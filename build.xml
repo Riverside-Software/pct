@@ -18,20 +18,8 @@
   <property name="check" value="check"/>  
   <property name="website" value="website"/>
   
-  <!-- Jalopy classpath -->
-  <path id="JalopyCP">
-    <fileset dir="${env.JALOPY_HOME}/lib">
-      <include name="*.jar"/>
-    </fileset>
-  </path>
-
-  <!-- Jalopy task definition -->
-  <taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
-    <classpath refid="JalopyCP"/>
-  </taskdef>
-  
   <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.3.jar"/>
+  <taskdef resource="checkstyletask.properties"/>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
@@ -68,6 +56,13 @@
         <pathelement location="${src.progress}"/>
       </propath>
     </PCTCompile>
+  	<copy todir="${build}/tty">
+      <fileset dir="${src.progress}">
+        <include name="prodict/**/*.p"/>
+        <include name="prodict/**/*.p"/>
+        <include name="adecomm/*.i"/>
+      </fileset>
+  	</copy>
     <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
         <include name="pct/*.p"/>
@@ -76,6 +71,13 @@
         <pathelement location="${src.progress}"/>
       </propath>
     </PCTCompile>
+    <copy todir="${build}/gui">
+      <fileset dir="${src.progress}">
+        <include name="prodict/**/*.p"/>
+        <include name="prodict/**/*.i"/>
+        <include name="adecomm/*.i"/>
+      </fileset>
+    </copy>
   </target>
   
   <target name="format" depends="build,test-build" description="Java source code formatting">
@@ -89,7 +91,7 @@
     </jalopy>
   </target>
 
-  <target name="check" depends="format" description="Check source code convention">
+  <target name="check" depends="build" description="Check source code convention">
     <mkdir dir="${check}"/>
     <checkstyle config="conf/check-config.xml" failOnViolation="false">
       <formatter type="xml" toFile="${check}/check.xml"/>
