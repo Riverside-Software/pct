@@ -1,24 +1,62 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
 <html>
+
 <head>
-<title>PCT documentation</title>
-<meta http-equiv="Content-language" content="fr" />
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="fr" />
+<meta name="Keywords"- content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
-<meta name="robots" content="index,follow" />
 <meta name="DC.Language" content="fr" />
+<title>PCT homepage - Progress&reg; Compilation Tools</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
+
 <body>
 
 <div class="Main">
 
 <div class="Bandeau">
-Progress&reg; Compilation Tools
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogo" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; Compilation Tools
 </div>
 
 <div class="Menu">
-<a href="index.html">Overview</a> :: <a href="download.html">Download</a> :: Documentation :: <a href="javadoc/index.html">JavaDoc</a> :: <a href="PLReader.html">PLReader</a>
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTRun.html">PCTConnection</a></li>
+    <li><a href="PCTCompile.html">PCTAlias</a></li>
+  </ul>
 </div>
 
 <div class="Text">
@@ -26,7 +64,7 @@ Progress&reg; Compilation Tools
 <h2>Installation</h2>
 <h3>System requirements</h3>
 <p>
-The PCT plug-in requires Ant 1.3 or higher. However, it has only been tested with 1.5 & 1.6 version of Ant.
+The PCT plug-in requires Ant 1.3 or higher. However, it has only been tested with 1.5 &amp; 1.6 version of Ant.
 Please feel free to notify of other success stories.
 To obtain more information about this wonderful build tool, visit the official Ant home page at the Apache Jakarta site :
 <a href="http://ant.apache.org">http://ant.apache.org</a> 
@@ -34,7 +72,7 @@ To obtain more information about this wonderful build tool, visit the official A
 <h3>Installation (binary package)</h3>
 <p>
 The PCT plug-in comes either as a single .zip or as a tarball.
-Unzipping either one of these files into a directory of your choice (referred to as <i>&lt;INST_DIR&gt;</i>)
+Unzipping either one of these files into a directory of your choice (referred to as <em>&lt;INST_DIR&gt;</em>)
 will produce two subdirectories /lib and /src. 
 </p>
 <p>You first have to copy Progress&reg; code (to $DLC/tty and $DLC/gui). Just copy the pct subdir from <i>tty</i> and <i>gui</i>
@@ -45,9 +83,7 @@ subdirectories from the binary archive.
 Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. Maybe the simplest way 
 is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
 </p>
-<pre>
-&lt;taskdef resource="PCT.properties" classpath="<i>&lt;INST_DIR&gt;</i>/lib/PCT.jar"/&gt;
-</pre>
+<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar"/&gt;</pre>
 <h1>Tasks overview</h1>
 <p>
 10 tasks are available in PCT, corresponding to 10 basic actions for Progress&reg;.
@@ -64,610 +100,11 @@ You can :</p>
 <li>Convert WebSpeed HTML files to Progress .w files</li>
 <li>Load binary datas into dabase</li>
 </ul>
-<p>These 9 tasks all inherits from the PCT superclass 5 attributes :</p>
-<ul>
-<li>dlcHome</li>
-<li>dlcBin</li>
-<li>dlcJava</li>
-<li>ProgressJar</li>
-<li>ProxygenJar</li>
-</ul>
-
-<h2>PCTCreateBase : creates a new database</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Mandatory</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>DBName</td>
-<td>Database name</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>DestDir</td>
-<td>Destination directory where to create the database</td>
-<td>No</td>
-<td>Current directory</td>
-</tr>
-<tr>
-<td>StructFile</td>
-<td>Structure description file. </td>
-<td>Mandatory if noInit set to Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>BlockSize</td>
-<td>Block size in kilobytes (1, 2, 4 or 8)</td>
-<td>Mandatory if noSchema set to Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>NoInit</td>
-<td>No initialization of database schema (procopy emptyX dbName)</td>
-<td>No</td>
-<td>False</td>
-</tr>
-<tr>
-<td>NoSchema</td>
-<td>No schema creation</td>
-<td>No</td>
-<td>False</td>
-</tr>
-<tr>
-<td>Overwrite</td>
-<td>Overwrites database if exists</td>
-<td>No</td>
-<td>False</td>
-</tr>
-</table>
-
-<h2>PCTLoadSchema : loads a database schema from a text file</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Mandatory</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>SrcFile</td>
-<td>File containing the schema dump</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>It is mandatory to specify a database connection with a nested &lt;PCTConnection&gt; element. One and only one database connection should be declared for a PCTLoadSchema task</p>
-
-<h2>PCTDumpSchema : dumps a database schema to a text file</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Mandatory</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>DestFile</td>
-<td>Destination file to dump the schema</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>It is mandatory to specify a database connection with a nested &lt;PCTConnection&gt; element. One and only one database connection should be declared for a P
-CTDumpSchema task</p>
-
-<h2>PCTConnection : connects a Progress&reg; database</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>dbName</td>
-<td>Database physical name</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>dbDir</td>
-<td>Directory where database is physically located (relative to baseDir)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>dbPort</td>
-<td>TCP port to connect to (-S parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>Protocol</td>
-<td>Protocol to use (-N parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>LogicalName</td>
-<td>Logical name for the database (-ld parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>CacheFile</td>
-<td>Name of the binary cache file (-cache parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>DataService</td>
-<td>Dataservice (-DataService parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>DbType</td>
-<td>Database type (Oracle, SQL Server, ...) (-dt parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>HostName</td>
-<td>Host name where the database resides (-H parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>UserName</td>
-<td>Login (-U parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>Password</td>
-<td>Password (-P parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>ReadOnly</td>
-<td>Open the database in read-only mode (-RO parameter)</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>SingleUser</td>
-<td>Open the database in single-user mode (-1 parameter)</td>
-<td>No</td>
-<td>No</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>It is possible to define database aliases with nested &lt;PCTAlias&gt; elements.</p>
-
-<h2>PCTAlias : defines a database alias</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>Name</td>
-<td>Alias name</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>NoError</td>
-<td>If alias should be declared with NO-ERROR statement</td>
-<td>No</td>
-<td>False</td>
-</tr>
-</table>
-
-<h2>PCTRun : executes a Progress&reg; procedure</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>Procedure</td>
-<td>Procedure name</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>graphicalMode</td>
-<td>Yes if you want to execute procedure using prowin32, _progres otherwise</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>debugPCT</td>
-<td>Yes to keep internal temporary files on disk</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>centuryYearOffset</td>
-<td>Century Year Offset (-yy parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>cpInternal</td>
-<td>Internal code page (-cpinternal parameter)</td>
-<td>No</td>
-<td>undefined</td>
-</tr>
-<tr>
-<td>cpStream</td>
-<td>Stream code page (-cpstream parameter)</td>
-<td>No</td>
-<td>undefined</td>
-</tr>
-<tr>
-<td>dirSize</td>
-<td>The number of compiled procedure directory entries (-D parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>inputChars</td>
-<td>The number of characters allowed in a single statement (-inp parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>maximumMemory</td>
-<td>The amount of memory allocated for r-code segments (-mmax parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>parameter</td>
-<td>Parameter (-param parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>stackSize</td>
-<td>The size of the stack in 1KB units (-s parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>token</td>
-<td>The number of tokens allowed in a 4GL statement (-tok parameter)</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>It is possible to define database connections with nested &lt;PCTConnection&gt; elements. &lt;PCTRun&gt;'s propath attribute is a path-like structure and can be set via nested &lt;propath&gt; elements.</p>
-
-<h2>PCTCompile : compiles Progress&reg; code</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>MinSize</td>
-<td>Compile using option MIN-SIZE=TRUE</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>MD5</td>
-<td>Compile using option GENERATE-MD5=TRUE</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>DestDir</td>
-<td>Directory where to put compiled code</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>FailOnError</td>
-<td>If task should end after a failed file compilation</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>XRefDir</td>
-<td>Where temporary files (xref and includes) should be created</td>
-<td>No</td>
-<td>DestDir attribute</td>
-</tr>
-<tr>
-<td>forceCompile</td>
-<td>Always compile everything</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>noXRef</td>
-<td>Don't use XREF when compiling or when reading files to compile</td>
-<td>No</td>
-<td>No</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>&lt;PCTCompile&gt; extends &lt;PCTRun&gt; and so has the same nested elements. &lt;PCTCompile&gt; also supports Fileset nested elements to declare file names to compile.</p>
-
-<h2>PCTWSComp : transforms WebSpeed HTML to .w Progress procedure</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>FailOnError</td>
-<td>If task should end after a failed file transformation</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>DestDir</td>
-<td>Directory where to put .w files</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>Debug</td>
-<td>Adds debug to e4gl-gen.p options</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>GetOptions</td>
-<td>Adds get-options to e4gl-gen.p options</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>Include</td>
-<td>Adds include to e4gl-gen.p options</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>KeepMetaContentType</td>
-<td>Adds keep-meta-content-type to e4gl-gen.p options</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>WebObject</td>
-<td>Adds web-object to e4gl-gen.p options</td>
-<td>No</td>
-<td>No</td>
-</tr>
-
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>&lt;PCTWSComp&gt; extends &lt;PCTRun&gt; and so has the same nested elements. &lt;PCTWSComp&gt; also supports Fileset nested elements to declare file names to compile.</p>
-
-<h2>PCTLibrary : creates a r-code library</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>DestFile</td>
-<td>R-code library to create</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>Encoding</td>
-<td>Character encoding to use</td>
-<td>No</td>
-<td>ISO8859-1</td>
-</tr>
-<tr>
-<td>NoCompress</td>
-<td>Libraries are by default compressed at the end of the process. Say No to skip compression</td>
-<td>No</td>
-<td>No</td>
-</tr>
-</table>
-
-<h2>PCTSchemaDoc : generates HTML database documentation</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>DestDir</td>
-<td>Directory where HTML files will be generated</td>
-<td>No</td>
-<td>Current directory</td>
-</tr>
-</table>
-
-<h2>PCTProxygen : use PXG files to generate Java proxy classes</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>
-<tr>
-<td>srcFile</td>
-<td>PXG file to use</td>
-<td>Yes</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>keepFiles</td>
-<td>Leave proxy files</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>workingDirectory</td>
-<td>Working directory</td>
-<td>No</td>
-<td>No default value</td>
-</tr>
-</table>
-
-<h2>PCTBinaryLoad : Load binary datas into databases (proutil -C load)</h2>
-<table>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default value</th>
-</tr>	
-<tr>
-<td>rebuildIndexes</td>
-<td>Yes if indexes should be rebuild (build indexes option)</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>IndexRebuildTimeout</td>
-<td>Timeout before rebuilding indexes (-G option)</td>
-<td>No</td>
-<td>0</td>
-</tr>
-</table>
-<h3>Parameters specified as nested elements</h3>
-<p>&lt;PCTBinaryLoad&gt; extends &lt;PCTRun&gt; and so has the same nested elements.
-But one and only one &lt;PCTConnection&gt; is allowed.
-&lt;PCTBinaryLoad&gt; also supports Fileset nested elements to declare file names to load 
-into database.
-</p>
-
-<h1>Examples</h1>
-
-<h2>Declare each task with PCT library in ANT lib directory</h2>
-<pre id="deprecated">
-&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"/&gt;
-&lt;taskdef name="PCTLoadSchema" classname="com.phenix.pct.PCTLoadSchema"/&gt;
-&lt;taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary"/&gt;
-&lt;taskdef name="PCTRun" classname="com.phenix.pct.PCTRun"/&gt;
-&lt;taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile"/&gt;
-&lt;taskdef name="PCTCreateBase" classname="com.phenix.pct.PCTCreateBase"/&gt;
-&lt;taskdef name="PCTSchemaDoc" classname="com.phenix.pct.PCTSchemaDoc"/&gt;
-&lt;taskdef name="PCTProxygen" classname="com.phenix.pct.PCTProxygen"/&gt;
-</pre>
-<pre>
-Use this instead :
-&lt;taskdef resource="PCT.properties" classpath="<i>&lt;INST_DIR&gt;</i>/lib/PCT.jar"/&gt;
-</pre>
-
-<h2>Create a new database in base/db subdirectory based on a dump file and generates database documentation</h2>
-<pre>
-&lt;PCTCreateBase dbName="MyDB" destDir="base/db" noSchema="yes" DlcHome="${env.DLC}"/&gt;
-&lt;PCTLoadSchema srcFile="base/dump/MyDB.df" &gt;
-  &lt;PCTConnection dbDir="base/db" dbName="MyDB" singleUser="true"/&gt;
-&lt;/PCTLoadSchema&gt;
-&lt;PCTSchemaDoc destDir="base/doc"&gt;
-  &lt;PCTConnection dbDir="base/db" dbName="MyDB" singleUser="true"/&gt;
-&lt;/PCTSchemaDoc&gt;
-</pre>
-
-<h2>Compile source files with 2 database connections and a specific PROPATH</h2>
-<pre>
-&lt;PCTCompile destDir="build" baseDir="src" md5="true" minSize="true" graphicalMode="false"&gt;
-  &lt;fileset dir="src"&gt;
-    &lt;include name="**/*.p"/&gt;
-    &lt;include name="**/*.w"/&gt;
-    &lt;exclude name="non/**/*"/&gt;
-  &lt;/fileset&gt;
-  &lt;PCTConnection dbDir="base/db" dbName="MyDB" logicalName="fixed" singleUser="true"/&gt;
-  &lt;PCTConnection dbDir="base/db" dbName="MyDB2" logicalName="custom" singleUser="true"&gt;
-    &lt;PCTAlias name="custom1"/&gt;
-    &lt;PCTAlias name="custom2"/&gt;
-  &lt;/PCTConnection&gt;
-  &lt;propath&gt;
-    &lt;pathelement location="src"/&gt;
-    &lt;pathelement location="src/adm2"/&gt;
-  &lt;/propath&gt;
-&lt;/PCTCompile&gt;
-</pre>
-
-<h2>Generate a library based on previously compiled source files</h2>
-<pre>
-&lt;PCTLibrary destFile="dist/MyLib.pl"&gt;
-  &lt;fileset dir="build"&gt;
-    &lt;include name="**/*.r"/&gt;
-    &lt;exclude name="adm2/*.r"/&gt;
-  &lt;/fileset&gt;
-&lt;/PCTLibrary&gt;
-</pre>
-
-<h2>How to use proxygen task</h2>
-<pre>
-&lt;PCTProxygen dlcHome="${env.DLC}" srcFile="src/progress/MyProxy.pxg" workingDirectory="src/progress"/&gt;
-&lt;!-- baseDir is the directory from which the task is launched --&gt;
-</pre>
-
-<h1>Hints</h1>
-<h2>How to use DLC environment variable in ANT scripts</h2>
-<p>ANT doesn't handle environment variables by default. Add this line at the beginning of your
-script to load environment variables :</p>
-<pre>
-&lt;property environment="env"/&gt;
-</pre>
-<p>You may now refer to your DLC env variable with the following syntax :</p>
-<pre>
-dlcHome="${env.DLC}"
-</pre>
-
-
-<h2>How to use PCT_HOME environment variable in ANT scripts</h2>
-<p>I find cleaner to use an environment variable to declare the location
-of PCT files rather than putting it in the ANT script or in the classpath.
-So just declare PCT_HOME variable in your favorite shell, and use these
-directives in the ANT script :</p>
-<pre>
-  &lt;!-- ClassPath pour PCT --&gt;
-  &lt;path id="PCT"&gt;
-    &lt;fileset dir="${env.PCT_HOME}/lib"&gt;
-      &lt;include name="PCT.jar"/&gt;
-    &lt;/fileset&gt;
-  &lt;/path&gt;
-
-  &lt;!-- Definition des taches externes --&gt;  
-  &lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
-    &lt;classpath refid="PCT"/&gt;
-  &lt;/taskdef&gt;
-</pre>
 
 </div>
 
 <div class="LastUpdate">
-Last update : 14th January, 2004
+  $Date$
 </div>
 
 </div>
