@@ -437,12 +437,16 @@ public class PCTRun extends PCT {
         }
 
         // Stream code page
-        exec.createArg().setValue("-cpstream");
-        exec.createArg().setValue(((this.cpStream == null) ? "undefined" : this.cpStream));
+        if (this.cpStream != null) {
+            exec.createArg().setValue("-cpstream");
+            exec.createArg().setValue(this.cpStream);
+        }
 
         // Internal code page
-        exec.createArg().setValue("-cpinternal");
-        exec.createArg().setValue(((this.cpInternal == null) ? "undefined" : this.cpInternal));
+        if (this.cpInternal != null) {
+            exec.createArg().setValue("-cpinternal");
+            exec.createArg().setValue(this.cpInternal);
+        }
 
         // Directory size
         if (this.dirSize != 0) {
