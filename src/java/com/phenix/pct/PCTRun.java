@@ -91,7 +91,7 @@ public class PCTRun extends PCT {
     private int maximumMemory = 0;
     private int stackSize = 0;
     private int ttBufferSize = 0;
-    protected boolean debugPCT = false;
+    private boolean debugPCT = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
 
@@ -306,23 +306,27 @@ public class PCTRun extends PCT {
         try {
             exec.execute();
         } catch (BuildException be) {
-            // BuildException is trapped to delete temp files, and then thrown again
-            if (!this.initProc.delete()) {
-                log("Failed to delete " + this.initProc.getAbsolutePath());
-            }
+        	if (!this.debugPCT) {
+        	    // BuildException is trapped to delete temp files, and then thrown again
+                if (!this.initProc.delete()) {
+                    log("Failed to delete " + this.initProc.getAbsolutePath());
+                }
 
-            if (!this.status.delete()) {
-                log("Failed to delete " + this.status.getAbsolutePath());
-            }
-
+                if (!this.status.delete()) {
+                    log("Failed to delete " + this.status.getAbsolutePath());
+                }
+        	}
+        	
             throw be;
         }
 
         exec = null;
 
         // Progress procedure can now be safely deleted
-        if (!this.initProc.delete()) {
-            log("Failed to delete " + this.initProc.getAbsolutePath());
+        if (!this.debugPCT) {
+            if (!this.initProc.delete()) {
+                log("Failed to delete " + this.initProc.getAbsolutePath());
+            }
         }
 
         BufferedReader br = null;
@@ -334,8 +338,10 @@ public class PCTRun extends PCT {
             String s = br.readLine();
             br.close();
 
-            if (!this.status.delete()) {
-                log("Failed to delete " + this.status.getAbsolutePath());
+            if (!this.debugPCT) {
+                if (!this.status.delete()) {
+                    log("Failed to delete " + this.status.getAbsolutePath());
+                }
             }
 
             int ret = Integer.parseInt(s);
@@ -351,8 +357,10 @@ public class PCTRun extends PCT {
             } catch (IOException ioe2) {
             }
 
-            if (!this.status.delete()) {
-                log("Failed to delete " + this.status.getAbsolutePath());
+            if (!this.debugPCT) {
+                if (!this.status.delete()) {
+                    log("Failed to delete " + this.status.getAbsolutePath());
+                }
             }
 
             throw new BuildException("Progress procedure failed - Error reading return value");
@@ -569,5 +577,14 @@ public class PCTRun extends PCT {
         }
 
         return res.toString();
+    }
+
+    /**
+     * Return PCT Debug status
+     *
+     * @return boolean
+     */
+    protected boolean getDebugPCT() {
+        return this.debugPCT;
     }
 }
