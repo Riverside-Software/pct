@@ -86,6 +86,8 @@ public class PCTCompile extends PCT {
     private boolean graphMode = false;
     private File destDir = null;
     private int inputChars = 0;
+    private String cpStream = null;
+    private String cpInternal = null;
 
     /**
      * Set the propath to be used for this compilation.
@@ -116,6 +118,22 @@ public class PCTCompile extends PCT {
      */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
+    }
+
+    /**
+     * Stream code page
+     * @param cpStream
+     */
+    public void setCpStream(String cpStream) {
+        this.cpStream = cpStream;
+    }
+
+    /**
+     * Internal code page
+     * @param cpInternal
+     */
+    public void setCpInternal(String cpInternal) {
+        this.cpInternal = cpInternal;
     }
 
     /**
@@ -304,8 +322,8 @@ public class PCTCompile extends PCT {
     public void execute() throws BuildException {
         Commandline cmdLine = null;
         int result = 0;
-        File tmpProc = null, tmpProc2 = null;
-        
+        File tmpProc = null;
+        File tmpProc2 = null;
 
         log("PCTCompile - Progress Code Compiler", Project.MSG_INFO);
 
@@ -337,30 +355,32 @@ public class PCTCompile extends PCT {
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("compile", ".p");
-			tmpProc2 = File.createTempFile("aliases", ".p");
-			
+            tmpProc2 = File.createTempFile("aliases", ".p");
+
             tmpProc.deleteOnExit();
-			tmpProc2.deleteOnExit();
-			
+            tmpProc2.deleteOnExit();
+
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
             BufferedWriter bw2 = new BufferedWriter(new FileWriter(tmpProc2));
-            
+
             bw.write("ASSIGN PROPATH=\"" + propath.toString() + File.pathSeparatorChar +
                      "\" + PROPATH.");
-            
+
             // Defines aliases
-			for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
-				PCTConnection dbc = (PCTConnection) e.nextElement();
-				for (Enumeration e2 = dbc.getAliases().elements(); e2.hasMoreElements();) {
-					bw2.write((String) e2.nextElement());
-					bw2.newLine();
-				}
-			}
-			// Calls compile procedure
+            for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
+                PCTConnection dbc = (PCTConnection) e.nextElement();
+
+                for (Enumeration e2 = dbc.getAliases().elements(); e2.hasMoreElements();) {
+                    bw2.write((String) e2.nextElement());
+                    bw2.newLine();
+                }
+            }
+
+            // Calls compile procedure
             bw2.write("RUN " + tmpProc.toString() + ".");
-            bw2.newLine();         
+            bw2.newLine();
             bw2.close();
-            
+
             bw.newLine();
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
@@ -436,6 +456,15 @@ public class PCTCompile extends PCT {
             commandLine.createArgument().setValue("-inp");
             commandLine.createArgument().setValue("" + this.inputChars);
         }
+
+        // Stream code page
+        commandLine.createArgument().setValue("-cpstream");
+        commandLine.createArgument().setValue(((this.cpStream == null) ? "undefined" : this.cpStream));
+
+        // Internal code page
+        commandLine.createArgument().setValue("-cpinternal");
+        commandLine.createArgument().setValue(((this.cpInternal == null) ? "undefined"
+                                                                         : this.cpInternal));
 
         return commandLine;
     }
