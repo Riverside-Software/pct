@@ -297,11 +297,11 @@ public class PCTRun extends PCT {
         } catch (BuildException be) {
             // BuildException is trapped to delete temp files, and then thrown again
             if (!this.initProc.delete()) {
-                System.err.println("Failed to delete " + this.initProc.getAbsolutePath());
+                log("Failed to delete " + this.initProc.getAbsolutePath());
             }
 
             if (!this.status.delete()) {
-                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+                log("Failed to delete " + this.status.getAbsolutePath());
             }
 
             throw be;
@@ -311,7 +311,7 @@ public class PCTRun extends PCT {
 
         // Progress procedure can now be safely deleted
         if (!this.initProc.delete()) {
-            System.err.println("Failed to delete " + this.initProc.getAbsolutePath());
+            log("Failed to delete " + this.initProc.getAbsolutePath());
         }
 
         BufferedReader br = null;
@@ -324,7 +324,7 @@ public class PCTRun extends PCT {
             br.close();
 
             if (!this.status.delete()) {
-                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+                log("Failed to delete " + this.status.getAbsolutePath());
             }
 
             int ret = Integer.parseInt(s);
@@ -341,7 +341,7 @@ public class PCTRun extends PCT {
             }
 
             if (!this.status.delete()) {
-                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+                log("Failed to delete " + this.status.getAbsolutePath());
             }
 
             throw new BuildException("Progress procedure failed - Error reading return value");
