@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<project name="PCTWSComp-test" default="">
+
+  <taskdef name="PCTWSComp" classname="com.phenix.pct.PCTWSComp" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no dest dir -->
+  <target name="test1">
+    <PCTWSComp/>
+  </target>
+  
+  <!-- Do nothing : should not hurt -->
+  <target name="test2">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTWSComp>
+  </target>
+  
+  <!-- Simple compilation -->
+  <target name="test3">
+    <echo file="sandbox/simple.html">
+      &lt;body&gt;
+        &lt;script language="SpeedScript"&gt;
+        DEFINE VARIABLE vdate AS DATE INITIAL TODAY.
+        &lt;/script&gt;
+        &lt;p&gt;Today : 'vdate'&lt;/p&gt;
+      &lt;/body&gt;
+    </echo>
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/simple.html"/>	
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTWSComp>	
+  </target>
+    
+</project>

@@ -1,7 +1,10 @@
 Version 0.3c (Not yet released)
 ==============================
  * Added hasNamedAlias method in PCTConnection (P. BAIRD)
-
+ * Added PCTWSComp task - Not test, so don't expect it to run correctly 
+   Help needed for this task, as I don't know how WebSpeed works
+ * Updated manual to reflect PCTWSComp task
+ 
 Version 0.3b (11/15/2003)
 ==============================
  * Added unit tests (still in development)
