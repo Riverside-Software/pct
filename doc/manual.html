@@ -479,7 +479,7 @@ CTDumpSchema task</p>
 <h1>Examples</h1>
 
 <h2>Declare each task with PCT library in ANT lib directory</h2>
-<pre>
+<pre id="deprecated">
 &lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"/&gt;
 &lt;taskdef name="PCTLoadSchema" classname="com.phenix.pct.PCTLoadSchema"/&gt;
 &lt;taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary"/&gt;
@@ -488,6 +488,10 @@ CTDumpSchema task</p>
 &lt;taskdef name="PCTCreateBase" classname="com.phenix.pct.PCTCreateBase"/&gt;
 &lt;taskdef name="PCTSchemaDoc" classname="com.phenix.pct.PCTSchemaDoc"/&gt;
 &lt;taskdef name="PCTProxygen" classname="com.phenix.pct.PCTProxygen"/&gt;
+</pre>
+<pre>
+Use this instead :
+&lt;taskdef resource="PCT.properties" classpath="<i>&lt;INST_DIR&gt;</i>/lib/PCT.jar"/&gt;
 </pre>
 
 <h2>Create a new database in base/db subdirectory based on a dump file and generates database documentation</h2>
