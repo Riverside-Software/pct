@@ -59,7 +59,7 @@
   	<copy todir="${build}/tty">
       <fileset dir="${src.progress}">
         <include name="prodict/**/*.p"/>
-        <include name="prodict/**/*.p"/>
+        <include name="prodict/**/*.i"/>
         <include name="adecomm/*.i"/>
       </fileset>
   	</copy>
