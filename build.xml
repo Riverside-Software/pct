@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="PCT" default="bindist">
+<project name="PCT" default="dist">
   
   <!-- Give user a chance to override without editing this file
        (and without typing -D each time it compiles it) -->
@@ -183,7 +183,7 @@
     </zip>
   </target>
   
-  <target name="dist" depends="bindist,srcdist"/>
+  <target name="dist" depends="build,test-build,test,srcdist,bindist"/>
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}"/>
