@@ -134,7 +134,7 @@ public class PCTRun extends PCT {
 
     /**
      * Turns on/off debugging mode (keeps Progress temp files on disk)
-     * @param debug boolean
+     * @param debugPCT boolean
      */
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
