@@ -68,6 +68,7 @@ You can :</p>
 <li>Compile Progress code</li>
 <li>Create and/or update Progress r-code libraries</li>
 <li>Generate database documentation</li>
+<li>Use PXG files to generate Java proxy classes</li>
 </ul>
 <p>These 6 tasks all inherits from the PCT superclass 2 attributes :</p>
 <ul>
@@ -319,6 +320,28 @@ You can :</p>
 </tr>
 </table>
 
+<h2>PCTProxygen : use PXG files to generate Java proxy classes</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>	
+<tr>
+<td>srcFile</td>
+<td>PXG file to use</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>keepFiles</td>
+<td>Leave proxy files</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</table>
+
 <h1>Examples</h1>
 
 <h2>Declare each task with PCT library in ANT lib directory</h2>
@@ -329,6 +352,7 @@ You can :</p>
 &lt;taskdef name="PCTLoadSchema" classname="com.phenix.pct.PCTLoadSchema"/&gt;
 &lt;taskdef name="PCTCreateBase" classname="com.phenix.pct.PCTCreateBase"/&gt;
 &lt;taskdef name="PCTSchemaDoc" classname="com.phenix.pct.PCTSchemaDoc"/&gt;
+&lt;taskdef name="PCTProxygen" classname="com.phenix.pct.PCTProxygen"/&gt;
 </pre>
 
 <h2>Create a new database in base/db subdirectory based on a dump file and generates database documentation</h2>
@@ -363,6 +387,12 @@ You can :</p>
   &lt;include name="build/**/*.r"/&gt;
   &lt;exclude name="build/adm2/*.r"/&gt;
 &lt;/PCTLibrary&gt;
+</pre>
+
+<h2>How to use proxygen task</h2>
+<pre>
+&lt;PCTProxygen dlcHome="${env.DLC}" srcFile="src/progress/MyProxy.pxg" baseDir="src/progress"/&gt;
+&lt;!-- baseDir is the directory from which the task is launched --&gt;
 </pre>
 
 <h1>Hints</h1>
@@ -400,7 +430,7 @@ directives in the ANT script :</p>
 </div>
 
 <div class="LastUpdate">
-Last update : 17th July, 2003
+Last update : 25th August, 2003
 </div>
 
 </div>
