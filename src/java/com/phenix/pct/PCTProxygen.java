@@ -127,7 +127,7 @@ public class PCTProxygen extends PCT {
 
         pxg.setClassname("com.progress.open4gl.proxygen.Batch");
 
-        pxg.createClasspath().setPath(this.getProxygenJar().toString());
+        pxg.createClasspath().setPath(this.getProgressJar().toString());
 
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
