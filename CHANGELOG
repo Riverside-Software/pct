@@ -1,6 +1,9 @@
+Version 0.6 (??)
+==============================
+ * Bug #995235 : compress command line is only run once
+
 Version 0.5 (08/25/2004)
 ==============================
-
  * Bug #972486 : changed the way temp files are deleted
  * Bug #992280 : added paramFile attribute to PCTConnection
 
