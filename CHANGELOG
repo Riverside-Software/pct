@@ -5,6 +5,7 @@ Version 0.8 (??/??/????)
    Warning : API changed, see PCT.java and PCTProxygen.java for details
  * Bug #1117740 : DLC environment not defined
    Added DLC environment variable in every Exec or Java task.
+ * Added Eclipse stuff in CVS...
 
 Version 0.7 (01/17/2005)
 ==============================
