@@ -223,6 +223,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("MD5=" + (this.md5 ? "1" : "0"));
             bw.newLine();
+            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
+            bw.newLine();
+            bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
+            bw.newLine();
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException("Unable to write file list to compile");
