@@ -109,7 +109,7 @@ Compiles Progress procedures.
 <td>False</td>
 </tr>
 <tr>
-<td>noXRef</td>
+<td>noXRef <em>[Deprecated]</em></td>
 <td>Don't use XREF when compiling or when reading files to compile</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
@@ -117,7 +117,7 @@ Compiles Progress procedures.
 </tr>
 <tr>
 <td>XRefDir</td>
-<td>Where temporary files (xref and includes) should be created</td>
+<td>Where temporary files (CRC and includes) should be created</td>
 <td align="center">File</td>
 <td align="center">Optional</td>
 <td>Same as destDir</td>
@@ -128,6 +128,20 @@ Compiles Progress procedures.
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
 <td>False</td>
+</tr>
+<tr>
+<td>XCode</td>
+<td>Compiles using XCODE option</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>XCodeKey</td>
+<td>Sets specific key for encrypted procedures</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
 </tr>
 </table>
 <p>PCTCompile inherits attributes from <a href="PCT.html">PCT</a> and 
