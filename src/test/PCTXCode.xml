@@ -80,4 +80,31 @@
     </PCTXCode>
   </target>
   
+  <!-- Real test -->
+  <target name="test7init">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      RETURN "1".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/*.p"/>
+      </fileset>
+    </PCTXCode>
+    <delete file="sandbox/test.p"/>
+    <delete file="sandbox/test2.p"/>
+  </target>
+  <target name="test7">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <propath path="build"/>
+    </PCTRun>
+  </target>  
+  <target name="test7bis">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}">
+      <propath path="build"/>
+    </PCTRun>
+  </target>  
+  
 </project>
