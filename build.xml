@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="bindist">
   
@@ -31,7 +31,7 @@
   </taskdef>
   
   <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.1.jar"/>
+  <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.3.jar"/>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
@@ -79,7 +79,7 @@
   </target>
   
   <target name="format" depends="build,test-build" description="Java source code formatting">
-    <jalopy fileformat="unix" encoding="utf-8" history="file" historymethod="adler32" convention="conf/jalopy.xml">
+    <jalopy fileformat="dos" encoding="utf-8" history="file" historymethod="adler32" convention="conf/jalopy.xml">
       <fileset dir="${src.java}">
         <include name="com/phenix/pct/**/*.java" />
       </fileset>
@@ -191,7 +191,7 @@
   <target name="website" depends="javadoc" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}"/>
     <mkdir dir="${website}"/>
-    <copy toDir="${website}">
+    <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html"/>
         <include name="*.css"/>
