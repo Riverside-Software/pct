@@ -88,6 +88,13 @@ Adds a database connection
 <td>No default value</td>
 </tr>
 <tr>
+<td>paramFile</td>
+<td>Parameter file (-pf parameter). -pf is always in second position in the connection parameters (just after the -db parameter)</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
 <td>dbDir</td>
 <td>Directory where database is physically located (relative to baseDir)</td>
 <td align="center">File</td>
@@ -180,7 +187,14 @@ Adds an alias to a connection
 </p>
 
 <h2>Examples</h2>
-None
+<pre>
+&lt;PCTRun ...&gt;
+  &lt;PCTConnection dbName="foo" logicalName="bar" paramFile="conf/param.pf"/&gt;
+&lt;/PCTRun&gt;
+</pre>
+<p>
+On the command line will be appended the following parameters : <code>-db foo -pf conf/param.pf -ld bar</code>
+</p>
 </div>
 
 <div class="LastUpdate">
