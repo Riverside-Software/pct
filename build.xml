@@ -29,7 +29,7 @@
   </target>
 
   <target name="format" depends="compile" description="Formats source code">
-    <jalopy fileformat="unix" encoding="iso8859-1">
+    <jalopy fileformat="unix" encoding="iso8859-1" convention="jalopy.xml">
       <fileset dir="${src.java}">
         <include name="com/phenix/pct/**/*.java" />
       </fileset>
