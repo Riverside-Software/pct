@@ -55,14 +55,17 @@
 DEFINE OUTPUT PARAMETER pmXML AS MEMPTR NO-UNDO.
 
 /* Handles for table _Database */
-DEFINE VARIABLE hDB        AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hBDB       AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hCodePage  AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hCollation AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hDatabase  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBDatabase AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hCreateDt  AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBlkSize   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hVersion   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hVersMin   AS HANDLE     NO-UNDO.
+/* Handles for table _Db */
+DEFINE VARIABLE hDB        AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBDB       AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hCodepage  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hCollation AS HANDLE     NO-UNDO.
 /* Handles for table _File */
 DEFINE VARIABLE hFile      AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBFile     AS HANDLE     NO-UNDO.
@@ -127,6 +130,7 @@ xRoot:CREATE-NODE(xDB, 'database':U, 'ELEMENT':U).
 xRoot:APPEND-CHILD(xDB).
 
 /* Creating queries */
+CREATE QUERY hDatabase.
 CREATE QUERY hDB.
 CREATE QUERY hFile.
 CREATE QUERY hField.
@@ -135,28 +139,30 @@ CREATE QUERY hTrig.
 CREATE QUERY hIdxField.
 
 /* Creating buffers */
-CREATE BUFFER hBDB    FOR TABLE '_DbStatus'.
-CREATE BUFFER hBFile  FOR TABLE '_File'.
-CREATE BUFFER hBField FOR TABLE '_Field'.
-CREATE BUFFER hBIndex FOR TABLE '_Index'.
-CREATE BUFFER hBTrig  FOR TABLE '_File-Trig'.
+CREATE BUFFER hBDatabase FOR TABLE '_DbStatus'.
+CREATE BUFFER hBDB       FOR TABLE '_Db'.
+CREATE BUFFER hBFile     FOR TABLE '_File'.
+CREATE BUFFER hBField    FOR TABLE '_Field'.
+CREATE BUFFER hBIndex    FOR TABLE '_Index'.
+CREATE BUFFER hBTrig     FOR TABLE '_File-Trig'.
 CREATE BUFFER hBIdxField FOR TABLE '_Index-Field'.
 
 /* Assigning buffers */
-hDB:SET-BUFFERS (hBDB).
-hFile:SET-BUFFERS (hBFile).
-hField:SET-BUFFERS (hBField).
-hIndex:SET-BUFFERS (hBIndex).
-hTrig:SET-BUFFERS (hBTrig).
-hIdxField:SET-BUFFERS (hBIdxField).
+hDatabase:SET-BUFFERS(hBDatabase).
+hDB:SET-BUFFERS(hBDB).
+hFile:SET-BUFFERS(hBFile).
+hField:SET-BUFFERS(hBField).
+hIndex:SET-BUFFERS(hBIndex).
+hTrig:SET-BUFFERS(hBTrig).
+hIdxField:SET-BUFFERS(hBIdxField).
 
 /* Getting buffer fields -- 9.1C compatibility */
-ASSIGN hCodePage  = hBDB:BUFFER-FIELD('_DbStatus-Codepage')
-       hCollation = hBDB:BUFFER-FIELD('_DbStatus-Collation')
-       hCreateDt  = hBDB:BUFFER-FIELD('_DbStatus-CreateDate')
-       hBlkSize   = hBDB:BUFFER-FIELD('_DbStatus-DbBlkSize')
-       hVersion   = hBDB:BUFFER-FIELD('_DbStatus-DbVers')
-       hVersMin   = hBDB:BUFFER-FIELD('_DbStatus-DbVersMinor')
+ASSIGN hCreateDt  = hBDatabase:BUFFER-FIELD('_DbStatus-CreateDate')
+       hBlkSize   = hBDatabase:BUFFER-FIELD('_DbStatus-DbBlkSize')
+       hVersion   = hBDatabase:BUFFER-FIELD('_DbStatus-DbVers')
+       hVersMin   = hBDatabase:BUFFER-FIELD('_DbStatus-DbVersMinor')
+       hCodepage  = hBDB:BUFFER-FIELD('_Db-xl-name')
+       hCollation = hBDB:BUFFER-FIELD('_Db-coll-name')
        hDump      = hBFile:BUFFER-FIELD ('_Dump-Name')
        hTable     = hBFile:BUFFER-FIELD ('_File-Name')
        hTableDesc = hBFile:BUFFER-FIELD ('_Desc')
@@ -180,14 +186,19 @@ ASSIGN hCodePage  = hBDB:BUFFER-FIELD('_DbStatus-Codepage')
        hFieldRecID = hBIdxField:BUFFER-FIELD ('_Field-recid').
 
 /* Checking _Database record */
-hDB:QUERY-PREPARE ('FOR EACH _DbStatus').
-hDB:QUERY-OPEN().
-hDB:GET-FIRST(NO-LOCK).
-xDB:SET-ATTRIBUTE('codepage', (IF hCodePage:BUFFER-VALUE EQ ? THEN 'undefined':U ELSE hCodePage:BUFFER-VALUE)).
-xDB:SET-ATTRIBUTE('collation', (IF hCollation:BUFFER-VALUE EQ ? THEN 'undefined':U ELSE hCollation:BUFFER-VALUE)).
+hDatabase:QUERY-PREPARE ('FOR EACH _DbStatus').
+hDatabase:QUERY-OPEN().
+hDatabase:GET-FIRST(NO-LOCK).
 xDB:SET-ATTRIBUTE('creation', hCreateDt:BUFFER-VALUE).
 xDB:SET-ATTRIBUTE('blockSize', hBlkSize:BUFFER-VALUE).
-xDB:SET-ATTRIBUTE('version', hVersion:BUFFER-VALUE + ' -- ' + hVersMin:BUFFER-VALUE).
+xDB:SET-ATTRIBUTE('version', hVersion:BUFFER-VALUE + '.' + hVersMin:BUFFER-VALUE).
+hDatabase:QUERY-CLOSE().
+
+hDB:QUERY-PREPARE('FOR EACH _Db').
+hDB:QUERY-OPEN().
+hDB:GET-FIRST(NO-LOCK).
+xDB:SET-ATTRIBUTE('codepage', hCodepage:BUFFER-VALUE).
+xDB:SET-ATTRIBUTE('collation', hCollation:BUFFER-VALUE).
 hDB:QUERY-CLOSE().
 
 /* Parsing every _File record */
@@ -297,12 +308,12 @@ hFile:QUERY-CLOSE().
 
 /* Freeing up memory */
 /* Starting with buffer field handles */
-DELETE OBJECT hCodePage.
-DELETE OBJECT hCollation.
 DELETE OBJECT hCreateDt.
 DELETE OBJECT hBlkSize.
 DELETE OBJECT hVersion.
 DELETE OBJECT hVersMin.
+DELETE OBJECT hCodepage.
+DELETE OBJECT hCollation.
 DELETE OBJECT hDump.
 DELETE OBJECT hTable.
 DELETE OBJECT hTableDesc.
@@ -325,6 +336,7 @@ DELETE OBJECT hActive.
 DELETE OBJECT hIndexDesc.
 DELETE OBJECT hFieldRecID.
 /* Continue with buffer handles */
+DELETE OBJECT hBDatabase.
 DELETE OBJECT hBDB.
 DELETE OBJECT hBFile.
 DELETE OBJECT hBField.
@@ -332,6 +344,7 @@ DELETE OBJECT hBIndex.
 DELETE OBJECT hBTrig.
 DELETE OBJECT hBIdxField.
 /* And ends up with query handles */
+DELETE OBJECT hDatabase.
 DELETE OBJECT hDB.
 DELETE OBJECT hFile.
 DELETE OBJECT hField.
