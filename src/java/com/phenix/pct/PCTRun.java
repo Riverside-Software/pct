@@ -78,12 +78,13 @@ public class PCTRun extends PCT {
     // Attributes
     private boolean graphMode = false;
     private String procedure = null;
-    private int inputChars = 0;
     private String cpStream = null;
     private String cpInternal = null;
     private String parameter = null;
+    private File paramFile = null;
     private File status = null;
     private File iniFile = null;
+    private int inputChars = 0;
     private int dirSize = 0;
     private int centuryYearOffset = 0;
     private int token = 0;
@@ -125,6 +126,15 @@ public class PCTRun extends PCT {
         }
 
         this.dbConnList.addElement(dbConn);
+    }
+
+    /**
+     * Parameter file (-pf attribute)
+     *
+     * @param pf File
+     */
+    public void setParamFile(File pf) {
+        this.paramFile = pf;
     }
 
     /**
@@ -266,7 +276,8 @@ public class PCTRun extends PCT {
 
     /**
      * Buffer Size for Temporary Tables (-Bt attribute)
-     * @param ttBufferSize
+     *
+     * @param ttBufferSize int
      */
     public void setTTBufferSize(int ttBufferSize) {
         this.ttBufferSize = ttBufferSize;
@@ -352,9 +363,8 @@ public class PCTRun extends PCT {
 
     /**
      * Creates and initialize
-     * @throws BuildException
      */
-    protected void prepareExecTask() throws BuildException {
+    protected void prepareExecTask() {
         if (!this.isPrepared) {
             exec = (ExecTask) getProject().createTask("exec");
             exec.setOwningTarget(this.getOwningTarget());
@@ -376,6 +386,12 @@ public class PCTRun extends PCT {
                 PCTConnection dbc = (PCTConnection) e.nextElement();
                 dbc.createArguments(exec);
             }
+        }
+
+        // Parameter file
+        if (this.paramFile != null) {
+            exec.createArg().setValue("-pf");
+            exec.createArg().setValue(this.paramFile.getAbsolutePath());
         }
 
         // Batch mode
@@ -492,7 +508,7 @@ public class PCTRun extends PCT {
                 bw.newLine();
             }
 
-            // TODO : vérifier que le programme compile avant de le lancer 
+            // TODO : vérifier que le programme compile avant de le lancer
             bw.write("RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
             bw.newLine();
             bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
