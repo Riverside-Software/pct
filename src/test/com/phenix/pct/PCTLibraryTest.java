@@ -54,6 +54,8 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
@@ -74,14 +76,19 @@ public class PCTLibraryTest extends BuildFileTest {
      */
     public void setUp() {
         configureProject("src/test/PCTLibrary.xml");
+        
+        // Creates a sandbox directory to play with
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(this.getProject());
+        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
     public void tearDown() {
-        File pl = new File("src/test/test.pl");
-        pl.delete();
+        Delete del = new Delete();
+        del.setProject(this.project);
+        del.setDir(new File("src/test/sandbox"));
+        del.execute();
     }
 
     /**
@@ -95,7 +102,7 @@ public class PCTLibraryTest extends BuildFileTest {
      * Checks that a new library is created
      */
     public void test2() {
-        File pl = new File("src/test/test.pl");
+        File pl = new File("src/test/sandbox/test.pl");
 
         assertFalse(pl.exists());
         executeTarget("test2");
@@ -109,7 +116,21 @@ public class PCTLibraryTest extends BuildFileTest {
     public void test3() {
         executeTarget("test3");
 
-        File pl = new File("src/test/test.pl");
+        File pl = new File("src/test/sandbox/test.pl");
+        assertTrue(pl.exists());
+
+        PLReader r = new PLReader(pl);
+        Vector v = r.getFileList();
+        assertTrue(v != null);
+        assertTrue(v.size() == 1);
+    }
+    /**
+     * Checks that a file is added in the library
+     */
+    public void test4() {
+        executeTarget("test4pre");
+
+        File pl = new File("src/test/sandbox/test.pl");
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
