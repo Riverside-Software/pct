@@ -110,8 +110,8 @@ public class PCTProxygen extends PCT {
             throw new BuildException("Progress installation directory not defined");
         }
 
-        if (this.getProxygenJar() == null) {
-            throw new BuildException("proxygen.jar not found");
+        if (this.getProgressJar() == null) {
+            throw new BuildException("progress.[jar|zip] not found");
         }
 
         // Creates a new Java task to launch proxygen task
