@@ -57,8 +57,8 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
   FIELD ttCRC   AS CHARACTER
   INDEX ttCRC-PK IS PRIMARY UNIQUE ttTable.
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
-  FIELD ttFile     AS CHARACTER
-  FIELD ttFullPath AS CHARACTER
+  FIELD ttFile     AS CHARACTER CASE-SENSITIVE
+  FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
   FIELD ttMod      AS INTEGER
   INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
@@ -97,6 +97,7 @@ DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
@@ -154,6 +155,8 @@ REPEAT:
             ASSIGN XCodeKey = ENTRY(2, cLine, '=':U).
         WHEN 'NOCOMPILE':U THEN
             ASSIGN NoComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'RUNLIST':U THEN
+            ASSIGN RunList = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -368,13 +371,15 @@ PROCEDURE importXref.
     DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
 
+    DEFINE VARIABLE cSearch AS CHARACTER  NO-UNDO.
+
     EMPTY TEMP-TABLE ttXref.
 
     INPUT STREAM sXREF FROM VALUE (pcXref).
     REPEAT:
         CREATE ttXref.
         IMPORT STREAM sXREF ttXref.
-        IF (ttXref.xRefType EQ 'INCLUDE':U) THEN
+        IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
         ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
             DELETE ttXref.
@@ -399,6 +404,25 @@ PROCEDURE importXref.
         END.
     END.
     OUTPUT CLOSE.
+
+    IF RunList THEN DO:
+        OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.run':U).
+        FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*~~.p') OR (ttXref.xObjID MATCHES '*~~.w')) NO-LOCK GROUP BY ttXref.xObjID:
+            IF FIRST-OF (ttXref.xObjID) THEN DO:
+                FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
+                IF (NOT AVAILABLE TimeStamps) THEN DO:
+                    ASSIGN cSearch = SEARCH(ttXref.xObjID).
+                    CREATE TimeStamps.
+                    ASSIGN TimeStamps.ttFile = ttXref.xObjID
+                           TimeStamps.ttFullPath = (IF cSearch EQ ? THEN 'NOT FOUND' ELSE cSearch).
+                    ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+                END.
+                EXPORT ttXref.xObjID TimeStamps.ttFullPath.
+            END.
+        END.
+        OUTPUT CLOSE.
+    END.
+
 END PROCEDURE.
 
 FUNCTION getTimeStampDF RETURNS INTEGER(INPUT d AS CHARACTER, INPUT f AS CHARACTER):
@@ -431,7 +455,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     IF (AVAILABLE ttDirs) THEN
         RETURN TRUE.
 
-    ASSIGN d = REPLACE(d, '\':U, '/':U).
+    ASSIGN d = REPLACE(d, '~\':U, '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
         FIND ttDirs WHERE ttDirs.baseDir EQ base
