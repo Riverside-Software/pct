@@ -40,7 +40,7 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="false" target="1.1"/>
+    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="true" target="1.1"/>
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
