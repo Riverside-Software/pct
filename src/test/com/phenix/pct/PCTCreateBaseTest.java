@@ -70,19 +70,21 @@ public class PCTCreateBaseTest extends BuildFileTest {
     }
 
     public void setUp() {
-        configureProject("src/test/PCTCreateBase.xml");
+        configureProject("PCTCreateBase.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
     }
 
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
+        del.execute();
+        del.setDir(new File("build"));
         del.execute();
     }
 
@@ -97,7 +99,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
     public void test3() {
         executeTarget("test3");
 
-        File f = new File("src/test/sandbox/test3.db");
+        File f = new File("sandbox/test3.db");
         assertTrue(f.exists());
     }
 
@@ -108,15 +110,15 @@ public class PCTCreateBaseTest extends BuildFileTest {
     public void test5() {
         executeTarget("test5init");
 
-        File f = new File("src/test/sandbox/test.db");
+        File f = new File("sandbox/test.db");
         assertTrue(f.exists());
         executeTarget("test5");
-        f = new File("src/test/sandbox/test.r");
+        f = new File("build/sandbox/test.r");
         assertTrue(f.exists());
     }
 
     public void test6() {
-        File f = new File("src/test/sandbox/test.db");
+        File f = new File("sandbox/test.db");
         executeTarget("test6");
 
         long time = f.lastModified();
@@ -125,7 +127,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
     }
 
     public void test7() {
-        File f = new File("src/test/sandbox/test.db");
+        File f = new File("sandbox/test.db");
         executeTarget("test7");
 
         long time = f.lastModified();
@@ -138,13 +140,13 @@ public class PCTCreateBaseTest extends BuildFileTest {
     public void test8() {
         executeTarget("test8");
 
-        File f = new File("src/test/sandbox/test.b1");
+        File f = new File("sandbox/test.b1");
         assertTrue(f.exists());
-        f = new File("src/test/sandbox/test.b2");
+        f = new File("sandbox/test.b2");
         assertTrue(f.exists());
-        f = new File("src/test/sandbox/test.d1");
+        f = new File("sandbox/test.d1");
         assertTrue(f.exists());
-        f = new File("src/test/sandbox/test.d2");
+        f = new File("sandbox/test.d2");
         assertTrue(f.exists());
 
         executeTarget("test8bis");
