@@ -290,7 +290,7 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
   </target>
   <target name="test14">
     <echo file="sandbox/test.p">
@@ -320,7 +320,7 @@
         COLUMN-LABEL "Fld2"
         ORDER 20
     </echo>
-    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${env.DLC}">
+    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
     <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
@@ -360,7 +360,7 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
   </target>
   <target name="test15">
     <echo file="sandbox/test.p">
