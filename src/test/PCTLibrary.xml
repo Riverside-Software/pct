@@ -43,4 +43,32 @@
       </fileset>
     </PCTLibrary>
   </target>
+  
+  <target name="test5">
+  	<echo file="sandbox/test">
+  		Empty file
+  	</echo>
+  	<echo file="sandbox/test2">
+  		Empty file again
+  	</echo>
+  	<PCTLibrary destfile="sandbox/test.pl" dlcHome="${env.DLC}" noCompress="true">
+  		<fileset dir=".">
+  			<include name="sandbox/test"/>
+  		</fileset>
+  		<fileset dir=".">
+  			<include name="sandbox/test2"/>
+  		</fileset>
+  	</PCTLibrary>
+  </target>
+  <target name="test5bis">
+  	<PCTLibrary destfile="sandbox/test.pl" dlcHome="${env.DLC}" noCompress="false">
+  		<fileset dir=".">
+  			<include name="sandbox/test"/>
+  		</fileset>
+  		<fileset dir=".">
+  			<include name="sandbox/test2"/>
+  		</fileset>
+  	</PCTLibrary>
+  </target>
+  
 </project>

@@ -139,4 +139,18 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(v != null);
         assertTrue(v.size() == 1);
     }
+    
+    public void test5() {
+        executeTarget("test5");
+        
+        File pl = new File("sandbox/test.pl");
+        assertTrue(pl.exists());
+        long size = pl.length();
+        
+        assertTrue(pl.delete());
+        
+        executeTarget("test5bis");
+        assertTrue(pl.exists());
+        assertTrue((pl.length() < size));
+    }
 }
