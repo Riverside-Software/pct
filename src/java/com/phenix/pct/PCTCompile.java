@@ -77,6 +77,7 @@ public class PCTCompile extends PCTRun {
     private boolean forceCompile = false;
     private boolean failOnError = false;
     private boolean xcode = false;
+    private boolean noCompile = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -129,8 +130,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Don't use XREF (and so compile everything). Removed since 0.5, use
-     * forceCompile
+     * Don't use XREF (and so compile everything). Removed since 0.5, use forceCompile
      * 
      * @param noXref "true|false|on|off|yes|no"
      * 
@@ -142,8 +142,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Directory where to store CRC and includes files : .pct subdirectory is
-     * created there
+     * Directory where to store CRC and includes files : .pct subdirectory is created there
      * 
      * @param xrefDir File
      */
@@ -158,6 +157,15 @@ public class PCTCompile extends PCTRun {
      */
     public void setMD5(boolean md5) {
         this.md5 = md5;
+    }
+
+    /**
+     * No real compilation ; just print the files which should be recompiled
+     * 
+     * @param noCompile "true|false|on|off|yes|no"
+     */
+    public void setNoCompile(boolean noCompile) {
+        this.noCompile = noCompile;
     }
 
     /**
@@ -247,6 +255,8 @@ public class PCTCompile extends PCTRun {
             bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
             bw.newLine();
             bw.write("XCODE=" + (this.xcode ? "1" : "0"));
+            bw.newLine();
+            bw.write("NOCOMPILE=" + (this.noCompile ? "1" : "0"));
             bw.newLine();
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey);

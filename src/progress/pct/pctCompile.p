@@ -96,6 +96,7 @@ DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
@@ -151,6 +152,8 @@ REPEAT:
             ASSIGN lXCode = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'XCODEKEY':U THEN
             ASSIGN XCodeKey = ENTRY(2, cLine, '=':U).
+        WHEN 'NOCOMPILE':U THEN
+            ASSIGN NoComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknow parameter : " + cLine.
     END CASE.
@@ -176,6 +179,8 @@ REPEAT:
     ELSE DO:
         IF (ForceComp OR lXCode) THEN DO:
             ASSIGN Recompile = TRUE.
+            IF NoComp THEN
+                MESSAGE cLine + ' [':U + (IF ForceComp THEN 'COMPILATION FORCED' ELSE 'XCODE') + ']':U.
         END.
         ELSE DO:
             /* Checking .r file exists */
@@ -183,16 +188,24 @@ REPEAT:
             ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
             ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
             Recompile = (RCodeTS EQ ?).
+            IF Recompile AND NoComp THEN
+                MESSAGE cLine + ' [NO RCODE]':U.
             IF (NOT Recompile) THEN DO:
                 /* Checking .r timestamp is prior procedure timestamp */
                 ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
                 Recompile = (ProcTS GT RCodeTS).
+                IF Recompile AND NoComp THEN
+                    MESSAGE cLine + ' [OLD RCODE]':U.
                 IF (NOT Recompile) THEN DO:
                     /* Checking included files */
                     Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
+                    IF Recompile AND NoComp THEN
+                        MESSAGE cLine + ' [INCLUDES]':U.
                     IF (NOT Recompile) THEN DO:
                         /* Checking CRC */
                         Recompile = CheckCRC(cLine, PCTDir).
+                        IF Recompile AND NoComp THEN
+                          MESSAGE cLine + ' [CRC]':U.
                         /* Compilation options should also be checked */
                         /* This is another story... */
                     END.
@@ -200,7 +213,7 @@ REPEAT:
             END.
 	    END.
 	    /* Selective compile */
-        IF Recompile THEN DO:
+        IF (NOT NoComp) AND Recompile THEN DO:
             IF lXCode THEN
                 RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
             ELSE
