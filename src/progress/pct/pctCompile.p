@@ -1,0 +1,338 @@
+DEFINE STREAM sParams.
+DEFINE STREAM sFiles.
+DEFINE STREAM sXref.
+DEFINE STREAM sConfig.
+DEFINE STREAM sFileset.
+DEFINE STREAM sIncludes.
+DEFINE STREAM sCRC.
+
+DEFINE TEMP-TABLE CRCList NO-UNDO
+  FIELD ttTable AS CHARACTER
+  FIELD ttCRC   AS CHARACTER
+  INDEX ttCRC-PK IS PRIMARY UNIQUE ttTable.
+DEFINE TEMP-TABLE TimeStamps NO-UNDO
+  FIELD ttFile     AS CHARACTER
+  FIELD ttFullPath AS CHARACTER
+  FIELD ttMod      AS INTEGER
+  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
+DEFINE TEMP-TABLE ttXref NO-UNDO
+    FIELD xProcName   AS CHARACTER
+    FIELD xFileName   AS CHARACTER
+    FIELD xLineNumber AS INTEGER
+    FIELD xRefType    AS CHARACTER
+    FIELD xObjID      AS CHARACTER FORMAT "X(50)"
+    index typ is primary xRefType.
+DEFINE TEMP-TABLE ttDirs NO-UNDO
+    FIELD baseDir AS CHARACTER
+    FIELD dirName AS CHARACTER.
+
+FUNCTION getTimeStampDF RETURN INTEGER (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
+FUNCTION getTimeStampF RETURN INTEGER (INPUT f AS CHARACTER) FORWARD.
+FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER) FORWARD.
+FUNCTION CheckIncludes RETURNS LOGICAL  (INPUT f AS CHARACTER, INPUT TS AS INTEGER, INPUT d AS CHARACTER) FORWARD.
+FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
+FUNCTION FileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
+FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
+
+/* Recuperation de la liste des CRC */
+DEFINE VARIABLE h AS HANDLE     NO-UNDO.
+h = TEMP-TABLE CRCList:HANDLE.
+RUN pct/pctCRC.p (INPUT-OUTPUT TABLE-HANDLE h) NO-ERROR.
+IF (RETURN-VALUE NE '0') THEN
+    RETURN RETURN-VALUE.
+
+/*DEFINE VARIABLE CfgLine AS CHARACTER  NO-UNDO.
+INPUT STREAM sConfig FROM VALUE(SESSION:PARAMETER).
+REPEAT:
+    IMPORT STREAM sConfig UNFORMATTED CfgLine.
+    
+END.
+INPUT STREAM sConfig CLOSE.*/
+
+DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
+
+DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE PCTDir    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
+
+DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE BuildDir  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE XRefDir   AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE IncDir    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE CRCDir    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE OptDir    AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cFileExt  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE BaseName  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE RCodeName AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE RCodeTS   AS INTEGER    NO-UNDO.
+DEFINE VARIABLE ProcTS    AS INTEGER    NO-UNDO.
+DEFINE VARIABLE Recompile AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE lComp     AS LOGICAL    NO-UNDO INITIAL TRUE.
+
+/* Checks for valid parameters */
+IF (SESSION:PARAMETER EQ ?) THEN
+    RETURN '1'.
+IF NOT FileExists(SESSION:PARAMETER) THEN
+    RETURN '2'.
+/* Reads config */
+INPUT STREAM sParams FROM VALUE(FILE-INFO:FULL-PATHNAME).
+REPEAT:
+    IMPORT STREAM sParams UNFORMATTED cLine.
+    IF (NUM-ENTRIES(cLine, '=':U) EQ 2) THEN
+    CASE ENTRY(1, cLine, '=':U):
+        WHEN 'FILESETS':U THEN
+            ASSIGN Filesets = ENTRY(2, cLine, '=':U).
+        WHEN 'OUTPUTDIR':U THEN
+            ASSIGN OutputDir = ENTRY(2, cLine, '=':U).
+        WHEN 'PCTDIR':U THEN
+            ASSIGN PCTDir = ENTRY(2, cLine, '=':U).
+        WHEN 'MINSIZE':U THEN
+            ASSIGN MinSize = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'MD5':U THEN
+            ASSIGN MD5 = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        OTHERWISE
+            .
+    END CASE.
+END.
+INPUT STREAM sParams CLOSE.
+
+/* Checks if valid config */
+IF NOT FileExists(Filesets) THEN
+    RETURN '3'.
+IF NOT FileExists(OutputDir) THEN
+    RETURN '4'.
+IF NOT FileExists(PCTDir) THEN
+    ASSIGN PCTDir = OutputDir + '/.pct':U.
+
+/* Parcours de la liste des fichiers a compiler */
+INPUT STREAM sFileset FROM VALUE(Filesets).
+CompLoop:
+REPEAT:
+    IMPORT STREAM sFileset UNFORMATTED cLine.
+    IF (cLine BEGINS 'FILESET=':U) THEN
+        ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
+    ELSE DO:
+        /* Verification si le .r existe */
+        RUN adecomm/_osfext.p(cLine, OUTPUT cFileExt).
+        ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
+        ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
+        Recompile = (RCodeTS EQ ?).
+        IF (NOT Recompile) THEN DO:
+            /* Verification si le .r est anterieur au fichier de base */
+            ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
+            Recompile = (ProcTS GT RCodeTS).
+            IF (NOT Recompile) THEN DO:
+                /* On verifie les fichiers en INCLUDE */
+                Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
+                IF (NOT Recompile) THEN DO:
+                    /* On verifie les CRC */
+                    Recompile = CheckCRC(cLine, PCTDir).
+                    /* Il faut encore vefifier les options de compilation */
+                    /* Ce sera fait plus tard */
+                END.
+            END.
+        END.
+        /* Recompilation selective */
+        IF Recompile THEN DO:
+            RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
+            IF NOT lComp THEN
+                LEAVE CompLoop.
+        END.
+    END.
+END.
+INPUT STREAM sFileset CLOSE.
+IF lComp THEN
+    RETURN '0'.
+ELSE
+    RETURN '10'.
+
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGER, INPUT d AS CHARACTER).
+    DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
+
+    INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
+    FileList:
+    REPEAT:
+        IMPORT STREAM sIncludes IncFile IncFullPath.
+        FIND TimeStamps WHERE TimeStamps.ttFile EQ IncFile NO-LOCK NO-ERROR.
+        IF (NOT AVAILABLE TimeStamps) THEN DO:
+            CREATE TimeStamps.
+            ASSIGN TimeStamps.ttFile = IncFile
+                   TimeStamps.ttFullPath = SEARCH(IncFile).
+            ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+        END.
+        IF (TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod) THEN DO:
+            ASSIGN lReturn = TRUE.
+            LEAVE FileList.
+        END.
+    END.
+    INPUT STREAM sIncludes CLOSE.
+    RETURN lReturn.
+
+END FUNCTION.
+
+FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
+    DEFINE VARIABLE cTab AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cCRC AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO INITIAL FALSE.
+
+    INPUT STREAM sCRC FROM VALUE(d + '/':U + f + '.crc':U).
+    CRCList:
+    REPEAT:
+        IMPORT STREAM sCRC cTab cCRC.
+        FIND CRCList WHERE CRCList.ttTable EQ cTab NO-LOCK NO-ERROR.
+        IF (NOT AVAILABLE CRCList) THEN DO:
+            ASSIGN lRet = TRUE.
+            LEAVE CRCList.
+        END.
+        IF (CRCList.ttCRC NE cCRC) THEN DO:
+            ASSIGN lRet = TRUE.
+            LEAVE CRCList.
+        END.
+    END.
+    INPUT STREAM sCRC CLOSE.
+    RETURN lRet.
+
+END FUNCTION.
+
+/** Compilation de procedure */
+PROCEDURE PCTCompile.
+    DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcOutDir  AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
+
+    DEFINE VARIABLE i AS INTEGER    NO-UNDO.
+
+    COMPILE VALUE(pcInDir + pcInFile) SAVE INTO VALUE(pcOutDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    ASSIGN plOK = COMPILER:ERROR.
+    IF (NOT plOK) THEN DO:
+        DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
+            MESSAGE ERROR-STATUS:GET-MESSAGE(i).
+        END.
+    END.
+
+END PROCEDURE.
+
+PROCEDURE PCTCompileXref.
+    DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcOutDir  AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcPCTDir  AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
+
+    DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+
+    RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
+    ASSIGN plOK = createDir(pcOutDir, cBase).
+    IF (NOT plOK) THEN RETURN.
+    ASSIGN plOK = createDir(pcPCTDir, cBase).
+    IF (NOT plOK) THEN RETURN.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+    ASSIGN plOK = NOT COMPILER:ERROR.
+    IF plOK THEN DO:
+        RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
+        /* Il faut verifier le code de retour */
+    END.
+    ELSE DO:
+        DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
+            MESSAGE ERROR-STATUS:GET-MESSAGE(i). /* A verifier */
+        END.
+    END.
+
+END PROCEDURE.
+
+
+PROCEDURE importXref.
+    DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
+
+    EMPTY TEMP-TABLE ttXref.
+
+    INPUT STREAM sXREF FROM VALUE (pcXref).
+    REPEAT:
+        CREATE ttXref.
+        IMPORT STREAM sXREF ttXref.
+        IF (ttXref.xRefType EQ 'INCLUDE':U) THEN
+            ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
+        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE':U) EQ 0) THEN
+            DELETE ttXref.
+    END.
+    DELETE ttXref. /* ttXref is non-undo'able */
+    INPUT STREAM sXREF CLOSE.
+
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
+    FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK GROUP BY ttXref.xObjID:
+    	IF FIRST-OF (ttXref.xObjID) THEN
+            PUT UNFORMATTED ttXref.xObjID SEARCH(ttXref.xObjID) SKIP.
+    END.
+    OUTPUT CLOSE.
+    
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
+    FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE':U) NE 0 NO-LOCK GROUP BY ttXref.xObjID:
+    	IF FIRST-OF (ttXref.xObjID) THEN DO:
+            FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
+            IF (AVAILABLE CRCList) THEN DO:
+                PUT UNFORMATTED CRCList.ttTable ' ':U CRCList.ttCRC SKIP.
+            END.
+        END.
+    END.
+    OUTPUT CLOSE.
+END PROCEDURE.
+
+FUNCTION getTimeStampDF RETURNS INTEGER(INPUT d AS CHARACTER, INPUT f AS CHARACTER):
+    RETURN getTimeStampF(d + '/':U + f).
+END FUNCTION.
+
+FUNCTION getTimeStampF RETURNS INTEGER(INPUT f AS CHARACTER):
+    ASSIGN FILE-INFO:FILE-NAME = f.
+    RETURN getDate(FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME).
+END FUNCTION.
+
+FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER):
+    IF (dt EQ ?) OR (tm EQ ?) THEN RETURN ?.
+    RETURN (INTEGER(dt) - INTEGER(DATE(1, 1, 1990))) * 86400 + tm.
+END FUNCTION.
+
+FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER):
+    ASSIGN FILE-INFO:FILE-NAME = f.
+    RETURN (FILE-INFO:FULL-PATHNAME NE ?).
+END FUNCTION.
+
+FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER):
+    DEFINE VARIABLE i AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+
+    /* Asserts base is a writable directory */
+    FIND ttDirs WHERE ttDirs.baseDir EQ base
+                  AND ttDirs.dirName EQ d
+                NO-LOCK NO-ERROR.
+    IF (AVAILABLE ttDirs) THEN
+        RETURN TRUE.
+
+    ASSIGN d = REPLACE(d, '\':U, '/':U).
+    DO i = 1 TO NUM-ENTRIES(d, '/':U):
+        ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
+        FIND ttDirs WHERE ttDirs.baseDir EQ base
+                      AND ttDirs.dirName EQ c
+                    NO-LOCK NO-ERROR.
+        IF (NOT AVAILABLE ttDirs) THEN DO:
+            OS-CREATE-DIR VALUE(base + c).
+            IF (OS-ERROR EQ 0) THEN DO:
+                CREATE ttDirs.
+                ASSIGN ttDirs.baseDir = base
+                       ttDirs.dirName = c.
+            END.
+            ELSE DO:
+                RETURN FALSE.
+            END.
+        END.
+    END.
+
+END FUNCTION.
