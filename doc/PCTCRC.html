@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="fr" />
-<title>PCT documentation - PCTDumpIncremental task</title>
+<title>PCT documentation - PCTRun task</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -62,13 +62,14 @@
 </div>
 
 <div class="Text">
-<h1>PCTDumpIncremental task</h1>
+<h1>PCTCRC task</h1>
 
 <h2>Description</h2>
-<p>
-Creates a schema diff file between two databases. This is a wrapper around
-prodict/dump_inc.p from POSSENET code.
-</p>
+<p>Creates CRC list for databases tables</p>
+<p>This task generates a flat file, referencing each table and associated CRC, e.g.
+<pre>
+db_name.table_name CRC
+</pre>
 
 <h2>Parameters</h2>
 <table>
@@ -81,56 +82,35 @@ prodict/dump_inc.p from POSSENET code.
 </tr>
 <tr>
 <td>destFile</td>
-<td>File containing the schema dump</td>
+<td>Output file</td>
 <td align="center">File</td>
 <td align="center">Required</td>
 <td>No default value</td>
 </tr>
-<tr>
-<td>renameFile</td>
-<td>The RenameFile parameter is used to identify tables, database fields and sequences that have changed names</td>
-<td align="center">File</td>
-<td align="center">Optional</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>debugLevel</td>
-<td>DebugLevel (0, 1 or 2 (verbose))</td>
-<td align="center">Integer</td>
-<td align="center">Optional</td>
-<td>0</td>
-</tr>
-<tr>
-<td>activeIndexes</td>
-<td>If indexes should be created Active (true) or Inactive (false)</td>
-<td align="center">Boolean</td>
-<td align="center">Optional</td>
-<td>True</td>
-</tr>
 </table>
-<p>PCTDumpIncremental inherits attributes from <a href="PCT.html">PCT</a> and
-<a href="PCTRun.html">PCTRun</a>. However, PCTDumpIncremental <strong>must</strong>
-have <strong>two and only two</strong> PCTConnection. One database must have a
-dictdb alias, while the second one must have a dictdb2 alias.
-</p>
+<p>PCTCRC inherits attributes from <a href="PCT.html">PCT</a> and 
+<a href="PCTRun.html">PCTRun</a>.</p>
 
 <h2>Parameters as nested elements</h2>
-None
+<h3>PCTConnection (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+Adds a database connection on startup
+</p>
+<h3>propath (org.apache.tools.types.Path)</h3>
+<p>
+Creates a nested propath, and adds it to the implicit propath.
+</p>
 
 <h2>Examples</h2>
 <pre>
-&lt;PCTDumpIncremental destFile="incr.df"&gt;
-  &lt;PCTConnection dbName="db1" singleUser="true"&gt;
-    &lt;PCTAlias name="dictdb"/&gt;
+&lt;PCTCRC destFile="crc.txt" dlcHome="${env.DLC}"&gt;
+  &lt;PCTConnection dbName="foo" dbDir="base" singleUser="true"&gt;
+    &lt;PCTAlias name="foo3"/&gt;
   &lt;/PCTConnection&gt;
-  &lt;PCTConnection dbName="db2" singleUser="true"&gt;
-    &lt;PCTAlias name="dictdb2"/&gt;
-  &lt;/PCTConnection&gt;
-&lt;/PCTDumpIncremental&gt;
+  &lt;PCTConnection dbName="bar" dbDir="base" singleUser="true"/&gt;
+&lt;/PCTRun&gt;
 </pre>
-<p>
-Compares db1 to db2, and generates a diff named incr.df, which could be
-loaded into db2 to bring it to same schema as db1.
+<p>Generates CRC list for each table of databases foo and bar in file crc.txt
 </p>
 
 </div>
