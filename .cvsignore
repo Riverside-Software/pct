@@ -3,5 +3,7 @@ build
 lib
 check
 website
+pct-bin*
+pct-src*
 .classpath
 .project
