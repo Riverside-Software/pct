@@ -79,7 +79,7 @@
   </target>
   
   <target name="format" depends="build,test-build" description="Java source code formatting">
-    <jalopy fileformat="unix" encoding="iso8859-1" convention="conf/jalopy.xml">
+    <jalopy fileformat="unix" encoding="utf-8" history="file" historymethod="adler32" convention="conf/jalopy.xml">
       <fileset dir="${src.java}">
         <include name="com/phenix/pct/**/*.java" />
       </fileset>
@@ -110,14 +110,18 @@
   </target>
   
   <target name="test" depends="test-build" description="Starts tests">
-    <junit showoutput="true" filtertrace="true" >
+    <junit printsummary="no" haltonfailure="yes" filtertrace="off">
       <classpath>
         <pathelement location="${build}"/>
       </classpath>
-      <formatter type="brief" usefile="false" />
-      <test name="com.phenix.pct.PCTTest"/>
-      <test name="com.phenix.pct.PCTLibraryTest"/>
-      <test name="com.phenix.pct.PCTConnectionTest"/>
+
+      <formatter type="brief" usefile="false"/>
+
+      <batchtest>
+        <fileset dir="src/test">
+          <include name="com/phenix/pct/*Test*"/>
+        </fileset>
+      </batchtest>
     </junit>
   </target>
 
