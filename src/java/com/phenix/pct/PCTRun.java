@@ -99,7 +99,6 @@ public class PCTRun extends PCT {
 
         try {
             status = File.createTempFile("PCTResult", ".out");
-
             status.deleteOnExit();
         } catch (IOException ioe) {
             throw new BuildException("Unable to create return status file");
@@ -277,8 +276,8 @@ public class PCTRun extends PCT {
         } catch (FileNotFoundException fnfe) {
         } catch (IOException ioe) {
         } catch (NumberFormatException nfe) {
-		throw new BuildException("Progress procedure failed");
-	}
+            throw new BuildException("Progress procedure failed");
+        }
     }
 
     private ExecTask launchTask() {
@@ -410,15 +409,15 @@ public class PCTRun extends PCT {
                 bw.newLine();
             }
 
-            bw.write("RUN VALUE('" + this.procedure + "') NO-ERROR.");
+            bw.write("RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
             bw.newLine();
             bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
             bw.newLine();
             bw.write("IF (i EQ ?) THEN ASSIGN i = INTEGER (RETURN-VALUE) NO-ERROR.");
             bw.newLine();
-            bw.write("IF (i EQ ?) THEN ASSIGN i = 0.");
+            bw.write("IF (i EQ ?) THEN ASSIGN i = 1.");
             bw.newLine();
-            bw.write("OUTPUT TO VALUE('" + status.getAbsolutePath() + "').");
+            bw.write("OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "').");
             bw.newLine();
             bw.write("PUT UNFORMATTED i SKIP.");
             bw.newLine();
@@ -432,5 +431,40 @@ public class PCTRun extends PCT {
         } catch (IOException ioe) {
             throw new BuildException();
         }
+    }
+
+    /**
+     * Escapes a string so it does not accidentally contain Progress escape characters
+     * @param str the input string
+     * @return the escaped string
+     */
+    protected String escapeString(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        int slen = str.length();
+        StringBuffer res = new StringBuffer();
+
+        for (int i = 0; i < slen; i++) {
+            char c = str.charAt(i);
+
+            switch (c) {
+            case '\u007E':
+                res.append("\u007E\u007E");
+
+                break;
+
+            case '\'':
+                res.append("\u0027\u0027");
+
+                break;
+
+            default:
+                res.append(c);
+            }
+        }
+
+        return res.toString();
     }
 }
