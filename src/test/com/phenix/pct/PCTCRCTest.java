@@ -66,7 +66,7 @@ import java.io.IOException;
 
 /**
  * Class for testing PCTCRC task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class PCTCRCTest extends BuildFileTest {

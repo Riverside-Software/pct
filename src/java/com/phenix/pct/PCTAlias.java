@@ -56,7 +56,7 @@ package com.phenix.pct;
 
 /**
  * Alias object for PCTConnection
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class PCTAlias {

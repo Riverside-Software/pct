@@ -65,7 +65,7 @@ import java.util.Iterator;
  * Creates a schema diff file between two databases. This is a wrapper around
  * prodict/dump_inc.p from POSSENET code.
  * @author Phillip BAIRD
- * @author <a href="gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTDumpIncremental extends PCTRun {
     private File destFile = null;

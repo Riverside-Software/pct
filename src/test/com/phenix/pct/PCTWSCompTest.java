@@ -62,7 +62,7 @@ import java.io.File;
 /**
  * Class for testing PCTWSComp task
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTWSCompTest extends BuildFileTest {
     public PCTWSCompTest(String name) {

@@ -62,7 +62,7 @@ import java.io.File;
 
 /**
  * Class for testing PCTCompile task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTCompileTest extends BuildFileTest {
     public PCTCompileTest(String name) {
