@@ -1,3 +1,11 @@
+Version 0.5
+==============================
+ * PCTCRC task (Dick Knol)
+ * Documentation update
+ * New compilation procedure : now checks CRC, so database updates force recompilation
+ * Added iniFile and ttBufferSize attributes in PCTRun
+ * Changed the way temp files are deleted. Should work better, but still not perfect
+
 Version 0.4 (01/18/2004)
 ==============================
  * Added hasNamedAlias method in PCTConnection (P. BAIRD)
