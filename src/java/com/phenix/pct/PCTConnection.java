@@ -70,6 +70,7 @@ public class PCTConnection {
     private String userName = null;
     private String password = null;
     private File cacheFile = null;
+    private File dbDir = null;
     private boolean singleUser = false;
     private boolean readOnly = false;
 
@@ -79,6 +80,14 @@ public class PCTConnection {
      */
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    /**
+     * Database directory
+     * @param dbDir
+     */
+    public void setDbDir(File dbDir) {
+        this.dbDir = dbDir;
     }
 
     /**
@@ -179,7 +188,13 @@ public class PCTConnection {
         }
 
         cmdLine.createArgument().setValue("-db");
-        cmdLine.createArgument().setValue(this.dbName);
+
+        if (this.dbDir == null) {
+            cmdLine.createArgument().setValue(this.dbName);
+        } else {
+            cmdLine.createArgument().setValue(this.dbDir.toString() + File.separatorChar +
+                                              this.dbName);
+        }
 
         if (this.protocol != null) {
             cmdLine.createArgument().setValue("-N");
