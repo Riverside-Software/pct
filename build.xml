@@ -21,21 +21,19 @@
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
-    <mkdir dir="${doc}"/>
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
     <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="true" target="1.1"/>
+    <copy todir="${build}" file="${src.java}/PCT.properties"/>
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class"/>
-        <exclude name="com/phenix/pct/*Test.class"/>
-      </fileset>
-      <fileset dir="${src.java}">
         <include name="PCT.properties"/>
+        <exclude name="com/phenix/pct/*Test.class"/>
       </fileset>
     </jar>
   </target>
@@ -107,10 +105,15 @@
         <pathelement location="${build}"/>
       </classpath>
     </javac>
+    <copy todir="${build}">
+      <fileset dir="${src.test}">
+        <include name="*.xml"/>
+      </fileset>
+    </copy>
   </target>
   
   <target name="test" depends="test-build" description="Starts tests">
-    <junit printsummary="no" haltonfailure="yes" filtertrace="off">
+    <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${build}">
       <classpath>
         <pathelement location="${build}"/>
       </classpath>
@@ -118,14 +121,15 @@
       <formatter type="brief" usefile="false"/>
 
       <batchtest>
-        <fileset dir="${src.test}">
-          <include name="com/phenix/pct/*Test.java"/>
+        <fileset dir="${build}">
+          <include name="com/phenix/pct/PCT*Test.class"/>
         </fileset>
       </batchtest>
     </junit>
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
+    <mkdir dir="${doc}"/>
     <javadoc destdir="${doc}" useexternalfile="yes">
       <packageset dir="${src.java}"/>
       <group title="PCT Core" packages="com.phenix.pct.*"/>
@@ -195,7 +199,14 @@
     <delete dir="${dist}"/>
     <delete dir="${doc}"/>
     <delete dir="${check}"/>
+    <delete dir="${website}"/>
     <delete dir="sports2000"/>
+    <delete>
+      <fileset dir=".">
+        <include name="pct*.tar.gz"/>
+        <include name="pct*.zip"/>
+      </fileset>
+    </delete>
   </target>
   
   <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
