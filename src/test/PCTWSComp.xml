@@ -8,7 +8,7 @@
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTWSComp/>
+    <PCTWSComp dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Do nothing : should not hurt -->
@@ -30,7 +30,7 @@
         &lt;p&gt;Today : 'vdate'&lt;/p&gt;
       &lt;/body&gt;
     </echo>
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
+    <PCTWSComp debugPCT="true" destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/simple.html"/>	
       </fileset>	

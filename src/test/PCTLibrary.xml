@@ -7,7 +7,7 @@
   <property environment="env"/>
   
   <target name="test1">
-    <PCTLibrary/>
+    <PCTLibrary dlcHome="${env.DLC}"/>
   </target>
    
   <target name="test2">
