@@ -54,26 +54,46 @@ is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
 &lt;/taskdef&gt;
 </pre>
 <p>
+Another way would is to use a reference propath :
+</p>
+<pre>
+&lt;!-- PCT classpath --&gt;
+&lt;path id="PCT"&gt;
+  &lt;fileset dir="INST_DIR/lib"&gt;
+    &lt;include name="PCT.jar" /&gt;
+  &lt;/fileset&gt;
+&lt;/path&gt;
+
+&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
+  &lt;classpath refid="PCT"/&gt;
+&lt;/taskdef&gt;
+
+</pre>
+<p>
 It is also possible to add the provided library to you classpath, either by adding it to the /lib subdirectory
 of your ANT installation, or to add it with classical way of modifying the classpath.
 </p>
 <h1>Tasks overview</h1>
 <p>
-6 tasks are available in PCT, corresponding to 6 basic actions for Progress&reg;.
+7 tasks are available in PCT, corresponding to 7 basic actions for Progress&reg;.
 You can :</p>
 <ul>
 <li>Create a new database with or without a specific structure description</li>
 <li>Load a database schema into an existing database</li>
 <li>Dump a database schema into a text file</li>
+<li>Run a progress procedure</li>
 <li>Compile Progress code</li>
 <li>Create and/or update Progress r-code libraries</li>
 <li>Generate database documentation</li>
 <li>Use PXG files to generate Java proxy classes</li>
 </ul>
-<p>These 6 tasks all inherits from the PCT superclass 2 attributes :</p>
+<p>These 7 tasks all inherits from the PCT superclass 5 attributes :</p>
 <ul>
 <li>dlcHome</li>
-<li>baseDir</li>
+<li>dlcBin</li>
+<li>dlcJava</li>
+<li>ProgressJar</li>
+<li>ProxygenJar</li>
 </ul>
 
 <h2>PCTCreateBase : creates a new database</h2>
@@ -86,7 +106,7 @@ You can :</p>
 </tr>
 <tr>
 <td>DBName</td>
-<td>Database name - Warning : the database name will be written in the .st file.</td>
+<td>Database name</td>
 <td>Yes</td>
 <td>No default value</td>
 </tr>
@@ -120,6 +140,12 @@ You can :</p>
 <td>No</td>
 <td>False</td>
 </tr>
+<tr>
+<td>Overwrite</td>
+<td>Overwrites database if exists</td>
+<td>No</td>
+<td>False</td>
+</tr>
 </table>
 
 <h2>PCTLoadSchema : loads a database schema from a text file</h2>
@@ -137,6 +163,8 @@ You can :</p>
 <td>No default value</td>
 </tr>
 </table>
+<h3>Parameters specified as nested elements</h3>
+<p>It is mandatory to specify a database connection with a nested &lt;PCTConnection&gt; element. One and only one database connection should be declared for a PCTLoadSchema task</p>
 
 <h2>PCTDumpSchema : dumps a database schema to a text file</h2>
 <table>
@@ -153,6 +181,9 @@ You can :</p>
 <td>No default value</td>
 </tr>
 </table>
+<h3>Parameters specified as nested elements</h3>
+<p>It is mandatory to specify a database connection with a nested &lt;PCTConnection&gt; element. One and only one database connection should be declared for a P
+CTDumpSchema task</p>
 
 <h2>PCTConnection : connects a Progress&reg; database</h2>
 <table>
@@ -241,6 +272,107 @@ You can :</p>
 <td>No</td>
 </tr>
 </table>
+<h3>Parameters specified as nested elements</h3>
+<p>It is possible to define database aliases with nested &lt;PCTAlias&gt; elements.</p>
+
+<h2>PCTAlias : defines a database alias</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>Name</td>
+<td>Alias name</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>NoError</td>
+<td>If alias should be declared with NO-ERROR statement</td>
+<td>No</td>
+<td>False</td>
+</table>
+
+<h2>PCTRun : executes a Progress&reg; procedure</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>Procedure</td>
+<td>Procedure name</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>graphicalMode</td>
+<td>Yes if you want to execute procedure using prowin32, _progres otherwise</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>centuryYearOffset</td>
+<td>Century Year Offset (-yy parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>cpInternal</td>
+<td>Internal code page (-cpinternal parameter)</td>
+<td>No</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>cpStream</td>
+<td>Stream code page (-cpstream parameter)</td>
+<td>No</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>dirSize</td>
+<td>The number of compiled procedure directory entries (-D parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>inputChars</td>
+<td>The number of characters allowed in a single statement (-inp parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>maximumMemory</td>
+<td>The amount of memory allocated for r-code segments (-mmax parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>parameter</td>
+<td>Parameter (-param parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>stackSize</td>
+<td>The size of the stack in 1KB units (-s parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>token</td>
+<td>The number of tokens allowed in a 4GL statement (-tok parameter)</td>
+<td>No</td>
+<td>No default value</td/>
+</tr>
+</table>
+<h3>Parameters specified as nested elements</h3>
+<p>It is possible to define database connections with nested &lt;PCTConnection&gt; elements. &lt;PCTRun&gt;'s propath attribute is a path-like structure and can be set via nested &lt;propath&gt; elements.</p>
 
 <h2>PCTCompile : compiles Progress&reg; code</h2>
 <table>
@@ -263,24 +395,14 @@ You can :</p>
 <td>No</td>
 </tr>
 <tr>
-<td>InputChars</td>
-<td>Start command with parameter -inp=&lt;value&gt;</td>
-<td>No</td>
-<td>Default Progress value</td>
-</tr>
-<tr>
 <td>DestDir</td>
 <td>Directory where to put compiled code</td>
-<td>No</td>
+<td>Yes</td>
 <td>No default value</td>
 </tr>
-<tr>
-<td>GraphicalMode</td>
-<td>Yes if you want to compile using prowin32, _progres otherwise</td>
-<td>No</td>
-<td>No</td>
-</tr>
 </table>
+<h3>Parameters specified as nested elements</h3>
+<p>&lt;PCTCompile&gt; extends &lt;PCTRun&gt; and so has the same nested elements. &lt;PCTCompile&gt; also supports Fileset nested elements to declare file names to compile.</p>
 
 <h2>PCTLibrary : creates a r-code library</h2>
 <table>
@@ -346,6 +468,12 @@ You can :</p>
 <td>No</td>
 <td>No</td>
 </tr>
+<tr>
+<td>workingDirectory</td>
+<td>Working directory</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
 </table>
 
 <h1>Examples</h1>
@@ -353,9 +481,10 @@ You can :</p>
 <h2>Declare each task with PCT library in ANT lib directory</h2>
 <pre>
 &lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"/&gt;
-&lt;taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary"/&gt;
-&lt;taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile"/&gt;
 &lt;taskdef name="PCTLoadSchema" classname="com.phenix.pct.PCTLoadSchema"/&gt;
+&lt;taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary"/&gt;
+&lt;taskdef name="PCTRun" classname="com.phenix.pct.PCTRun"/&gt;
+&lt;taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile"/&gt;
 &lt;taskdef name="PCTCreateBase" classname="com.phenix.pct.PCTCreateBase"/&gt;
 &lt;taskdef name="PCTSchemaDoc" classname="com.phenix.pct.PCTSchemaDoc"/&gt;
 &lt;taskdef name="PCTProxygen" classname="com.phenix.pct.PCTProxygen"/&gt;
@@ -365,24 +494,29 @@ You can :</p>
 <pre>
 &lt;PCTCreateBase dbName="MyDB" destDir="base/db" noSchema="yes" DlcHome="${env.DLC}"/&gt;
 &lt;PCTLoadSchema srcFile="base/dump/MyDB.df" &gt;
-  &lt;PCTConnection dbName="base/db/MyDB" singleUser="true"/&gt;
+  &lt;PCTConnection dbDir="base/db" dbName="MyDB" singleUser="true"/&gt;
 &lt;/PCTLoadSchema&gt;
 &lt;PCTSchemaDoc destDir="base/doc"&gt;
-  &lt;PCTConnection dbName="base/db/MyDB" singleUser="true"/&gt;
+  &lt;PCTConnection dbDir="base/db" dbName="MyDB" singleUser="true"/&gt;
 &lt;/PCTSchemaDoc&gt;
 </pre>
 
 <h2>Compile source files with 2 database connections and a specific PROPATH</h2>
 <pre>
 &lt;PCTCompile destDir="build" baseDir="src" md5="true" minSize="true" graphicalMode="false"&gt;
-  &lt;include name="**/*.p"/&gt;
-  &lt;include name="**/*.w"/&gt;
-  &lt;exclude name="non/**/*"/&gt;
-  &lt;PCTConnection dbName="../base/db/MyDB" logicalName="fixed" singleUser="true"/&gt;
-  &lt;PCTConnection dbName="../base/db/MyDB2" logicalName="custom" singleUser="true"/&gt;
+  &lt;fileset dir="src"&gt;
+    &lt;include name="**/*.p"/&gt;
+    &lt;include name="**/*.w"/&gt;
+    &lt;exclude name="non/**/*"/&gt;
+  &lt;/fileset&gt;
+  &lt;PCTConnection dbDir="base/db" dbName="MyDB" logicalName="fixed" singleUser="true"/&gt;
+  &lt;PCTConnection dbDir="base/db" dbName="MyDB2" logicalName="custom" singleUser="true"&gt;
+    &lt;PCTAlias name="custom1"/&gt;
+    &lt;PCTAlias name="custom2"/&gt;
+  &lt;/PCTConnection&gt;
   &lt;propath&gt;
     &lt;pathelement location="src"/&gt;
-    &lt;pathelement location="adm2"/&gt;
+    &lt;pathelement location="src/adm2"/&gt;
   &lt;/propath&gt;
 &lt;/PCTCompile&gt;
 </pre>
@@ -390,14 +524,16 @@ You can :</p>
 <h2>Generate a library based on previously compiled source files</h2>
 <pre>
 &lt;PCTLibrary destFile="dist/MyLib.pl"&gt;
-  &lt;include name="build/**/*.r"/&gt;
-  &lt;exclude name="build/adm2/*.r"/&gt;
+  &lt;fileset dir="build"&gt;
+    &lt;include name="**/*.r"/&gt;
+    &lt;exclude name="adm2/*.r"/&gt;
+  &lt;/fileset&gt;
 &lt;/PCTLibrary&gt;
 </pre>
 
 <h2>How to use proxygen task</h2>
 <pre>
-&lt;PCTProxygen dlcHome="${env.DLC}" srcFile="src/progress/MyProxy.pxg" baseDir="src/progress"/&gt;
+&lt;PCTProxygen dlcHome="${env.DLC}" srcFile="src/progress/MyProxy.pxg" workingDirectory="src/progress"/&gt;
 &lt;!-- baseDir is the directory from which the task is launched --&gt;
 </pre>
 
@@ -436,7 +572,7 @@ directives in the ANT script :</p>
 </div>
 
 <div class="LastUpdate">
-Last update : 25th August, 2003
+Last update : 26th September, 2003
 </div>
 
 </div>
