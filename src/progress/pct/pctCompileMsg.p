@@ -68,23 +68,28 @@ PROCEDURE importXref.
     INPUT FROM VALUE (pcFile).
     REPEAT:
         CREATE ttXref.
-		IMPORT ttXref.
+        IMPORT ttXref.
+        IF ttXref.xRefType EQ 'INCLUDE':U THEN
+            ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
+        ELSE
+            DELETE ttXref.
     END.
+    DELETE ttXref. /* ttXref is non-undo'able */
     INPUT CLOSE.
     OUTPUT TO VALUE (pcOut).
-    FOR EACH ttXref WHERE ttXref.xRefType EQ 'INCLUDE' NO-LOCK GROUP BY ttXref.xObjID:
+    FOR EACH ttXref NO-LOCK GROUP BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
-	        PUT UNFORMATTED SEARCH (ENTRY (1, ttXref.xObjID, ' ':U)) SKIP.
+            PUT UNFORMATTED SEARCH(ttXref.xObjID) SKIP.
     END.
     OUTPUT CLOSE.
 END PROCEDURE.
 
 PROCEDURE finish.
-	DEFINE INPUT PARAMETER piComp   AS INTEGER   NO-UNDO.
-	DEFINE INPUT PARAMETER piNoComp AS INTEGER   NO-UNDO.
-	
+    DEFINE INPUT PARAMETER piComp   AS INTEGER   NO-UNDO.
+    DEFINE INPUT PARAMETER piNoComp AS INTEGER   NO-UNDO.
+
     MESSAGE "Compiled " + STRING(piComp) + " file(s)".
     IF (piNoComp NE 0) THEN
-    	MESSAGE "Failed compile " + STRING(piNoComp) + " file(s)".
+        MESSAGE "Failed compile " + STRING(piNoComp) + " file(s)".
 
 END PROCEDURE.
