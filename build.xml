@@ -133,7 +133,8 @@
       <group title="PCT Core" packages="com.phenix.pct.*"/>
       <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
       <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
-      <link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>
+      <!-- Seems down -->
+      <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
     </javadoc>
   </target>
 
@@ -141,25 +142,31 @@
     <tar destfile="pct-bin.tar.gz" compression="gzip">
       <tarfileset prefix="pct" dir="." mode="644">
         <include name="${dist}/PCT.jar"/>
-        <include name="doc/**"/>
         <include name="CHANGELOG"/>
         <include name="website/**"/>
       </tarfileset>
       <tarfileset prefix="pct" dir="build" mode="644">
-        <include name="tty/pct/*.r"/>
-        <include name="gui/pct/*.r"/>
+        <include name="tty/**/*.r"/>
+        <include name="tty/**/*.i"/>
+        <include name="tty/**/*.p"/>
+        <include name="gui/**/*.r"/>
+        <include name="gui/**/*.i"/>
+        <include name="gui/**/*.p"/>
       </tarfileset>
     </tar>
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="${dist}/PCT.jar"/>
-        <include name="doc/**"/>
         <include name="CHANGELOG"/>
         <include name="website/**"/>
       </zipfileset>
       <zipfileset prefix="pct" dir="build" filemode="644">
-        <include name="tty/pct/*.r"/>
-        <include name="gui/pct/*.r"/>
+        <include name="tty/**/*.r"/>
+        <include name="tty/**/*.i"/>
+        <include name="tty/**/*.p"/>
+        <include name="gui/**/*.r"/>
+        <include name="gui/**/*.i"/>
+        <include name="gui/**/*.p"/>
       </zipfileset>
     </zip>
   </target>
