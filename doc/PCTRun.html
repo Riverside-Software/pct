@@ -70,6 +70,14 @@ procedure on the fly  which sets the propath and declares database aliases accor
 parameters, and then runs the specified procedure.</p>
 <p>This temporary procedure is launched by an Exec task, with prowin32 or _progres executable,
 and with the specified arguments.</p>
+<p>The generated procedure follows this template :</p>
+<pre>
+CREATE ALIAS '…' FOR DATABASE … [NO-ERROR]. // 1 line for each alias
+ASSIGN PROPATH = '…' + PROPATH.
+RUN VALUE('…') NO-ERROR.
+Check error status, return-value and outputs result to a file
+Quit
+</pre>
 <p>TODO : explain return values</p>
 
 <h2>Parameters</h2>
@@ -172,6 +180,27 @@ and with the specified arguments.</p>
 <td align="center">Optional</td>
 <td>False</td>
 </tr>
+<!--<tr>
+<td>batchMode</td>
+<td>Batch mode (-b parameter)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>-->
+<tr>
+<td>iniFile</td>
+<td>Use a .ini file (adds -basekey INI -ininame ...)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>
+<tr>
+<td>TTBufferSize</td>
+<td>Buffer Size for Temporary Tables (-Bt attribute)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
 </table>
 
 <h2>Parameters as nested elements</h2>
@@ -189,17 +218,37 @@ Creates a nested propath, and adds it to the implicit propath.
 &lt;PCTRun procedure="test.p" dlcHome="${env.DLC}"/&gt;
 </pre>
 <p>
-Commandline : <code>${env.DLC}/bin/_progres -p test.p</code>
+Commandline : <code>${env.DLC}/bin/_progres -b -p test.p</code>
 </p>
 
 <pre>
 &lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"/&gt;
 </pre>
 <p>
-Commandline : <code>${env.DLC}/bin/prowin32 -p test.p -param foobar</code>
+Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</code>
 </p>
 
-<p>TODO : propath and aliases examples</p>
+<pre>
+&lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"&gt;
+  &lt;PCTConnection dbName="foo" dbDir="base" singleUser="true"&gt;
+    &lt;PCTAlias name="foo2"/&gt;
+    &lt;PCTAlias name="foo3"/&gt;
+  &lt;/PCTConnection&gt;
+  &lt;propath&gt;
+    &lt;pathelement path="src/include"/&gt;
+  &lt;/propath&gt;
+&lt;/PCTRun&gt;
+</pre>
+<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar -db base/foo -1</code></p>
+<p>Procedure : <br/><code>
+CREATE ALIAS 'foo2' FOR foo.<br/>
+CREATE ALIAS 'foo3' FOR foo.<br/>
+ASSIGN PROPATH='src/include,' + PROPATH.<br/>
+RUN VALUE('test/test.p') NO-ERROR.<br/>
+// Check errors<br/>
+// Quit<br/>
+</p>
+
 </div>
 
 <div class="LastUpdate">
