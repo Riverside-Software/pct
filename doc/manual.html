@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>PCT documentation</title>
+<meta http-equiv="Content-language" content="fr" />
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+<meta name="revisit-after" content="30 days" />
+<meta name="robots" content="index,follow" />
+<meta name="DC.Language" content="fr" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+Progress&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+<a href="index.html">Overview</a> :: <a href="download.html">Download</a> :: Documentation
+</div>
+
+<div class="Text">
+<h1>Documentation</h1>
+<h2>Installation</h2>
+<h3>System requirements</h3>
+<p>
+The PCT plug-in requires Ant 1.3 or higher. However, it has only been tested with 1.5 version of Ant.
+Please feel free to notify of other success stories.
+To obtain more information about this wonderful build tool, visit the official Ant home page at the Apache Jakarta site :
+<a href="http://ant.apache.org">http://ant.apache.org</a> 
+</p>
+<h3>Installation (binary package)</h3>
+<p>
+The PCT plug-in comes either as a single .zip or as a tarball.
+Unzipping either one of these files into a directory of your choice (referred to as <i>&lt;INST_DIR&gt;</i>)
+will produce two subdirectories /lib and /src. 
+</p>
+<p>You first have to copy Progress&reg; code to $DLC/tty and $DLC/gui. Just copy all the .p files in the <b>src</b> subdirectory of <i>&lt;INST_DIR&gt;</i>.
+</p>
+
+<p>
+Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. Maybe the simplest way 
+is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
+</p>
+<pre>
+&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
+  &lt;classpath&gt;
+    &lt;fileset dir="<i>&lt;INST_DIR&gt;</i>/lib"&gt;
+      &lt;include name="*.jar"/&gt;
+    &lt;/fileset&gt;
+  &lt;/classpath&gt;
+&lt;/taskdef&gt;
+</pre>
+<p>
+It is also possible to add the provided library to you classpath, either by adding it to the /lib subdirectory
+of your ANT installation, or to add it with classical way of modifying the classpath.
+</p>
+<h1>Tasks overview</h1>
+<p>
+6 tasks are available in PCT, corresponding to 6 basic actions for Progress&reg;.
+You can :</p>
+<ul>
+<li>Create a new database with or without a specific structure description</li>
+<li>Load a database schema into an existing database</li>
+<li>Dump a database schema into a text file</li>
+<li>Compile Progress code</li>
+<li>Create and/or update Progress r-code libraries</li>
+<li>Generate database documentation</li>
+</ul>
+<p>These 6 tasks all inherits from the PCT superclass 2 attributes :</p>
+<ul>
+<li>dlcHome</li>
+<li>baseDir</li>
+</ul>
+
+<h2>PCTCreateBase : creates a new database</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Mandatory</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>DBName</td>
+<td>Database name - Warning : the database name will be written in the .st file.</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>DestDir</td>
+<td>Destination directory where to create the database</td>
+<td>No</td>
+<td>Current directory</td>
+</tr>
+<tr>
+<td>StructFile</td>
+<td>Structure description file. </td>
+<td>Mandatory if noInit set to Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>BlockSize</td>
+<td>Block size in kilobytes (1, 2, 4 or 8)</td>
+<td>Mandatory if noSchema set to Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>NoInit</td>
+<td>No initialization of database schema (procopy emptyX dbName)</td>
+<td>No</td>
+<td>False</td>
+</tr>
+<tr>
+<td>NoSchema</td>
+<td>No schema creation</td>
+<td>No</td>
+<td>False</td>
+</tr>
+</table>
+
+<h2>PCTLoadSchema : loads a database schema from a text file</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Mandatory</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>SrcFile</td>
+<td>File containing the schema dump</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+</table>
+
+<h2>PCTDumpSchema : dumps a database schema to a text file</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Mandatory</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>DestFile</td>
+<td>Destination file to dump the schema</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+</table>
+
+<h2>PCTConnection : connects a Progress&reg; database</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>dbName</td>
+<td>Database physical name</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>dbPort</td>
+<td>TCP port to connect to (-S parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>Protocol to use (-N parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>LogicalName</td>
+<td>Logical name for the database (-ld parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>CacheFile</td>
+<td>Name of the binary cache file (-cache parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>DataService</td>
+<td>Dataservice (-DataService parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>DbType</td>
+<td>Database type (Oracle, SQL Server, ...) (-dt parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>HostName</td>
+<td>Host name where the database resides (-H parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>UserName</td>
+<td>Login (-U parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>Password (-P parameter)</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>ReadOnly</td>
+<td>Open the database in read-only mode (-RO parameter)</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>SingleUser</td>
+<td>Open the database in single-user mode (-1 parameter)</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</table>
+
+<h2>PCTCompile : compiles Progress&reg; code</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>MinSize</td>
+<td>Compile using option MIN-SIZE=TRUE</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>MD5</td>
+<td>Compile using option GENERATE-MD5=TRUE</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>InputChars</td>
+<td>Start command with parameter -inp=&lt;value&gt;</td>
+<td>No</td>
+<td>Default Progress value</td>
+</tr>
+<tr>
+<td>DestDir</td>
+<td>Directory where to put compiled code</td>
+<td>No</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>GraphicalMode</td>
+<td>Yes if you want to compile using prowin32, _progres otherwise</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</table>
+
+<h2>PCTLibrary : creates a r-code library</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>DestFile</td>
+<td>R-code library to create</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>Encoding</td>
+<td>Character encoding to use</td>
+<td>No</td>
+<td>ISO8859-1</td>
+</tr>
+<tr>
+<td>NoCompress</td>
+<td>Libraries are by default compressed at the end of the process. Say No to skip compression</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</table>
+
+<h2>PCTSchemaDoc : generates HTML database documentation</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>DestDir</td>
+<td>Directory where HTML files will be generated</td>
+<td>No</td>
+<td>Current directory</td>
+</tr>
+</table>
+
+<h1>Examples</h1>
+
+<h2>Declare each task with PCT library in ANT lib directory</h2>
+<pre>
+&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"/&gt;
+&lt;taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary"/&gt;
+&lt;taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile"/&gt;
+&lt;taskdef name="PCTLoadSchema" classname="com.phenix.pct.PCTLoadSchema"/&gt;
+&lt;taskdef name="PCTCreateBase" classname="com.phenix.pct.PCTCreateBase"/&gt;
+&lt;taskdef name="PCTSchemaDoc" classname="com.phenix.pct.PCTSchemaDoc"/&gt;
+</pre>
+
+<h2>Create a new database in base/db subdirectory based on a dump file and generates database documentation</h2>
+<pre>
+&lt;PCTCreateBase dbName="MyDB" destDir="base/db" noSchema="yes" DlcHome="${env.DLC}"/&gt;
+&lt;PCTLoadSchema srcFile="base/dump/MyDB.df" &gt;
+  &lt;PCTConnection dbName="base/db/MyDB" singleUser="true"/&gt;
+&lt;/PCTLoadSchema&gt;
+&lt;PCTSchemaDoc destDir="base/doc"&gt;
+  &lt;PCTConnection dbName="base/db/MyDB" singleUser="true"/&gt;
+&lt;/PCTSchemaDoc&gt;
+</pre>
+
+<h2>Compile source files with 2 database connections and a specific PROPATH</h2>
+<pre>
+&lt;PCTCompile destDir="build" baseDir="src" md5="true" minSize="true" graphicalMode="false"&gt;
+  &lt;include name="**/*.p"/&gt;
+  &lt;include name="**/*.w"/&gt;
+  &lt;exclude name="non/**/*"/&gt;
+  &lt;PCTConnection dbName="../base/db/MyDB" logicalName="fixed" singleUser="true"/&gt;
+  &lt;PCTConnection dbName="../base/db/MyDB2" logicalName="custom" singleUser="true"/&gt;
+  &lt;propath&gt;
+    &lt;pathelement location="src"/&gt;
+    &lt;pathelement location="adm2"/&gt;
+  &lt;/propath&gt;
+&lt;/PCTCompile&gt;
+</pre>
+
+<h2>Generate a library based on previously compiled source files</h2>
+<pre>
+&lt;PCTLibrary destFile="dist/MyLib.pl"&gt;
+  &lt;include name="build/**/*.r"/&gt;
+  &lt;exclude name="build/adm2/*.r"/&gt;
+&lt;/PCTLibrary&gt;
+</pre>
+
+<h1>Hints</h1>
+<h2>How to use DLC environment variable in ANT scripts</h2>
+<p>ANT doesn't handle environment variables by default. Add this line at the beginning of your
+script to load environment variables :</p>
+<pre>
+&lt;property environment="env"/&gt;
+</pre>
+<p>You may now refer to your DLC env variable with the following syntax :</p>
+<pre>
+dlcHome="${env.DLC}"
+</pre>
+
+
+<h2>How to use PCT_HOME environment variable in ANT scripts</h2>
+<p>I find cleaner to use an environment variable to declare the location
+of PCT files rather than putting it in the ANT script or in the classpath.
+So just declare PCT_HOME variable in your favorite shell, and use these
+directives in the ANT script :</p>
+<pre>
+  &lt;!-- ClassPath pour PCT --&gt;
+  &lt;path id="PCT"&gt;
+    &lt;fileset dir="${env.PCT_HOME}/lib"&gt;
+      &lt;include name="PCT.jar"/&gt;
+    &lt;/fileset&gt;
+  &lt;/path&gt;
+
+  &lt;!-- Definition des taches externes --&gt;  
+  &lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
+    &lt;classpath refid="PCT"/&gt;
+  &lt;/taskdef&gt;
+</pre>
+
+</div>
+
+<div class="LastUpdate">
+Last update : 17th July, 2003
+</div>
+
+</div>
+
+</body>
+</html>

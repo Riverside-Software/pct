@@ -1,0 +1,98 @@
+body {
+    background-color: #555555;
+    color: black;
+}
+
+pre {
+    background-color: #77aaee;
+    padding: 5px;
+}
+div {
+    text-align: left;
+    /*float: left;*/
+    color: black;
+}
+
+div.Main {
+    margin: 5px;
+    background: #eeeeee;
+    border: 2px black solid;
+}
+
+div.Bandeau {
+    background: #ffecce;
+    border: 1px #ddcaac solid;
+    width: 100%;
+    font-weight: bold;
+    text-align: center;
+    font-size: 140%;
+    color: #336699;
+}
+
+div.Menu {
+    margin-top: 10px;
+    background: #cccccc;
+    border: 1px #aaaaaa solid;
+    width: 100%;
+    font-weight: bold;
+    text-align: center;
+    color: #336699;
+}
+
+div.Menu a {
+    color: #336699;
+    text-decoration: underline;
+}
+
+div.Menu a:hover {
+    background: #eeeeee;
+    text-decoration: none;
+}
+
+div.LastUpdate {
+    width: 100%;
+    margin-top: 10px;
+    background: #cccccc;
+    color: #336699;
+    text-align: right;
+}
+
+div.TextArea {
+    width: 100%;
+    padding: 5px;
+}
+
+div.Text {
+    color: black;
+    /*background: white;*/
+    padding: 5px;
+}
+
+div.Text h1 {
+    color: #336699;
+    font-size: 140%;
+}
+
+div.Text h2 {
+    color: #336699;
+    font-size: 120%;
+}
+
+div.Text table {
+    border-collapse: collapse;
+}
+
+div.Text tr {
+    padding: 0px;
+    border-left: 1px black solid;
+    border-right: 1px black solid;
+}
+
+div.Text th {
+    background: #336699;
+    border-top: 1px black solid;	
+}
+
+div.Text td {
+    border-bottom: 1px black solid;
+}

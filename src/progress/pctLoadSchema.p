@@ -1,0 +1,2 @@
+RUN prodict/load_df.p (INPUT SESSION:PARAMETER).
+QUIT.

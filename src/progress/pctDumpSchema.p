@@ -1,0 +1,2 @@
+RUN prodict/dump_df.p (INPUT 'ALL':U, INPUT SESSION:PARAMETER, INPUT ?).
+QUIT.
