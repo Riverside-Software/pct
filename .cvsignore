@@ -8,3 +8,4 @@ pct-bin*
 pct-src*
 .classpath
 .project
+.settings
