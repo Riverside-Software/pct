@@ -8,9 +8,10 @@ Version 0.3c (Not yet released)
  * Updated PCTCreateBase :
    * Removed noSchema attribute (use directly structFile)
    * Added schemaFile attribute (loads a .df into database after its creation)
-   * Correction bug when destDir == null
+   * Corrected bug when destDir == null
    * Added unit tests
-   
+ * Added debug attribute in PCTRun (protected, so it can accessed from children)
+ 
 Version 0.3b (11/15/2003)
 ==============================
  * Added unit tests (still in development)

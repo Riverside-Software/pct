@@ -87,79 +87,79 @@ public class PCTCompile extends PCTRun {
     private Hashtable _dirs = new Hashtable();
 
     /**
- * Reduce r-code size ?
- * MIN-SIZE option of the COMPILE statement
- * @param minSize "true|false|on|off|yes|no"
- */
+     * Reduce r-code size ?
+     * MIN-SIZE option of the COMPILE statement
+     * @param minSize "true|false|on|off|yes|no"
+     */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
     }
 
     /**
- * Always force compilation
- * @param forceCompile "true|false|on|off|yes|no"
- * @since 0.3b
- */
+     * Always force compilation
+     * @param forceCompile "true|false|on|off|yes|no"
+     * @since 0.3b
+     */
     public void setForceCompile(boolean forceCompile) {
         this.forceCompile = forceCompile;
     }
 
     /**
- * Immediatly quit if a progress procedure fails to compile
- * @param failOnError "true|false|on|off|yes|no"
- */
+     * Immediatly quit if a progress procedure fails to compile
+     * @param failOnError "true|false|on|off|yes|no"
+     */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
     }
 
     /**
- * Don't use XREF (and so compile everything)
- * @param noXref "true|false|on|off|yes|no"
- */
+     * Don't use XREF (and so compile everything)
+     * @param noXref "true|false|on|off|yes|no"
+     */
     public void setNoXref(boolean noXref) {
         this.noXref = noXref;
     }
 
     /**
- * Directory where to store xref and includes files
- * .xref and .includes subdirectories are created there
- * @param xrefDir File
- */
+     * Directory where to store xref and includes files
+     * .xref and .includes subdirectories are created there
+     * @param xrefDir File
+     */
     public void setXRefDir(File xrefDir) {
         this.xRefDir = xrefDir;
     }
 
     /**
- * Put MD5 in r-code ?
- * GENERATE-MD5 option of the COMPILE statement
- * @param md5 "true|false|on|off|yes|no"
- */
+     * Put MD5 in r-code ?
+     * GENERATE-MD5 option of the COMPILE statement
+     * @param md5 "true|false|on|off|yes|no"
+     */
     public void setMD5(boolean md5) {
         this.md5 = md5;
     }
 
     /**
- * Location to store the .r files
- * @param destDir Destination directory
- */
+     * Location to store the .r files
+     * @param destDir Destination directory
+     */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
     }
 
     /**
- * Adds a set of files to archive.
- * @param set FileSet
- */
+     * Adds a set of files to archive.
+     * @param set FileSet
+     */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
     }
 
     /**
- * Checks whether files from a fileset need to be compiled
- * @param inc Directory where XREF and include files are located
- * @return Vector of PCTFile
- * @throws BuildException
- */
+     * Checks whether files from a fileset need to be compiled
+     * @param inc Directory where XREF and include files are located
+     * @return Vector of PCTFile
+     * @throws BuildException
+     */
     private Vector getFileList(File inc) throws BuildException {
         Vector v = new Vector();
         int j = 0;
@@ -235,11 +235,11 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
- * Checks if directories need to be created
- * @param v File list to compile
- * @return Hashtable of directories to be created
- * @throws BuildException Something went wrong
- */
+     * Checks if directories need to be created
+     * @param v File list to compile
+     * @return Hashtable of directories to be created
+     * @throws BuildException Something went wrong
+     */
     private Hashtable getDirectoryList(Vector v) throws BuildException {
         Hashtable dirs = new Hashtable();
 
@@ -272,9 +272,9 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
- * Do the work
- * @throws BuildException Something went wrong
- */
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         File tmpProc = null; // Compile procedure
         File xRefDir = null; // Where to store XREF files
@@ -320,7 +320,8 @@ public class PCTCompile extends PCTRun {
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("pct_compile", ".p");
-            tmpProc.deleteOnExit();
+            if (this.debug)
+            	tmpProc.deleteOnExit();
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
