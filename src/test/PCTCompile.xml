@@ -2,13 +2,17 @@
 
 <project name="PCTCompile-test" default="">
 
-  <taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile" classpath="../../lib/PCT.jar"/>
+	<taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
 
   <property environment="env"/>
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTCompile dlcHome="${env.DLC}"/>
+    <PCTCompile dlcHome="${env.DLC}">
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>
   </target>
   
   <!-- Do nothing : should not hurt -->
@@ -50,9 +54,6 @@
       </propath>
     </PCTCompile>	
   </target>
-  <target name="test3post">
-    <delete file="progress/temp.p"/>	
-  </target>
   
   <!-- Test MIN-SIZE attribute -->
   <target name="test4">
@@ -70,10 +71,6 @@
     </PCTCompile>	
   </target>
   <target name="test4bis">
-    <echo file="sandbox/test.p">
-      MESSAGE "Hello world!".
-      RETURN "0".
-    </echo>
     <PCTCompile destDir="build" dlcHome="${env.DLC}" minSize="true">
       <fileset dir=".">
         <include name="sandbox/test.p"/>	
@@ -125,7 +122,6 @@
         <pathelement path="../../build/tty"/>	
       </propath>
     </PCTCompile>
-    <delete file="progress/temp.p"/>
   </target>
 
   <!-- Test simple recompile if file has changed (.r timestamp based) -->
@@ -145,8 +141,8 @@
     </PCTCompile>	
   </target>
   <target name="test7bis">
-  	<sleep seconds="3"/>
-  	<touch file="sandbox/temp.p"/>
+    <sleep seconds="3"/>
+    <touch file="sandbox/temp.p"/>
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
@@ -155,7 +151,6 @@
         <pathelement path="../../build/tty"/>	
       </propath>
     </PCTCompile>
-    <delete file="progress/temp.p"/>
   </target>
   
   <!-- Test forceCompile (file has not changed) -->
@@ -183,7 +178,6 @@
         <pathelement path="../../build/tty"/>	
       </propath>
     </PCTCompile>
-    <delete file="sandbox/temp.p"/>
   </target>
   
   <!-- Test recompile if included file has changed -->
@@ -199,25 +193,23 @@
   <target name="test9">
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
-        <include name="sandbox/temp.p"/>	
-      </fileset>	
+        <include name="sandbox/temp.p"/>
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
-    </PCTCompile>	
+    </PCTCompile>
   </target>
   <target name="test9bis">
   	<touch file="sandbox/temp.i"/>
     <PCTCompile destDir="build" dlcHome="${env.DLC}" forceCompile="true">
       <fileset dir=".">
-        <include name="sandbox/temp.p"/>	
-      </fileset>	
+        <include name="sandbox/temp.p"/>
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
     </PCTCompile>
-    <delete file="sandbox/temp.i"/>
-    <delete file="sandbox/temp.p"/>
   </target>
   
   <!-- Same as test9 but with spaces in include statement -->
@@ -233,10 +225,10 @@
   <target name="test10">
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
-        <include name="sandbox/temp.p"/>	
-      </fileset>	
+        <include name="sandbox/temp.p"/>
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
     </PCTCompile>	
   </target>
@@ -244,14 +236,12 @@
   	<touch file="sandbox/temp.i"/>
     <PCTCompile destDir="build" dlcHome="${env.DLC}" forceCompile="true">
       <fileset dir=".">
-        <include name="sandbox/temp.p"/>	
-      </fileset>	
+        <include name="sandbox/temp.p"/>
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
     </PCTCompile>
-    <delete file="sandbox/temp.i"/>
-    <delete file="sandbox/temp.p"/>
   </target>
   
   <!-- Test failOnError attribute -->
@@ -264,21 +254,19 @@
   	</echo>
   </target>
   <target name="test11">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+    <PCTCompile failOnError="true" destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
+      </fileset>
+      <fileset dir=".">
         <include name="sandbox/temp2.p"/>
-      </fileset>	
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
-    </PCTCompile>	
+    </PCTCompile>
   </target>
-  <target name="test11post">
-    <delete file="sandbox/temp.p"/>
-    <delete file="sandbox/temp2.p"/>
-  </target>
-  
+
   <!-- Test compileUnderscore attribute -->
   <target name="test12init">
   	<echo file="sandbox/temp.p">
@@ -289,9 +277,9 @@
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
-      </fileset>	
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
     </PCTCompile>
   </target>
@@ -299,14 +287,48 @@
     <PCTCompile destDir="build" dlcHome="${env.DLC}" compileUnderscore="true">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
-      </fileset>	
+      </fileset>
       <propath>
-        <pathelement path="../../build/tty"/>	
+        <pathelement path="../../build/tty"/>
       </propath>
-    </PCTCompile>	
+    </PCTCompile>
   </target>
-  <target name="test12post">
-    <delete file="sandbox/temp.p"/>
+  
+  <!-- Test deep includes -->
+  <target name="test13init">
+    <echo file="sandbox/temp.p">
+      {sandbox/temp.i}.
+      RETURN '0'.
+    </echo>
+    <echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+      {sandbox/temp2.i}.
+    </echo>
+    <echo file="sandbox/temp2.i">
+      MESSAGE "World".
+    </echo>
+  </target>
+  <target name="test13">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+      <propath>
+        <pathelement path="../../build/tty"/>
+      </propath>
+    </PCTCompile>
+  </target>
+  <target name="test13bis">
+    <sleep seconds="3"/>
+    <touch file="sandbox/temp2.i"/>
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+      <propath>
+        <pathelement path="../../build/tty"/>
+      </propath>
+    </PCTCompile>
   </target>
   
 </project>
