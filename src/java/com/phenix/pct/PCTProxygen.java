@@ -133,17 +133,22 @@ public class PCTProxygen extends PCT {
         Environment.Variable var = new Environment.Variable();
         var.setKey("PXGFile");
         var.setValue(this.srcFile.toString());
-        pxg.addSysproperty(var);
+        pxg.addEnv(var);
 
         Environment.Variable var2 = new Environment.Variable();
         var2.setKey("Install.Dir");
         var2.setValue(this.getDlcHome().toString());
-        pxg.addSysproperty(var2);
+        pxg.addEnv(var2);
 
         Environment.Variable var3 = new Environment.Variable();
         var3.setKey("Proxygen.LeaveProxyFiles");
         var3.setValue((this.keepFiles ? "true" : "false"));
-        pxg.addSysproperty(var3);
+        pxg.addEnv(var3);
+
+        Environment.Variable var4 = new Environment.Variable();
+        var4.setKey("DLC");
+        var4.setValue(this.getDlcHome().toString());
+        pxg.addEnv(var4);
 
         // Don't use executeJava and get return code as Progress doesn't know what a return value is
         pxg.execute();

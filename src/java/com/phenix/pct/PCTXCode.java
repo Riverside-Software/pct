@@ -57,6 +57,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
@@ -225,6 +226,11 @@ public class PCTXCode extends PCT {
         exec.setDescription(this.getDescription());
         exec.setOutput(tmpLog);
         exec.setExecutable(this.getExecPath("xcode").toString());
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
 
         if (this.key != null) {
             exec.createArg().setValue("-k");

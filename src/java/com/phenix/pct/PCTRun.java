@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
 
 import java.io.BufferedReader;
@@ -72,7 +73,7 @@ import java.util.Vector;
 /**
  * Run a Progress procedure.
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  * @version $Revision$
  */
 public class PCTRun extends PCT {
@@ -399,6 +400,11 @@ public class PCTRun extends PCT {
             exec.setOwningTarget(this.getOwningTarget());
             exec.setTaskName(this.getTaskName());
             exec.setDescription(this.getDescription());
+            
+            Environment.Variable var = new Environment.Variable();
+            var.setKey("DLC");
+            var.setValue(this.getDlcHome().toString());
+            exec.addEnv(var);
         }
 
         this.isPrepared = true;
