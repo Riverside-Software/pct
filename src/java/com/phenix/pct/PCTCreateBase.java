@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
@@ -74,6 +75,7 @@ public class PCTCreateBase extends PCT {
     private boolean noInit = false;
     private boolean overwrite = false;
     private File schema = null;
+    private Path propath = null;
 
     /**
      * Structure file (.st)
@@ -141,6 +143,26 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Set the propath to be used when running the procedure
+     * @param propath an Ant Path object containing the propath
+     */
+     public void setPropath(Path propath) {
+         createPropath().append(propath);
+     }
+
+     /**
+      * Creates a new Path instance
+      * @return Path
+      */
+     public Path createPropath() {
+         if (this.propath == null) {
+             this.propath = new Path(this.getProject());
+         }
+
+         return this.propath;
+     }
+
+    /**
      * Do the work
      * @throws BuildException Something went wrong
      */
@@ -203,7 +225,8 @@ public class PCTCreateBase extends PCT {
             pls.setSrcFile(this.schema);
             pls.setDlcHome(this.getDlcHome());
             pls.setDlcBin(this.getDlcBin());
-
+            pls.setPropath(this.propath);
+            
             PCTConnection pc = new PCTConnection();
             pc.setDbName(this.dbName);
             pc.setDbDir(this.destDir);
