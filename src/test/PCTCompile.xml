@@ -2,7 +2,7 @@
 
 <project name="PCTCompile-test" default="">
 
-	<taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
+  <taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
 
   <property environment="env"/>
   
