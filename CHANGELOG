@@ -1,6 +1,7 @@
 Version 0.7 (??/??/????)
 ==============================
  * Added screenshots to website
+ * Added PCTGlobalDefine : define preprocessor directives in PCTRun
 
 Version 0.6 (11/04/2004)
 ==============================
