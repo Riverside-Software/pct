@@ -56,7 +56,6 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -89,8 +88,12 @@ public class PCTRun extends PCT {
     private int stackSize = 0;
     protected Vector dbConnList = null;
     protected Path propath = null;
-	private boolean compileUnderscore = false;
-	
+    private boolean compileUnderscore = false;
+
+    /**
+     * Default constructor
+     *
+     */
     public PCTRun() {
         super();
 
@@ -123,15 +126,15 @@ public class PCTRun extends PCT {
         this.parameter = param;
     }
 
-	/**
-	 * If files beginning with an underscore should be compiled (-zn option)
-	 * See POSSE documentation for more details
-	 * @param comUnderscore
-	 */
-	public void setCompileUnderscore(boolean compUnderscore) {
-		this.compileUnderscore = compUnderscore;		
-	}
-	
+    /**
+     * If files beginning with an underscore should be compiled (-zn option)
+     * See POSSE documentation for more details
+     * @param compUnderscore boolean
+     */
+    public void setCompileUnderscore(boolean compUnderscore) {
+        this.compileUnderscore = compUnderscore;
+    }
+
     /**
      * The number of compiled procedure directory entries (-D attribute)
      * @param dirSize int
@@ -164,6 +167,10 @@ public class PCTRun extends PCT {
         createPropath().append(propath);
     }
 
+    /**
+     * Creates a new Path instance
+     * @return Path
+     */
     public Path createPropath() {
         if (this.propath == null) {
             this.propath = new Path(this.getProject());
@@ -178,7 +185,7 @@ public class PCTRun extends PCT {
 
     /**
      * Stream code page (-cpstream attribute)
-     * @param cpStream
+     * @param cpStream String
      */
     public void setCpStream(String cpStream) {
         this.cpStream = cpStream;
@@ -186,7 +193,7 @@ public class PCTRun extends PCT {
 
     /**
      * Internal code page (-cpinternal attribute)
-     * @param cpInternal
+     * @param cpInternal String
      */
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
@@ -232,17 +239,28 @@ public class PCTRun extends PCT {
         this.stackSize = stackSize;
     }
 
+    /**
+     * Returns status file name (where to write progress procedure result)
+     * @return String
+     */
     protected String getStatusFileName() {
         return status.getAbsolutePath();
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         this.run();
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void run() throws BuildException {
         ExecTask exec = null;
-
         exec = launchTask();
 
         //log ("PCTRUN : " + exec.toString());
@@ -332,10 +350,11 @@ public class PCTRun extends PCT {
             exec.createArg().setValue("-tok");
             exec.createArg().setValue(Integer.toString(this.token));
         }
-		
-		if (this.compileUnderscore)
-			exec.createArg().setValue("-zn");
-			
+
+        if (this.compileUnderscore) {
+            exec.createArg().setValue("-zn");
+        }
+
         // Parameter
         if (this.parameter != null) {
             exec.createArg().setValue("-param");
@@ -350,9 +369,12 @@ public class PCTRun extends PCT {
     private File createInitProcedure() throws BuildException {
         try {
             File f = File.createTempFile("pct_init", ".p");
+            f.deleteOnExit();
 
-            //f.deleteOnExit();
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+
+            bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?.");
+            bw.newLine();
 
             // Defines aliases
             if (dbConnList != null) {
@@ -387,8 +409,19 @@ public class PCTRun extends PCT {
                 bw.newLine();
             }
 
-            bw.write("RUN VALUE('" + this.procedure + "') (INPUT '" + status.getAbsolutePath() +
-                     "') NO-ERROR.");
+            bw.write("RUN VALUE('" + this.procedure + "') NO-ERROR.");
+            bw.newLine();
+            bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
+            bw.newLine();
+            bw.write("IF (i EQ ?) THEN ASSIGN i = INTEGER (RETURN-VALUE) NO-ERROR.");
+            bw.newLine();
+            bw.write("IF (i EQ ?) THEN ASSIGN i = 0.");
+            bw.newLine();
+            bw.write("OUTPUT TO VALUE('" + status.getAbsolutePath() + "').");
+            bw.newLine();
+            bw.write("PUT UNFORMATTED i SKIP.");
+            bw.newLine();
+            bw.write("OUTPUT CLOSE.");
             bw.newLine();
             bw.write("QUIT.");
             bw.newLine();

@@ -58,13 +58,25 @@ import org.apache.tools.ant.BuildException;
 import java.io.File;
 
 
+/**
+ * Loads schema into database
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ */
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
 
+    /**
+     * Dump file
+     * @param srcFile File
+     */
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
             throw new BuildException("No database connection defined");
@@ -78,7 +90,7 @@ public class PCTLoadSchema extends PCTRun {
             throw new BuildException("Mandatory argument : dump file");
         }
 
-        this.setProcedure("pctLoadSchema.p");
+        this.setProcedure("pct/pctLoadSchema.p");
         this.setParameter(srcFile.toString());
         this.run();
     }

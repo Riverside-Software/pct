@@ -59,16 +59,24 @@ import java.io.File;
 
 
 /**
- *
-  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * Dumps schema from database
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTDumpSchema extends PCTRun {
     private File destFile = null;
 
+    /**
+     * Output file for dump
+     * @param destFile File
+     */
     public void setDestFile(File destFile) {
         this.destFile = destFile;
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
             throw new BuildException("No database connection defined");
@@ -82,7 +90,7 @@ public class PCTDumpSchema extends PCTRun {
             throw new BuildException("Mandatory argument : dump file");
         }
 
-        this.setProcedure("pctDumpSchema.p");
+        this.setProcedure("pct/pctDumpSchema.p");
         this.setParameter(destFile.toString());
         this.run();
     }
