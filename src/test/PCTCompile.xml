@@ -88,6 +88,7 @@
     </PCTCompile>	
   </target>
   <target name="test6bis">
+    <sleep seconds="3"/>
     <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
@@ -383,4 +384,54 @@
     </PCTCompile>
   </target>
 
+  <!-- Test encrypted code with default key can be compiled -->
+  <target name="test16init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+      RETURN "1".
+  	</echo>
+    <mkdir dir="xcode"/>
+    <PCTXCode destDir="xcode" dlcHome="${env.DLC}">
+      <fileset dir="sandbox">
+        <include name="temp.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test16">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+
+  <!-- Test encrypted code with specified key needs option -->
+  <target name="test17init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+      RETURN "1".
+  	</echo>
+    <mkdir dir="xcode"/>
+    <PCTXCode destDir="xcode" dlcHome="${env.DLC}" key="pct">
+      <fileset dir="sandbox">
+        <include name="temp.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test17-part1">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true">
+      <fileset dir=".">
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+  <target name="test17-part2">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true" xcodekey="pct">
+      <fileset dir=".">
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+  
 </project>
