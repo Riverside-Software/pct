@@ -52,11 +52,13 @@
  * <http://www.apache.org/>.
  */
 package com.phenix.pct;
+
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
+
 
 /**
  * Class for testing PCTCompile task
@@ -85,59 +87,64 @@ public class PCTCreateBaseTest extends BuildFileTest {
     }
 
     public void test1() {
-    	expectBuildException("test1", "No dbName defined");
+        expectBuildException("test1", "No dbName defined");
     }
-    
+
     public void test2() {
-    	expectBuildException("test2", "dbName longer than 11 characters");
+        expectBuildException("test2", "dbName longer than 11 characters");
     }
-    
+
     public void test3() {
-		executeTarget("test3");
-		File f = new File("src/test/sandbox/test3.db");
-		assertTrue(f.exists());
+        executeTarget("test3");
+
+        File f = new File("src/test/sandbox/test3.db");
+        assertTrue(f.exists());
     }
 
     public void test4() {
-    	expectBuildException("test4", "noInit and noStruct both defined");
+        expectBuildException("test4", "noInit and noStruct both defined");
     }
-    
+
     public void test5() {
-    	executeTarget("test5init");
-    	File f = new File("src/test/sandbox/test.db");
-    	assertTrue(f.exists());
-    	executeTarget("test5");
-    	f = new File("src/test/sandbox/test.r");
-    	assertTrue(f.exists());
+        executeTarget("test5init");
+
+        File f = new File("src/test/sandbox/test.db");
+        assertTrue(f.exists());
+        executeTarget("test5");
+        f = new File("src/test/sandbox/test.r");
+        assertTrue(f.exists());
     }
-    
+
     public void test6() {
-    	File f = new File("src/test/sandbox/test.db");
-    	executeTarget("test6");
-    	long time = f.lastModified();
-    	executeTarget("test6");
-    	assertTrue(f.lastModified() == time);
+        File f = new File("src/test/sandbox/test.db");
+        executeTarget("test6");
+
+        long time = f.lastModified();
+        executeTarget("test6");
+        assertTrue(f.lastModified() == time);
     }
-    
+
     public void test7() {
-    	File f = new File("src/test/sandbox/test.db");
-    	executeTarget("test7");
-    	long time = f.lastModified();
-    	// TODO : fix the overwrite attribute
-    	// executeTarget("test7");
-    	// assert True(f.lastModified() != time);
-    	
+        File f = new File("src/test/sandbox/test.db");
+        executeTarget("test7");
+
+        long time = f.lastModified();
+
+        // TODO : fix the overwrite attribute
+        // executeTarget("test7");
+        // assert True(f.lastModified() != time);
     }
-    
+
     public void test8() {
-    	executeTarget("test8");
-    	File f = new File("src/test/sandbox/test.b1");
-    	assertTrue(f.exists());
-    	f = new File("src/test/sandbox/test.b2");
-    	assertTrue(f.exists());
-    	f = new File("src/test/sandbox/test.d1");
-    	assertTrue(f.exists());
-    	f = new File("src/test/sandbox/test.d2");
-    	assertTrue(f.exists());
+        executeTarget("test8");
+
+        File f = new File("src/test/sandbox/test.b1");
+        assertTrue(f.exists());
+        f = new File("src/test/sandbox/test.b2");
+        assertTrue(f.exists());
+        f = new File("src/test/sandbox/test.d1");
+        assertTrue(f.exists());
+        f = new File("src/test/sandbox/test.d2");
+        assertTrue(f.exists());
     }
 }
