@@ -229,7 +229,7 @@
       <arg path="${env.DLC}/sports2000"/>
       <arg value="sports2000"/>
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}">
       <propath path="build"/>
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true"/>
     </PCTSchemaDoc>
