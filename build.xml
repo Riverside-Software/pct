@@ -18,9 +18,6 @@
   <property name="check" value="check"/>  
   <property name="website" value="website"/>
   
-  <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties"/>
-
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
@@ -79,7 +76,7 @@
       </fileset>
     </copy>
   </target>
-  
+
   <target name="format" depends="build,test-build" description="Java source code formatting">
     <jalopy fileformat="dos" encoding="utf-8" history="file" historymethod="adler32" convention="conf/jalopy.xml">
       <fileset dir="${src.java}">
@@ -92,11 +89,12 @@
   </target>
 
   <target name="check" depends="build" description="Check source code convention">
+    <taskdef resource="checkstyletask.properties"/>
     <mkdir dir="${check}"/>
     <checkstyle config="conf/check-config.xml" failOnViolation="false">
       <formatter type="xml" toFile="${check}/check.xml"/>
       <fileset dir="${src.java}" includes="com/phenix/pct/*.java"/>
-      <fileset dir="${src.test}" includes="com/phenix/pct/*.java"/>
+      <!--<fileset dir="${src.test}" includes="com/phenix/pct/*.java"/>-->
     </checkstyle>
     <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
   </target>
@@ -197,21 +195,47 @@
     <delete dir="${dist}"/>
     <delete dir="${doc}"/>
     <delete dir="${check}"/>
+    <delete dir="sports2000"/>
   </target>
   
-  <target name="website" depends="javadoc" description="Generates files used for the pct.sf.net website">
+  <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}"/>
     <mkdir dir="${website}"/>
     <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html"/>
         <include name="*.css"/>
+        <include name="*.xsl"/>
       </fileset>
       <fileset dir=".">
         <include name="CHANGELOG"/>
         <include name="${doc}/**"/>
       </fileset>
     </copy>
+    <copy todir="${website}/sports2000">
+      <fileset dir="sports2000/doc">
+        <include name="**"/>
+      </fileset>
+    </copy>
   </target>
-  
+
+  <target name="sports2000doc" depends="pbuild">
+    <mkdir dir="sports2000"/>
+    <mkdir dir="sports2000/doc"/>
+    <mkdir dir="sports2000/doc/files"/>
+    <exec executable="${env.DLC}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${env.DLC}"/>
+      <arg value="procopy"/>
+      <arg path="${env.DLC}/sports2000"/>
+      <arg value="sports2000"/>
+    </exec>
+    <PCTSchemaDoc file="sports2000/sports2000.xml">
+      <propath path="build"/>
+      <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true"/>
+    </PCTSchemaDoc>
+    <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
+      <param name="outputdir" expression="doc"/>
+    </style>
+  </target>
+
 </project>
