@@ -1,6 +1,7 @@
 Version 0.6 (??)
 ==============================
  * Bug #995235 : compress command line is only run once
+ * Added codepage attribute to PCTCreateBase to create database with a specific codepage
 
 Version 0.5 (08/25/2004)
 ==============================

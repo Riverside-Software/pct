@@ -69,6 +69,7 @@ public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
     private String dbName = null;
+    private String codepage = null;
     private File destDir = null;
     private File structFile = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
@@ -162,6 +163,14 @@ public class PCTCreateBase extends PCT {
          return this.propath;
      }
 
+     /**
+      * Set the desired database codepage (copy from $DLC/prolang/codepage/emptyX)
+      * @param codepage Subdirectory name from prolang directory where to find the empty database 
+      */
+     public void setCodepage(String codepage) {
+         this.codepage = codepage;
+     }
+
     /**
      * Do the work
      * @throws BuildException Something went wrong
@@ -242,7 +251,13 @@ public class PCTCreateBase extends PCT {
      */
     private ExecTask initCmdLine() {
         ExecTask exec = (ExecTask) getProject().createTask("exec");
-        File srcDB = new File(this.getDlcHome(), "empty" + this.blockSize);
+        
+        File srcDir = this.getDlcHome();
+        if (this.codepage != null) {
+            srcDir = new File(srcDir, "prolang");
+            srcDir = new File(srcDir, this.codepage);
+        }
+        File srcDB = new File(srcDir, "empty" + this.blockSize);
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());

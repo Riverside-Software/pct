@@ -129,6 +129,14 @@ Creates Progress database.
 <td align="center">No</td>
 <td>False</td>
 </tr>
+<tr>
+<td>Codepage</td>
+<td>Copy empty database from a prolang subdirectory. So database use a specific
+	codepage instead of the undefined codepage</td>
+<td align="center">String</td>
+<td align="center">No</td>
+<td>No default value (undefined)</td>
+</tr>
 </table>
 <p>PCTCreateBase inherits attributes from <a href="PCT.html">PCT</a>.
 </p>
@@ -164,11 +172,11 @@ then loads schema from file ./MySchema.df
   d "Schema Area":6,64 test.d1 f 1024
   d "Schema Area":6,64 test.d2 v 2048
 &lt;/echo&gt;
-&lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}" structFile="test.st"/&gt;
+&lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}" structFile="test.st" codepage="utf"/&gt;
 </pre>
 <p>
   Creates a database structure from test.st file (<code>_proutil prostrct create
-  test test.st</code>) and then <code>procopy empty8 test</code>.
+  test test.st</code>) and then <code>procopy $DLC/prolang/utf/empty8 test</code>.
 </p>
 </div>
 
