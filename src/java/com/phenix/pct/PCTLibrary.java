@@ -57,24 +57,44 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.FileSet;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.util.Enumeration;
 import java.util.Vector;
 
-
 /**
  * Class for managing Progress library files
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  */
 public class PCTLibrary extends PCT {
+    private File tmpFile = null;
     private File destFile = null;
     private String encoding = null;
     private boolean noCompress = false;
     private Vector filesets = new Vector();
 
     /**
+     * Default constructor
+     *  
+     */
+    public PCTLibrary() {
+        super();
+
+        try {
+            tmpFile = File.createTempFile("PCTLib", ".txt");
+            tmpFile.deleteOnExit();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to create temp files");
+        }
+    }
+
+    /**
      * Adds a set of files to archive.
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -83,6 +103,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Library file name to create/update
+     * 
      * @param destFile File
      */
     public void setDestFile(File destFile) {
@@ -91,6 +112,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Codepage to use
+     * 
      * @param encoding String
      */
     public void setEncoding(String encoding) {
@@ -99,6 +121,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Compress library at the end of the process
+     * 
      * @param noCompress boolean
      */
     public void setNoCompress(boolean noCompress) {
@@ -107,6 +130,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
@@ -124,16 +148,8 @@ public class PCTLibrary extends PCT {
         // Parses filesets
         for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
             FileSet fs = (FileSet) e.nextElement();
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
-                exec = addFileTask(dsfiles[i], fs.getDir(this.getProject()));
-                exec.execute();
-            }
-        }
-
-        if (!this.noCompress) {
-            exec = compressTask();
+            exec = addFilesTask(fs.getDir(this.getProject()));
+            writeFileList(fs);
             exec.execute();
         }
     }
@@ -159,35 +175,45 @@ public class PCTLibrary extends PCT {
         return exec;
     }
 
-    private ExecTask addFileTask(String f, File dir) {
+    private ExecTask addFilesTask(File dir) {
         ExecTask exec = (ExecTask) getProject().createTask("exec");
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
-
-        exec.setExecutable(getExecPath("prolib").toString());
         exec.setDir(dir);
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
-        exec.createArg().setValue("-replace");
-        exec.createArg().setValue(f);
-        exec.createArg().setValue("-nowarn");
-
-        return exec;
-    }
-
-    private ExecTask compressTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
-        exec.createArg().setValue("-compress");
-        exec.createArg().setValue("-nowarn");
+        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue("-pf");
+        exec.createArg().setValue(this.tmpFile.getAbsolutePath().toString());
 
         return exec;
     }
+
+    /**
+     * 
+     * @throws BuildException
+     */
+    private void writeFileList(FileSet fs) throws BuildException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
+            bw.write("-replace ");
+
+            // And get files from fileset
+            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+
+            for (int i = 0; i < dsfiles.length; i++) {
+                bw.write(dsfiles[i] + " ");
+            }
+            if (!this.noCompress)
+                bw.write("-compress ");
+            bw.write("-nowarn ");
+
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to write file list to compile");
+        }
+    }
+
 }
