@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="fr" />
-<title>PCT documentation - PCTLibrary task</title>
+<title>PCT documentation - PCTProxygen task</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -61,11 +61,11 @@
 </div>
 
 <div class="Text">
-<h1>PCTLibrary task</h1>
+<h1>PCTProxygen task</h1>
 
 <h2>Description</h2>
 <p>
-Creates and adds/replaces files in Progress library files
+Handles PXG files
 </p>
 
 <h2>Parameters</h2>
@@ -78,25 +78,25 @@ Creates and adds/replaces files in Progress library files
 <th>Default value</th>
 </tr>
 <tr>
-<td>DestFile</td>
-<td>R-code library to create</td>
+<td>srcFile</td>
+<td>PXG file to use</td>
 <td align="center">File</td>
 <td align="center">Required</td>
-<td align="center">No default value</td>
+<td>No default value</td>
 </tr>
 <tr>
-<td>Encoding</td>
-<td>Character encoding to use</td>
-<td align="center">String</td>
-<td align="center">Optional</td>
-<td align="center">ISO8859-1</td>
-</tr>
-<tr>
-<td>NoCompress</td>
-<td>Libraries are by default compressed at the end of the process. Say No to skip compression</td>
+<td>keepFiles</td>
+<td>Leave proxy files</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
-<td align="center">False</td>
+<td>No</td>
+</tr>
+<tr>
+<td>workingDirectory</td>
+<td>Working directory</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>Current directory</td>
 </tr>
 </table>
 
