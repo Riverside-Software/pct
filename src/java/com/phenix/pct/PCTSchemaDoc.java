@@ -67,7 +67,7 @@ public class PCTSchemaDoc extends PCTRun {
 
     /**
      * Output directory
-     * @param destDir File
+     * @param file File
      */
     public void setFile(File file) {
         this.destFile = file;
