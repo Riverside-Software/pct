@@ -8,7 +8,7 @@
   
   <!-- Should throw BuildException : no procedure defined -->
   <target name="test1">
-    <PCTRun/>
+    <PCTRun dlcHome="${env.DLC}"/>
   </target>
    
    <!-- Simple case : displays 'Hello world' and exits properly -->
@@ -98,4 +98,11 @@
     <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60"/>
   </target>
   
+  <!-- RETURN statement but no return value : considered OK -->
+  <target name="test11">
+    <echo file="sandbox/test.p">
+      RETURN.
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+  </target>
 </project>
