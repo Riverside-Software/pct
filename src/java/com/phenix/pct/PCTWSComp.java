@@ -68,7 +68,7 @@ import java.util.Vector;
 /**
  * Converts Webspeed HTML files to .w or .i
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTWSComp extends PCTRun {
     private Vector filesets = new Vector();

@@ -64,7 +64,7 @@ import java.util.Vector;
 /**
  * Object to add a database connection to a PCTRun task
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTConnection {
     private String dbName = null;

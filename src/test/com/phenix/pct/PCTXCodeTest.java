@@ -49,7 +49,7 @@ import java.io.File;
 
 /**
  * Class for testing PCTXCode task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTXCodeTest extends BuildFileTest {
     public PCTXCodeTest(String name) {

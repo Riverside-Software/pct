@@ -64,7 +64,7 @@ import java.util.Vector;
 
 /**
  * Class for testing PCTLibrary task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTLibraryTest extends BuildFileTest {
     public PCTLibraryTest(String name) {

@@ -71,7 +71,7 @@ import java.util.Vector;
 /**
  * Class for reading the content of a Progress Library file
  * Only basic actions for now : file list
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PLReader {
     private static final int MAGIC = 0xD707;

@@ -60,7 +60,7 @@ import java.io.File;
 
 /**
  * Dumps schema from database
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTDumpSchema extends PCTRun {
     private File destFile = null;
