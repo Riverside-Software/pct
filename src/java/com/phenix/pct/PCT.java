@@ -63,6 +63,8 @@ import java.io.File;
   * Base class for creating tasks involving Progress.
   * It does basic work on guessing where various bin/java/etc are located.
   * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+  * @todo dlcHome should get DLC environment variable content at startup and
+  * could be overridden with setDlcHome
   **/
 public abstract class PCT extends Task {
     private File dlcHome = null;
@@ -124,10 +126,10 @@ public abstract class PCT extends Task {
 
         this.dlcJava = dlcJava;
 
-        // Tries to guess where proxygen.jar is located
+        // Tries to guess where proxygen.zip is located
         if (this.proxygenJar == null) {
             try {
-                setProxygenJar(new File(dlcJava, "proxygen.jar"));
+                setProxygenJar(new File(dlcJava, "proxygen.zip"));
             } catch (BuildException be) {
             }
         }
@@ -188,6 +190,15 @@ public abstract class PCT extends Task {
         return this.proxygenJar;
     }
 
+    /**
+     * Returns Progress executables directory
+     * @return File
+     * @since 0.3b
+     */
+     protected final File getDlcBin() {
+	     return this.dlcBin;
+     }
+     
     /**
      * Returns the needed Jar/Zip file or directory to run various Progress/Java tasks
      * @return File
