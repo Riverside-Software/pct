@@ -76,7 +76,9 @@ public class PCTLibrary extends PCT {
     private File destFile = null;
     private String encoding = null;
     private boolean noCompress = false;
+    private FileSet fileset = new FileSet();
     private Vector filesets = new Vector();
+    private File baseDir = null;
 
     /**
      * Default constructor
@@ -129,6 +131,67 @@ public class PCTLibrary extends PCT {
     }
 
     /**
+     * Directory from which to archive files; optional.
+     * 
+     * @param baseDir File
+     */
+    public void setBasedir(File baseDir) {
+        this.baseDir = baseDir;
+        this.fileset.setDir(baseDir);
+    }
+
+    /**
+     * Sets the set of include patterns. Patterns may be separated by a comma
+     * or a space.
+     *
+     * @param includes the string containing the include patterns
+     */
+    public void setIncludes(String includes) {
+        fileset.setIncludes(includes);
+    }
+
+    /**
+     * Sets the set of exclude patterns. Patterns may be separated by a comma
+     * or a space.
+     *
+     * @param excludes the string containing the exclude patterns
+     */
+    public void setExcludes(String excludes) {
+        fileset.setExcludes(excludes);
+    }
+
+    /**
+     * Sets the name of the file containing the includes patterns.
+     *
+     * @param includesfile A string containing the filename to fetch
+     * the include patterns from.
+     */
+    public void setIncludesfile(File includesfile) {
+        fileset.setIncludesfile(includesfile);
+    }
+
+    /**
+     * Sets the name of the file containing the includes patterns.
+     *
+     * @param excludesfile A string containing the filename to fetch
+     * the include patterns from.
+     */
+    public void setExcludesfile(File excludesfile) {
+        fileset.setExcludesfile(excludesfile);
+    }
+
+    /**
+     * Sets whether default exclusions should be used or not.
+     *
+     * @param useDefaultExcludes "true"|"on"|"yes" when default exclusions
+     *                           should be used, "false"|"off"|"no" when they
+     *                           shouldn't be used.
+     */
+    public void setDefaultexcludes(boolean useDefaultExcludes) {
+        fileset.setDefaultexcludes(useDefaultExcludes);
+    }
+
+    /**
      * Do the work
      * 
      * @throws BuildException Something went wrong
@@ -141,11 +204,24 @@ public class PCTLibrary extends PCT {
             this.cleanup();
             throw new BuildException("Library name not defined");
         }
+        
+        // There must be at least one fileset
+        if ((this.baseDir == null) && (this.filesets.size() == 0)) {
+            throw new BuildException("basedir attribute must be set, "
+                    + "or at least "
+                    + "one fileset must be given!");
+        }
 
         try {
             // Creates new library
             exec = createArchiveTask();
             exec.execute();
+            // Parse fileset from task
+            if (this.baseDir != null) {
+                exec = addFilesTask(this.baseDir);
+                writeFileList(this.fileset);
+                exec.execute();
+            }
             // Parses filesets
             for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
                 FileSet fs = (FileSet) e.nextElement();
@@ -228,6 +304,11 @@ public class PCTLibrary extends PCT {
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
             for (int i = 0; i < dsfiles.length; i++) {
+                File resourceAsFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                if (resourceAsFile.equals(this.destFile)) {
+                    bw.close();
+                    throw new BuildException("A .pl file cannot include itself");
+                }
                 bw.write(dsfiles[i] + " ");
             }
             bw.write("-nowarn ");
