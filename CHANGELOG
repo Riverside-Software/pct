@@ -1,9 +1,11 @@
 Version 0.7 (??/??/????)
 ==============================
  * Added screenshots to website
- * Added PCTGlobalDefine : define preprocessor directives in PCTRun (bugs remaining!!!)
  * Bug #1081206 : added messages.jar to classpath in proxygen task (for 9.1d and upper)
  * Bug #1081209 : in proxygen task, java process is forked
+ * Bug #1102998 : corrected bug in PCTSchemaDoc with codepage and collation
+ * Added runList attribute in PCTCompile task, which checks for RUN statements
+ * Bug #1103002 : added case-sensitive attribute in ttTimeStamps which records included files
 
 Version 0.6 (11/04/2004)
 ==============================
