@@ -241,11 +241,6 @@ public class PCTCompile extends PCTRun {
     public void execute() throws BuildException {
         File xRefDir = null; // Where to store XREF files
 
-        if (!this.debugPCT) {
-            fsList.deleteOnExit();
-            params.deleteOnExit();
-        }
-
         if (this.destDir == null) {
             throw new BuildException("destDir attribute not defined");
         }
@@ -278,11 +273,30 @@ public class PCTCompile extends PCTRun {
 
         log("PCTCompile - Progress Code Compiler", Project.MSG_INFO);
 
-        writeFileList();
-        writeParams();
+        try {
+            writeFileList();
+            writeParams();
+            this.setProcedure("pct/pctCompile.p");
+            this.setParameter(params.getAbsolutePath());
+            super.execute();
+            if (!this.fsList.delete()) {
+                log("Failed to delete " + this.fsList.getAbsolutePath());
+            }
 
-        this.setProcedure("pct/pctCompile.p");
-        this.setParameter(params.getAbsolutePath());
-        super.execute();
+            if (!this.params.delete()) {
+                log("Failed to delete " + this.params.getAbsolutePath());
+            }
+
+        } catch (BuildException be) {
+            if (!this.fsList.delete()) {
+                log("Failed to delete " + this.fsList.getAbsolutePath());
+            }
+
+            if (!this.params.delete()) {
+                log("Failed to delete " + this.params.getAbsolutePath());
+            }
+
+            throw be;
+        }
     }
 }
