@@ -1,3 +1,13 @@
+Changes since 0.2 (09/29/2003)
+==============================
+ * Documentation updated
+ * Added checkstyle task in build.xml (internal)
+ * Major rewrite (conforming to ANT standards)
+ * Added pctProxygen task
+ * Added pctRun task
+ * Resource properties file added in JAR
+ * Progress source files moved to pct subdir
+
 Changes since 0.1 (07/15/2003)
 ==============================
 
