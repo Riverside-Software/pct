@@ -2,10 +2,14 @@ body {
     background-color: #555555;
     color: black;
 }
-
 pre {
     background-color: #77aaee;
     padding: 5px;
+}
+
+pre#deprecated {
+    background-color: #99ccff;
+	text-decoration: line-through;
 }
 div {
     text-align: left;
