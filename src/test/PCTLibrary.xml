@@ -11,15 +11,36 @@
   </target>
    
   <target name="test2">
-    <PCTLibrary destFile="test.pl" dlcHome="${env.DLC}"/>
+    <PCTLibrary destFile="sandbox/test.pl" dlcHome="${env.DLC}"/>
   </target>
   
   <target name="test3">
-    <PCTLibrary destFile="test.pl" dlcHome="${env.DLC}">
+  	<echo file="sandbox/test">
+  		Empty file
+    </echo>
+    <PCTLibrary destFile="sandbox/test.pl" dlcHome="${env.DLC}">
       <fileset dir=".">
-        <include name="PCTLibrary.xml"/>
+        <include name="sandbox/test"/>
       </fileset>
     </PCTLibrary>
   </target>
 
+  <target name="test4pre">
+  	<echo file="sandbox/test">
+  		Empty file
+    </echo>
+    <PCTLibrary destFile="sandbox/test.pl" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test"/>
+      </fileset>
+    </PCTLibrary>
+  </target>
+  <target name="test4">
+    <touch file="sandbox/test"/>
+    <PCTLibrary destFile="sandbox/test.pl" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test"/>
+      </fileset>
+    </PCTLibrary>
+  </target>
 </project>
