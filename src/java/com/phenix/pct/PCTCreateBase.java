@@ -106,7 +106,7 @@ public class PCTCreateBase extends PCT {
      * @param noSchema "true|false|on|off|yes|no"
      */
     public void setNoSchema(boolean noSchema) {
-        this.log("noSchema is deprecated and not used anymore - Use structFile directly");
+        this.log("noSchema is deprecated and not used anymore - Use structFile instead");
     }
 
     /**
