@@ -206,6 +206,7 @@ REPEAT:
         END.
     END.
 END.
+OS-DELETE VALUE(SESSION:TEMP-DIRECTORY + '/PCTXREF':U).
 INPUT STREAM sFileset CLOSE.
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN
