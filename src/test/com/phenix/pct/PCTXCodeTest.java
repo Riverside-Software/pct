@@ -112,4 +112,16 @@ public class PCTXCodeTest extends BuildFileTest {
 
         //assertTrue(size != f.length());
     }
+
+    public void test6() {
+    	executeTarget("test6");
+
+    	File f = new File("src/test/build/test.p");
+    	File f2 = new File("src/test/build/test2.p");
+
+    	assertTrue(f.exists());
+    	assertTrue(f2.exists());
+    	// Rough test, but it should work
+    	assertTrue(f.length() != f2.length());
+    }
 }

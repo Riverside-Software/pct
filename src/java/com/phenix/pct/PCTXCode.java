@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
@@ -80,6 +81,13 @@ public class PCTXCode extends PCT {
     private boolean overwrite = false;
     private boolean lowercase = false;
 
+    // Internal use
+    private ExecTask exec = null;
+    private Commandline.Argument arg = null;
+
+    /**
+     * Default constructor
+     */
     public PCTXCode() {
         super();
 
@@ -120,7 +128,7 @@ public class PCTXCode extends PCT {
     /**
      * Convert filenames to lowercase (-l attribute)
      *
-     * @param lowercase
+     * @param lowercase boolean
      */
     public void setLowercase(boolean lowercase) {
         this.lowercase = lowercase;
@@ -166,12 +174,10 @@ public class PCTXCode extends PCT {
 
     /**
      * Do the work
-     * 
+     *
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        ExecTask exec = null;
-
         if (this.destDir == null) {
             throw new BuildException("destDir not defined");
         }
@@ -179,10 +185,12 @@ public class PCTXCode extends PCT {
         log("PCTXCode - Progress Encryption Tool", Project.MSG_INFO);
 
         this.createDirectories();
+        this.createExecTask();
 
         for (Iterator e = filesets.iterator(); e.hasNext();) {
             // Parse filesets
             FileSet fs = (FileSet) e.next();
+            exec.setDir(fs.getDir(this.getProject()));
 
             // And get files from fileset
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
@@ -194,8 +202,7 @@ public class PCTXCode extends PCT {
                 if (!trgFile.exists() || this.overwrite ||
                       (srcFile.lastModified() > trgFile.lastModified())) {
                     log("Encryption of " + trgFile.toString(), Project.MSG_VERBOSE);
-
-                    exec = xcodeTask(fs.getDir(this.getProject()), dsfiles[i]);
+                    arg.setValue(dsfiles[i]);
                     exec.execute();
                 }
             }
@@ -204,13 +211,13 @@ public class PCTXCode extends PCT {
         this.tmpLog.deleteOnExit();
     }
 
-    // TODO : should create only one exec task to reduce overhead
-    private ExecTask xcodeTask(File dir, String fn) {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
+    private void createExecTask() {
+        exec = (ExecTask) getProject().createTask("exec");
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+        exec.setOutput(tmpLog);
         exec.setExecutable(this.getExecPath("xcode").toString());
-
-        exec.setDir(dir);
 
         if (this.key != null) {
             exec.createArg().setValue("-k");
@@ -224,13 +231,6 @@ public class PCTXCode extends PCT {
             exec.createArg().setValue("-l");
         }
 
-        exec.createArg().setValue(fn.toString());
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
-
-        exec.setOutput(tmpLog);
-        return exec;
+        arg = exec.createArg();
     }
 }
