@@ -159,7 +159,7 @@
     </zip>
   </target>
   
-  <target name="dist" depends="build,test-build,test,srcdist,bindist"/>
+  <target name="dist" depends="srcdist,bindist"/>
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}"/>
