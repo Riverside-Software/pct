@@ -83,9 +83,11 @@ public class PCTCompile extends PCTRun {
     private boolean failOnError = false;
     private File destDir = null;
     private File xRefDir = null;
+    private Hashtable _dirs = new Hashtable();
 
     /**
      * Reduce r-code size ?
+     * MIN-SIZE option of the COMPILE statement
      * @param minSize "true|false|on|off|yes|no"
      */
     public void setMinSize(boolean minSize) {
@@ -118,7 +120,8 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Put MD5 in r-code
+     * Put MD5 in r-code ?
+     * GENERATE-MD5 option of the COMPILE statement
      * @param md5 "true|false|on|off|yes|no"
      */
     public void setMD5(boolean md5) {
@@ -134,107 +137,103 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-    * Adds a set of files to archive.
-    * @param set FileSet
-    */
+     * Adds a set of files to archive.
+     * @param set FileSet
+     */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
     }
 
-    private Hashtable getFileList(File inc) throws BuildException {
-        Hashtable arg = new Hashtable();
-        boolean compile = false;
+    /**
+     * Checks whether files from a fileset need to be compiled
+     * @param inc Directory where XREF and include files are located
+     * @return Vector of PCTFile
+     * @throws BuildException
+     */
+    private Vector getFileList(File inc) throws BuildException {
+        Vector v = new Vector();
+        int j = 0;
 
         for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
+            // Parse filesets
             FileSet fs = (FileSet) e.nextElement();
-            log("Nouveau fileset : " + fs.getDir(this.getProject()), Project.MSG_DEBUG);
 
-            //File fsRoot = fs.getDir(this.getProject());
-            //log("Racine du fileset : " + fsRoot.getAbsolutePath());
+            // Creates a new entry in hashtable
+            _dirs.put(fs.getDir(this.getProject()).getAbsolutePath(), new Integer(++j));
+
+            // And get files from fileset
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
             for (int i = 0; i < dsfiles.length; i++) {
-                String pFileName = dsfiles[i];
-                log("Fichier dans FS : " + dsfiles[i], Project.MSG_DEBUG);
-
-                File pFile = new File(fs.getDir(this.getProject()), pFileName);
-                log("File : " + pFile.getAbsolutePath(), Project.MSG_DEBUG);
+                PCTFile pctf = new PCTFile(fs.getDir(this.getProject()), dsfiles[i]);
 
                 if (this.noXref) {
-                    arg.put(pFileName, pFile);
+                    // Always recompile
+                    v.add(pctf);
                 } else {
-                    String rFileName = pFileName.substring(0, pFileName.lastIndexOf(".")) + ".r";
-                    log("RCode correspondant : " + rFileName, Project.MSG_DEBUG);
-
-                    File rFile = new File(this.destDir, rFileName);
-                    log("Fichier rcode : " + rFile.getAbsolutePath(), Project.MSG_DEBUG);
+                    // Guess r-code file name
+                    File rFile = new File(this.destDir, pctf.baseDirExt + pctf.rCode); // File handle
+                    File pFile = new File(pctf.baseDir, pctf.baseDirExt + pctf.fileName);
 
                     if (rFile.exists()) {
-                        log("Fichier .r trouvé", Project.MSG_DEBUG);
-                        compile = false;
-
                         if (pFile.lastModified() > rFile.lastModified()) {
-                            log(".P modifié après .r on ajoute");
-                            arg.put(pFileName, pFile);
-
-                            // arg.addElement(pCode);
+                            // Source code is more recent than R-code
+                            v.add(pctf);
                         } else {
+                            // Must check if included files are more recent
                             BufferedReader br = null;
                             String incFile = null;
 
                             try {
-                                compile = false;
-                                br = new BufferedReader(new FileReader(new File(inc, pFileName)));
+                                // Opens a reader to includes file
+                                br = new BufferedReader(new FileReader(new File(inc,
+                                                                                pctf.baseDirExt +
+                                                                                pctf.fileName)));
+
+                                boolean compile = false;
 
                                 while (((incFile = br.readLine()) != null) && !(compile)) {
-                                    File shit = new File(incFile);
+                                    File f = new File(incFile);
 
-                                    if (shit.lastModified() > rFile.lastModified()) {
+                                    if (f.lastModified() > rFile.lastModified()) {
+                                        v.add(pctf);
                                         compile = true;
-                                        arg.put(pFileName, pFile);
-
-                                        //                                    arg.addElement(pCode);
                                     }
                                 }
 
                                 br.close();
                             } catch (FileNotFoundException fnfe) {
-                                arg.put(pFileName, pFile);
-
-                                //                            arg.addElement(pCode);
+                                // Includes file not found => compile source code
+                                v.add(pctf);
                             } catch (IOException ioe) {
-                                arg.put(pFileName, pFile);
-
-                                //                            arg.addElement(pCode);
+                                // Error occured => compile source code
+                                v.add(pctf);
                             }
                         }
                     } else {
-                        log("Fichier .r pas trouvé - Ajout de " + pFile.getAbsolutePath(),
-                            Project.MSG_DEBUG);
-                        arg.put(pFileName, pFile);
-
-                        //                    arg.addElement(pCode);
+                        // R-code file doesn't exist => compile it
+                        v.add(pctf);
                     }
                 }
             }
-
-            // appendFiles(files, fs.getDirectoryScanner(this.getProject()));
         }
 
-        return arg;
+        return v;
     }
 
-    private Hashtable getDirectoryList(Hashtable files)
-                                throws BuildException {
+    /**
+     * Checks if directories need to be created
+     * @param v File list to compile
+     * @return Hashtable of directories to be created
+     * @throws BuildException Something went wrong
+     */
+    private Hashtable getDirectoryList(Vector v) throws BuildException {
         Hashtable dirs = new Hashtable();
 
-        for (Enumeration e = files.keys(); e.hasMoreElements();) {
-            File f = new File((String) e.nextElement());
-            String s = f.getParent();
-
-            if (s != null) {
-                dirs.put(s, s);
-            }
+        for (Enumeration e = v.elements(); e.hasMoreElements();) {
+            // Parse filesets
+            PCTFile pctf = (PCTFile) e.nextElement();
+            dirs.put(pctf.baseDirExt, pctf.baseDirExt);
         }
 
         return dirs;
@@ -267,8 +266,8 @@ public class PCTCompile extends PCTRun {
         File tmpProc = null; // Compile procedure
         File xRefDir = null; // Where to store XREF files
         File includesDir = null; // Where to store INCLUDES files
-        Hashtable compFiles = null; // File list to compile
 
+        //int i = 0;
         if (this.destDir == null) {
             throw new BuildException("destDir attribute not defined");
         }
@@ -289,15 +288,7 @@ public class PCTCompile extends PCTRun {
             }
         }
 
-        compFiles = getFileList(includesDir);
-
-        //compFiles = files;
-
-        /*if (this.noXref) {
-            compFiles = files;
-        } else {
-            compFiles = getFileListToCompile(files);
-        }*/
+        Vector compFiles = getFileList(includesDir);
         Hashtable dirs = getDirectoryList(compFiles);
         createDirectories(this.destDir, dirs);
 
@@ -307,12 +298,12 @@ public class PCTCompile extends PCTRun {
         }
 
         // If there are no files to compile, just return...
-        /*if (compFiles.size() == 0) {
+        if (compFiles.size() == 0) {
             return;
-        } else {*/
-        log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
+        } else {
+            log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
+        }
 
-        /*}*/
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("pct_compile", ".p");
@@ -325,34 +316,48 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
-            bw.write("RUN pct/pctCompileMsg.p PERSISTENT SET h.");
+            bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
+                     this.destDir.getAbsolutePath() + File.separatorChar + "\".");
+            bw.newLine();
             bw.newLine();
 
-            for (Enumeration e = compFiles.keys(); e.hasMoreElements();) {
-                File xRefFile = null;
-                File includesFile = null;
-                File outputDir = null;
+            for (Enumeration e = _dirs.keys(); e.hasMoreElements();) {
+                String s = (String) e.nextElement();
+                Integer i = (Integer) _dirs.get(s);
+                bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s +
+                         File.separatorChar + "\".");
+                bw.newLine();
+            }
 
-                String fileName = (String) e.nextElement();
-                File s = (File) compFiles.get(fileName);
-                String parent = new File(fileName).getParent();
+            bw.newLine();
 
-                if (parent == null) {
-                    outputDir = destDir;
-                } else {
-                    outputDir = new File(destDir, parent);
-                }
+            if (!this.noXref) {
+                bw.write("DEFINE VARIABLE xRefDir AS CHARACTER NO-UNDO INITIAL \"" +
+                         xRefDir.getAbsolutePath() + File.separatorChar + "\".");
+                bw.newLine();
+                bw.write("DEFINE VARIABLE includesDir AS CHARACTER NO-UNDO INITIAL \"" +
+                         includesDir.getAbsolutePath() + File.separatorChar + "\".");
+                bw.newLine();
+            }
 
-                bw.write("COMPILE VALUE (\"" + s.getAbsolutePath() + "\") SAVE INTO VALUE (\"" +
-                         outputDir + "\")");
+            bw.newLine();
+
+            bw.write("RUN pct/pctCompileMsg.p PERSISTENT SET h.");
+            bw.newLine();
+            bw.newLine();
+
+            for (Enumeration e = compFiles.elements(); e.hasMoreElements();) {
+                PCTFile pctf = (PCTFile) e.nextElement();
+                Integer i = (Integer) _dirs.get(pctf.baseDir.getAbsolutePath());
+                bw.write("COMPILE VALUE (dir" + i + " + \"" + pctf.baseDirExt + pctf.fileName +
+                         "\") SAVE INTO VALUE (destDir + \"" + pctf.baseDirExt + "\")");
 
                 bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
                 bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
 
                 if (!this.noXref) {
-                    xRefFile = new File(xRefDir, fileName);
-                    includesFile = new File(includesDir, fileName);
-                    bw.write(" XREF VALUE (\"" + xRefFile.getAbsolutePath() + "\") APPEND=FALSE");
+                    bw.write(" XREF VALUE (xRefDir + \"" + pctf.baseDirExt + pctf.fileName +
+                             "\") APPEND=FALSE");
                 }
 
                 bw.write(".");
@@ -381,8 +386,9 @@ public class PCTCompile extends PCTRun {
                 bw.newLine();
 
                 if (!this.noXref) {
-                    bw.write("  RUN importXref IN h (INPUT '" + xRefFile.getAbsolutePath() +
-                             "', INPUT '" + includesFile.getAbsolutePath() + "').");
+                    bw.write("  RUN importXref IN h (INPUT xRefDir + '" + pctf.baseDirExt +
+                             pctf.fileName + "', INPUT includesDir + '" + pctf.baseDirExt +
+                             pctf.fileName + "').");
                     bw.newLine();
                 }
 
@@ -404,5 +410,35 @@ public class PCTCompile extends PCTRun {
 
         this.setProcedure(tmpProc.getAbsolutePath());
         this.run();
+    }
+
+    private class PCTFile {
+        public File baseDir = null;
+        public String baseDirExt = null;
+        public String fileName = null;
+        public String rCode = null;
+
+        public PCTFile(File baseDir, String fileName) {
+            this.baseDir = baseDir;
+
+            String s = fileName.replace('\\', '/');
+            int i = s.lastIndexOf('/');
+
+            if (i == -1) {
+                this.fileName = fileName;
+                this.baseDirExt = "" + File.separatorChar;
+            } else {
+                this.baseDirExt = s.substring(0, i) + File.separatorChar;
+                this.fileName = s.substring(i + 1); // Exception ???
+            }
+
+            i = this.fileName.lastIndexOf('.');
+
+            if (i == -1) {
+                this.rCode = this.fileName + ".r";
+            } else {
+                this.rCode = this.fileName.substring(0, i) + ".r";
+            }
+        }
     }
 }
