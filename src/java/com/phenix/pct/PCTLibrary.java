@@ -154,6 +154,11 @@ public class PCTLibrary extends PCT {
                 exec.execute();
             }
             this.cleanup();
+            // Compress library if noCompress set to false
+            if (!this.noCompress) {
+                exec = compressTask();
+                exec.execute();
+            }
         } catch (BuildException be) {
             this.cleanup();
             throw be;
@@ -197,6 +202,19 @@ public class PCTLibrary extends PCT {
         return exec;
     }
 
+    private ExecTask compressTask() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
+        
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue("-compress");
+
+        return exec;
+    }
     /**
      * 
      * @throws BuildException
@@ -212,8 +230,6 @@ public class PCTLibrary extends PCT {
             for (int i = 0; i < dsfiles.length; i++) {
                 bw.write(dsfiles[i] + " ");
             }
-            if (!this.noCompress)
-                bw.write("-compress ");
             bw.write("-nowarn ");
 
             bw.close();
