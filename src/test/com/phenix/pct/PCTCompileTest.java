@@ -86,6 +86,8 @@ public class PCTCompileTest extends BuildFileTest {
         del.execute();
         del.setDir(new File("sandbox"));
         del.execute();
+        /*del.setDir(new File("xcode"));
+        del.execute();*/
     }
 
     public void test1() {
@@ -235,5 +237,22 @@ public class PCTCompileTest extends BuildFileTest {
         long mod = f.lastModified();
         executeTarget("test15bis");
         assertTrue(mod == f.lastModified());
+    }
+    
+    public void test16() {
+    	executeTarget("test16init");
+    	executeTarget("test16");
+        File f = new File("build/sandbox/temp.r");
+        assertTrue(f.exists());
+        File f2 = new File("build/xcode/temp.r");
+        assertTrue(f2.exists());
+    }
+    
+    public void test17() {
+    	executeTarget("test17init");
+    	expectBuildException("test17-part1", "Should fail - No key specified");
+    	executeTarget("test17-part2");
+    	File f = new File("build/xcode/temp.r");
+    	assertTrue(f.exists());
     }
 }
