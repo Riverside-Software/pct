@@ -88,6 +88,7 @@ public class PCTRun extends PCT {
     private int stackSize = 0;
     protected Vector dbConnList = null;
     protected Path propath = null;
+    protected ExecTask exec = null;
     private boolean compileUnderscore = false;
 
     /**
@@ -255,14 +256,21 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Prepare the work
+     * @throws BuildException
+     */
+    protected void prepare() throws BuildException {
+        exec = launchTask();
+    }
+
+    /**
      * Do the work
      * @throws BuildException Something went wrong
      */
     public void run() throws BuildException {
-        ExecTask exec = null;
-        exec = launchTask();
-
+        this.prepare();
         exec.execute();
+        exec = null;
 
         // Now read status file
         try {
@@ -291,7 +299,6 @@ public class PCTRun extends PCT {
 
         exec.setExecutable(a.toString());
 
-        //log("PCTRun exec " + a.toString());
         // Database connections
         if (dbConnList != null) {
             for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
@@ -310,7 +317,6 @@ public class PCTRun extends PCT {
         exec.createArg().setValue("-p");
         exec.createArg().setValue(f.getAbsolutePath());
 
-        //log("PCTRUN -p " + f.getAbsolutePath());
         // Max length of a line
         if (this.inputChars != 0) {
             exec.createArg().setValue("-inp");
@@ -359,8 +365,6 @@ public class PCTRun extends PCT {
         if (this.parameter != null) {
             exec.createArg().setValue("-param");
             exec.createArg().setValue(this.parameter);
-
-            //log("PCTRUN -param " + this.parameter);
         }
 
         return exec;
