@@ -42,6 +42,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
@@ -57,12 +58,19 @@ public class PCTCompileTest extends BuildFileTest {
 
     public void setUp() {
         configureProject("src/test/PCTCompile.xml");
-    }
+        // Creates a sandbox directory to play with
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(this.getProject());
+        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.execute();
+        }
 
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("src/test/build"));
+        del.execute();
+        del.setDir(new File("src/test/sandbox"));
         del.execute();
     }
 
@@ -77,14 +85,14 @@ public class PCTCompileTest extends BuildFileTest {
     public void test3() {
         executeTarget("test3");
 
-        File f = new File("src/test/build/progress/simple.r");
+        File f = new File("src/test/build/sandbox/test.r");
         assertTrue(f.exists());
     }
 
     public void test3bis() {
         expectBuildException("test3bis", "Compilation should fail");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         assertFalse(f.exists());
         executeTarget("test3post");
     }
@@ -94,7 +102,7 @@ public class PCTCompileTest extends BuildFileTest {
         long size2 = 0;
         executeTarget("test4");
 
-        File f = new File("src/test/build/progress/simple.r");
+        File f = new File("src/test/build/sandbox/test.r");
         assertTrue(f.exists());
         size1 = f.length();
         assertTrue(f.delete());
@@ -107,7 +115,7 @@ public class PCTCompileTest extends BuildFileTest {
     public void test5() {
         executeTarget("test5");
 
-        File f = new File("src/test/build/progress/wizz~~'~.r");
+        File f = new File("src/test/build/sandbox/wizz~~'~.r");
         assertTrue(f.exists());
     }
 
@@ -115,7 +123,7 @@ public class PCTCompileTest extends BuildFileTest {
         executeTarget("test6init");
         executeTarget("test6");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         long mod = f.lastModified();
         executeTarget("test6bis");
         assertTrue(mod == f.lastModified());
@@ -125,7 +133,7 @@ public class PCTCompileTest extends BuildFileTest {
         executeTarget("test7init");
         executeTarget("test7");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         long mod = f.lastModified();
         executeTarget("test7bis");
         assertTrue(mod < f.lastModified());
@@ -135,7 +143,7 @@ public class PCTCompileTest extends BuildFileTest {
         executeTarget("test8init");
         executeTarget("test8");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         long mod = f.lastModified();
         executeTarget("test8bis");
         assertTrue(mod < f.lastModified());
@@ -145,7 +153,7 @@ public class PCTCompileTest extends BuildFileTest {
         executeTarget("test9init");
         executeTarget("test9");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         long mod = f.lastModified();
         executeTarget("test9bis");
         assertTrue(mod < f.lastModified());
@@ -155,7 +163,7 @@ public class PCTCompileTest extends BuildFileTest {
         executeTarget("test10init");
         executeTarget("test10");
 
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         long mod = f.lastModified();
         executeTarget("test10bis");
         assertTrue(mod < f.lastModified());
@@ -166,12 +174,12 @@ public class PCTCompileTest extends BuildFileTest {
         expectBuildException("test11", "Second task should not be launched");
         executeTarget("test11post");
 
-        File f = new File("src/test/build/progress/temp2.r");
+        File f = new File("src/test/build/sandbox/temp2.r");
         assertFalse(f.exists());
     }
 
     public void test12() {
-        File f = new File("src/test/build/progress/temp.r");
+        File f = new File("src/test/build/sandbox/temp.r");
         executeTarget("test12init");
         expectBuildException("test12", "File with underscore");
         assertFalse(f.exists());
