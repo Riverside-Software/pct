@@ -185,4 +185,13 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test12-part3", "123,456");
         expectLog("test12-part4", "123.456");
     }
+    
+    /**
+     * Tests propath order
+     */
+    public void test13() {
+        executeTarget("test13-init");
+        expectLog("test13-part1", "This is dir1");
+        expectLog("test13-part2", "This is dir2");
+    }
 }
