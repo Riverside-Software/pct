@@ -259,7 +259,7 @@ public class PCTWSComp extends PCTRun {
     public void execute() throws BuildException {
         String sOptions = "";
 
-        if (!this.debugPCT) {
+        if (!this.getDebugPCT()) {
             this.tmpFiles.deleteOnExit();
             this.tmpProc.deleteOnExit();
         }
