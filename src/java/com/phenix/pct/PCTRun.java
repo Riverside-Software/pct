@@ -75,6 +75,7 @@ import java.util.Vector;
  */
 public class PCTRun extends PCT {
     private boolean graphMode = false;
+    protected boolean debug = false;
     private String procedure = null;
     private int inputChars = 0;
     private String cpStream = null;
@@ -126,6 +127,14 @@ public class PCTRun extends PCT {
         this.parameter = param;
     }
 
+    /**
+     * Turns on/off debugging mode (keeps Progress temp files on disk)
+     * @param debug boolean
+     */
+    public void setDebug(boolean debug) {
+    	this.debug = debug;
+    }
+    
     /**
      * If files beginning with an underscore should be compiled (-zn option)
      * See POSSE documentation for more details
@@ -373,7 +382,8 @@ public class PCTRun extends PCT {
     private File createInitProcedure() throws BuildException {
         try {
             File f = File.createTempFile("pct_init", ".p");
-            f.deleteOnExit();
+            if (this.debug)
+            	f.deleteOnExit();
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 
