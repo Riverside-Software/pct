@@ -67,7 +67,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -99,7 +98,6 @@ public class PCTRun extends PCT {
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
     protected Vector dbConnList = null;
-    protected Vector globalDef = null;
     protected Path propath = null;
 
     // Internal use
@@ -133,20 +131,6 @@ public class PCTRun extends PCT {
         }
 
         this.dbConnList.addElement(dbConn);
-    }
-
-    /**
-     * Adds a preprocessor directive
-     * 
-     * @param gd Instance of PCTGlobalDefine class
-     * @since PCT 0.7
-     */
-    public void addGlobalDefine(PCTGlobalDefine gd) {
-        if (this.globalDef == null) {
-            this.globalDef = new Vector();
-        }
-
-        this.globalDef.addElement(gd);
     }
 
     /**
@@ -579,17 +563,6 @@ public class PCTRun extends PCT {
                             bw.newLine();
                         }
                     }
-                }
-                bw.newLine();
-            }
-
-            // Defines constants (preprocessor directives)
-            if (this.globalDef != null) {
-                for (Iterator e = this.globalDef.iterator(); e.hasNext();) {
-                    // Parse filesets
-                    PCTGlobalDefine gd = (PCTGlobalDefine) e.next();
-                    bw.write(gd.getStatement());
-                    bw.newLine();
                 }
                 bw.newLine();
             }
