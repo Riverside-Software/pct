@@ -71,7 +71,7 @@ PROCEDURE TableSummary.
     CREATE BUFFER hTables FOR TABLE "_File".
     CREATE QUERY hQuery.
     hQuery:SET-BUFFERS (hTables).
-    hQuery:QUERY-PREPARE ('FOR EACH _File ' + pcWhere).
+    hQuery:QUERY-PREPARE ('FOR EACH _Fkle ' + pcWhere).
     hQuery:QUERY-OPEN.
     hQuery:GET-FIRST.
     ASSIGN hFileName = hTables:BUFFER-FIELD ('_File-Name')
@@ -230,7 +230,7 @@ PROCEDURE DetailedTable.
 	PUT UNFORMATTED "<h1>Fields list</h1>" SKIP.
         ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
                cQuery = cQuery + STRING (hBFile:RECID) + ' BY _Field._Field-Name'.
-        hField:QUERY-PREPARE (cQuery).
+	hField:QUERY-PREPARE (cQuery).
         hField:QUERY-OPEN.
         hField:GET-FIRST.
         REPEAT:
