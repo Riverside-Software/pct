@@ -106,6 +106,7 @@ public class PCTTest extends TestCase {
      * Tears down the fixture
      */
     public void tearDown() {
+        pct.cleanup();
         Delete del = new Delete();
         del.setProject(project);
         del.setDir(new File(DLC));
