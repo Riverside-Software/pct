@@ -130,21 +130,6 @@
   </target>
 
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
-    <tar destfile="pct-bin.tar.gz" compression="gzip">
-      <tarfileset prefix="pct" dir="." mode="644">
-        <include name="${dist}/PCT.jar"/>
-        <include name="CHANGELOG"/>
-        <include name="website/**"/>
-      </tarfileset>
-      <tarfileset prefix="pct" dir="build" mode="644">
-        <include name="tty/**/*.r"/>
-        <include name="tty/**/*.i"/>
-        <include name="tty/**/*.p"/>
-        <include name="gui/**/*.r"/>
-        <include name="gui/**/*.i"/>
-        <include name="gui/**/*.p"/>
-      </tarfileset>
-    </tar>
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="${dist}/PCT.jar"/>
@@ -163,15 +148,6 @@
   </target>
   
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <tar destfile="pct-src.tar.gz" compression="gzip">
-      <tarfileset prefix="pct" dir="." mode="644">
-        <include name="src/**"/>
-        <include name="build.xml"/>
-        <include name="conf/**"/>
-        <include name="doc/**"/>
-        <include name="CHANGELOG"/>
-      </tarfileset>
-    </tar>
     <zip destfile="pct-src.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**"/>
