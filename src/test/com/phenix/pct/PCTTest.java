@@ -79,6 +79,9 @@ public class PCTTest extends TestCase {
     private Project project;
     private PCTRun pct;
 
+    /**
+     * Sets up the fixture
+     */
     public void setUp() {
         project = new Project();
         project.init();
@@ -99,6 +102,9 @@ public class PCTTest extends TestCase {
         mkdir.execute();
     }
 
+    /**
+     * Tears down the fixture
+     */
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(project);
@@ -110,6 +116,9 @@ public class PCTTest extends TestCase {
         del.execute();
     }
 
+    /**
+     * Check if bin subdirectory is detected when dlcHome is set
+     */
     public void testDlcBinCheck() {
         File bin = new File(DLC_BIN);
 
@@ -117,6 +126,10 @@ public class PCTTest extends TestCase {
         assertEquals(bin, pct.getDlcBin());
     }
 
+    /**
+     * Check if setting dlcBin attribute overrides bin subdirectory
+     * found when setting dlcHome attribute
+     */
     public void testDlcBinOverride() {
         File bin = new File(DLC_BIN_FAKE);
 
@@ -125,6 +138,9 @@ public class PCTTest extends TestCase {
         assertEquals(bin, pct.getDlcBin());
     }
 
+    /**
+     * Check if proxygen.zip is detected when dlcHome is set
+     */
     public void testDlcProxygenZipCheck() {
         File pxg = new File(DLC_JAVA + DLC_PROXYGEN_ZIP);
         Touch touch = new Touch();
@@ -135,6 +151,9 @@ public class PCTTest extends TestCase {
         assertEquals(pxg, pct.getProxygenJar());
     }
 
+    /**
+     * Check if progress.zip is detected when dlcHome is set
+     */
     public void testDlcProgressZipCheck() {
         File pro = new File(DLC_JAVA + DLC_PROGRESS_ZIP);
         Touch touch = new Touch();
@@ -145,6 +164,9 @@ public class PCTTest extends TestCase {
         assertEquals(pro, pct.getProgressJar());
     }
 
+    /**
+     * Check if progress.jar is detected when dlcHome is set
+     */
     public void testDlcProgressJarCheck() {
         File pro = new File(DLC_JAVA + DLC_PROGRESS_JAR);
         Touch touch = new Touch();
@@ -155,6 +177,10 @@ public class PCTTest extends TestCase {
         assertEquals(pro, pct.getProgressJar());
     }
 
+    /**
+     * Check if setting proxygenJar attribute overrides proxygen.zip
+     * found when dlcHome is set
+     */
     public void testDlcProxygenOverride() {
         File pxg = new File(DLC_JAVA_FAKE + DLC_PROXYGEN_ZIP);
         Touch touch = new Touch();
@@ -166,6 +192,10 @@ public class PCTTest extends TestCase {
         assertEquals(pxg, pct.getProxygenJar());
     }
 
+    /**
+     * Check if setting progressJar attribute overrides progress.zip
+     * found when dlcHome is set
+     */
     public void testDlcProgressOverride() {
         File pro = new File(DLC_JAVA_FAKE + DLC_PROGRESS_ZIP);
         Touch touch = new Touch();
