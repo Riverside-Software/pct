@@ -126,4 +126,36 @@
     <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="," numdec="."/>
   </target>
   
+  <!-- Propath order -->
+  <target name="test13-init">
+  	<mkdir dir="sandbox/dir1"/>
+  	<mkdir dir="sandbox/dir2"/>
+  	<echo file="sandbox/dir1/test.i">
+		MESSAGE "This is dir1".
+  	</echo>
+  	<echo file="sandbox/dir2/test.i">
+  		MESSAGE "This is dir2".
+  	</echo>
+  	<echo file="sandbox/test.p">
+  		{test.i}.
+  		RETURN "0".
+  	</echo>
+  </target>
+  <target name="test13-part1">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <propath>
+      	<pathelement location="sandbox/dir1"/>
+      	<pathelement location="sandbox/dir2"/>
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test13-part2">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <propath>
+      	<pathelement location="sandbox/dir2"/>
+      	<pathelement location="sandbox/dir1"/>
+      </propath>
+    </PCTRun>
+  </target>
+  
 </project>
