@@ -46,34 +46,8 @@ Before you can use the PCT Ant tasks in your build scripts, you have to add them
 is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
 </p>
 <pre>
-&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
-  &lt;classpath&gt;
-    &lt;fileset dir="<i>&lt;INST_DIR&gt;</i>/lib"&gt;
-      &lt;include name="*.jar"/&gt;
-    &lt;/fileset&gt;
-  &lt;/classpath&gt;
-&lt;/taskdef&gt;
+&lt;taskdef resource="PCT.properties" classpath="<i>&lt;INST_DIR&gt;</i>/lib/PCT.jar"/&gt;
 </pre>
-<p>
-Another way would is to use a reference propath :
-</p>
-<pre>
-&lt;!-- PCT classpath --&gt;
-&lt;path id="PCT"&gt;
-  &lt;fileset dir="INST_DIR/lib"&gt;
-    &lt;include name="PCT.jar" /&gt;
-  &lt;/fileset&gt;
-&lt;/path&gt;
-
-&lt;taskdef name="PCTDumpSchema" classname="com.phenix.pct.PCTDumpSchema"&gt;
-  &lt;classpath refid="PCT"/&gt;
-&lt;/taskdef&gt;
-
-</pre>
-<p>
-It is also possible to add the provided library to you classpath, either by adding it to the /lib subdirectory
-of your ANT installation, or to add it with classical way of modifying the classpath.
-</p>
 <h1>Tasks overview</h1>
 <p>
 7 tasks are available in PCT, corresponding to 7 basic actions for Progress&reg;.
@@ -327,7 +301,7 @@ CTDumpSchema task</p>
 <td>cpInternal</td>
 <td>Internal code page (-cpinternal parameter)</td>
 <td>No</td>
-<td>undefined</td>
+<td>undefingd</td>
 </tr>
 <tr>
 <td>cpStream</td>
@@ -400,6 +374,18 @@ CTDumpSchema task</p>
 <td>Directory where to put compiled code</td>
 <td>Yes</td>
 <td>No default value</td>
+</tr>
+<tr>
+<td>FailOnError</td>
+<td>If task should end after a failed file compilation</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>XRefDir</td>
+<td>Where temporary files (xref and includes) should be created</td>
+<td>No</td>
+<td>DestDir attribute</td>
 </tr>
 </table>
 <h3>Parameters specified as nested elements</h3>
@@ -573,7 +559,7 @@ directives in the ANT script :</p>
 </div>
 
 <div class="LastUpdate">
-Last update : 29th September, 2003
+Last update : 2nd October, 2003
 </div>
 
 </div>
