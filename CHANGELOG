@@ -1,4 +1,16 @@
-Changes since 0.2 (09/29/2003)
+Version 0.3b (not yet released)
+==============================
+ * Added unit tests (still in development)
+ * Added website task & automatic deployment of website
+ * Updated download webpage
+ * Updated jar task (files were added twice)
+ * Added forceCompile attribute to PCTCompile
+ 
+Version 0.3a
+==============================
+ * Changed the way files are handled in the PCTCompile
+
+Version 0.3 (09/29/2003)
 ==============================
  * Documentation updated
  * Added checkstyle task in build.xml (internal)
@@ -8,7 +20,7 @@ Changes since 0.2 (09/29/2003)
  * Resource properties file added in JAR
  * Progress source files moved to pct subdir
 
-Changes since 0.1 (07/15/2003)
+Version 0.2 (07/15/2003)
 ==============================
 
 * Documentation included in tarball & minor changes
