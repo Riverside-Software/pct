@@ -117,6 +117,7 @@ DEFINE VARIABLE RCodeTS   AS INTEGER    NO-UNDO.
 DEFINE VARIABLE ProcTS    AS INTEGER    NO-UNDO.
 DEFINE VARIABLE Recompile AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE lComp     AS LOGICAL    NO-UNDO INITIAL TRUE.
+DEFINE VARIABLE BuildExc  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 /* Checks for valid parameters */
 IF (SESSION:PARAMETER EQ ?) THEN
@@ -165,39 +166,43 @@ REPEAT:
     IF (cLine BEGINS 'FILESET=':U) THEN
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
-        /* Verification si le .r existe */
-        RUN adecomm/_osfext.p(cLine, OUTPUT cFileExt).
-        ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
-        ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
-        Recompile = (RCodeTS EQ ?).
-        IF (NOT Recompile) THEN DO:
-            /* Verification si le .r est anterieur au fichier de base */
-            ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
-            Recompile = (ProcTS GT RCodeTS).
+        IF ForceComp THEN DO:
+            ASSIGN Recompile = TRUE.
+        END.
+        ELSE DO:
+            /* Verification si le .r existe */
+            RUN adecomm/_osfext.p(cLine, OUTPUT cFileExt).
+            ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
+            ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
+            Recompile = (RCodeTS EQ ?).
             IF (NOT Recompile) THEN DO:
-                /* On verifie les fichiers en INCLUDE */
-                Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
+                /* Verification si le .r est anterieur au fichier de base */
+                ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
+                Recompile = (ProcTS GT RCodeTS).
                 IF (NOT Recompile) THEN DO:
-                    /* On verifie les CRC */
-                    Recompile = CheckCRC(cLine, PCTDir).
-                    /* Il faut encore vefifier les options de compilation */
-                    /* Ce sera fait plus tard */
+                    /* On verifie les fichiers en INCLUDE */
+                    Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
+                    IF (NOT Recompile) THEN DO:
+                        /* On verifie les CRC */
+                        Recompile = CheckCRC(cLine, PCTDir).
+                        /* Il faut encore vefifier les options de compilation */
+                        /* Ce sera fait plus tard */
+                    END.
                 END.
             END.
-        END.
-        /* Recompilation selective */
+	    END.
+	    /* Recompilation selective */
         IF Recompile THEN DO:
             RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
-            IF NOT lComp THEN
-                LEAVE CompLoop.
+            IF (NOT lComp) THEN DO:
+                ASSIGN BuildExc = TRUE.
+                IF FailOnErr THEN LEAVE CompLoop.
+            END.
         END.
     END.
 END.
 INPUT STREAM sFileset CLOSE.
-IF lComp THEN
-    RETURN '0'.
-ELSE
-    RETURN '10'.
+RETURN (IF BuildExc THEN '10' ELSE '0').
 
 FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGER, INPUT d AS CHARACTER).
     DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
