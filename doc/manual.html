@@ -48,12 +48,14 @@
     <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
     <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
     <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpData.html">PCTDumpData</a></li>
     <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
     <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
     <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
     <li><a href="PCTLibrary.html">PCTLibrary</a></li>
     <li><a href="PCTProxygen.html">PCTProxygen</a></li>
     <li><a href="PCTCRC.html">PCTCRC</a></li>
+    <li><a href="PCTXCode.html">PCTXCode</a></li>
   </ul>
   <h1>Types</h1>
   <ul>
@@ -74,12 +76,13 @@ To obtain more information about this wonderful build tool, visit the official A
 <h2>Installation (binary package)</h2>
 <p>
 The PCT plug-in comes either as a single .zip or as a tarball.
-Unzipping either one of these files into a directory of your choice (referred to as <em>&lt;INST_DIR&gt;</em>)
-will produce two subdirectories /lib and /src. 
+Unzipping one of these files into a directory of your choice (referred to as <em>&lt;INST_DIR&gt;</em>)
+will produce four subdirectories&nbsp;: /lib, /gui, /tty and /website. 
 </p>
 <p>You first have to copy Progress&reg; code (to $DLC/tty and $DLC/gui). Just copy the pct subdir from <i>tty</i> and <i>gui</i>
 subdirectories of the binary archive.
 </p>
+<p>Website subdirectory is a copy of the Sourceforge's PCT website.</p>
 
 <p>
 Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. Maybe the simplest way 
