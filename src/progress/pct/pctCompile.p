@@ -96,6 +96,8 @@ DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -145,8 +147,12 @@ REPEAT:
             ASSIGN FailOnErr = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'FORCECOMPILE':U THEN
             ASSIGN ForceComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'XCODE':U THEN
+            ASSIGN lXCode = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'XCODEKEY':U THEN
+            ASSIGN XCodeKey = ENTRY(2, cLine, '=':U).
         OTHERWISE
-            .
+            MESSAGE "Unknow parameter : " + cLine.
     END CASE.
 END.
 INPUT STREAM sParams CLOSE.
@@ -159,42 +165,46 @@ IF NOT FileExists(OutputDir) THEN
 IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
 
-/* Parcours de la liste des fichiers a compiler */
+/* Parsing file list to compile */
 INPUT STREAM sFileset FROM VALUE(Filesets).
 CompLoop:
 REPEAT:
     IMPORT STREAM sFileset UNFORMATTED cLine.
     IF (cLine BEGINS 'FILESET=':U) THEN
+        /* This is a new fileset -- Changing base dir */
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
-        IF ForceComp THEN DO:
+        IF (ForceComp OR lXCode) THEN DO:
             ASSIGN Recompile = TRUE.
         END.
         ELSE DO:
-            /* Verification si le .r existe */
+            /* Checking .r file exists */
             RUN adecomm/_osfext.p(cLine, OUTPUT cFileExt).
             ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
             ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
             Recompile = (RCodeTS EQ ?).
             IF (NOT Recompile) THEN DO:
-                /* Verification si le .r est anterieur au fichier de base */
+                /* Checking .r timestamp is prior procedure timestamp */
                 ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
                 Recompile = (ProcTS GT RCodeTS).
                 IF (NOT Recompile) THEN DO:
-                    /* On verifie les fichiers en INCLUDE */
+                    /* Checking included files */
                     Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
                     IF (NOT Recompile) THEN DO:
-                        /* On verifie les CRC */
+                        /* Checking CRC */
                         Recompile = CheckCRC(cLine, PCTDir).
-                        /* Il faut encore vefifier les options de compilation */
-                        /* Ce sera fait plus tard */
+                        /* Compilation options should also be checked */
+                        /* This is another story... */
                     END.
                 END.
             END.
 	    END.
-	    /* Recompilation selective */
+	    /* Selective compile */
         IF Recompile THEN DO:
-            RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
+            IF lXCode THEN
+                RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
+            ELSE
+                RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             IF (lComp) THEN DO:
                 ASSIGN iCompOK = iCompOK + 1.
             END.
@@ -263,7 +273,7 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
 
 END FUNCTION.
 
-/** Compilation de procedure */
+/** Compilation without XREF - Not used for the moment */
 PROCEDURE PCTCompile.
     DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
@@ -282,6 +292,7 @@ PROCEDURE PCTCompile.
 
 END PROCEDURE.
 
+/** Compilation with Xref */
 PROCEDURE PCTCompileXref.
     DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
@@ -312,6 +323,32 @@ PROCEDURE PCTCompileXref.
 
 END PROCEDURE.
 
+PROCEDURE PCTCompileXCode.
+    DEFINE INPUT  PARAMETER pcInDir    AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcInFile   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcOutDir   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcXCodeKey AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAMETER plOK       AS LOGICAL    NO-UNDO.
+
+    DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+
+    RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
+    ASSIGN plOK = createDir(pcOutDir, cBase).
+    IF (NOT plOK) THEN RETURN.
+    IF (pcXCodeKey NE ?) THEN
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
+    ELSE
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    ASSIGN plOK = NOT COMPILER:ERROR.
+    IF (NOT plOK) THEN DO:
+        DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
+            MESSAGE ERROR-STATUS:GET-MESSAGE(i).
+        END.
+    END.
+
+END PROCEDURE.
 
 PROCEDURE importXref.
     DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.
