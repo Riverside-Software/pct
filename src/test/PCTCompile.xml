@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="PCTLibrary-test">
+<project name="PCTCompile-test">
 
   <taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile" classpath="../../lib/PCT.jar"/>
 
