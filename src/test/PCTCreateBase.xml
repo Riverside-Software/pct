@@ -97,4 +97,100 @@
     </PCTRun>
   </target>
   
+  <!-- Checks multiple schema files -->
+  <target name="test9init">
+    <echo file="sandbox/schema1.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab2"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab3"
+
+      ADD FIELD "Fld1" OF "tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab2-PK" ON "tab2" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema3.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab3"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab3"
+
+      ADD FIELD "Fld1" OF "tab3" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab3-PK" ON "tab3" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+      CREATE tab2.
+      ASSIGN tab2.fld1 = 2.
+      CREATE tab3.
+      ASSIGN tab3.fld1 = 3.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema1.df,sandbox/schema2.df,sandbox/schema3.df" propath="tty"/>
+  </target>
+  <target name="test9">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  
 </project>
