@@ -1,0 +1,15 @@
+Changes since 0.1 (07/15/2003)
+==============================
+
+* Documentation included in tarball & minor changes
+* PCTCreateBase : added destDir attribute
+* PCTCompile : logs how many files were compiled or not
+* PCTCompile : automatically creates subdirectories during the build process
+* PCTCompile : uses XREF to compile only modified files
+* PCTDumpSchema, PCTLoadSchema, PCTSchemaDoc : changed the way it handles PCTConnection
+* PCTLibrary : added the noCompress attribute (false by default)
+
+Version 0.1 (06/05/2003)
+========================
+
+* First alpha release

@@ -1,0 +1,37 @@
+DEFINE TEMP-TABLE ttXref NO-UNDO
+    FIELD xProcName   AS CHARACTER
+    FIELD xFileName   AS CHARACTER
+    FIELD xLineNumber AS INTEGER
+    FIELD xRefType    AS CHARACTER
+    FIELD xObjID      AS CHARACTER.
+
+DEFINE VARIABLE iNotComp AS INTEGER NO-UNDO.
+DEFINE VARIABLE iComp    AS INTEGER NO-UNDO.
+
+PROCEDURE importXref.
+    DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pcOut  AS CHARACTER NO-UNDO.
+    EMPTY TEMP-TABLE ttXref.
+    ASSIGN iComp = iComp + 1.
+    INPUT FROM VALUE (pcFile).
+    REPEAT:
+        CREATE ttXref.
+	IMPORT ttXref.
+    END.
+    INPUT CLOSE.
+    OUTPUT TO VALUE (pcOut).
+    FOR EACH ttXref WHERE ttXref.xRefType EQ 'INCLUDE' NO-LOCK:
+        PUT UNFORMATTED SEARCH (ENTRY (1, ttXref.xObjID, ' ':U)) SKIP.
+    END.
+    OUTPUT CLOSE.
+END PROCEDURE.
+
+PROCEDURE notCompiled.
+    ASSIGN iNotComp = iNotComp + 1.
+END PROCEDURE.
+
+PROCEDURE finish.
+    MESSAGE "Compiled " + STRING(iComp) + " file(s)".
+    IF (iNotComp NE 0) THEN
+    	MESSAGE "Failed compile " + STRING(iNotComp) + " file(s)".
+END PROCEDURE.
