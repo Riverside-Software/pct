@@ -43,6 +43,9 @@
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb2"/>
       </PCTConnection>
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
     </PCTDumpIncremental>
   </target>
   <target name="test1bis">
