@@ -89,6 +89,7 @@ public class PCTRun extends PCT {
     private int token = 0;
     private int maximumMemory = 0;
     private int stackSize = 0;
+    private int ttBufferSize = 0;
     protected boolean debugPCT = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
@@ -172,7 +173,7 @@ public class PCTRun extends PCT {
      * @param iniFile File
      */
     public void setIniFile(File iniFile) {
-    	this.iniFile = iniFile;
+        this.iniFile = iniFile;
     }
 
     /**
@@ -264,6 +265,14 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Buffer Size for Temporary Tables (-Bt attribute)
+     * @param ttBufferSize
+     */
+    public void setTTBufferSize(int ttBufferSize) {
+        this.ttBufferSize = ttBufferSize;
+    }
+
+    /**
      * Returns status file name (where to write progress procedure result)
      * @return String
      */
@@ -280,27 +289,62 @@ public class PCTRun extends PCT {
             this.prepareExecTask();
         }
 
-        if (!this.debugPCT) {
-            status.deleteOnExit();
-            initProc.deleteOnExit();
-        }
-
         this.createInitProcedure();
         this.setExecTaskParams();
-        exec.execute();
+
+        try {
+            exec.execute();
+        } catch (BuildException be) {
+            // BuildException is trapped to delete temp files, and then thrown again
+            if (!this.initProc.delete()) {
+                System.err.println("Failed to delete " + this.initProc.getAbsolutePath());
+            }
+
+            if (!this.status.delete()) {
+                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+            }
+
+            throw be;
+        }
+
         exec = null;
+
+        // Progress procedure can now be safely deleted
+        if (!this.initProc.delete()) {
+            System.err.println("Failed to delete " + this.initProc.getAbsolutePath());
+        }
+
+        BufferedReader br = null;
 
         // Now read status file
         try {
-            BufferedReader br = new BufferedReader(new FileReader(status));
+            br = new BufferedReader(new FileReader(status));
+
             String s = br.readLine();
+            br.close();
+
+            if (!this.status.delete()) {
+                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+            }
+
             int ret = Integer.parseInt(s);
 
             if (ret != 0) {
                 throw new BuildException("Return code : " + ret);
             }
         } catch (FileNotFoundException fnfe) {
+            throw new BuildException("Progress procedure failed - No output file");
         } catch (IOException ioe) {
+            try {
+                br.close();
+            } catch (IOException ioe2) {
+            }
+
+            if (!this.status.delete()) {
+                System.err.println("Failed to delete " + this.status.getAbsolutePath());
+            }
+
+            throw new BuildException("Progress procedure failed - Error reading return value");
         } catch (NumberFormatException nfe) {
             throw new BuildException("Progress procedure failed - No return value");
         }
@@ -394,6 +438,11 @@ public class PCTRun extends PCT {
 
         if (this.compileUnderscore) {
             exec.createArg().setValue("-zn");
+        }
+
+        if (this.ttBufferSize != 0) {
+            exec.createArg().setValue("-Bt");
+            exec.createArg().setValue(Integer.toString(this.ttBufferSize));
         }
 
         // Parameter
