@@ -126,4 +126,14 @@ public class PCTConnectionTest extends TestCase {
             }
         }
     }
+
+    public void testNamedAlias() {
+        PCTConnection conn = new PCTConnection();
+        PCTAlias alias1 = new PCTAlias();
+        alias1.setName("alias1");
+        conn.addPCTAlias(alias1);
+
+        assertTrue(conn.hasNamedAlias("alias1"));
+        assertFalse(conn.hasNamedAlias("alias2"));
+    }
 }

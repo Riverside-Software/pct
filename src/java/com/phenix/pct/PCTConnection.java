@@ -58,6 +58,7 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 
 import java.io.File;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 
@@ -207,6 +208,31 @@ public class PCTConnection {
         } else {
             return (aliases.size() > 0);
         }
+    }
+
+    /**
+     * Checks if an alias is defined
+     * TODO : Iterator appeared in JDK 1.2 ; as it seems to be a smarter
+     * way to parse lists (cf JDK API doc), I'll move every Enum to Iterator
+     * This could be done as ANT 1.6 requires JDK1.2
+     * @return True if alias defined for this database connection
+     */
+    public boolean hasNamedAlias(String aliasName) {
+        if (aliases == null) {
+            return false;
+        }
+
+        Iterator i = aliases.iterator();
+
+        while (i.hasNext()) {
+            PCTAlias a = (PCTAlias) i.next();
+
+            if (a.getName().equalsIgnoreCase(aliasName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
