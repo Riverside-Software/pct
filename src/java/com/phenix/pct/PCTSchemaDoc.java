@@ -63,14 +63,14 @@ import java.io.File;
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTSchemaDoc extends PCTRun {
-    private File destDir = null;
+    private File destFile = null;
 
     /**
      * Output directory
      * @param destDir File
      */
-    public void setDestDir(File destDir) {
-        this.destDir = destDir;
+    public void setFile(File file) {
+        this.destFile = file;
     }
 
     /**
@@ -78,10 +78,8 @@ public class PCTSchemaDoc extends PCTRun {
      * @throws BuildException If attributes are not valid
      */
     public void execute() throws BuildException {
-        if (this.destDir != null) {
-            if (!(this.destDir.isDirectory()) || !(this.destDir.canWrite())) {
-                throw new BuildException("destDir is not a directory or not writable");
-            }
+        if (this.destFile == null) {
+            throw new BuildException("Output file not defined");
         }
 
         if (this.dbConnList == null) {
@@ -94,11 +92,7 @@ public class PCTSchemaDoc extends PCTRun {
 
         this.setProcedure("pct/pctSchemaDoc.p");
 
-        if (this.destDir == null) {
-            this.setParameter(".");
-        } else {
-            this.setParameter(destDir.toString());
-        }
+            this.setParameter(destFile.getAbsolutePath());
 
         super.execute();
     }
