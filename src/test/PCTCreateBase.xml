@@ -91,4 +91,16 @@
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" structFile="test.st"/>
   </target>
+  <target name="test8bis">
+    <echo file="sandbox/test.p">
+      RETURN '0'.
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  
 </project>

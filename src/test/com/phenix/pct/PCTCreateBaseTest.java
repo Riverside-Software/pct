@@ -146,5 +146,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         assertTrue(f.exists());
         f = new File("src/test/sandbox/test.d2");
         assertTrue(f.exists());
+
+        executeTarget("test8bis");
     }
 }
