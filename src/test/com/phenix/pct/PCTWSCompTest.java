@@ -39,6 +39,7 @@
  * Apache Software Foundation, please see <http://www.apache.org/> .
  */
 package com.phenix.pct;
+
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
@@ -51,59 +52,57 @@ import java.io.File;
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTWSCompTest extends BuildFileTest {
-	public PCTWSCompTest(String name) {
-		super(name);
-	}
+    public PCTWSCompTest(String name) {
+        super(name);
+    }
 
-	/**
-	 * Sets up the fixture
-	 */
-	public void setUp() {
-		configureProject("src/test/PCTWSComp.xml");
-		// Creates a sandbox directory to play with
-		Mkdir mkdir = new Mkdir();
-		mkdir.setProject(this.getProject());
-		mkdir.setDir(new File("src/test/sandbox"));
-		mkdir.execute();
-	}
-	
-	/**
-	 * Tears down the fixture
-	 */
-	public void tearDown() {
-		Delete del = new Delete();
-		del.setProject(this.project);
-		del.setDir(new File("src/test/build"));
-		del.execute();
-		del.setDir(new File("src/test/sandbox"));
-		del.execute();
-	}
-	
-	/**
-	 * destDir attribute should always be defined : expect BuildException
-	 */
-	public void test1() {
-		expectBuildException("test1", "No destDir defined");
-	}
-	
-	/**
-	 * Do nothing : should not hurt
-	 */
-	public void test2() {
-		executeTarget("test2");
-	}
-	
-	/**
-	 * Very simple compilation
-	 */
-	public void test3() {
-		File f = new File("src/test/build/sandbox/simple.w");
-		
-		assertFalse(f.exists());
-		executeTarget("test3");
-		assertTrue(f.exists());
-	}
+    /**
+     * Sets up the fixture
+     */
+    public void setUp() {
+        configureProject("src/test/PCTWSComp.xml");
 
-	
+        // Creates a sandbox directory to play with
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(this.getProject());
+        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.execute();
+    }
+
+    /**
+     * Tears down the fixture
+     */
+    public void tearDown() {
+        Delete del = new Delete();
+        del.setProject(this.project);
+        del.setDir(new File("src/test/build"));
+        del.execute();
+        del.setDir(new File("src/test/sandbox"));
+        del.execute();
+    }
+
+    /**
+     * destDir attribute should always be defined : expect BuildException
+     */
+    public void test1() {
+        expectBuildException("test1", "No destDir defined");
+    }
+
+    /**
+     * Do nothing : should not hurt
+     */
+    public void test2() {
+        executeTarget("test2");
+    }
+
+    /**
+     * Very simple compilation
+     */
+    public void test3() {
+        File f = new File("src/test/build/sandbox/simple.w");
+
+        assertFalse(f.exists());
+        executeTarget("test3");
+        assertTrue(f.exists());
+    }
 }
-	

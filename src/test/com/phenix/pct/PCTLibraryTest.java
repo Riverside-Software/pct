@@ -70,7 +70,7 @@ public class PCTLibraryTest extends BuildFileTest {
     }
 
     /**
-     * Sets up the fixture 
+     * Sets up the fixture
      */
     public void setUp() {
         configureProject("src/test/PCTLibrary.xml");
@@ -95,9 +95,9 @@ public class PCTLibraryTest extends BuildFileTest {
      * Checks that a new library is created
      */
     public void test2() {
-    	File pl = new File("src/test/test.pl");
-    	
-    	assertFalse(pl.exists());
+        File pl = new File("src/test/test.pl");
+
+        assertFalse(pl.exists());
         executeTarget("test2");
         assertTrue(pl.exists());
         pl.delete();

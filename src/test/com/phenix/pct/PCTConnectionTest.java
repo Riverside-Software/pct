@@ -132,8 +132,12 @@ public class PCTConnectionTest extends TestCase {
         PCTAlias alias1 = new PCTAlias();
         alias1.setName("alias1");
         conn.addPCTAlias(alias1);
+        alias1 = new PCTAlias();
+        alias1.setName("alias3");
+        conn.addPCTAlias(alias1);
 
         assertTrue(conn.hasNamedAlias("alias1"));
+        assertTrue(conn.hasNamedAlias("alias3"));
         assertFalse(conn.hasNamedAlias("alias2"));
     }
 }
