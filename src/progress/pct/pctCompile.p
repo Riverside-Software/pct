@@ -335,7 +335,7 @@ PROCEDURE importXref.
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK GROUP BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
-            PUT UNFORMATTED ttXref.xObjID SEARCH(ttXref.xObjID) SKIP.
+            EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
     
@@ -344,7 +344,7 @@ PROCEDURE importXref.
     	IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
-                PUT UNFORMATTED CRCList.ttTable ' ':U CRCList.ttCRC SKIP.
+                EXPORT CRCList.
             END.
         END.
     END.
