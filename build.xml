@@ -184,7 +184,8 @@
         <include name="*.html"/>
         <include name="*.css"/>
         <include name="*.xsl"/>
-        <include name="back.png"/> 
+        <include name="back.png"/>
+      	<include name="ss*.png"/>
       </fileset>
       <fileset dir=".">
         <include name="CHANGELOG"/>
