@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<project name="PCTLibrary-test">
+
+  <taskdef name="PCTCompile" classname="com.phenix.pct.PCTCompile" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no dest dir -->
+  <target name="test1">
+    <PCTCompile/>
+  </target>
+  
+  <!-- Do nothing : should not hurt -->
+  <target name="test2">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>
+  </target>
+  
+  <!-- Simple compilation -->
+  <target name="test3">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="progress/simple*.p"/>	
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>	
+  </target>
+  
+  <!-- Test MIN-SIZE attribute -->
+  <target name="test4">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="progress/simple.p"/>	
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>	
+  </target>
+  <target name="test4bis">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}" minSize="true">
+      <fileset dir=".">
+        <include name="progress/simple.p"/>	
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>	
+  </target>
+  
+  <!-- Test escape string -->
+  <target name="test5">
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="progress/wizz~~'~.p"/>	
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+    </PCTCompile>	
+  </target>
+  
+</project>
