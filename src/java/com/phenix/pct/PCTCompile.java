@@ -320,7 +320,7 @@ public class PCTCompile extends PCTRun {
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("pct_compile", ".p");
-            if (this.debug)
+            if (!this.debug)
             	tmpProc.deleteOnExit();
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));

@@ -101,7 +101,8 @@ public class PCTRun extends PCT {
 
         try {
             status = File.createTempFile("PCTResult", ".out");
-            status.deleteOnExit();
+            if (!this.debug)
+            	status.deleteOnExit();
         } catch (IOException ioe) {
             throw new BuildException("Unable to create return status file");
         }
@@ -382,7 +383,7 @@ public class PCTRun extends PCT {
     private File createInitProcedure() throws BuildException {
         try {
             File f = File.createTempFile("pct_init", ".p");
-            if (this.debug)
+            if (!this.debug)
             	f.deleteOnExit();
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
