@@ -195,10 +195,10 @@ public abstract class PCT extends Task {
      * @return File
      * @since 0.3b
      */
-     protected final File getDlcBin() {
-	     return this.dlcBin;
-     }
-     
+    protected final File getDlcBin() {
+        return this.dlcBin;
+    }
+
     /**
      * Returns the needed Jar/Zip file or directory to run various Progress/Java tasks
      * @return File
