@@ -163,10 +163,21 @@ public class PLReader {
                 br = in.read(bb, offset);
 
                 while (br > 29) {
-                    // First byte should be 0xFF
+                    // First byte should be 0xFE or 0xFF
                     short magic = ((short) (bb.get(0) & (short) 0xff));
 
-                    if (magic == 0xFF) {
+                    if (magic == 0xFE) {
+                        int k = 1;
+
+                        while (((short) (bb.get(k) & (short) 0xff)) != 0xFF) {
+                            k++;
+                        }
+
+                        // Reading next entry
+                        offset += k;
+                        bb.clear();
+                        br = in.read(bb, offset);
+                    } else if (magic == 0xFF) {
                         short fnsz = ((short) (bb.get(1) & (short) 0xff));
 
                         if (fnsz > 0) {
