@@ -172,6 +172,7 @@ public abstract class PCT extends Task {
      *
      * @since 0.8
      * @return FileSet
+     * @throws BuildException
      */
     protected FileSet getJavaFileset() throws BuildException {
         FileSet fs = new FileSet();
@@ -183,6 +184,7 @@ public abstract class PCT extends Task {
     
     /**
      * This method has to be overridden
+     * @throws BuildException
      */
     public abstract void execute() throws BuildException;
 }
