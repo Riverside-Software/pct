@@ -61,10 +61,10 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-
 /**
  * Object to add a database connection to a PCTRun task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  */
 public class PCTConnection {
     private String dbName = null;
@@ -78,12 +78,14 @@ public class PCTConnection {
     private String password = null;
     private File cacheFile = null;
     private File dbDir = null;
+    private File paramFile = null;
     private boolean singleUser = false;
     private boolean readOnly = false;
     private Vector aliases = null;
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
+     * 
      * @param dbName String
      */
     public void setDbName(String dbName) {
@@ -92,6 +94,7 @@ public class PCTConnection {
 
     /**
      * Database directory
+     * 
      * @param dbDir File
      */
     public void setDbDir(File dbDir) {
@@ -100,6 +103,7 @@ public class PCTConnection {
 
     /**
      * Port name or number (<CODE>-S</CODE> parameter)
+     * 
      * @param dbPort String
      */
     public void setDbPort(String dbPort) {
@@ -108,6 +112,7 @@ public class PCTConnection {
 
     /**
      * Protocol to use (<CODE>-N</CODE> parameter)
+     * 
      * @param protocol "AS400SNA|TCP"
      */
     public void setProtocol(String protocol) {
@@ -116,6 +121,7 @@ public class PCTConnection {
 
     /**
      * Logical name to use (<CODE>-ld</CODE> parameter)
+     * 
      * @param logicalName String
      */
     public void setLogicalName(String logicalName) {
@@ -124,6 +130,7 @@ public class PCTConnection {
 
     /**
      * Name of the schema cache file (<CODE>-cache</CODE> parameter)
+     * 
      * @param cacheFile File
      */
     public void setCacheFile(File cacheFile) {
@@ -132,6 +139,7 @@ public class PCTConnection {
 
     /**
      * Name of the nameserver to connect to a dataserver (<CODE>-DataService</CODE> parameter)
+     * 
      * @param dataService String
      */
     public void setDataService(String dataService) {
@@ -140,6 +148,7 @@ public class PCTConnection {
 
     /**
      * Database type (ORACLE, SQLSERVER or nothing) (<CODE>-dt</CODE> parameter)
+     * 
      * @param dbType String
      */
     public void setDbType(String dbType) {
@@ -148,6 +157,7 @@ public class PCTConnection {
 
     /**
      * Host where to access database (<CODE>-H</CODE> parameter)
+     * 
      * @param hostName String
      */
     public void setHostName(String hostName) {
@@ -156,6 +166,7 @@ public class PCTConnection {
 
     /**
      * Username needed to access database (<CODE>-U</CODE> parameter)
+     * 
      * @param userName String
      */
     public void setUserName(String userName) {
@@ -164,6 +175,7 @@ public class PCTConnection {
 
     /**
      * Password needed to access database (<CODE>-P</CODE> parameter)
+     * 
      * @param password String
      */
     public void setPassword(String password) {
@@ -171,7 +183,17 @@ public class PCTConnection {
     }
 
     /**
+     * Parameter file (-pf attribute)
+     * 
+     * @param paramFile File
+     */
+    public void setParamFile(File paramFile) {
+        this.paramFile = paramFile;
+    }
+
+    /**
      * If true, opens the database in read-only mode
+     * 
      * @param readOnly true|false|on|off|yes|no
      */
     public void setReadOnly(boolean readOnly) {
@@ -180,6 +202,7 @@ public class PCTConnection {
 
     /**
      * If true, opens the database in single-user mode
+     * 
      * @param singleUser true|false|on|off|yes|no
      */
     public void setSingleUser(boolean singleUser) {
@@ -188,6 +211,7 @@ public class PCTConnection {
 
     /**
      * Adds an alias to the current DB connection
+     * 
      * @param alias Instance of PCTAlias
      */
     public void addPCTAlias(PCTAlias alias) {
@@ -200,6 +224,7 @@ public class PCTConnection {
 
     /**
      * Checks if aliases defined
+     * 
      * @return True if aliases defined for this database connection
      */
     public boolean hasAliases() {
@@ -211,10 +236,10 @@ public class PCTConnection {
     }
 
     /**
-     * Checks if an alias is defined
-     * TODO : Iterator appeared in JDK 1.2 ; as it seems to be a smarter
-     * way to parse lists (cf JDK API doc), I'll move every Enum to Iterator
-     * This could be done as ANT 1.6 requires JDK1.2
+     * Checks if an alias is defined TODO : Iterator appeared in JDK 1.2 ; as it seems to be a
+     * smarter way to parse lists (cf JDK API doc), I'll move every Enum to Iterator This could be
+     * done as ANT 1.6 requires JDK1.2
+     * 
      * @param aliasName String
      * @return True if alias defined for this database connection
      */
@@ -238,6 +263,7 @@ public class PCTConnection {
 
     /**
      * Populates a command line with the needed arguments to connect to the specified database
+     * 
      * @param task Exec task to populate
      * @throws BuildException Something went wrong
      */
@@ -252,6 +278,11 @@ public class PCTConnection {
             task.createArg().setValue(this.dbName);
         } else {
             task.createArg().setValue(this.dbDir.toString() + File.separatorChar + this.dbName);
+        }
+
+        if (this.paramFile != null) {
+            task.createArg().setValue("-pf");
+            task.createArg().setValue(this.paramFile.getAbsolutePath());
         }
 
         if (this.protocol != null) {
@@ -307,6 +338,7 @@ public class PCTConnection {
 
     /**
      * Returns defined aliases for a database connection
+     * 
      * @return Vector
      */
     public Vector getAliases() {
@@ -315,6 +347,7 @@ public class PCTConnection {
 
     /**
      * Returns database name
+     * 
      * @return String
      */
     public String getDbName() {
