@@ -120,22 +120,22 @@ div.Text h2 {
     font-size: 120%;
 }
 
-div.Text table {
+div.Text table.params {
     border: 1px #000000 solid;
 }
 
-div.Text tr {
+div.Text table.params tr {
     padding: 0px;
     border-left: 1px black solid;
     border-right: 1px black solid;
 }
 
-div.Text th {
+div.Text table.params th {
     background: #cccccc;
     border-bottom: 1px black solid;	
 }
 
-div.Text td {
+div.Text table.params td {
     background: #dddddd;
 }
 
