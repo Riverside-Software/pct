@@ -100,6 +100,6 @@ public class PCTSchemaDoc extends PCTRun {
             this.setParameter(destDir.toString());
         }
 
-        this.run();
+        super.execute();
     }
 }

@@ -92,6 +92,6 @@ public class PCTDumpSchema extends PCTRun {
 
         this.setProcedure("pct/pctDumpSchema.p");
         this.setParameter(destFile.toString());
-        this.run();
+        super.execute();
     }
 }
