@@ -7,6 +7,7 @@ Version 0.8 (??/??/????)
    Added DLC environment variable in every Exec or Java task.
  * Added Eclipse stuff in CVS...
  * Added quickstart HTML page
+ * Multiple files can be loaded in a single PCTCreateBase statement
 
 Version 0.7 (01/17/2005)
 ==============================
