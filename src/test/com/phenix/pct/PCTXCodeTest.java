@@ -124,4 +124,10 @@ public class PCTXCodeTest extends BuildFileTest {
     	// Rough test, but it should work
     	assertTrue(f.length() != f2.length());
     }
+    
+    public void test7() {
+    	executeTarget("test7init");
+    	executeTarget("test7");
+    	expectBuildException("test7bis", "RETURN 1");
+    }
 }
