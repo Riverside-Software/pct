@@ -517,8 +517,8 @@ public class PCTRun extends PCT {
             }
 
             // TODO : vérifier que le programme compile avant de le lancer
-            bw.write("IF SEARCH('" + escapeString(this.procedure) + "') NE ? THEN DO:");
-            bw.newLine();
+//            bw.write("IF SEARCH('" + escapeString(this.procedure) + "') NE ? THEN DO:");
+//            bw.newLine();
             bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
             bw.newLine();
             bw.write("  IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
@@ -527,10 +527,10 @@ public class PCTRun extends PCT {
             bw.newLine();
             bw.write("  IF (i EQ ?) THEN ASSIGN i = 1.");
             bw.newLine();
-            bw.write("END.");
-            bw.newLine();
-            bw.write("ELSE ASSIGN i = -1.");
-            bw.newLine();
+//            bw.write("END.");
+//            bw.newLine();
+//            bw.write("ELSE ASSIGN i = -12.");
+//            bw.newLine();
             bw.write("OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "').");
             bw.newLine();
             bw.write("PUT UNFORMATTED i SKIP.");
