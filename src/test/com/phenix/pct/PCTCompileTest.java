@@ -208,4 +208,14 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
         assertTrue(mod2 < f2.lastModified());
     }
+    
+    public void test15() {
+    	executeTarget("test15init");
+    	executeTarget("test15");
+        File f = new File("src/test/build/sandbox/test.r");
+        assertTrue(f.exists());
+        long mod = f.lastModified();
+        executeTarget("test15bis");
+        assertTrue(mod == f.lastModified());
+    }
 }
