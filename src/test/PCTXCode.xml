@@ -2,7 +2,7 @@
 
 <project name="PCTXCode-test" default="">
 
-  <taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
+  <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
   
@@ -97,14 +97,10 @@
     <delete file="sandbox/test2.p"/>
   </target>
   <target name="test7">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
-      <propath path="build"/>
-    </PCTRun>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" propath="build"/>
   </target>  
   <target name="test7bis">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}">
-      <propath path="build"/>
-    </PCTRun>
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" propath="build"/>
   </target>  
   
 </project>

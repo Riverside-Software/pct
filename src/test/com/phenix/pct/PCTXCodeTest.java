@@ -57,23 +57,23 @@ public class PCTXCodeTest extends BuildFileTest {
     }
 
     public void setUp() {
-        configureProject("src/test/PCTXCode.xml");
+        configureProject("PCTXCode.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
-        mkdir.setDir(new File("src/test/build"));
+        mkdir.setDir(new File("build"));
         mkdir.execute();
     }
 
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
         del.execute();
-        del.setDir(new File("src/test/build"));
+        del.setDir(new File("build"));
         del.execute();
     }
 
@@ -88,21 +88,21 @@ public class PCTXCodeTest extends BuildFileTest {
     public void test3() {
         executeTarget("test3");
 
-        File f = new File("src/test/build/test.p");
+        File f = new File("build/test.p");
         assertTrue(f.exists());
     }
 
     public void test4() {
         executeTarget("test4");
 
-        File f = new File("src/test/build/sandbox/foo/test.p");
+        File f = new File("build/sandbox/foo/test.p");
         assertTrue(f.exists());
     }
 
     public void test5() {
         executeTarget("test5");
 
-        File f = new File("src/test/build/test.p");
+        File f = new File("build/test.p");
         assertTrue(f.exists());
 
         long size = f.length();
@@ -116,8 +116,8 @@ public class PCTXCodeTest extends BuildFileTest {
     public void test6() {
     	executeTarget("test6");
 
-    	File f = new File("src/test/build/test.p");
-    	File f2 = new File("src/test/build/test2.p");
+    	File f = new File("build/test.p");
+    	File f2 = new File("build/test2.p");
 
     	assertTrue(f.exists());
     	assertTrue(f2.exists());
