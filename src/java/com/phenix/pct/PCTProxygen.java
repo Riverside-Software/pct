@@ -120,15 +120,20 @@ public class PCTProxygen extends PCT {
         pxg.setOwningTarget(this.getOwningTarget());
         pxg.setTaskName(this.getTaskName());
         pxg.setDescription(this.getDescription());
-
+        
         if (this.workingDirectory != null) {
+            // Bug #1081209 : fork needed to change working directory
+            pxg.setFork(true);
             pxg.setDir(this.workingDirectory);
         }
 
         pxg.setClassname("com.progress.open4gl.proxygen.Batch");
 
         pxg.createClasspath().setPath(this.getProgressJar().toString());
-        pxg.createClasspath().setPath(this.getMessagesJar().toString());
+        // Bug #1081206 : messages.jar needed as of 9.1D
+        if (this.getMessagesJar() != null) {
+            pxg.createClasspath().setPath(this.getMessagesJar().toString());
+        }
 
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
