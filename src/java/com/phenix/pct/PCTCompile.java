@@ -401,7 +401,7 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("  IMPORT STREAM sFiles baseDir extDir fileName.");
             bw.newLine();
-            bw.write("  COMPILE VALUE(baseDir + '\\' + extDir + fileName) SAVE INTO VALUE(destDir + extDir)");
+            bw.write("  COMPILE VALUE(baseDir + '/' + extDir + fileName) SAVE INTO VALUE(destDir + extDir)");
             bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
             bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
 
