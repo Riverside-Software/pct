@@ -135,10 +135,22 @@ public class PLReader {
     }
 
     /**
+     *
+     * @return Vector of FileEntry
+     */
+    public Vector getFileList() {
+        if (this.init) {
+            return this.files;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Read file list
      * @throws Exception File has bad format
      */
-    public void readFileList() throws Exception {
+    private void readFileList() throws Exception {
         ByteBuffer bb = ByteBuffer.allocate(RECORD_MAX_SIZE);
         long offset = 0;
         int br = 0;
@@ -162,7 +174,7 @@ public class PLReader {
                 // Reading first file in list
                 br = in.read(bb, offset);
 
-                while (br > 29) {
+                while (br > RECORD_MIN_SIZE) {
                     // First byte should be 0xFE or 0xFF
                     short magic = ((short) (bb.get(0) & (short) 0xff));
 
@@ -207,23 +219,28 @@ public class PLReader {
                         }
                     } else {
                         try {
+                            in.close();
                             fis.close();
                         } catch (IOException ioe) {
                         }
 
-                        throw new Exception("Byte at position " + offset + " should be FF but is " +
-                                            magic);
+                        throw new Exception("Byte at position " + offset +
+                                            " should be FE or FF but is " + magic);
                     }
                 }
             } else { // i == 4
 
                 try {
+                    in.close();
                     fis.close();
                 } catch (IOException ioe) {
                 }
 
                 throw new Exception("Incorrect format ");
             }
+
+            in.close();
+            fis.close();
         } catch (IOException ioe) {
             System.out.println("ioe");
         }
@@ -250,16 +267,21 @@ public class PLReader {
         try {
             FileInputStream fis = new FileInputStream(f);
             FileChannel in = fis.getChannel();
-            ByteBuffer b = ByteBuffer.allocate(2);
-            int i = in.read(b, 0);
+
+            ByteBuffer bb = ByteBuffer.allocate(2);
+            int i = in.read(bb, 0);
 
             if (i == 2) {
-                char a = b.getChar(0);
-
-                return (a == MAGIC);
+                int magic = (bb.getShort(0) & 0xffff);
+                retVal = (magic == MAGIC);
             } else {
-                return false;
+                retVal = false;
             }
+
+            in.close();
+            fis.close();
+
+            return retVal;
         } catch (FileNotFoundException fnfe) {
             System.out.println("fnfe");
         } catch (IOException ioe) {
@@ -277,7 +299,7 @@ public class PLReader {
     /**
      * Class representing a static file entry in a PL file
      */
-    private class FileEntry {
+    public class FileEntry {
         private String fileName;
         private Date modDate;
         private Date addDate;
