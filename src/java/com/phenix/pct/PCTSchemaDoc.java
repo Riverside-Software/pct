@@ -54,66 +54,52 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 
 
-public class PCTSchemaDoc extends PCT {
+/**
+ * Creates database documentation
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ */
+public class PCTSchemaDoc extends PCTRun {
     private File destDir = null;
-    private PCTConnection dbConn = null;
 
-    public void addPCTConnection(PCTConnection dbConn) {
-        if (this.dbConn != null) {
-            throw new BuildException("Only one connection allowed");
-        }
-
-        this.dbConn = dbConn;
-    }
-
+    /**
+     * Output directory
+     * @param destDir File
+     */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
     }
 
+    /**
+     * do the work
+     * @throws BuildException If attributes are not valid
+     */
     public void execute() throws BuildException {
-        Commandline cmdLine = null;
-        int result = 0;
-
         if (this.destDir != null) {
             if (!(this.destDir.isDirectory()) || !(this.destDir.canWrite())) {
                 throw new BuildException("destDir is not a directory or not writable");
             }
         }
 
-        if (this.dbConn == null) {
+        if (this.dbConnList == null) {
             throw new BuildException("No database connection defined");
         }
 
-        cmdLine = buildCmdLine();
-        result = run(cmdLine);
-
-        if (result != 0) {
-            throw new BuildException("Failed creating database documentation [" + result + "]");
+        if (this.dbConnList.size() > 1) {
+            throw new BuildException("More than one database connection defined");
         }
-    }
 
-    private Commandline buildCmdLine() throws BuildException {
-        Commandline commandLine = new Commandline();
-
-        commandLine.setExecutable(getExecPath("_progres"));
-
-        commandLine.createArgument().setValue("-b");
-        dbConn.createArguments(commandLine);
-        commandLine.createArgument().setValue("-p");
-        commandLine.createArgument().setValue("pctSchemaDoc.p");
-        commandLine.createArgument().setValue("-param");
+        this.setProcedure("pctSchemaDoc.p");
 
         if (this.destDir == null) {
-            commandLine.createArgument().setValue(".");
+            this.setParameter(".");
         } else {
-            commandLine.createArgument().setValue(destDir.toString());
+            this.setParameter(destDir.toString());
         }
 
-        return commandLine;
+        this.run();
     }
 }

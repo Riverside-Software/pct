@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002 The Apache Software Foundation.  All rights
+ * Copyright (c) The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,33 +55,41 @@ package com.phenix.pct;
 
 
 /**
- * @author Gilles QUERRET
+ * Alias object for PCTConnection
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTAlias {
     private String name = null;
     private boolean noError = false;
 
-	/**
-	 * Alias name
-	 * @param name
-	 */
+    /**
+     * Alias name
+     * @param name String
+     */
     public void setName(String name) {
         this.name = name;
     }
 
-	/**
-	 * If alias should be declared with NO-ERROR
-	 * @param noError
-	 */
-
+    /**
+     * If alias should be declared with NO-ERROR
+     * @param noError "true|false|on|off|yes|no"
+     */
     public void setNoError(boolean noError) {
         this.noError = noError;
     }
 
+    /**
+     * If alias should be declared with NO-ERROR
+     * @return boolean
+     */
     public boolean getNoError() {
         return this.noError;
     }
 
+    /**
+     * Alias name
+     * @return String
+     */
     public String getName() {
         return this.name;
     }

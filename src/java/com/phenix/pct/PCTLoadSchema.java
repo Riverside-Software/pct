@@ -54,60 +54,32 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 
 
-public class PCTLoadSchema extends PCT {
+public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
-    private PCTConnection dbConn = null;
-
-    public void addPCTConnection(PCTConnection dbConn)
-                          throws BuildException {
-        if (this.dbConn != null) {
-            throw new BuildException("Only one connection allowed");
-        }
-
-        this.dbConn = dbConn;
-    }
 
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
     }
 
     public void execute() throws BuildException {
-        Commandline cmdLine = null;
-        int result = 0;
+        if (this.dbConnList == null) {
+            throw new BuildException("No database connection defined");
+        }
+
+        if (this.dbConnList.size() > 1) {
+            throw new BuildException("More than one database connection defined");
+        }
 
         if (this.srcFile == null) {
             throw new BuildException("Mandatory argument : dump file");
         }
 
-        if (this.dbConn == null) {
-            throw new BuildException("No database connection defined");
-        }
-
-        cmdLine = buildCmdLine();
-        result = run(cmdLine);
-
-        if (result != 0) {
-            throw new BuildException("Failed loading schema [" + result + "]");
-        }
-    }
-
-    private Commandline buildCmdLine() throws BuildException {
-        Commandline commandLine = new Commandline();
-
-        commandLine.setExecutable(getExecPath("_progres"));
-
-        commandLine.createArgument().setValue("-b");
-        this.dbConn.createArguments(commandLine);
-        commandLine.createArgument().setValue("-p");
-        commandLine.createArgument().setValue("pctLoadSchema.p");
-        commandLine.createArgument().setValue("-param");
-        commandLine.createArgument().setValue(this.srcFile.toString());
-
-        return commandLine;
+        this.setProcedure("pctLoadSchema.p");
+        this.setParameter(srcFile.toString());
+        this.run();
     }
 }

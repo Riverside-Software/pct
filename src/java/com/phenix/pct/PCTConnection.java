@@ -54,11 +54,10 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.taskdefs.ExecTask;
 
 import java.io.File;
 
-import java.util.Enumeration;
 import java.util.Vector;
 
 
@@ -210,68 +209,67 @@ public class PCTConnection {
      * Populates a command line with the needed arguments to connect to the specified database
      * @param cmdLine Command line to populate
      */
-    public void createArguments(Commandline cmdLine) throws BuildException {
+    public void createArguments(ExecTask task) throws BuildException {
         if (this.dbName == null) {
             throw new BuildException("Database name not defined");
         }
 
-        cmdLine.createArgument().setValue("-db");
+        task.createArg().setValue("-db");
 
-        if (this.dbDir == null) {
-            cmdLine.createArgument().setValue(this.dbName);
+        if ((this.dbDir == null) || (this.hostName != null)) {
+            task.createArg().setValue(this.dbName);
         } else {
-            cmdLine.createArgument().setValue(this.dbDir.toString() + File.separatorChar +
-                                              this.dbName);
+            task.createArg().setValue(this.dbDir.toString() + File.separatorChar + this.dbName);
         }
 
         if (this.protocol != null) {
-            cmdLine.createArgument().setValue("-N");
-            cmdLine.createArgument().setValue(this.protocol);
+            task.createArg().setValue("-N");
+            task.createArg().setValue(this.protocol);
         }
 
         if (this.dbPort != null) {
-            cmdLine.createArgument().setValue("-S");
-            cmdLine.createArgument().setValue(this.dbPort);
+            task.createArg().setValue("-S");
+            task.createArg().setValue(this.dbPort);
         }
 
         if (this.logicalName != null) {
-            cmdLine.createArgument().setValue("-ld");
-            cmdLine.createArgument().setValue(this.logicalName);
+            task.createArg().setValue("-ld");
+            task.createArg().setValue(this.logicalName);
         }
 
         if (this.singleUser) {
-            cmdLine.createArgument().setValue("-1");
+            task.createArg().setValue("-1");
         }
 
         if (this.cacheFile != null) {
-            cmdLine.createArgument().setValue("-cache");
-            cmdLine.createArgument().setValue(this.cacheFile.getAbsolutePath());
+            task.createArg().setValue("-cache");
+            task.createArg().setValue(this.cacheFile.getAbsolutePath());
         }
 
         if (this.dataService != null) {
-            cmdLine.createArgument().setValue("-DataService");
-            cmdLine.createArgument().setValue(this.dataService);
+            task.createArg().setValue("-DataService");
+            task.createArg().setValue(this.dataService);
         }
 
         if (this.dbType != null) {
-            cmdLine.createArgument().setValue("-dt");
-            cmdLine.createArgument().setValue(this.dbType);
+            task.createArg().setValue("-dt");
+            task.createArg().setValue(this.dbType);
         }
 
         if (this.hostName != null) {
-            cmdLine.createArgument().setValue("-H");
-            cmdLine.createArgument().setValue(this.hostName);
+            task.createArg().setValue("-H");
+            task.createArg().setValue(this.hostName);
         }
 
         if (this.readOnly) {
-            cmdLine.createArgument().setValue("-RO");
+            task.createArg().setValue("-RO");
         }
 
         if ((this.userName != null) && (this.password != null)) {
-            cmdLine.createArgument().setValue("-U");
-            cmdLine.createArgument().setValue(this.userName);
-            cmdLine.createArgument().setValue("-P");
-            cmdLine.createArgument().setValue(this.password);
+            task.createArg().setValue("-U");
+            task.createArg().setValue(this.userName);
+            task.createArg().setValue("-P");
+            task.createArg().setValue(this.password);
         }
     }
 
@@ -279,15 +277,10 @@ public class PCTConnection {
      * Creates Progress code to define aliases
      */
     public Vector getAliases() {
-        
-		Vector v = new Vector();
-		if (aliases == null) return null;
-        for (Enumeration e = aliases.elements(); e.hasMoreElements();) {
-            PCTAlias alias = (PCTAlias) e.nextElement();
-			String s = "CREATE ALIAS " + alias.getName() + " FOR DATABASE " + this.dbName + (alias.getNoError() ? " NO-ERROR" : "") + ".";
-			v.add(s);
-        }
+        return aliases;
+    }
 
-        return v;
+    public String getDbName() {
+        return this.dbName;
     }
 }

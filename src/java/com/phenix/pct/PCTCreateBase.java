@@ -54,13 +54,15 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.ExecTask;
 
 import java.io.File;
 
 
 /**
   * Class for creating Progress databases
+  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
   **/
 public class PCTCreateBase extends PCT {
     private String dbName = null;
@@ -69,42 +71,69 @@ public class PCTCreateBase extends PCT {
     private int blockSize = 8;
     private boolean noInit = false;
     private boolean noSchema = false;
+    private boolean overwrite = false;
 
+    /**
+     * Structure file (.st)
+     * @param structFile File
+     */
     public void setStructFile(File structFile) {
         this.structFile = structFile;
     }
 
+    /**
+     * Database name
+     * @param dbName String
+     */
     public void setDBName(String dbName) {
         this.dbName = dbName;
     }
 
+    /**
+     * If database shouldn't be initialized
+     * @param noInit "true|false|on|off|yes|no"
+     */
     public void setNoInit(boolean noInit) {
         this.noInit = noInit;
     }
 
+    /**
+     * No schema
+     * @param noSchema "true|false|on|off|yes|no"
+     */
     public void setNoSchema(boolean noSchema) {
         this.noSchema = noSchema;
     }
 
+    /**
+     * Block size
+     * @param blockSize int
+     */
     public void setBlockSize(int blockSize) {
         this.blockSize = blockSize;
     }
 
+    /**
+     * In which directory create the database
+     * @param destDir File
+     */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
     }
 
-    protected File getDestDir() {
-        if (destDir == null) {
-            return project.getBaseDir();
-        } else {
-            return destDir;
-        }
+    /**
+     * Overwrite database if existent
+     * @param overwrite "true|false|on|off|yes|no"
+     */
+    public void setOverwrite(boolean overwrite) {
+        this.overwrite = overwrite;
     }
 
+    /**
+     * Executes the task
+     */
     public void execute() throws BuildException {
-        int result = 0;
-        Commandline cmdLine = null;
+        ExecTask exec = null;
 
         // Checking there is at least an init or a structure creation
         if (this.noSchema && this.noInit) {
@@ -121,64 +150,72 @@ public class PCTCreateBase extends PCT {
             throw new BuildException("Database name is longer than 11 characters");
         }
 
-        if (!this.noSchema) {
-            cmdLine = buildCreateCmdLine();
+        // Checks if DB already exists
+        File db = new File(destDir, dbName + ".db");
 
-            result = run(cmdLine, this.getDestDir());
-
-            if (result != 0) {
-                throw new BuildException("Failed creating structure - Return code : " + result);
+        if (db.exists()) {
+            if (this.overwrite) {
+                Delete del = (Delete) getProject().createTask("delete");
+                del.setOwningTarget(this.getOwningTarget());
+                del.setTaskName(this.getTaskName());
+                del.setDescription(this.getDescription());
+                del.setFile(db);
+                del.execute();
+            } else {
+                return;
             }
+        }
+
+        if (!this.noSchema) {
+            exec = structCmdLine();
+            exec.execute();
         }
 
         if (!this.noInit) {
-            cmdLine = buildInitCmdLine();
-
-            result = run(cmdLine, this.getDestDir());
-
-            if (result != 0) {
-                throw new BuildException("Failed initializing database - Return code : " + result);
-            }
+            exec = initCmdLine();
+            exec.execute();
         }
     }
 
-    protected Commandline buildInitCmdLine() {
-        File dlcHome = getDlcHome();
-        Commandline cmdLine = new Commandline();
-        cmdLine.setExecutable(getExecPath("_dbutil"));
-        cmdLine.createArgument().setValue("procopy");
+    /**
+     *
+     * @return
+     */
+    private ExecTask initCmdLine() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
+        File srcDB = new File(this.getDlcHome(), "empty" + this.blockSize);
 
-        if (dlcHome != null) {
-            cmdLine.createArgument().setValue(dlcHome.getAbsolutePath() + File.separatorChar +
-                                              "empty" + this.blockSize);
-        } else {
-            cmdLine.createArgument().setValue("empty" + this.blockSize);
-        }
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
 
-        cmdLine.createArgument().setValue(this.dbName);
+        exec.setExecutable(getExecPath("_dbutil").toString());
+        exec.setDir(this.destDir);
+        exec.createArg().setValue("procopy");
+        exec.createArg().setValue(srcDB.getAbsolutePath());
+        exec.createArg().setValue(this.dbName);
 
-        return cmdLine;
+        return exec;
     }
 
-    protected Commandline buildCreateCmdLine() {
-        Commandline cmdLine = new Commandline();
-        cmdLine.setExecutable(getExecPath("_dbutil"));
-        cmdLine.createArgument().setValue("prostrct");
-        cmdLine.createArgument().setValue("create");
-        cmdLine.createArgument().setValue(this.dbName);
-        cmdLine.createArgument().setValue(this.structFile.getAbsolutePath());
+    /**
+     *
+     * @return
+     */
+    private ExecTask structCmdLine() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
 
-        return cmdLine;
-    }
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
 
-    protected Commandline buildProdbCmdLine() {
-        Commandline cmdLine = new Commandline();
-        cmdLine.setExecutable(getExecPath("_dbutil"));
-        cmdLine.createArgument().setValue("prostrct");
-        cmdLine.createArgument().setValue("create");
-        cmdLine.createArgument().setValue(this.dbName);
-        cmdLine.createArgument().setValue(this.structFile.getAbsolutePath());
+        exec.setExecutable(getExecPath("_dbutil").toString());
+        exec.setDir(this.destDir);
+        exec.createArg().setValue("prostrct");
+        exec.createArg().setValue("create");
+        exec.createArg().setValue(this.dbName);
+        exec.createArg().setValue(this.structFile.getAbsolutePath());
 
-        return cmdLine;
+        return exec;
     }
 }

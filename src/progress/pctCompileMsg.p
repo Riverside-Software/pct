@@ -5,33 +5,37 @@ DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xRefType    AS CHARACTER
     FIELD xObjID      AS CHARACTER.
 
-DEFINE VARIABLE iNotComp AS INTEGER NO-UNDO.
-DEFINE VARIABLE iComp    AS INTEGER NO-UNDO.
-
 PROCEDURE importXref.
     DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcOut  AS CHARACTER NO-UNDO.
+
     EMPTY TEMP-TABLE ttXref.
-    ASSIGN iComp = iComp + 1.
+
     INPUT FROM VALUE (pcFile).
     REPEAT:
         CREATE ttXref.
-	IMPORT ttXref.
+		IMPORT ttXref.
     END.
     INPUT CLOSE.
     OUTPUT TO VALUE (pcOut).
-    FOR EACH ttXref WHERE ttXref.xRefType EQ 'INCLUDE' NO-LOCK:
-        PUT UNFORMATTED SEARCH (ENTRY (1, ttXref.xObjID, ' ':U)) SKIP.
+    FOR EACH ttXref WHERE ttXref.xRefType EQ 'INCLUDE' NO-LOCK GROUP BY ttXref.xObjID:
+    	IF FIRST-OF (ttXref.xObjID) THEN
+	        PUT UNFORMATTED SEARCH (ENTRY (1, ttXref.xObjID, ' ':U)) SKIP.
     END.
     OUTPUT CLOSE.
 END PROCEDURE.
 
-PROCEDURE notCompiled.
-    ASSIGN iNotComp = iNotComp + 1.
-END PROCEDURE.
-
 PROCEDURE finish.
-    MESSAGE "Compiled " + STRING(iComp) + " file(s)".
-    IF (iNotComp NE 0) THEN
-    	MESSAGE "Failed compile " + STRING(iNotComp) + " file(s)".
+	DEFINE INPUT PARAMETER piComp   AS INTEGER   NO-UNDO.
+	DEFINE INPUT PARAMETER piNoComp AS INTEGER   NO-UNDO.
+	DEFINE INPUT PARAMETER pcFile   AS CHARACTER NO-UNDO.
+	
+	OUTPUT TO VALUE(pcFile).
+	PUT UNFORMATTED (IF piNoComp EQ 0 THEN '0' ELSE '1') SKIP.
+	OUTPUT CLOSE.
+
+    MESSAGE "Compiled " + STRING(piComp) + " file(s)".
+    IF (piNoComp NE 0) THEN
+    	MESSAGE "Failed compile " + STRING(piNoComp) + " file(s)".
+
 END PROCEDURE.

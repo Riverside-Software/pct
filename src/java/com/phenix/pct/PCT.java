@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002 The Apache Software Foundation.  All rights
+ * Copyright (c) The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,101 +54,160 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Execute;
-import org.apache.tools.ant.taskdefs.LogStreamHandler;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.Task;
 
 import java.io.File;
 
 
 /**
-  * Base class for creating tasks involving Progress
-  * The class uses the 'Execute' task as it operates by executing various commands
-  * supplied with Progress. By default the task expects Progress bin directory to be in the path,
-  * you can override this by specifying the dlcHome attribute.
+  * Base class for creating tasks involving Progress.
+  * It does basic work on guessing where various bin/java/etc are located.
+  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
   **/
-public abstract class PCT extends MatchingTask {
+public abstract class PCT extends Task {
     private File dlcHome = null;
-    private File baseDir = null;
+    private File dlcBin = null;
+    private File dlcJava = null;
+    private File proxygenJar = null;
+    private File progressJar = null;
 
     /**
      * Progress installation directory
      * @param dlcHome File
      */
     public final void setDlcHome(File dlcHome) {
+        if (!dlcHome.exists()) {
+            throw new BuildException("dlcHome attribute : " + dlcHome.toString() + " not found");
+        }
+
         this.dlcHome = dlcHome;
-    }
 
-    /**
-     * Base directory where to execute command lines
-     * @param baseDir File
-     */
-    public final void setBaseDir(File baseDir) {
-        this.baseDir = baseDir;
-    }
+        // Tries to guess bin directory
+        if (this.dlcBin == null) {
+            try {
+                this.setDlcBin(new File(dlcHome, "bin"));
+            } catch (BuildException be) {
+            }
+        }
 
-    /**
-     * Returns base directory
-     */
-    protected final File getBaseDir() {
-        if (this.baseDir == null) {
-            return this.getProject().getBaseDir();
-        } else {
-            return this.baseDir;
+        // Tries to guess java directory
+        if (this.dlcJava == null) {
+            try {
+                this.setDlcJava(new File(dlcHome, "java"));
+            } catch (BuildException be) {
+            }
         }
     }
 
     /**
+     * Progress binary directory
+     * @param dlcBin File
+     * @since 0.3
+     */
+    public final void setDlcBin(File dlcBin) {
+        if (!dlcBin.exists()) {
+            throw new BuildException("dlcBin attribute : " + dlcBin.toString() + " not found");
+        }
+
+        this.dlcBin = dlcBin;
+    }
+
+    /**
+     * Progress java directory
+     * @param dlcJava File
+     * @since 0.3
+     */
+    public final void setDlcJava(File dlcJava) {
+        if (!dlcJava.exists()) {
+            throw new BuildException("dlcJava attribute : " + dlcJava.toString() + " not found");
+        }
+
+        this.dlcJava = dlcJava;
+
+        // Tries to guess where proxygen.jar is located
+        if (this.proxygenJar == null) {
+            try {
+                setProxygenJar(new File(dlcJava, "proxygen.jar"));
+            } catch (BuildException be) {
+            }
+        }
+
+        // Tries to guess where progress.[zip|jar] is located
+        if (this.progressJar == null) {
+            try {
+                setProgressJar(new File(dlcJava, "progress.zip"));
+            } catch (BuildException be) {
+            }
+
+            if (this.progressJar == null) {
+                try {
+                    setProgressJar(new File(dlcJava, "progress.jar"));
+                } catch (BuildException be) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Proxygen.jar file
+     * @param pxgJar File
+     */
+    public final void setProxygenJar(File pxgJar) {
+        if (!pxgJar.exists()) {
+            throw new BuildException("ProxygenJar attribute : " + pxgJar.toString() + " not found");
+        }
+
+        this.proxygenJar = pxgJar;
+    }
+
+    /**
+     * Progress.zip file
+     * @param pscJar File
+     */
+    public final void setProgressJar(File pscJar) {
+        if (!pscJar.exists()) {
+            throw new BuildException("ProgressJar attribute : " + pscJar.toString() + " not found");
+        }
+
+        this.progressJar = pscJar;
+    }
+
+    /**
      * Returns Progress installation directory
+     * @return File
      */
     protected final File getDlcHome() {
         return this.dlcHome;
     }
 
     /**
+     * Returns the needed Jar File or directory to run Proxygen tasks
+     * @return File
+     */
+    protected final File getProxygenJar() {
+        return this.proxygenJar;
+    }
+
+    /**
+     * Returns the needed Jar/Zip file or directory to run various Progress/Java tasks
+     * @return File
+     */
+    protected final File getProgressJar() {
+        return this.progressJar;
+    }
+
+    /**
      * Returns a Progress executable path
+     * @param exec String
+     * @return File
      */
-    protected String getExecPath(String exec) {
-        if (this.dlcHome == null) {
-            return exec;
-        } else {
-            return (this.dlcHome.toString() + File.separatorChar + "bin" + File.separatorChar +
-                   exec);
-        }
-    }
-
-    /**
-     * Runs a command line
-     */
-    protected int run(Commandline cmd) throws BuildException {
-        return run(cmd, this.getBaseDir());
-    }
-
-    /**
-     * Runs a command line in a specified directory
-     */
-    protected int run(Commandline cmd, File dir) throws BuildException {
-        if (!dir.exists()) {
-            throw new BuildException("Directory " + dir.toString() + " doesn't exist");
+    protected final File getExecPath(String exec) {
+        if (dlcBin == null) {
+            return new File(exec);
         }
 
-        if (cmd == null) {
-            throw new BuildException("Command line not defined");
-        }
+        File f = new File(dlcBin, exec);
 
-        try {
-            Execute exe = new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN));
-            exe.setWorkingDirectory(dir);
-            log("Executing : " + cmd.toString() + " in directory " + dir.toString(),
-                Project.MSG_VERBOSE);
-
-            exe.setCommandline(cmd.getCommandline());
-
-            return exe.execute();
-        } catch (java.io.IOException e) {
-            throw new BuildException(e, location);
-        }
+        return f;
     }
 }

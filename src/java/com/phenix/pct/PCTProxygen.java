@@ -54,10 +54,8 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
@@ -68,12 +66,21 @@ import java.io.File;
 public class PCTProxygen extends PCT {
     private File srcFile = null;
     private boolean keepFiles = false;
+    private File workingDirectory = null;
 
     /**
      * @param keepFiles
      */
     public void setKeepFiles(boolean keepFiles) {
         this.keepFiles = keepFiles;
+    }
+
+    public void setWorkingDirectory(File workingDir) {
+        if (!workingDir.exists()) {
+            throw new BuildException("work dir pas bon");
+        }
+
+        this.workingDirectory = workingDir;
     }
 
     /**
@@ -92,23 +99,24 @@ public class PCTProxygen extends PCT {
             throw new BuildException("Progress installation directory not defined");
         }
 
+        if (this.getProxygenJar() == null) {
+            throw new BuildException("proxygen.jar not found");
+        }
+
         // Creates a new Java task to launch proxygen task
-        Java pxg = new Java();
+        Java pxg = (Java) getProject().createTask("java");
+
         pxg.setOwningTarget(this.getOwningTarget());
         pxg.setTaskName(this.getTaskName());
+        pxg.setDescription(this.getDescription());
 
-        Project project = this.getProject();
-        project.setBaseDir(this.getBaseDir());
-        pxg.setProject(project);
-        pxg.setDir(this.getBaseDir());
+        if (this.workingDirectory != null) {
+            pxg.setDir(this.workingDirectory);
+        }
+
         pxg.setClassname("com.progress.open4gl.proxygen.Batch");
 
-        // Add proxygen.zip to classpath
-        Path p = new Path(this.getProject());
-        p.setPath(this.getDlcHome().toString() + File.separatorChar + "java" + File.separatorChar +
-                  "proxygen.zip");
-        pxg.createClasspath();
-        pxg.setClasspath(p);
+        pxg.createClasspath().setPath(this.getProxygenJar().toString());
 
         // As Progress doesn't know command line parameters, arguments are given via environment variables        
         Environment.Variable var = new Environment.Variable();
