@@ -278,17 +278,16 @@ public class PCTConnection {
     /**
      * Creates Progress code to define aliases
      */
-    public String getAliases() {
-        StringBuffer sb = new StringBuffer();
-
+    public Vector getAliases() {
+        
+		Vector v = new Vector();
+		if (aliases == null) return null;
         for (Enumeration e = aliases.elements(); e.hasMoreElements();) {
             PCTAlias alias = (PCTAlias) e.nextElement();
-            sb.append("CREATE ALIAS " + alias.getName());
-            sb.append(" FOR DATABASE " + this.dbName);
-            sb.append((alias.getNoError() ? " NO-ERROR" : "") + ".");
-            sb.append("\n");
+			String s = "CREATE ALIAS " + alias.getName() + " FOR DATABASE " + this.dbName + (alias.getNoError() ? " NO-ERROR" : "") + ".";
+			v.add(s);
         }
 
-        return sb.toString();
+        return v;
     }
 }

@@ -304,7 +304,8 @@ public class PCTCompile extends PCT {
     public void execute() throws BuildException {
         Commandline cmdLine = null;
         int result = 0;
-        File tmpProc = null;
+        File tmpProc = null, tmpProc2 = null;
+        
 
         log("PCTCompile - Progress Code Compiler", Project.MSG_INFO);
 
@@ -336,13 +337,30 @@ public class PCTCompile extends PCT {
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("compile", ".p");
-
+			tmpProc2 = File.createTempFile("aliases", ".p");
+			
             tmpProc.deleteOnExit();
-
-            //log("Compilation : " + tmpProc.toString());
+			tmpProc2.deleteOnExit();
+			
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
+            BufferedWriter bw2 = new BufferedWriter(new FileWriter(tmpProc2));
+            
             bw.write("ASSIGN PROPATH=\"" + propath.toString() + File.pathSeparatorChar +
                      "\" + PROPATH.");
+            
+            // Defines aliases
+			for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
+				PCTConnection dbc = (PCTConnection) e.nextElement();
+				for (Enumeration e2 = dbc.getAliases().elements(); e2.hasMoreElements();) {
+					bw2.write((String) e2.nextElement());
+					bw2.newLine();
+				}
+			}
+			// Calls compile procedure
+            bw2.write("RUN " + tmpProc.toString() + ".");
+            bw2.newLine();         
+            bw2.close();
+            
             bw.newLine();
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
@@ -383,7 +401,7 @@ public class PCTCompile extends PCT {
             System.out.println(e);
         }
 
-        cmdLine = buildCompileCmdLine(tmpProc);
+        cmdLine = buildCompileCmdLine(tmpProc2);
         result = run(cmdLine);
 
         if (result != 0) {
