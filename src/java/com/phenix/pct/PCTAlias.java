@@ -61,9 +61,18 @@ public class PCTAlias {
     private String name = null;
     private boolean noError = false;
 
+	/**
+	 * Alias name
+	 * @param name
+	 */
     public void setName(String name) {
         this.name = name;
     }
+
+	/**
+	 * If alias should be declared with NO-ERROR
+	 * @param noError
+	 */
 
     public void setNoError(boolean noError) {
         this.noError = noError;
