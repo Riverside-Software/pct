@@ -95,24 +95,17 @@ Converts Webspeed HTML files to .w
 <td>False</td>
 </tr>
 <tr>
+<td>forceCompile</td>
+<td>Always compile everything</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
 <td>Debug</td>
 <td>Adds debug to e4gl-gen.p options</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
-<td>No</td>
-</tr>
-<tr>
-<td>GetOptions</td>
-<td>Adds get-options to e4gl-gen.p options</td>
-<td align="center">Boolean</td>
-<td align="center">Optional</td>
-<td>No</td>
-</tr>
-<tr>
-<td>Include</td>
-<td>Adds include to e4gl-gen.p options</td>
-<td align="center">Boolean</td>
-<td align="center">No</td>
 <td>No</td>
 </tr>
 <tr>
@@ -124,10 +117,10 @@ Converts Webspeed HTML files to .w
 </tr>
 <tr>
 <td>WebObject</td>
-<td>Adds web-object to e4gl-gen.p options</td>
+<td>Adds web-object to e4gl-gen.p options. If false, adds include option.</td>
 <td align="center">Boolean</td>
 <td align="center">No</td>
-<td>No</td>
+<td>True</td>
 </tr>
 </table>
 <p>PCTWSComp inherits attributes from <a href="PCT.html">PCT</a> and 

@@ -55,7 +55,6 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.BufferedWriter;
@@ -64,41 +63,58 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
 
-
 /**
-  * Converts Webspeed HTML files to .w
-  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
-  */
+ * Converts Webspeed HTML files to .w or .i
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ */
 public class PCTWSComp extends PCTRun {
     private Vector filesets = new Vector();
     private boolean debug = false;
     private boolean webObject = true;
-    private boolean include = false;
     private boolean keepMetaContentType = false;
-    private boolean getOptions = false;
     private boolean failOnError = false;
+    private boolean forceCompile = false;
     private File destDir = null;
 
     // Internal use
-    private File tmpProc = null;
-    private File tmpFiles = null;
+    private File fsList = null;
+    private File params = null;
 
     public PCTWSComp() {
         super();
 
         try {
-            tmpProc = File.createTempFile("pct_wscomp", ".p");
-            tmpFiles = File.createTempFile("comp_files", ".txt");
+            fsList = File.createTempFile("pct_filesets", ".txt");
+            params = File.createTempFile("pct_params", ".txt");
         } catch (IOException ioe) {
             throw new BuildException("Unable to create temp files");
         }
     }
 
     /**
+     * Force compilation, even if file is not modified
+     * 
+     * @param forceCompile "true|false|on|off|yes|no"
+     */
+    public void setForceCompile(boolean forceCompile) {
+        this.forceCompile = forceCompile;
+    }
+
+    /**
+     * Immediatly quit if a webspeed file fails to compile
+     * 
+     * @param failOnError "true|false|on|off|yes|no"
+     */
+    public void setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+    }
+
+    /**
      * Sets debug flag on in e4gl-gen.p
+     * 
      * @param debug true|false|yes|no|on|off
      */
     public void setDebug(boolean debug) {
@@ -107,22 +123,16 @@ public class PCTWSComp extends PCTRun {
 
     /**
      * Sets web-object flag on in e4gl-gen.p
+     * 
      * @param webObject true|false|yes|no|on|off
      */
-    public void setWebOject(boolean webObject) {
+    public void setWebObject(boolean webObject) {
         this.webObject = webObject;
     }
 
     /**
-     * Sets include flag on in e4gl-gen.p
-     * @param include true|false|yes|no|on|off
-     */
-    public void setInclude(boolean include) {
-        this.include = include;
-    }
-
-    /**
      * Sets keep-meta-content-type flag on in e4gl-gen.p
+     * 
      * @param keepMetaContentType true|false|yes|no|on|off
      */
     public void setKeepMetaContentType(boolean keepMetaContentType) {
@@ -130,15 +140,8 @@ public class PCTWSComp extends PCTRun {
     }
 
     /**
-     * Sets get-options flag on in e4gl-gen.p
-     * @param getOptions true|false|yes|no|on|off
-     */
-    public void setGetOptions(boolean getOptions) {
-        this.getOptions = getOptions;
-    }
-
-    /**
      * Location to store the .w files
+     * 
      * @param destDir Destination directory
      */
     public void setDestDir(File destDir) {
@@ -147,60 +150,34 @@ public class PCTWSComp extends PCTRun {
 
     /**
      * Adds a set of files to archive.
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
     }
 
-    private Vector getFileList() throws BuildException {
-        Vector v = new Vector();
-        int j = 0;
-
-        for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
-            FileSet fs = (FileSet) e.nextElement();
-
-            // And get files from fileset
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
-                PCTFile pctf = new PCTFile(fs.getDir(this.getProject()), dsfiles[i]);
-
-                // Guess r-code file name
-                File rFile = new File(this.destDir, pctf.baseDirExt + pctf.wFile); // File handle
-                File pFile = new File(pctf.baseDir, pctf.baseDirExt + pctf.fileName);
-
-                if (rFile.exists()) {
-                    if (pFile.lastModified() > rFile.lastModified()) {
-                        // Source code is more recent than R-code
-                        v.add(pctf);
-                    }
-                } else {
-                    // R-code file doesn't exist => compile it
-                    v.add(pctf);
-                }
-            }
-        }
-
-        return v;
-    }
-
-    private void writeFileList(Vector v) throws BuildException {
+    /**
+     * 
+     * @throws BuildException
+     */
+    private void writeFileList() throws BuildException {
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFiles));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fsList));
 
-            for (Enumeration e = v.elements(); e.hasMoreElements();) {
-                PCTFile pctf = (PCTFile) e.nextElement();
-                bw.write("\"");
-                bw.write(pctf.baseDir.getAbsolutePath());
-                bw.write("\" \"");
-                bw.write(pctf.baseDirExt);
-                bw.write("\" \"");
-                bw.write(pctf.fileName);
-                bw.write("\" \"");
-                bw.write(pctf.wFile);
-                bw.write("\"");
+            for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
+                // Parse filesets
+                FileSet fs = (FileSet) e.nextElement();
+                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString());
                 bw.newLine();
+
+                // And get files from fileset
+                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+
+                for (int i = 0; i < dsfiles.length; i++) {
+                    bw.write(dsfiles[i]);
+                    bw.newLine();
+                }
             }
 
             bw.close();
@@ -210,230 +187,84 @@ public class PCTWSComp extends PCTRun {
     }
 
     /**
-     *
-     * @param baseDir
-     * @param dirs
+     * 
      * @throws BuildException
      */
-    private void createDirectories(File baseDir, Hashtable dirs)
-                            throws BuildException {
-        Mkdir mkdir = new Mkdir();
-        mkdir.setOwningTarget(this.getOwningTarget());
-        mkdir.setTaskName(this.getTaskName());
-        mkdir.setDescription(this.getDescription());
-        mkdir.setProject(this.getProject());
-
-        // Creates base directory (if necessary)
-        mkdir.setDir(baseDir);
-        mkdir.execute();
-
-        // Creates subdirectories
-        for (Enumeration e = dirs.elements(); e.hasMoreElements();) {
-            mkdir.setDir(new File(baseDir, (String) e.nextElement()));
-            mkdir.execute();
+    private void writeParams() throws BuildException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
+            bw.write("FILESETS=" + fsList.getAbsolutePath());
+            bw.newLine();
+            bw.write("OUTPUTDIR=" + destDir.getAbsolutePath());
+            bw.newLine();
+            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
+            bw.newLine();
+            bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
+            bw.newLine();
+            bw.write("DEBUG=" + (this.debug ? "1" : "0"));
+            bw.newLine();
+            bw.write("WEBOBJECT=" + (this.webObject ? "1" : "0"));
+            bw.newLine();
+            bw.write("KEEPMCT=" + (this.keepMetaContentType ? "1" : "0"));
+            bw.newLine();
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to write file list to compile");
         }
-    }
-
-    /**
-     * Checks if directories need to be created
-     * @param v File list to compile
-     * @return Hashtable of directories to be created
-     * @throws BuildException Something went wrong
-     */
-    private Hashtable getDirectoryList(Vector v) throws BuildException {
-        Hashtable dirs = new Hashtable();
-
-        for (Enumeration e = v.elements(); e.hasMoreElements();) {
-            // Parse filesets
-            PCTFile pctf = (PCTFile) e.nextElement();
-            dirs.put(pctf.baseDirExt, pctf.baseDirExt);
-        }
-
-        return dirs;
     }
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        String sOptions = "";
-
-        if (!this.getDebugPCT()) {
-            this.tmpFiles.deleteOnExit();
-            this.tmpProc.deleteOnExit();
-        }
 
         if (this.destDir == null) {
             throw new BuildException("destDir attribute not defined");
         }
 
-        if (this.destDir.exists() && (!this.destDir.isDirectory())) {
-            throw new BuildException("destDir is not a directory");
-        }
-
-        log("PCTWebCompile - Progress SpeedScript Compiler", Project.MSG_INFO);
-
-        Vector compFiles = getFileList();
-        Hashtable dirs = getDirectoryList(compFiles);
-        createDirectories(this.destDir, dirs);
-
-        // If there are no files to compile, just return...
-        if (compFiles.size() == 0) {
-            return;
+        // Test output directory
+        if (this.destDir.exists()) {
+            if (!this.destDir.isDirectory()) {
+                throw new BuildException("destDir is not a directory");
+            }
         } else {
-            log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
+            if (!this.destDir.mkdir()) {
+                throw new BuildException("Unable to create destDir");
+            }
         }
 
-        // And then write file list
-        writeFileList(compFiles);
-
-        if (this.debug) {
-            sOptions += "debug";
-        }
-
-        if (this.webObject) {
-            sOptions += ",web-object";
-        }
-
-        if (this.include) {
-            sOptions += ",include";
-        }
-
-        if (this.keepMetaContentType) {
-            sOptions += ",keep-meta-content-type";
-        }
-
-        if (this.getOptions) {
-            sOptions += ",get-options";
-        }
+        log("PCTWSComp - Progress WebSpeed Code Compiler", Project.MSG_INFO);
 
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
-            bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE iComp AS INTEGER NO-UNDO INITIAL 0.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE baseDir AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE extDir AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE fileName AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE wFile AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
-                     escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE cOptions AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE cOutFile AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE VARIABLE cRetVal AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE STREAM sFiles.");
-            bw.newLine();
-            bw.newLine();
+            writeFileList();
+            writeParams();
+            this.setProcedure("pct/pctWSComp.p");
+            this.setParameter(params.getAbsolutePath());
+            super.execute();
 
-            bw.write("{src/web/method/cgidefs.i NEW}");
-            bw.newLine();
+            if (!this.getDebugPCT()) {
+                if (!this.fsList.delete()) {
+                    log("Failed to delete " + this.fsList.getAbsolutePath());
+                }
 
-            bw.write("RUN pct/pctWSComp.p PERSISTENT SET h.");
-            bw.newLine();
-            bw.newLine();
+                if (!this.params.delete()) {
+                    log("Failed to delete " + this.params.getAbsolutePath());
+                }
+            }
+        } catch (BuildException be) {
+            if (!this.getDebugPCT()) {
+                if (!this.fsList.delete()) {
+                    log("Failed to delete " + this.fsList.getAbsolutePath());
+                }
 
-            bw.write("INPUT STREAM sFiles FROM VALUE(\"" +
-                     escapeString(tmpFiles.getAbsolutePath()) + "\").");
-            bw.newLine();
-            bw.write("FileLoop:");
-            bw.newLine();
-            bw.write("REPEAT:");
-            bw.newLine();
-            bw.write("  IMPORT STREAM sFiles baseDir extDir fileName wFile.");
-            bw.newLine();
-            bw.write("  ASSIGN cOutFile = destDir + extDir + wFile");
-            bw.newLine();
-            bw.write("         cOptions = \"" + sOptions + "\".");
-            bw.newLine();
-            bw.write("  RUN webutil/e4gl-gen.p (INPUT baseDir + '/' + extDir + fileName, INPUT-OUTPUT cOptions, INPUT-OUTPUT cOutFile).");
-            bw.newLine();
-
-            bw.write("  ASSIGN cRetVal = RETURN-VALUE.");
-            bw.newLine();
-
-            bw.write("  IF (cRetVal NE '') THEN DO:");
-            bw.newLine();
-
-            bw.write("    ASSIGN iNoComp = iNoComp + 1.");
-            bw.newLine();
-
-            if (this.failOnError) {
-                bw.write("    LEAVE FileLoop.");
-                bw.newLine();
+                if (!this.params.delete()) {
+                    log("Failed to delete " + this.params.getAbsolutePath());
+                }
             }
 
-            bw.write("  END.");
-            bw.newLine();
-            bw.write("  ELSE DO:");
-            bw.newLine();
-            bw.write("    ASSIGN iComp = iComp + 1.");
-            bw.newLine();
-
-            bw.write("  END.");
-            bw.newLine();
-
-            bw.write("END.");
-            bw.newLine();
-            bw.write("INPUT CLOSE.");
-            bw.newLine();
-            bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
-            bw.newLine();
-            bw.write("DELETE PROCEDURE h.");
-            bw.newLine();
-            bw.write("RETURN (IF iNoComp GT 0 THEN '1' ELSE '0').");
-            bw.newLine();
-            bw.close();
-        } catch (IOException e) {
-            throw new BuildException("Unable to write compilation program");
-        }
-
-        this.setProcedure(tmpProc.getAbsolutePath());
-        super.execute();
-    }
-
-    /**
-     * Inner class representing files to be transformed into .w
-     * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
-     */
-    private class PCTFile {
-        public File baseDir = null;
-        public String baseDirExt = null;
-        public String fileName = null;
-        public String wFile = null;
-
-        public PCTFile(File baseDir, String fileName) {
-            this.baseDir = baseDir;
-
-            String s = escapeString(fileName.replace('\\', '/'));
-            int i = s.lastIndexOf('/');
-
-            if (i == -1) {
-                this.fileName = fileName;
-                this.baseDirExt = "" + File.separatorChar;
-            } else {
-                this.baseDirExt = s.substring(0, i) + File.separatorChar;
-                this.fileName = s.substring(i + 1); // Exception ???
-            }
-
-            i = this.fileName.lastIndexOf('.');
-
-            if (i == -1) {
-                this.wFile = this.fileName + ".w";
-            } else {
-                this.wFile = this.fileName.substring(0, i) + ".w";
-            }
+            throw be;
         }
     }
 }

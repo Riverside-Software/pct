@@ -32,5 +32,13 @@
       </fileset>	
     </PCTWSComp>	
   </target>
+  <!-- And now with include directive -->
+  <target name="test3-part2">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty" webObject="false">
+      <fileset dir=".">
+        <include name="sandbox/simple.html"/>	
+      </fileset>	
+    </PCTWSComp>	
+  </target>
     
 </project>

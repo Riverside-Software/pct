@@ -59,10 +59,10 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-
 /**
  * Class for testing PCTWSComp task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  */
 public class PCTWSCompTest extends BuildFileTest {
     public PCTWSCompTest(String name) {
@@ -113,9 +113,13 @@ public class PCTWSCompTest extends BuildFileTest {
      */
     public void test3() {
         File f = new File("build/sandbox/simple.w");
+        File f2 = new File("build/sandbox/simple.i");
 
         assertFalse(f.exists());
         executeTarget("test3");
         assertTrue(f.exists());
+        executeTarget("test3-part2");
+        assertTrue(f.exists());
+        assertTrue(f2.length() < f.length());
     }
 }
