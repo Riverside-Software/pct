@@ -147,6 +147,7 @@ public class PCTCreateBase extends PCT {
     public void execute() throws BuildException {
         ExecTask exec = null;
 
+        // TODO : rediriger la sortie standard
         // Checking there is at least an init or a structure creation
         if ((this.structFile == null) && this.noInit) {
             throw new BuildException("noInit and noStruct can't be both defined to true");
