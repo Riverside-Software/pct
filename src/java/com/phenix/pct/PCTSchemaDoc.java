@@ -92,7 +92,7 @@ public class PCTSchemaDoc extends PCTRun {
             throw new BuildException("More than one database connection defined");
         }
 
-        this.setProcedure("pctSchemaDoc.p");
+        this.setProcedure("pct/pctSchemaDoc.p");
 
         if (this.destDir == null) {
             this.setParameter(".");
