@@ -63,7 +63,7 @@ import java.util.Enumeration;
 
 
 /**
- * Class for testing PCTConnection task
+ * Class for testing PCTConnection class
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTConnectionTest extends TestCase {

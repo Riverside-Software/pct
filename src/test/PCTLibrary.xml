@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<project name="PCTLibrary-test">
+
+  <taskdef name="PCTLibrary" classname="com.phenix.pct.PCTLibrary" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <target name="test1">
+    <PCTLibrary/>
+  </target>
+   
+  <target name="test2">
+    <PCTLibrary destFile="test.pl" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <target name="test3">
+    <PCTLibrary destFile="test.pl" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="PCTLibrary.xml"/>
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+</project>

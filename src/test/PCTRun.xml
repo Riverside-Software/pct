@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<project name="PCTLibrary-test">
+
+  <taskdef name="PCTRun" classname="com.phenix.pct.PCTRun" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no procedure defined -->
+  <target name="test1">
+    <PCTRun/>
+  </target>
+   
+   <!-- Simple case : displays 'Hello world' and exits properly -->
+  <target name="test2">
+    <PCTRun procedure="progress/simple.p" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Simple case 2 : return value is 1 : Expect build exception -->
+  <target name="test3">
+    <PCTRun procedure="progress/simple2.p" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Procedure doesn't exists : Expect build exception -->
+  <target name="test4">
+    <PCTRun procedure="progress/not_existing.p" dlcHome="${env.DLC}"/>	
+  </target>
+  
+  <!-- Return value is non numeric : Expect build exception -->
+  <target name="test5">
+  	<PCTRun procedure="progress/simple3.p" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Impossible to compile procedure : Expect build exception -->
+  <target name="test6">
+    <PCTRun procedure="progress/no_compil.p" dlcHome="${env.DLC}"/>	
+  </target>
+  
+  <!-- Test propath -->
+  <target name="test7">
+    <PCTRun procedure="subdir_simple.p" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement location="progress/subdir"/>	
+      </propath>	
+    </PCTRun>
+  </target>
+  
+  <!-- Test name containing ' and ~ -->
+  <!-- See bug 837205 -->
+  <target name="test8">
+    <PCTRun procedure="progress/wizz~~'~.p" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Test -param attribute -->
+  <target name="test9">
+    <PCTRun procedure="progress/param.p" dlcHome="${env.DLC}" parameter="PCT"/>
+  </target>
+  <target name="test9bis">
+    <PCTRun procedure="progress/param.p" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Test -yy attribute - Default is 1950 -->
+  <target name="test10">
+    <PCTRun procedure="progress/century.p" dlcHome="${env.DLC}" parameter="60" centuryYearOffset="1970"/>
+  </target>
+  <target name="test10bis">
+    <PCTRun procedure="progress/century.p" dlcHome="${env.DLC}" parameter="60"/>
+  </target>
+  
+</project>

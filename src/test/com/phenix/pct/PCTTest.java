@@ -64,11 +64,8 @@ import java.io.File;
 
 
 /**
- *
- * @author gquerret
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Class for testing PCT abstract task
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTTest extends TestCase {
     private static final String DLC = "dlc/";
