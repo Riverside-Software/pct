@@ -65,11 +65,10 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-
 /**
  * Class for compiling Progress procedures
- *
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
     private Vector filesets = new Vector();
@@ -78,7 +77,7 @@ public class PCTCompile extends PCTRun {
     private boolean forceCompile = false;
     private boolean failOnError = false;
     private boolean xcode = false;
-    private String xcodeKey = null; 
+    private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
 
@@ -102,7 +101,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Reduce r-code size ? MIN-SIZE option of the COMPILE statement
-     *
+     * 
      * @param minSize "true|false|on|off|yes|no"
      */
     public void setMinSize(boolean minSize) {
@@ -111,9 +110,9 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Force compilation, without xref generation
-     *
+     * 
      * @param forceCompile "true|false|on|off|yes|no"
-     *
+     * 
      * @since 0.3b
      */
     public void setForceCompile(boolean forceCompile) {
@@ -122,7 +121,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Immediatly quit if a progress procedure fails to compile
-     *
+     * 
      * @param failOnError "true|false|on|off|yes|no"
      */
     public void setFailOnError(boolean failOnError) {
@@ -130,10 +129,11 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Don't use XREF (and so compile everything). Removed since 0.5, use forceCompile
-     *
+     * Don't use XREF (and so compile everything). Removed since 0.5, use
+     * forceCompile
+     * 
      * @param noXref "true|false|on|off|yes|no"
-     *
+     * 
      * @deprecated
      */
     public void setNoXref(boolean noXref) {
@@ -142,8 +142,9 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Directory where to store CRC and includes files : .pct subdirectory is created there
-     *
+     * Directory where to store CRC and includes files : .pct subdirectory is
+     * created there
+     * 
      * @param xrefDir File
      */
     public void setXRefDir(File xrefDir) {
@@ -152,7 +153,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Put MD5 in r-code ? GENERATE-MD5 option of the COMPILE statement
-     *
+     * 
      * @param md5 "true|false|on|off|yes|no"
      */
     public void setMD5(boolean md5) {
@@ -161,7 +162,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Location to store the .r files
-     *
+     * 
      * @param destDir Destination directory
      */
     public void setDestDir(File destDir) {
@@ -170,7 +171,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Procedures are encrypted ?
-     *
+     * 
      * @param xcode boolean
      */
     public void setXCode(boolean xcode) {
@@ -179,7 +180,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Compile using a specific key instead of the default key
-     *
+     * 
      * @param xcodeKey String
      */
     public void setXCodeKey(String xcodeKey) {
@@ -188,7 +189,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Adds a set of files to archive.
-     *
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -196,7 +197,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     *
+     * 
      * @throws BuildException
      */
     private void writeFileList() throws BuildException {
@@ -225,7 +226,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     *
+     * 
      * @throws BuildException
      */
     private void writeParams() throws BuildException {
@@ -261,7 +262,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Do the work
-     *
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
@@ -316,7 +317,7 @@ public class PCTCompile extends PCTRun {
                 }
             }
         } catch (BuildException be) {
-        	if (!this.getDebugPCT()) {
+            if (!this.getDebugPCT()) {
                 if (!this.fsList.delete()) {
                     log("Failed to delete " + this.fsList.getAbsolutePath());
                 }
@@ -324,8 +325,8 @@ public class PCTCompile extends PCTRun {
                 if (!this.params.delete()) {
                     log("Failed to delete " + this.params.getAbsolutePath());
                 }
-        	}
-        	
+            }
+
             throw be;
         }
     }
