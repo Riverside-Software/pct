@@ -64,7 +64,7 @@ public class PCTDumpSchema extends PCT {
     private File destFile = null;
 
     public void addPCTConnection(PCTConnection dbConn)
-        throws BuildException {
+                          throws BuildException {
         if (this.dbConn != null) {
             throw new BuildException("Only one connection allowed");
         }

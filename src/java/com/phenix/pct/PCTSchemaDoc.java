@@ -81,8 +81,7 @@ public class PCTSchemaDoc extends PCT {
 
         if (this.destDir != null) {
             if (!(this.destDir.isDirectory()) || !(this.destDir.canWrite())) {
-                throw new BuildException(
-                    "destDir is not a directory or not writable");
+                throw new BuildException("destDir is not a directory or not writable");
             }
         }
 
@@ -94,8 +93,7 @@ public class PCTSchemaDoc extends PCT {
         result = run(cmdLine);
 
         if (result != 0) {
-            throw new BuildException("Failed creating database documentation [" +
-                result + "]");
+            throw new BuildException("Failed creating database documentation [" + result + "]");
         }
     }
 
