@@ -57,7 +57,7 @@
       CREATE tab1.
       ASSIGN tab1.fld1 = 1.
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="../../build/tty"/>
   </target>
   <target name="test5">
     <PCTCompile destDir="." dlcHome="${env.DLC}">
