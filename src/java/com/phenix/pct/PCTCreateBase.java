@@ -134,7 +134,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Load schema after creating database
-     * @param srcFile Schema file
+     * @param schemaFile File
      */
     public void setSchemaFile(File schemaFile) {
         this.schema = schemaFile;
