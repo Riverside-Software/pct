@@ -69,27 +69,43 @@ public class PCTLibraryTest extends BuildFileTest {
         super(name);
     }
 
+    /**
+     * Sets up the fixture 
+     */
     public void setUp() {
         configureProject("src/test/PCTLibrary.xml");
     }
 
+    /**
+     * Tears down the fixture
+     */
     public void tearDown() {
         File pl = new File("src/test/test.pl");
         pl.delete();
     }
 
+    /**
+     * Attribute destFile should always be defined
+     */
     public void test1() {
         expectBuildException("test1", "Library name not defined");
     }
 
+    /**
+     * Checks that a new library is created
+     */
     public void test2() {
+    	File pl = new File("src/test/test.pl");
+    	
+    	assertFalse(pl.exists());
         executeTarget("test2");
-
-        File pl = new File("src/test/test.pl");
         assertTrue(pl.exists());
         pl.delete();
     }
 
+    /**
+     * Checks that a file is added in the library
+     */
     public void test3() {
         executeTarget("test3");
 
