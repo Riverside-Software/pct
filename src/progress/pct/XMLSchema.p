@@ -244,7 +244,7 @@ REPEAT:
         xTable:APPEND-CHILD(xTrigger).
         xTrigger:SET-ATTRIBUTE('event':U, hEvent:BUFFER-VALUE).
         xTrigger:SET-ATTRIBUTE('procedure':U, hProc:BUFFER-VALUE).
-        xTrigger:SET-ATTRIBUTE('overridable':U, hOverride:BUFFER-VALUE).
+        xTrigger:SET-ATTRIBUTE('overridable':U, (IF hOverride:BUFFER-VALUE THEN 'True' ELSE 'False')).
         hTrig:GET-NEXT(NO-LOCK).
     END.
     hTrig:QUERY-CLOSE().
