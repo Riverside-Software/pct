@@ -57,11 +57,9 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
-//import java.util.Enumeration;
 import java.util.Vector;
 
 
@@ -153,7 +151,7 @@ public class PCTLibrary extends PCT {
 
         if (result != 0) {
             String msg = "Failed creating new library: " + cmdLine.toString() +
-                " - Return code : " + result;
+                         " - Return code : " + result;
             throw new BuildException(msg, location);
         }
 
@@ -164,8 +162,8 @@ public class PCTLibrary extends PCT {
             result = run(cmdLine);
 
             if (result != 0) {
-                String msg = "Failed adding file: " + cmdLine.toString() +
-                    " - Return code : " + result;
+                String msg = "Failed adding file: " + cmdLine.toString() + " - Return code : " +
+                             result;
                 throw new BuildException(msg, location);
             }
         }
@@ -175,8 +173,8 @@ public class PCTLibrary extends PCT {
             result = run(cmdLine);
 
             if (result != 0) {
-                String msg = "Failed compressing library: " +
-                    cmdLine.toString() + " - Return code : " + result;
+                String msg = "Failed compressing library: " + cmdLine.toString() +
+                             " - Return code : " + result;
                 throw new BuildException(msg, location);
             }
         }

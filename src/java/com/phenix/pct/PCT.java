@@ -114,8 +114,8 @@ public abstract class PCT extends MatchingTask {
         if (this.dlcHome == null) {
             return exec;
         } else {
-            return (this.dlcHome.toString() + File.separatorChar + "bin" +
-            File.separatorChar + exec);
+            return (this.dlcHome.toString() + File.separatorChar + "bin" + File.separatorChar +
+                   exec);
         }
     }
 
@@ -131,8 +131,7 @@ public abstract class PCT extends MatchingTask {
      */
     protected int run(Commandline cmd, File dir) throws BuildException {
         if (!dir.exists()) {
-            throw new BuildException("Directory " + dir.toString() +
-                " doesn't exist");
+            throw new BuildException("Directory " + dir.toString() + " doesn't exist");
         }
 
         if (cmd == null) {
@@ -140,11 +139,11 @@ public abstract class PCT extends MatchingTask {
         }
 
         try {
-            Execute exe = new Execute(new LogStreamHandler(this,
-                        Project.MSG_INFO, Project.MSG_WARN));
+            Execute exe = new Execute(new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN));
             exe.setWorkingDirectory(dir);
-            log("Executing : " + cmd.toString() + " in directory " +
-                dir.toString(), Project.MSG_VERBOSE);
+            log("Executing : " + cmd.toString() + " in directory " + dir.toString(),
+                Project.MSG_VERBOSE);
+
             exe.setCommandline(cmd.getCommandline());
 
             return exe.execute();

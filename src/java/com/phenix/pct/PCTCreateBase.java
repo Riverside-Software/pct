@@ -118,8 +118,7 @@ public class PCTCreateBase extends PCT {
 
         // Checking length of the database name
         if (this.dbName.length() > 11) {
-            throw new BuildException(
-                "Database name is longer than 11 characters");
+            throw new BuildException("Database name is longer than 11 characters");
         }
 
         if (!this.noSchema) {
@@ -128,8 +127,7 @@ public class PCTCreateBase extends PCT {
             result = run(cmdLine, this.getDestDir());
 
             if (result != 0) {
-                throw new BuildException(
-                    "Failed creating structure - Return code : " + result);
+                throw new BuildException("Failed creating structure - Return code : " + result);
             }
         }
 
@@ -139,8 +137,7 @@ public class PCTCreateBase extends PCT {
             result = run(cmdLine, this.getDestDir());
 
             if (result != 0) {
-                throw new BuildException(
-                    "Failed initializing database - Return code : " + result);
+                throw new BuildException("Failed initializing database - Return code : " + result);
             }
         }
     }
@@ -152,8 +149,8 @@ public class PCTCreateBase extends PCT {
         cmdLine.createArgument().setValue("procopy");
 
         if (dlcHome != null) {
-            cmdLine.createArgument().setValue(dlcHome.getAbsolutePath() +
-                File.separatorChar + "empty" + this.blockSize);
+            cmdLine.createArgument().setValue(dlcHome.getAbsolutePath() + File.separatorChar +
+                                              "empty" + this.blockSize);
         } else {
             cmdLine.createArgument().setValue("empty" + this.blockSize);
         }

@@ -64,7 +64,7 @@ public class PCTLoadSchema extends PCT {
     private PCTConnection dbConn = null;
 
     public void addPCTConnection(PCTConnection dbConn)
-        throws BuildException {
+                          throws BuildException {
         if (this.dbConn != null) {
             throw new BuildException("Only one connection allowed");
         }

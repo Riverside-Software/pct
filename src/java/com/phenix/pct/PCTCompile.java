@@ -60,7 +60,6 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -230,9 +229,9 @@ public class PCTCompile extends PCT {
         for (int i = 0; i < files.size(); i++) {
             // Search r-code file
             rFile = files.elementAt(i).toString().substring(0,
-                    files.elementAt(i).toString().lastIndexOf(".")) + ".r";
-            f1 = new File(((this.destDir == null) ? this.getBaseDir()
-                                                  : this.destDir), rFile);
+                                                            files.elementAt(i).toString()
+                                                            .lastIndexOf(".")) + ".r";
+            f1 = new File(((this.destDir == null) ? this.getBaseDir() : this.destDir), rFile);
 
             if (f1.exists()) {
                 recompile = false;
@@ -246,11 +245,12 @@ public class PCTCompile extends PCT {
 
                 // Check against included files 
                 try {
-                    br = new BufferedReader(new FileReader(
-                                new File(((this.destDir == null)
-                                    ? this.getBaseDir() : this.destDir),
-                                    ".includes" + File.separatorChar +
-                                    files.elementAt(i).toString())));
+                    br = new BufferedReader(new FileReader(new File(((this.destDir == null)
+                                                                     ? this.getBaseDir()
+                                                                     : this.destDir),
+                                                                    ".includes" +
+                                                                    File.separatorChar +
+                                                                    files.elementAt(i).toString())));
 
                     while (((s = br.readLine()) != null) && !(recompile)) {
                         // Search included file
@@ -283,7 +283,7 @@ public class PCTCompile extends PCT {
     }
 
     private void createDirectories(File baseDir, Hashtable dirs)
-        throws BuildException {
+                            throws BuildException {
         Mkdir mkdir = new Mkdir();
         mkdir.setOwningTarget(this.getOwningTarget());
         mkdir.setTaskName(this.getTaskName());
@@ -316,12 +316,10 @@ public class PCTCompile extends PCT {
             createDirectories(this.destDir, dirs);
         }
 
-        createDirectories(new File(((this.destDir == null) ? this.getBaseDir()
-                                                           : this.destDir),
-                ".xref"), dirs);
-        createDirectories(new File(((this.destDir == null) ? this.getBaseDir()
-                                                           : this.destDir),
-                ".includes"), dirs);
+        createDirectories(new File(((this.destDir == null) ? this.getBaseDir() : this.destDir),
+                                   ".xref"), dirs);
+        createDirectories(new File(((this.destDir == null) ? this.getBaseDir() : this.destDir),
+                                   ".includes"), dirs);
 
         /*if ((destDir != null) && (!destDir.isDirectory())) {
             throw new BuildException("destDir is not a directory");
@@ -332,8 +330,7 @@ public class PCTCompile extends PCT {
             return;
         } else {
             log("Compiling " + compFiles.size() + " file(s) to " +
-                ((this.destDir == null) ? this.getBaseDir() : this.destDir),
-                Project.MSG_INFO);
+                ((this.destDir == null) ? this.getBaseDir() : this.destDir), Project.MSG_INFO);
         }
 
         try {
@@ -344,8 +341,8 @@ public class PCTCompile extends PCT {
 
             //log("Compilation : " + tmpProc.toString());
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
-            bw.write("ASSIGN PROPATH=\"" + propath.toString() +
-                File.pathSeparatorChar + "\" + PROPATH.");
+            bw.write("ASSIGN PROPATH=\"" + propath.toString() + File.pathSeparatorChar +
+                     "\" + PROPATH.");
             bw.newLine();
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
@@ -353,8 +350,7 @@ public class PCTCompile extends PCT {
             bw.newLine();
 
             for (int i = 0; i < compFiles.size(); i++) {
-                bw.write("COMPILE " + compFiles.elementAt(i).toString() +
-                    " SAVE");
+                bw.write("COMPILE " + compFiles.elementAt(i).toString() + " SAVE");
 
                 if (destDir != null) {
                     bw.write(" INTO VALUE(\"" + destDir + "\")");
@@ -363,18 +359,15 @@ public class PCTCompile extends PCT {
                 bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
                 bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
                 bw.write(" XREF " +
-                    ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
-                    "/.xref/" + compFiles.elementAt(i).toString() +
-                    " APPEND=FALSE.");
+                         ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
+                         "/.xref/" + compFiles.elementAt(i).toString() + " APPEND=FALSE.");
 
                 bw.newLine();
-                bw.write(
-                    "IF NOT COMPILER:ERROR THEN RUN importXref IN h (INPUT '" +
-                    ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
-                    "/.xref/" + compFiles.elementAt(i).toString() +
-                    "', INPUT '" +
-                    ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
-                    "/.includes/" + compFiles.elementAt(i).toString() + "').");
+                bw.write("IF NOT COMPILER:ERROR THEN RUN importXref IN h (INPUT '" +
+                         ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
+                         "/.xref/" + compFiles.elementAt(i).toString() + "', INPUT '" +
+                         ((this.destDir == null) ? this.getBaseDir() : this.destDir).getAbsolutePath() +
+                         "/.includes/" + compFiles.elementAt(i).toString() + "').");
                 bw.newLine();
                 bw.write("ELSE RUN notCompiled IN h.");
                 bw.newLine();
@@ -394,16 +387,15 @@ public class PCTCompile extends PCT {
         result = run(cmdLine);
 
         if (result != 0) {
-            String msg = "Compilation failed: " + cmdLine.toString() +
-                " - Return code : " + result;
+            String msg = "Compilation failed: " + cmdLine.toString() + " - Return code : " +
+                         result;
             throw new BuildException(msg, location);
         }
     }
 
     protected Commandline buildCompileCmdLine(File f) {
         Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getExecPath((this.graphMode ? "prowin32"
-                                                              : "_progres")));
+        commandLine.setExecutable(getExecPath((this.graphMode ? "prowin32" : "_progres")));
 
         // Database connections
         for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
