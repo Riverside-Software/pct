@@ -238,8 +238,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("PCTDIR=" + xRefDir.getAbsolutePath());
             bw.newLine();
-            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
-            bw.newLine();
             bw.write("MINSIZE=" + (this.minSize ? "1" : "0"));
             bw.newLine();
             bw.write("MD5=" + (this.md5 ? "1" : "0"));
