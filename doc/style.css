@@ -146,3 +146,16 @@ span#sflogo {
 img#sflogoimg {
     border: 0px;
 }
+
+pre.source {
+	background: #aaaaaa;
+}
+
+pre.output {
+	color: darkblue;
+}
+
+tt.ln {
+	color: green;
+	font-weight: 700;
+}

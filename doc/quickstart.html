@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="fr" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="fr" />
+<title>PCT documentation - Installation</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+    <li><a href="PLReader.html">PLReader</a></li>
+    <li><a href="quickstart.html">Quick start</a></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpData.html">PCTDumpData</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+    <li><a href="PCTCRC.html">PCTCRC</a></li>
+    <li><a href="PCTXCode.html">PCTXCode</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTConnection.html">PCTConnection</a></li>
+    <li><a href="PCTAlias.html">PCTAlias</a></li>
+  </ul>
+</div>
+
+<div class="Text">
+<h1>Quick start</h1>
+<h2>Step 1 : first build.xml file (aka Hello, world!) [Download <a href="sample1.zip">sample</a>]</h2>
+<p>
+Let's assume ANT and PCT are correctly installed (see <a href="manual.html">manual</a>).
+We'll create a new Progress
+project in a directory called, say, MyProject. As a good practice, we'll separate
+sources from build files : let's say we'll have a subdirectory called <em>src</em>
+for sources, and a subdirectory called <em>build</em> for build files.
+</p>
+<p>
+We'll now create one or more procedures in the <em>src</em> subdir. For example,
+in <em>MyProject/src/test.p</em> :<pre class="source">
+<tt class="ln"> 1</tt>  MESSAGE "This is a test file".
+</pre>
+</p>
+<p>
+And now, in <em>MyProject/build.xml</em> :<pre class="source">
+<tt class="ln"> 1</tt>  &lt;?xml version="1.0" encoding="utf-8"?&gt;
+<tt class="ln"> 2</tt>  &lt;project name="MyProject" default="build" basedir="."&gt;
+<tt class="ln"> 3</tt>    &lt;property environment="env"/&gt;
+<tt class="ln"> 4</tt>    &lt;taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar"/&gt;  
+<tt class="ln"> 5</tt>    &lt;target name="build" description="Builds source files">
+<tt class="ln"> 6</tt>      &lt;mkdir dir="build"/&gt;
+<tt class="ln"> 7</tt>      &lt;PCTCompile destDir="build" dlcHome="${env.DLC}"&gt;
+<tt class="ln"> 8</tt>        &lt;fileset dir="src"&gt;
+<tt class="ln"> 9</tt>          &lt;include name="*.p"/&gt;
+<tt class="ln">10</tt>        &lt;/fileset&gt;
+<tt class="ln">11</tt>      &lt;/PCTCompile&gt;
+<tt class="ln">12</tt>    &lt;/target&gt;
+<tt class="ln">13</tt>  &lt;/project&gt;
+</pre>
+</p>
+<p>
+Open a shell, define two environment variables, DLC and PCT_HOME, pointing to
+Progress base directory and PCT base directory. Ant also assumes that ANT_HOME,
+JAVA_HOME are defined, but that's part of Ant installation.
+Then cd to the MyProject directory, and then type <code>ant build</code>.
+You should get the following :<pre class="output">
+Buildfile: build.xml
+
+build:
+    [mkdir] Created dir: /home/justus/MyProject/build
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 1 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 1 seconds
+</pre>
+And you should have a subdir called build, containing a test.r file.
+</p>
+<p>
+A few words on this :<ul>
+<li>line 3 tells Ant to load environment variables so that
+they could be accessed with ${env.VARIABLE_NAME} : useful for DLC and PCT_HOME...</li>
+<li>Line 4 tells Ant to load the mapping between tasks name (e.g. PCTCompile) and Java
+class files (e.g. com.phenix.pct.PCTCompile) : this is mandatory to have a working
+PCT.</li>
+<li>Lines 7 to 11 tells PCT to compile every .p file in the src directory, and then
+put them in the destDir directory.</li>
+</ul>
+</p>
+<p>
+Download the <a href="sample1.zip">sample</a>
+</p>
+
+<h2>Step 2 : adding a database [Download <a href="sample3.zip">sample</a>]</h2>
+<p>
+We'll create a subdir called db, containing the database dump file (called db.df).
+Just create this file :<pre class="source"">
+<tt class="ln"> 1</tt>  ADD TABLE "MyTable"
+<tt class="ln"> 2</tt>    AREA "Schema Area"
+<tt class="ln"> 3</tt>    DUMP-NAME "MyTable"
+<tt class="ln"> 4</tt>  
+<tt class="ln"> 5</tt>  ADD FIELD "Fld1" OF "MyTable" AS character 
+<tt class="ln"> 6</tt>  
+<tt class="ln"> 7</tt>  ADD FIELD "Fld2" OF "MyTable" AS character 
+<tt class="ln"> 8</tt>  
+<tt class="ln"> 9</tt>  ADD INDEX "MyTable-PK" ON "MyTable" 
+<tt class="ln">10</tt>    AREA "Schema Area"
+<tt class="ln">11</tt>    UNIQUE
+<tt class="ln">12</tt>    PRIMARY
+<tt class="ln">13</tt>    INDEX-FIELD "Fld1" ASCENDING 
+</pre>
+This should create a really simple table, with two fields, and a primary unique index.
+</p>
+<p>
+Now, we'll create a new procedure, called src/test2.p :<pre class="source"">
+<tt class="ln"> 1</tt>  CREATE MyTable.
+<tt class="ln"> 2</tt>  ASSIGN MyTable.Fld1 = "ABC"
+<tt class="ln"> 3</tt>         MyTable.Fld2 = "DEF".
+</pre>
+Now, add the following line after line 6 of the previous build.xml :<pre class="source">
+<tt class="ln"> 1</tt>      &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
+</pre>
+and this one after line 10 :<pre class="source"">
+<tt class="ln"> 1</tt>        &lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
+</pre>
+Now run ant build from the shell prompt. You should get the following :<pre class="output">
+Buildfile: build.xml
+
+build:
+[PCTCreateBase] procopy source session begin for justus on batch. (451)
+
+[PCTCreateBase] Formatting extents:
+[PCTCreateBase]    size                area name   path name
+[PCTCreateBase]       4    Primary Recovery Area /home/justus/MyProject/db/db.b1 00:00:00
+[PCTCreateBase]       4              Schema Area /home/justus/MyProject/db/db.d1 00:00:00
+
+[PCTCreateBase] Copying /opt/dlc10/empty8 to db... (6715)
+
+[PCTCreateBase] Start writing data blocks. (6718)
+[PCTCreateBase] 14:23:21 10 Percent complete.
+[PCTCreateBase] 14:23:21 20 Percent complete.
+[PCTCreateBase] 14:23:21 30 Percent complete.
+[PCTCreateBase] 14:23:21 40 Percent complete.
+[PCTCreateBase] 14:23:21 50 Percent complete.
+[PCTCreateBase] 14:23:21 60 Percent complete.
+[PCTCreateBase] 14:23:21 70 Percent complete.
+[PCTCreateBase] 14:23:21 80 Percent complete.
+[PCTCreateBase] 14:23:21 90 Percent complete.
+[PCTCreateBase] 14:23:21 100 Percent complete.
+[PCTCreateBase] 239 blocks copied. (6720)
+
+[PCTCreateBase] ...Copy complete. (6722)
+[PCTCreateBase] procopy source session end. (334)
+[PCTCreateBase] Database copied from /opt/dlc10/empty8. (1365)
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 2 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 7 seconds
+</pre>
+Running ant build a second time will give you this :<pre class="output">
+Buildfile: build.xml
+
+build:
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 0 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 1 seconds
+</pre>
+</p>
+
+<h2>Step 3 : dealing with propath [Download <a href="sample3.zip">sample</a>]</h2>
+<p>
+</p>
+
+<h2>Step 4 : dealing with ADM2 and customs [Download <a href="sample4.zip">sample</a>]</h2>
+<p>
+</p>
+
+<h2>Step 5 : let's proxygen... [Download <a href="sample5.zip">sample</a>]</h2>
+<p>
+</p>
+
+<h2>Step 6 : a cup of Java ? [Download <a href="sample6.zip">sample</a>]</h2>
+<p>
+</p>
+
+<h2>Step 7 : let's web... [Download <a href="sample7.zip">sample</a>]</h2>
+<p>
+</p>
+</div>
+
+<div class="LastUpdate">
+  $Date$
+</div>
+
+</div>
+
+</body>
+</html>
