@@ -71,7 +71,7 @@ PROCEDURE TableSummary.
     CREATE BUFFER hTables FOR TABLE "_File".
     CREATE QUERY hQuery.
     hQuery:SET-BUFFERS (hTables).
-    hQuery:QUERY-PREPARE ('FOR EACH _Fkle ' + pcWhere).
+    hQuery:QUERY-PREPARE ('FOR EACH _File ' + pcWhere).
     hQuery:QUERY-OPEN.
     hQuery:GET-FIRST.
     ASSIGN hFileName = hTables:BUFFER-FIELD ('_File-Name')
@@ -278,7 +278,7 @@ PROCEDURE DetailedTable.
         PUT UNFORMATTED  "</div>" SKIP(2).
         PUT UNFORMATTED "</div>" SKIP.
 	
-        /* Tableau HTML contenant différentes informations sur les champs de la table PROGRESS*/
+        /* Tableau HTML contenant diffï¿½rentes informations sur les champs de la table PROGRESS*/
 	PUT UNFORMATTED "<div id=""Detail"">" SKIP.
         PUT UNFORMATTED "<table class=""Internal"">" SKIP.
         PUT UNFORMATTED "<tr><th colspan=""8"">Fields</th></tr>" SKIP.
@@ -421,7 +421,7 @@ PROCEDURE DetailedTable.
         PUT UNFORMATTED "</table>" SKIP(2).
 	PUT UNFORMATTED "</div>" SKIP.
         
-        /* Fin du document HTML de présentation de la table PROGRESS */
+        /* Fin du document HTML de prï¿½sentation de la table PROGRESS */
         PUT UNFORMATTED "</body>" SKIP.
         PUT UNFORMATTED "</html>" SKIP.
         OUTPUT CLOSE.
