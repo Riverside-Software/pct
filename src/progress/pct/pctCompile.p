@@ -207,8 +207,9 @@ REPEAT:
     END.
 END.
 INPUT STREAM sFileset CLOSE.
-MESSAGE iCompOK " files compiled".
-MESSAGE "Failed compile " iCompFail " files".
+MESSAGE STRING(iCompOK) + " file(s) compiled".
+IF (iCompFail GE 1) THEN
+    MESSAGE "Failed to compile " iCompFail " file(s)".
 RETURN (IF BuildExc THEN '10' ELSE '0').
 
 FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGER, INPUT d AS CHARACTER).
