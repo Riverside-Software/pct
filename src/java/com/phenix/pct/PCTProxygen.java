@@ -133,17 +133,17 @@ public class PCTProxygen extends PCT {
         Environment.Variable var = new Environment.Variable();
         var.setKey("PXGFile");
         var.setValue(this.srcFile.toString());
-        pxg.addEnv(var);
+        pxg.addSysproperty(var);
 
         Environment.Variable var2 = new Environment.Variable();
         var2.setKey("Install.Dir");
         var2.setValue(this.getDlcHome().toString());
-        pxg.addEnv(var2);
+        pxg.addSysproperty(var2);
 
         Environment.Variable var3 = new Environment.Variable();
         var3.setKey("Proxygen.LeaveProxyFiles");
         var3.setValue((this.keepFiles ? "true" : "false"));
-        pxg.addEnv(var3);
+        pxg.addSysproperty(var3);
 
         Environment.Variable var4 = new Environment.Variable();
         var4.setKey("DLC");
