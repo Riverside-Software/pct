@@ -72,8 +72,8 @@ public class PCTCreateBase extends PCT {
     private File structFile = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
-    private boolean noSchema = false;
     private boolean overwrite = false;
+    private File schema = null;
 
     /**
      * Structure file (.st)
@@ -104,7 +104,7 @@ public class PCTCreateBase extends PCT {
      * @param noSchema "true|false|on|off|yes|no"
      */
     public void setNoSchema(boolean noSchema) {
-        this.noSchema = noSchema;
+        this.log("noSchema is deprecated and not used anymore - Use structFile directly");
     }
 
     /**
@@ -128,7 +128,16 @@ public class PCTCreateBase extends PCT {
      * @param overwrite "true|false|on|off|yes|no"
      */
     public void setOverwrite(boolean overwrite) {
+        log("WARNING : this attribute doesn't work properly");
         this.overwrite = overwrite;
+    }
+
+    /**
+     * Load schema after creating database
+     * @param srcFile Schema file
+     */
+    public void setSchemaFile(File schemaFile) {
+        this.schema = schemaFile;
     }
 
     /**
@@ -139,13 +148,18 @@ public class PCTCreateBase extends PCT {
         ExecTask exec = null;
 
         // Checking there is at least an init or a structure creation
-        if (this.noSchema && this.noInit) {
-            throw new BuildException("noInit et noSchema");
+        if ((this.structFile == null) && this.noInit) {
+            throw new BuildException("noInit and noStruct can't be both defined to true");
         }
 
-        // Checking structure file argument is given
-        if (!this.noSchema && (this.structFile == null)) {
-            throw new BuildException("No structure file defined");
+        // Checking dbName is defined
+        if (this.dbName == null) {
+            throw new BuildException("Database name not defined");
+        }
+
+        // Update destDir if not defined
+        if (this.destDir == null) {
+            this.destDir = this.getProject().getBaseDir();
         }
 
         // Checking length of the database name
@@ -158,6 +172,7 @@ public class PCTCreateBase extends PCT {
 
         if (db.exists()) {
             if (this.overwrite) {
+                // TODO : revoir l'effacement de l'ancienne base
                 Delete del = (Delete) getProject().createTask("delete");
                 del.setOwningTarget(this.getOwningTarget());
                 del.setTaskName(this.getTaskName());
@@ -169,7 +184,7 @@ public class PCTCreateBase extends PCT {
             }
         }
 
-        if (!this.noSchema) {
+        if (this.structFile != null) {
             exec = structCmdLine();
             exec.execute();
         }
@@ -178,10 +193,27 @@ public class PCTCreateBase extends PCT {
             exec = initCmdLine();
             exec.execute();
         }
+
+        if (this.schema != null) {
+            PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema");
+            pls.setOwningTarget(this.getOwningTarget());
+            pls.setTaskName(this.getTaskName());
+            pls.setDescription(this.getDescription());
+            pls.setSrcFile(this.schema);
+            pls.setDlcHome(this.getDlcHome());
+            pls.setDlcBin(this.getDlcBin());
+
+            PCTConnection pc = new PCTConnection();
+            pc.setDbName(this.dbName);
+            pc.setDbDir(this.destDir);
+            pc.setSingleUser(true);
+            pls.addPCTConnection(pc);
+            pls.execute();
+        }
     }
 
     /**
-     *
+     * Creates the _dbutil procopy emptyX command line
      * @return
      */
     private ExecTask initCmdLine() {
@@ -202,7 +234,7 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
-     *
+     * Creates the _dbutil prostrct create command line
      * @return
      */
     private ExecTask structCmdLine() {
