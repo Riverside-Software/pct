@@ -92,6 +92,6 @@ public class PCTLoadSchema extends PCTRun {
 
         this.setProcedure("pct/pctLoadSchema.p");
         this.setParameter(srcFile.toString());
-        this.run();
+        super.execute();
     }
 }
