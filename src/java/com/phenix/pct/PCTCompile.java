@@ -101,9 +101,9 @@ public class PCTCompile extends PCTRun {
      * @since 0.3b
      */
     public void setForceCompile(boolean forceCompile) {
-    	this.forceCompile = forceCompile;
+        this.forceCompile = forceCompile;
     }
-    
+
     /**
      * Immediatly quit if a progress procedure fails to compile
      * @param failOnError "true|false|on|off|yes|no"
@@ -189,7 +189,7 @@ public class PCTCompile extends PCTRun {
                         if (pFile.lastModified() > rFile.lastModified()) {
                             // Source code is more recent than R-code
                             v.add(pctf);
-                        } else if (!this.noXref){
+                        } else if (!this.noXref) {
                             // Must check if included files are more recent
                             BufferedReader br = null;
                             String incFile = null;
@@ -219,10 +219,9 @@ public class PCTCompile extends PCTRun {
                                 // Error occured => compile source code
                                 v.add(pctf);
                             }
-                        }
-                        else {
-                        	// Included files not checked => compile it
-                        	v.add(pctf);
+                        } else {
+                            // Included files not checked => compile it
+                            v.add(pctf);
                         }
                     } else {
                         // R-code file doesn't exist => compile it
