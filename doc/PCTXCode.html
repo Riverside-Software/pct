@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="fr" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="fr" />
+<title>PCT documentation - PCTXCode task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+    <li><a href="PLReader.html">PLReader</a></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+    <li><a href="PCTCRC.html">PCTCRC</a></li>
+    <li><a href="PCTXCode.html">PCTXCode</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTConnection.html">PCTConnection</a></li>
+    <li><a href="PCTAlias.html">PCTAlias</a></li>
+  </ul>
+</div>
+
+<div class="Text">
+<h1>PCTXCode task</h1>
+
+<h2>Description</h2>
+<p>Encrypts Progress procedures.</p>
+<p>This task encrypts procedures and include files using the Progress xcode utility.</p>
+
+<h2>Parameters</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>destDir</td>
+<td>Where encrypted files should be dropped</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>key</td>
+<td>Encryption key (-k argument)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>Default Progress key</td>
+</tr>
+<tr>
+<td>lowercase</td>
+<td>If files should be converted to lowercase before encryption (-l argument)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>overwrite</td>
+<td>Always overwrite files</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<h3>fileset (org.apache.tools.ant.types.Fileset)</h3>
+<p>
+Adds a file set to the file list to encrypt
+</p>
+
+<h2>Examples</h2>
+<pre>
+&lt;PCTXCode destDir="xbuild" key="mykey" dlcHome="${env.DLC}"&gt;
+  &lt;fileset dir="."&gt;
+    &lt;include name="*.p"/&gt;
+  &lt;/fileset&gt;
+&lt;/PCTXCode&gt;
+</pre>
+<p>
+Encrypt every *.p file in current directory using mykey key, and drop files in xbuild directory.
+</p>
+
+</div>
+
+<div class="LastUpdate">
+  $Date$
+</div>
+
+</div>
+
+</body>
+</html>
