@@ -91,9 +91,7 @@ public class PCTSchemaDoc extends PCTRun {
         }
 
         this.setProcedure("pct/pctSchemaDoc.p");
-
-            this.setParameter(destFile.getAbsolutePath());
-
+        this.setParameter(destFile.getAbsolutePath());
         super.execute();
     }
 }
