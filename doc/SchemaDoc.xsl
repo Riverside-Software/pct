@@ -1,7 +1,9 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
-  xmlns:lxslt="http://xml.apache.org/xslt" 
-  xmlns:redirect="org.apache.xalan.lib.Redirect" 
-  extension-element-prefixes="redirect">
+<xsl:stylesheet version="1.0"
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+   xmlns:xsltc="http://xml.apache.org/xalan/xsltc"
+   xmlns:redirect="http://xml.apache.org/xalan/redirect"
+   extension-element-prefixes="xsltc redirect">
+
 
 <!--
     Copyright  2002-2004 The Apache Software Foundation

@@ -203,6 +203,7 @@
     <mkdir dir="sports2000"/>
     <mkdir dir="sports2000/doc"/>
     <mkdir dir="sports2000/doc/files"/>
+    <property name="sports2000-doc" location="sports2000/doc"/>
     <exec executable="${env.DLC}/bin/_dbutil" dir="sports2000">
       <env key="DLC" value="${env.DLC}"/>
       <arg value="procopy"/>
@@ -213,7 +214,7 @@
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true"/>
     </PCTSchemaDoc>
     <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
-      <param name="outputdir" expression="doc"/>
+      <param name="outputdir" expression="${sports2000-doc}"/>
     </style>
   </target>
 
