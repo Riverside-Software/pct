@@ -2,7 +2,7 @@
 
 <project name="PCTWSComp-test" default="">
 
-  <taskdef name="PCTWSComp" classname="com.phenix.pct.PCTWSComp" classpath="../../lib/PCT.jar"/>
+  <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
   
@@ -13,11 +13,7 @@
   
   <!-- Do nothing : should not hurt -->
   <target name="test2">
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
-      <propath>
-        <pathelement path="../../build/tty"/>	
-      </propath>
-    </PCTWSComp>
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty"/>
   </target>
   
   <!-- Simple compilation -->
@@ -30,13 +26,10 @@
         &lt;p&gt;Today : 'vdate'&lt;/p&gt;
       &lt;/body&gt;
     </echo>
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/simple.html"/>	
       </fileset>	
-      <propath>
-        <pathelement path="../../build/tty"/>	
-      </propath>
     </PCTWSComp>	
   </target>
     

@@ -73,12 +73,12 @@ public class PCTWSCompTest extends BuildFileTest {
      * Sets up the fixture
      */
     public void setUp() {
-        configureProject("src/test/PCTWSComp.xml");
+        configureProject("PCTWSComp.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
     }
 
@@ -88,9 +88,9 @@ public class PCTWSCompTest extends BuildFileTest {
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("src/test/build"));
+        del.setDir(new File("build"));
         del.execute();
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
         del.execute();
     }
 
@@ -112,7 +112,7 @@ public class PCTWSCompTest extends BuildFileTest {
      * Very simple compilation
      */
     public void test3() {
-        File f = new File("src/test/build/sandbox/simple.w");
+        File f = new File("build/sandbox/simple.w");
 
         assertFalse(f.exists());
         executeTarget("test3");

@@ -73,12 +73,12 @@ public class PCTRunTest extends BuildFileTest {
      * Sets up the fixture
      */
     public void setUp() {
-        configureProject("src/test/PCTRun.xml");
+        configureProject("PCTRun.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
     }
 
@@ -117,7 +117,7 @@ public class PCTRunTest extends BuildFileTest {
      * Procedure file not found : should throw BuildException
      */
     public void test4() {
-        File f = new File("src/test/sandbox/not_existing.p");
+        File f = new File("sandbox/not_existing.p");
         assertFalse(f.exists());
         expectBuildException("test4", "Procedure not existing");
     }

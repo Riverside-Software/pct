@@ -75,19 +75,19 @@ public class PCTCRCTest extends BuildFileTest {
     }
 
     public void setUp() {
-        configureProject("src/test/PCTCRC.xml");
+        configureProject("PCTCRC.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
     }
 
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
         del.execute();
     }
 
@@ -103,7 +103,7 @@ public class PCTCRCTest extends BuildFileTest {
         executeTarget("test3pre");
         executeTarget("test3");
 
-        File f = new File("src/test/sandbox/crc");
+        File f = new File("sandbox/crc");
         assertTrue(f.exists());
 
         BufferedReader br = null;
@@ -127,7 +127,7 @@ public class PCTCRCTest extends BuildFileTest {
         executeTarget("test4pre");
         executeTarget("test4");
 
-        File f = new File("src/test/sandbox/crc");
+        File f = new File("sandbox/crc");
         assertTrue(f.exists());
 
         BufferedReader br = null;
