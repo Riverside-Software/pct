@@ -38,7 +38,7 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="false"/>
+    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="false" target="1.1"/>
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
@@ -57,17 +57,17 @@
   </target>
   
   <target name="pbuild" depends="declare" description="Progress code compilation">
-    <PCTCompile destdir="${build}/tty/pct" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
-      <fileset dir="${src.progress}/pct">
-	    <include name="*.p"/>
+    <PCTCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
+      <fileset dir="${src.progress}">
+	    <include name="pct/*.p"/>
 	  </fileset>
 	  <propath>
 	    <pathelement location="${src.progress}"/>
 	  </propath>
     </PCTCompile>
-    <PCTCompile destdir="${build}/gui/pct" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
-      <fileset dir="${src.progress}/pct">
-        <include name="*.p"/>
+    <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
+      <fileset dir="${src.progress}">
+        <include name="pct/*.p"/>
       </fileset>
       <propath>
         <pathelement location="${src.progress}"/>
