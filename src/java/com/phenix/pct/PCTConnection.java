@@ -215,6 +215,7 @@ public class PCTConnection {
      * TODO : Iterator appeared in JDK 1.2 ; as it seems to be a smarter
      * way to parse lists (cf JDK API doc), I'll move every Enum to Iterator
      * This could be done as ANT 1.6 requires JDK1.2
+     * @param aliasName String
      * @return True if alias defined for this database connection
      */
     public boolean hasNamedAlias(String aliasName) {
