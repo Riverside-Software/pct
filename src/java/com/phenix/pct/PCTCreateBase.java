@@ -77,7 +77,8 @@ public class PCTCreateBase extends PCT {
     private boolean overwrite = false;
     private File schema = null;
     private Path propath = null;
-
+    private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
+    
     /**
      * Structure file (.st)
      * @param structFile File
@@ -289,7 +290,9 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("create");
         exec.createArg().setValue(this.dbName);
         exec.createArg().setValue(this.structFile.getAbsolutePath());
-
+        exec.createArg().setValue("-blocksize");
+        exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
+        
         return exec;
     }
 }
