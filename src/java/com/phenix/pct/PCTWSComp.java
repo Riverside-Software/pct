@@ -69,7 +69,7 @@ import java.util.Vector;
 
 
 /**
-  * Class for compiling Progress procedures
+  * Converts Webspeed HTML files to .w
   * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
   */
 public class PCTWSComp extends PCTRun {
