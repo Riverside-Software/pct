@@ -455,8 +455,13 @@ public class PCTRun extends PCT {
 
                 break;
 
+            case '\u0022':
+                res.append("\u007E\u0027");
+
+                break;
+
             case '\'':
-                res.append("\u0027\u0027");
+                res.append("\u007E\u0027");
 
                 break;
 
