@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<project name="PCTXCode-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no dest dir -->
+  <target name="test1">
+    <PCTXCode dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Do nothing : should not hurt -->
+  <target name="test2">
+    <PCTXCode destDir="build" dlcHome="${env.DLC}"/>
+  </target>
+
+  <!-- Simple test -->
+  <target name="test3">
+    <echo file="sandbox/test.p">
+      DISPLAY "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  
+  <!-- More complex test with directories -->
+  <target name="test4">
+    <mkdir dir="sandbox/foo"/>
+    <echo file="sandbox/foo/test.p">
+      DISPLAY "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/foo/test.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  
+  <!-- Test key -->
+  <target name="test5">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test5bis">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode key="foobar" destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+
+</project>
