@@ -59,10 +59,10 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-
 /**
  * Class for testing PCTRun task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  */
 public class PCTRunTest extends BuildFileTest {
     public PCTRunTest(String name) {
@@ -174,7 +174,7 @@ public class PCTRunTest extends BuildFileTest {
     public void test11() {
         executeTarget("test11");
     }
-    
+
     /**
      * Tests numsep and numdec parameters
      */
@@ -185,7 +185,7 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test12-part3", "123,456");
         expectLog("test12-part4", "123.456");
     }
-    
+
     /**
      * Tests propath order
      */
@@ -193,5 +193,14 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test13-init");
         expectLog("test13-part1", "This is dir1");
         expectLog("test13-part2", "This is dir2");
+    }
+
+    /**
+     * Tests preprocessor directives
+     */
+    public void test14() {
+        executeTarget("test14-init");
+        expectLog("test14-part1", "");
+        expectLog("test14-part2", "Powered by PCT :)");
     }
 }
