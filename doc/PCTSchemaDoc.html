@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="fr" />
-<title>PCT documentation - PCTBinaryLoad task</title>
+<title>PCT documentation - PCTSchemaDoc task</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -68,7 +68,9 @@
 
 <h2>Description</h2>
 <p>
-Creates HTML documentation from database
+Creates XML documentation from database. This XML file is meant to be transformed using
+a XSL stylesheet, like <a href="SchemaDoc.xsl">this one</a>. See examples below for a
+complete process. You can find an sample for sports2000 database <a href="sports2000/index.html">here</a>.
 </p>
 
 <h2>Parameters</h2>
@@ -81,11 +83,11 @@ Creates HTML documentation from database
 <th>Default value</th>
 </tr>
 <tr>
-<td>DestDir</td>
-<td>Directory where HTML files will be generated</td>
+<td>File</td>
+<td>XML file to be generated</td>
 <td align="center">File</td>
 <td align="center">Required</td>
-<td>Current directory</td>
+<td>No default value</td>
 </tr>
 </table>
 <p>PCTSchemaDoc inherits attributes from <a href="PCT.html">PCT</a> and
@@ -96,7 +98,18 @@ have <strong>one and only one</strong> PCTConnection.</p>
 None
 
 <h2>Examples</h2>
-None
+<pre>
+&lt;PCTSchemaDoc file="doc/db.xml"&gt;
+  &lt;PCTConnection dbName="MyDB" dbDir="base"/&gt;
+&lt;/PCTSchemaDoc&gt;
+&lt;style in="doc/db.xml" style="doc/SchemaDoc.xsl" out="doc/output.txt"&gt;
+  &lt;param name="basedir" expression="doc/MyDB"/&gt;
+&lt;/style&gt;
+</pre>
+<p>
+Creates an XML file (doc/db.xml) which is transformed using doc/SchemaDoc.xsl to produce
+HTML documentation in doc/MyDB directory.
+</p>
 </div>
 
 <div class="LastUpdate">
