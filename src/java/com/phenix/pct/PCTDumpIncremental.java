@@ -88,7 +88,6 @@ public class PCTDumpIncremental extends PCTRun {
      * <li>code-page = ?,""          : default conversion (SESSION:STREAM)</li>
      * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li></ul>
      * @param codePage String
-     * TODO : vérifier avec PCTRun
      */
     public void setCodePage(String codePage) {
         this.codePage = codePage;
@@ -168,14 +167,14 @@ public class PCTDumpIncremental extends PCTRun {
         if (this.codePage != null) {
             Environment.Variable var2 = new Environment.Variable();
             var2.setKey("DUMP_INC_CODEPAGE");
-            var2.setValue(this.destFile.toString());
+            var2.setValue(this.codePage.toString());
             this.exec.addEnv(var2);
         }
 
         if (this.renameFile != null) {
             Environment.Variable var3 = new Environment.Variable();
             var3.setKey("DUMP_INC_RENAMEFILE");
-            var3.setValue(this.destFile.toString());
+            var3.setValue(this.renameFile.toString());
             this.exec.addEnv(var3);
         }
 
