@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
@@ -63,7 +64,7 @@ import java.io.File;
 
 /**
   * Class for creating Progress databases
-  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
   **/
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
@@ -270,6 +271,11 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(this.dbName);
 
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
         return exec;
     }
 
@@ -293,6 +299,11 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("-blocksize");
         exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
         
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
         return exec;
     }
 }

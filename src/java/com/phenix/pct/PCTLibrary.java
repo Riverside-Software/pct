@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.BufferedWriter;
@@ -69,7 +70,7 @@ import java.util.Vector;
 /**
  * Class for managing Progress library files
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTLibrary extends PCT {
     private File tmpFile = null;
@@ -259,6 +260,11 @@ public class PCTLibrary extends PCT {
 
         exec.createArg().setValue("-nowarn");
 
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
         return exec;
     }
 
@@ -275,6 +281,11 @@ public class PCTLibrary extends PCT {
         exec.createArg().setValue("-pf");
         exec.createArg().setValue(this.tmpFile.getAbsolutePath().toString());
 
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
         return exec;
     }
 
@@ -288,6 +299,11 @@ public class PCTLibrary extends PCT {
         exec.setExecutable(getExecPath("prolib").toString());
         exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
         exec.createArg().setValue("-compress");
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
 
         return exec;
     }
