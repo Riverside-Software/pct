@@ -51,13 +51,13 @@
         <pathelement location="${src.progress}"/>
       </propath>
     </PCTCompile>
-  	<copy todir="${build}/tty">
+    <copy todir="${build}/tty">
       <fileset dir="${src.progress}">
         <include name="prodict/**/*.p"/>
         <include name="prodict/**/*.i"/>
         <include name="adecomm/*.i"/>
       </fileset>
-  	</copy>
+    </copy>
     <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
         <include name="pct/*.p"/>
@@ -97,7 +97,7 @@
     <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
   </target>
 
-  <target name="test-build" depends="jar,pbuild" description="Builds junit tests">
+  <target name="test-build" depends="pbuild" description="Builds junit tests">
     <javac srcdir="${src.test}" destdir="${build}" debug="true">
       <include name="org/apache/tools/ant/*.java"/>
       <include name="com/phenix/pct/*.java"/>
@@ -194,6 +194,8 @@
     </zip>
   </target>
   
+  <target name="dist" depends="bindist,srcdist"/>
+
   <target name="clean" description="Nettoyage">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
@@ -240,8 +242,7 @@
       <arg path="${env.DLC}/sports2000"/>
       <arg value="sports2000"/>
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}">
-      <propath path="build"/>
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}" propath="${build}/tty">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true"/>
     </PCTSchemaDoc>
     <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
