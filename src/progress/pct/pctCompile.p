@@ -208,7 +208,7 @@ REPEAT:
             IF (lComp) THEN DO:
                 ASSIGN iCompOK = iCompOK + 1.
             END.
-            IF (NOT lComp) THEN DO:
+            ELSE DO:
                 ASSIGN BuildExc  = TRUE
                        iCompFail = iCompFail + 1.
                 IF FailOnErr THEN LEAVE CompLoop.
@@ -436,5 +436,6 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
             END.
         END.
     END.
+    RETURN TRUE.
 
 END FUNCTION.
