@@ -2,7 +2,12 @@ Version 0.6 (??)
 ==============================
  * Bug #995235 : compress command line is only run once
  * Added codepage attribute to PCTCreateBase to create database with a specific codepage
-
+ * Bug #1020999 : cheks the .pl created is not in the file list
+ * Bug #995235 : added basedir, includes, excludes, includesfile, excludesfile, defaultexcludes
+   attribute to the PCTLibrary task
+ * Behavior change in the PCTLibrary task : task fails when no filesets defined (either with
+   basedir or nested fileset). Previous behavior was to create an empty library.
+ 
 Version 0.5 (08/25/2004)
 ==============================
  * Bug #972486 : changed the way temp files are deleted

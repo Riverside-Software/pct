@@ -82,6 +82,10 @@ public class PCTLibraryTest extends BuildFileTest {
         mkdir.setProject(this.getProject());
         mkdir.setDir(new File("sandbox"));
         mkdir.execute();
+        mkdir.setDir(new File("sandbox/files"));
+        mkdir.execute();
+        mkdir.setDir(new File("sandbox/lib"));
+        mkdir.execute();
     }
 
     public void tearDown() {
@@ -102,12 +106,7 @@ public class PCTLibraryTest extends BuildFileTest {
      * Checks that a new library is created
      */
     public void test2() {
-        File pl = new File("sandbox/test.pl");
-
-        assertFalse(pl.exists());
-        executeTarget("test2");
-        assertTrue(pl.exists());
-        pl.delete();
+        expectBuildException("test2", "No filesets defined");
     }
 
     /**
@@ -116,7 +115,7 @@ public class PCTLibraryTest extends BuildFileTest {
     public void test3() {
         executeTarget("test3");
 
-        File pl = new File("sandbox/test.pl");
+        File pl = new File("sandbox/lib/test.pl");
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
@@ -131,7 +130,7 @@ public class PCTLibraryTest extends BuildFileTest {
     public void test4() {
         executeTarget("test4pre");
 
-        File pl = new File("sandbox/test.pl");
+        File pl = new File("sandbox/lib/test.pl");
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
@@ -143,7 +142,7 @@ public class PCTLibraryTest extends BuildFileTest {
     public void test5() {
         executeTarget("test5");
         
-        File pl = new File("sandbox/test.pl");
+        File pl = new File("sandbox/lib/test.pl");
         assertTrue(pl.exists());
         long size = pl.length();
         
@@ -152,5 +151,34 @@ public class PCTLibraryTest extends BuildFileTest {
         executeTarget("test5bis");
         assertTrue(pl.exists());
         assertTrue((pl.length() < size));
+    }
+    
+    public void test6() {
+        executeTarget("test6");
+        
+        File pl = new File("sandbox/lib/test.pl");
+        assertTrue(pl.exists());
+
+        PLReader r = new PLReader(pl);
+        Vector v = r.getFileList();
+        assertTrue(v != null);
+        assertTrue(v.size() == 3);
+    }
+    
+    public void test7() {
+        expectBuildException("test7", "PL file cannot include itself");
+    }
+    
+    public void test8() {
+        executeTarget("test8");
+        
+        File pl = new File("sandbox/lib/test.pl");
+        assertTrue(pl.exists());
+
+        PLReader r = new PLReader(pl);
+        Vector v = r.getFileList();
+        assertTrue(v != null);
+        System.out.println(v.size());
+        assertTrue(v.size() == 2);
     }
 }

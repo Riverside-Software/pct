@@ -89,7 +89,7 @@ Creates and adds/replaces files in Progress library files
 </tr>
 <tr>
 <td>Encoding</td>
-<td>Character encoding to use</td>
+<td>Character encoding used to store filenames.</td>
 <td align="center">String</td>
 <td align="center">Optional</td>
 <td align="center">ISO8859-1</td>
@@ -101,14 +101,82 @@ Creates and adds/replaces files in Progress library files
 <td align="center">Optional</td>
 <td align="center">False</td>
 </tr>
+<tr>
+<td>Basedir</td>
+<td>The directory from which to jar the files.</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td align="center">No default value</td>
+</tr>
+<tr>
+<td>Includes</td>
+<td>Comma- or space-separated list of patterns of files that must be included. All files are included when omitted.</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td align="center">No default value</td>
+</tr>
+<tr>
+<td>IncludesFile</td>
+<td>The name of a file. Each line of this file is taken to be an include pattern.</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td align="center">No default value</td>
+</tr>
+<tr>
+<td>Excludes</td>
+<td>Comma- or space-separated list of patterns of files that must be excluded. No files (except default excludes) are excluded when omitted.</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td align="center">No default value</td>
+</tr>
+<tr>
+<td>ExcludesFile</td>
+<td>The name of a file. Each line of this file is taken to be an exclude pattern.</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td align="center">No default value</td>
+</tr>
+<tr>
+<td>DefaultExcludes</td>
+<td>Indicates whether default excludes should be used or not ("yes"/"no"). Default excludes are used when omitted.</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td align="center">True</td>
+</tr>
+
 </table>
 
 <h2>Parameters as nested elements</h2>
-None
+<h3>fileset (org.apache.tools.ant.types.Fileset)</h3>
+<p>
+Adds a file set to the library
+</p>
 
 <h2>Examples</h2>
-None
+<pre>
+&lt;jar destfile="${dist}/mylib.pl" basedir="${build}"/&gt;
+</pre>
+<p>stores all files in the ${build} directory into a file called mylib.pl
+in the ${dist} directory.</p>
+
+<pre>
+&lt;jar destfile="${dist}/mylib.pl" basedir="${build}" includes="**/*.r" excludes="test/*"/&gt;
+</pre>
+<p>stores all .r files in the ${build} directory (and subdirectories) except from
+	the files in the test subdirectory, into a file called mylib.pl in the ${dist} directory.</p>
+
+<pre>
+&lt;jar destfile="${dist}/mylib.pl"&gt;
+  &lt;fileset dir="${build}"&gt;
+    &lt;include name="**/*.r"/&gt;
+    &lt;exclude name="test/*"/&gt;
+  &lt;/fileset&gt;
+&lt;/jar&gt;
+</pre>
+<p>is similar to the previous example, but using nested fileset.</p>
+
 </div>
+
 
 <div class="LastUpdate">
   $Date$
