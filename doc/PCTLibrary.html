@@ -156,24 +156,24 @@ Adds a file set to the library
 
 <h2>Examples</h2>
 <pre>
-&lt;jar destfile="${dist}/mylib.pl" basedir="${build}"/&gt;
+&lt;PCTLibrary destfile="${dist}/mylib.pl" basedir="${build}"/&gt;
 </pre>
 <p>stores all files in the ${build} directory into a file called mylib.pl
 in the ${dist} directory.</p>
 
 <pre>
-&lt;jar destfile="${dist}/mylib.pl" basedir="${build}" includes="**/*.r" excludes="test/*"/&gt;
+&lt;PCTLibrary destfile="${dist}/mylib.pl" basedir="${build}" includes="**/*.r" excludes="test/*"/&gt;
 </pre>
 <p>stores all .r files in the ${build} directory (and subdirectories) except from
 	the files in the test subdirectory, into a file called mylib.pl in the ${dist} directory.</p>
 
 <pre>
-&lt;jar destfile="${dist}/mylib.pl"&gt;
+&lt;PCTLibrary destfile="${dist}/mylib.pl"&gt;
   &lt;fileset dir="${build}"&gt;
     &lt;include name="**/*.r"/&gt;
     &lt;exclude name="test/*"/&gt;
   &lt;/fileset&gt;
-&lt;/jar&gt;
+&lt;/PCTLibrary&gt;
 </pre>
 <p>is similar to the previous example, but using nested fileset.</p>
 
