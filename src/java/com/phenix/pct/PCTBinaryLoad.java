@@ -67,6 +67,7 @@ import java.util.Vector;
 /**
  * Binary load task
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @version $Revision$
  */
 public class PCTBinaryLoad extends PCT {
     private List dbConnList = null;
