@@ -58,6 +58,9 @@ import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 
 public class PCTConnection {
     private String dbName = null;
@@ -73,6 +76,7 @@ public class PCTConnection {
     private File dbDir = null;
     private boolean singleUser = false;
     private boolean readOnly = false;
+    private Vector aliases = null;
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
@@ -179,6 +183,30 @@ public class PCTConnection {
     }
 
     /**
+     * Adds an alias to the current DB connection
+     * @param alias Instance of PCTAlias
+     */
+    public void addPCTAlias(PCTAlias alias) {
+        if (this.aliases == null) {
+            aliases = new Vector();
+        }
+
+        aliases.add(alias);
+    }
+
+    /**
+     *
+     * @return True if aliases defined for this DB connection
+     */
+    public boolean hasAliases() {
+        if (aliases == null) {
+            return false;
+        } else {
+            return (aliases.size() > 0);
+        }
+    }
+
+    /**
      * Populates a command line with the needed arguments to connect to the specified database
      * @param cmdLine Command line to populate
      */
@@ -245,5 +273,22 @@ public class PCTConnection {
             cmdLine.createArgument().setValue("-P");
             cmdLine.createArgument().setValue(this.password);
         }
+    }
+
+    /**
+     * Creates Progress code to define aliases
+     */
+    public String getAliases() {
+        StringBuffer sb = new StringBuffer();
+
+        for (Enumeration e = aliases.elements(); e.hasMoreElements();) {
+            PCTAlias alias = (PCTAlias) e.nextElement();
+            sb.append("CREATE ALIAS " + alias.getName());
+            sb.append(" FOR DATABASE " + this.dbName);
+            sb.append((alias.getNoError() ? " NO-ERROR" : "") + ".");
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 }
