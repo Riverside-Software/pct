@@ -52,6 +52,8 @@
  * <http://www.apache.org/>.
  */
 
+DEFINE STREAM sXREF.
+
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
@@ -65,17 +67,17 @@ PROCEDURE importXref.
 
     EMPTY TEMP-TABLE ttXref.
 
-    INPUT FROM VALUE (pcFile).
+    INPUT STREAM sXREF FROM VALUE (pcFile).
     REPEAT:
         CREATE ttXref.
-        IMPORT ttXref.
+        IMPORT STREAM sXREF ttXref.
         IF ttXref.xRefType EQ 'INCLUDE':U THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
         ELSE
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */
-    INPUT CLOSE.
+    INPUT STREAM sXREF CLOSE.
     OUTPUT TO VALUE (pcOut).
     FOR EACH ttXref NO-LOCK GROUP BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
