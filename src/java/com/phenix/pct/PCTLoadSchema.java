@@ -79,14 +79,17 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
+            this.cleanup();
             throw new BuildException("No database connection defined");
         }
 
         if (this.dbConnList.size() > 1) {
+            this.cleanup();
             throw new BuildException("More than one database connection defined");
         }
 
         if (this.srcFile == null) {
+            this.cleanup();
             throw new BuildException("Mandatory argument : dump file");
         }
 

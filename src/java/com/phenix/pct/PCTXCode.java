@@ -179,36 +179,43 @@ public class PCTXCode extends PCT {
      */
     public void execute() throws BuildException {
         if (this.destDir == null) {
+            this.cleanup();
             throw new BuildException("destDir not defined");
         }
 
         log("PCTXCode - Progress Encryption Tool", Project.MSG_INFO);
 
-        this.createDirectories();
-        this.createExecTask();
+        try {
+            this.createDirectories();            
+            this.createExecTask();
 
-        for (Iterator e = filesets.iterator(); e.hasNext();) {
-            // Parse filesets
-            FileSet fs = (FileSet) e.next();
-            exec.setDir(fs.getDir(this.getProject()));
+            for (Iterator e = filesets.iterator(); e.hasNext();) {
+                // Parse filesets
+                FileSet fs = (FileSet) e.next();
+                exec.setDir(fs.getDir(this.getProject()));
 
-            // And get files from fileset
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+                // And get files from fileset
+                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
-            for (int i = 0; i < dsfiles.length; i++) {
-                File trgFile = new File(this.destDir, dsfiles[i]);
-                File srcFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                for (int i = 0; i < dsfiles.length; i++) {
+                    File trgFile = new File(this.destDir, dsfiles[i]);
+                    File srcFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
 
-                if (!trgFile.exists() || this.overwrite ||
-                      (srcFile.lastModified() > trgFile.lastModified())) {
-                    log("Encryption of " + trgFile.toString(), Project.MSG_VERBOSE);
-                    arg.setValue(dsfiles[i]);
-                    exec.execute();
+                    if (!trgFile.exists() || this.overwrite ||
+                          (srcFile.lastModified() > trgFile.lastModified())) {
+                        log("Encryption of " + trgFile.toString(), Project.MSG_VERBOSE);
+                        arg.setValue(dsfiles[i]);
+                        exec.execute();
+                    }
                 }
             }
+            this.cleanup();
         }
-
-        this.tmpLog.deleteOnExit();
+        catch (BuildException be) {
+            this.cleanup();
+            throw be;
+        }
+        
     }
 
     private void createExecTask() {
@@ -232,5 +239,11 @@ public class PCTXCode extends PCT {
         }
 
         arg = exec.createArg();
+    }
+    
+    protected void cleanup() {
+        if (this.tmpLog.exists() && !this.tmpLog.delete()) {
+            log("Failed to delete " + this.tmpLog.getAbsolutePath(), Project.MSG_VERBOSE);
+        }
     }
 }

@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Path;
 
@@ -68,10 +69,10 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-
 /**
  * Run a Progress procedure.
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
  * @version $Revision$
  */
 public class PCTRun extends PCT {
@@ -104,7 +105,7 @@ public class PCTRun extends PCT {
 
     /**
      * Default constructor
-     *
+     *  
      */
     public PCTRun() {
         super();
@@ -119,6 +120,7 @@ public class PCTRun extends PCT {
 
     /**
      * Adds a database connection
+     * 
      * @param dbConn Instance of DBConnection class
      */
     public void addPCTConnection(PCTConnection dbConn) {
@@ -131,7 +133,7 @@ public class PCTRun extends PCT {
 
     /**
      * Parameter file (-pf attribute)
-     *
+     * 
      * @param pf File
      */
     public void setParamFile(File pf) {
@@ -140,6 +142,7 @@ public class PCTRun extends PCT {
 
     /**
      * Parameter (-param attribute)
+     * 
      * @param param String
      */
     public void setParameter(String param) {
@@ -148,6 +151,7 @@ public class PCTRun extends PCT {
 
     /**
      * Turns on/off debugging mode (keeps Progress temp files on disk)
+     * 
      * @param debugPCT boolean
      */
     public void setDebugPCT(boolean debugPCT) {
@@ -155,8 +159,9 @@ public class PCTRun extends PCT {
     }
 
     /**
-     * If files beginning with an underscore should be compiled (-zn option)
-     * See POSSE documentation for more details
+     * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
+     * for more details
+     * 
      * @param compUnderscore boolean
      */
     public void setCompileUnderscore(boolean compUnderscore) {
@@ -165,6 +170,7 @@ public class PCTRun extends PCT {
 
     /**
      * The number of compiled procedure directory entries (-D attribute)
+     * 
      * @param dirSize int
      */
     public void setDirSize(int dirSize) {
@@ -173,6 +179,7 @@ public class PCTRun extends PCT {
 
     /**
      * Graphical mode on/off (call to _progres or prowin32)
+     * 
      * @param graphMode boolean
      */
     public void setGraphicalMode(boolean graphMode) {
@@ -181,6 +188,7 @@ public class PCTRun extends PCT {
 
     /**
      * Sets .ini file to use (-basekey INI -ininame xxx)
+     * 
      * @param iniFile File
      */
     public void setIniFile(File iniFile) {
@@ -189,6 +197,7 @@ public class PCTRun extends PCT {
 
     /**
      * Procedure to be run (not -p param, this parameter is always pct_initXXX.p)
+     * 
      * @param procedure String
      */
     public void setProcedure(String procedure) {
@@ -196,15 +205,17 @@ public class PCTRun extends PCT {
     }
 
     /**
-    * Set the propath to be used when running the procedure
-    * @param propath an Ant Path object containing the propath
-    */
+     * Set the propath to be used when running the procedure
+     * 
+     * @param propath an Ant Path object containing the propath
+     */
     public void setPropath(Path propath) {
         createPropath().append(propath);
     }
 
     /**
      * Creates a new Path instance
+     * 
      * @return Path
      */
     public Path createPropath() {
@@ -215,12 +226,13 @@ public class PCTRun extends PCT {
         return this.propath;
     }
 
-    /*public void addPropathRef(Reference r) {
-        this.propath.setRefid(r);
-    }*/
+    /*
+     * public void addPropathRef(Reference r) { this.propath.setRefid(r); }
+     */
 
     /**
      * Stream code page (-cpstream attribute)
+     * 
      * @param cpStream String
      */
     public void setCpStream(String cpStream) {
@@ -229,6 +241,7 @@ public class PCTRun extends PCT {
 
     /**
      * Internal code page (-cpinternal attribute)
+     * 
      * @param cpInternal String
      */
     public void setCpInternal(String cpInternal) {
@@ -237,6 +250,7 @@ public class PCTRun extends PCT {
 
     /**
      * The number of characters allowed in a single statement (-inp attribute)
+     * 
      * @param inputChars Integer
      */
     public void setInputChars(int inputChars) {
@@ -245,6 +259,7 @@ public class PCTRun extends PCT {
 
     /**
      * Century year offset (-yy attribute)
+     * 
      * @param centuryYearOffset Integer
      */
     public void setCenturyYearOffset(int centuryYearOffset) {
@@ -253,6 +268,7 @@ public class PCTRun extends PCT {
 
     /**
      * The number of tokens allowed in a 4GL statement (-tok attribute)
+     * 
      * @param token int
      */
     public void setToken(int token) {
@@ -261,6 +277,7 @@ public class PCTRun extends PCT {
 
     /**
      * The amount of memory allocated for r-code segments
+     * 
      * @param maximumMemory int
      */
     public void setMaximumMemory(int maximumMemory) {
@@ -269,6 +286,7 @@ public class PCTRun extends PCT {
 
     /**
      * The size of the stack in 1KB units.
+     * 
      * @param stackSize int
      */
     public void setStackSize(int stackSize) {
@@ -277,7 +295,7 @@ public class PCTRun extends PCT {
 
     /**
      * Buffer Size for Temporary Tables (-Bt attribute)
-     *
+     * 
      * @param ttBufferSize int
      */
     public void setTTBufferSize(int ttBufferSize) {
@@ -286,15 +304,16 @@ public class PCTRun extends PCT {
 
     /**
      * Message buffer size (-Mm attribute)
-     *
+     * 
      * @param msgBufSize int
      */
-     public void setMsgBufferSize(int msgBufSize) {
-         this.messageBufferSize = msgBufSize;  
-     }
+    public void setMsgBufferSize(int msgBufSize) {
+        this.messageBufferSize = msgBufSize;
+    }
 
     /**
      * Returns status file name (where to write progress procedure result)
+     * 
      * @return String
      */
     protected String getStatusFileName() {
@@ -303,9 +322,12 @@ public class PCTRun extends PCT {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
+        BufferedReader br = null;
+
         if (!this.isPrepared) {
             this.prepareExecTask();
         }
@@ -316,30 +338,9 @@ public class PCTRun extends PCT {
         try {
             exec.execute();
         } catch (BuildException be) {
-        	if (!this.debugPCT) {
-        	    // BuildException is trapped to delete temp files, and then thrown again
-                if (!this.initProc.delete()) {
-                    log("Failed to delete " + this.initProc.getAbsolutePath());
-                }
-
-                if (!this.status.delete()) {
-                    log("Failed to delete " + this.status.getAbsolutePath());
-                }
-        	}
-        	
+            this.cleanup();
             throw be;
         }
-
-        exec = null;
-
-        // Progress procedure can now be safely deleted
-        if (!this.debugPCT) {
-            if (!this.initProc.delete()) {
-                log("Failed to delete " + this.initProc.getAbsolutePath());
-            }
-        }
-
-        BufferedReader br = null;
 
         // Now read status file
         try {
@@ -348,31 +349,21 @@ public class PCTRun extends PCT {
             String s = br.readLine();
             br.close();
 
-            if (!this.debugPCT) {
-                if (!this.status.delete()) {
-                    log("Failed to delete " + this.status.getAbsolutePath());
-                }
-            }
-
+            this.cleanup();
             int ret = Integer.parseInt(s);
 
             if (ret != 0) {
                 throw new BuildException("Return code : " + ret);
             }
         } catch (FileNotFoundException fnfe) {
+            this.cleanup();
             throw new BuildException("Progress procedure failed - No output file");
         } catch (IOException ioe) {
             try {
                 br.close();
             } catch (IOException ioe2) {
             }
-
-            if (!this.debugPCT) {
-                if (!this.status.delete()) {
-                    log("Failed to delete " + this.status.getAbsolutePath());
-                }
-            }
-
+            this.cleanup();
             throw new BuildException("Progress procedure failed - Error reading return value");
         } catch (NumberFormatException nfe) {
             throw new BuildException("Progress procedure failed - No return value");
@@ -536,8 +527,8 @@ public class PCTRun extends PCT {
             }
 
             // TODO : vérifier que le programme compile avant de le lancer
-//            bw.write("IF SEARCH('" + escapeString(this.procedure) + "') NE ? THEN DO:");
-//            bw.newLine();
+            //            bw.write("IF SEARCH('" + escapeString(this.procedure) + "') NE ? THEN DO:");
+            //            bw.newLine();
             bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
             bw.newLine();
             bw.write("  IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
@@ -546,10 +537,10 @@ public class PCTRun extends PCT {
             bw.newLine();
             bw.write("  IF (i EQ ?) THEN ASSIGN i = 1.");
             bw.newLine();
-//            bw.write("END.");
-//            bw.newLine();
-//            bw.write("ELSE ASSIGN i = -12.");
-//            bw.newLine();
+            //            bw.write("END.");
+            //            bw.newLine();
+            //            bw.write("ELSE ASSIGN i = -12.");
+            //            bw.newLine();
             bw.write("OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "').");
             bw.newLine();
             bw.write("PUT UNFORMATTED i SKIP.");
@@ -566,6 +557,7 @@ public class PCTRun extends PCT {
 
     /**
      * Escapes a string so it does not accidentally contain Progress escape characters
+     * 
      * @param str the input string
      * @return the escaped string
      */
@@ -581,23 +573,23 @@ public class PCTRun extends PCT {
             char c = str.charAt(i);
 
             switch (c) {
-            case '\u007E':
-                res.append("\u007E\u007E");
+                case '\u007E' :
+                    res.append("\u007E\u007E");
 
-                break;
+                    break;
 
-            case '\u0022':
-                res.append("\u007E\u0027");
+                case '\u0022' :
+                    res.append("\u007E\u0027");
 
-                break;
+                    break;
 
-            case '\'':
-                res.append("\u007E\u0027");
+                case '\'' :
+                    res.append("\u007E\u0027");
 
-                break;
+                    break;
 
-            default:
-                res.append(c);
+                default :
+                    res.append(c);
             }
         }
 
@@ -606,10 +598,26 @@ public class PCTRun extends PCT {
 
     /**
      * Return PCT Debug status
-     *
+     * 
      * @return boolean
      */
     protected boolean getDebugPCT() {
         return this.debugPCT;
+    }
+
+    /**
+     * Delete temporary files if debug not activated
+     *  
+     */
+    protected void cleanup() {
+        if (!this.debugPCT) {
+            if (this.initProc.exists() && !this.initProc.delete()) {
+                log("Failed to delete " + this.initProc.getAbsolutePath(), Project.MSG_VERBOSE);
+            }
+
+            if (this.status.exists() && !this.status.delete()) {
+                log("Failed to delete " + this.status.getAbsolutePath(), Project.MSG_VERBOSE);
+            }
+        }
     }
 }

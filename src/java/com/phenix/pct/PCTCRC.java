@@ -80,10 +80,12 @@ public class PCTCRC extends PCTRun {
      */
     public void execute() throws BuildException {
         if (this.destFile == null) {
+            this.cleanup();
             throw new BuildException("Mandatory argument : destination file");
         }
 
         if (this.dbConnList == null) {
+            this.cleanup();
             throw new BuildException("No database connection defined");
         }
 

@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.FileSet;
 
@@ -86,7 +87,6 @@ public class PCTLibrary extends PCT {
 
         try {
             tmpFile = File.createTempFile("PCTLib", ".txt");
-            tmpFile.deleteOnExit();
         } catch (IOException ioe) {
             throw new BuildException("Unable to create temp files");
         }
@@ -138,19 +138,25 @@ public class PCTLibrary extends PCT {
 
         // Library name must be defined
         if (this.destFile == null) {
+            this.cleanup();
             throw new BuildException("Library name not defined");
         }
 
-        // Creates new library
-        exec = createArchiveTask();
-        exec.execute();
-
-        // Parses filesets
-        for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
-            FileSet fs = (FileSet) e.nextElement();
-            exec = addFilesTask(fs.getDir(this.getProject()));
-            writeFileList(fs);
+        try {
+            // Creates new library
+            exec = createArchiveTask();
             exec.execute();
+            // Parses filesets
+            for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
+                FileSet fs = (FileSet) e.nextElement();
+                exec = addFilesTask(fs.getDir(this.getProject()));
+                writeFileList(fs);
+                exec.execute();
+            }
+            this.cleanup();
+        } catch (BuildException be) {
+            this.cleanup();
+            throw be;
         }
     }
 
@@ -212,7 +218,17 @@ public class PCTLibrary extends PCT {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to compile");
+            throw new BuildException("Unable to write file list to add to library");
+        }
+    }
+
+    /**
+     * Delete temporary files if debug not activated
+     * 
+     */
+    protected void cleanup() {
+        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
+            log("Failed to delete " + this.tmpFile.getAbsolutePath(), Project.MSG_VERBOSE);
         }
     }
 

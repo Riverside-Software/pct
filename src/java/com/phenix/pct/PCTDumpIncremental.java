@@ -136,22 +136,27 @@ public class PCTDumpIncremental extends PCTRun {
      */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
+            this.cleanup();
             throw new BuildException("No database connections defined");
         }
 
         if (this.dbConnList.size() != 2) {
+            this.cleanup();
             throw new BuildException("Two database connections must be defined");
         }
 
         if (!aliasDefined("dictdb")) {
+            this.cleanup();
             throw new BuildException("Master database must have DICTDB alias.");
         }
 
         if (!aliasDefined("dictdb2")) {
+            this.cleanup();
             throw new BuildException("Slave database must have DICTDB2 alias.");
         }
 
         if (this.destFile == null) {
+            this.cleanup();
             throw new BuildException("Mandatory argument : dump file");
         }
 
