@@ -1,16 +1,20 @@
-Version 0.3c (Not yet released)
+Version 0.4 (01/18/2004)
 ==============================
  * Added hasNamedAlias method in PCTConnection (P. BAIRD)
- * Added PCTWSComp task - Not test, so don't expect it to run correctly 
+ * Added PCTWSComp task - Not tested, so don't expect it to run correctly 
    Help needed for this task, as I don't know how WebSpeed works
- * Updated manual to reflect PCTWSComp task
  * Added PCTBinaryLoad task
  * Updated PCTCreateBase :
    * Removed noSchema attribute (use directly structFile)
    * Added schemaFile attribute (loads a .df into database after its creation)
    * Corrected bug when destDir == null
    * Added unit tests
- * Added debug attribute in PCTRun (protected, so it can accessed from children)
+ * Added debugPCT attribute in PCTRun (protected, so it can accessed from children)
+ * Changed the way files are added in PCTCompile and PCTWSComp (should no more block
+   on large filesets)
+ * Added PCTDumpIncremental task. Not really tested. (P. BAIRD)
+ * Documentation cleanup
+ * Added more JUnit tests
  
 Version 0.3b (11/15/2003)
 ==============================
