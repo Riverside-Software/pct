@@ -154,11 +154,11 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test10", "01/01/2060");
         expectLog("test10bis", "01/01/1960");
     }
-    
+
     /**
      * Tests RETURN statement with no return value
      */
     public void test11() {
-    	executeTarget("test11");
+        executeTarget("test11");
     }
 }
