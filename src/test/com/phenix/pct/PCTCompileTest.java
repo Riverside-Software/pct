@@ -76,6 +76,17 @@ public class PCTCompileTest extends BuildFileTest {
 
     public void test3() {
         executeTarget("test3");
+
+        File f = new File("src/test/build/progress/simple.r");
+        assertTrue(f.exists());
+    }
+
+    public void test3bis() {
+        expectBuildException("test3bis", "Compilation should fail");
+
+        File f = new File("src/test/build/progress/temp.r");
+        assertFalse(f.exists());
+        executeTarget("test3post");
     }
 
     public void test4() {
@@ -95,5 +106,77 @@ public class PCTCompileTest extends BuildFileTest {
 
     public void test5() {
         executeTarget("test5");
+
+        File f = new File("src/test/build/progress/wizz~~'~.r");
+        assertTrue(f.exists());
+    }
+
+    public void test6() {
+        executeTarget("test6init");
+        executeTarget("test6");
+
+        File f = new File("src/test/build/progress/temp.r");
+        long mod = f.lastModified();
+        executeTarget("test6bis");
+        assertTrue(mod == f.lastModified());
+    }
+
+    public void test7() {
+        executeTarget("test7init");
+        executeTarget("test7");
+
+        File f = new File("src/test/build/progress/temp.r");
+        long mod = f.lastModified();
+        executeTarget("test7bis");
+        assertTrue(mod < f.lastModified());
+    }
+
+    public void test8() {
+        executeTarget("test8init");
+        executeTarget("test8");
+
+        File f = new File("src/test/build/progress/temp.r");
+        long mod = f.lastModified();
+        executeTarget("test8bis");
+        assertTrue(mod < f.lastModified());
+    }
+
+    public void test9() {
+        executeTarget("test9init");
+        executeTarget("test9");
+
+        File f = new File("src/test/build/progress/temp.r");
+        long mod = f.lastModified();
+        executeTarget("test9bis");
+        assertTrue(mod < f.lastModified());
+    }
+
+    public void test10() {
+        executeTarget("test10init");
+        executeTarget("test10");
+
+        File f = new File("src/test/build/progress/temp.r");
+        long mod = f.lastModified();
+        executeTarget("test10bis");
+        assertTrue(mod < f.lastModified());
+    }
+
+    public void test11() {
+        executeTarget("test11init");
+        expectBuildException("test11", "Second task should not be launched");
+        executeTarget("test11post");
+
+        File f = new File("src/test/build/progress/temp2.r");
+        assertFalse(f.exists());
+    }
+
+    public void test12() {
+        File f = new File("src/test/build/progress/temp.r");
+        executeTarget("test12init");
+        expectBuildException("test12", "File with underscore");
+        assertFalse(f.exists());
+        executeTarget("test12bis");
+        assertTrue(f.exists());
+        executeTarget("test12post");
     }
 }
