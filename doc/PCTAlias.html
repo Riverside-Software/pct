@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="fr" />
-<title>PCT documentation - PLReader</title>
+<title>PCT documentation - PCTAlias type</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -61,112 +61,43 @@
 </div>
 
 <div class="Text">
-<h1>Overview</h1>
-<p>
-The PLReader class was developed during my attempt to setup JUnit tests for PCT. I needed a way to check
-files were correctly added in archives with the PCTLibrary task.
-</p>
-<p>
-Using an hex editor and the PROLIB utility, I tried to guess the structure of a PL file. A library
-is divided into 3 parts&nbsp;:</p>
-<ul>
-<li>Header : describes codepage, and a pointer to the files list</li>
-<li>Files content</li>
-<li>Files list : </li>
-</ul>
-<table cellpadding="2">
-<tr>
-<th colspan="3">Header</th>
-</tr>
-<tr>
-<th>Offset</th>
-<th>Size (in bytes)</th>
-<th>Description</th>
-</tr>
-<tr>
-<td align="center">0x00</td>
-<td align="center">2</td>
-<td>Magic number : always 0xD707</td>
-</tr>
-<tr>
-<td align="center">0x02</td>
-<td align="center">20</td>
-<td>Codepage used to store file names</td>
-</tr>
-<tr>
-<td align="center">0x16</td>
-<td align="center">4</td>
-<td>Unknown</td>
-</tr>
-<tr>
-<td align="center">0x1A</td>
-<td align="center">4</td>
-<td>Files list's offset</td>
-</tr>
-</table>
+<h1>PCTAlias type</h1>
 
-<p>Each file in the files list is a sequence of bytes, which are described here&nbsp;:</p>
+<h2>Description</h2>
+<p>
+Adds an alias to a database connection
+</p>
+
+<h2>Parameters</h2>
 <table>
 <tr>
-<th colspan="3">Files list entry</th>
-</tr>
-<tr>
-<th>Offset</th>
-<th>Size (in bytes)</th>
+<th>Attribute</th>
 <th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
 </tr>
 <tr>
-<td align="center">0x00</td>
-<td align="center">1</td>
-<td>Magic number : if 0xFF, it's a file entry, if 0xFE jump to the next 0xFF</td>
+<td>name</td>
+<td>Alias name</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default value</td>
 </tr>
 <tr>
-<td align="center">0x01</td>
-<td align="center">1</td>
-<td>Size of the file name (noted SZ)</td>
-</tr>
-<tr>
-<td align="center">0x02</td>
-<td align="center">SZ</td>
-<td>File name</td>
-</tr>
-<tr>
-<td align="center">0x02 + SZ</td>
-<td align="center">2</td>
-<td>Unknown</td>
-</tr>
-<tr>
-<td align="center">0x04 + SZ</td>
-<td align="center">4</td>
-<td>Offset of the beginning of the file content</td>
-</tr>
-<tr>
-<td align="center">0x08 + SZ</td>
-<td align="center">1</td>
-<td>Unknown (always FF)</td>
-</tr>
-<tr>
-<td align="center">0x09 + SZ</td>
-<td align="center">4</td>
-<td>File size (in bytes)</td>
-</tr>
-<tr>
-<td align="center">0x13 + SZ</td>
-<td align="center">4</td>
-<td>Added to archive (in seconds since 1/1/1970)</td>
-</tr>
-<tr>
-<td align="center">0x17 + SZ</td>
-<td align="center">4</td>
-<td>Modification timestamp (in seconds since 1/1/1970)</td>
-</tr>
-<tr>
-<td align="center">0x21 + SZ</td>
-<td align="center">8</td>
-<td>Always 0x00000000</td>
+<td>noError</td>
+<td>If alias should be declared with NO-ERROR</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
 </tr>
 </table>
 
+<h2>Parameters as nested elements</h2>
+None
+
+<h2>Examples</h2>
+None
 </div>
 
 <div class="LastUpdate">
@@ -174,6 +105,6 @@ is divided into 3 parts&nbsp;:</p>
 </div>
 
 </div>
-</body>
 
+</body>
 </html>
