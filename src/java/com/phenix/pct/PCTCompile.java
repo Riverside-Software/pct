@@ -279,23 +279,27 @@ public class PCTCompile extends PCTRun {
             this.setProcedure("pct/pctCompile.p");
             this.setParameter(params.getAbsolutePath());
             super.execute();
-            if (!this.fsList.delete()) {
-                log("Failed to delete " + this.fsList.getAbsolutePath());
-            }
 
-            if (!this.params.delete()) {
-                log("Failed to delete " + this.params.getAbsolutePath());
-            }
+            if (!this.getDebugPCT()) {
+                if (!this.fsList.delete()) {
+                    log("Failed to delete " + this.fsList.getAbsolutePath());
+                }
 
+                if (!this.params.delete()) {
+                    log("Failed to delete " + this.params.getAbsolutePath());
+                }
+            }
         } catch (BuildException be) {
-            if (!this.fsList.delete()) {
-                log("Failed to delete " + this.fsList.getAbsolutePath());
-            }
+        	if (!this.getDebugPCT()) {
+                if (!this.fsList.delete()) {
+                    log("Failed to delete " + this.fsList.getAbsolutePath());
+                }
 
-            if (!this.params.delete()) {
-                log("Failed to delete " + this.params.getAbsolutePath());
-            }
-
+                if (!this.params.delete()) {
+                    log("Failed to delete " + this.params.getAbsolutePath());
+                }
+        	}
+        	
             throw be;
         }
     }
