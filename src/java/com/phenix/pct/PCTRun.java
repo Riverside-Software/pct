@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The Apache Software License, Version 1.1
  *
  * Copyright (c) 2002 The Apache Software Foundation.  All rights
@@ -91,6 +91,7 @@ public class PCTRun extends PCT {
     private int maximumMemory = 0;
     private int stackSize = 0;
     private int ttBufferSize = 0;
+    private int messageBufferSize = 0;
     private boolean debugPCT = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
@@ -284,6 +285,15 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Message buffer size (-Mm attribute)
+     *
+     * @param msgBufSize int
+     */
+     public void setMsgBufferSize(int msgBufSize) {
+         this.messageBufferSize = msgBufSize;  
+     }
+
+    /**
      * Returns status file name (where to write progress procedure result)
      * @return String
      */
@@ -458,6 +468,11 @@ public class PCTRun extends PCT {
         if (this.token != 0) {
             exec.createArg().setValue("-tok");
             exec.createArg().setValue(Integer.toString(this.token));
+        }
+
+        if (this.messageBufferSize != 0) {
+            exec.createArg().setValue("-Mm");
+            exec.createArg().setValue(Integer.toString(this.messageBufferSize));
         }
 
         if (this.compileUnderscore) {
