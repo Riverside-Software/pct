@@ -317,6 +317,10 @@ public class PCTConnection {
      * @return String
      */
     public String getDbName() {
-        return this.dbName;
+        if (this.logicalName != null) {
+            return this.logicalName;
+        } else {
+            return this.dbName;
+        }
     }
 }
