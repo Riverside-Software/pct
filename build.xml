@@ -28,7 +28,7 @@
     <classpath refid="JalopyCP"/>
   </taskdef>
   
-  <!-- Checktyle task definition -->
+  <!-- Checkstyle task definition -->
   <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.1.jar"/>
 
   <target name="init" description="Creates required directories">
@@ -103,22 +103,22 @@
   <target name="bindist" depends="jar,pbuild,javadoc" description="Generates binary zip/tarball archive">
     <tar destfile="pct-bin.tar.gz" compression="gzip">
       <tarfileset prefix="pct" dir="." mode="644">
-        <include name="${dist}/PCT.jar"/>
-        <include name="${build}/tty/*.r"/>
-        <include name="${build}/gui/*.r"/>
+        <include name="lib/PCT.jar"/>
+        <include name="build/tty/pct/*.r"/>
+        <include name="build/gui/pct/*.r"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="${doc}/**"/>
+        <include name="javadoc/**"/>
       </tarfileset>
     </tar>
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="${dist}/PCT.jar"/>
-        <include name="${build}/tty/*.r"/>
-        <include name="${build}/gui/*.r"/>
+        <include name="lib/PCT.jar"/>
+        <include name="build/tty/pct/*.r"/>
+        <include name="build/gui/pct/*.r"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="${doc}/**"/>
+        <include name="javadoc/**"/>
       </zipfileset>
     </zip>
   </target>
