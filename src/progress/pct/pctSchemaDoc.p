@@ -57,378 +57,258 @@
  * <http://www.apache.org/>.
  */
 
-PROCEDURE TableSummary.
-    DEFINE INPUT  PARAMETER pcWhere AS CHARACTER NO-UNDO.
-    DEFINE INPUT  PARAMETER pcTable AS CHARACTER NO-UNDO.
-    DEFINE INPUT  PARAMETER pcTitle AS CHARACTER NO-UNDO.
-    
-    DEFINE VARIABLE hTables   AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hQuery    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hFileName AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hDumpName AS HANDLE     NO-UNDO.
+/* Handles for table _File */
+DEFINE VARIABLE hFile      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBFile     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hDump      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hTable     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hTableDesc AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hPrime     AS HANDLE     NO-UNDO.
+/* Handles for table _Field */
+DEFINE VARIABLE hField     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBField    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hOrder     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hFieldName AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hDataType  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hMandatory AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hFormat    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hExtent    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hInitial   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hLabel     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hFieldDesc AS HANDLE     NO-UNDO.
+/* Handles for table _Index */
+DEFINE VARIABLE hIndex     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBIndex    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hIndexName AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hActive    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hIndexDesc AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hUnique    AS HANDLE     NO-UNDO.
+/* Handles for table _File-Trig */
+DEFINE VARIABLE hTrig      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBTrig     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hEvent     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hProc      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hOverride  AS HANDLE     NO-UNDO.
+/* Handles for table _Index_Field */
+DEFINE VARIABLE hIdxField   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hBIdxField  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hFieldRecID AS HANDLE     NO-UNDO.
+/* Handles for XML nodes */
+DEFINE VARIABLE xRoot       AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xTables     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xTable      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xField      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xIndex      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xIndexFld   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xTrigger    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xText       AS HANDLE     NO-UNDO.
 
-    /* Open the query and set the buffers */
-    CREATE BUFFER hTables FOR TABLE "_File".
-    CREATE QUERY hQuery.
-    hQuery:SET-BUFFERS (hTables).
-    hQuery:QUERY-PREPARE ('FOR EACH _File ' + pcWhere).
-    hQuery:QUERY-OPEN.
-    hQuery:GET-FIRST.
-    ASSIGN hFileName = hTables:BUFFER-FIELD ('_File-Name')
-           hDumpName = hTables:BUFFER-FIELD ('_Dump-Name').
+DEFINE VARIABLE cQuery AS CHARACTER  NO-UNDO.
 
-    PUT UNFORMATTED "<div id=""TableSummary"">" SKIP.
-    PUT UNFORMATTED "<h1>" pcTitle "</h1>" SKIP.
-    REPEAT:
-        IF hQuery:QUERY-OFF-END THEN LEAVE.
-	IF (hDumpName:BUFFER-VALUE EQ pcTable) THEN DO:
-            PUT UNFORMATTED "<p id=""Highlight"">" SKIP.
-	END.
-	ELSE DO:
-	    PUT UNFORMATTED "<p>" SKIP.
-	END.
-	IF (hDumpName:BUFFER-VALUE NE pcTable) THEN DO:
-	    PUT UNFORMATTED "<a href=""".
-	    IF (hDumpName:BUFFER-VALUE EQ ?) THEN
-	        PUT UNFORMATTED hFileName:BUFFER-VALUE + ".html".
-	    ELSE
-	        PUT UNFORMATTED hDumpName:BUFFER-VALUE + ".html".
-            PUT UNFORMATTED """>".
-	END.
-        PUT UNFORMATTED hFileName:BUFFER-VALUE.
-	IF (hDumpName:BUFFER-VALUE NE pcTable) THEN DO:
-            PUT UNFORMATTED "</a>".
-        END.
-	PUT UNFORMATTED "</p>" SKIP.
-        hQuery:GET-NEXT (NO-LOCK).
+/* XML Init */
+CREATE X-DOCUMENT xRoot.
+xRoot:ENCODING = "UTF-8":U.
+
+CREATE X-NODEREF xTables.
+CREATE X-NODEREF xTable.
+CREATE X-NODEREF xField.
+CREATE X-NODEREF xIndex.
+CREATE X-NODEREF xIndexFld.
+CREATE X-NODEREF xTrigger.
+CREATE X-NODEREF xText.
+
+xRoot:CREATE-NODE(xTables, 'TABLES':U, 'ELEMENT':U).
+xRoot:APPEND-CHILD(xTables).
+
+/* Creating queries */
+CREATE QUERY hFile.
+CREATE QUERY hField.
+CREATE QUERY hIndex.
+CREATE QUERY hTrig.
+CREATE QUERY hIdxField.
+
+/* Creating buffers */
+CREATE BUFFER hBFile  FOR TABLE '_File'.
+CREATE BUFFER hBField FOR TABLE '_Field'.
+CREATE BUFFER hBIndex FOR TABLE '_Index'.
+CREATE BUFFER hBTrig  FOR TABLE '_File-Trig'.
+CREATE BUFFER hBIdxField FOR TABLE '_Index-Field'.
+
+/* Assigning buffers */
+hFile:SET-BUFFERS (hBFile).
+hField:SET-BUFFERS (hBField).
+hIndex:SET-BUFFERS (hBIndex).
+hTrig:SET-BUFFERS (hBTrig).
+hIdxField:SET-BUFFERS (hBIdxField).
+
+/* Getting buffer fields */
+ASSIGN hDump      = hBFile:BUFFER-FIELD ('_Dump-Name')
+       hTable     = hBFile:BUFFER-FIELD ('_File-Name')
+       hTableDesc = hBFile:BUFFER-FIELD ('_Desc')
+       hPrime     = hBFile:BUFFER-FIELD ('_Prime-Index')
+       hOrder     = hBField:BUFFER-FIELD ('_Order')
+       hFieldName = hBField:BUFFER-FIELD ('_Field-Name')
+       hDataType  = hBField:BUFFER-FIELD ('_Data-Type')
+       hMandatory = hBField:BUFFER-FIELD ('_Mandatory')
+       hFormat    = hBField:BUFFER-FIELD ('_Format')
+       hExtent    = hBField:BUFFER-FIELD ('_Extent')
+       hInitial   = hBField:BUFFER-FIELD ('_Initial')
+       hLabel     = hBField:BUFFER-FIELD ('_Label')
+       hFieldDesc = hBField:BUFFER-FIELD ('_Desc')
+       hEvent     = hBTrig:BUFFER-FIELD ('_Event')
+       hProc      = hBTrig:BUFFER-FIELD ('_Proc-Name')
+       hOverride  = hBTrig:BUFFER-FIELD ('_Override')
+       hIndexName = hBIndex:BUFFER-FIELD ('_Index-Name')
+       hUnique    = hBIndex:BUFFER-FIELD ('_Unique')
+       hActive    = hBIndex:BUFFER-FIELD ('_Active')
+       hIndexDesc = hBIndex:BUFFER-FIELD ('_Desc')
+       hFieldRecID = hBIdxField:BUFFER-FIELD ('_Field-recid').
+hFile:QUERY-PREPARE ('FOR EACH _File WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS") BY _File._File-Name').
+hFile:QUERY-OPEN.
+hFile:GET-FIRST.
+REPEAT:
+    IF hFile:QUERY-OFF-END THEN LEAVE.
+    xRoot:CREATE-NODE(xTable, 'TABLE':U, 'ELEMENT':U).
+    xTables:APPEND-CHILD(xTable).
+    xTable:SET-ATTRIBUTE('DumpName', (IF hDump:BUFFER-VALUE EQ ? THEN hTable:BUFFER-VALUE ELSE hDump:BUFFER-VALUE)).
+    xTable:SET-ATTRIBUTE('Name', hTable:BUFFER-VALUE).
+    IF (hTableDesc:BUFFER-VALUE NE ?) THEN DO:
+        xRoot:CREATE-NODE(xText, '':U, 'TEXT':U).
+        xText:NODE-VALUE = hTableDesc:BUFFER-VALUE.
+        xTable:APPEND-CHILD(xText).
     END.
-    PUT UNFORMATTED "</div>" SKIP.
-    hQuery:QUERY-CLOSE.
-    DELETE OBJECT hFileName.
-    DELETE OBJECT hDumpName.
-    DELETE OBJECT hQuery.
-    DELETE OBJECT hTables.
     
-END PROCEDURE.
-
-PROCEDURE DetailedTable.
-    /* Handles for table _File */
-    DEFINE VARIABLE hFile      AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBFile     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hDump      AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hTable     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hTableDesc AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hPrime     AS HANDLE     NO-UNDO.
-    /* Handles for table _Field */
-    DEFINE VARIABLE hField     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBField    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hOrder     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hFieldName AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hDataType  AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hMandatory AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hFormat    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hExtent    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hInitial   AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hLabel     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hFieldDesc AS HANDLE     NO-UNDO.
-    /* Handles for table _Index */
-    DEFINE VARIABLE hIndex     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBIndex    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hIndexName AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hActive    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hIndexDesc AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hUnique    AS HANDLE     NO-UNDO.
-    /* Handles for table _File-Trig */
-    DEFINE VARIABLE hTrig     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBTrig    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hEvent    AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hProc     AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hOverride AS HANDLE     NO-UNDO.
-    /* Handles for table _Index_Field */
-    DEFINE VARIABLE hIdxField   AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBIdxField  AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hFieldRecID AS HANDLE     NO-UNDO.
-    
-    DEFINE VARIABLE cQuery AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE lEven  AS LOGICAL    NO-UNDO FORMAT "Even/Odd" INITIAL TRUE.
-    
-    /* Creating queries */
-    CREATE QUERY hFile.
-    CREATE QUERY hField.
-    CREATE QUERY hIndex.
-    CREATE QUERY hTrig.
-    CREATE QUERY hIdxField.
-
-    /* Creating buffers */
-    CREATE BUFFER hBFile  FOR TABLE '_File'.
-    CREATE BUFFER hBField FOR TABLE '_Field'.
-    CREATE BUFFER hBIndex FOR TABLE '_Index'.
-    CREATE BUFFER hBTrig  FOR TABLE '_File-Trig'.
-    CREATE BUFFER hBIdxField FOR TABLE '_Index-Field'.
-
-    /* Assigning buffers */
-    hFile:SET-BUFFERS (hBFile).
-    hField:SET-BUFFERS (hBField).
-    hIndex:SET-BUFFERS (hBIndex).
-    hTrig:SET-BUFFERS (hBTrig).
-    hIdxField:SET-BUFFERS (hBIdxField).
-
-    /* Getting buffer fields */
-    ASSIGN hDump      = hBFile:BUFFER-FIELD ('_Dump-Name')
-           hTable     = hBFile:BUFFER-FIELD ('_File-Name')
-           hTableDesc = hBFile:BUFFER-FIELD ('_Desc')
-           hPrime     = hBFile:BUFFER-FIELD ('_Prime-Index')
-           hOrder     = hBField:BUFFER-FIELD ('_Order')
-           hFieldName = hBField:BUFFER-FIELD ('_Field-Name')
-           hDataType  = hBField:BUFFER-FIELD ('_Data-Type')
-           hMandatory = hBField:BUFFER-FIELD ('_Mandatory')
-           hFormat    = hBField:BUFFER-FIELD ('_Format')
-           hExtent    = hBField:BUFFER-FIELD ('_Extent')
-           hInitial   = hBField:BUFFER-FIELD ('_Initial')
-           hLabel     = hBField:BUFFER-FIELD ('_Label')
-           hFieldDesc = hBField:BUFFER-FIELD ('_Desc')
-           hEvent     = hBTrig:BUFFER-FIELD ('_Event')
-           hProc      = hBTrig:BUFFER-FIELD ('_Proc-Name')
-           hOverride  = hBTrig:BUFFER-FIELD ('_Override')
-           hIndexName = hBIndex:BUFFER-FIELD ('_Index-Name')
-           hUnique    = hBIndex:BUFFER-FIELD ('_Unique')
-           hActive    = hBIndex:BUFFER-FIELD ('_Active')
-           hIndexDesc = hBIndex:BUFFER-FIELD ('_Desc')
-           hFieldRecID = hBIdxField:BUFFER-FIELD ('_Field-recid').
-    hFile:QUERY-PREPARE ('FOR EACH _File').
-    hFile:QUERY-OPEN.
-    hFile:GET-FIRST.
+    ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
+           cQuery = cQuery + STRING (hBFile:RECID) + ' BY _Field._Order'.
+    hField:QUERY-PREPARE(cQuery).
+    hField:QUERY-OPEN().
+    hField:GET-FIRST(NO-LOCK).
     REPEAT:
-        IF hFile:QUERY-OFF-END THEN LEAVE.
-        OUTPUT TO VALUE (SESSION:PARAMETER + "/" + (IF hDump:BUFFER-VALUE EQ ? THEN hTable:BUFFER-VALUE ELSE hDump:BUFFER-VALUE) + '.html').
-        /* HTML header */        
-        PUT UNFORMATTED "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">" SKIP.
-	PUT UNFORMATTED "<html>" SKIP.
-	PUT UNFORMATTED "<head>" SKIP.
-        PUT UNFORMATTED "<title>" + hDump:BUFFER-VALUE + "</title>" SKIP.
-        PUT UNFORMATTED "<meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1""/>" SKIP.
-        PUT UNFORMATTED "<link href=""style.css"" rel=""stylesheet"" type=""text/css"" media=""screen""/>" SKIP.
-        PUT UNFORMATTED "</head>" SKIP (2).
-        PUT UNFORMATTED "<body>" SKIP.
-	    /* Table summary */
-	RUN TableSummary ('WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS") BY _File._File-Name', hTable:BUFFER-VALUE, 'Tables').
-	&IF DEFINED (SYS_TAB) &THEN
-	    RUN TableSummary ('WHERE _File._File-Name BEGINS "SYS" BY _File._File-Name', hTable:BUFFER-VALUE, 'System tables').
-	&ENDIF
-	&IF DEFINED (INTERNAL_TABS) &THEN
-	    RUN TableSummary ('WHERE _File._File-Number LE 0', hTable:BUFFER-VALUE, 'Internal tables').
-	&ENDIF
-	
-	PUT UNFORMATTED "<h1>" + hTable:BUFFER-VALUE + "</h1>" SKIP.
-        IF (hTableDesc:BUFFER-VALUE NE ?) THEN 
-            PUT UNFORMATTED "<h3>" + hTableDesc:BUFFER-VALUE + "</h3>" SKIP(2).
-
-	PUT UNFORMATTED "<div id=""Lists"">" SKIP.
+        IF hField:QUERY-OFF-END THEN LEAVE.
+        xRoot:CREATE-NODE(xField, 'FIELD':U, 'ELEMENT':U).
+        xTable:APPEND-CHILD(xField).
+        xField:SET-ATTRIBUTE('Name':U, hFieldName:BUFFER-VALUE).
+        xField:SET-ATTRIBUTE('Order':U, STRING(hOrder:BUFFER-VALUE)).
+        xField:SET-ATTRIBUTE('DataType':U, hDataType:BUFFER-VALUE).
+        xField:SET-ATTRIBUTE('Mandatory':U, STRING (hMandatory:BUFFER-VALUE)).
+        xField:SET-ATTRIBUTE('Format':U, STRING (hFormat:BUFFER-VALUE)).
+        xField:SET-ATTRIBUTE('Extent':U, STRING (hExtent:BUFFER-VALUE)).
+        xField:SET-ATTRIBUTE('InitialValue':U, (IF hInitial:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hInitial:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('Label':U, (IF hLabel:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hLabel:BUFFER-VALUE))).
+        IF (hFieldDesc:BUFFER-VALUE NE ?) THEN DO:
+            xRoot:CREATE-NODE(xText, '':U, 'TEXT':U).
+            xText:NODE-VALUE = hFieldDesc:BUFFER-VALUE.
+            xField:APPEND-CHILD(xText).
+        END.
+        hField:GET-NEXT(NO-LOCK).
+    END.
+    hField:QUERY-CLOSE().
+    
+    ASSIGN cQuery = 'FOR EACH _File-Trig WHERE _File-Trig._File-recid = ' + STRING (hBFile:RECID).
+    hTrig:QUERY-PREPARE(cQuery).
+    hTrig:QUERY-OPEN().
+    hTrig:GET-FIRST(NO-LOCK).
+    REPEAT:
+        IF hTrig:QUERY-OFF-END THEN LEAVE.
+        xRoot:CREATE-NODE(xTrigger, 'TRIGGER':U, 'ELEMENT':U).
+        xTable:APPEND-CHILD(xTrigger).
+        xTrigger:SET-ATTRIBUTE('Event':U, hEvent:BUFFER-VALUE).
+        xTrigger:SET-ATTRIBUTE('Procedure':U, hProc:BUFFER-VALUE).
+        xTrigger:SET-ATTRIBUTE('Overridable':U, hOverride:BUFFER-VALUE).
+        hTrig:GET-NEXT(NO-LOCK).
+    END.
+    hTrig:QUERY-CLOSE().
+            
+    /* Tableau HTML contenant la description des index de la table PROGRESS*/
+    ASSIGN cQuery = 'FOR EACH _Index WHERE _Index._File-recid EQ ' + STRING (hBFile:RECID) + ' BY _Index._Unique DESCENDING BY _Index._Index-Name'.
+    hIndex:QUERY-PREPARE (cQuery).
+    hIndex:QUERY-OPEN().
+    hIndex:GET-FIRST(NO-LOCK).
+    REPEAT:
+        IF hIndex:QUERY-OFF-END THEN LEAVE.
+        xRoot:CREATE-NODE(xIndex, 'INDEX', 'ELEMENT':U).
+        xTable:APPEND-CHILD(xIndex).
+        xIndex:SET-ATTRIBUTE('Name':U, hIndexName:BUFFER-VALUE).
+        xIndex:SET-ATTRIBUTE('Primary':U, (IF (hPrime:BUFFER-VALUE EQ hBIndex:RECID) THEN 'True':U ELSE 'False')).
+        xIndex:SET-ATTRIBUTE('Unique':U, (IF hUnique:BUFFER-VALUE THEN 'True':U ELSE 'False')).
+        xIndex:SET-ATTRIBUTE('Active':U, (IF hActive:BUFFER-VALUE THEN 'True':U ELSE 'False')).
+        IF (hIndexDesc:BUFFER-VALUE NE ?) THEN DO:
+            xRoot:CREATE-NODE(xText, '':U, 'TEXT':U).
+            xText:NODE-VALUE = hIndexDesc:BUFFER-VALUE.
+            xIndex:APPEND-CHILD(xText).
+        END.
         
-	/* Beginning of table */
-        PUT UNFORMATTED "<div id=""FieldList"">" SKIP.
-	PUT UNFORMATTED "<h1>Fields list</h1>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
-               cQuery = cQuery + STRING (hBFile:RECID) + ' BY _Field._Field-Name'.
-	hField:QUERY-PREPARE (cQuery).
-        hField:QUERY-OPEN.
-        hField:GET-FIRST.
+        ASSIGN cQuery = 'FOR EACH _Index-Field WHERE _Index-Field._Index-recid EQ ' + STRING (hBIndex:RECID).
+        hIdxField:QUERY-PREPARE (cQuery).
+        hIdxField:QUERY-OPEN().
+        hIdxField:GET-FIRST(NO-LOCK).
         REPEAT:
-            IF hField:QUERY-OFF-END THEN LEAVE.
-            PUT UNFORMATTED "<p>".
-            PUT UNFORMATTED "<a href=""#" + hOrder:BUFFER-VALUE + """>" + hFieldName:BUFFER-VALUE + "</a>".
-            PUT UNFORMATTED "</p>" SKIP.
-            hField:GET-NEXT (NO-LOCK).
-        END.
-        hField:QUERY-CLOSE.
-        PUT UNFORMATTED "</div>" SKIP(2).
-
-        /* Creating trigger retrieval query */
-        PUT UNFORMATTED "<div id=""TrigList"">" SKIP.
-	PUT UNFORMATTED "<h1>Triggers list</h1>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _File-Trig WHERE _File-Trig._File-recid = ' + STRING (hBFile:RECID).
-        hTrig:QUERY-PREPARE (cQuery).
-        hTrig:QUERY-OPEN.
-        hTrig:GET-FIRST.
-        REPEAT:
-            IF hTrig:QUERY-OFF-END THEN LEAVE.
-	PUT UNFORMATTED "<p>".
-            PUT UNFORMATTED "<a href=""#" + hEvent:BUFFER-VALUE + """>" + hEvent:BUFFER-VALUE + "</a>".
-            PUT UNFORMATTED "</p>" SKIP.
-            hTrig:GET-NEXT (NO-LOCK).
-        END.
-        hTrig:QUERY-CLOSE.
-        PUT UNFORMATTED  "</div>" SKIP (2).
-
-        /* Creating index retrieval query */
-	PUT UNFORMATTED "<div id=""IdxList"">" SKIP.
-	PUT UNFORMATTED "<h1>Indexes list</h1>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _Index WHERE _Index._File-recid EQ ' + STRING (hBFile:RECID).
-        hIndex:QUERY-PREPARE (cQuery).
-        hIndex:QUERY-OPEN.
-        hIndex:GET-FIRST.
-        REPEAT:
-            IF hIndex:QUERY-OFF-END THEN LEAVE.
-	    PUT UNFORMATTED "<p>".
-            PUT UNFORMATTED "<a href=""#" + hIndexName:BUFFER-VALUE + """>" + hIndexName:BUFFER-VALUE + "</a>" SKIP.
-            PUT UNFORMATTED "</p>" SKIP.
-            hIndex:GET-NEXT (NO-LOCK).
-        END.
-        hIndex:QUERY-CLOSE.
-        PUT UNFORMATTED  "</div>" SKIP(2).
-        PUT UNFORMATTED "</div>" SKIP.
-	
-        /* Tableau HTML contenant diff�rentes informations sur les champs de la table PROGRESS*/
-	PUT UNFORMATTED "<div id=""Detail"">" SKIP.
-        PUT UNFORMATTED "<table class=""Internal"">" SKIP.
-        PUT UNFORMATTED "<tr><th colspan=""8"">Fields</th></tr>" SKIP.
-        PUT UNFORMATTED "<tr>" SKIP.
-        PUT UNFORMATTED "<th>Order</th>" SKIP.
-        PUT UNFORMATTED "<th>Field Name</th>" SKIP.
-        PUT UNFORMATTED "<th>Datatype</th>" SKIP.
-        PUT UNFORMATTED "<th>Mandatory</th>" SKIP.
-        PUT UNFORMATTED "<th>Format</th>" SKIP.
-        PUT UNFORMATTED "<th>Extent</th>" SKIP.
-        PUT UNFORMATTED "<th>Default</th>" SKIP.
-        PUT UNFORMATTED "<th>Label</th>" SKIP.
-        PUT UNFORMATTED "</tr>" SKIP.
-	PUT UNFORMATTED "<tr>" SKIP.
-	PUT UNFORMATTED "<th colspan=""8"">Description</th>" SKIP.
-        PUT UNFORMATTED "</tr>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
-               cQuery = cQuery + STRING (hBFile:RECID) + ' BY _Field._Order'.
-        hField:QUERY-PREPARE (cQuery).
-        hField:QUERY-OPEN.
-        hField:GET-FIRST.
-	lEven = TRUE.
-        REPEAT:
-            IF hField:QUERY-OFF-END THEN LEAVE.
-            PUT UNFORMATTED "<tr>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """><a name=""" + hOrder:BUFFER-VALUE + """>" + hOrder:BUFFER-VALUE + "</a></td>" SKIP. 
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>" + hFieldName:BUFFER-VALUE + "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>" + hDataType:BUFFER-VALUE + "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>" + STRING (hMandatory:BUFFER-VALUE) + "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>" + STRING (hFormat:BUFFER-VALUE) + "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>" + STRING (hExtent:BUFFER-VALUE) + "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            IF (TRIM (STRING (hInitial:BUFFER-VALUE)) EQ '') THEN
-                PUT UNFORMATTED "&nbsp;".
-            ELSE
-                PUT UNFORMATTED STRING (hInitial:BUFFER-VALUE).
-            PUT UNFORMATTED "</td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            IF (TRIM (STRING (hLabel:BUFFER-VALUE)) EQ '') THEN
-                PUT UNFORMATTED "&nbsp;".
-            ELSE
-                PUT UNFORMATTED STRING (hLabel:BUFFER-VALUE).
-            PUT UNFORMATTED "</td>" SKIP.
-	    PUT UNFORMATTED "</tr>" SKIP.
-	    PUT UNFORMATTED "<tr>" SKIP.
-            PUT UNFORMATTED "<td colspan=""8"" class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            IF (TRIM (STRING (hFieldDesc:BUFFER-VALUE)) EQ '') THEN
-                PUT UNFORMATTED "&nbsp;".
-            ELSE
-                PUT UNFORMATTED STRING (hFieldDesc:BUFFER-VALUE).
-            PUT UNFORMATTED "</td></tr>" SKIP.
-            hField:GET-NEXT (NO-LOCK).
-	    lEven = NOT lEven.
-        END.
-        hField:QUERY-CLOSE.
-        PUT UNFORMATTED "</table>" SKIP(2).
-        
-        PUT UNFORMATTED "<table class=""Internal"">" SKIP.
-        PUT UNFORMATTED "<tr><th colspan=""3"">Triggers</th></tr>" SKIP.
-        PUT UNFORMATTED "<tr>" SKIP.
-        PUT UNFORMATTED "<th>Event</th>" SKIP.
-        PUT UNFORMATTED "<th>Procedure</th>" SKIP.
-        PUT UNFORMATTED "<th>Overridable ?</th></tr>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _File-Trig WHERE _File-Trig._File-recid = ' + STRING (hBFile:RECID).
-        hTrig:QUERY-PREPARE (cQuery).
-        hTrig:QUERY-OPEN.
-        hTrig:GET-FIRST.
-	lEven = TRUE.
-        REPEAT:
-            IF hTrig:QUERY-OFF-END THEN LEAVE.
-            PUT UNFORMATTED "<tr>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>".
-	    PUT UNFORMATTED "<a name=""" + hEvent:BUFFER-VALUE + """>" + hEvent:BUFFER-VALUE + "</a></td>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>".
-	    PUT UNFORMATTED hProc:BUFFER-VALUE + "</TD>" SKIP.
-            PUT UNFORMATTED "<td class=""Field" + STRING(lEven, "Even/Odd") + """>".
-	    PUT UNFORMATTED STRING (hOverride:BUFFER-VALUE) + "</td>" SKIP.
-            PUT UNFORMATTED "</tr>" SKIP.
-            hTrig:GET-NEXT (NO-LOCK).
-	    lEven = NOT lEven.
-        END.
-        hTrig:QUERY-CLOSE.
-        PUT UNFORMATTED "</table>" SKIP (2).
-                
-        /* Tableau HTML contenant la description des index de la table PROGRESS*/
-        PUT UNFORMATTED "<table class=""Internal"">".
-        PUT UNFORMATTED "<tr><th colspan=""4"">Indexes</th></tr>" SKIP.
-        PUT UNFORMATTED "<tr>" SKIP.
-        PUT UNFORMATTED "<th>Flags</th>" SKIP.
-        PUT UNFORMATTED "<th>Index name</th>" SKIP.
-        PUT UNFORMATTED "<th>Fields name</th>" SKIP.
-        PUT UNFORMATTED "<th>Description</th>" SKIP.
-        PUT UNFORMATTED "</tr>" SKIP.
-        ASSIGN cQuery = 'FOR EACH _Index WHERE _Index._File-recid EQ ' + STRING (hBFile:RECID) + ' BY _Index._Unique DESCENDING BY _Index._Index-Name'.
-        hIndex:QUERY-PREPARE (cQuery).
-        hIndex:QUERY-OPEN.
-        hIndex:GET-FIRST.
-	lEven = TRUE.
-        REPEAT:
-            IF hIndex:QUERY-OFF-END THEN LEAVE.
-            PUT UNFORMATTED "<tr><td valign=""top"" class=""Field" + STRING(lEven, "Even/Odd") + """>" SKIP.
-            IF (hPrime:BUFFER-VALUE EQ hBIndex:RECID) THEN
-                PUT UNFORMATTED "Primary<br/>".
-            IF hUnique:BUFFER-VALUE THEN
-                PUT UNFORMATTED "Unique<br/>".
-            IF NOT (hActive:BUFFER-VALUE) THEN
-                PUT UNFORMATTED "Inactive<br/>".
-            PUT UNFORMATTED "&nbsp;</td>" SKIP.
-            PUT UNFORMATTED "<td valign=""top"" class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            PUT UNFORMATTED "<a name=""" + hIndexName:BUFFER-VALUE + """>" + hIndexName:BUFFER-VALUE + "</a></td>" SKIP.
-            PUT UNFORMATTED "<td valign=""top"" class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            ASSIGN cQuery = 'FOR EACH _Index-Field WHERE _Index-Field._Index-recid EQ ' + STRING (hBIndex:RECID).
-            hIdxField:QUERY-PREPARE (cQuery).
-            hIdxField:QUERY-OPEN.
-            hIdxField:GET-FIRST.
-            REPEAT:
-                IF hIdxField:QUERY-OFF-END THEN LEAVE.
-                ASSIGN cQuery = 'FOR EACH _Field WHERE RECID (_Field) EQ ' + STRING (hFieldRecID:BUFFER-VALUE).
-                hField:QUERY-PREPARE (cQuery).
-                hField:QUERY-OPEN.
-                hField:GET-FIRST.
-                IF (NOT hField:QUERY-OFF-END) THEN DO:
-                    PUT UNFORMATTED hFieldName:BUFFER-VALUE "<br/>" SKIP.
-                END.
-                hField:QUERY-CLOSE.
-                hIdxField:GET-NEXT (NO-LOCK).
+            IF hIdxField:QUERY-OFF-END THEN LEAVE.
+            xRoot:CREATE-NODE(xIndexFld, 'INDEX-FIELD':U, 'ELEMENT':U).
+            xIndex:APPEND-CHILD(xIndexFld).
+            ASSIGN cQuery = 'FOR EACH _Field WHERE RECID (_Field) EQ ' + STRING (hFieldRecID:BUFFER-VALUE).
+            hField:QUERY-PREPARE (cQuery).
+            hField:QUERY-OPEN().
+            hField:GET-FIRST(NO-LOCK).
+            IF (NOT hField:QUERY-OFF-END) THEN DO:
+                xIndexFld:SET-ATTRIBUTE('Name':U, hFieldName:BUFFER-VALUE).
             END.
-            hIdxField:QUERY-CLOSE.
-	    PUT UNFORMATTED "</td>" SKIP.
-            PUT UNFORMATTED "<td valign=""top"" class=""Field" + STRING(lEven, "Even/Odd") + """>".
-            IF (TRIM (STRING (hIndexDesc:BUFFER-VALUE)) EQ '') THEN
-                PUT UNFORMATTED "&nbsp;".
-            ELSE
-                PUT UNFORMATTED STRING (hIndexDesc:BUFFER-VALUE).
-            PUT UNFORMATTED "</td></tr>" SKIP.
-            hIndex:GET-NEXT (NO-LOCK).
-	    lEven = NOT lEven.
+            hField:QUERY-CLOSE().
+            hIdxField:GET-NEXT (NO-LOCK).
         END.
-        hIndex:QUERY-CLOSE.
-        PUT UNFORMATTED "</table>" SKIP(2).
-	PUT UNFORMATTED "</div>" SKIP.
-        
-        /* Fin du document HTML de pr�sentation de la table PROGRESS */
-        PUT UNFORMATTED "</body>" SKIP.
-        PUT UNFORMATTED "</html>" SKIP.
-        OUTPUT CLOSE.
-        hFile:GET-NEXT (NO-LOCK).
+        hIdxField:QUERY-CLOSE().
+        hIndex:GET-NEXT (NO-LOCK).
     END.
-END PROCEDURE.
+    hIndex:QUERY-CLOSE().
+    hFile:GET-NEXT (NO-LOCK).
+END.
+hFile:QUERY-CLOSE().
 
-RUN DetailedTable.
+/* Freeing up memory */
+/* Starting with buffer field handles */
+DELETE OBJECT hDump.
+DELETE OBJECT hTable.
+DELETE OBJECT hTableDesc.
+DELETE OBJECT hPrime.
+DELETE OBJECT hOrder.
+DELETE OBJECT hFieldName.
+DELETE OBJECT hDataType.
+DELETE OBJECT hMandatory.
+DELETE OBJECT hFormat.
+DELETE OBJECT hExtent.
+DELETE OBJECT hInitial.
+DELETE OBJECT hLabel.
+DELETE OBJECT hFieldDesc.
+DELETE OBJECT hEvent.
+DELETE OBJECT hProc.
+DELETE OBJECT hOverride.
+DELETE OBJECT hIndexName.
+DELETE OBJECT hUnique.
+DELETE OBJECT hActive.
+DELETE OBJECT hIndexDesc.
+DELETE OBJECT hFieldRecID.
+/* Continue with buffer handles */
+DELETE OBJECT hBFile.
+DELETE OBJECT hBField.
+DELETE OBJECT hBIndex.
+DELETE OBJECT hBTrig.
+DELETE OBJECT hBIdxField.
+/* And ends up with query handles */
+DELETE OBJECT hFile.
+DELETE OBJECT hField.
+DELETE OBJECT hIndex.
+DELETE OBJECT hTrig.
+DELETE OBJECT hIdxField.
+
+xRoot:SAVE("FILE":U, SESSION:PARAMETER).
+
+DELETE OBJECT xRoot.
+DELETE OBJECT xTables.
+DELETE OBJECT xTable.
+DELETE OBJECT xField.
+DELETE OBJECT xIndex.
+DELETE OBJECT xIndexFld.
+DELETE OBJECT xTrigger.
+DELETE OBJECT xText.
 
 RETURN '0'.
