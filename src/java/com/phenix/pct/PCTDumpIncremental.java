@@ -88,7 +88,7 @@ public class PCTDumpIncremental extends PCTRun {
      * <li>code-page = ?,""          : default conversion (SESSION:STREAM)</li>
      * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li></ul>
      * @param codePage String
-     * TODO : vérifier avec PCTRun 
+     * TODO : vérifier avec PCTRun
      */
     public void setCodePage(String codePage) {
         this.codePage = codePage;
