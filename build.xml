@@ -9,12 +9,12 @@
   <property environment="env"/>
   
   <!-- Some directories definitions -->
-  <property name="src.java" location="src/java"/>
-  <property name="src.progress" location="src/progress"/>
-  <property name="build" location="build"/>
-  <property name="dist" location="lib"/>
-  <property name="doc" location="javadoc"/>
-  <property name="check" location="check"/>
+  <property name="src.java" value="src/java"/>
+  <property name="src.progress" value="src/progress"/>
+  <property name="build" value="build"/>
+  <property name="dist" value="lib"/>
+  <property name="doc" value="javadoc"/>
+  <property name="check" value="check"/>
 
   <!-- Jalopy classpath -->
   <path id="JalopyCP">
@@ -67,11 +67,11 @@
     </PCTCompile>
     <PCTCompile destdir="${build}/gui/pct" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}/pct">
-	    <include name="*.p"/>
-	  </fileset>
-	  <propath>
-	    <pathelement location="${src.progress}"/>
-	  </propath>
+        <include name="*.p"/>
+      </fileset>
+      <propath>
+        <pathelement location="${src.progress}"/>
+      </propath>
     </PCTCompile>
    </target>
   
@@ -103,10 +103,10 @@
   <target name="bindist" depends="jar,pbuild,javadoc" description="Generates binary zip/tarball archive">
     <tar destfile="pct-bin.tar.gz" compression="gzip">
       <tarfileset prefix="pct" dir="." mode="644">
-        <include name="lib/PCT.jar"/>
+        <include name="${dist}/PCT.jar"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="javadoc/**"/>
+        <include name="${doc}/**"/>
       </tarfileset>
       <tarfileset prefix="pct" dir="build" mode="644">
         <include name="tty/pct/*.r"/>
@@ -115,10 +115,10 @@
     </tar>
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="lib/PCT.jar"/>
+        <include name="${dist}/PCT.jar"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="javadoc/**"/>
+        <include name="${doc}/**"/>
       </zipfileset>
       <zipfileset prefix="pct" dir="build" filemode="644">
         <include name="tty/pct/*.r"/>
