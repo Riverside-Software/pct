@@ -78,6 +78,7 @@ public class PCTCompile extends PCTRun {
     private boolean failOnError = false;
     private boolean xcode = false;
     private boolean noCompile = false;
+    private boolean runList = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -169,6 +170,16 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
+     * Generates a .run file in the .pct directory, which shows internal and
+     * external procedures calls
+     *
+     * @param runList "true|false|on|off|yes|no"
+     */
+    public void setRunList(boolean runList) {
+        this.runList = runList;
+    }
+
+    /**
      * Location to store the .r files
      * 
      * @param destDir Destination directory
@@ -257,6 +268,8 @@ public class PCTCompile extends PCTRun {
             bw.write("XCODE=" + (this.xcode ? "1" : "0"));
             bw.newLine();
             bw.write("NOCOMPILE=" + (this.noCompile ? "1" : "0"));
+            bw.newLine();
+            bw.write("RUNLIST=" + (this.runList ? "1" : "0"));
             bw.newLine();
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey);
