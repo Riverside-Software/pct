@@ -145,6 +145,7 @@
     </PCTCompile>	
   </target>
   <target name="test7bis">
+  	<sleep seconds="3"/>
   	<touch file="sandbox/temp.p"/>
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
@@ -266,13 +267,6 @@
     <PCTCompile destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
-      </fileset>	
-      <propath>
-        <pathelement path="../../build/tty"/>	
-      </propath>
-    </PCTCompile>	
-    <PCTCompile destDir="build" dlcHome="${env.DLC}">
-      <fileset dir=".">
         <include name="sandbox/temp2.p"/>
       </fileset>	
       <propath>
