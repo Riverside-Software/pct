@@ -118,8 +118,8 @@
       <formatter type="brief" usefile="false"/>
 
       <batchtest>
-        <fileset dir="src/test">
-          <include name="com/phenix/pct/*Test*"/>
+        <fileset dir="${src.test}">
+          <include name="com/phenix/pct/*Test.java"/>
         </fileset>
       </batchtest>
     </junit>
