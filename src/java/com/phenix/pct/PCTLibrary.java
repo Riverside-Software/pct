@@ -54,12 +54,12 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 
@@ -101,120 +101,86 @@ public class PCTLibrary extends PCT {
         this.noCompress = noCompress;
     }
 
-    /**
-     * Append all files found by a directory scanner to a vector.
-     */
-    private void appendFiles(Vector files, DirectoryScanner ds) {
-        String[] dsfiles = ds.getIncludedFiles();
-
-        for (int i = 0; i < dsfiles.length; i++) {
-            files.addElement(dsfiles[i]);
-        }
-    }
-
-    /**
-     * Get the complete list of files to be included in the cab.  Filenames
-     * are gathered from filesets if any have been added, otherwise from the
-     * traditional include parameters.
-     */
-    private Vector getFileList() throws BuildException {
-        Vector files = new Vector();
-
-        if (filesets.size() == 0) {
-            // get files from old methods - includes and nested include
-            appendFiles(files, super.getDirectoryScanner(this.getBaseDir()));
-        } else {
-            // get files from filesets
-            for (int i = 0; i < filesets.size(); i++) {
-                FileSet fs = (FileSet) filesets.elementAt(i);
-
-                if (fs != null) {
-                    appendFiles(files, fs.getDirectoryScanner(this.getProject()));
-                }
-            }
-        }
-
-        return files;
-    }
-
     public void execute() throws BuildException {
-        Commandline cmdLine = null;
-        int result = 0;
+        ExecTask exec = null;
 
         // Library name must be defined
         if (this.destFile == null) {
             throw new BuildException("Library name not defined");
         }
 
-        cmdLine = createLib();
-        result = run(cmdLine);
+        // Creates new library
+        exec = createArchiveTask();
+        exec.execute();
 
-        if (result != 0) {
-            String msg = "Failed creating new library: " + cmdLine.toString() +
-                         " - Return code : " + result;
-            throw new BuildException(msg, location);
-        }
+        // Parses filesets
+        for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
+            FileSet fs = (FileSet) e.nextElement();
 
-        Vector files = getFileList();
+            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
-        for (int i = 0; i < files.size(); i++) {
-            cmdLine = addFile(files.elementAt(i).toString());
-            result = run(cmdLine);
-
-            if (result != 0) {
-                String msg = "Failed adding file: " + cmdLine.toString() + " - Return code : " +
-                             result;
-                throw new BuildException(msg, location);
+            for (int i = 0; i < dsfiles.length; i++) {
+                exec = addFileTask(dsfiles[i], fs.getDir(this.getProject()));
+                exec.execute();
             }
         }
 
         if (!this.noCompress) {
-            cmdLine = compressLib();
-            result = run(cmdLine);
-
-            if (result != 0) {
-                String msg = "Failed compressing library: " + cmdLine.toString() +
-                             " - Return code : " + result;
-                throw new BuildException(msg, location);
-            }
+            exec = compressTask();
+            exec.execute();
         }
     }
 
-    private Commandline createLib() {
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getExecPath("prolib"));
-        commandLine.createArgument().setValue(this.destFile.toString());
-        commandLine.createArgument().setValue("-create");
+    private ExecTask createArchiveTask() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
+
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue("-create");
 
         if (this.encoding != null) {
-            commandLine.createArgument().setValue("-codepage");
-            commandLine.createArgument().setValue(this.encoding);
+            exec.createArg().setValue("-codepage");
+            exec.createArg().setValue(this.encoding);
         }
 
-        commandLine.createArgument().setValue("-nowarn");
+        exec.createArg().setValue("-nowarn");
 
-        return commandLine;
+        return exec;
     }
 
-    private Commandline addFile(String f) {
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getExecPath("prolib"));
+    private ExecTask addFileTask(String f, File dir) {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
 
-        commandLine.createArgument().setValue(this.destFile.toString());
-        commandLine.createArgument().setValue("-replace");
-        commandLine.createArgument().setValue(f);
-        commandLine.createArgument().setValue("-nowarn");
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
 
-        return commandLine;
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.setDir(dir);
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue("-replace");
+        exec.createArg().setValue(f);
+        exec.createArg().setValue("-nowarn");
+
+        return exec;
     }
 
-    private Commandline compressLib() {
-        Commandline commandLine = new Commandline();
-        commandLine.setExecutable(getExecPath("prolib"));
-        commandLine.createArgument().setValue(this.destFile.toString());
-        commandLine.createArgument().setValue("-compress");
-        commandLine.createArgument().setValue("-nowarn");
+    private ExecTask compressTask() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
 
-        return commandLine;
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue("-compress");
+        exec.createArg().setValue("-nowarn");
+
+        return exec;
     }
 }

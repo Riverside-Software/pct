@@ -22,6 +22,7 @@
       </fileset>
     </classpath>
   </taskdef>
+  <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.1.jar"/>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
@@ -35,6 +36,20 @@
       </fileset>
     </jalopy>
   </target>
+
+  <target name="check" depends="format">
+    <checkstyle config="check-config.xml" failOnViolation="false">
+      <formatter type="xml" toFile="check.raw"/>
+      <fileset dir="src/java">
+        <include name="**/*.java"/>
+      </fileset>
+    </checkstyle>
+    <mkdir dir="check"/>
+    <style in="check.raw" style="checkstyle-frames.xsl" out="check/output.txt">
+<!--      <param name="basedir" expression="."/> -->
+    </style>
+  </target>
+
 
   <target name="doc" description="Creates the API documentation">
     <mkdir dir="${doc}"/>
