@@ -83,7 +83,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Default constructor
-     *  
+     * 
      */
     public PCTLibrary() {
         super();
@@ -142,9 +142,8 @@ public class PCTLibrary extends PCT {
     }
 
     /**
-     * Sets the set of include patterns. Patterns may be separated by a comma
-     * or a space.
-     *
+     * Sets the set of include patterns. Patterns may be separated by a comma or a space.
+     * 
      * @param includes the string containing the include patterns
      */
     public void setIncludes(String includes) {
@@ -152,9 +151,8 @@ public class PCTLibrary extends PCT {
     }
 
     /**
-     * Sets the set of exclude patterns. Patterns may be separated by a comma
-     * or a space.
-     *
+     * Sets the set of exclude patterns. Patterns may be separated by a comma or a space.
+     * 
      * @param excludes the string containing the exclude patterns
      */
     public void setExcludes(String excludes) {
@@ -163,9 +161,8 @@ public class PCTLibrary extends PCT {
 
     /**
      * Sets the name of the file containing the includes patterns.
-     *
-     * @param includesfile A string containing the filename to fetch
-     * the include patterns from.
+     * 
+     * @param includesfile A string containing the filename to fetch the include patterns from.
      */
     public void setIncludesfile(File includesfile) {
         fileset.setIncludesfile(includesfile);
@@ -173,9 +170,8 @@ public class PCTLibrary extends PCT {
 
     /**
      * Sets the name of the file containing the includes patterns.
-     *
-     * @param excludesfile A string containing the filename to fetch
-     * the include patterns from.
+     * 
+     * @param excludesfile A string containing the filename to fetch the include patterns from.
      */
     public void setExcludesfile(File excludesfile) {
         fileset.setExcludesfile(excludesfile);
@@ -183,10 +179,9 @@ public class PCTLibrary extends PCT {
 
     /**
      * Sets whether default exclusions should be used or not.
-     *
-     * @param useDefaultExcludes "true"|"on"|"yes" when default exclusions
-     *                           should be used, "false"|"off"|"no" when they
-     *                           shouldn't be used.
+     * 
+     * @param useDefaultExcludes "true"|"on"|"yes" when default exclusions should be used,
+     *            "false"|"off"|"no" when they shouldn't be used.
      */
     public void setDefaultexcludes(boolean useDefaultExcludes) {
         fileset.setDefaultexcludes(useDefaultExcludes);
@@ -205,11 +200,10 @@ public class PCTLibrary extends PCT {
             this.cleanup();
             throw new BuildException("Library name not defined");
         }
-        
+
         // There must be at least one fileset
         if ((this.baseDir == null) && (this.filesets.size() == 0)) {
-            throw new BuildException("basedir attribute must be set, "
-                    + "or at least "
+            throw new BuildException("basedir attribute must be set, " + "or at least "
                     + "one fileset must be given!");
         }
 
@@ -291,7 +285,7 @@ public class PCTLibrary extends PCT {
 
     private ExecTask compressTask() {
         ExecTask exec = (ExecTask) getProject().createTask("exec");
-        
+
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
@@ -307,8 +301,10 @@ public class PCTLibrary extends PCT {
 
         return exec;
     }
+
     /**
      * 
+     * @param fs FileSet to be written
      * @throws BuildException
      */
     private void writeFileList(FileSet fs) throws BuildException {
