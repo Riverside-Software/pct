@@ -6,7 +6,6 @@
     <!-- Javadoc requirements -->
     <module name="JavadocType">
       <property name="scope" value="protected"/>
-      <property name="authorFormat" value="\S"/>
     </module>
     <module name="JavadocMethod">
       <property name="scope" value="protected"/>
@@ -30,7 +29,7 @@
     <!-- required licence file -->
     <module name="Header">
         <property name="headerFile" value="conf/RequiredHeader.txt"/>
-        <property name="ignoreLines" value="4"/>
+        <property name="ignoreLines" value="2"/>
     </module>
 
     <!-- Import conventions -->
