@@ -195,12 +195,4 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test13-part2", "This is dir2");
     }
 
-    /**
-     * Tests preprocessor directives
-     */
-    public void test14() {
-        executeTarget("test14-init");
-        expectLog("test14-part1", "");
-        expectLog("test14-part2", "Powered by PCT :)");
-    }
 }

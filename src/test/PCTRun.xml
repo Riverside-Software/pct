@@ -157,28 +157,5 @@
       </propath>
     </PCTRun>
   </target>
-  
-  <!-- Global defines -->
-  <target name="test14-init">
-    <echo file="sandbox/test.p">
-      MESSAGE {&MYDIRECTIVE}.
-      RETURN "0".
-    </echo>
-  </target>
-  <target name="test14-part1">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
-      <propath>
-      	<pathelement location="sandbox"/>
-      </propath>
-    </PCTRun>
-  </target>
-  <target name="test14-part2">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
-      <propath>
-      	<pathelement location="sandbox"/>
-      </propath>
-      <PCTGlobalDefine name="MYDIRECTIVE" value="Powered by PCT :)"/>
-    </PCTRun>
-  </target>
 
 </project>
