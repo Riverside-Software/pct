@@ -8,7 +8,7 @@
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTCompile/>
+    <PCTCompile dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Do nothing : should not hurt -->
