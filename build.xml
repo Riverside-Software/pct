@@ -204,6 +204,12 @@
         <include name="**"/>
       </fileset>
     </copy>
+    <zip destfile="${website}/sample1.zip" whenempty="create" >
+      <zipfileset dir="doc/quickstart-samples/step1" prefix="MyProject"/>
+    </zip>
+    <zip destfile="${website}/sample2.zip" whenempty="create" >
+      <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject"/>
+    </zip>
   </target>
 
   <target name="sports2000doc" depends="pbuild">
