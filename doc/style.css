@@ -48,6 +48,10 @@ div.Menu a {
     text-decoration: underline;
 }
 
+div.Menu span#selected {
+    background: #336699;
+    color: #cccccc;
+}
 div.Menu a:hover {
     background: #eeeeee;
     text-decoration: none;
@@ -99,4 +103,8 @@ div.Text th {
 
 div.Text td {
     border-bottom: 1px black solid;
+}
+
+img#sflogo {
+    border: 0px;
 }
