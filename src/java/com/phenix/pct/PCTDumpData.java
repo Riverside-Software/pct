@@ -60,7 +60,7 @@ import java.io.File;
 
 /**
  * Dumps data from database
- * 
+ *
  * @author <a href="mailto:d.knol@steeg-software.nl">Ing. D.G. Knol</a>
  */
 public class PCTDumpData extends PCTRun {
