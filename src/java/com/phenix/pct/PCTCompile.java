@@ -330,12 +330,12 @@ public class PCTCompile extends PCTRun {
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
             bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
-                     this.destDir.getAbsolutePath() + File.separatorChar + "\".");
+                     escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
             bw.newLine();
             bw.newLine();
 
             for (Enumeration e = _dirs.keys(); e.hasMoreElements();) {
-                String s = (String) e.nextElement();
+                String s = escapeString((String) e.nextElement());
                 Integer i = (Integer) _dirs.get(s);
                 bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s +
                          File.separatorChar + "\".");
@@ -346,10 +346,10 @@ public class PCTCompile extends PCTRun {
 
             if (!this.noXref) {
                 bw.write("DEFINE VARIABLE xRefDir AS CHARACTER NO-UNDO INITIAL \"" +
-                         xRefDir.getAbsolutePath() + File.separatorChar + "\".");
+                         escapeString(xRefDir.getAbsolutePath()) + File.separatorChar + "\".");
                 bw.newLine();
                 bw.write("DEFINE VARIABLE includesDir AS CHARACTER NO-UNDO INITIAL \"" +
-                         includesDir.getAbsolutePath() + File.separatorChar + "\".");
+                         escapeString(includesDir.getAbsolutePath()) + File.separatorChar + "\".");
                 bw.newLine();
             }
 
@@ -434,7 +434,7 @@ public class PCTCompile extends PCTRun {
         public PCTFile(File baseDir, String fileName) {
             this.baseDir = baseDir;
 
-            String s = fileName.replace('\\', '/');
+            String s = escapeString(fileName.replace('\\', '/'));
             int i = s.lastIndexOf('/');
 
             if (i == -1) {
