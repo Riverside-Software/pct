@@ -264,7 +264,7 @@ public class PCTCompile extends PCTRun {
             }
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to compile");
+            throw new BuildException("Unable to write parameter list");
         }
     }
 
@@ -277,16 +277,19 @@ public class PCTCompile extends PCTRun {
         File xRefDir = null; // Where to store XREF files
 
         if (this.destDir == null) {
+            this.cleanup();
             throw new BuildException("destDir attribute not defined");
         }
 
         // Test output directory
         if (this.destDir.exists()) {
             if (!this.destDir.isDirectory()) {
+                this.cleanup();
                 throw new BuildException("destDir is not a directory");
             }
         } else {
             if (!this.destDir.mkdir()) {
+                this.cleanup();
                 throw new BuildException("Unable to create destDir");
             }
         }
@@ -298,10 +301,12 @@ public class PCTCompile extends PCTRun {
 
         if (this.xRefDir.exists()) {
             if (!this.xRefDir.isDirectory()) {
+                this.cleanup();
                 throw new BuildException("xRefDir is not a directory");
             }
         } else {
             if (!this.xRefDir.mkdir()) {
+                this.cleanup();
                 throw new BuildException("Unable to create xRefDir");
             }
         }
@@ -314,28 +319,29 @@ public class PCTCompile extends PCTRun {
             this.setProcedure("pct/pctCompile.p");
             this.setParameter(params.getAbsolutePath());
             super.execute();
-
-            if (!this.getDebugPCT()) {
-                if (!this.fsList.delete()) {
-                    log("Failed to delete " + this.fsList.getAbsolutePath());
-                }
-
-                if (!this.params.delete()) {
-                    log("Failed to delete " + this.params.getAbsolutePath());
-                }
-            }
+            this.cleanup();
         } catch (BuildException be) {
-            if (!this.getDebugPCT()) {
-                if (!this.fsList.delete()) {
-                    log("Failed to delete " + this.fsList.getAbsolutePath());
-                }
+            this.cleanup();
+            throw be;
+        }
+    }
 
-                if (!this.params.delete()) {
-                    log("Failed to delete " + this.params.getAbsolutePath());
-                }
+    /**
+     * Delete temporary files if debug not activated
+     * 
+     * @see PCTRun#cleanup
+     */
+    protected void cleanup() {
+        super.cleanup();
+
+        if (!this.getDebugPCT()) {
+            if (this.fsList.exists() && !this.fsList.delete()) {
+                log("Failed to delete " + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE);
             }
 
-            throw be;
+            if (this.params.exists() && !this.params.delete()) {
+                log("Failed to delete " + this.params.getAbsolutePath(), Project.MSG_VERBOSE);
+            }
         }
     }
 }
