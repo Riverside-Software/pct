@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="fr" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="fr" />
+<title>PCT documentation - PCTRun task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+    <li><a href="PLReader.html">PLReader</a></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTConnection.html">PCTConnection</a></li>
+    <li><a href="PCTAlias.html">PCTAlias</a></li>
+  </ul>
+</div>
+
+<div class="Text">
+<h1>PCTRun task</h1>
+
+<h2>Description</h2>
+<p>Executes a Progress procedure.</p>
+<p>This task generates a temporary Progress 
+procedure on the fly  which sets the propath and declares database aliases according to specified
+parameters, and then runs the specified procedure.</p>
+<p>This temporary procedure is launched by an Exec task, with prowin32 or _progres executable,
+and with the specified arguments.</p>
+<p>TODO : explain return values</p>
+
+<h2>Parameters</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>procedure</td>
+<td>Procedure to execute</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>graphicalMode</td>
+<td>True if you want to execute procedure using prowin32, _progres otherwise</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False (_progres)</td>
+</tr>
+<tr>
+<td>debugPCT</td>
+<td>True to keep internal temporary files on disk</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>centuryYearOffset</td>
+<td>Century Year Offset (-yy parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>cpInternal</td>
+<td>Internal code page (-cpinternal parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>cpStream</td>
+<td>Stream code page (-cpstream parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>dirSize</td>
+<td>The number of compiled procedure directory entries (-D parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>inputChars</td>
+<td>The number of characters allowed in a single statement (-inp parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>maximumMemory</td>
+<td>The amount of memory allocated for r-code segments (-mmax parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>parameter</td>
+<td>Parameter (-param parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>stackSize</td>
+<td>Stack size in 1KB units (-s parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>token</td>
+<td>The number of tokens allowed in a 4GL statement (-tok parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>compileUnderscore</td>
+<td>COMPILE statement allows underscores (-zn parameter)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<h3>PCTConnection (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+Adds a database connection on startup
+</p>
+<h3>propath (org.apache.tools.types.Path)</h3>
+<p>
+Creates a nested propath, and adds it to the implicit propath.
+</p>
+
+<h2>Examples</h2>
+<pre>
+&lt;PCTRun procedure="test.p" dlcHome="${env.DLC}"/&gt;
+</pre>
+<p>
+Commandline : <code>${env.DLC}/bin/_progres -p test.p</code>
+</p>
+
+<pre>
+&lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"/&gt;
+</pre>
+<p>
+Commandline : <code>${env.DLC}/bin/prowin32 -p test.p -param foobar</code>
+</p>
+
+<p>TODO : propath and aliases examples</p>
+</div>
+
+<div class="LastUpdate">
+  $Date$
+</div>
+
+</div>
+
+</body>
+</html>
