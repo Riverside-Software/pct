@@ -263,7 +263,6 @@ public class PCTRun extends PCT {
         ExecTask exec = null;
         exec = launchTask();
 
-        //log ("PCTRUN : " + exec.toString());
         exec.execute();
 
         // Now read status file
@@ -277,7 +276,9 @@ public class PCTRun extends PCT {
             }
         } catch (FileNotFoundException fnfe) {
         } catch (IOException ioe) {
-        }
+        } catch (NumberFormatException nfe) {
+		throw new BuildException("Progress procedure failed");
+	}
     }
 
     private ExecTask launchTask() {
