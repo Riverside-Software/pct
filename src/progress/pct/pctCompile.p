@@ -155,7 +155,7 @@ REPEAT:
         WHEN 'NOCOMPILE':U THEN
             ASSIGN NoComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
-            MESSAGE "Unknow parameter : " + cLine.
+            MESSAGE "Unknown parameter : " + cLine.
     END CASE.
 END.
 INPUT STREAM sParams CLOSE.
