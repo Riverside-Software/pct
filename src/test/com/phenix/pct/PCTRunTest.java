@@ -174,4 +174,15 @@ public class PCTRunTest extends BuildFileTest {
     public void test11() {
         executeTarget("test11");
     }
+    
+    /**
+     * Tests numsep and numdec parameters
+     */
+    public void test12() {
+        executeTarget("test12-init");
+        expectLog("test12-part1", "123.456");
+        expectLog("test12-part2", "123,456");
+        expectLog("test12-part3", "123,456");
+        expectLog("test12-part4", "123.456");
+    }
 }

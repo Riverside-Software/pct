@@ -7,6 +7,7 @@ Version 0.6 (??)
    attribute to the PCTLibrary task
  * Behavior change in the PCTLibrary task : task fails when no filesets defined (either with
    basedir or nested fileset). Previous behavior was to create an empty library.
+ * Added numsep and numdec attributes to PCTRun task
  
 Version 0.5 (08/25/2004)
 ==============================

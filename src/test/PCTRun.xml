@@ -105,4 +105,25 @@
     </echo>
     <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
+  
+  <!-- Numsep and numdec tests -->
+  <target name="test12-init">
+    <echo file="sandbox/test.p">
+  		MESSAGE 123.456.
+  		RETURN "0".
+    </echo>
+  </target>
+  <target name="test12-part1">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="44" numdec="46"/>
+  </target>
+  <target name="test12-part2">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="46" numdec="44"/>
+  </target>
+  <target name="test12-part3">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="." numdec=","/>
+  </target>
+  <target name="test12-part4">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="," numdec="."/>
+  </target>
+  
 </project>
