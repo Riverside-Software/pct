@@ -317,7 +317,7 @@ PROCEDURE importXref.
         IMPORT STREAM sXREF ttXref.
         IF (ttXref.xRefType EQ 'INCLUDE':U) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
-        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE':U) EQ 0) THEN
+        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */
@@ -331,7 +331,7 @@ PROCEDURE importXref.
     OUTPUT CLOSE.
     
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
-    FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE':U) NE 0 NO-LOCK GROUP BY ttXref.xObjID:
+    FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK GROUP BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
