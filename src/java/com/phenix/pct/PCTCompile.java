@@ -77,6 +77,8 @@ public class PCTCompile extends PCTRun {
     private boolean md5 = true;
     private boolean forceCompile = false;
     private boolean failOnError = false;
+    private boolean xcode = false;
+    private String xcodeKey = null; 
     private File destDir = null;
     private File xRefDir = null;
 
@@ -167,6 +169,24 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
+     * Procedures are encrypted ?
+     *
+     * @param xcode boolean
+     */
+    public void setXCode(boolean xcode) {
+        this.xcode = xcode;
+    }
+
+    /**
+     * Compile using a specific key instead of the default key
+     *
+     * @param xcodeKey String
+     */
+    public void setXCodeKey(String xcodeKey) {
+        this.xcodeKey = xcodeKey;
+    }
+
+    /**
      * Adds a set of files to archive.
      *
      * @param set FileSet
@@ -217,7 +237,7 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("PCTDIR=" + xRefDir.getAbsolutePath());
             bw.newLine();
-            bw.write("FORCE=" + (this.forceCompile ? "1" : "0"));
+            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
             bw.newLine();
             bw.write("MINSIZE=" + (this.minSize ? "1" : "0"));
             bw.newLine();
@@ -227,6 +247,12 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
             bw.newLine();
+            bw.write("XCODE=" + (this.xcode ? "1" : "0"));
+            bw.newLine();
+            if (this.xcodeKey != null) {
+                bw.write("XCODEKEY=" + this.xcodeKey);
+                bw.newLine();
+            }
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException("Unable to write file list to compile");
