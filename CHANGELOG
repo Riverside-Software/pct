@@ -1,3 +1,7 @@
+Version 0.8 (??/??/????)
+==============================
+ * PCT can be compiled with JDK 1.5 (just added source attribute in javac task)
+
 Version 0.7 (01/17/2005)
 ==============================
  * Added screenshots to website

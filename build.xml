@@ -18,13 +18,20 @@
   <property name="check" value="check"/>  
   <property name="website" value="website"/>
   
+  <!-- Properties that control various build options -->
+  <property name="debug" value="false"/>
+  <property name="deprecation" value="false"/>
+  <property name="optimize" value="false"/>
+  <property name="javac.source" value="1.2"/>
+  <property name="javac.target" value="1.2"/>
+
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="true" target="1.1"/>
+    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}"/>
     <copy todir="${build}" file="${src.java}/PCT.properties"/>
   </target>
 
