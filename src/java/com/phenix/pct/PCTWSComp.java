@@ -221,16 +221,19 @@ public class PCTWSComp extends PCTRun {
     public void execute() throws BuildException {
 
         if (this.destDir == null) {
+            this.cleanup();
             throw new BuildException("destDir attribute not defined");
         }
 
         // Test output directory
         if (this.destDir.exists()) {
             if (!this.destDir.isDirectory()) {
+                this.cleanup();
                 throw new BuildException("destDir is not a directory");
             }
         } else {
             if (!this.destDir.mkdir()) {
+                this.cleanup();
                 throw new BuildException("Unable to create destDir");
             }
         }
@@ -243,28 +246,30 @@ public class PCTWSComp extends PCTRun {
             this.setProcedure("pct/pctWSComp.p");
             this.setParameter(params.getAbsolutePath());
             super.execute();
-
-            if (!this.getDebugPCT()) {
-                if (!this.fsList.delete()) {
-                    log("Failed to delete " + this.fsList.getAbsolutePath());
-                }
-
-                if (!this.params.delete()) {
-                    log("Failed to delete " + this.params.getAbsolutePath());
-                }
-            }
+            this.cleanup();
         } catch (BuildException be) {
-            if (!this.getDebugPCT()) {
-                if (!this.fsList.delete()) {
-                    log("Failed to delete " + this.fsList.getAbsolutePath());
-                }
-
-                if (!this.params.delete()) {
-                    log("Failed to delete " + this.params.getAbsolutePath());
-                }
-            }
-
+            this.cleanup();
             throw be;
         }
     }
+
+    /**
+     * Delete temporary files if debug not activated
+     * 
+     * @see PCTRun#cleanup
+     */
+    protected void cleanup() {
+        super.cleanup();
+
+        if (!this.getDebugPCT()) {
+            if (this.fsList.exists() && !this.fsList.delete()) {
+                log("Failed to delete " + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE);
+            }
+
+            if (this.params.exists() && !this.params.delete()) {
+                log("Failed to delete " + this.params.getAbsolutePath(), Project.MSG_VERBOSE);
+            }
+        }
+    }
+
 }

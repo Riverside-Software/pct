@@ -79,14 +79,17 @@ public class PCTSchemaDoc extends PCTRun {
      */
     public void execute() throws BuildException {
         if (this.destFile == null) {
+            this.cleanup();
             throw new BuildException("Output file not defined");
         }
 
         if (this.dbConnList == null) {
+            this.cleanup();
             throw new BuildException("No database connection defined");
         }
 
         if (this.dbConnList.size() > 1) {
+            this.cleanup();
             throw new BuildException("More than one database connection defined");
         }
 

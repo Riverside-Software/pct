@@ -91,14 +91,17 @@ public class PCTDumpData extends PCTRun {
         String param = null;
 
         if (this.dbConnList == null) {
+            this.cleanup();
             throw new BuildException("No database connection defined");
         }
 
         if (this.dbConnList.size() > 1) {
+            this.cleanup();
             throw new BuildException("More than one database connection defined");
         }
 
         if (this.destDir == null) {
+            this.cleanup();
             throw new BuildException("Mandatory argument : dump file");
         }
 

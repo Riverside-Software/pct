@@ -1,3 +1,8 @@
+Version 0.5
+==============================
+
+ * Bug #972486 : changed the way temp files are deleted
+
 Version 0.5 pre2 (06/10/2004)
 ==============================
  * Added PCTXCode task (Dick Knol)
