@@ -87,7 +87,7 @@ public class PCTRun extends PCT {
     private int token = 0;
     private int maximumMemory = 0;
     private int stackSize = 0;
-    protected boolean debug = false;
+    protected boolean debugPCT = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
 
@@ -107,11 +107,6 @@ public class PCTRun extends PCT {
         try {
             status = File.createTempFile("PCTResult", ".out");
             initProc = File.createTempFile("pct_init", ".p");
-
-            if (!this.debug) {
-                status.deleteOnExit();
-                initProc.deleteOnExit();
-            }
         } catch (IOException ioe) {
             throw new BuildException("Unable to create temp files");
         }
@@ -141,8 +136,8 @@ public class PCTRun extends PCT {
      * Turns on/off debugging mode (keeps Progress temp files on disk)
      * @param debug boolean
      */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
+    public void setDebugPCT(boolean debugPCT) {
+        this.debugPCT = debugPCT;
     }
 
     /**
@@ -273,6 +268,11 @@ public class PCTRun extends PCT {
     public void execute() throws BuildException {
         if (!this.isPrepared) {
             this.prepareExecTask();
+        }
+
+        if (!this.debugPCT) {
+            status.deleteOnExit();
+            initProc.deleteOnExit();
         }
 
         this.createInitProcedure();
