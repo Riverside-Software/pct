@@ -63,6 +63,7 @@ import java.io.File;
   * Base class for creating tasks involving Progress.
   * It does basic work on guessing where various bin/java/etc are located.
   * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+  * @version $Revision$
   * @todo dlcHome should get DLC environment variable content at startup and
   * could be overridden with setDlcHome
   **/
@@ -221,4 +222,6 @@ public abstract class PCT extends Task {
 
         return f;
     }
+    
+    public abstract void execute () throws BuildException;
 }
