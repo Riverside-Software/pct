@@ -30,7 +30,7 @@
         &lt;p&gt;Today : 'vdate'&lt;/p&gt;
       &lt;/body&gt;
     </echo>
-    <PCTWSComp debugPCT="true" destDir="build" dlcHome="${env.DLC}">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}">
       <fileset dir=".">
         <include name="sandbox/simple.html"/>	
       </fileset>	
