@@ -210,6 +210,12 @@
     <zip destfile="${website}/sample2.zip" whenempty="create" >
       <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject"/>
     </zip>
+    <zip destfile="${website}/sample3.zip" whenempty="create" >
+      <zipfileset dir="doc/quickstart-samples/step3" prefix="MyProject"/>
+    </zip>
+    <zip destfile="${website}/sample4.zip" whenempty="create" >
+      <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject"/>
+    </zip>
   </target>
 
   <target name="sports2000doc" depends="pbuild">
