@@ -75,17 +75,6 @@
     </copy>
   </target>
 
-  <target name="format" depends="build,test-build" description="Java source code formatting">
-    <jalopy fileformat="dos" encoding="utf-8" history="file" historymethod="adler32" convention="conf/jalopy.xml">
-      <fileset dir="${src.java}">
-        <include name="com/phenix/pct/**/*.java" />
-      </fileset>
-      <fileset dir="${src.test}">
-        <include name="com/phenix/pct/**/*.java" />
-      </fileset>
-    </jalopy>
-  </target>
-
   <target name="check" depends="build" description="Check source code convention">
     <taskdef resource="checkstyletask.properties"/>
     <mkdir dir="${check}"/>
