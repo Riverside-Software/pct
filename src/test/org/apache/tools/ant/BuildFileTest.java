@@ -112,6 +112,18 @@ public abstract class BuildFileTest extends TestCase {
     }
 
     /**
+     * Assert that the given substring is in the log messages
+     */
+
+    protected void assertDebuglogContaining(String substring) {
+        String realLog = getFullLog();
+        assertTrue("expecting debug log to contain \"" + substring 
+                   + "\" log was \""
+                   + realLog + "\"",
+                   realLog.indexOf(substring) >= 0);
+    }
+
+    /**
      *  Gets the log the BuildFileTest object.
      *  only valid if configureProject() has
      *  been called.
@@ -202,9 +214,10 @@ public abstract class BuildFileTest extends TestCase {
         fullLogBuffer = new StringBuffer();
         project = new Project();
         project.init();
-        project.setUserProperty( "ant.file" , new File(filename).getAbsolutePath() );
+        File antFile = new File(System.getProperty("root"), filename);
+        project.setUserProperty("ant.file" , antFile.getAbsolutePath());
         project.addBuildListener(new AntTestListener(logLevel));
-        ProjectHelper.configureProject(project, new File(filename));
+        ProjectHelper.configureProject(project, antFile);
     }
 
     /**
