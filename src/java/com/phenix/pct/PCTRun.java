@@ -77,11 +77,12 @@ import java.util.Vector;
  */
 public class PCTRun extends PCT {
     // Attributes
-    private boolean graphMode = false;
     private String procedure = null;
     private String cpStream = null;
     private String cpInternal = null;
     private String parameter = null;
+    private String numsep = null;
+    private String numdec = null;
     private File paramFile = null;
     private File status = null;
     private File iniFile = null;
@@ -93,13 +94,14 @@ public class PCTRun extends PCT {
     private int stackSize = 0;
     private int ttBufferSize = 0;
     private int messageBufferSize = 0;
+    private boolean graphMode = false;
     private boolean debugPCT = false;
+    private boolean compileUnderscore = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
 
     // Internal use
     protected ExecTask exec = null;
-    private boolean compileUnderscore = false;
     private File initProc = null;
     private boolean isPrepared = false;
 
@@ -138,6 +140,24 @@ public class PCTRun extends PCT {
      */
     public void setParamFile(File pf) {
         this.paramFile = pf;
+    }
+
+    /**
+     * Thousands separator (-numsep attribute)
+     * 
+     * @param numsep String
+     */
+    public void setNumSep(String numsep) {
+        this.numsep = numsep;
+    }
+
+    /**
+     * Decimal separator (-numdec attribute)
+     * 
+     * @param numdec String
+     */
+    public void setNumDec(String numdec) {
+        this.numdec = numdec;
     }
 
     /**
@@ -479,6 +499,34 @@ public class PCTRun extends PCT {
             exec.createArg().setValue(Integer.toString(this.ttBufferSize));
         }
 
+        if (this.numsep != null) {
+            int tmpSep = 0;
+            try {
+                tmpSep = Integer.parseInt(this.numsep);
+            } catch (NumberFormatException nfe) {
+                if (this.numsep.length() == 1)
+                    tmpSep = this.numsep.charAt(0);
+                else
+                    throw new BuildException("Invalid numsep value");
+            }
+            exec.createArg().setValue("-numsep");
+            exec.createArg().setValue(Integer.toString(tmpSep));
+        }
+
+        if (this.numdec != null) {
+            int tmpDec = 0;
+            try {
+                tmpDec = Integer.parseInt(this.numdec);
+            } catch (NumberFormatException nfe) {
+                if (this.numdec.length() == 1)
+                    tmpDec = this.numdec.charAt(0);
+                else
+                    throw new BuildException("Invalid numdec value");
+            }
+            exec.createArg().setValue("-numdec");
+            exec.createArg().setValue(Integer.toString(tmpDec));
+        }
+
         // Parameter
         if (this.parameter != null) {
             exec.createArg().setValue("-param");
@@ -526,7 +574,7 @@ public class PCTRun extends PCT {
                 bw.newLine();
             }
 
-            // TODO : vérifier que le programme compile avant de le lancer
+            // TODO : vÃ©rifier que le programme compile avant de le lancer
             //            bw.write("IF SEARCH('" + escapeString(this.procedure) + "') NE ? THEN DO:");
             //            bw.newLine();
             bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
