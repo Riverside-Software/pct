@@ -84,7 +84,21 @@ public class PCTCompile extends PCTRun {
     private boolean failOnError = false;
     private File destDir = null;
     private File xRefDir = null;
-    private Hashtable _dirs = new Hashtable();
+
+    // Internal use
+    private File tmpProc = null;
+    private File tmpFiles = null;
+
+    public PCTCompile() {
+        super();
+
+        try {
+            tmpProc = File.createTempFile("pct_compile", ".p");
+            tmpFiles = File.createTempFile("comp_files", ".txt");
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to create temp files");
+        }
+    }
 
     /**
      * Reduce r-code size ?
@@ -168,9 +182,6 @@ public class PCTCompile extends PCTRun {
             // Parse filesets
             FileSet fs = (FileSet) e.nextElement();
 
-            // Creates a new entry in hashtable
-            _dirs.put(fs.getDir(this.getProject()).getAbsolutePath(), new Integer(++j));
-
             // And get files from fileset
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
@@ -234,6 +245,28 @@ public class PCTCompile extends PCTRun {
         return v;
     }
 
+    private void writeFileList(Vector v) throws BuildException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFiles));
+
+            for (Enumeration e = v.elements(); e.hasMoreElements();) {
+                PCTFile pctf = (PCTFile) e.nextElement();
+                bw.write("\"");
+                bw.write(pctf.baseDir.getAbsolutePath());
+                bw.write("\" \"");
+                bw.write(pctf.baseDirExt);
+                bw.write("\" \"");
+                bw.write(pctf.fileName);
+                bw.write("\"");
+                bw.newLine();
+            }
+
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to write file list to compile");
+        }
+    }
+
     /**
      * Checks if directories need to be created
      * @param v File list to compile
@@ -276,9 +309,13 @@ public class PCTCompile extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        File tmpProc = null; // Compile procedure
         File xRefDir = null; // Where to store XREF files
         File includesDir = null; // Where to store INCLUDES files
+
+        if (!this.debugPCT) {
+            tmpProc.deleteOnExit();
+            tmpFiles.deleteOnExit();
+        }
 
         if (this.destDir == null) {
             throw new BuildException("destDir attribute not defined");
@@ -316,14 +353,10 @@ public class PCTCompile extends PCTRun {
             log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
         }
 
+        // And then write file list
+        writeFileList(compFiles);
+
         try {
-            // Creates Progress procedure to compile files
-            tmpProc = File.createTempFile("pct_compile", ".p");
-
-            if (!this.debug) {
-                tmpProc.deleteOnExit();
-            }
-
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
@@ -331,19 +364,17 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
+            bw.write("DEFINE VARIABLE baseDir AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE VARIABLE extDir AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE VARIABLE fileName AS CHARACTER NO-UNDO.");
+            bw.newLine();
             bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
                      escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
             bw.newLine();
+            bw.write("DEFINE STREAM sFiles.");
             bw.newLine();
-
-            for (Enumeration e = _dirs.keys(); e.hasMoreElements();) {
-                String s = escapeString((String) e.nextElement());
-                Integer i = (Integer) _dirs.get(s);
-                bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s +
-                         File.separatorChar + "\".");
-                bw.newLine();
-            }
-
             bw.newLine();
 
             if (!this.noXref) {
@@ -361,57 +392,56 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.newLine();
 
-            for (Enumeration e = compFiles.elements(); e.hasMoreElements();) {
-                PCTFile pctf = (PCTFile) e.nextElement();
-                Integer i = (Integer) _dirs.get(pctf.baseDir.getAbsolutePath());
-                bw.write("COMPILE VALUE (dir" + i + " + \"" + pctf.baseDirExt + pctf.fileName +
-                         "\") SAVE INTO VALUE (destDir + \"" + pctf.baseDirExt + "\")");
+            bw.write("INPUT STREAM sFiles FROM VALUE(\"" +
+                     escapeString(tmpFiles.getAbsolutePath()) + "\").");
+            bw.newLine();
+            bw.write("FileLoop:");
+            bw.newLine();
+            bw.write("REPEAT:");
+            bw.newLine();
+            bw.write("  IMPORT STREAM sFiles baseDir extDir fileName.");
+            bw.newLine();
+            bw.write("  COMPILE VALUE(baseDir + '\\' + extDir + fileName) SAVE INTO VALUE(destDir + extDir)");
+            bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
+            bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
 
-                bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
-                bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
+            if (!this.noXref) {
+                bw.write(" XREF VALUE(xRefDir + extDir + fileName) APPEND=FALSE");
+            }
 
-                if (!this.noXref) {
-                    bw.write(" XREF VALUE (xRefDir + \"" + pctf.baseDirExt + pctf.fileName +
-                             "\") APPEND=FALSE");
-                }
+            bw.write(".");
+            bw.newLine();
 
-                bw.write(".");
-                bw.newLine();
+            bw.write("  IF COMPILER:ERROR THEN DO:");
+            bw.newLine();
 
-                bw.write("IF COMPILER:ERROR THEN DO:");
-                bw.newLine();
+            bw.write("    ASSIGN iNoComp = iNoComp + 1.");
+            bw.newLine();
 
-                bw.write("  ASSIGN iNoComp = iNoComp + 1.");
-                bw.newLine();
-
-                if (this.failOnError) {
-                    bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
-                    bw.newLine();
-                    bw.write("DELETE PROCEDURE h.");
-                    bw.newLine();
-                    bw.write("RETURN '1'.");
-                    bw.newLine();
-                }
-
-                bw.write("END.");
-                bw.newLine();
-                bw.write("ELSE DO:");
-                bw.newLine();
-                bw.write("  ASSIGN iComp = iComp + 1.");
-                bw.newLine();
-
-                if (!this.noXref) {
-                    bw.write("  RUN importXref IN h (INPUT xRefDir + '" + pctf.baseDirExt +
-                             pctf.fileName + "', INPUT includesDir + '" + pctf.baseDirExt +
-                             pctf.fileName + "').");
-                    bw.newLine();
-                }
-
-                bw.write("END.");
-                bw.newLine();
+            if (this.failOnError) {
+                bw.write("    LEAVE FileLoop.");
                 bw.newLine();
             }
 
+            bw.write("  END.");
+            bw.newLine();
+            bw.write("  ELSE DO:");
+            bw.newLine();
+            bw.write("    ASSIGN iComp = iComp + 1.");
+            bw.newLine();
+
+            if (!this.noXref) {
+                bw.write("    RUN importXref IN h (INPUT xRefDir + extDir + fileName, INPUT includesDir + extDir + fileName).");
+                bw.newLine();
+            }
+
+            bw.write("  END.");
+            bw.newLine();
+
+            bw.write("END.");
+            bw.newLine();
+            bw.write("INPUT CLOSE.");
+            bw.newLine();
             bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
             bw.newLine();
             bw.write("DELETE PROCEDURE h.");
@@ -420,7 +450,7 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            throw new BuildException("Unable to write compilation program");
         }
 
         this.setProcedure(tmpProc.getAbsolutePath());
@@ -436,14 +466,14 @@ public class PCTCompile extends PCTRun {
         public PCTFile(File baseDir, String fileName) {
             this.baseDir = baseDir;
 
-            String s = escapeString(fileName.replace('\\', '/'));
+            String s = fileName.replace('\\', '/');
             int i = s.lastIndexOf('/');
 
             if (i == -1) {
                 this.fileName = fileName;
-                this.baseDirExt = "" + File.separatorChar;
+                this.baseDirExt = "/";
             } else {
-                this.baseDirExt = s.substring(0, i) + File.separatorChar;
+                this.baseDirExt = s.substring(0, i) + "/";
                 this.fileName = s.substring(i + 1); // Exception ???
             }
 

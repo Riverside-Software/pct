@@ -81,7 +81,21 @@ public class PCTWSComp extends PCTRun {
     private boolean getOptions = false;
     private boolean failOnError = false;
     private File destDir = null;
-    private Hashtable _dirs = new Hashtable();
+
+    // Internal use
+    private File tmpProc = null;
+    private File tmpFiles = null;
+
+    public PCTWSComp() {
+        super();
+
+        try {
+            tmpProc = File.createTempFile("pct_wscomp", ".p");
+            tmpFiles = File.createTempFile("comp_files", ".txt");
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to create temp files");
+        }
+    }
 
     /**
      * Sets debug flag on in e4gl-gen.p
@@ -145,7 +159,6 @@ public class PCTWSComp extends PCTRun {
 
         for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
             FileSet fs = (FileSet) e.nextElement();
-            _dirs.put(fs.getDir(this.getProject()).getAbsolutePath(), new Integer(++j));
 
             // And get files from fileset
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
@@ -172,8 +185,32 @@ public class PCTWSComp extends PCTRun {
         return v;
     }
 
+    private void writeFileList(Vector v) throws BuildException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFiles));
+
+            for (Enumeration e = v.elements(); e.hasMoreElements();) {
+                PCTFile pctf = (PCTFile) e.nextElement();
+                bw.write("\"");
+                bw.write(pctf.baseDir.getAbsolutePath());
+                bw.write("\" \"");
+                bw.write(pctf.baseDirExt);
+                bw.write("\" \"");
+                bw.write(pctf.fileName);
+                bw.write("\" \"");
+                bw.write(pctf.wFile);
+                bw.write("\"");
+                bw.newLine();
+            }
+
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to write file list to compile");
+        }
+    }
+
     /**
-     * 
+     *
      * @param baseDir
      * @param dirs
      * @throws BuildException
@@ -220,7 +257,12 @@ public class PCTWSComp extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        File tmpProc = null;
+        String sOptions = "";
+
+        if (!this.debugPCT) {
+            this.tmpFiles.deleteOnExit();
+            this.tmpProc.deleteOnExit();
+        }
 
         if (this.destDir == null) {
             throw new BuildException("destDir attribute not defined");
@@ -243,11 +285,30 @@ public class PCTWSComp extends PCTRun {
             log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
         }
 
-        try {
-            // Creates Progress procedure to compile files
-            tmpProc = File.createTempFile("pct_wscomp", ".p");
-            tmpProc.deleteOnExit();
+        // And then write file list
+        writeFileList(compFiles);
 
+        if (this.debug) {
+            sOptions += "debug";
+        }
+
+        if (this.webObject) {
+            sOptions += ",web-object";
+        }
+
+        if (this.include) {
+            sOptions += ",include";
+        }
+
+        if (this.keepMetaContentType) {
+            sOptions += ",keep-meta-content-type";
+        }
+
+        if (this.getOptions) {
+            sOptions += ",get-options";
+        }
+
+        try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
@@ -255,27 +316,25 @@ public class PCTWSComp extends PCTRun {
             bw.newLine();
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
+            bw.write("DEFINE VARIABLE baseDir AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE VARIABLE extDir AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE VARIABLE fileName AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE VARIABLE wFile AS CHARACTER NO-UNDO.");
+            bw.newLine();
             bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
                      escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
             bw.newLine();
             bw.write("DEFINE VARIABLE cOptions AS CHARACTER NO-UNDO.");
             bw.newLine();
-            bw.write("DEFINE VARIABLE cInFile AS CHARACTER NO-UNDO.");
-            bw.newLine();
             bw.write("DEFINE VARIABLE cOutFile AS CHARACTER NO-UNDO.");
             bw.newLine();
             bw.write("DEFINE VARIABLE cRetVal AS CHARACTER NO-UNDO.");
             bw.newLine();
+            bw.write("DEFINE STREAM sFiles.");
             bw.newLine();
-
-            for (Enumeration e = _dirs.keys(); e.hasMoreElements();) {
-                String s = escapeString((String) e.nextElement());
-                Integer i = (Integer) _dirs.get(s);
-                bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s +
-                         File.separatorChar + "\".");
-                bw.newLine();
-            }
-
             bw.newLine();
 
             bw.write("{src/web/method/cgidefs.i NEW}");
@@ -285,76 +344,50 @@ public class PCTWSComp extends PCTRun {
             bw.newLine();
             bw.newLine();
 
-            for (Enumeration e = compFiles.elements(); e.hasMoreElements();) {
-                PCTFile pctf = (PCTFile) e.nextElement();
-                Integer i = (Integer) _dirs.get(pctf.baseDir.getAbsolutePath());
-                bw.write("ASSIGN cInFile  = dir" + i + " + \"" + pctf.baseDirExt + pctf.fileName +
-                         "\"");
-                bw.newLine();
-                bw.write("       cOutFile = destDir + \"" + pctf.baseDirExt + pctf.wFile + "\"");
-                bw.newLine();
-                bw.write("       cOptions = \"");
+            bw.write("INPUT STREAM sFiles FROM VALUE(\"" +
+                     escapeString(tmpFiles.getAbsolutePath()) + "\").");
+            bw.newLine();
+            bw.write("FileLoop:");
+            bw.newLine();
+            bw.write("REPEAT:");
+            bw.newLine();
+            bw.write("  IMPORT STREAM sFiles baseDir extDir fileName wFile.");
+            bw.newLine();
+            bw.write("  ASSIGN cOutFile = destDir + extDir + wFile");
+            bw.newLine();
+            bw.write("         cOptions = \"" + sOptions + "\".");
+            bw.newLine();
+            bw.write("  RUN webutil/e4gl-gen.p (INPUT baseDir + '/' + extDir + fileName, INPUT-OUTPUT cOptions, INPUT-OUTPUT cOutFile).");
+            bw.newLine();
 
-                if (this.debug) {
-                    bw.write(",debug");
-                }
+            bw.write("  ASSIGN cRetVal = RETURN-VALUE.");
+            bw.newLine();
 
-                if (this.webObject) {
-                    bw.write(",web-object");
-                }
+            bw.write("  IF (cRetVal NE '') THEN DO:");
+            bw.newLine();
 
-                if (this.include) {
-                    bw.write(",include");
-                }
+            bw.write("    ASSIGN iNoComp = iNoComp + 1.");
+            bw.newLine();
 
-                if (this.keepMetaContentType) {
-                    bw.write(",keep-meta-content-type");
-                }
-
-                if (this.getOptions) {
-                    bw.write(",get-options");
-                }
-
-                bw.write("\".");
-                bw.newLine();
-
-                bw.write("RUN webutil/e4gl-gen.p (INPUT cInFile, INPUT-OUTPUT cOptions, INPUT-OUTPUT cOutFile).");
-                bw.newLine();
-
-                bw.write("ASSIGN cRetVal = RETURN-VALUE.");
-                bw.newLine();
-                bw.write("MESSAGE 'RET-VAL :' + cRetVal + '-'.");
-                bw.newLine();
-                bw.write("IF (cRetVal NE '') THEN DO:");
-                bw.newLine();
-
-                bw.write("  MESSAGE RETURN-VALUE.");
-                bw.newLine();
-
-                bw.write("  ASSIGN iNoComp = iNoComp + 1.");
-                bw.newLine();
-
-                if (this.failOnError) {
-                    bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
-                    bw.newLine();
-                    bw.write("DELETE PROCEDURE h.");
-                    bw.newLine();
-                    bw.write("RETURN '1'.");
-                    bw.newLine();
-                }
-
-                bw.write("END.");
-                bw.newLine();
-                bw.write("ELSE DO:");
-                bw.newLine();
-                bw.write("  ASSIGN iComp = iComp + 1.");
-                bw.newLine();
-
-                bw.write("END.");
-                bw.newLine();
+            if (this.failOnError) {
+                bw.write("    LEAVE FileLoop.");
                 bw.newLine();
             }
 
+            bw.write("  END.");
+            bw.newLine();
+            bw.write("  ELSE DO:");
+            bw.newLine();
+            bw.write("    ASSIGN iComp = iComp + 1.");
+            bw.newLine();
+
+            bw.write("  END.");
+            bw.newLine();
+
+            bw.write("END.");
+            bw.newLine();
+            bw.write("INPUT CLOSE.");
+            bw.newLine();
             bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
             bw.newLine();
             bw.write("DELETE PROCEDURE h.");
@@ -363,7 +396,7 @@ public class PCTWSComp extends PCTRun {
             bw.newLine();
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            throw new BuildException("Unable to write compilation program");
         }
 
         this.setProcedure(tmpProc.getAbsolutePath());
@@ -371,7 +404,7 @@ public class PCTWSComp extends PCTRun {
     }
 
     /**
-     * Inner class representing files to be transformed into .w  
+     * Inner class representing files to be transformed into .w
      * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
      */
     private class PCTFile {
