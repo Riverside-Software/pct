@@ -1,4 +1,4 @@
-Version 0.6 (??)
+Version 0.6 (11/04/2004)
 ==============================
  * Bug #995235 : compress command line is only run once
  * Added codepage attribute to PCTCreateBase to create database with a specific codepage
@@ -8,6 +8,7 @@ Version 0.6 (??)
  * Behavior change in the PCTLibrary task : task fails when no filesets defined (either with
    basedir or nested fileset). Previous behavior was to create an empty library.
  * Added numsep and numdec attributes to PCTRun task
+ * Bug #1058733 : multiple assignments for propath in PCTRun
  
 Version 0.5 (08/25/2004)
 ==============================
