@@ -88,6 +88,7 @@ public class PCTDumpIncremental extends PCTRun {
      * <li>code-page = ?,""          : default conversion (SESSION:STREAM)</li>
      * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li></ul>
      * @param codePage String
+     * TODO : vérifier avec PCTRun 
      */
     public void setCodePage(String codePage) {
         this.codePage = codePage;
@@ -118,6 +119,7 @@ public class PCTDumpIncremental extends PCTRun {
      * seperated list that identifies the renamed object, its old name and the new
      * name. When an object is found missing, this file is checked to determine if
      * it was renamed.  If no matching entry is found, then the object
+     * TODO : finir le javadoc
      * If RenameFile is not defined, then all missing objects are deleted.
      * The RenameFile has following format:<ul>
      * <li>T,&lt;old-table-name&gt;,&lt;new-table-name&gt;</li>
