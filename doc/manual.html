@@ -50,7 +50,7 @@ is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
 </pre>
 <h1>Tasks overview</h1>
 <p>
-7 tasks are available in PCT, corresponding to 7 basic actions for Progress&reg;.
+9 tasks are available in PCT, corresponding to 9 basic actions for Progress&reg;.
 You can :</p>
 <ul>
 <li>Create a new database with or without a specific structure description</li>
@@ -61,8 +61,9 @@ You can :</p>
 <li>Create and/or update Progress r-code libraries</li>
 <li>Generate database documentation</li>
 <li>Use PXG files to generate Java proxy classes</li>
+<li>Convert WebSpeed HTML files to Progress .w files</li>
 </ul>
-<p>These 7 tasks all inherits from the PCT superclass 5 attributes :</p>
+<p>These 9 tasks all inherits from the PCT superclass 5 attributes :</p>
 <ul>
 <li>dlcHome</li>
 <li>dlcBin</li>
@@ -403,6 +404,61 @@ CTDumpSchema task</p>
 </table>
 <h3>Parameters specified as nested elements</h3>
 <p>&lt;PCTCompile&gt; extends &lt;PCTRun&gt; and so has the same nested elements. &lt;PCTCompile&gt; also supports Fileset nested elements to declare file names to compile.</p>
+
+<h2>PCTWSComp : transforms WebSpeed HTML to .w Progress procedure</h2>
+<table>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>FailOnError</td>
+<td>If task should end after a failed file transformation</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DestDir</td>
+<td>Directory where to put .w files</td>
+<td>Yes</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>Adds debug to e4gl-gen.p options</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>GetOptions</td>
+<td>Adds get-options to e4gl-gen.p options</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Include</td>
+<td>Adds include to e4gl-gen.p options</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>KeepMetaContentType</td>
+<td>Adds keep-meta-content-type to e4gl-gen.p options</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>WebObject</td>
+<td>Adds web-object to e4gl-gen.p options</td>
+<td>No</td>
+<td>No</td>
+</tr>
+
+</table>
+<h3>Parameters specified as nested elements</h3>
+<p>&lt;PCTWSComp&gt; extends &lt;PCTRun&gt; and so has the same nested elements. &lt;PCTWSComp&gt; also supports Fileset nested elements to declare file names to compile.</p>
 
 <h2>PCTLibrary : creates a r-code library</h2>
 <table>
