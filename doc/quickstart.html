@@ -153,7 +153,7 @@ Just create this file :<pre class="source"">
 This should create a really simple table, with two fields, and a primary unique index.
 </p>
 <p>
-Now, we'll create a new procedure, called src/test2.p :<pre class="source"">
+Now, we'll create a new procedure, called src/test2.p :<pre class="source">
 <tt class="ln"> 1</tt>  CREATE MyTable.
 <tt class="ln"> 2</tt>  ASSIGN MyTable.Fld1 = "ABC"
 <tt class="ln"> 3</tt>         MyTable.Fld2 = "DEF".
@@ -212,11 +212,60 @@ Total time: 1 seconds
 </p>
 
 <h2>Step 3 : dealing with propath [Download <a href="sample3.zip">sample</a>]</h2>
-<p>
+<p>Imagine you'd like to work with PDFInclude : it would be a good idea to separate
+your own source code from PDFInclude source code, so that upgrading to a newer version
+would just be a drop of the new source files. So in project tree, you add a pdfinc-src
+directory, and include {pdfinc.i} in your programs. How to add this dir to your propath ?
+Quite simple, just add a <code>propath</code> directive in you PCTCompile task (line 9) :<pre class="source">
+<tt class="ln"> 1</tt>        &lt;propath&gt;
+<tt class="ln"> 2</tt>          &lt;pathelement location="pdfinc-src"/&gt;
+<tt class="ln"> 3</tt>        &lt;/propath&gt;
+</pre>
+Compile as usual, using <code>ant build</code>, then execute build/test3.r : you should
+get<pre class="output">
+Message from pdfinc.i
+Message from test3.p
+</pre>
 </p>
 
 <h2>Step 4 : dealing with ADM2 and customs [Download <a href="sample4.zip">sample</a>]</h2>
 <p>
+When working with ADM2, it's really a good idea to have your own copy in your project, so that
+you can upgrade your Progress version without upgrading your ADM2 version. Here is how I proceed :
+in my project tree, I create two subdirectories, called <code>ade</code> and <code>ade-custom</code>.
+The first one contains everything I import directly from Progress, and is only modified when I
+upgrade ADM2 version, the second one contains my own customizations.
+</p>
+<p>
+I add two targets to compile both the non-customized and the customized versions :<pre class="source">
+  <target name="build-ade-custom" depends="build-ade">
+    <PCTCompile destDir="${build-dlc-custom}" graphicalMode="true" dlcHome="${DLC}" md5="${md5}" minSize="${minSize}" cpstream="ibm850" compileUnderscore="true">
+      <fileset dir="${src-dlc}/src">
+        <include name="adm2/*.p"/>
+        <include name="adm2/*.w"/>
+      </fileset>
+      <fileset dir="${src-dlc-custom}/src">
+        <include name="adecomm/*.w"/>
+        <include name="adm2/**/*.p"/>
+        <include name="adm2/**/*.w"/>
+        <exclude name="adm2/template/**"/>
+      </fileset>
+      <propath>
+        <pathelement location="${src-dlc-custom}"/>
+        <pathelement location="${src-dlc}"/>
+        <pathelement location="${src-dlc}/src"/>
+        <pathelement location="${src}"/> 
+      </propath>
+    </PCTCompile>
+    <copy toDir="${build-dlc-custom}">
+      <fileset dir="${src-dlc-custom}/src">
+        <include name="adm2/image/**"/>
+        <include name="adm2/template/**"/>
+      </fileset>
+    </copy>
+  </target>
+
+</pre>
 </p>
 
 <h2>Step 5 : let's proxygen... [Download <a href="sample5.zip">sample</a>]</h2>
