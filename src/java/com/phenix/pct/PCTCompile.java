@@ -80,6 +80,7 @@ public class PCTCompile extends PCTRun {
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean noXref = false;
+    private boolean forceCompile = false;
     private boolean failOnError = false;
     private File destDir = null;
     private File xRefDir = null;
@@ -94,6 +95,15 @@ public class PCTCompile extends PCTRun {
         this.minSize = minSize;
     }
 
+    /**
+     * Always force compilation
+     * @param forceCompile "true|false|on|off|yes|no"
+     * @since 0.3b
+     */
+    public void setForceCompile(boolean forceCompile) {
+    	this.forceCompile = forceCompile;
+    }
+    
     /**
      * Immediatly quit if a progress procedure fails to compile
      * @param failOnError "true|false|on|off|yes|no"
@@ -167,7 +177,7 @@ public class PCTCompile extends PCTRun {
             for (int i = 0; i < dsfiles.length; i++) {
                 PCTFile pctf = new PCTFile(fs.getDir(this.getProject()), dsfiles[i]);
 
-                if (this.noXref) {
+                if (this.forceCompile) {
                     // Always recompile
                     v.add(pctf);
                 } else {
@@ -179,7 +189,7 @@ public class PCTCompile extends PCTRun {
                         if (pFile.lastModified() > rFile.lastModified()) {
                             // Source code is more recent than R-code
                             v.add(pctf);
-                        } else {
+                        } else if (!this.noXref){
                             // Must check if included files are more recent
                             BufferedReader br = null;
                             String incFile = null;
@@ -209,6 +219,10 @@ public class PCTCompile extends PCTRun {
                                 // Error occured => compile source code
                                 v.add(pctf);
                             }
+                        }
+                        else {
+                        	// Included files not checked => compile it
+                        	v.add(pctf);
                         }
                     } else {
                         // R-code file doesn't exist => compile it
