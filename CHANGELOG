@@ -1,7 +1,14 @@
-Version 0.5 pre2
+Version 0.5 pre2 (06/10/2004)
 ==============================
  * Added PCTXCode task (Dick Knol)
- 
+ * Added noCompile and xcode attributes in PCTCompile
+ * Separate versions for Progress v9 and v10
+ * Removed Jalopy for Eclipse formatting
+ * Added Propath to PCTCreateBase
+ * Added PCTDumpData task (Dick Knol)
+ * Corrected PCTIncrementalDump bug (Dick Knol)
+ * Added parameterFile attribute in PCTRun
+ * PCTSchemaDoc now creates XML file. It has to be tied with a style task
 
 Version 0.5 pre1 (05/13/2004)
 ==============================
