@@ -151,4 +151,15 @@ public class PCTCreateBaseTest extends BuildFileTest {
 
         executeTarget("test8bis");
     }
+
+    public void test9() {
+        executeTarget("test9init");
+
+        File f = new File("sandbox/test.db");
+        assertTrue(f.exists());
+        executeTarget("test9");
+        f = new File("build/sandbox/test.r");
+        assertTrue(f.exists());
+    }
+
 }
