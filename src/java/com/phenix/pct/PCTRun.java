@@ -568,10 +568,16 @@ public class PCTRun extends PCT {
 
             // Defines PROPATH
             if (this.propath != null) {
-                bw.write("ASSIGN PROPATH='");
-                bw.write(this.propath.toString());
-                bw.write(File.pathSeparatorChar + "' + PROPATH.");
-                bw.newLine();
+                // Bug #1058733 : multiple assignments for propath, as a long propath
+                // could lead to error 135 (More than xxx characters in a single
+                // statement--use -inp parm)
+                String[] lst = this.propath.list();
+                for (int k = lst.length - 1; k >= 0; k--) {
+                    bw.write("ASSIGN PROPATH='");
+                    bw.write(lst[k]);
+                    bw.write(File.pathSeparatorChar + "' + PROPATH.");
+                    bw.newLine();
+                }
             }
 
             // TODO : vÃ©rifier que le programme compile avant de le lancer

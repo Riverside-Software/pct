@@ -75,9 +75,9 @@ parameters, and then runs the specified procedure.</p>
 and with the specified arguments.</p>
 <p>The generated procedure follows this template :</p>
 <pre>
-CREATE ALIAS 'âŠ' FOR DATABASE âŠ [NO-ERROR]. // 1 line for each alias
-ASSIGN PROPATH = 'âŠ' + PROPATH.
-RUN VALUE('âŠ') NO-ERROR.
+CREATE ALIAS '…' FOR DATABASE … [NO-ERROR]. // 1 line for each alias
+ASSIGN PROPATH = '…' + PROPATH. // 1 line for each propath entry
+RUN VALUE('…') NO-ERROR.
 Check error status, return-value and outputs result to a file
 Quit
 </pre>
@@ -267,6 +267,7 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
   &lt;/PCTConnection&gt;
   &lt;propath&gt;
     &lt;pathelement path="src/include"/&gt;
+    &lt;pathelement path="src/include2"/&gt;
   &lt;/propath&gt;
 &lt;/PCTRun&gt;
 </pre>
@@ -274,6 +275,7 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
 <p>Procedure : <br/><code>
 CREATE ALIAS 'foo2' FOR foo.<br/>
 CREATE ALIAS 'foo3' FOR foo.<br/>
+ASSIGN PROPATH='src/include2,' + PROPATH.<br/>
 ASSIGN PROPATH='src/include,' + PROPATH.<br/>
 RUN VALUE('test/test.p') NO-ERROR.<br/>
 // Check errors<br/>
