@@ -58,14 +58,16 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
-
+import java.util.Vector;
 
 /**
-  * Class for creating Progress databases
-  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
-  **/
+ * Class for creating Progress databases
+ * 
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ */
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
@@ -76,12 +78,13 @@ public class PCTCreateBase extends PCT {
     private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
     private boolean overwrite = false;
-    private File schema = null;
+    private String schema = null;
     private Path propath = null;
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
-    
+
     /**
      * Structure file (.st)
+     * 
      * @param structFile File
      */
     public void setStructFile(File structFile) {
@@ -90,6 +93,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Database name
+     * 
      * @param dbName String
      */
     public void setDBName(String dbName) {
@@ -98,6 +102,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * If database shouldn't be initialized
+     * 
      * @param noInit "true|false|on|off|yes|no"
      */
     public void setNoInit(boolean noInit) {
@@ -106,6 +111,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * No schema
+     * 
      * @param noSchema "true|false|on|off|yes|no"
      */
     public void setNoSchema(boolean noSchema) {
@@ -114,6 +120,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Block size
+     * 
      * @param blockSize int
      */
     public void setBlockSize(int blockSize) {
@@ -122,6 +129,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * In which directory create the database
+     * 
      * @param destDir File
      */
     public void setDestDir(File destDir) {
@@ -130,6 +138,7 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Overwrite database if existent
+     * 
      * @param overwrite "true|false|on|off|yes|no"
      */
     public void setOverwrite(boolean overwrite) {
@@ -138,43 +147,49 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
-     * Load schema after creating database
-     * @param schemaFile File
+     * Load schema after creating database. Multiple schemas can be loaded : seperate them with
+     * commas e.g. dump1.df,dump2.df,dump3.df
+     * 
+     * @param schemaFile String
      */
-    public void setSchemaFile(File schemaFile) {
+    public void setSchemaFile(String schemaFile) {
         this.schema = schemaFile;
     }
 
     /**
      * Set the propath to be used when running the procedure
+     * 
      * @param propath an Ant Path object containing the propath
      */
-     public void setPropath(Path propath) {
-         createPropath().append(propath);
-     }
+    public void setPropath(Path propath) {
+        createPropath().append(propath);
+    }
 
-     /**
-      * Creates a new Path instance
-      * @return Path
-      */
-     public Path createPropath() {
-         if (this.propath == null) {
-             this.propath = new Path(this.getProject());
-         }
+    /**
+     * Creates a new Path instance
+     * 
+     * @return Path
+     */
+    public Path createPropath() {
+        if (this.propath == null) {
+            this.propath = new Path(this.getProject());
+        }
 
-         return this.propath;
-     }
+        return this.propath;
+    }
 
-     /**
-      * Set the desired database codepage (copy from $DLC/prolang/codepage/emptyX)
-      * @param codepage Subdirectory name from prolang directory where to find the empty database 
-      */
-     public void setCodepage(String codepage) {
-         this.codepage = codepage;
-     }
+    /**
+     * Set the desired database codepage (copy from $DLC/prolang/codepage/emptyX)
+     * 
+     * @param codepage Subdirectory name from prolang directory where to find the empty database
+     */
+    public void setCodepage(String codepage) {
+        this.codepage = codepage;
+    }
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
@@ -229,31 +244,37 @@ public class PCTCreateBase extends PCT {
         }
 
         if (this.schema != null) {
-            PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema");
-            pls.setOwningTarget(this.getOwningTarget());
-            pls.setTaskName(this.getTaskName());
-            pls.setDescription(this.getDescription());
-            pls.setSrcFile(this.schema);
-            pls.setDlcHome(this.getDlcHome());
-            pls.setDlcBin(this.getDlcBin());
-            pls.setPropath(this.propath);
-            
-            PCTConnection pc = new PCTConnection();
-            pc.setDbName(this.dbName);
-            pc.setDbDir(this.destDir);
-            pc.setSingleUser(true);
-            pls.addPCTConnection(pc);
-            pls.execute();
+            Vector v = StringUtils.split(this.schema, ',');
+            for (int i = 0; i < v.size(); i++) {
+                String sc = (String) v.elementAt(i);
+                File f = new File(this.getProject().getBaseDir(), sc);
+                PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema");
+                pls.setOwningTarget(this.getOwningTarget());
+                pls.setTaskName(this.getTaskName());
+                pls.setDescription(this.getDescription());
+                pls.setSrcFile(f);
+                pls.setDlcHome(this.getDlcHome());
+                pls.setDlcBin(this.getDlcBin());
+                pls.setPropath(this.propath);
+
+                PCTConnection pc = new PCTConnection();
+                pc.setDbName(this.dbName);
+                pc.setDbDir(this.destDir);
+                pc.setSingleUser(true);
+                pls.addPCTConnection(pc);
+                pls.execute();
+            }
         }
     }
 
     /**
      * Creates the _dbutil procopy emptyX command line
-     * @return
+     * 
+     * @return An ExecTask, ready to be executed
      */
     private ExecTask initCmdLine() {
         ExecTask exec = (ExecTask) getProject().createTask("exec");
-        
+
         File srcDir = this.getDlcHome();
         if (this.codepage != null) {
             srcDir = new File(srcDir, "prolang");
@@ -281,7 +302,8 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Creates the _dbutil prostrct create command line
-     * @return
+     * 
+     * @return An ExecTask, ready to be executed
      */
     private ExecTask structCmdLine() {
         ExecTask exec = (ExecTask) getProject().createTask("exec");
@@ -298,7 +320,7 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(this.structFile.getAbsolutePath());
         exec.createArg().setValue("-blocksize");
         exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
-        
+
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
         var.setValue(this.getDlcHome().toString());
