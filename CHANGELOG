@@ -1,10 +1,11 @@
 Version 0.3b (not yet released)
 ==============================
  * Added unit tests (still in development)
- * Added website task & automatic deployment of website
+ * Added website task
  * Updated download webpage
  * Updated jar task (files were added twice)
  * Added forceCompile attribute to PCTCompile
+ * Added com.phenix.pct.PLReader task and documentation
  
 Version 0.3a
 ==============================
