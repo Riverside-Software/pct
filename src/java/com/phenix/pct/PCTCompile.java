@@ -87,79 +87,79 @@ public class PCTCompile extends PCTRun {
     private Hashtable _dirs = new Hashtable();
 
     /**
-     * Reduce r-code size ?
-     * MIN-SIZE option of the COMPILE statement
-     * @param minSize "true|false|on|off|yes|no"
-     */
+ * Reduce r-code size ?
+ * MIN-SIZE option of the COMPILE statement
+ * @param minSize "true|false|on|off|yes|no"
+ */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
     }
 
     /**
-     * Always force compilation
-     * @param forceCompile "true|false|on|off|yes|no"
-     * @since 0.3b
-     */
+ * Always force compilation
+ * @param forceCompile "true|false|on|off|yes|no"
+ * @since 0.3b
+ */
     public void setForceCompile(boolean forceCompile) {
         this.forceCompile = forceCompile;
     }
 
     /**
-     * Immediatly quit if a progress procedure fails to compile
-     * @param failOnError "true|false|on|off|yes|no"
-     */
+ * Immediatly quit if a progress procedure fails to compile
+ * @param failOnError "true|false|on|off|yes|no"
+ */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
     }
 
     /**
-     * Don't use XREF (and so compile everything)
-     * @param noXref "true|false|on|off|yes|no"
-     */
+ * Don't use XREF (and so compile everything)
+ * @param noXref "true|false|on|off|yes|no"
+ */
     public void setNoXref(boolean noXref) {
         this.noXref = noXref;
     }
 
     /**
-     * Directory where to store xref and includes files
-     * .xref and .includes subdirectories are created there
-     * @param xrefDir File
-     */
+ * Directory where to store xref and includes files
+ * .xref and .includes subdirectories are created there
+ * @param xrefDir File
+ */
     public void setXRefDir(File xrefDir) {
         this.xRefDir = xrefDir;
     }
 
     /**
-     * Put MD5 in r-code ?
-     * GENERATE-MD5 option of the COMPILE statement
-     * @param md5 "true|false|on|off|yes|no"
-     */
+ * Put MD5 in r-code ?
+ * GENERATE-MD5 option of the COMPILE statement
+ * @param md5 "true|false|on|off|yes|no"
+ */
     public void setMD5(boolean md5) {
         this.md5 = md5;
     }
 
     /**
-     * Location to store the .r files
-     * @param destDir Destination directory
-     */
+ * Location to store the .r files
+ * @param destDir Destination directory
+ */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
     }
 
     /**
-     * Adds a set of files to archive.
-     * @param set FileSet
-     */
+ * Adds a set of files to archive.
+ * @param set FileSet
+ */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
     }
 
     /**
-     * Checks whether files from a fileset need to be compiled
-     * @param inc Directory where XREF and include files are located
-     * @return Vector of PCTFile
-     * @throws BuildException
-     */
+ * Checks whether files from a fileset need to be compiled
+ * @param inc Directory where XREF and include files are located
+ * @return Vector of PCTFile
+ * @throws BuildException
+ */
     private Vector getFileList(File inc) throws BuildException {
         Vector v = new Vector();
         int j = 0;
@@ -197,8 +197,8 @@ public class PCTCompile extends PCTRun {
                             try {
                                 // Opens a reader to includes file
                                 br = new BufferedReader(new FileReader(new File(inc,
-                                                                                pctf.baseDirExt +
-                                                                                pctf.fileName)));
+                                                                                pctf.baseDirExt
+                                                                                + pctf.fileName)));
 
                                 boolean compile = false;
 
@@ -235,11 +235,11 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Checks if directories need to be created
-     * @param v File list to compile
-     * @return Hashtable of directories to be created
-     * @throws BuildException Something went wrong
-     */
+ * Checks if directories need to be created
+ * @param v File list to compile
+ * @return Hashtable of directories to be created
+ * @throws BuildException Something went wrong
+ */
     private Hashtable getDirectoryList(Vector v) throws BuildException {
         Hashtable dirs = new Hashtable();
 
@@ -272,9 +272,9 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Do the work
-     * @throws BuildException Something went wrong
-     */
+ * Do the work
+ * @throws BuildException Something went wrong
+ */
     public void execute() throws BuildException {
         File tmpProc = null; // Compile procedure
         File xRefDir = null; // Where to store XREF files
@@ -329,27 +329,27 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
-            bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \"" +
-                     escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
+            bw.write("DEFINE VARIABLE destDir AS CHARACTER NO-UNDO INITIAL \""
+                     + escapeString(this.destDir.getAbsolutePath()) + File.separatorChar + "\".");
             bw.newLine();
             bw.newLine();
 
             for (Enumeration e = _dirs.keys(); e.hasMoreElements();) {
                 String s = escapeString((String) e.nextElement());
                 Integer i = (Integer) _dirs.get(s);
-                bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s +
-                         File.separatorChar + "\".");
+                bw.write("DEFINE VARIABLE dir" + i + " AS CHARACTER NO-UNDO INITIAL \"" + s
+                         + File.separatorChar + "\".");
                 bw.newLine();
             }
 
             bw.newLine();
 
             if (!this.noXref) {
-                bw.write("DEFINE VARIABLE xRefDir AS CHARACTER NO-UNDO INITIAL \"" +
-                         escapeString(xRefDir.getAbsolutePath()) + File.separatorChar + "\".");
+                bw.write("DEFINE VARIABLE xRefDir AS CHARACTER NO-UNDO INITIAL \""
+                         + escapeString(xRefDir.getAbsolutePath()) + File.separatorChar + "\".");
                 bw.newLine();
-                bw.write("DEFINE VARIABLE includesDir AS CHARACTER NO-UNDO INITIAL \"" +
-                         escapeString(includesDir.getAbsolutePath()) + File.separatorChar + "\".");
+                bw.write("DEFINE VARIABLE includesDir AS CHARACTER NO-UNDO INITIAL \""
+                         + escapeString(includesDir.getAbsolutePath()) + File.separatorChar + "\".");
                 bw.newLine();
             }
 
@@ -362,15 +362,15 @@ public class PCTCompile extends PCTRun {
             for (Enumeration e = compFiles.elements(); e.hasMoreElements();) {
                 PCTFile pctf = (PCTFile) e.nextElement();
                 Integer i = (Integer) _dirs.get(pctf.baseDir.getAbsolutePath());
-                bw.write("COMPILE VALUE (dir" + i + " + \"" + pctf.baseDirExt + pctf.fileName +
-                         "\") SAVE INTO VALUE (destDir + \"" + pctf.baseDirExt + "\")");
+                bw.write("COMPILE VALUE (dir" + i + " + \"" + pctf.baseDirExt + pctf.fileName
+                         + "\") SAVE INTO VALUE (destDir + \"" + pctf.baseDirExt + "\")");
 
                 bw.write(" MIN-SIZE=" + (this.minSize ? "TRUE" : "FALSE"));
                 bw.write(" GENERATE-MD5=" + (this.md5 ? "TRUE" : "FALSE"));
 
                 if (!this.noXref) {
-                    bw.write(" XREF VALUE (xRefDir + \"" + pctf.baseDirExt + pctf.fileName +
-                             "\") APPEND=FALSE");
+                    bw.write(" XREF VALUE (xRefDir + \"" + pctf.baseDirExt + pctf.fileName
+                             + "\") APPEND=FALSE");
                 }
 
                 bw.write(".");
@@ -399,9 +399,9 @@ public class PCTCompile extends PCTRun {
                 bw.newLine();
 
                 if (!this.noXref) {
-                    bw.write("  RUN importXref IN h (INPUT xRefDir + '" + pctf.baseDirExt +
-                             pctf.fileName + "', INPUT includesDir + '" + pctf.baseDirExt +
-                             pctf.fileName + "').");
+                    bw.write("  RUN importXref IN h (INPUT xRefDir + '" + pctf.baseDirExt
+                             + pctf.fileName + "', INPUT includesDir + '" + pctf.baseDirExt
+                             + pctf.fileName + "').");
                     bw.newLine();
                 }
 
