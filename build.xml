@@ -11,13 +11,13 @@
   <!-- Some directories definitions -->
   <property name="src.java" value="src/java"/>
   <property name="src.progress" value="src/progress"/>
-  <property name="src.test" value="test"/>
+  <property name="src.test" value="src/test"/>
   <property name="build" value="build"/>
-  <property name="build.test" value="test-build"/>
   <property name="dist" value="lib"/>
   <property name="doc" value="javadoc"/>
-  <property name="check" value="check"/>
-
+  <property name="check" value="check"/>  
+  <property name="website" value="website"/>
+  
   <!-- Jalopy classpath -->
   <path id="JalopyCP">
     <fileset dir="${env.JALOPY_HOME}/lib">
@@ -44,9 +44,10 @@
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
-    <jar jarfile="${dist}/PCT.jar" basedir="${build}">
+    <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class"/>
+        <exclude name="com/phenix/pct/*Test.class"/>
       </fileset>
       <fileset dir="${src.java}">
         <include name="PCT.properties"/>
@@ -61,11 +62,11 @@
   <target name="pbuild" depends="declare" description="Progress code compilation">
     <PCTCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
-	    <include name="pct/*.p"/>
-	  </fileset>
-	  <propath>
-	    <pathelement location="${src.progress}"/>
-	  </propath>
+        <include name="pct/*.p"/>
+      </fileset>
+      <propath>
+        <pathelement location="${src.progress}"/>
+      </propath>
     </PCTCompile>
     <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
@@ -75,11 +76,14 @@
         <pathelement location="${src.progress}"/>
       </propath>
     </PCTCompile>
-   </target>
+  </target>
   
-  <target name="format" depends="build" description="Java source code formatting">
+  <target name="format" depends="build,test-build" description="Java source code formatting">
     <jalopy fileformat="unix" encoding="iso8859-1" convention="conf/jalopy.xml">
       <fileset dir="${src.java}">
+        <include name="com/phenix/pct/**/*.java" />
+      </fileset>
+      <fileset dir="${src.test}">
         <include name="com/phenix/pct/**/*.java" />
       </fileset>
     </jalopy>
@@ -90,13 +94,13 @@
     <checkstyle config="conf/check-config.xml" failOnViolation="false">
       <formatter type="xml" toFile="${check}/check.xml"/>
       <fileset dir="${src.java}" includes="com/phenix/pct/*.java"/>
+      <fileset dir="${src.test}" includes="com/phenix/pct/*.java"/>
     </checkstyle>
     <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
   </target>
 
-  <target name="test-build" depends="build" description="Builds junit tests">
-    <mkdir dir="${build.test}"/>
-    <javac srcdir="${src.test}" destdir="${build.test}">
+  <target name="test-build" depends="jar" description="Builds junit tests">
+    <javac srcdir="${src.test}" destdir="${build}" debug="true">
       <include name="org/apache/tools/ant/*.java"/>
       <include name="com/phenix/pct/*.java"/>
       <classpath>
@@ -105,23 +109,15 @@
     </javac>
   </target>
   
-  <target name="test-format" depends="test-build" description="Java source code formatting (test classes)">
-    <jalopy fileformat="unix" encoding="iso8859-1" convention="conf/jalopy.xml">
-      <fileset dir="${src.test}">
-        <include name="com/phenix/pct/**/*.java" />
-      </fileset>
-    </jalopy>
-  </target>
-
   <target name="test" depends="test-build" description="Starts tests">
-    <junit>
+    <junit showoutput="true" filtertrace="true" >
       <classpath>
-        <pathelement location="${build.test}"/>
         <pathelement location="${build}"/>
       </classpath>
       <formatter type="brief" usefile="false" />
       <test name="com.phenix.pct.PCTTest"/>
       <test name="com.phenix.pct.PCTLibraryTest"/>
+      <test name="com.phenix.pct.PCTConnectionTest"/>
     </junit>
   </target>
 
@@ -133,13 +129,13 @@
     </javadoc>
   </target>
 
-  <target name="bindist" depends="jar,pbuild,javadoc" description="Generates binary zip/tarball archive">
+  <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
     <tar destfile="pct-bin.tar.gz" compression="gzip">
       <tarfileset prefix="pct" dir="." mode="644">
         <include name="${dist}/PCT.jar"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="${doc}/**"/>
+        <include name="website/**"/>
       </tarfileset>
       <tarfileset prefix="pct" dir="build" mode="644">
         <include name="tty/pct/*.r"/>
@@ -151,7 +147,7 @@
         <include name="${dist}/PCT.jar"/>
         <include name="doc/**"/>
         <include name="CHANGELOG"/>
-        <include name="${doc}/**"/>
+        <include name="website/**"/>
       </zipfileset>
       <zipfileset prefix="pct" dir="build" filemode="644">
         <include name="tty/pct/*.r"/>
@@ -186,6 +182,21 @@
     <delete dir="${dist}"/>
     <delete dir="${doc}"/>
     <delete dir="${check}"/>
+  </target>
+  
+  <target name="website" depends="javadoc" description="Generates files used for the pct.sf.net website">
+    <delete dir="${website}"/>
+    <mkdir dir="${website}"/>
+    <copy toDir="${website}">
+      <fileset dir="doc">
+        <include name="*.html"/>
+        <include name="*.css"/>
+      </fileset>
+      <fileset dir=".">
+        <include name="CHANGELOG"/>
+        <include name="${doc}/**"/>
+      </fileset>
+    </copy>
   </target>
   
 </project>
