@@ -62,6 +62,8 @@ public class PCTAlias {
     private String name = null;
     private boolean noError = false;
 
+    // TODO : vérifier que deux alias identiques ne peuvent être définis
+
     /**
      * Alias name
      * @param name String
