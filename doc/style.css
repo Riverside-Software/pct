@@ -1,9 +1,9 @@
 body {
-    background-color: #555555;
-    color: black;
+    background: url(back.png) repeat #000000;
+    color: #ffffff;
 }
 pre {
-    background-color: #77aaee;
+    background-color: #cccccc;
     padding: 5px;
 }
 
@@ -12,31 +12,35 @@ pre#deprecated {
 	text-decoration: line-through;
 }
 div {
-    text-align: left;
-    /*float: left;*/
+    background: white;
     color: black;
 }
 
 div.Main {
-    margin: 5px;
-    background: #eeeeee;
-    border: 2px black solid;
+    background: #ffffff;
+    border: 2px #000000 solid;
+    width: 99%;
 }
 
 div.Bandeau {
-    background: #ffecce;
-    border: 1px #ddcaac solid;
+    background: #7777bb;
+    border-bottom: 2px #000000 solid;
     width: 100%;
     font-weight: bold;
     text-align: center;
     font-size: 140%;
-    color: #336699;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    color: black;
+    margin-bottom: 0px;
 }
 
 div.Menu {
-    margin-top: 10px;
+    margin-top: 0px;
     background: #cccccc;
-    border: 1px #aaaaaa solid;
+    border-bottom: 2px #000000 solid;
+    padding-top: 3px;
+    padding-bottom: 3px;
     width: 100%;
     font-weight: bold;
     text-align: center;
@@ -44,36 +48,66 @@ div.Menu {
 }
 
 div.Menu a {
-    color: #336699;
-    text-decoration: underline;
+    color: #7777bb;
+    text-decoration: none;
 }
 
-div.Menu span#selected {
-    background: #336699;
-    color: #cccccc;
+div.Menu span.selected {
+    color: #ff8c55;
 }
 div.Menu a:hover {
     background: #eeeeee;
     text-decoration: none;
 }
 
-div.LastUpdate {
-    width: 100%;
-    margin-top: 10px;
+div.Menu2 {
+    border-left: 2px black solid;
+    border-bottom: 2px black solid;
     background: #cccccc;
-    color: #336699;
-    text-align: right;
+    float: right;
+    padding: 3px;
 }
 
-div.TextArea {
+div.Menu2 h1 {
+    font-size: 120%;
+}
+
+div.Menu2 a {
+    font-weight: bold;
+    color: #7777bb;
+    text-decoration: none;
+}
+
+div.Menu2 a:hover {
+    font-weight: bold;
+    background: #eeeeee;
+    text-decoration: none;
+}
+div.LastUpdate {
     width: 100%;
-    padding: 5px;
+    font-size: 80%;
+    border-top: 2px black solid;
+    margin-top: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background: #cccccc;
+    color: #000000;
+    text-align: right;
 }
 
 div.Text {
     color: black;
-    /*background: white;*/
     padding: 5px;
+}
+
+div.Text a {
+    color: black;
+    text-decoration: underline;
+}
+
+div.Text a:hover {
+    color: #ff8c55;
+    text-decoration: underline;
 }
 
 div.Text h1 {
@@ -87,7 +121,7 @@ div.Text h2 {
 }
 
 div.Text table {
-    border-collapse: collapse;
+    border: 1px #000000 solid;
 }
 
 div.Text tr {
@@ -97,14 +131,18 @@ div.Text tr {
 }
 
 div.Text th {
-    background: #336699;
-    border-top: 1px black solid;	
+    background: #cccccc;
+    border-bottom: 1px black solid;	
 }
 
 div.Text td {
-    border-bottom: 1px black solid;
+    background: #dddddd;
 }
 
-img#sflogo {
+span#sflogo {
+    float: right;
+}
+
+img#sflogoimg {
     border: 0px;
 }
