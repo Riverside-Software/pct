@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<project name="PCTCreateBase-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no database name -->
+  <target name="test1">
+    <PCTCreateBase dlcHome="${env.DLC}"/>
+  </target>
+
+  <!-- Should throw BuildException : dbName longer than 11 characters -->
+  <target name="test2">
+    <PCTCreateBase dbName="VeryLongName" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Simple test : creates a database -->
+  <target name="test3">
+    <PCTCreateBase dbName="test3" destDir="sandbox" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Should throw BuildException : noInit and noStruct both defined -->
+  <target name="test4">
+    <PCTCreateBase noInit="true" noStruct="true" dbName="test3" destDir="sandbox" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Database with table creation -->
+  <target name="test5init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df"/>
+  </target>
+  <target name="test5">
+    <PCTCompile destDir="." dlcHome="${env.DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>	
+      <propath>
+        <pathelement path="../../build/tty"/>	
+      </propath>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  
+  <!-- Checks database is not overwritten when overwrite=false -->
+  <target name="test6">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}"/>
+  </target>
+  
+  <!-- Checks database is overwritten when overwrite=true -->
+  <target name="test7">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" overwrite="true"/>
+  </target>
+  
+  <!-- Checks structure creation -->
+  <target name="test8">
+    <echo file="sandbox/test.st">
+      b test.b1 f 1024
+      b test.b2 v 2048
+      d "Schema Area":6,64 test.d1 f 1024
+      d "Schema Area":6,64 test.d2 v 2048
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" structFile="test.st"/>
+  </target>
+</project>
