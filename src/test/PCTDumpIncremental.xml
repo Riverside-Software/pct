@@ -2,7 +2,7 @@
 
 <project name="PCTDumpIncremental-test" default="">
 
-  <taskdef resource="PCT.properties" classpath="../../lib/PCT.jar"/>
+  <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
   
@@ -32,38 +32,32 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df"/>
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" propath="tty"/>
   </target>
   <target name="test1">
-    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${env.DLC}">
+    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb"/>
       </PCTConnection>
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb2"/>
       </PCTConnection>
-      <propath>
-        <pathelement path="../../build/tty"/>	
-      </propath>
     </PCTDumpIncremental>
   </target>
   <target name="test1bis">
-    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${env.DLC}">
+    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
     <echo file="sandbox/test1.p">
       CREATE Tab1.
       ASSIGN Tab1.Fld1 = 0.
     </echo>
-    <PCTCompile destDir="sandbox" dlcHome="${env.DLC}">
+    <PCTCompile destDir="sandbox" dlcHome="${env.DLC}" propath="tty">
       <fileset dir="sandbox">
         <include name="test1.p"/>	
       </fileset>
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
-      <propath>
-        <pathelement path="../../build/tty"/>	
-      </propath>
     </PCTCompile>	
   </target>
   

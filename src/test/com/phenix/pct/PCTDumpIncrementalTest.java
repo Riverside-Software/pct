@@ -71,25 +71,25 @@ public class PCTDumpIncrementalTest extends BuildFileTest {
     }
 
     public void setUp() {
-        configureProject("src/test/PCTDumpIncremental.xml");
+        configureProject("PCTDumpIncremental.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.setDir(new File("sandbox"));
         mkdir.execute();
     }
 
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
         del.execute();
     }
 
     public void test1() {
-        File f = new File("src/test/sandbox/incr.df");
-        File f2 = new File("src/test/sandbox/test1.r");
+        File f = new File("sandbox/incr.df");
+        File f2 = new File("sandbox/test1.r");
 
         executeTarget("test1init");
         executeTarget("test1");
@@ -97,5 +97,4 @@ public class PCTDumpIncrementalTest extends BuildFileTest {
         executeTarget("test1bis");
         assertTrue(f2.exists());
     }
-
 }

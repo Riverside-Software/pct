@@ -2,7 +2,7 @@
 
 <project name="PCTRun-test" default="">
 
-  <taskdef name="PCTRun" classname="com.phenix.pct.PCTRun" classpath="../../lib/PCT.jar"/>
+  <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
   
