@@ -72,6 +72,7 @@ import java.util.Vector;
 /**
  * Run a Progress procedure.
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @version $Revision$
  */
 public class PCTRun extends PCT {
     // Attributes
@@ -82,6 +83,7 @@ public class PCTRun extends PCT {
     private String cpInternal = null;
     private String parameter = null;
     private File status = null;
+    private File iniFile = null;
     private int dirSize = 0;
     private int centuryYearOffset = 0;
     private int token = 0;
@@ -163,6 +165,14 @@ public class PCTRun extends PCT {
      */
     public void setGraphicalMode(boolean graphMode) {
         this.graphMode = graphMode;
+    }
+
+    /**
+     * Sets .ini file to use (-basekey INI -ininame xxx)
+     * @param iniFile File
+     */
+    public void setIniFile(File iniFile) {
+    	this.iniFile = iniFile;
     }
 
     /**
@@ -326,6 +336,14 @@ public class PCTRun extends PCT {
 
         // Batch mode
         exec.createArg().setValue("-b");
+
+        // Inifile
+        if (this.iniFile != null) {
+            exec.createArg().setValue("-basekey");
+            exec.createArg().setValue("INI");
+            exec.createArg().setValue("-ininame");
+            exec.createArg().setValue(this.iniFile.getAbsolutePath());
+        }
 
         // Quick access to files
         exec.createArg().setValue("-q");
