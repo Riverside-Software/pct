@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="PCTLibrary-test">
+<project name="PCTRun-test">
 
   <taskdef name="PCTRun" classname="com.phenix.pct.PCTRun" classpath="../../lib/PCT.jar"/>
 
@@ -13,34 +13,50 @@
    
    <!-- Simple case : displays 'Hello world' and exits properly -->
   <target name="test2">
-    <PCTRun procedure="progress/simple.p" dlcHome="${env.DLC}"/>
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Simple case 2 : return value is 1 : Expect build exception -->
   <target name="test3">
-    <PCTRun procedure="progress/simple2.p" dlcHome="${env.DLC}"/>
+    <echo file="sandbox/test.p">
+      RETURN "1".
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Procedure doesn't exists : Expect build exception -->
   <target name="test4">
-    <PCTRun procedure="progress/not_existing.p" dlcHome="${env.DLC}"/>	
+    <PCTRun procedure="sandbox/not_existing.p" dlcHome="${env.DLC}"/>	
   </target>
   
   <!-- Return value is non numeric : Expect build exception -->
   <target name="test5">
-  	<PCTRun procedure="progress/simple3.p" dlcHome="${env.DLC}"/>
+    <echo file="sandbox/test.p">
+      RETURN "ABC".
+    </echo>
+  	<PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Impossible to compile procedure : Expect build exception -->
   <target name="test6">
-    <PCTRun procedure="progress/no_compil.p" dlcHome="${env.DLC}"/>	
+    <echo file="sandbox/test.p">
+      En voila du code qui ne compile pas.
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>	
   </target>
   
   <!-- Test propath -->
   <target name="test7">
-    <PCTRun procedure="subdir_simple.p" dlcHome="${env.DLC}">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="test.p" dlcHome="${env.DLC}">
       <propath>
-        <pathelement location="progress/subdir"/>	
+        <pathelement location="sandbox"/>	
       </propath>	
     </PCTRun>
   </target>
@@ -48,23 +64,38 @@
   <!-- Test name containing ' and ~ -->
   <!-- See bug 837205 -->
   <target name="test8">
-    <PCTRun procedure="progress/wizz~~'~.p" dlcHome="${env.DLC}"/>
+    <echo file="sandbox/wizz~~'~.p">
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="sandbox/wizz~~'~.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Test -param attribute -->
+  <target name="test9init">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello" + SESSION:PARAMETER.
+      RETURN "0".
+    </echo>
+  </target>
   <target name="test9">
-    <PCTRun procedure="progress/param.p" dlcHome="${env.DLC}" parameter="PCT"/>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter=" PCT"/>
   </target>
   <target name="test9bis">
-    <PCTRun procedure="progress/param.p" dlcHome="${env.DLC}"/>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Test -yy attribute - Default is 1950 -->
+  <target name="test10init">
+    <echo file="sandbox/test.p">
+      MESSAGE STRING(DATE("0101" + SESSION:PARAMETER), "99/99/9999").
+      RETURN "0".
+    </echo>
+  </target>
   <target name="test10">
-    <PCTRun procedure="progress/century.p" dlcHome="${env.DLC}" parameter="60" centuryYearOffset="1970"/>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60" centuryYearOffset="1970"/>
   </target>
   <target name="test10bis">
-    <PCTRun procedure="progress/century.p" dlcHome="${env.DLC}" parameter="60"/>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60"/>
   </target>
   
 </project>

@@ -41,13 +41,14 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
 
 /**
  * Class for testing PCTRun task
- *
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTRunTest extends BuildFileTest {
@@ -55,53 +56,100 @@ public class PCTRunTest extends BuildFileTest {
         super(name);
     }
 
+    /**
+     * Sets up the fixture
+     */
     public void setUp() {
         configureProject("src/test/PCTRun.xml");
+        // Creates a sandbox directory to play with
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(this.getProject());
+        mkdir.setDir(new File("src/test/sandbox"));
+        mkdir.execute();
     }
 
+    /**
+     * Tears down the fixture
+     */
     public void tearDown() {
+    	Delete del = new Delete();
+    	del.setProject(this.getProject());
+    	del.setDir(new File("src/test/sandbox"));
+    	del.execute();
     }
 
+    /**
+     * Attribute procedure should always be defined
+     */
     public void test1() {
         expectBuildException("test1", "No procedure name defined");
     }
 
+    /**
+     * Very simple run, and exits properly
+     */
     public void test2() {
         expectLog("test2", "Hello world!");
     }
 
+    /**
+     * Very simple run, and exits with error code
+     */
     public void test3() {
         expectBuildException("test3", "Return value : 1");
     }
 
+    /**
+     * Procedure file not found : should throw BuildException
+     */
     public void test4() {
-        File f = new File("src/test/progress/not_existing.p");
+        File f = new File("src/test/sandbox/not_existing.p");
         assertFalse(f.exists());
         expectBuildException("test4", "Procedure not existing");
     }
 
+    /**
+     * Non-numeric return value : should throw BuildException
+     */
     public void test5() {
         expectBuildException("test5", "Return value not numeric");
     }
 
+    /**
+     * Procedure don't compile : should throw BuildException
+     */
     public void test6() {
         expectBuildException("test6", "Impossible to compile file");
     }
 
+    /**
+     * Checks if PROPATH is correctly defined
+     */
     public void test7() {
         executeTarget("test7");
     }
 
+    /**
+     * Checks if strings containing ~ and ' are escaped
+     */
     public void test8() {
         executeTarget("test8");
     }
 
+    /**
+     * Tests -param attribute
+     */
     public void test9() {
+    	executeTarget("test9init");
         expectLog("test9", "Hello PCT");
         expectLog("test9bis", "Hello");
     }
 
+    /**
+     * Tests -yy attribute
+     */
     public void test10() {
+    	executeTarget("test10init");
         expectLog("test10", "01/01/2060");
         expectLog("test10bis", "01/01/1960");
     }
