@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="PCT" default="dist" basedir=".">
+<project name="PCT" default="bindist">
   
   <!-- Give user a chance to override without editing this file
        (and without typing -D each time it compiles it) -->
@@ -14,79 +14,132 @@
   <property name="build" location="build"/>
   <property name="dist" location="lib"/>
   <property name="doc" location="javadoc"/>
+  <property name="check" location="check"/>
 
+  <!-- Jalopy classpath -->
+  <path id="JalopyCP">
+    <fileset dir="${env.JALOPY_HOME}/lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- Jalopy task definition -->
   <taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
-    <classpath>
-      <fileset dir="${env.JALOPY_HOME}/lib">
-        <include name="*.jar" />
-      </fileset>
-    </classpath>
+    <classpath refid="JalopyCP"/>
   </taskdef>
+  
+  <!-- Checktyle task definition -->
   <taskdef resource="checkstyletask.properties" classpath="${env.CHECKSTYLE_HOME}/checkstyle-all-3.1.jar"/>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
+    <mkdir dir="${doc}"/>
   </target>
 
-  <target name="format" depends="compile" description="Formats source code">
-    <jalopy fileformat="unix" encoding="iso8859-1" convention="jalopy.xml">
+  <target name="build" depends="init" description="Java source files compilation">
+    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="false"/>
+  </target>
+
+  <target name="jar" depends="build" description="JAR file generation">
+    <jar jarfile="${dist}/PCT.jar" basedir="${build}">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class"/>
+      </fileset>
+      <fileset dir="${src.java}">
+        <include name="PCT.properties"/>
+      </fileset>
+    </jar>
+  </target>
+  
+  <target name="declare" depends="jar" description="PCT tasks declaration">
+    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar"/>
+  </target>
+  
+  <target name="pbuild" depends="declare" description="Progress code compilation">
+    <PCTCompile destdir="${build}/tty/pct" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
+      <fileset dir="${src.progress}/pct">
+	    <include name="*.p"/>
+	  </fileset>
+	  <propath>
+	    <pathelement location="${src.progress}"/>
+	  </propath>
+    </PCTCompile>
+    <PCTCompile destdir="${build}/gui/pct" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
+      <fileset dir="${src.progress}/pct">
+	    <include name="*.p"/>
+	  </fileset>
+	  <propath>
+	    <pathelement location="${src.progress}"/>
+	  </propath>
+    </PCTCompile>
+   </target>
+  
+  <target name="format" depends="build" description="Java source code formatting">
+    <jalopy fileformat="unix" encoding="iso8859-1" convention="conf/jalopy.xml">
       <fileset dir="${src.java}">
         <include name="com/phenix/pct/**/*.java" />
       </fileset>
     </jalopy>
   </target>
 
-  <target name="check" depends="format">
-    <checkstyle config="check-config.xml" failOnViolation="false">
-      <formatter type="xml" toFile="check.raw"/>
-      <fileset dir="src/java">
-        <include name="**/*.java"/>
-      </fileset>
+  <target name="check" depends="format" description="Check source code convention">
+    <mkdir dir="${check}"/>
+    <checkstyle config="conf/check-config.xml" failOnViolation="false">
+      <formatter type="xml" toFile="${check}/check.xml"/>
+      <fileset dir="${src.java}" includes="com/phenix/pct/*.java"/>
     </checkstyle>
-    <mkdir dir="check"/>
-    <style in="check.raw" style="checkstyle-frames.xsl" out="check/output.txt">
-<!--      <param name="basedir" expression="."/> -->
-    </style>
+    <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
   </target>
 
-
-  <target name="doc" description="Creates the API documentation">
-    <mkdir dir="${doc}"/>
-    <javadoc sourcepath="${src.java}" destdir="${doc}" author="true" doctitle="PCT" windowtitle="PCT API" locale="en" version="false" classpath="/usr/local/ant/lib/ant.jar">
+  <target name="javadoc" depends="build" description="API documentation creation">
+    <javadoc destdir="${doc}" useexternalfile="yes">
       <packageset dir="${src.java}"/>
       <group title="PCT Core" packages="com.phenix.pct.*"/>
-      <bottom>Copyright &#169; 2003 Apache Software Foundation. All Rights Reserved.</bottom>
+      <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
     </javadoc>
   </target>
-  
-  <target name="compile" depends="init" description="Source compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" classpath="/usr/local/ant/lib/ant.jar" debug="true"/>
-  </target>
 
-  <target name="jar" depends="compile" description="Generates JAR files">
-    <jar jarfile="${dist}/PCT.jar" basedir="${build}" includes="com/phenix/pct/*.class"/>
-  </target>
-  
-  <target name="dist" depends="jar" description="Generates zip archive">
-    <tar destfile="pct.tar.gz" compression="gzip">
+  <target name="bindist" depends="jar,pbuild,javadoc" description="Generates binary zip/tarball archive">
+    <tar destfile="pct-bin.tar.gz" compression="gzip">
       <tarfileset prefix="pct" dir="." mode="644">
-        <include name="lib/PCT.jar"/>
-        <include name="src/progress/*.p"/>
-        <include name="src/java/**/*.java"/>
-	<include name="doc/*.html"/>
-	<include name="doc/*.css"/>
-	<include name="CHANGELOG"/>
+        <include name="${dist}/PCT.jar"/>
+        <include name="${build}/tty/*.r"/>
+        <include name="${build}/gui/*.r"/>
+        <include name="doc/**"/>
+        <include name="CHANGELOG"/>
+        <include name="${doc}/**"/>
       </tarfileset>
     </tar>
-    <zip destfile="pct.zip">
+    <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="lib/PCT.jar"/>
-        <include name="src/progress/*.p"/>
-        <include name="src/java/**/*.java"/>
-	<include name="doc/*.html"/>
-	<include name="doc/*.css"/>
-	<include name="CHANGELOG"/>
+        <include name="${dist}/PCT.jar"/>
+        <include name="${build}/tty/*.r"/>
+        <include name="${build}/gui/*.r"/>
+        <include name="doc/**"/>
+        <include name="CHANGELOG"/>
+        <include name="${doc}/**"/>
+      </zipfileset>
+    </zip>
+  </target>
+  
+  <target name="srcdist" description="Generates source zip/tarball archive">
+    <tar destfile="pct-src.tar.gz" compression="gzip">
+      <tarfileset prefix="pct" dir="." mode="644">
+        <include name="src/**"/>
+        <include name="build.xml"/>
+        <include name="conf/**"/>
+        <include name="doc/**"/>
+        <include name="CHANGELOG"/>
+      </tarfileset>
+    </tar>
+    <zip destfile="pct-src.zip">
+      <zipfileset prefix="pct" dir="." filemode="644">
+        <include name="src/**"/>
+        <include name="build.xml"/>
+        <include name="conf/**"/>
+        <include name="doc/**"/>
+        <include name="CHANGELOG"/>
       </zipfileset>
     </zip>
   </target>
@@ -94,6 +147,8 @@
   <target name="clean" description="Nettoyage">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <delete dir="${doc}"/>
+    <delete dir="${check}"/>
   </target>
   
 </project>
