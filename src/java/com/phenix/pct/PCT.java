@@ -58,24 +58,26 @@ import org.apache.tools.ant.Task;
 
 import java.io.File;
 
-
 /**
-  * Base class for creating tasks involving Progress.
-  * It does basic work on guessing where various bin/java/etc are located.
-  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
-  * @version $Revision$
-  * @todo dlcHome should get DLC environment variable content at startup and
-  * could be overridden with setDlcHome
-  **/
+ * Base class for creating tasks involving Progress. It does basic work on guessing where various
+ * bin/java/etc are located.
+ * 
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @version $Revision$
+ * @todo dlcHome should get DLC environment variable content at startup and could be overridden with
+ *       setDlcHome
+ */
 public abstract class PCT extends Task {
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
     private File proxygenJar = null;
     private File progressJar = null;
+    private File messagesJar = null;
 
     /**
      * Progress installation directory
+     * 
      * @param dlcHome File
      */
     public final void setDlcHome(File dlcHome) {
@@ -104,6 +106,7 @@ public abstract class PCT extends Task {
 
     /**
      * Progress binary directory
+     * 
      * @param dlcBin File
      * @since 0.3
      */
@@ -117,6 +120,7 @@ public abstract class PCT extends Task {
 
     /**
      * Progress java directory
+     * 
      * @param dlcJava File
      * @since 0.3
      */
@@ -153,6 +157,7 @@ public abstract class PCT extends Task {
 
     /**
      * Proxygen.jar file
+     * 
      * @param pxgJar File
      */
     public final void setProxygenJar(File pxgJar) {
@@ -164,7 +169,23 @@ public abstract class PCT extends Task {
     }
 
     /**
+     * Messages.jar file
+     * 
+     * @param msgJar File
+     * @since 0.7
+     */
+    public final void setMessagesJar(File msgJar) {
+        if (!msgJar.exists()) {
+            throw new BuildException("ProxygenJar attribute : " + msgJar.toString() + " not found");
+        }
+
+        this.messagesJar = msgJar;
+
+    }
+
+    /**
      * Progress.zip file
+     * 
      * @param pscJar File
      */
     public final void setProgressJar(File pscJar) {
@@ -177,6 +198,7 @@ public abstract class PCT extends Task {
 
     /**
      * Returns Progress installation directory
+     * 
      * @return File
      */
     protected final File getDlcHome() {
@@ -185,6 +207,7 @@ public abstract class PCT extends Task {
 
     /**
      * Returns the needed Jar File or directory to run Proxygen tasks
+     * 
      * @return File
      */
     protected final File getProxygenJar() {
@@ -192,7 +215,18 @@ public abstract class PCT extends Task {
     }
 
     /**
+     * Returns the needed Jar File or directory to run Proxygen tasks
+     * 
+     * @return File
+     * @since 0.7
+     */
+    protected final File getMessagesJar() {
+        return this.messagesJar;
+    }
+
+    /**
      * Returns Progress executables directory
+     * 
      * @return File
      * @since 0.3b
      */
@@ -202,6 +236,7 @@ public abstract class PCT extends Task {
 
     /**
      * Returns the needed Jar/Zip file or directory to run various Progress/Java tasks
+     * 
      * @return File
      */
     protected final File getProgressJar() {
@@ -210,6 +245,7 @@ public abstract class PCT extends Task {
 
     /**
      * Returns a Progress executable path
+     * 
      * @param exec String
      * @return File
      */
