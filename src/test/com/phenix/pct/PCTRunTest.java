@@ -61,6 +61,7 @@ public class PCTRunTest extends BuildFileTest {
      */
     public void setUp() {
         configureProject("src/test/PCTRun.xml");
+
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
@@ -72,10 +73,10 @@ public class PCTRunTest extends BuildFileTest {
      * Tears down the fixture
      */
     public void tearDown() {
-    	Delete del = new Delete();
-    	del.setProject(this.getProject());
-    	del.setDir(new File("src/test/sandbox"));
-    	del.execute();
+        Delete del = new Delete();
+        del.setProject(this.getProject());
+        del.setDir(new File("src/test/sandbox"));
+        del.execute();
     }
 
     /**
@@ -140,7 +141,7 @@ public class PCTRunTest extends BuildFileTest {
      * Tests -param attribute
      */
     public void test9() {
-    	executeTarget("test9init");
+        executeTarget("test9init");
         expectLog("test9", "Hello PCT");
         expectLog("test9bis", "Hello");
     }
@@ -149,7 +150,7 @@ public class PCTRunTest extends BuildFileTest {
      * Tests -yy attribute
      */
     public void test10() {
-    	executeTarget("test10init");
+        executeTarget("test10init");
         expectLog("test10", "01/01/2060");
         expectLog("test10bis", "01/01/1960");
     }

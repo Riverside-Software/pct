@@ -58,12 +58,13 @@ public class PCTCompileTest extends BuildFileTest {
 
     public void setUp() {
         configureProject("src/test/PCTCompile.xml");
+
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
         mkdir.setDir(new File("src/test/sandbox"));
         mkdir.execute();
-        }
+    }
 
     public void tearDown() {
         Delete del = new Delete();

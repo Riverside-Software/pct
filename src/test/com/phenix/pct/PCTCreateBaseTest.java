@@ -61,7 +61,7 @@ import java.io.File;
 
 
 /**
- * Class for testing PCTCompile task
+ * Class for testing PCTCreateBase task
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTCreateBaseTest extends BuildFileTest {
