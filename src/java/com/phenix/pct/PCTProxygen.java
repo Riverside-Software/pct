@@ -61,7 +61,8 @@ import java.io.File;
 
 
 /**
- * @author Gilles QUERRET
+ * Proxygen task
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTProxygen extends PCT {
     private File srcFile = null;
@@ -69,12 +70,17 @@ public class PCTProxygen extends PCT {
     private File workingDirectory = null;
 
     /**
-     * @param keepFiles
+     * Keep files
+     * @param keepFiles boolean
      */
     public void setKeepFiles(boolean keepFiles) {
         this.keepFiles = keepFiles;
     }
 
+    /**
+     * Working directory
+     * @param workingDir File
+     */
     public void setWorkingDirectory(File workingDir) {
         if (!workingDir.exists()) {
             throw new BuildException("work dir pas bon");
@@ -84,12 +90,17 @@ public class PCTProxygen extends PCT {
     }
 
     /**
-     * @param srcFile
+     * PXG file to use
+     * @param srcFile File
      */
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         if (this.srcFile == null) {
             throw new BuildException("Proxygen file not defined");
@@ -118,7 +129,8 @@ public class PCTProxygen extends PCT {
 
         pxg.createClasspath().setPath(this.getProxygenJar().toString());
 
-        // As Progress doesn't know command line parameters, arguments are given via environment variables        
+        // As Progress doesn't know command line parameters,
+        // arguments are given via environment variables
         Environment.Variable var = new Environment.Variable();
         var.setKey("PXGFile");
         var.setValue(this.srcFile.toString());

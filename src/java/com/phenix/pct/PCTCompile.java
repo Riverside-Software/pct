@@ -111,7 +111,7 @@ public class PCTCompile extends PCTRun {
     /**
      * Directory where to store xref and includes files
      * .xref and .includes subdirectories are created there
-     * @param xref File
+     * @param xrefDir File
      */
     public void setXRefDir(File xrefDir) {
         this.xRefDir = xrefDir;
@@ -135,6 +135,7 @@ public class PCTCompile extends PCTRun {
 
     /**
     * Adds a set of files to archive.
+    * @param set FileSet
     */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
@@ -259,7 +260,8 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     *
+     * Do the work
+     * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         File tmpProc = null; // Compile procedure
@@ -305,28 +307,25 @@ public class PCTCompile extends PCTRun {
         }
 
         // If there are no files to compile, just return...
-        if (compFiles.size() == 0) {
+        /*if (compFiles.size() == 0) {
             return;
-        } else {
-            log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
-        }
+        } else {*/
+        log("Compiling " + compFiles.size() + " file(s) to " + this.destDir, Project.MSG_INFO);
 
+        /*}*/
         try {
             // Creates Progress procedure to compile files
             tmpProc = File.createTempFile("pct_compile", ".p");
+            tmpProc.deleteOnExit();
 
-            // tmpProc.deleteOnExit();
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpProc));
-            bw.write("DEFINE INPUT PARAMETER pcStatus AS CHARACTER NO-UNDO.");
-            bw.newLine();
-            bw.newLine();
             bw.write("DEFINE VARIABLE h AS HANDLE NO-UNDO.");
             bw.newLine();
             bw.write("DEFINE VARIABLE iComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
             bw.write("DEFINE VARIABLE iNoComp AS INTEGER NO-UNDO INITIAL 0.");
             bw.newLine();
-            bw.write("RUN pctCompileMsg.p PERSISTENT SET h.");
+            bw.write("RUN pct/pctCompileMsg.p PERSISTENT SET h.");
             bw.newLine();
 
             for (Enumeration e = compFiles.keys(); e.hasMoreElements();) {
@@ -366,9 +365,11 @@ public class PCTCompile extends PCTRun {
                 bw.newLine();
 
                 if (this.failOnError) {
-                    bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp, INPUT pcStatus).");
+                    bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
                     bw.newLine();
-                    bw.write("RETURN.");
+                    bw.write("DELETE PROCEDURE h.");
+                    bw.newLine();
+                    bw.write("RETURN '1'.");
                     bw.newLine();
                 }
 
@@ -390,9 +391,11 @@ public class PCTCompile extends PCTRun {
                 bw.newLine();
             }
 
-            bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp, INPUT pcStatus).");
+            bw.write("RUN finish IN h (INPUT iComp, INPUT iNoComp).");
             bw.newLine();
             bw.write("DELETE PROCEDURE h.");
+            bw.newLine();
+            bw.write("RETURN (IF iNoComp GT 0 THEN '1' ELSE '0').");
             bw.newLine();
             bw.close();
         } catch (IOException e) {

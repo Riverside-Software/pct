@@ -64,8 +64,9 @@ import java.util.Vector;
 
 
 /**
-  * Class for managing Progress library files
-  */
+ * Class for managing Progress library files
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ */
 public class PCTLibrary extends PCT {
     private File destFile = null;
     private String encoding = null;
@@ -74,6 +75,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Adds a set of files to archive.
+     * @param set FileSet
      */
     public void addFileset(FileSet set) {
         filesets.addElement(set);
@@ -81,6 +83,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Library file name to create/update
+     * @param destFile File
      */
     public void setDestFile(File destFile) {
         this.destFile = destFile;
@@ -88,6 +91,7 @@ public class PCTLibrary extends PCT {
 
     /**
      * Codepage to use
+     * @param encoding String
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
@@ -101,6 +105,10 @@ public class PCTLibrary extends PCT {
         this.noCompress = noCompress;
     }
 
+    /**
+     * Do the work
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         ExecTask exec = null;
 

@@ -61,6 +61,10 @@ import java.io.File;
 import java.util.Vector;
 
 
+/**
+ * Object to add a database connection to a PCTRun task
+ * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ */
 public class PCTConnection {
     private String dbName = null;
     private String dbPort = null;
@@ -79,7 +83,7 @@ public class PCTConnection {
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
-     * @param dbName
+     * @param dbName String
      */
     public void setDbName(String dbName) {
         this.dbName = dbName;
@@ -87,7 +91,7 @@ public class PCTConnection {
 
     /**
      * Database directory
-     * @param dbDir
+     * @param dbDir File
      */
     public void setDbDir(File dbDir) {
         this.dbDir = dbDir;
@@ -95,7 +99,7 @@ public class PCTConnection {
 
     /**
      * Port name or number (<CODE>-S</CODE> parameter)
-     * @param dbPort
+     * @param dbPort String
      */
     public void setDbPort(String dbPort) {
         this.dbPort = dbPort;
@@ -111,7 +115,7 @@ public class PCTConnection {
 
     /**
      * Logical name to use (<CODE>-ld</CODE> parameter)
-     * @param logicalName
+     * @param logicalName String
      */
     public void setLogicalName(String logicalName) {
         this.logicalName = logicalName;
@@ -119,7 +123,7 @@ public class PCTConnection {
 
     /**
      * Name of the schema cache file (<CODE>-cache</CODE> parameter)
-     * @param cacheFile
+     * @param cacheFile File
      */
     public void setCacheFile(File cacheFile) {
         this.cacheFile = cacheFile;
@@ -127,7 +131,7 @@ public class PCTConnection {
 
     /**
      * Name of the nameserver to connect to a dataserver (<CODE>-DataService</CODE> parameter)
-     * @param dataService
+     * @param dataService String
      */
     public void setDataService(String dataService) {
         this.dataService = dataService;
@@ -135,7 +139,7 @@ public class PCTConnection {
 
     /**
      * Database type (ORACLE, SQLSERVER or nothing) (<CODE>-dt</CODE> parameter)
-     * @param dbType
+     * @param dbType String
      */
     public void setDbType(String dbType) {
         this.dbType = dbType;
@@ -143,7 +147,7 @@ public class PCTConnection {
 
     /**
      * Host where to access database (<CODE>-H</CODE> parameter)
-     * @param hostName
+     * @param hostName String
      */
     public void setHostName(String hostName) {
         this.hostName = hostName;
@@ -151,7 +155,7 @@ public class PCTConnection {
 
     /**
      * Username needed to access database (<CODE>-U</CODE> parameter)
-     * @param userName
+     * @param userName String
      */
     public void setUserName(String userName) {
         this.userName = userName;
@@ -159,7 +163,7 @@ public class PCTConnection {
 
     /**
      * Password needed to access database (<CODE>-P</CODE> parameter)
-     * @param password
+     * @param password String
      */
     public void setPassword(String password) {
         this.password = password;
@@ -194,8 +198,8 @@ public class PCTConnection {
     }
 
     /**
-     *
-     * @return True if aliases defined for this DB connection
+     * Checks if aliases defined
+     * @return True if aliases defined for this database connection
      */
     public boolean hasAliases() {
         if (aliases == null) {
@@ -207,7 +211,8 @@ public class PCTConnection {
 
     /**
      * Populates a command line with the needed arguments to connect to the specified database
-     * @param cmdLine Command line to populate
+     * @param task Exec task to populate
+     * @throws BuildException Something went wrong
      */
     public void createArguments(ExecTask task) throws BuildException {
         if (this.dbName == null) {
@@ -274,12 +279,17 @@ public class PCTConnection {
     }
 
     /**
-     * Creates Progress code to define aliases
+     * Returns defined aliases for a database connection
+     * @return Vector
      */
     public Vector getAliases() {
         return aliases;
     }
 
+    /**
+     * Returns database name
+     * @return String
+     */
     public String getDbName() {
         return this.dbName;
     }

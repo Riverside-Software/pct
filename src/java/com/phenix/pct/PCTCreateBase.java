@@ -65,10 +65,12 @@ import java.io.File;
   * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
   **/
 public class PCTCreateBase extends PCT {
+    private static final int DEFAULT_BLOCK_SIZE = 8;
+    private static final int DB_NAME_MAX_LENGTH = 11;
     private String dbName = null;
     private File destDir = null;
     private File structFile = null;
-    private int blockSize = 8;
+    private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
     private boolean noSchema = false;
     private boolean overwrite = false;
@@ -130,7 +132,8 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
-     * Executes the task
+     * Do the work
+     * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         ExecTask exec = null;
@@ -140,13 +143,13 @@ public class PCTCreateBase extends PCT {
             throw new BuildException("noInit et noSchema");
         }
 
-        // Checking structure file argument is given 
+        // Checking structure file argument is given
         if (!this.noSchema && (this.structFile == null)) {
             throw new BuildException("No structure file defined");
         }
 
         // Checking length of the database name
-        if (this.dbName.length() > 11) {
+        if (this.dbName.length() > DB_NAME_MAX_LENGTH) {
             throw new BuildException("Database name is longer than 11 characters");
         }
 
