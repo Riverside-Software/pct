@@ -153,6 +153,11 @@ public abstract class PCT extends Task {
                 }
             }
         }
+        
+        // Tries to guess where messages.jar is located
+        if (this.messagesJar == null) {
+            setMessagesJar(new File(dlcJava, "messages.jar"));
+        }
     }
 
     /**
@@ -169,18 +174,14 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * Messages.jar file
+     * Messages.jar file. No verification is done for existence of file, as 
+     * it's available only after 9.1D. See bug #1081206.
      * 
      * @param msgJar File
      * @since 0.7
      */
     public final void setMessagesJar(File msgJar) {
-        if (!msgJar.exists()) {
-            throw new BuildException("ProxygenJar attribute : " + msgJar.toString() + " not found");
-        }
-
-        this.messagesJar = msgJar;
-
+        this.messagesJar = (msgJar.exists() ? msgJar : null);
     }
 
     /**

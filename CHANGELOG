@@ -1,7 +1,9 @@
 Version 0.7 (??/??/????)
 ==============================
  * Added screenshots to website
- * Added PCTGlobalDefine : define preprocessor directives in PCTRun
+ * Added PCTGlobalDefine : define preprocessor directives in PCTRun (bugs remaining!!!)
+ * Bug #1081206 : added messages.jar to classpath in proxygen task (for 9.1d and upper)
+ * Bug #1081209 : in proxygen task, java process is forked
 
 Version 0.6 (11/04/2004)
 ==============================
@@ -14,7 +16,7 @@ Version 0.6 (11/04/2004)
    basedir or nested fileset). Previous behavior was to create an empty library.
  * Added numsep and numdec attributes to PCTRun task
  * Bug #1058733 : multiple assignments for propath in PCTRun
- 
+
 Version 0.5 (08/25/2004)
 ==============================
  * Bug #972486 : changed the way temp files are deleted
@@ -57,7 +59,7 @@ Version 0.4 (01/18/2004)
  * Added PCTDumpIncremental task. Not really tested. (P. BAIRD)
  * Documentation cleanup
  * Added more JUnit tests
- 
+
 Version 0.3b (11/15/2003)
 ==============================
  * Added unit tests (still in development)
@@ -66,7 +68,7 @@ Version 0.3b (11/15/2003)
  * Updated jar task (files were added twice)
  * Added forceCompile attribute to PCTCompile
  * Added com.phenix.pct.PLReader task and documentation
- 
+
 Version 0.3a
 ==============================
  * Changed the way files are handled in the PCTCompile
@@ -83,7 +85,6 @@ Version 0.3 (09/29/2003)
 
 Version 0.2 (07/15/2003)
 ==============================
-
 * Documentation included in tarball & minor changes
 * PCTCreateBase : added destDir attribute
 * PCTCompile : logs how many files were compiled or not
@@ -94,5 +95,4 @@ Version 0.2 (07/15/2003)
 
 Version 0.1 (06/05/2003)
 ========================
-
 * First alpha release
