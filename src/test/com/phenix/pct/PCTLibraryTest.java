@@ -178,7 +178,6 @@ public class PCTLibraryTest extends BuildFileTest {
         PLReader r = new PLReader(pl);
         Vector v = r.getFileList();
         assertTrue(v != null);
-        System.out.println(v.size());
         assertTrue(v.size() == 2);
     }
 }
