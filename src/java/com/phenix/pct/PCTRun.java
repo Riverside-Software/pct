@@ -89,7 +89,8 @@ public class PCTRun extends PCT {
     private int stackSize = 0;
     protected Vector dbConnList = null;
     protected Path propath = null;
-
+	private boolean compileUnderscore = false;
+	
     public PCTRun() {
         super();
 
@@ -122,6 +123,15 @@ public class PCTRun extends PCT {
         this.parameter = param;
     }
 
+	/**
+	 * If files beginning with an underscore should be compiled (-zn option)
+	 * See POSSE documentation for more details
+	 * @param comUnderscore
+	 */
+	public void setCompileUnderscore(boolean compUnderscore) {
+		this.compileUnderscore = compUnderscore;		
+	}
+	
     /**
      * The number of compiled procedure directory entries (-D attribute)
      * @param dirSize int
@@ -322,7 +332,10 @@ public class PCTRun extends PCT {
             exec.createArg().setValue("-tok");
             exec.createArg().setValue(Integer.toString(this.token));
         }
-
+		
+		if (this.compileUnderscore)
+			exec.createArg().setValue("-zn");
+			
         // Parameter
         if (this.parameter != null) {
             exec.createArg().setValue("-param");
@@ -375,7 +388,7 @@ public class PCTRun extends PCT {
             }
 
             bw.write("RUN VALUE('" + this.procedure + "') (INPUT '" + status.getAbsolutePath() +
-                     "').");
+                     "') NO-ERROR.");
             bw.newLine();
             bw.write("QUIT.");
             bw.newLine();
