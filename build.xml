@@ -99,7 +99,7 @@
     <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
   </target>
 
-  <target name="test-build" depends="jar" description="Builds junit tests">
+  <target name="test-build" depends="jar,pbuild" description="Builds junit tests">
     <javac srcdir="${src.test}" destdir="${build}" debug="true">
       <include name="org/apache/tools/ant/*.java"/>
       <include name="com/phenix/pct/*.java"/>
