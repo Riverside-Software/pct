@@ -74,8 +74,8 @@ import java.util.Vector;
  * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
  */
 public class PCTRun extends PCT {
+    // Attributes
     private boolean graphMode = false;
-    protected boolean debug = false;
     private String procedure = null;
     private int inputChars = 0;
     private String cpStream = null;
@@ -87,10 +87,15 @@ public class PCTRun extends PCT {
     private int token = 0;
     private int maximumMemory = 0;
     private int stackSize = 0;
+    protected boolean debug = false;
     protected Vector dbConnList = null;
     protected Path propath = null;
+
+    // Internal use
     protected ExecTask exec = null;
     private boolean compileUnderscore = false;
+    private File initProc = null;
+    private boolean isPrepared = false;
 
     /**
      * Default constructor
@@ -101,10 +106,14 @@ public class PCTRun extends PCT {
 
         try {
             status = File.createTempFile("PCTResult", ".out");
-            if (!this.debug)
-            	status.deleteOnExit();
+            initProc = File.createTempFile("pct_init", ".p");
+
+            if (!this.debug) {
+                status.deleteOnExit();
+                initProc.deleteOnExit();
+            }
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create return status file");
+            throw new BuildException("Unable to create temp files");
         }
     }
 
@@ -133,9 +142,9 @@ public class PCTRun extends PCT {
      * @param debug boolean
      */
     public void setDebug(boolean debug) {
-    	this.debug = debug;
+        this.debug = debug;
     }
-    
+
     /**
      * If files beginning with an underscore should be compiled (-zn option)
      * See POSSE documentation for more details
@@ -162,7 +171,7 @@ public class PCTRun extends PCT {
     }
 
     /**
-     * Startup procedure (-p attribute)
+     * Procedure to be run (not -p param, this parameter is always pct_initXXX.p)
      * @param procedure String
      */
     public void setProcedure(String procedure) {
@@ -262,23 +271,12 @@ public class PCTRun extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        this.run();
-    }
+        if (!this.isPrepared) {
+            this.prepareExecTask();
+        }
 
-    /**
-     * Prepare the work
-     * @throws BuildException
-     */
-    protected void prepare() throws BuildException {
-        exec = launchTask();
-    }
-
-    /**
-     * Do the work
-     * @throws BuildException Something went wrong
-     */
-    public void run() throws BuildException {
-        this.prepare();
+        this.createInitProcedure();
+        this.setExecTaskParams();
         exec.execute();
         exec = null;
 
@@ -294,18 +292,27 @@ public class PCTRun extends PCT {
         } catch (FileNotFoundException fnfe) {
         } catch (IOException ioe) {
         } catch (NumberFormatException nfe) {
-            throw new BuildException("Progress procedure failed");
+            throw new BuildException("Progress procedure failed - No return value");
         }
     }
 
-    private ExecTask launchTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres"));
-        File f = this.createInitProcedure();
+    /**
+     * Creates and initialize
+     * @throws BuildException
+     */
+    protected void prepareExecTask() throws BuildException {
+        if (!this.isPrepared) {
+            exec = (ExecTask) getProject().createTask("exec");
+            exec.setOwningTarget(this.getOwningTarget());
+            exec.setTaskName(this.getTaskName());
+            exec.setDescription(this.getDescription());
+        }
 
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        this.isPrepared = true;
+    }
+
+    private void setExecTaskParams() {
+        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres"));
 
         exec.setExecutable(a.toString());
 
@@ -325,7 +332,7 @@ public class PCTRun extends PCT {
 
         // Startup procedure
         exec.createArg().setValue("-p");
-        exec.createArg().setValue(f.getAbsolutePath());
+        exec.createArg().setValue(this.initProc.getAbsolutePath());
 
         // Max length of a line
         if (this.inputChars != 0) {
@@ -376,17 +383,11 @@ public class PCTRun extends PCT {
             exec.createArg().setValue("-param");
             exec.createArg().setValue(this.parameter);
         }
-
-        return exec;
     }
 
-    private File createInitProcedure() throws BuildException {
+    private void createInitProcedure() throws BuildException {
         try {
-            File f = File.createTempFile("pct_init", ".p");
-            if (!this.debug)
-            	f.deleteOnExit();
-
-            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
 
             bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?.");
             bw.newLine();
@@ -424,6 +425,7 @@ public class PCTRun extends PCT {
                 bw.newLine();
             }
 
+            // TODO : vérifier que le programme compile avant de le lancer 
             bw.write("RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
             bw.newLine();
             bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
@@ -441,8 +443,6 @@ public class PCTRun extends PCT {
             bw.write("QUIT.");
             bw.newLine();
             bw.close();
-
-            return f;
         } catch (IOException ioe) {
             throw new BuildException();
         }
