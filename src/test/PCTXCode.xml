@@ -56,10 +56,6 @@
     </PCTXCode>
   </target>
   <target name="test5bis">
-    <echo file="sandbox/test.p">
-      MESSAGE "Hello world!".
-      RETURN "0".
-    </echo>
     <PCTXCode key="foobar" destDir="build" dlcHome="${env.DLC}">
       <fileset dir="sandbox">
         <include name="test.p"/>
@@ -67,4 +63,21 @@
     </PCTXCode>
   </target>
 
+  <!-- Multiple files -->
+  <target name="test6">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      MESSAGE "Hello world n°2 !".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="sandbox">
+        <include name="*.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  
 </project>
