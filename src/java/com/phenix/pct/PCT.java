@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
 
@@ -62,19 +63,18 @@ import java.io.File;
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
  * bin/java/etc are located.
  * 
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET </a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  * @version $Revision$
  * @todo dlcHome should get DLC environment variable content at startup and could be overridden with
  *       setDlcHome
  */
 public abstract class PCT extends Task {
+    private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/*.jar";
+    
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
-    private File proxygenJar = null;
-    private File progressJar = null;
-    private File messagesJar = null;
-
+    
     /**
      * Progress installation directory
      * 
@@ -130,71 +130,6 @@ public abstract class PCT extends Task {
         }
 
         this.dlcJava = dlcJava;
-
-        // Tries to guess where proxygen.zip is located
-        if (this.proxygenJar == null) {
-            try {
-                setProxygenJar(new File(dlcJava, "proxygen.zip"));
-            } catch (BuildException be) {
-            }
-        }
-
-        // Tries to guess where progress.[zip|jar] is located
-        if (this.progressJar == null) {
-            try {
-                setProgressJar(new File(dlcJava, "progress.zip"));
-            } catch (BuildException be) {
-            }
-
-            if (this.progressJar == null) {
-                try {
-                    setProgressJar(new File(dlcJava, "progress.jar"));
-                } catch (BuildException be) {
-                }
-            }
-        }
-        
-        // Tries to guess where messages.jar is located
-        if (this.messagesJar == null) {
-            setMessagesJar(new File(dlcJava, "messages.jar"));
-        }
-    }
-
-    /**
-     * Proxygen.jar file
-     * 
-     * @param pxgJar File
-     */
-    public final void setProxygenJar(File pxgJar) {
-        if (!pxgJar.exists()) {
-            throw new BuildException("ProxygenJar attribute : " + pxgJar.toString() + " not found");
-        }
-
-        this.proxygenJar = pxgJar;
-    }
-
-    /**
-     * Messages.jar file. No verification is done for existence of file, as 
-     * it's available only after 9.1D. See bug #1081206.
-     * 
-     * @param msgJar File
-     * @since 0.7
-     */
-    public final void setMessagesJar(File msgJar) {
-        this.messagesJar = (msgJar.exists() ? msgJar : null);
-    }
-
-    /**
-     * Progress.zip file
-     * 
-     * @param pscJar File
-     */
-    public final void setProgressJar(File pscJar) {
-        if (!pscJar.exists()) {
-            throw new BuildException("ProgressJar attribute : " + pscJar.toString() + " not found");
-        }
-
-        this.progressJar = pscJar;
     }
 
     /**
@@ -207,25 +142,6 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * Returns the needed Jar File or directory to run Proxygen tasks
-     * 
-     * @return File
-     */
-    protected final File getProxygenJar() {
-        return this.proxygenJar;
-    }
-
-    /**
-     * Returns the needed Jar File or directory to run Proxygen tasks
-     * 
-     * @return File
-     * @since 0.7
-     */
-    protected final File getMessagesJar() {
-        return this.messagesJar;
-    }
-
-    /**
      * Returns Progress executables directory
      * 
      * @return File
@@ -233,15 +149,6 @@ public abstract class PCT extends Task {
      */
     protected final File getDlcBin() {
         return this.dlcBin;
-    }
-
-    /**
-     * Returns the needed Jar/Zip file or directory to run various Progress/Java tasks
-     * 
-     * @return File
-     */
-    protected final File getProgressJar() {
-        return this.progressJar;
     }
 
     /**
@@ -260,6 +167,20 @@ public abstract class PCT extends Task {
         return f;
     }
 
+    /**
+     * Returns a fileset containing every JAR/ZIP files needed for proxygen task
+     *
+     * @since 0.8
+     * @return FileSet
+     */
+    protected FileSet getJavaFileset() throws BuildException {
+        FileSet fs = new FileSet();
+        fs.setDir(this.dlcJava);
+        fs.setIncludes(JAVA_CP);
+        
+        return fs;
+    }
+    
     /**
      * This method has to be overridden
      */

@@ -62,7 +62,7 @@ import java.io.File;
 
 /**
  * Proxygen task
- * @author <a href="mailto:gilles.querret@nerim.net">Gilles QUERRET</a>
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTProxygen extends PCT {
     private File srcFile = null;
@@ -110,10 +110,6 @@ public class PCTProxygen extends PCT {
             throw new BuildException("Progress installation directory not defined");
         }
 
-        if (this.getProgressJar() == null) {
-            throw new BuildException("progress.[jar|zip] not found");
-        }
-
         // Creates a new Java task to launch proxygen task
         Java pxg = (Java) getProject().createTask("java");
 
@@ -129,12 +125,9 @@ public class PCTProxygen extends PCT {
 
         pxg.setClassname("com.progress.open4gl.proxygen.Batch");
 
-        pxg.createClasspath().setPath(this.getProgressJar().toString());
-        // Bug #1081206 : messages.jar needed as of 9.1D
-        if (this.getMessagesJar() != null) {
-            pxg.createClasspath().setPath(this.getMessagesJar().toString());
-        }
-
+        // Bug #1114731 : new way of handling JAR dependencies
+        pxg.createClasspath().addFileset(this.getJavaFileset());
+       
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
         Environment.Variable var = new Environment.Variable();
