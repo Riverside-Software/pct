@@ -124,12 +124,15 @@ public class PCTLibrary extends PCT {
         // Parses filesets
         for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
             FileSet fs = (FileSet) e.nextElement();
-
+            File f = null;
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
             for (int i = 0; i < dsfiles.length; i++) {
-                exec = addFileTask(dsfiles[i], fs.getDir(this.getProject()));
-                exec.execute();
+                f = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                if (f.lastModified() > this.destFile.lastModified()) {
+                    exec = addFileTask(dsfiles[i], fs.getDir(this.getProject()));
+                    exec.execute();
+                }
             }
         }
 
