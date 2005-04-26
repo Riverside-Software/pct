@@ -411,7 +411,9 @@ PROCEDURE importXref.
             IF FIRST-OF (ttXref.xObjID) THEN DO:
                 FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
                 IF (NOT AVAILABLE TimeStamps) THEN DO:
-                    ASSIGN cSearch = SEARCH(ttXref.xObjID).
+                	ASSIGN cSearch = SEARCH(SUBSTRING(ttXref.xObjID, 1, R-INDEX(ttXref.xObjID, '.')) + 'r').
+                	IF (cSearch EQ ?) THEN
+                        ASSIGN cSearch = SEARCH(ttXref.xObjID).
                     CREATE TimeStamps.
                     ASSIGN TimeStamps.ttFile = ttXref.xObjID
                            TimeStamps.ttFullPath = (IF cSearch EQ ? THEN 'NOT FOUND' ELSE cSearch).
