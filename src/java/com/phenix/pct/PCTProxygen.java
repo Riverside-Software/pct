@@ -83,7 +83,7 @@ public class PCTProxygen extends PCT {
      */
     public void setWorkingDirectory(File workingDir) {
         if (!workingDir.exists()) {
-            throw new BuildException("work dir pas bon");
+            throw new BuildException("Working directory doesn't exist");
         }
 
         this.workingDirectory = workingDir;
@@ -131,7 +131,11 @@ public class PCTProxygen extends PCT {
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
         Environment.Variable var = new Environment.Variable();
-        var.setKey("PXGFile");
+        if (this.srcFile.toString().endsWith(".xpxg"))
+            var.setKey("XPXGFile");
+        else
+            var.setKey("PXGFile");
+            
         var.setValue(this.srcFile.toString());
         pxg.addSysproperty(var);
 
