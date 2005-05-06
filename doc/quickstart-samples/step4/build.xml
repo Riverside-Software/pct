@@ -1,67 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="MyProject" default="build" basedir=".">
-  <property environment="env"/>
-  <taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar"/>
-    <target name="build-ade" description="Compilation outils Progress sans custom">
-      <PCTCompile destDir="${build-dlc}" graphicalMode="true" dlcHome="${DLC}" md5="${md5}" minSize="${minSize}" cpstream="ibm850" compileUnderscore="true">
-        <fileset dir="${src-dlc}/src">
-          <include name="adm2/**/*.p"/>
-          <include name="adm2/**/*.w"/>
-          <exclude name="adm2/template/**"/>
-        </fileset>
-        <PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}"/> 
-        <propath>
-          <pathelement location="${src-dlc}"/>
-          <pathelement location="${src-dlc}/src"/>
-        </propath>
-      </PCTCompile>
-      <copy toDir="${build-dlc}">
-        <fileset dir="${src-dlc}/src">
-          <include name="adm2/image/**"/>
-          <include name="adm2/template/**"/>
-        </fileset>
-      </copy>
-    </target>
+  <property environment="env" />
+  <taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar" />
 
-    <target name="build-ade-custom" depends="build-ade" description="Compilation outils Progress avec custom">
-      <PCTCompile destDir="${build-dlc-custom}" graphicalMode="true" dlcHome="${DLC}" md5="${md5}" minSize="${minSize}" cpstream="ibm850" compileUnderscore="true">
-        <fileset dir="${src-dlc}/src">
-          <include name="adm2/*.p"/>
-          <include name="adm2/*.w"/>
-        </fileset>
-        <fileset dir="${src-dlc-custom}/src">
-          <include name="adecomm/*.w"/>
-          <include name="adm2/**/*.p"/>
-          <include name="adm2/**/*.w"/>
-          <exclude name="adm2/template/**"/>
-        </fileset>
-        <PCTConnection dbName="comeon" dbDir="${db}" singleUser="${singleUser}" logicalName="comeon9"/> 
-        <propath>
-          <pathelement location="${src-dlc-custom}"/>
-          <pathelement location="${src-dlc}"/>
-          <pathelement location="${src-dlc}/src"/>
-          <pathelement location="${src}"/> 
-        </propath>
-      </PCTCompile>
-      <copy toDir="${build-dlc-custom}">
-        <fileset dir="${src-dlc-custom}/src">
-          <include name="adm2/image/**"/>
-          <include name="adm2/template/**"/>
-        </fileset>
-      </copy>
-    </target>
+  <target name="build-ade" description="Standard ADM2">
+    <mkdir dir="build-ade" />
+    <PCTCreateBase dbName="db" destDir="db" schemaFile="ade/temp-db.df" dlcHome="${env.DLC}" />
+    <PCTCompile destDir="build-ade" dlcHome="${env.DLC}">
+      <fileset dir="ade/src">
+        <include name="adm2/**/*.p" />
+        <include name="adm2/**/*.w" />
+        <exclude name="adm2/template/**" />
+      </fileset>
+      <PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" />
+      <propath>
+        <pathelement location="ade" />
+        <pathelement location="ade/src" />
+      </propath>
+    </PCTCompile>
+    <copy toDir="ade">
+      <fileset dir="ade/src">
+        <include name="adm2/image/**" />
+        <include name="adm2/template/**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="build-ade-custom" depends="build-ade" description="Customized ADM2">
+    <mkdir dir="build-ade-custom" />
+    <PCTCompile destDir="build-ade-custom" dlcHome="${env.DLC}">
+      <fileset dir="ade/src">
+        <include name="adm2/*.p" />
+        <include name="adm2/*.w" />
+      </fileset>
+      <fileset dir="ade-custom/src">
+        <include name="adm2/**/*.p" />
+        <include name="adm2/**/*.w" />
+        <exclude name="adm2/template/**" />
+      </fileset>
+      <PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" />
+      <propath>
+        <pathelement location="ade-custom" />
+        <pathelement location="ade" />
+        <pathelement location="ade/src" />
+      </propath>
+    </PCTCompile>
+    <copy toDir="build-ade-custom">
+      <fileset dir="ade-custom/src">
+        <include name="adm2/image/**" />
+        <include name="adm2/template/**" />
+      </fileset>
+    </copy>
+  </target>
 
   <target name="build" description="Builds source files">
-    <mkdir dir="build"/>
-      <PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/>
-      <PCTCompile destDir="build" dlcHome="${env.DLC}">
-        <propath>
-          <pathelement location="pdfinc-src"/>
-        </propath>
-        <fileset dir="src">
-          <include name="*.p"/>
-        </fileset>
-      <PCTConnection dbName="db" dbDir="db" singleUser="true"/>
+    <mkdir dir="build" />
+    <PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}" />
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement location="pdfinc-src" />
+      </propath>
+      <fileset dir="src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="db" dbDir="db" singleUser="true" />
     </PCTCompile>
   </target>
 </project>

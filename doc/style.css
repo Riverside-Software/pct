@@ -8,9 +8,10 @@ pre {
 }
 
 pre#deprecated {
-    background-color: #99ccff;
+	background-color: #99ccff;
 	text-decoration: line-through;
 }
+
 div {
     background: white;
     color: black;
@@ -83,6 +84,7 @@ div.Menu2 a:hover {
     background: #eeeeee;
     text-decoration: none;
 }
+
 div.LastUpdate {
     width: 100%;
     font-size: 80%;
@@ -147,15 +149,25 @@ img#sflogoimg {
     border: 0px;
 }
 
-pre.source {
-	background: #aaaaaa;
+pre {
+	margin-left: 2em;
+  overflow: auto;
+  border: 1px solid black;
+  padding: 1em;
 }
 
-pre.output {
+pre.source {
+	background: #cccccc;
 	color: darkblue;
 }
 
-tt.ln {
-	color: green;
-	font-weight: 700;
+pre.output {
+	background: #cccccc;
+	color: darkred;
+}
+
+span#new {
+  color: red;
+  font-size: 90%;
+  font-weigth: 700;
 }
