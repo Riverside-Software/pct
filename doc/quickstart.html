@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="fr" />
-<title>PCT documentation - Installation</title>
+<title>PCT documentation - Quick start</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 
@@ -39,7 +39,7 @@
   <ul>
     <li><a href="manual.html">Installation</a></li>
     <li><a href="PLReader.html">PLReader</a></li>
-    <li><a href="quickstart.html">Quick start</a></li>
+    <li><a href="quickstart.html">Quick start</a> <span id="new">!!NEW!!</span></li>
   </ul>
   <h1>Tasks</h1>
   <ul>
@@ -78,33 +78,37 @@ for sources, and a subdirectory called <em>build</em> for build files.
 </p>
 <p>
 We'll now create one or more procedures in the <em>src</em> subdir. For example,
-in <em>MyProject/src/test.p</em> :<pre class="source">
-<tt class="ln"> 1</tt>  MESSAGE "This is a test file".
+in <em>MyProject/src/test.p</em> :</p><pre class="source">
+MESSAGE "This is a test file".
 </pre>
-</p>
-<p>
-And now, in <em>MyProject/build.xml</em> :<pre class="source">
-<tt class="ln"> 1</tt>  &lt;?xml version="1.0" encoding="utf-8"?&gt;
-<tt class="ln"> 2</tt>  &lt;project name="MyProject" default="build" basedir="."&gt;
-<tt class="ln"> 3</tt>    &lt;property environment="env"/&gt;
-<tt class="ln"> 4</tt>    &lt;taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar"/&gt;  
-<tt class="ln"> 5</tt>    &lt;target name="build" description="Builds source files">
-<tt class="ln"> 6</tt>      &lt;mkdir dir="build"/&gt;
-<tt class="ln"> 7</tt>      &lt;PCTCompile destDir="build" dlcHome="${env.DLC}"&gt;
-<tt class="ln"> 8</tt>        &lt;fileset dir="src"&gt;
-<tt class="ln"> 9</tt>          &lt;include name="*.p"/&gt;
-<tt class="ln">10</tt>        &lt;/fileset&gt;
-<tt class="ln">11</tt>      &lt;/PCTCompile&gt;
-<tt class="ln">12</tt>    &lt;/target&gt;
-<tt class="ln">13</tt>  &lt;/project&gt;
+
+<p>And now, in <em>MyProject/build.xml</em> :</p>
+<pre class="source">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;project name="MyProject" default="build" basedir="."&gt;
+
+&lt;property environment="env" /&gt;
+
+&lt;taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar" /&gt;
+
+&lt;target name="build" description="Builds source files"&gt;
+  &lt;mkdir dir="build"/&gt;
+  &lt;PCTCompile destDir="build" dlcHome="${env.DLC}"&gt;
+    &lt;fileset dir="src"&gt;
+      &lt;include name="*.p" /&gt;
+    &lt;/fileset&gt;
+  &lt;/PCTCompile&gt;
+&lt;/target&gt;
+&lt;/project&gt;
 </pre>
-</p>
+
 <p>
 Open a shell, define two environment variables, DLC and PCT_HOME, pointing to
 Progress base directory and PCT base directory. Ant also assumes that ANT_HOME,
 JAVA_HOME are defined, but that's part of Ant installation.
 Then cd to the MyProject directory, and then type <code>ant build</code>.
-You should get the following :<pre class="output">
+You should get the following :</p>
+<pre class="output">
 Buildfile: build.xml
 
 build:
@@ -115,56 +119,61 @@ build:
 BUILD SUCCESSFUL
 Total time: 1 seconds
 </pre>
-And you should have a subdir called build, containing a test.r file.
-</p>
-<p>
-A few words on this :<ul>
-<li>line 3 tells Ant to load environment variables so that
+<p>And you should have a subdir called build, containing a test.r file.</p>
+
+<p>A few words on this :</p><ul>
+<li>Line 4 tells Ant to load environment variables so that
 they could be accessed with ${env.VARIABLE_NAME} : useful for DLC and PCT_HOME...</li>
-<li>Line 4 tells Ant to load the mapping between tasks name (e.g. PCTCompile) and Java
+<li>Line 6 tells Ant to load the mapping between tasks name (e.g. PCTCompile) and Java
 class files (e.g. com.phenix.pct.PCTCompile) : this is mandatory to have a working
 PCT.</li>
-<li>Lines 7 to 11 tells PCT to compile every .p file in the src directory, and then
+<li>Lines 10 to 14 tells PCT to compile every .p file in the src directory, and then
 put them in the destDir directory.</li>
 </ul>
-</p>
+
 <p>
 Download the <a href="sample1.zip">sample</a>
 </p>
 
-<h2>Step 2 : adding a database [Download <a href="sample3.zip">sample</a>]</h2>
+
+
+<h2>Step 2 : adding a database [Download <a href="sample2.zip">sample</a>]</h2>
 <p>
 We'll create a subdir called db, containing the database dump file (called db.df).
-Just create this file :<pre class="source"">
-<tt class="ln"> 1</tt>  ADD TABLE "MyTable"
-<tt class="ln"> 2</tt>    AREA "Schema Area"
-<tt class="ln"> 3</tt>    DUMP-NAME "MyTable"
-<tt class="ln"> 4</tt>  
-<tt class="ln"> 5</tt>  ADD FIELD "Fld1" OF "MyTable" AS character 
-<tt class="ln"> 6</tt>  
-<tt class="ln"> 7</tt>  ADD FIELD "Fld2" OF "MyTable" AS character 
-<tt class="ln"> 8</tt>  
-<tt class="ln"> 9</tt>  ADD INDEX "MyTable-PK" ON "MyTable" 
-<tt class="ln">10</tt>    AREA "Schema Area"
-<tt class="ln">11</tt>    UNIQUE
-<tt class="ln">12</tt>    PRIMARY
-<tt class="ln">13</tt>    INDEX-FIELD "Fld1" ASCENDING 
+Just create this file :</p>
+<pre class="source"">
+ADD TABLE "MyTable"
+  AREA "Schema Area"
+  DUMP-NAME "MyTable"
+
+ADD FIELD "Fld1" OF "MyTable" AS character 
+
+ADD FIELD "Fld2" OF "MyTable" AS character 
+
+ADD INDEX "MyTable-PK" ON "MyTable" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Fld1" ASCENDING 
 </pre>
-This should create a really simple table, with two fields, and a primary unique index.
-</p>
-<p>
-Now, we'll create a new procedure, called src/test2.p :<pre class="source">
-<tt class="ln"> 1</tt>  CREATE MyTable.
-<tt class="ln"> 2</tt>  ASSIGN MyTable.Fld1 = "ABC"
-<tt class="ln"> 3</tt>         MyTable.Fld2 = "DEF".
+<p>This should create a really simple table, with two fields, and a primary unique index.</p>
+
+<p>Now, we'll create a new procedure, called src/test2.p :</p>
+<pre class="source">
+CREATE MyTable.
+ASSIGN MyTable.Fld1 = "ABC"
+       MyTable.Fld2 = "DEF".
 </pre>
-Now, add the following line after line 6 of the previous build.xml :<pre class="source">
-<tt class="ln"> 1</tt>      &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
+<p>Now, add the following line after line 8 of the previous build.xml :</p>
+<pre class="source">
+&lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
 </pre>
-and this one after line 10 :<pre class="source"">
-<tt class="ln"> 1</tt>        &lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
+<p>and this one after line 10 :</p>
+<pre class="source"">
+&lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
 </pre>
-Now run ant build from the shell prompt. You should get the following :<pre class="output">
+<p>Now run ant build from the shell prompt. You should get the following :</p>
+<pre class="output">
 Buildfile: build.xml
 
 build:
@@ -209,76 +218,98 @@ build:
 BUILD SUCCESSFUL
 Total time: 1 seconds
 </pre>
-</p>
 
 <h2>Step 3 : dealing with propath [Download <a href="sample3.zip">sample</a>]</h2>
 <p>Imagine you'd like to work with PDFInclude : it would be a good idea to separate
 your own source code from PDFInclude source code, so that upgrading to a newer version
 would just be a drop of the new source files. So in project tree, you add a pdfinc-src
 directory, and include {pdfinc.i} in your programs. How to add this dir to your propath ?
-Quite simple, just add a <code>propath</code> directive in you PCTCompile task (line 9) :<pre class="source">
-<tt class="ln"> 1</tt>        &lt;propath&gt;
-<tt class="ln"> 2</tt>          &lt;pathelement location="pdfinc-src"/&gt;
-<tt class="ln"> 3</tt>        &lt;/propath&gt;
+Quite simple, just add a <code>propath</code> directive in you PCTCompile task (line 9) :</p>
+<pre class="source">
+&lt;propath&gt;
+  &lt;pathelement location="pdfinc-src"/&gt;
+&lt;/propath&gt;
 </pre>
-Compile as usual, using <code>ant build</code>, then execute build/test3.r : you should
-get<pre class="output">
+<p>Compile as usual, using <code>ant build</code>, then execute build/test3.r : you should
+get</p>
+<pre class="output">
 Message from pdfinc.i
 Message from test3.p
 </pre>
-</p>
+
 
 <h2>Step 4 : dealing with ADM2 and customs [Download <a href="sample4.zip">sample</a>]</h2>
 <p>
 When working with ADM2, it's really a good idea to have your own copy in your project, so that
 you can upgrade your Progress version without upgrading your ADM2 version. Here is how I proceed :
 in my project tree, I create two subdirectories, called <code>ade</code> and <code>ade-custom</code>.
-The first one contains everything I import directly from Progress, and is only modified when I
+The first one contains everything I import directly from Progress directory, and is only modified when I
 upgrade ADM2 version, the second one contains my own customizations.
 </p>
-<p>
-I add two targets to compile both the non-customized and the customized versions :<pre class="source">
-  <target name="build-ade-custom" depends="build-ade">
-    <PCTCompile destDir="${build-dlc-custom}" graphicalMode="true" dlcHome="${DLC}" md5="${md5}" minSize="${minSize}" cpstream="ibm850" compileUnderscore="true">
-      <fileset dir="${src-dlc}/src">
-        <include name="adm2/*.p"/>
-        <include name="adm2/*.w"/>
-      </fileset>
-      <fileset dir="${src-dlc-custom}/src">
-        <include name="adecomm/*.w"/>
-        <include name="adm2/**/*.p"/>
-        <include name="adm2/**/*.w"/>
-        <exclude name="adm2/template/**"/>
-      </fileset>
-      <propath>
-        <pathelement location="${src-dlc-custom}"/>
-        <pathelement location="${src-dlc}"/>
-        <pathelement location="${src-dlc}/src"/>
-        <pathelement location="${src}"/> 
-      </propath>
-    </PCTCompile>
-    <copy toDir="${build-dlc-custom}">
-      <fileset dir="${src-dlc-custom}/src">
-        <include name="adm2/image/**"/>
-        <include name="adm2/template/**"/>
-      </fileset>
-    </copy>
-  </target>
-
+<p>Here is the target to compile the standard ADM2 :</p>
+<pre class="source">
+  &lt;target name="build-ade" description="Standard ADM2"&gt;
+    &lt;mkdir dir="build-ade" /&gt;
+    &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="ade/temp-db.df" dlcHome="${env.DLC}" /&gt;
+    &lt;PCTCompile destDir="build-ade" dlcHome="${env.DLC}"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/**/*.p" /&gt;
+        &lt;include name="adm2/**/*.w" /&gt;
+        &lt;exclude name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+      &lt;PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" /&gt;
+      &lt;propath&gt;
+        &lt;pathelement location="ade" /&gt;
+        &lt;pathelement location="ade/src" /&gt;
+      &lt;/propath&gt;
+    &lt;/PCTCompile&gt;
+    &lt;copy toDir="ade"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/image/**" /&gt;
+        &lt;include name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+    &lt;/copy&gt;
+  &lt;/target&gt;
 </pre>
-</p>
+<p>And the target to compile your customized version of ADM2 :</p>
+<pre class="source">
+  &lt;target name="build-ade-custom" depends="build-ade" description="Customized ADM2"&gt;
+    &lt;mkdir dir="build-ade-custom" /&gt;
+    &lt;PCTCompile destDir="build-ade-custom" dlcHome="${env.DLC}"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/*.p" /&gt;
+        &lt;include name="adm2/*.w" /&gt;
+      &lt;/fileset&gt;
+      &lt;fileset dir="ade-custom/src"&gt;
+        &lt;include name="adm2/**/*.p" /&gt;
+        &lt;include name="adm2/**/*.w" /&gt;
+        &lt;exclude name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+      &lt;PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" /&gt;
+      &lt;propath&gt;
+        &lt;pathelement location="ade-custom" /&gt;
+        &lt;pathelement location="ade" /&gt;
+        &lt;pathelement location="ade/src" /&gt;
+      &lt;/propath&gt;
+    &lt;/PCTCompile&gt;
+    &lt;copy toDir="build-ade-custom"&gt;
+      &lt;fileset dir="ade-custom/src"&gt;
+        &lt;include name="adm2/image/**" /&gt;
+        &lt;include name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+    &lt;/copy&gt;
+  &lt;/target&gt;
+</pre>
+
 
 <h2>Step 5 : let's proxygen... [Download <a href="sample5.zip">sample</a>]</h2>
-<p>
-</p>
+<p>WORK IN PROGRESS</p>
+<p>A use case for PCTProxygen task.</p>
 
 <h2>Step 6 : a cup of Java ? [Download <a href="sample6.zip">sample</a>]</h2>
-<p>
-</p>
+<p>WORK IN PROGRESS</p>
+<p>On how to write Java classes which depends on proxygen classes</p>
 
-<h2>Step 7 : let's web... [Download <a href="sample7.zip">sample</a>]</h2>
-<p>
-</p>
 </div>
 
 <div class="LastUpdate">
