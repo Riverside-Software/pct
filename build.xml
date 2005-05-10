@@ -26,8 +26,8 @@
   <property name="javac.target" value="1.2"/>
 
   <target name="init" description="Creates required directories">
-    <mkdir dir="${build}"/>
-    <mkdir dir="${dist}"/>
+    <mkdir dir="${build}" />
+    <mkdir dir="${dist}" />
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
@@ -94,11 +94,12 @@
   </target>
 
   <target name="test-build" depends="pbuild" description="Builds junit tests">
-    <javac srcdir="${src.test}" destdir="${build}" debug="true">
+    <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
       <include name="org/apache/tools/ant/*.java"/>
       <include name="com/phenix/pct/*.java"/>
       <classpath>
-        <pathelement location="${build}"/>
+        <pathelement location="${build}" />
+        <pathelement location="junit.jar" />
       </classpath>
     </javac>
     <copy todir="${build}">
@@ -111,7 +112,8 @@
   <target name="test" depends="test-build" description="Starts tests">
     <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${build}">
       <classpath>
-        <pathelement location="${build}"/>
+        <pathelement location="${build}" />
+        <filelist dir="." files="junit.jar" />
       </classpath>
 
       <formatter type="brief" usefile="false"/>
