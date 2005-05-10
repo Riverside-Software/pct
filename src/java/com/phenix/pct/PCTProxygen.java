@@ -154,6 +154,13 @@ public class PCTProxygen extends PCT {
         var4.setValue(this.getDlcHome().toString());
         pxg.addEnv(var4);
 
+        // TODO : check if this sysproperty is mandatory. It's used in $DLC/bin/bproxygen.bat
+        // but running without it works fine
+//        Environment.Variable var5 = new Environment.Variable();
+//        var5.setKey("Proxygen.FromGUI");
+//        var5.setValue("no");
+//        pxg.addSysproperty(var5);
+        
         // Don't use executeJava and get return code as Progress doesn't know what a return value is
         pxg.execute();
     }
