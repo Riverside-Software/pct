@@ -1,3 +1,7 @@
+Version 0.9 (??/??/????)
+==============================
+ * Upgrading to ANT 1.6.3
+
 Version 0.8 (05/13/2005)
 ==============================
  * PCT can be compiled with JDK 1.5 (just added source attribute in javac task)
