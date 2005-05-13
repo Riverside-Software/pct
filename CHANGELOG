@@ -1,4 +1,4 @@
-Version 0.8 (??/??/????)
+Version 0.8 (05/13/2005)
 ==============================
  * PCT can be compiled with JDK 1.5 (just added source attribute in javac task)
  * Bug #1114731 : new way of handling JAR dependencies
