@@ -110,10 +110,11 @@
   </target>
   
   <target name="test" depends="test-build" description="Starts tests">
+    
     <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${build}">
       <classpath>
         <pathelement location="${build}" />
-        <filelist dir="." files="junit.jar" />
+<!--        <fileset dir="." files="junit.jar" /> -->
       </classpath>
 
       <formatter type="brief" usefile="false"/>
@@ -131,7 +132,7 @@
     <javadoc destdir="${doc}" useexternalfile="yes">
       <packageset dir="${src.java}"/>
       <group title="PCT Core" packages="com.phenix.pct.*"/>
-      <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <bottom>Copyright &#169; 2003-2005 Gilles QUERRET. All Rights Reserved.</bottom>
       <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
       <!-- Seems down -->
       <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
