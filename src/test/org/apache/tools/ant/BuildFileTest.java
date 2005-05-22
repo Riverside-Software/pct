@@ -1,5 +1,5 @@
 /*
- * Copyright  2001-2004 The Apache Software Foundation
+ * Copyright  2001-2005 The Apache Software Foundation
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public abstract class BuildFileTest extends TestCase {
 
     /**
      * Assert that only the given message has been logged with a
-     * priority &gt;= INFO when running the given target.
+     * priority &lt;= INFO when running the given target.
      */
     protected void expectLog(String target, String log) {
         executeTarget(target);
@@ -82,8 +82,19 @@ public abstract class BuildFileTest extends TestCase {
     }
 
     /**
+     * Assert that the given substring is in the output messages
+     * @since Ant1.7
+     */
+
+    protected void assertOutputContaining(String substring) {
+        String realOutput = getOutput();
+        assertTrue("expecting output to contain \"" + substring + "\" output was \""
+                + realOutput + "\"",
+                realOutput.indexOf(substring) >= 0);
+    }
+    /**
      * Assert that the given message has been logged with a priority
-     * &gt;= INFO when running the given target.
+     * &lt;= INFO when running the given target.
      */
     protected void expectLogContaining(String target, String log) {
         executeTarget(target);
@@ -103,7 +114,7 @@ public abstract class BuildFileTest extends TestCase {
 
     /**
      * Assert that the given message has been logged with a priority
-     * &gt;= DEBUG when running the given target.
+     * &gt;= VERBOSE when running the given target.
      */
     protected void expectDebuglog(String target, String log) {
         executeTarget(target);
@@ -420,7 +431,7 @@ public abstract class BuildFileTest extends TestCase {
 
         /**
          *  Fired after the last target has finished. This event
-         *  will still be thrown if an error occured during the build.
+         *  will still be thrown if an error occurred during the build.
          *
          *  @see BuildEvent#getException()
          */
@@ -438,7 +449,7 @@ public abstract class BuildFileTest extends TestCase {
 
         /**
          *  Fired when a target has finished. This event will
-         *  still be thrown if an error occured during the build.
+         *  still be thrown if an error occurred during the build.
          *
          *  @see BuildEvent#getException()
          */
@@ -457,7 +468,7 @@ public abstract class BuildFileTest extends TestCase {
 
         /**
          *  Fired when a task has finished. This event will still
-         *  be throw if an error occured during the build.
+         *  be throw if an error occurred during the build.
          *
          *  @see BuildEvent#getException()
          */
