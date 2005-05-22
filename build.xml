@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="dist">
-  
+
   <!-- Give user a chance to override without editing this file
        (and without typing -D each time it compiles it) -->
-  <property file=".pct.properties"/>
-  <property file="${user.home}/.pctrc"/>
-  <property environment="env"/>
-  
+  <property file=".pct.properties" />
+  <property file="${user.home}/.pctrc" />
+  <property environment="env" />
+
   <!-- Some directories definitions -->
-  <property name="src.java" value="src/java"/>
-  <property name="src.progress" value="src/progress"/>
-  <property name="src.test" value="src/test"/>
-  <property name="build" value="build"/>
-  <property name="dist" value="lib"/>
-  <property name="doc" value="javadoc"/>
-  <property name="check" value="check"/>  
-  <property name="website" value="website"/>
-  
+  <property name="src.java" value="src/java" />
+  <property name="src.progress" value="src/progress" />
+  <property name="src.test" value="src/test" />
+  <property name="build" value="build" />
+  <property name="dist" value="lib" />
+  <property name="doc" value="javadoc" />
+  <property name="check" value="check" />
+  <property name="website" value="website" />
+
   <!-- Properties that control various build options -->
-  <property name="debug" value="false"/>
-  <property name="deprecation" value="false"/>
-  <property name="optimize" value="false"/>
-  <property name="javac.source" value="1.2"/>
-  <property name="javac.target" value="1.2"/>
+  <property name="debug" value="false" />
+  <property name="deprecation" value="false" />
+  <property name="optimize" value="false" />
+  <property name="javac.source" value="1.2" />
+  <property name="javac.target" value="1.2" />
+
+  <!-- PCT Version -->
+  <property name="pct.version" value="0.9-dev" />
+
+  <tstamp>
+    <format property="year" pattern="yyyy" />
+  </tstamp>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}" />
@@ -31,72 +38,83 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}"/>
-    <copy todir="${build}" file="${src.java}/PCT.properties"/>
+    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" />
+    <copy todir="${build}" file="${src.java}/PCT.properties" />
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
-        <include name="com/phenix/pct/*.class"/>
-        <include name="PCT.properties"/>
-        <exclude name="com/phenix/pct/*Test.class"/>
+        <include name="com/phenix/pct/*.class" />
+        <include name="PCT.properties" />
+        <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+        <section name="common">
+          <attribute name="Specification-Title" value="PCT" />
+          <attribute name="Specification-Version" value="${pct.version}" />
+          <attribute name="Specification-Vendor" value="Phenix Engineering" />
+          <attribute name="Implementation-Title" value="PCT" />
+          <attribute name="Implementation-Version" value="${pct.version} ${TODAY}" />
+          <attribute name="Implementation-Vendor" value="Phenix Engineering" />
+        </section>
+      </manifest>
     </jar>
   </target>
-  
+
   <target name="declare" depends="jar" description="PCT tasks declaration">
-    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar"/>
+    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
   </target>
-  
+
   <target name="pbuild" depends="declare" description="Progress code compilation">
     <PCTCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
-        <include name="pct/*.p"/>
+        <include name="pct/*.p" />
       </fileset>
       <propath>
-        <pathelement location="${src.progress}"/>
+        <pathelement location="${src.progress}" />
       </propath>
     </PCTCompile>
     <copy todir="${build}/tty">
       <fileset dir="${src.progress}">
-        <include name="prodict/**/*.p"/>
-        <include name="prodict/**/*.i"/>
-        <include name="adecomm/*.i"/>
+        <include name="prodict/**/*.p" />
+        <include name="prodict/**/*.i" />
+        <include name="adecomm/*.i" />
       </fileset>
     </copy>
     <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
-        <include name="pct/*.p"/>
+        <include name="pct/*.p" />
       </fileset>
       <propath>
-        <pathelement location="${src.progress}"/>
+        <pathelement location="${src.progress}" />
       </propath>
     </PCTCompile>
     <copy todir="${build}/gui">
       <fileset dir="${src.progress}">
-        <include name="prodict/**/*.p"/>
-        <include name="prodict/**/*.i"/>
-        <include name="adecomm/*.i"/>
+        <include name="prodict/**/*.p" />
+        <include name="prodict/**/*.i" />
+        <include name="adecomm/*.i" />
       </fileset>
     </copy>
   </target>
 
   <target name="check" depends="build" description="Check source code convention">
-    <taskdef resource="checkstyletask.properties"/>
-    <mkdir dir="${check}"/>
+    <taskdef resource="checkstyletask.properties" />
+    <mkdir dir="${check}" />
     <checkstyle config="conf/check-config.xml" failOnViolation="false">
-      <formatter type="xml" toFile="${check}/check.xml"/>
-      <fileset dir="${src.java}" includes="com/phenix/pct/*.java"/>
+      <formatter type="xml" toFile="${check}/check.xml" />
+      <fileset dir="${src.java}" includes="com/phenix/pct/*.java" />
       <!--<fileset dir="${src.test}" includes="com/phenix/pct/*.java"/>-->
     </checkstyle>
-    <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html"/>
+    <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html" />
   </target>
 
   <target name="test-build" depends="pbuild" description="Builds junit tests">
     <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
-      <include name="org/apache/tools/ant/*.java"/>
-      <include name="com/phenix/pct/*.java"/>
+      <include name="org/apache/tools/ant/*.java" />
+      <include name="com/phenix/pct/*.java" />
       <classpath>
         <pathelement location="${build}" />
         <pathelement location="junit.jar" />
@@ -104,36 +122,36 @@
     </javac>
     <copy todir="${build}">
       <fileset dir="${src.test}">
-        <include name="*.xml"/>
+        <include name="*.xml" />
       </fileset>
     </copy>
   </target>
-  
+
   <target name="test" depends="test-build" description="Starts tests">
-    
+
     <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${build}">
       <classpath>
         <pathelement location="${build}" />
-<!--        <fileset dir="." files="junit.jar" /> -->
+        <!--        <fileset dir="." files="junit.jar" /> -->
       </classpath>
 
-      <formatter type="brief" usefile="false"/>
+      <formatter type="brief" usefile="false" />
 
       <batchtest>
         <fileset dir="${build}">
-          <include name="com/phenix/pct/PCT*Test.class"/>
+          <include name="com/phenix/pct/PCT*Test.class" />
         </fileset>
       </batchtest>
     </junit>
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
-    <mkdir dir="${doc}"/>
+    <mkdir dir="${doc}" />
     <javadoc destdir="${doc}" useexternalfile="yes">
-      <packageset dir="${src.java}"/>
-      <group title="PCT Core" packages="com.phenix.pct.*"/>
-      <bottom>Copyright &#169; 2003-2005 Gilles QUERRET. All Rights Reserved.</bottom>
-      <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+      <packageset dir="${src.java}" />
+      <group title="PCT Core" packages="com.phenix.pct.*" />
+      <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
       <!-- Seems down -->
       <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
     </javadoc>
@@ -142,101 +160,101 @@
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="${dist}/PCT.jar"/>
-        <include name="CHANGELOG"/>
-        <include name="website/**"/>
+        <include name="${dist}/PCT.jar" />
+        <include name="CHANGELOG" />
+        <include name="website/**" />
       </zipfileset>
       <zipfileset prefix="pct" dir="build" filemode="644">
-        <include name="tty/**/*.r"/>
-        <include name="tty/**/*.i"/>
-        <include name="tty/**/*.p"/>
-        <include name="gui/**/*.r"/>
-        <include name="gui/**/*.i"/>
-        <include name="gui/**/*.p"/>
+        <include name="tty/**/*.r" />
+        <include name="tty/**/*.i" />
+        <include name="tty/**/*.p" />
+        <include name="gui/**/*.r" />
+        <include name="gui/**/*.i" />
+        <include name="gui/**/*.p" />
       </zipfileset>
     </zip>
   </target>
-  
+
   <target name="srcdist" description="Generates source zip/tarball archive">
     <zip destfile="pct-src.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="src/**"/>
-        <include name="build.xml"/>
-        <include name="conf/**"/>
-        <include name="doc/**"/>
-        <include name="CHANGELOG"/>
+        <include name="src/**" />
+        <include name="build.xml" />
+        <include name="conf/**" />
+        <include name="doc/**" />
+        <include name="CHANGELOG" />
       </zipfileset>
     </zip>
   </target>
-  
-  <target name="dist" depends="srcdist,bindist"/>
+
+  <target name="dist" depends="srcdist,bindist" />
 
   <target name="clean" description="Nettoyage">
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-    <delete dir="${doc}"/>
-    <delete dir="${check}"/>
-    <delete dir="${website}"/>
-    <delete dir="sports2000"/>
+    <delete dir="${build}" />
+    <delete dir="${dist}" />
+    <delete dir="${doc}" />
+    <delete dir="${check}" />
+    <delete dir="${website}" />
+    <delete dir="sports2000" />
     <delete>
       <fileset dir=".">
-        <include name="pct*.tar.gz"/>
-        <include name="pct*.zip"/>
+        <include name="pct*.tar.gz" />
+        <include name="pct*.zip" />
       </fileset>
     </delete>
   </target>
-  
+
   <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
-    <delete dir="${website}"/>
-    <mkdir dir="${website}"/>
+    <delete dir="${website}" />
+    <mkdir dir="${website}" />
     <copy todir="${website}">
       <fileset dir="doc">
-        <include name="*.html"/>
-        <include name="*.css"/>
-        <include name="*.xsl"/>
-        <include name="back.png"/>
-      	<include name="ss*.png"/>
+        <include name="*.html" />
+        <include name="*.css" />
+        <include name="*.xsl" />
+        <include name="back.png" />
+        <include name="ss*.png" />
       </fileset>
       <fileset dir=".">
-        <include name="CHANGELOG"/>
-        <include name="${doc}/**"/>
+        <include name="CHANGELOG" />
+        <include name="${doc}/**" />
       </fileset>
     </copy>
     <copy todir="${website}/sports2000">
       <fileset dir="sports2000/doc">
-        <include name="**"/>
+        <include name="**" />
       </fileset>
     </copy>
-    <zip destfile="${website}/sample1.zip" whenempty="create" >
-      <zipfileset dir="doc/quickstart-samples/step1" prefix="MyProject"/>
+    <zip destfile="${website}/sample1.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step1" prefix="MyProject" />
     </zip>
-    <zip destfile="${website}/sample2.zip" whenempty="create" >
-      <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject"/>
+    <zip destfile="${website}/sample2.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject" />
     </zip>
-    <zip destfile="${website}/sample3.zip" whenempty="create" >
-      <zipfileset dir="doc/quickstart-samples/step3" prefix="MyProject"/>
+    <zip destfile="${website}/sample3.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step3" prefix="MyProject" />
     </zip>
-    <zip destfile="${website}/sample4.zip" whenempty="create" >
-      <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject"/>
+    <zip destfile="${website}/sample4.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject" />
     </zip>
   </target>
 
   <target name="sports2000doc" depends="pbuild">
-    <mkdir dir="sports2000"/>
-    <mkdir dir="sports2000/doc"/>
-    <mkdir dir="sports2000/doc/files"/>
-    <property name="sports2000-doc" location="sports2000/doc"/>
+    <mkdir dir="sports2000" />
+    <mkdir dir="sports2000/doc" />
+    <mkdir dir="sports2000/doc/files" />
+    <property name="sports2000-doc" location="sports2000/doc" />
     <exec executable="${env.DLC}/bin/_dbutil" dir="sports2000">
-      <env key="DLC" value="${env.DLC}"/>
-      <arg value="procopy"/>
-      <arg path="${env.DLC}/sports2000"/>
-      <arg value="sports2000"/>
+      <env key="DLC" value="${env.DLC}" />
+      <arg value="procopy" />
+      <arg path="${env.DLC}/sports2000" />
+      <arg value="sports2000" />
     </exec>
     <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}" propath="${build}/tty">
-      <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true"/>
+      <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
-      <param name="outputdir" expression="${sports2000-doc}"/>
+      <param name="outputdir" expression="${sports2000-doc}" />
     </style>
   </target>
 
