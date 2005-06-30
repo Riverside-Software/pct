@@ -58,8 +58,9 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 
 import java.io.File;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Object to add a database connection to a PCTRun task
@@ -81,7 +82,7 @@ public class PCTConnection {
     private File paramFile = null;
     private boolean singleUser = false;
     private boolean readOnly = false;
-    private Vector aliases = null;
+    private Map aliases = null;
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
@@ -216,10 +217,11 @@ public class PCTConnection {
      */
     public void addPCTAlias(PCTAlias alias) {
         if (this.aliases == null) {
-            aliases = new Vector();
+            aliases = new HashMap();
         }
-
-        aliases.add(alias);
+        
+        if (aliases.put(alias.getName(), alias) != null) 
+        	throw new BuildException("Alias " + alias.getName() + " already defined");
     }
 
     /**
@@ -236,9 +238,7 @@ public class PCTConnection {
     }
 
     /**
-     * Checks if an alias is defined TODO : Iterator appeared in JDK 1.2 ; as it seems to be a
-     * smarter way to parse lists (cf JDK API doc), I'll move every Enum to Iterator This could be
-     * done as ANT 1.6 requires JDK1.2
+     * Checks if an alias is defined
      * 
      * @param aliasName String
      * @return True if alias defined for this database connection
@@ -248,19 +248,77 @@ public class PCTConnection {
             return false;
         }
 
-        Iterator i = aliases.iterator();
-
-        while (i.hasNext()) {
-            PCTAlias a = (PCTAlias) i.next();
-
-            if (a.getName().equalsIgnoreCase(aliasName)) {
-                return true;
-            }
-        }
-
-        return false;
+        return aliases.containsKey(aliasName);
     }
 
+    /**
+     * Returns a string which could be used by a CONNECT statement or directly in a
+     * _progres or prowin32 command line 
+     * 
+     * @return Connection string
+     * @throws BuildException If DB name not defined
+     */
+	public String createConnectString() throws BuildException {
+        if (this.dbName == null) {
+            throw new BuildException("Database name not defined");
+        }
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("-db ");
+
+        if ((this.dbDir == null) || (this.hostName != null)) {
+            sb.append(this.dbName);
+        } else {
+            sb.append(this.dbDir.toString()).append(File.separatorChar).append(this.dbName);
+        }
+
+        if (this.paramFile != null) {
+            sb.append(" -pf ").append(this.paramFile.getAbsolutePath());
+        }
+
+        if (this.protocol != null) {
+            sb.append(" -N ").append(this.protocol);
+        }
+
+        if (this.dbPort != null) {
+            sb.append(" -S ").append(this.dbPort);
+        }
+
+        if (this.logicalName != null) {
+            sb.append(" -ld ").append(this.logicalName);
+        }
+
+        if (this.singleUser) {
+            sb.append(" -1 ");
+        }
+
+        if (this.cacheFile != null) {
+            sb.append(" -cache ").append(this.cacheFile.getAbsolutePath());
+        }
+
+        if (this.dataService != null) {
+            sb.append(" -DataService ").append(this.dataService);
+        }
+
+        if (this.dbType != null) {
+            sb.append(" -dt ").append(this.dbType);
+        }
+
+        if (this.hostName != null) {
+            sb.append(" -H ").append(this.hostName);
+        }
+
+        if (this.readOnly) {
+            sb.append(" -RO ");
+        }
+
+        if ((this.userName != null) && (this.password != null)) {
+            sb.append(" -U ").append(this.userName).append(" -P ").append(this.password);
+        }
+		
+		return sb.toString();
+	}
+	
     /**
      * Populates a command line with the needed arguments to connect to the specified database
      * 
@@ -268,81 +326,16 @@ public class PCTConnection {
      * @throws BuildException Something went wrong
      */
     public void createArguments(ExecTask task) throws BuildException {
-        if (this.dbName == null) {
-            throw new BuildException("Database name not defined");
-        }
-
-        task.createArg().setValue("-db");
-
-        if ((this.dbDir == null) || (this.hostName != null)) {
-            task.createArg().setValue(this.dbName);
-        } else {
-            task.createArg().setValue(this.dbDir.toString() + File.separatorChar + this.dbName);
-        }
-
-        if (this.paramFile != null) {
-            task.createArg().setValue("-pf");
-            task.createArg().setValue(this.paramFile.getAbsolutePath());
-        }
-
-        if (this.protocol != null) {
-            task.createArg().setValue("-N");
-            task.createArg().setValue(this.protocol);
-        }
-
-        if (this.dbPort != null) {
-            task.createArg().setValue("-S");
-            task.createArg().setValue(this.dbPort);
-        }
-
-        if (this.logicalName != null) {
-            task.createArg().setValue("-ld");
-            task.createArg().setValue(this.logicalName);
-        }
-
-        if (this.singleUser) {
-            task.createArg().setValue("-1");
-        }
-
-        if (this.cacheFile != null) {
-            task.createArg().setValue("-cache");
-            task.createArg().setValue(this.cacheFile.getAbsolutePath());
-        }
-
-        if (this.dataService != null) {
-            task.createArg().setValue("-DataService");
-            task.createArg().setValue(this.dataService);
-        }
-
-        if (this.dbType != null) {
-            task.createArg().setValue("-dt");
-            task.createArg().setValue(this.dbType);
-        }
-
-        if (this.hostName != null) {
-            task.createArg().setValue("-H");
-            task.createArg().setValue(this.hostName);
-        }
-
-        if (this.readOnly) {
-            task.createArg().setValue("-RO");
-        }
-
-        if ((this.userName != null) && (this.password != null)) {
-            task.createArg().setValue("-U");
-            task.createArg().setValue(this.userName);
-            task.createArg().setValue("-P");
-            task.createArg().setValue(this.password);
-        }
+        task.createArg().setValue(createConnectString());
     }
 
     /**
      * Returns defined aliases for a database connection
      * 
-     * @return Vector
+     * @return Collection
      */
-    public Vector getAliases() {
-        return aliases;
+    public Collection getAliases() {
+        return aliases.values();
     }
 
     /**
