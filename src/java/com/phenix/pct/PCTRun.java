@@ -67,7 +67,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -178,6 +180,14 @@ public class PCTRun extends PCT {
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
     }
+
+// En prévision du passage en v10 uniquement 
+//    public void setDebugReady(int debugReady) {
+//    	if ((debugReady >= 0) && (debugReady <= 65535))
+//    		this.debugReady = debugReady;
+//    	else
+//    		log("Port number for debugReady should be between 0 and 65535");
+//    }
 
     /**
      * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
@@ -551,11 +561,11 @@ public class PCTRun extends PCT {
             if (dbConnList != null) {
                 for (Enumeration e = dbConnList.elements(); e.hasMoreElements();) {
                     PCTConnection dbc = (PCTConnection) e.nextElement();
-                    Vector aliases = dbc.getAliases();
+                    Collection aliases = dbc.getAliases();
 
                     if (aliases != null) {
-                        for (Enumeration e2 = aliases.elements(); e2.hasMoreElements();) {
-                            PCTAlias alias = (PCTAlias) e2.nextElement();
+                        for (Iterator i = aliases.iterator(); i.hasNext();) {
+                            PCTAlias alias = (PCTAlias) i.next();
                             bw.write("CREATE ALIAS '");
                             bw.write(alias.getName());
                             bw.write("' FOR DATABASE ");
