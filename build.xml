@@ -17,6 +17,7 @@
   <property name="doc" value="javadoc" />
   <property name="check" value="check" />
   <property name="website" value="website" />
+  <property name="testdir" value="testbox" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="false" />
@@ -120,29 +121,43 @@
         <pathelement location="junit.jar" />
       </classpath>
     </javac>
-    <copy todir="${build}">
-      <fileset dir="${src.test}">
-        <include name="*.xml" />
-      </fileset>
-    </copy>
   </target>
 
-  <target name="test" depends="test-build" description="Starts tests">
-
-    <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${build}">
+  <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
+  	<!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
+    <mkdir dir="${testdir}" />
+  	<copy todir="${testdir}">
+  	  <fileset dir="${src.test}" includes="*.xml" />
+      <fileset dir="${src.progress}" includes="**" />
+  	</copy>
+    <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
+    <!-- To have consistent behavior between command line ANT and eclipse -->
+  	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+      <classpath>
+        <pathelement location="${basedir}/ant-junit.jar" />
+        <pathelement location="${basedir}/junit.jar" />
+        <pathelement location="${basedir}/ant-launcher.jar" />
+      </classpath>
+    </taskdef>
+  </target>
+  	
+  <target name="test" depends="prepare-test" description="Starts tests">
+    <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="${build}" />
-        <!--        <fileset dir="." files="junit.jar" /> -->
       </classpath>
-
-      <formatter type="brief" usefile="false" />
-
       <batchtest>
         <fileset dir="${build}">
           <include name="com/phenix/pct/PCT*Test.class" />
         </fileset>
       </batchtest>
     </junit>
+    <!--<junitreport>
+      <fileset dir="${build}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="noframes" styledir="${basedir}"/>
+    </junitreport>-->
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
