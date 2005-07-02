@@ -222,6 +222,7 @@
   <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}" />
     <mkdir dir="${website}" />
+    <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include"/>
     <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html" />
@@ -234,6 +235,9 @@
         <include name="CHANGELOG" />
         <include name="${doc}/**" />
       </fileset>
+      <filterset>
+        <filter token="RIGHT_BANNER" value="${right-banner}"/>
+      </filterset>
     </copy>
     <copy todir="${website}/sports2000">
       <fileset dir="sports2000/doc">
