@@ -97,6 +97,7 @@ public class PCTRun extends PCT {
     private int stackSize = 0;
     private int ttBufferSize = 0;
     private int messageBufferSize = 0;
+    private int debugReady = -1;
     private boolean graphMode = false;
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
@@ -343,6 +344,15 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Port number on which debugger should connect (-debugReady parameter)
+     * 
+     * @param debugReady int
+     */
+    public void setDebugReady(int debugReady) {
+    	this.debugReady = debugReady;
+    }
+
+    /**
      * Returns status file name (where to write progress procedure result)
      * 
      * @return String
@@ -442,6 +452,12 @@ public class PCTRun extends PCT {
         // Batch mode
         exec.createArg().setValue("-b");
 
+        // DebugReady
+        if (this.debugReady != -1) {
+        	exec.createArg().setValue("-debugReady");
+        	exec.createArg().setValue(Integer.toString(this.debugReady));
+        }
+
         // Inifile
         if (this.iniFile != null) {
             exec.createArg().setValue("-basekey");
@@ -460,7 +476,7 @@ public class PCTRun extends PCT {
         // Max length of a line
         if (this.inputChars != 0) {
             exec.createArg().setValue("-inp");
-            exec.createArg().setValue("" + this.inputChars);
+            exec.createArg().setValue(Integer.toString(this.inputChars));
         }
 
         // Stream code page
