@@ -59,7 +59,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 
 /**
@@ -112,8 +112,8 @@ public class PCTConnectionTest extends TestCase {
             fail("There should be only 2 aliases");
         }
 
-        for (Enumeration e = conn.getAliases().elements(); e.hasMoreElements();) {
-            PCTAlias a = (PCTAlias) e.nextElement();
+        for (Iterator i = conn.getAliases().iterator(); i.hasNext();) {
+            PCTAlias a = (PCTAlias) i.next();
             String s = a.getName();
 
             if (s.equalsIgnoreCase("alias1")) {
