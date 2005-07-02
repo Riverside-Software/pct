@@ -65,8 +65,6 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  * @version $Revision$
- * @todo dlcHome should get DLC environment variable content at startup and could be overridden with
- *       setDlcHome
  */
 public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
