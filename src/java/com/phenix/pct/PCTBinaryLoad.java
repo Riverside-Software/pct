@@ -59,13 +59,14 @@ import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-
 /**
  * Binary load task
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version 1.2
  */
@@ -77,6 +78,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Adds a database connection
+     * 
      * @param dbConn Instance of DBConnection class
      */
     public void addPCTConnection(PCTConnection dbConn) {
@@ -89,6 +91,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Adds a set of files to archive.
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -97,11 +100,12 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Sets the timeout before indexes are rebuilt (-G parameter)
+     * 
      * @param timeout Timeout
      */
     public void setIndexRebuildTimeout(int timeout) {
         if (timeout < 0) {
-            throw new BuildException("Timeout must be greater than zero");
+            throw new BuildException(Messages.getString("PCTBinaryLoad.0")); //$NON-NLS-1$
         }
 
         this.indexRebuildTimeout = timeout;
@@ -109,6 +113,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Sets to false if indexes shouldn't be rebuilt
+     * 
      * @param rebuildIndexes boolean
      */
     public void setRebuildIndexes(boolean rebuildIndexes) {
@@ -117,17 +122,19 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         ExecTask exec = null;
 
         if (this.dbConnList == null) {
-            throw new BuildException("No database connection defined");
+            throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
         }
 
         if (this.dbConnList.size() > 1) {
-            throw new BuildException("More than one database connection defined");
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("PCTBinaryLoad.2"), new Object[]{"1"})); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         for (Iterator e = filesets.iterator(); e.hasNext();) {
@@ -146,8 +153,8 @@ public class PCTBinaryLoad extends PCT {
     }
 
     private ExecTask loadTask(File binaryFile) {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-        File a = this.getExecPath("_proutil");
+        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
+        File a = this.getExecPath("_proutil"); //$NON-NLS-1$
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
@@ -162,16 +169,18 @@ public class PCTBinaryLoad extends PCT {
         }
 
         // Binary load
-        exec.createArg().setValue("-C");
-        exec.createArg().setValue("load");
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("load"); //$NON-NLS-1$
 
         // File to load
         exec.createArg().setValue(binaryFile.getAbsolutePath());
 
         // Rebuild indexes
         if (this.rebuildIndexes) {
-            exec.createArg().setValue("build indexes");
-            exec.createArg().setValue("-G " + this.indexRebuildTimeout);
+            exec.createArg().setValue("build"); //$NON-NLS-1$
+            exec.createArg().setValue("indexes"); //$NON-NLS-1$
+            exec.createArg().setValue("-G"); //$NON-NLS-1$
+            exec.createArg().setValue(Integer.toString(this.indexRebuildTimeout));
         }
 
         return exec;
