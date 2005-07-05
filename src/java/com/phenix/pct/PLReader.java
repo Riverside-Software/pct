@@ -61,16 +61,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import java.text.DateFormat;
+import java.text.MessageFormat;
 
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
-
 /**
- * Class for reading the content of a Progress Library file
- * Only basic actions for now : file list
+ * Class for reading the content of a Progress Library file Only basic actions for now : file list
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PLReader {
@@ -88,8 +87,7 @@ public class PLReader {
     }
 
     /**
-     * Performs initialization actions like checking file integrity
-     * and reading file list
+     * Performs initialization actions like checking file integrity and reading file list
      */
     public void init() {
         this.init = false;
@@ -110,6 +108,7 @@ public class PLReader {
 
     /**
      * Specifies a file to read. Should be initialized with init
+     * 
      * @param f File to read
      */
     public void setFile(File f) {
@@ -120,6 +119,7 @@ public class PLReader {
 
     /**
      * Specifies a file to read.
+     * 
      * @param f File to read
      * @param init If initialization should be done
      */
@@ -135,7 +135,7 @@ public class PLReader {
     }
 
     /**
-     *
+     * 
      * @return Vector of FileEntry
      */
     public Vector getFileList() {
@@ -148,6 +148,7 @@ public class PLReader {
 
     /**
      * Read file list
+     * 
      * @throws Exception File has bad format
      */
     private void readFileList() throws Exception {
@@ -208,7 +209,7 @@ public class PLReader {
 
                             // Creates new file entry and adds it to vector
                             FileEntry fe = new FileEntry(sb.toString(), modDate, addDate,
-                                                         fileOffset, (int) fileSize);
+                                    fileOffset, (int) fileSize);
                             files.add(fe);
 
                             // Reading next entry
@@ -223,9 +224,8 @@ public class PLReader {
                             fis.close();
                         } catch (IOException ioe) {
                         }
-
-                        throw new Exception("Byte at position " + offset +
-                                            " should be FE or FF but is " + magic);
+                        throw new Exception(MessageFormat.format(Messages.getString("PLReader.0"),
+                                new Object[]{new Long(offset), new Long(magic)}));
                     }
                 }
             } else { // i == 4
@@ -236,13 +236,13 @@ public class PLReader {
                 } catch (IOException ioe) {
                 }
 
-                throw new Exception("Incorrect format ");
+                throw new Exception(Messages.getString("PLReader.12")); //$NON-NLS-1$
             }
 
             in.close();
             fis.close();
         } catch (IOException ioe) {
-            System.out.println("ioe");
+            System.out.println(ioe.getMessage());
         }
     }
 
@@ -283,9 +283,9 @@ public class PLReader {
 
             return retVal;
         } catch (FileNotFoundException fnfe) {
-            System.out.println("fnfe");
+            System.out.println(fnfe.getMessage());
         } catch (IOException ioe) {
-            System.out.println("ioe");
+            System.out.println(ioe.getMessage());
         }
 
         return false;
@@ -335,10 +335,9 @@ public class PLReader {
         }
 
         public String toString() {
-            DateFormat df = DateFormat.getDateTimeInstance();
-
-            return "File " + this.fileName + " [" + size + "b] Added " + df.format(this.addDate) +
-                   " Modified " + df.format(this.modDate) + " [Offset : " + offset + "]";
+            return MessageFormat
+                    .format(
+                            Messages.getString("PLReader.6"), new Object[]{this.fileName, new Integer(size), this.addDate, this.modDate, new Long(offset)}); //$NON-NLS-1$
         }
     }
 }
