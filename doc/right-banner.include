@@ -3,7 +3,7 @@
   <ul>
     <li><a href="manual.html">Installation</a></li>
     <li><a href="PLReader.html">PLReader</a></li>
-    <li><a href="quickstart.html">Quick start</a> <span id="new">!!NEW!!</span></li>
+    <li><a href="quickstart.html">Quick start</a></li>
   </ul>
   <h1>Tasks</h1>
   <ul>
@@ -15,6 +15,7 @@
     <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
     <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
     <li><a href="PCTDumpData.html">PCTDumpData</a></li>
+    <li><a href="PCTLoadData.html">PCTLoadData</a> <span id="new">!!NEW!!</span></li>
     <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
     <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
     <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
