@@ -63,15 +63,15 @@ import org.apache.tools.ant.types.FileSet;
 import java.io.File;
 import java.io.IOException;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
 
 import java.util.Vector;
 
-
 /**
  * Procedure encryption task using xcode utility from Progress
- *
+ * 
  * @author <a href="mailto:d.knol@steeg-software.nl">Dick Knol</a>
  */
 public class PCTXCode extends PCT {
@@ -93,15 +93,15 @@ public class PCTXCode extends PCT {
         super();
 
         try {
-            this.tmpLog = File.createTempFile("pct_outp", ".log");
+            this.tmpLog = File.createTempFile("pct_outp", ".log"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create temp files");
+            throw new BuildException(Messages.getString("PCTXCode.2")); //$NON-NLS-1$
         }
     }
 
     /**
      * Sets output directory (-d attribute)
-     *
+     * 
      * @param destDir File
      */
     public void setDestDir(File destDir) {
@@ -110,7 +110,7 @@ public class PCTXCode extends PCT {
 
     /**
      * Sets key to be used for encryption (-k attribute)
-     *
+     * 
      * @param key String
      */
     public void setKey(String key) {
@@ -119,7 +119,7 @@ public class PCTXCode extends PCT {
 
     /**
      * Overwrites files ?
-     *
+     * 
      * @param overwrite boolean
      */
     public void setOverwrite(boolean overwrite) {
@@ -128,7 +128,7 @@ public class PCTXCode extends PCT {
 
     /**
      * Convert filenames to lowercase (-l attribute)
-     *
+     * 
      * @param lowercase boolean
      */
     public void setLowercase(boolean lowercase) {
@@ -137,7 +137,7 @@ public class PCTXCode extends PCT {
 
     /**
      * Adds a set of files to encrypt
-     *
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -146,7 +146,7 @@ public class PCTXCode extends PCT {
 
     /**
      * Creates destination directories, according to source directory tree
-     *
+     * 
      * @throws BuildException Something went wrong
      */
     private void createDirectories() throws BuildException {
@@ -164,8 +164,8 @@ public class PCTXCode extends PCT {
 
                     if (!f2.exists()) {
                         if (!f2.mkdirs()) {
-                            throw new BuildException("Unable to create directory : " +
-                                                     f2.getAbsolutePath());
+                            throw new BuildException(MessageFormat.format(Messages
+                                    .getString("PCTXCode.3"), new Object[]{f2.getAbsolutePath()})); //$NON-NLS-1$
                         }
                     }
                 }
@@ -175,19 +175,19 @@ public class PCTXCode extends PCT {
 
     /**
      * Do the work
-     *
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         if (this.destDir == null) {
             this.cleanup();
-            throw new BuildException("destDir not defined");
+            throw new BuildException(Messages.getString("PCTXCode.4")); //$NON-NLS-1$
         }
 
-        log("PCTXCode - Progress Encryption Tool", Project.MSG_INFO);
+        log(Messages.getString("PCTXCode.5"), Project.MSG_INFO); //$NON-NLS-1$
 
         try {
-            this.createDirectories();            
+            this.createDirectories();
             this.createExecTask();
 
             for (Iterator e = filesets.iterator(); e.hasNext();) {
@@ -202,54 +202,59 @@ public class PCTXCode extends PCT {
                     File trgFile = new File(this.destDir, dsfiles[i]);
                     File srcFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
 
-                    if (!trgFile.exists() || this.overwrite ||
-                          (srcFile.lastModified() > trgFile.lastModified())) {
-                        log("Encryption of " + trgFile.toString(), Project.MSG_VERBOSE);
+                    if (!trgFile.exists() || this.overwrite
+                            || (srcFile.lastModified() > trgFile.lastModified())) {
+                        log(
+                                MessageFormat
+                                        .format(
+                                                Messages.getString("PCTXCode.6"), new Object[]{trgFile.toString()}), Project.MSG_VERBOSE); //$NON-NLS-1$
                         arg.setValue(dsfiles[i]);
                         exec.execute();
                     }
                 }
             }
             this.cleanup();
-        }
-        catch (BuildException be) {
+        } catch (BuildException be) {
             this.cleanup();
             throw be;
         }
-        
+
     }
 
     private void createExecTask() {
-        exec = (ExecTask) getProject().createTask("exec");
+        exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
         exec.setOutput(tmpLog);
-        exec.setExecutable(this.getExecPath("xcode").toString());
+        exec.setExecutable(this.getExecPath("xcode").toString()); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC");
+        var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
         if (this.key != null) {
-            exec.createArg().setValue("-k");
+            exec.createArg().setValue("-k"); //$NON-NLS-1$
             exec.createArg().setValue(this.key);
         }
 
-        exec.createArg().setValue("-d");
+        exec.createArg().setValue("-d"); //$NON-NLS-1$
         exec.createArg().setValue(this.destDir.toString());
 
         if (this.lowercase) {
-            exec.createArg().setValue("-l");
+            exec.createArg().setValue("-l"); //$NON-NLS-1$
         }
 
         arg = exec.createArg();
     }
-    
+
     protected void cleanup() {
         if (this.tmpLog.exists() && !this.tmpLog.delete()) {
-            log("Failed to delete " + this.tmpLog.getAbsolutePath(), Project.MSG_VERBOSE);
+            log(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCTXCode.13"), new Object[]{this.tmpLog.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
         }
     }
 }
