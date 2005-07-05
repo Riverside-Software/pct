@@ -58,6 +58,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -69,12 +70,12 @@ import java.io.File;
 public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
-    private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar";
+    private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
 
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
-    
+
     /**
      * Progress installation directory
      * 
@@ -82,7 +83,10 @@ public abstract class PCT extends Task {
      */
     public final void setDlcHome(File dlcHome) {
         if (!dlcHome.exists()) {
-            throw new BuildException("dlcHome attribute : " + dlcHome.toString() + " not found");
+            throw new BuildException(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCT.1"), new Object[]{"dlcHome", dlcHome.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         this.dlcHome = dlcHome;
@@ -90,7 +94,7 @@ public abstract class PCT extends Task {
         // Tries to guess bin directory
         if (this.dlcBin == null) {
             try {
-                this.setDlcBin(new File(dlcHome, "bin"));
+                this.setDlcBin(new File(dlcHome, "bin")); //$NON-NLS-1$
             } catch (BuildException be) {
             }
         }
@@ -98,7 +102,7 @@ public abstract class PCT extends Task {
         // Tries to guess java directory
         if (this.dlcJava == null) {
             try {
-                this.setDlcJava(new File(dlcHome, "java"));
+                this.setDlcJava(new File(dlcHome, "java")); //$NON-NLS-1$
             } catch (BuildException be) {
             }
         }
@@ -112,7 +116,8 @@ public abstract class PCT extends Task {
      */
     public final void setDlcBin(File dlcBin) {
         if (!dlcBin.exists()) {
-            throw new BuildException("dlcBin attribute : " + dlcBin.toString() + " not found");
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("PCT.1"), new Object[]{"dlcBin", dlcBin.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         this.dlcBin = dlcBin;
@@ -126,7 +131,10 @@ public abstract class PCT extends Task {
      */
     public final void setDlcJava(File dlcJava) {
         if (!dlcJava.exists()) {
-            throw new BuildException("dlcJava attribute : " + dlcJava.toString() + " not found");
+            throw new BuildException(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCT.1"), new Object[]{"dlcJava", dlcJava.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         this.dlcJava = dlcJava;
@@ -169,7 +177,7 @@ public abstract class PCT extends Task {
 
     /**
      * Returns a fileset containing every JAR/ZIP files needed for proxygen task
-     *
+     * 
      * @since 0.8
      * @return FileSet
      * @throws BuildException
@@ -178,12 +186,13 @@ public abstract class PCT extends Task {
         FileSet fs = new FileSet();
         fs.setDir(this.dlcJava);
         fs.setIncludes(JAVA_CP);
-        
+
         return fs;
     }
-    
+
     /**
      * This method has to be overridden
+     * 
      * @throws BuildException
      */
     public abstract void execute() throws BuildException;
