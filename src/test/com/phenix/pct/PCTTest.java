@@ -55,15 +55,16 @@ package com.phenix.pct;
 
 import junit.framework.TestCase;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-
 /**
  * Class for testing PCT abstract task
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTTest extends TestCase {
@@ -72,9 +73,10 @@ public class PCTTest extends TestCase {
     private static final String DLC_BIN_FAKE = "bin/";
     private static final String DLC_JAVA = "dlc/java/";
     private static final String DLC_JAVA_FAKE = "java/";
-    private static final String DLC_PROXYGEN_ZIP = "proxygen.zip";
-    private static final String DLC_PROGRESS_ZIP = "progress.zip";
-    private static final String DLC_PROGRESS_JAR = "progress.jar";
+    private static final String DLC_FAKE = "dlc/foo";
+    // private static final String DLC_PROXYGEN_ZIP = "proxygen.zip";
+    // private static final String DLC_PROGRESS_ZIP = "progress.zip";
+    // private static final String DLC_PROGRESS_JAR = "progress.jar";
     private Project project;
     private PCTRun pct;
 
@@ -127,8 +129,8 @@ public class PCTTest extends TestCase {
     }
 
     /**
-     * Check if setting dlcBin attribute overrides bin subdirectory
-     * found when setting dlcHome attribute
+     * Check if setting dlcBin attribute overrides bin subdirectory found when setting dlcHome
+     * attribute
      */
     public void testDlcBinOverride() {
         File bin = new File(DLC_BIN_FAKE);
@@ -136,6 +138,45 @@ public class PCTTest extends TestCase {
         pct.setDlcHome(new File(DLC));
         pct.setDlcBin(bin);
         assertEquals(bin, pct.getDlcBin());
+    }
+
+    /**
+     * Check if not valid DLC directory throws BuildException
+     */
+    public void testDlcFailure() {
+        File dlc = new File(DLC_FAKE);
+        try {
+            pct.setDlcHome(dlc);
+        } catch (BuildException be) {
+            return;
+        }
+        fail("BuildException should be thrown (dlc directory is wrong");
+    }
+
+    /**
+     * Check if not valid DLC bin directory throws BuildException
+     */
+    public void testDlcBinFailure() {
+        pct.setDlcHome(new File(DLC));
+        try {
+            pct.setDlcBin(new File(DLC_FAKE));
+        } catch (BuildException be) {
+            return;
+        }
+        fail("BuildException should be thrown (dlcBin directory is wrong");
+    }
+
+    /**
+     * Check if not valid DLC java directory throws BuildException
+     */
+    public void testDlcJavaFailure() {
+        pct.setDlcHome(new File(DLC));
+        try {
+            pct.setDlcJava(new File(DLC_FAKE));
+        } catch (BuildException be) {
+            return;
+        }
+        fail("BuildException should be thrown (dlcJava directory is wrong");
     }
 
 }
