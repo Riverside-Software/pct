@@ -40,13 +40,16 @@
 
   <target name="build" depends="init" description="Java source files compilation">
     <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" />
-    <copy todir="${build}" file="${src.java}/PCT.properties" />
+    <copy todir="${build}">
+      <fileset dir="${src.java}" includes="**/*.properties" />
+    </copy>
   </target>
 
   <target name="jar" depends="build" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class" />
+      	<include name="com/phenix/pct/*.properties" />
         <include name="PCT.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
