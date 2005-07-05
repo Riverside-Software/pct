@@ -67,8 +67,8 @@ Dumps data from a database to a directory
 <td>Blank means ALL</td>
 </tr>
 </table>
-<p>PCTDumpSchema inherits attributes from <a href="PCT.html">PCT</a> and
-<a href="PCTRun.html">PCTRun</a>. However, PCTDumpSchema <strong>must</strong>
+<p>PCTDumpData inherits attributes from <a href="PCT.html">PCT</a> and
+<a href="PCTRun.html">PCTRun</a>. However, PCTDumpData <strong>must</strong>
 have <strong>one and only one</strong> PCTConnection.</p>
 
 <h2>Parameters as nested elements</h2>
@@ -78,14 +78,14 @@ None
 <pre>
 &lt;PCTDumpData destDir="datas" dlcHome="${env.DLC}"&gt;
   &lt;PCTConnection dbName="test" singleUser="true"/&gt;
-&lt;/PCTDumpSchema&gt;
+&lt;/PCTDumpData&gt;
 </pre>
 <p>Connects in single-user mode to test.db and dumps each table's data into datas directory</p>
 
 <pre>
 &lt;PCTDumpData destDir="datas" tables="Tab1,Tab2" dlcHome="${env.DLC}"&gt;
   &lt;PCTConnection dbName="test" singleUser="true"/&gt;
-&lt;/PCTDumpSchema&gt;
+&lt;/PCTDumpData&gt;
 </pre>
 <p>Same as previous, but dumps only Tab1 and Tab2</p>
 
