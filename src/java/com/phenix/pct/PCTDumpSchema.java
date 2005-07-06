@@ -57,9 +57,9 @@ import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
-
 /**
  * Dumps schema from database
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTDumpSchema extends PCTRun {
@@ -67,6 +67,7 @@ public class PCTDumpSchema extends PCTRun {
 
     /**
      * Output file for dump
+     * 
      * @param destFile File
      */
     public void setDestFile(File destFile) {
@@ -75,25 +76,26 @@ public class PCTDumpSchema extends PCTRun {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
             this.cleanup();
-            throw new BuildException("No database connection defined");
+            throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }
 
         if (this.dbConnList.size() > 1) {
             this.cleanup();
-            throw new BuildException("More than one database connection defined");
+            throw new BuildException(Messages.getString("PCTDumpSchema.1")); //$NON-NLS-1$
         }
 
         if (this.destFile == null) {
             this.cleanup();
-            throw new BuildException("Mandatory argument : dump file");
+            throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctDumpSchema.p");
+        this.setProcedure("pct/pctDumpSchema.p"); //$NON-NLS-1$
         this.setParameter(destFile.toString());
         super.execute();
     }

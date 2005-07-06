@@ -57,17 +57,18 @@ import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
-
 /**
-  * Generates a file containing CRC for each table (multiple databases allowed)
-  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
-  * @version $Revision$
-  */
+ * Generates a file containing CRC for each table (multiple databases allowed)
+ * 
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @version $Revision$
+ */
 public class PCTCRC extends PCTRun {
     private File destFile = null;
 
     /**
      * Output file for CRCs
+     * 
      * @param destFile File
      */
     public void setDestFile(File destFile) {
@@ -76,20 +77,21 @@ public class PCTCRC extends PCTRun {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         if (this.destFile == null) {
             this.cleanup();
-            throw new BuildException("Mandatory argument : destination file");
+            throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$
         }
 
         if (this.dbConnList == null) {
             this.cleanup();
-            throw new BuildException("No database connection defined");
+            throw new BuildException(Messages.getString("PCTCRC.1")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctCRCExport.p");
+        this.setProcedure("pct/pctCRCExport.p"); //$NON-NLS-1$
         this.setParameter(destFile.toString());
         super.execute();
     }
