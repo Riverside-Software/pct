@@ -58,6 +58,7 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 
 import java.io.File;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -219,9 +220,10 @@ public class PCTConnection {
         if (this.aliases == null) {
             aliases = new HashMap();
         }
-        
-        if (aliases.put(alias.getName(), alias) != null) 
-        	throw new BuildException("Alias " + alias.getName() + " already defined");
+
+        if (aliases.put(alias.getName(), alias) != null)
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("PCTConnection.0"), new Object[]{alias.getName()})); //$NON-NLS-1$
     }
 
     /**
@@ -252,19 +254,19 @@ public class PCTConnection {
     }
 
     /**
-     * Returns a string which could be used by a CONNECT statement or directly in a
-     * _progres or prowin32 command line 
+     * Returns a string which could be used by a CONNECT statement or directly in a _progres or
+     * prowin32 command line
      * 
      * @return Connection string
      * @throws BuildException If DB name not defined
      */
-	public String createConnectString() throws BuildException {
+    public String createConnectString() throws BuildException {
         if (this.dbName == null) {
-            throw new BuildException("Database name not defined");
+            throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
 
-		StringBuffer sb = new StringBuffer();
-		sb.append("-db ");
+        StringBuffer sb = new StringBuffer();
+        sb.append("-db "); //$NON-NLS-1$
 
         if ((this.dbDir == null) || (this.hostName != null)) {
             sb.append(this.dbName);
@@ -273,52 +275,52 @@ public class PCTConnection {
         }
 
         if (this.paramFile != null) {
-            sb.append(" -pf ").append(this.paramFile.getAbsolutePath());
+            sb.append(" -pf ").append(this.paramFile.getAbsolutePath()); //$NON-NLS-1$
         }
 
         if (this.protocol != null) {
-            sb.append(" -N ").append(this.protocol);
+            sb.append(" -N ").append(this.protocol); //$NON-NLS-1$
         }
 
         if (this.dbPort != null) {
-            sb.append(" -S ").append(this.dbPort);
+            sb.append(" -S ").append(this.dbPort); //$NON-NLS-1$
         }
 
         if (this.logicalName != null) {
-            sb.append(" -ld ").append(this.logicalName);
+            sb.append(" -ld ").append(this.logicalName); //$NON-NLS-1$
         }
 
         if (this.singleUser) {
-            sb.append(" -1 ");
+            sb.append(" -1 "); //$NON-NLS-1$
         }
 
         if (this.cacheFile != null) {
-            sb.append(" -cache ").append(this.cacheFile.getAbsolutePath());
+            sb.append(" -cache ").append(this.cacheFile.getAbsolutePath()); //$NON-NLS-1$
         }
 
         if (this.dataService != null) {
-            sb.append(" -DataService ").append(this.dataService);
+            sb.append(" -DataService ").append(this.dataService); //$NON-NLS-1$
         }
 
         if (this.dbType != null) {
-            sb.append(" -dt ").append(this.dbType);
+            sb.append(" -dt ").append(this.dbType); //$NON-NLS-1$
         }
 
         if (this.hostName != null) {
-            sb.append(" -H ").append(this.hostName);
+            sb.append(" -H ").append(this.hostName); //$NON-NLS-1$
         }
 
         if (this.readOnly) {
-            sb.append(" -RO ");
+            sb.append(" -RO "); //$NON-NLS-1$
         }
 
         if ((this.userName != null) && (this.password != null)) {
-            sb.append(" -U ").append(this.userName).append(" -P ").append(this.password);
+            sb.append(" -U ").append(this.userName).append(" -P ").append(this.password); //$NON-NLS-1$ //$NON-NLS-2$
         }
-		
-		return sb.toString();
-	}
-	
+
+        return sb.toString();
+    }
+
     /**
      * Populates a command line with the needed arguments to connect to the specified database
      * 
@@ -335,7 +337,7 @@ public class PCTConnection {
      * @return Collection
      */
     public Collection getAliases() {
-        return aliases.values();
+        return (aliases == null ? null : aliases.values());
     }
 
     /**
