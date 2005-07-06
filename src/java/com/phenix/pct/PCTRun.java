@@ -67,6 +67,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -111,16 +112,16 @@ public class PCTRun extends PCT {
 
     /**
      * Default constructor
-     *  
+     * 
      */
     public PCTRun() {
         super();
 
         try {
-            status = File.createTempFile("PCTResult", ".out");
-            initProc = File.createTempFile("pct_init", ".p");
+            status = File.createTempFile("PCTResult", ".out"); //$NON-NLS-1$ //$NON-NLS-2$
+            initProc = File.createTempFile("pct_init", ".p"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create temp files");
+            throw new BuildException(Messages.getString("PCTRun.0")); //$NON-NLS-1$
         }
     }
 
@@ -182,13 +183,13 @@ public class PCTRun extends PCT {
         this.debugPCT = debugPCT;
     }
 
-// En prévision du passage en v10 uniquement 
-//    public void setDebugReady(int debugReady) {
-//    	if ((debugReady >= 0) && (debugReady <= 65535))
-//    		this.debugReady = debugReady;
-//    	else
-//    		log("Port number for debugReady should be between 0 and 65535");
-//    }
+    // En prévision du passage en v10 uniquement
+    // public void setDebugReady(int debugReady) {
+    // if ((debugReady >= 0) && (debugReady <= 65535))
+    // this.debugReady = debugReady;
+    // else
+    // log("Port number for debugReady should be between 0 and 65535");
+    // }
 
     /**
      * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
@@ -349,7 +350,7 @@ public class PCTRun extends PCT {
      * @param debugReady int
      */
     public void setDebugReady(int debugReady) {
-    	this.debugReady = debugReady;
+        this.debugReady = debugReady;
     }
 
     /**
@@ -394,20 +395,21 @@ public class PCTRun extends PCT {
             int ret = Integer.parseInt(s);
 
             if (ret != 0) {
-                throw new BuildException("Return code : " + ret);
+                throw new BuildException(MessageFormat.format(
+                        Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }
         } catch (FileNotFoundException fnfe) {
             this.cleanup();
-            throw new BuildException("Progress procedure failed - No output file");
+            throw new BuildException(Messages.getString("PCTRun.1")); //$NON-NLS-1$
         } catch (IOException ioe) {
             try {
                 br.close();
             } catch (IOException ioe2) {
             }
             this.cleanup();
-            throw new BuildException("Progress procedure failed - Error reading return value");
+            throw new BuildException(Messages.getString("PCTRun.2")); //$NON-NLS-1$
         } catch (NumberFormatException nfe) {
-            throw new BuildException("Progress procedure failed - No return value");
+            throw new BuildException(Messages.getString("PCTRun.3")); //$NON-NLS-1$
         }
     }
 
@@ -416,13 +418,13 @@ public class PCTRun extends PCT {
      */
     protected void prepareExecTask() {
         if (!this.isPrepared) {
-            exec = (ExecTask) getProject().createTask("exec");
+            exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
             exec.setOwningTarget(this.getOwningTarget());
             exec.setTaskName(this.getTaskName());
             exec.setDescription(this.getDescription());
-            
+
             Environment.Variable var = new Environment.Variable();
-            var.setKey("DLC");
+            var.setKey("DLC"); //$NON-NLS-1$
             var.setValue(this.getDlcHome().toString());
             exec.addEnv(var);
         }
@@ -431,7 +433,7 @@ public class PCTRun extends PCT {
     }
 
     private void setExecTaskParams() {
-        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres"));
+        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
 
         exec.setExecutable(a.toString());
 
@@ -445,89 +447,89 @@ public class PCTRun extends PCT {
 
         // Parameter file
         if (this.paramFile != null) {
-            exec.createArg().setValue("-pf");
+            exec.createArg().setValue("-pf"); //$NON-NLS-1$
             exec.createArg().setValue(this.paramFile.getAbsolutePath());
         }
 
         // Batch mode
-        exec.createArg().setValue("-b");
+        exec.createArg().setValue("-b"); //$NON-NLS-1$
 
         // DebugReady
         if (this.debugReady != -1) {
-        	exec.createArg().setValue("-debugReady");
-        	exec.createArg().setValue(Integer.toString(this.debugReady));
+            exec.createArg().setValue("-debugReady"); //$NON-NLS-1$
+            exec.createArg().setValue(Integer.toString(this.debugReady));
         }
 
         // Inifile
         if (this.iniFile != null) {
-            exec.createArg().setValue("-basekey");
-            exec.createArg().setValue("INI");
-            exec.createArg().setValue("-ininame");
+            exec.createArg().setValue("-basekey"); //$NON-NLS-1$
+            exec.createArg().setValue("INI"); //$NON-NLS-1$
+            exec.createArg().setValue("-ininame"); //$NON-NLS-1$
             exec.createArg().setValue(this.iniFile.getAbsolutePath());
         }
 
         // Quick access to files
-        exec.createArg().setValue("-q");
+        exec.createArg().setValue("-q"); //$NON-NLS-1$
 
         // Startup procedure
-        exec.createArg().setValue("-p");
+        exec.createArg().setValue("-p"); //$NON-NLS-1$
         exec.createArg().setValue(this.initProc.getAbsolutePath());
 
         // Max length of a line
         if (this.inputChars != 0) {
-            exec.createArg().setValue("-inp");
+            exec.createArg().setValue("-inp"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.inputChars));
         }
 
         // Stream code page
         if (this.cpStream != null) {
-            exec.createArg().setValue("-cpstream");
+            exec.createArg().setValue("-cpstream"); //$NON-NLS-1$
             exec.createArg().setValue(this.cpStream);
         }
 
         // Internal code page
         if (this.cpInternal != null) {
-            exec.createArg().setValue("-cpinternal");
+            exec.createArg().setValue("-cpinternal"); //$NON-NLS-1$
             exec.createArg().setValue(this.cpInternal);
         }
 
         // Directory size
         if (this.dirSize != 0) {
-            exec.createArg().setValue("-D");
+            exec.createArg().setValue("-D"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.dirSize));
         }
 
         if (this.centuryYearOffset != 0) {
-            exec.createArg().setValue("-yy");
+            exec.createArg().setValue("-yy"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.centuryYearOffset));
         }
 
         if (this.maximumMemory != 0) {
-            exec.createArg().setValue("-mmax");
+            exec.createArg().setValue("-mmax"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.maximumMemory));
         }
 
         if (this.stackSize != 0) {
-            exec.createArg().setValue("-s");
+            exec.createArg().setValue("-s"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.stackSize));
         }
 
         if (this.token != 0) {
-            exec.createArg().setValue("-tok");
+            exec.createArg().setValue("-tok"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.token));
         }
 
         if (this.messageBufferSize != 0) {
-            exec.createArg().setValue("-Mm");
+            exec.createArg().setValue("-Mm"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.messageBufferSize));
         }
 
         if (this.compileUnderscore) {
-            exec.createArg().setValue("-zn");
+            exec.createArg().setValue("-zn"); //$NON-NLS-1$
         }
 
         if (this.ttBufferSize != 0) {
-            exec.createArg().setValue("-Bt");
+            exec.createArg().setValue("-Bt"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(this.ttBufferSize));
         }
 
@@ -539,9 +541,10 @@ public class PCTRun extends PCT {
                 if (this.numsep.length() == 1)
                     tmpSep = this.numsep.charAt(0);
                 else
-                    throw new BuildException("Invalid numsep value");
+                    throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
+                            new Object[]{"numsep"})); //$NON-NLS-1$
             }
-            exec.createArg().setValue("-numsep");
+            exec.createArg().setValue("-numsep"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(tmpSep));
         }
 
@@ -553,15 +556,16 @@ public class PCTRun extends PCT {
                 if (this.numdec.length() == 1)
                     tmpDec = this.numdec.charAt(0);
                 else
-                    throw new BuildException("Invalid numdec value");
+                    throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
+                            new Object[]{"numdec"})); //$NON-NLS-1$
             }
-            exec.createArg().setValue("-numdec");
+            exec.createArg().setValue("-numdec"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(tmpDec));
         }
 
         // Parameter
         if (this.parameter != null) {
-            exec.createArg().setValue("-param");
+            exec.createArg().setValue("-param"); //$NON-NLS-1$
             exec.createArg().setValue(this.parameter);
         }
     }
@@ -570,7 +574,7 @@ public class PCTRun extends PCT {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
 
-            bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?.");
+            bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?."); //$NON-NLS-1$
             bw.newLine();
 
             // Defines aliases
@@ -582,16 +586,16 @@ public class PCTRun extends PCT {
                     if (aliases != null) {
                         for (Iterator i = aliases.iterator(); i.hasNext();) {
                             PCTAlias alias = (PCTAlias) i.next();
-                            bw.write("CREATE ALIAS '");
+                            bw.write("CREATE ALIAS '"); //$NON-NLS-1$
                             bw.write(alias.getName());
-                            bw.write("' FOR DATABASE ");
+                            bw.write("' FOR DATABASE "); //$NON-NLS-1$
                             bw.write(dbc.getDbName());
 
                             if (alias.getNoError()) {
-                                bw.write(" NO-ERROR");
+                                bw.write(" NO-ERROR"); //$NON-NLS-1$
                             }
 
-                            bw.write(".");
+                            bw.write("."); //$NON-NLS-1$
                             bw.newLine();
                         }
                     }
@@ -606,28 +610,28 @@ public class PCTRun extends PCT {
                 // statement--use -inp parm)
                 String[] lst = this.propath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
-                    bw.write("ASSIGN PROPATH='");
+                    bw.write("ASSIGN PROPATH='"); //$NON-NLS-1$
                     bw.write(lst[k]);
-                    bw.write(File.pathSeparatorChar + "' + PROPATH.");
+                    bw.write(File.pathSeparatorChar + "' + PROPATH."); //$NON-NLS-1$
                     bw.newLine();
                 }
             }
 
-            bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR.");
+            bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
             bw.newLine();
-            bw.write("  IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.");
+            bw.write("  IF ERROR-STATUS:ERROR THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("  IF (i EQ ?) THEN ASSIGN i = INTEGER (RETURN-VALUE) NO-ERROR.");
+            bw.write("  IF (i EQ ?) THEN ASSIGN i = INTEGER (RETURN-VALUE) NO-ERROR."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("  IF (i EQ ?) THEN ASSIGN i = 1.");
+            bw.write("  IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "').");
+            bw.write("OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "')."); //$NON-NLS-1$ //$NON-NLS-2$
             bw.newLine();
-            bw.write("PUT UNFORMATTED i SKIP.");
+            bw.write("PUT UNFORMATTED i SKIP."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUT CLOSE.");
+            bw.write("OUTPUT CLOSE."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("QUIT.");
+            bw.write("QUIT."); //$NON-NLS-1$
             bw.newLine();
             bw.close();
         } catch (IOException ioe) {
@@ -654,17 +658,17 @@ public class PCTRun extends PCT {
 
             switch (c) {
                 case '\u007E' :
-                    res.append("\u007E\u007E");
+                    res.append("\u007E\u007E"); //$NON-NLS-1$
 
                     break;
 
                 case '\u0022' :
-                    res.append("\u007E\u0027");
+                    res.append("\u007E\u0027"); //$NON-NLS-1$
 
                     break;
 
                 case '\'' :
-                    res.append("\u007E\u0027");
+                    res.append("\u007E\u0027"); //$NON-NLS-1$
 
                     break;
 
@@ -687,16 +691,22 @@ public class PCTRun extends PCT {
 
     /**
      * Delete temporary files if debug not activated
-     *  
+     * 
      */
     protected void cleanup() {
         if (!this.debugPCT) {
             if (this.initProc.exists() && !this.initProc.delete()) {
-                log("Failed to delete " + this.initProc.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTRun.5"), new Object[]{this.initProc.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
             if (this.status.exists() && !this.status.delete()) {
-                log("Failed to delete " + this.status.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
     }
