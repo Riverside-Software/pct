@@ -63,6 +63,7 @@ import java.io.File;
  * Proxygen task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @version $Revision$
  */
 public class PCTProxygen extends PCT {
     // Class used by Proxygen
