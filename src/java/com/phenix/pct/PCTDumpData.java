@@ -62,6 +62,7 @@ import java.io.File;
  * Dumps data from database
  *
  * @author <a href="mailto:d.knol@steeg-software.nl">Ing. D.G. Knol</a>
+ * @version $Revision$
  */
 public class PCTDumpData extends PCTRun {
     private File destDir = null;
@@ -92,17 +93,17 @@ public class PCTDumpData extends PCTRun {
 
         if (this.dbConnList == null) {
             this.cleanup();
-            throw new BuildException("No database connection defined");
+            throw new BuildException(Messages.getString("PCTDumpData.0")); //$NON-NLS-1$
         }
 
         if (this.dbConnList.size() > 1) {
             this.cleanup();
-            throw new BuildException("More than one database connection defined");
+            throw new BuildException(Messages.getString("PCTDumpData.1")); //$NON-NLS-1$
         }
 
         if (this.destDir == null) {
             this.cleanup();
-            throw new BuildException("Mandatory argument : dump file");
+            throw new BuildException(Messages.getString("PCTDumpData.2")); //$NON-NLS-1$
         }
 
         param = destDir.toString();
@@ -111,7 +112,7 @@ public class PCTDumpData extends PCTRun {
             param = param + ',' + this.tables;
         }
 
-        this.setProcedure("pct/pctDumpData.p");
+        this.setProcedure("pct/pctDumpData.p"); //$NON-NLS-1$
         this.setParameter(param);
         super.execute();
     }

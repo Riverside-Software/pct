@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -91,7 +92,7 @@ public class PCTLibrary extends PCT {
         try {
             tmpFile = File.createTempFile("PCTLib", ".txt");
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create temp files");
+            throw new BuildException(Messages.getString("PCTLibrary.0"));
         }
     }
 
@@ -198,13 +199,12 @@ public class PCTLibrary extends PCT {
         // Library name must be defined
         if (this.destFile == null) {
             this.cleanup();
-            throw new BuildException("Library name not defined");
+            throw new BuildException(Messages.getString("PCTLibrary.1"));
         }
 
         // There must be at least one fileset
         if ((this.baseDir == null) && (this.filesets.size() == 0)) {
-            throw new BuildException("basedir attribute must be set, " + "or at least "
-                    + "one fileset must be given!");
+            throw new BuildException(Messages.getString("PCTLibrary.2"));
         }
 
         try {
@@ -319,7 +319,7 @@ public class PCTLibrary extends PCT {
                 File resourceAsFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
                 if (resourceAsFile.equals(this.destFile)) {
                     bw.close();
-                    throw new BuildException("A .pl file cannot include itself");
+                    throw new BuildException(Messages.getString("PCTLibrary.3"));
                 }
                 bw.write(dsfiles[i] + " ");
             }
@@ -327,7 +327,7 @@ public class PCTLibrary extends PCT {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to add to library");
+            throw new BuildException(Messages.getString("PCTLibrary.4"));
         }
     }
 
@@ -337,7 +337,8 @@ public class PCTLibrary extends PCT {
      */
     protected void cleanup() {
         if (this.tmpFile.exists() && !this.tmpFile.delete()) {
-            log("Failed to delete " + this.tmpFile.getAbsolutePath(), Project.MSG_VERBOSE);
+            log(MessageFormat.format(Messages.getString("PCTLibrary.5"), new Object[]{this.tmpFile
+                    .getAbsolutePath()}), Project.MSG_VERBOSE);
         }
     }
 

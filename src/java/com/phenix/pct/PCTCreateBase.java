@@ -67,10 +67,12 @@ import java.util.Vector;
  * Class for creating Progress databases
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @version $Revision$
  */
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
+
     private String dbName = null;
     private String codepage = null;
     private File destDir = null;
@@ -115,7 +117,7 @@ public class PCTCreateBase extends PCT {
      * @param noSchema "true|false|on|off|yes|no"
      */
     public void setNoSchema(boolean noSchema) {
-        this.log("noSchema is deprecated and not used anymore - Use structFile instead");
+        this.log(Messages.getString("PCTCreateBase.0")); //$NON-NLS-1$
     }
 
     /**
@@ -142,7 +144,7 @@ public class PCTCreateBase extends PCT {
      * @param overwrite "true|false|on|off|yes|no"
      */
     public void setOverwrite(boolean overwrite) {
-        log("WARNING : this attribute doesn't work properly");
+        log(Messages.getString("PCTCreateBase.1")); //$NON-NLS-1$
         this.overwrite = overwrite;
     }
 
@@ -198,12 +200,12 @@ public class PCTCreateBase extends PCT {
         // TODO : rediriger la sortie standard
         // Checking there is at least an init or a structure creation
         if ((this.structFile == null) && this.noInit) {
-            throw new BuildException("noInit and noStruct can't be both defined to true");
+            throw new BuildException(Messages.getString("PCTCreateBase.2")); //$NON-NLS-1$
         }
 
         // Checking dbName is defined
         if (this.dbName == null) {
-            throw new BuildException("Database name not defined");
+            throw new BuildException(Messages.getString("PCTCreateBase.3")); //$NON-NLS-1$
         }
 
         // Update destDir if not defined
@@ -213,16 +215,16 @@ public class PCTCreateBase extends PCT {
 
         // Checking length of the database name
         if (this.dbName.length() > DB_NAME_MAX_LENGTH) {
-            throw new BuildException("Database name is longer than 11 characters");
+            throw new BuildException(Messages.getString("PCTCreateBase.4")); //$NON-NLS-1$
         }
 
         // Checks if DB already exists
-        File db = new File(destDir, dbName + ".db");
+        File db = new File(destDir, dbName + ".db"); //$NON-NLS-1$
 
         if (db.exists()) {
             if (this.overwrite) {
                 // TODO : revoir l'effacement de l'ancienne base
-                Delete del = (Delete) getProject().createTask("delete");
+                Delete del = (Delete) getProject().createTask("delete"); //$NON-NLS-1$
                 del.setOwningTarget(this.getOwningTarget());
                 del.setTaskName(this.getTaskName());
                 del.setDescription(this.getDescription());
@@ -248,7 +250,7 @@ public class PCTCreateBase extends PCT {
             for (int i = 0; i < v.size(); i++) {
                 String sc = (String) v.elementAt(i);
                 File f = new File(this.getProject().getBaseDir(), sc);
-                PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema");
+                PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
                 pls.setOwningTarget(this.getOwningTarget());
                 pls.setTaskName(this.getTaskName());
                 pls.setDescription(this.getDescription());
@@ -273,27 +275,27 @@ public class PCTCreateBase extends PCT {
      * @return An ExecTask, ready to be executed
      */
     private ExecTask initCmdLine() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
+        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
 
         File srcDir = this.getDlcHome();
         if (this.codepage != null) {
-            srcDir = new File(srcDir, "prolang");
+            srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
             srcDir = new File(srcDir, this.codepage);
         }
-        File srcDB = new File(srcDir, "empty" + this.blockSize);
+        File srcDB = new File(srcDir, "empty" + this.blockSize); //$NON-NLS-1$
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
 
-        exec.setExecutable(getExecPath("_dbutil").toString());
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(this.destDir);
-        exec.createArg().setValue("procopy");
+        exec.createArg().setValue("procopy"); //$NON-NLS-1$
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(this.dbName);
 
         Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC");
+        var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
@@ -306,23 +308,23 @@ public class PCTCreateBase extends PCT {
      * @return An ExecTask, ready to be executed
      */
     private ExecTask structCmdLine() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
+        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
 
-        exec.setExecutable(getExecPath("_dbutil").toString());
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(this.destDir);
-        exec.createArg().setValue("prostrct");
-        exec.createArg().setValue("create");
+        exec.createArg().setValue("prostrct"); //$NON-NLS-1$
+        exec.createArg().setValue("create"); //$NON-NLS-1$
         exec.createArg().setValue(this.dbName);
         exec.createArg().setValue(this.structFile.getAbsolutePath());
-        exec.createArg().setValue("-blocksize");
+        exec.createArg().setValue("-blocksize"); //$NON-NLS-1$
         exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
 
         Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC");
+        var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 

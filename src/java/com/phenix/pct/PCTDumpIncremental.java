@@ -60,12 +60,13 @@ import java.io.File;
 
 import java.util.Iterator;
 
-
 /**
- * Creates a schema diff file between two databases. This is a wrapper around
- * prodict/dump_inc.p from POSSENET code.
+ * Creates a schema diff file between two databases. This is a wrapper around prodict/dump_inc.p
+ * from POSSENET code.
+ * 
  * @author Phillip BAIRD
  * @author <a href="justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @version $Revision$
  */
 public class PCTDumpIncremental extends PCTRun {
     private File destFile = null;
@@ -75,8 +76,8 @@ public class PCTDumpIncremental extends PCTRun {
     private int debugLevel = 0;
 
     /**
-     * Specifies if new indexes are created Active (true) or Inactive (false).
-     * Defaults to Active.
+     * Specifies if new indexes are created Active (true) or Inactive (false). Defaults to Active.
+     * 
      * @param activeIndexes boolean
      */
     public void setActiveIndexes(boolean activeIndexes) {
@@ -84,9 +85,12 @@ public class PCTDumpIncremental extends PCTRun {
     }
 
     /**
-     * Specifies the CodePage for the .df file.<ul>
-     * <li>code-page = ?,""          : default conversion (SESSION:STREAM)</li>
-     * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li></ul>
+     * Specifies the CodePage for the .df file.
+     * <ul>
+     * <li>code-page = ?,"" : default conversion (SESSION:STREAM)</li>
+     * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li>
+     * </ul>
+     * 
      * @param codePage String
      */
     public void setCodePage(String codePage) {
@@ -94,10 +98,13 @@ public class PCTDumpIncremental extends PCTRun {
     }
 
     /**
-     * Sets the debug level.<ul>
+     * Sets the debug level.
+     * <ul>
      * <li>0 = debug off (only errors and important warnings)</li>
      * <li>1 = all the above plus all warnings</li>
-     * <li>2 = all the above plus config info</li></ul>
+     * <li>2 = all the above plus config info</li>
+     * </ul>
+     * 
      * @param debugLevel integer
      */
     public void setDebugLevel(int debugLevel) {
@@ -106,6 +113,7 @@ public class PCTDumpIncremental extends PCTRun {
 
     /**
      * Output file for incremental df.
+     * 
      * @param destFile File
      */
     public void setDestFile(File destFile) {
@@ -113,17 +121,19 @@ public class PCTDumpIncremental extends PCTRun {
     }
 
     /**
-     * The RenameFile parameter is used to identify tables, database fields
-     * and sequences that have changed names. The format of the file is a comma
-     * seperated list that identifies the renamed object, its old name and the new
-     * name. When an object is found missing, this file is checked to determine if
-     * it was renamed.  If no matching entry is found, then the object
-     * TODO : finir le javadoc
-     * If RenameFile is not defined, then all missing objects are deleted.
-     * The RenameFile has following format:<ul>
+     * The RenameFile parameter is used to identify tables, database fields and sequences that have
+     * changed names. The format of the file is a comma seperated list that identifies the renamed
+     * object, its old name and the new name. When an object is found missing, this file is checked
+     * to determine if it was renamed. If no matching entry is found, then the object
+     * 
+     * If RenameFile is not defined, then all missing objects are deleted. The RenameFile has
+     * following format:
+     * <ul>
      * <li>T,&lt;old-table-name&gt;,&lt;new-table-name&gt;</li>
      * <li>F,&lt;table-name&gt;,&lt;old-field-name&gt;,&lt;new-field-name&gt;</li>
-     * <li>S,&lt;old-sequence-name&gt;,&lt;new-sequence-name&gt;</li></ul>
+     * <li>S,&lt;old-sequence-name&gt;,&lt;new-sequence-name&gt;</li>
+     * </ul>
+     * 
      * @param file File
      */
     public void setRenameFile(File file) {
@@ -132,64 +142,65 @@ public class PCTDumpIncremental extends PCTRun {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         if (this.dbConnList == null) {
             this.cleanup();
-            throw new BuildException("No database connections defined");
+            throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
         }
 
         if (this.dbConnList.size() != 2) {
             this.cleanup();
-            throw new BuildException("Two database connections must be defined");
+            throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
         }
 
-        if (!aliasDefined("dictdb")) {
+        if (!aliasDefined("dictdb")) { //$NON-NLS-1$
             this.cleanup();
-            throw new BuildException("Master database must have DICTDB alias.");
+            throw new BuildException(Messages.getString("PCTDumpIncremental.3")); //$NON-NLS-1$
         }
 
-        if (!aliasDefined("dictdb2")) {
+        if (!aliasDefined("dictdb2")) { //$NON-NLS-1$
             this.cleanup();
-            throw new BuildException("Slave database must have DICTDB2 alias.");
+            throw new BuildException(Messages.getString("PCTDumpIncremental.5")); //$NON-NLS-1$
         }
 
         if (this.destFile == null) {
             this.cleanup();
-            throw new BuildException("Mandatory argument : dump file");
+            throw new BuildException(Messages.getString("PCTDumpIncremental.6")); //$NON-NLS-1$
         }
 
         this.prepareExecTask();
 
-        this.setProcedure("prodict/dump_inc.p");
+        this.setProcedure("prodict/dump_inc.p"); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
-        var.setKey("DUMP_INC_DFFILE");
+        var.setKey("DUMP_INC_DFFILE"); //$NON-NLS-1$
         var.setValue(this.destFile.toString());
         this.exec.addEnv(var);
 
         if (this.codePage != null) {
             Environment.Variable var2 = new Environment.Variable();
-            var2.setKey("DUMP_INC_CODEPAGE");
+            var2.setKey("DUMP_INC_CODEPAGE"); //$NON-NLS-1$
             var2.setValue(this.codePage.toString());
             this.exec.addEnv(var2);
         }
 
         if (this.renameFile != null) {
             Environment.Variable var3 = new Environment.Variable();
-            var3.setKey("DUMP_INC_RENAMEFILE");
+            var3.setKey("DUMP_INC_RENAMEFILE"); //$NON-NLS-1$
             var3.setValue(this.renameFile.toString());
             this.exec.addEnv(var3);
         }
 
         Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DUMP_INC_INDEXMODE");
-        var4.setValue(this.activeIndexes ? "active" : "inactive");
+        var4.setKey("DUMP_INC_INDEXMODE"); //$NON-NLS-1$
+        var4.setValue(this.activeIndexes ? "active" : "inactive"); //$NON-NLS-1$ //$NON-NLS-2$
         this.exec.addEnv(var4);
 
         Environment.Variable var5 = new Environment.Variable();
-        var5.setKey("DUMP_INC_DEBUG");
+        var5.setKey("DUMP_INC_DEBUG"); //$NON-NLS-1$
         var5.setValue(Integer.toString(this.debugLevel));
         this.exec.addEnv(var5);
 
@@ -198,6 +209,7 @@ public class PCTDumpIncremental extends PCTRun {
 
     /**
      * Validates a database connection exists with the supplied alias.
+     * 
      * @param aliasName String
      * @return boolean
      */
