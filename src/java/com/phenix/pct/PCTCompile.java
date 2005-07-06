@@ -62,6 +62,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -94,10 +95,10 @@ public class PCTCompile extends PCTRun {
         super();
 
         try {
-            fsList = File.createTempFile("pct_filesets", ".txt");
-            params = File.createTempFile("pct_params", ".txt");
+            fsList = File.createTempFile("pct_filesets", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+            params = File.createTempFile("pct_params", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create temp files");
+            throw new BuildException(Messages.getString("PCTCompile.0")); //$NON-NLS-1$
         }
     }
 
@@ -138,7 +139,7 @@ public class PCTCompile extends PCTRun {
      * @deprecated
      */
     public void setNoXref(boolean noXref) {
-        log("noXref is deprecated and will be removed in future releases. Use forceCompile");
+        log(Messages.getString("PCTCompile.1")); //$NON-NLS-1$
         this.forceCompile = noXref;
     }
 
@@ -170,9 +171,9 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Generates a .run file in the .pct directory, which shows internal and
-     * external procedures calls
-     *
+     * Generates a .run file in the .pct directory, which shows internal and external procedures
+     * calls
+     * 
      * @param runList "true|false|on|off|yes|no"
      */
     public void setRunList(boolean runList) {
@@ -226,7 +227,7 @@ public class PCTCompile extends PCTRun {
             for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
                 // Parse filesets
                 FileSet fs = (FileSet) e.nextElement();
-                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString());
+                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString()); //$NON-NLS-1$
                 bw.newLine();
 
                 // And get files from fileset
@@ -240,7 +241,7 @@ public class PCTCompile extends PCTRun {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to compile");
+            throw new BuildException(Messages.getString("PCTCompile.2")); //$NON-NLS-1$
         }
     }
 
@@ -249,35 +250,36 @@ public class PCTCompile extends PCTRun {
      * @throws BuildException
      */
     private void writeParams() throws BuildException {
+
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
-            bw.write("FILESETS=" + fsList.getAbsolutePath());
+            bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUTDIR=" + destDir.getAbsolutePath());
+            bw.write("OUTPUTDIR=" + destDir.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("PCTDIR=" + xRefDir.getAbsolutePath());
+            bw.write("PCTDIR=" + xRefDir.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("MINSIZE=" + (this.minSize ? "1" : "0"));
+            bw.write("MINSIZE=" + (this.minSize ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("MD5=" + (this.md5 ? "1" : "0"));
+            bw.write("MD5=" + (this.md5 ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
+            bw.write("FORCECOMPILE=" + (this.forceCompile ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
+            bw.write("FAILONERROR=" + (this.failOnError ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("XCODE=" + (this.xcode ? "1" : "0"));
+            bw.write("XCODE=" + (this.xcode ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("NOCOMPILE=" + (this.noCompile ? "1" : "0"));
+            bw.write("NOCOMPILE=" + (this.noCompile ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("RUNLIST=" + (this.runList ? "1" : "0"));
+            bw.write("RUNLIST=" + (this.runList ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (this.xcodeKey != null) {
-                bw.write("XCODEKEY=" + this.xcodeKey);
+                bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$
                 bw.newLine();
             }
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write parameter list");
+            throw new BuildException(Messages.getString("PCTCompile.3")); //$NON-NLS-1$
         }
     }
 
@@ -287,49 +289,49 @@ public class PCTCompile extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        File xRefDir = null; // Where to store XREF files
+        // File xRefDir = null; // Where to store XREF files
 
         if (this.destDir == null) {
             this.cleanup();
-            throw new BuildException("destDir attribute not defined");
+            throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
         }
 
         // Test output directory
         if (this.destDir.exists()) {
             if (!this.destDir.isDirectory()) {
                 this.cleanup();
-                throw new BuildException("destDir is not a directory");
+                throw new BuildException(Messages.getString("PCTCompile.35")); //$NON-NLS-1$
             }
         } else {
             if (!this.destDir.mkdir()) {
                 this.cleanup();
-                throw new BuildException("Unable to create destDir");
+                throw new BuildException(Messages.getString("PCTCompile.36")); //$NON-NLS-1$
             }
         }
 
         // Test xRef directory
         if (this.xRefDir == null) {
-            this.xRefDir = new File(this.destDir, ".pct");
+            this.xRefDir = new File(this.destDir, ".pct"); //$NON-NLS-1$
         }
 
         if (this.xRefDir.exists()) {
             if (!this.xRefDir.isDirectory()) {
                 this.cleanup();
-                throw new BuildException("xRefDir is not a directory");
+                throw new BuildException(Messages.getString("PCTCompile.38")); //$NON-NLS-1$
             }
         } else {
             if (!this.xRefDir.mkdir()) {
                 this.cleanup();
-                throw new BuildException("Unable to create xRefDir");
+                throw new BuildException(Messages.getString("PCTCompile.39")); //$NON-NLS-1$
             }
         }
 
-        log("PCTCompile - Progress Code Compiler", Project.MSG_INFO);
+        log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
         try {
             writeFileList();
             writeParams();
-            this.setProcedure("pct/pctCompile.p");
+            this.setProcedure("pct/pctCompile.p"); //$NON-NLS-1$
             this.setParameter(params.getAbsolutePath());
             super.execute();
             this.cleanup();
@@ -349,11 +351,17 @@ public class PCTCompile extends PCTRun {
 
         if (!this.getDebugPCT()) {
             if (this.fsList.exists() && !this.fsList.delete()) {
-                log("Failed to delete " + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTCompile.42"), new Object[]{this.fsList.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
             if (this.params.exists() && !this.params.delete()) {
-                log("Failed to delete " + this.params.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTCompile.42"), new Object[]{this.params.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
     }

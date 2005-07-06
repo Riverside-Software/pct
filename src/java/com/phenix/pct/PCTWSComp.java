@@ -87,10 +87,10 @@ public class PCTWSComp extends PCTRun {
         super();
 
         try {
-            fsList = File.createTempFile("pct_filesets", ".txt");
-            params = File.createTempFile("pct_params", ".txt");
+            fsList = File.createTempFile("pct_filesets", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+            params = File.createTempFile("pct_params", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (IOException ioe) {
-            throw new BuildException("Unable to create temp files");
+            throw new BuildException(Messages.getString("PCTWSComp.4")); //$NON-NLS-1$
         }
     }
 
@@ -168,7 +168,7 @@ public class PCTWSComp extends PCTRun {
             for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
                 // Parse filesets
                 FileSet fs = (FileSet) e.nextElement();
-                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString());
+                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString()); //$NON-NLS-1$
                 bw.newLine();
 
                 // And get files from fileset
@@ -182,7 +182,7 @@ public class PCTWSComp extends PCTRun {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to compile");
+            throw new BuildException(Messages.getString("PCTWSComp.6")); //$NON-NLS-1$
         }
     }
 
@@ -193,23 +193,23 @@ public class PCTWSComp extends PCTRun {
     private void writeParams() throws BuildException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
-            bw.write("FILESETS=" + fsList.getAbsolutePath());
+            bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUTDIR=" + destDir.getAbsolutePath());
+            bw.write("OUTPUTDIR=" + destDir.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0"));
+            bw.write("FORCECOMPILE=" + (this.forceCompile ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
-            bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0"));
+            bw.write("FAILONERROR=" + (this.failOnError ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
-            bw.write("DEBUG=" + (this.debug ? "1" : "0"));
+            bw.write("DEBUG=" + (this.debug ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
-            bw.write("WEBOBJECT=" + (this.webObject ? "1" : "0"));
+            bw.write("WEBOBJECT=" + (this.webObject ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
-            bw.write("KEEPMCT=" + (this.keepMetaContentType ? "1" : "0"));
+            bw.write("KEEPMCT=" + (this.keepMetaContentType ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException("Unable to write file list to compile");
+            throw new BuildException(Messages.getString("PCTWSComp.24")); //$NON-NLS-1$
         }
     }
 
@@ -222,28 +222,28 @@ public class PCTWSComp extends PCTRun {
 
         if (this.destDir == null) {
             this.cleanup();
-            throw new BuildException("destDir attribute not defined");
+            throw new BuildException(Messages.getString("PCTWSComp.25")); //$NON-NLS-1$
         }
 
         // Test output directory
         if (this.destDir.exists()) {
             if (!this.destDir.isDirectory()) {
                 this.cleanup();
-                throw new BuildException("destDir is not a directory");
+                throw new BuildException(Messages.getString("PCTWSComp.26")); //$NON-NLS-1$
             }
         } else {
             if (!this.destDir.mkdir()) {
                 this.cleanup();
-                throw new BuildException("Unable to create destDir");
+                throw new BuildException(Messages.getString("PCTWSComp.27")); //$NON-NLS-1$
             }
         }
 
-        log("PCTWSComp - Progress WebSpeed Code Compiler", Project.MSG_INFO);
+        log(Messages.getString("PCTWSComp.28"), Project.MSG_INFO); //$NON-NLS-1$
 
         try {
             writeFileList();
             writeParams();
-            this.setProcedure("pct/pctWSComp.p");
+            this.setProcedure("pct/pctWSComp.p"); //$NON-NLS-1$
             this.setParameter(params.getAbsolutePath());
             super.execute();
             this.cleanup();
@@ -263,11 +263,11 @@ public class PCTWSComp extends PCTRun {
 
         if (!this.getDebugPCT()) {
             if (this.fsList.exists() && !this.fsList.delete()) {
-                log("Failed to delete " + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(Messages.getString("PCTWSComp.30") + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
             if (this.params.exists() && !this.params.delete()) {
-                log("Failed to delete " + this.params.getAbsolutePath(), Project.MSG_VERBOSE);
+                log(Messages.getString("PCTWSComp.31") + this.params.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
     }
