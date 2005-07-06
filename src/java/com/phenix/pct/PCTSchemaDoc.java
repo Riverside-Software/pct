@@ -57,9 +57,9 @@ import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
-
 /**
  * Creates database documentation
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTSchemaDoc extends PCTRun {
@@ -67,6 +67,7 @@ public class PCTSchemaDoc extends PCTRun {
 
     /**
      * Output directory
+     * 
      * @param file File
      */
     public void setFile(File file) {
@@ -75,25 +76,26 @@ public class PCTSchemaDoc extends PCTRun {
 
     /**
      * do the work
+     * 
      * @throws BuildException If attributes are not valid
      */
     public void execute() throws BuildException {
         if (this.destFile == null) {
             this.cleanup();
-            throw new BuildException("Output file not defined");
+            throw new BuildException(Messages.getString("PCTSchemaDoc.0")); //$NON-NLS-1$
         }
 
         if (this.dbConnList == null) {
             this.cleanup();
-            throw new BuildException("No database connection defined");
+            throw new BuildException(Messages.getString("PCTSchemaDoc.1")); //$NON-NLS-1$
         }
 
         if (this.dbConnList.size() > 1) {
             this.cleanup();
-            throw new BuildException("More than one database connection defined");
+            throw new BuildException(Messages.getString("PCTSchemaDoc.2")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctSchemaDoc.p");
+        this.setProcedure("pct/pctSchemaDoc.p"); //$NON-NLS-1$
         this.setParameter(destFile.getAbsolutePath());
         super.execute();
     }
