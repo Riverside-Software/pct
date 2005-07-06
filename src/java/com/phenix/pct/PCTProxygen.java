@@ -59,18 +59,22 @@ import org.apache.tools.ant.types.Environment;
 
 import java.io.File;
 
-
 /**
  * Proxygen task
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTProxygen extends PCT {
+    // Class used by Proxygen
+    private static final String PROXYGEN_CLASS = "com.progress.open4gl.proxygen.Batch";
+    
     private File srcFile = null;
     private boolean keepFiles = false;
     private File workingDirectory = null;
 
     /**
      * Keep files
+     * 
      * @param keepFiles boolean
      */
     public void setKeepFiles(boolean keepFiles) {
@@ -79,11 +83,12 @@ public class PCTProxygen extends PCT {
 
     /**
      * Working directory
+     * 
      * @param workingDir File
      */
     public void setWorkingDirectory(File workingDir) {
         if (!workingDir.exists()) {
-            throw new BuildException("Working directory doesn't exist");
+            throw new BuildException(Messages.getString("PCTProxygen.0")); //$NON-NLS-1$
         }
 
         this.workingDirectory = workingDir;
@@ -91,6 +96,7 @@ public class PCTProxygen extends PCT {
 
     /**
      * PXG file to use
+     * 
      * @param srcFile File
      */
     public void setSrcFile(File srcFile) {
@@ -99,68 +105,69 @@ public class PCTProxygen extends PCT {
 
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
         if (this.srcFile == null) {
-            throw new BuildException("Proxygen file not defined");
+            throw new BuildException(Messages.getString("PCTProxygen.1")); //$NON-NLS-1$
         }
 
         if (this.getDlcHome() == null) {
-            throw new BuildException("Progress installation directory not defined");
+            throw new BuildException(Messages.getString("PCTProxygen.2")); //$NON-NLS-1$
         }
 
         // Creates a new Java task to launch proxygen task
-        Java pxg = (Java) getProject().createTask("java");
+        Java pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
 
         pxg.setOwningTarget(this.getOwningTarget());
         pxg.setTaskName(this.getTaskName());
         pxg.setDescription(this.getDescription());
-        
+
         if (this.workingDirectory != null) {
             // Bug #1081209 : fork needed to change working directory
             pxg.setFork(true);
             pxg.setDir(this.workingDirectory);
         }
 
-        pxg.setClassname("com.progress.open4gl.proxygen.Batch");
+        pxg.setClassname(PROXYGEN_CLASS); //$NON-NLS-1$
 
         // Bug #1114731 : new way of handling JAR dependencies
         pxg.createClasspath().addFileset(this.getJavaFileset());
-       
+
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
         Environment.Variable var = new Environment.Variable();
-        if (this.srcFile.toString().endsWith(".xpxg"))
-            var.setKey("XPXGFile");
+        if (this.srcFile.toString().endsWith(".xpxg")) //$NON-NLS-1$
+            var.setKey("XPXGFile"); //$NON-NLS-1$
         else
-            var.setKey("PXGFile");
-            
+            var.setKey("PXGFile"); //$NON-NLS-1$
+
         var.setValue(this.srcFile.toString());
         pxg.addSysproperty(var);
 
         Environment.Variable var2 = new Environment.Variable();
-        var2.setKey("Install.Dir");
+        var2.setKey("Install.Dir"); //$NON-NLS-1$
         var2.setValue(this.getDlcHome().toString());
         pxg.addSysproperty(var2);
 
         Environment.Variable var3 = new Environment.Variable();
-        var3.setKey("Proxygen.LeaveProxyFiles");
-        var3.setValue((this.keepFiles ? "true" : "false"));
+        var3.setKey("Proxygen.LeaveProxyFiles"); //$NON-NLS-1$
+        var3.setValue((this.keepFiles ? "true" : "false")); //$NON-NLS-1$ //$NON-NLS-2$
         pxg.addSysproperty(var3);
 
         Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DLC");
+        var4.setKey("DLC"); //$NON-NLS-1$
         var4.setValue(this.getDlcHome().toString());
         pxg.addEnv(var4);
 
         // TODO : check if this sysproperty is mandatory. It's used in $DLC/bin/bproxygen.bat
         // but running without it works fine
-//        Environment.Variable var5 = new Environment.Variable();
-//        var5.setKey("Proxygen.FromGUI");
-//        var5.setValue("no");
-//        pxg.addSysproperty(var5);
-        
+        // Environment.Variable var5 = new Environment.Variable();
+        // var5.setKey("Proxygen.FromGUI");
+        // var5.setValue("no");
+        // pxg.addSysproperty(var5);
+
         // Don't use executeJava and get return code as Progress doesn't know what a return value is
         pxg.execute();
     }
