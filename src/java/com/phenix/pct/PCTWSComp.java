@@ -267,7 +267,7 @@ public class PCTWSComp extends PCTRun {
             }
 
             if (this.params.exists() && !this.params.delete()) {
-                log(Messages.getString("PCTWSComp.31") + this.params.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(Messages.getString("PCTWSComp.30") + this.params.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
     }
