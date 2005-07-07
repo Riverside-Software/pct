@@ -127,12 +127,11 @@ public class PCTCreateBaseTest extends BuildFileTest {
     }
 
     public void test7() {
-        File f = new File("sandbox/test.db");
         executeTarget("test7");
 
-        long time = f.lastModified();
-
-        // TODO : fix the overwrite attribute
+        // TODO : fix the overwrite attribute and uncomment this
+        // File f = new File("sandbox/test.db");
+        // long time = f.lastModified();
         // executeTarget("test7");
         // assert True(f.lastModified() != time);
     }
