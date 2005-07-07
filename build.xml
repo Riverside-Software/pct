@@ -135,6 +135,17 @@
   	</copy>
     <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
     <!-- To have consistent behavior between command line ANT and eclipse -->
+  	<!-- WARNING 1 : If you want to run this task from command line, be sure to remove -->
+  	<!-- ant-junit.jar from you %ANT_HOME%/lib directory -->
+  	<!-- WARNING 2 : If you want to run this task from Eclipse's Ant plugin, be sure to -->
+  	<!-- remove ant-junit.jar from your ClassPath : Window -> Preferences, section Ant -> Runtime -->
+  	<!-- Classpath tab, and remove ant-junit.jar from Ant Home Entries -->
+  	<!-- WARNING 3 : If you want to run tests from Eclipse's JUnit plugin, be sure to add -->
+  	<!-- the followings : -->
+  	<!--  * In Arguments tab, working directory should be set to ${workspace_loc:PCT/testbox} -->
+  	<!--  * In Classpath tab, add ant-junit and ant-launcher in User Entries -->
+  	<!--  * In Environment entries, add a DLC variable pointing to your DLC installation -->
+  	<!--  * And remember you always have to run the prepare-test task ... -->
   	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
       <classpath>
         <pathelement location="${basedir}/ant-junit.jar" />
