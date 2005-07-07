@@ -67,6 +67,7 @@ import java.util.Map;
  * Object to add a database connection to a PCTRun task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @version $Revision$
  */
 public class PCTConnection {
     private String dbName = null;
@@ -221,6 +222,8 @@ public class PCTConnection {
             aliases = new HashMap();
         }
 
+        // TODO There's a bug here : when this method is called, PCTAlias is not initialized, i.e. getName() will return null
+        // This is why PCTDumpIncrementalTest fails
         if (aliases.put(alias.getName(), alias) != null)
             throw new BuildException(MessageFormat.format(
                     Messages.getString("PCTConnection.0"), new Object[]{alias.getName()})); //$NON-NLS-1$
