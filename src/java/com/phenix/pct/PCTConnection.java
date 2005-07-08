@@ -213,17 +213,20 @@ public class PCTConnection {
     }
 
     /**
-     * Adds an alias to the current DB connection
+     * Adds an alias to the current DB connection.
+     * 
+     * The previous method's name (addPCTAlias) was changed when I switched from Vector to HashMap
+     * as a container for PCTAlias. When using addPCTAlias, you enter the method with a newly
+     * created object but with undefined attributes. If you method is called addConfigured then the
+     * object's attribute are set. See http://ant.apache.org/manual/develop.html#nested-elements
      * 
      * @param alias Instance of PCTAlias
      */
-    public void addPCTAlias(PCTAlias alias) {
+    public void addConfiguredPCTAlias(PCTAlias alias) {
         if (this.aliases == null) {
             aliases = new HashMap();
         }
 
-        // TODO There's a bug here : when this method is called, PCTAlias is not initialized, i.e. getName() will return null
-        // This is why PCTDumpIncrementalTest fails
         if (aliases.put(alias.getName(), alias) != null)
             throw new BuildException(MessageFormat.format(
                     Messages.getString("PCTConnection.0"), new Object[]{alias.getName()})); //$NON-NLS-1$

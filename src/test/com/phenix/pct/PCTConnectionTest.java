@@ -105,8 +105,8 @@ public class PCTConnectionTest extends TestCase {
         alias1.setName("alias1");
         alias2.setName("alias2");
         alias2.setNoError(true);
-        conn.addPCTAlias(alias1);
-        conn.addPCTAlias(alias2);
+        conn.addConfiguredPCTAlias(alias1);
+        conn.addConfiguredPCTAlias(alias2);
 
         if (conn.getAliases().size() != 2) {
             fail("There should be only 2 aliases");
@@ -131,10 +131,10 @@ public class PCTConnectionTest extends TestCase {
         PCTConnection conn = new PCTConnection();
         PCTAlias alias1 = new PCTAlias();
         alias1.setName("alias1");
-        conn.addPCTAlias(alias1);
+        conn.addConfiguredPCTAlias(alias1);
         alias1 = new PCTAlias();
         alias1.setName("alias3");
-        conn.addPCTAlias(alias1);
+        conn.addConfiguredPCTAlias(alias1);
 
         assertTrue(conn.hasNamedAlias("alias1"));
         assertTrue(conn.hasNamedAlias("alias3"));
