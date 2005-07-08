@@ -158,4 +158,29 @@
     </PCTRun>
   </target>
 
+  <target name="test14-init">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:PARAMETER.
+      RETURN "0".
+  	</echo>
+  </target>
+  <target name="test14-1">
+  	<property name="prop1" value="prop1" />
+  	<property name="prop2" value="prop2" />
+  	<property name="prop3" value="'prop3'" />
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop1} -prop2=${prop2} -prop3=${prop3}" />
+  </target>
+  <target name="test14-2">
+  	<property name="prop4" value="prop1" />
+  	<property name="prop5" value="prop2" />
+  	<property name="prop6" value='"prop3"' />
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop4} -prop2=${prop5} -prop3=${prop6}" />
+  </target>
+  <target name="test14-3">
+  	<property name="prop7" value="prop1" />
+  	<property name="prop8" value="prop2" />
+  	<property name="prop9" value="prop 3" />
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop7} -prop2=${prop8} -prop3=${prop9}" />
+  </target>
+	
 </project>

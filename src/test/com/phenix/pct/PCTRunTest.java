@@ -195,4 +195,13 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test13-part2", "This is dir2");
     }
 
+    /**
+     * Tests parameter containing quotes and so on...
+     */
+    public void test14() {
+        executeTarget("test14-init");
+        expectLog("test14-1", "-prop1=prop1 -prop2=prop2 -prop3='prop3'");
+        expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
+        expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
+    }
 }
