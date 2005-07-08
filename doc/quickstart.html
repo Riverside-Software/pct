@@ -5,11 +5,11 @@
 
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="Content-language" content="fr" />
+<meta http-equiv="Content-language" content="en" />
 <meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
-<meta name="DC.Language" content="fr" />
+<meta name="DC.Language" content="en" />
 <title>PCT documentation - Quick start</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
@@ -111,7 +111,7 @@ Download the <a href="sample1.zip">sample</a>
 <p>
 We'll create a subdir called db, containing the database dump file (called db.df).
 Just create this file :</p>
-<pre class="source"">
+<pre class="source">
 ADD TABLE "MyTable"
   AREA "Schema Area"
   DUMP-NAME "MyTable"
@@ -139,7 +139,7 @@ ASSIGN MyTable.Fld1 = "ABC"
 &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
 </pre>
 <p>and this one after line 10 :</p>
-<pre class="source"">
+<pre class="source">
 &lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
 </pre>
 <p>Now run ant build from the shell prompt. You should get the following :</p>
