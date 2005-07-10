@@ -59,7 +59,6 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Commandline.Argument;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -71,10 +70,8 @@ import java.io.IOException;
 
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.Vector;
 
 /**
@@ -119,16 +116,27 @@ public class PCTRun extends PCT {
      * 
      */
     public PCTRun() {
-        super();
-
-        try {
-            status = File.createTempFile("PCTResult", ".out"); //$NON-NLS-1$ //$NON-NLS-2$
-            initProc = File.createTempFile("pct_init", ".p"); //$NON-NLS-1$ //$NON-NLS-2$
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTRun.0")); //$NON-NLS-1$
-        }
+        this (true);
     }
 
+    /**
+     * Default constructor
+     * 
+     * @param tmp True if temporary files need to be created
+     */
+    public PCTRun(boolean tmp) {
+        super();
+        
+        if (tmp) {
+            try {
+                status = File.createTempFile("PCTResult", ".out"); //$NON-NLS-1$ //$NON-NLS-2$
+                initProc = File.createTempFile("pct_init", ".p"); //$NON-NLS-1$ //$NON-NLS-2$
+            } catch (IOException ioe) {
+                throw new BuildException(Messages.getString("PCTRun.0")); //$NON-NLS-1$
+            }
+        }
+    }
+    
     /**
      * Adds a database connection
      * 
