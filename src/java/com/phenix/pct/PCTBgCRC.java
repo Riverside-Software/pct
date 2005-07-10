@@ -55,16 +55,20 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Generates a file containing CRC for each table (multiple databases allowed)
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision$
- * @deprecated Since PCT 0.9 -- Use PCTBgCRC instead
  */
-public class PCTCRC extends PCTRun {
+public class PCTBgCRC extends PCTBgRun {
     private File destFile = null;
 
     /**
@@ -74,6 +78,17 @@ public class PCTCRC extends PCTRun {
      */
     public void setDestFile(File destFile) {
         this.destFile = destFile;
+    }
+
+    public File getDestFile() {
+        return this.destFile;
+    }
+
+    /**
+     * Returns a new listener
+     */
+    protected PCTListener getListener(PCTBgRun parent) throws IOException {
+        return new PCTCRCListener(this);
     }
 
     /**
@@ -92,8 +107,58 @@ public class PCTCRC extends PCTRun {
             throw new BuildException(Messages.getString("PCTCRC.1")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctCRCExport.p"); //$NON-NLS-1$
-        this.setParameter(destFile.toString());
         super.execute();
     }
+
+    private class PCTCRCListener extends PCTListener {
+        /**
+         * Creates a new PCTCRCListener
+         * 
+         * @param parent PCTBgRun instance
+         * @throws IOException Server socket fails
+         */
+        public PCTCRCListener(PCTBgCRC parent) throws IOException {
+            super(parent);
+        }
+
+        /**
+         * This task will run the pct/pctBgCRC.p, run its internal procedure getCRC, and then output
+         * the result to destFile
+         */
+        public void custom() throws IOException {
+            sendCommand("launch pct/pctBgCrc.p");
+            sendCommand("getCRC");
+        }
+
+        /**
+         * Reads response from Progress session. Write to destFile one line for each CRC found
+         * 
+         * @param param Procedure's parameter (empty for getCRC)
+         * @param ret Return value
+         * @param strings List of returned values
+         * @throws IOException
+         */
+        public void handleGetCRC(String param, String ret, List strings) throws IOException {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(((PCTBgCRC) this.parent)
+                    .getDestFile()));
+            for (Iterator i = strings.iterator(); i.hasNext();) {
+                bw.write((String) i.next());
+                bw.newLine();
+            }
+            bw.close();
+        }
+
+        /**
+         * Does nothing
+         * 
+         * @param param Procedure's parameter
+         * @param ret Return value
+         * @param strings List of returned values
+         * @throws IOException
+         */
+        public void handleLaunch(String param, String ret, List strings) throws IOException {
+
+        }
+    }
+
 }
