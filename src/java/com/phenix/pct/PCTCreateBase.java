@@ -61,6 +61,7 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Vector;
 
 /**
@@ -249,22 +250,34 @@ public class PCTCreateBase extends PCT {
             Vector v = StringUtils.split(this.schema, ',');
             for (int i = 0; i < v.size(); i++) {
                 String sc = (String) v.elementAt(i);
-                File f = new File(this.getProject().getBaseDir(), sc);
-                PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
-                pls.setOwningTarget(this.getOwningTarget());
-                pls.setTaskName(this.getTaskName());
-                pls.setDescription(this.getDescription());
-                pls.setSrcFile(f);
-                pls.setDlcHome(this.getDlcHome());
-                pls.setDlcBin(this.getDlcBin());
-                pls.setPropath(this.propath);
+                // Bug #1245992 : first try as an absolute path
+                File f = new File(sc);
+                if (f.isFile() && !f.canRead())
+                    throw new BuildException(MessageFormat.format(Messages
+                            .getString("PCTCreateBase.5"), new Object[]{sc}));
+                // Bug #1245992 : if this is not a file, then try relative path from ${basedir}
+                if (!f.isFile())
+                    f = new File(this.getProject().getBaseDir(), sc);
+                if (f.isFile() && f.canRead()) {
+                    PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
+                    pls.setOwningTarget(this.getOwningTarget());
+                    pls.setTaskName(this.getTaskName());
+                    pls.setDescription(this.getDescription());
+                    pls.setSrcFile(f);
+                    pls.setDlcHome(this.getDlcHome());
+                    pls.setDlcBin(this.getDlcBin());
+                    pls.setPropath(this.propath);
 
-                PCTConnection pc = new PCTConnection();
-                pc.setDbName(this.dbName);
-                pc.setDbDir(this.destDir);
-                pc.setSingleUser(true);
-                pls.addPCTConnection(pc);
-                pls.execute();
+                    PCTConnection pc = new PCTConnection();
+                    pc.setDbName(this.dbName);
+                    pc.setDbDir(this.destDir);
+                    pc.setSingleUser(true);
+                    pls.addPCTConnection(pc);
+                    pls.execute();
+                } else {
+                    throw new BuildException(MessageFormat.format(Messages
+                            .getString("PCTCreateBase.5"), new Object[]{f}));
+                }
             }
         }
     }
