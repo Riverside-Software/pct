@@ -59,9 +59,9 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-
 /**
  * Class for testing PCTCreateBase task
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTCreateBaseTest extends BuildFileTest {
@@ -86,6 +86,11 @@ public class PCTCreateBaseTest extends BuildFileTest {
         del.execute();
         del.setDir(new File("build"));
         del.execute();
+
+        Delete del2 = new Delete();
+        del2.setProject(this.project);
+        del2.setFile(new File("${user.home}/schema.df"));
+        del2.execute();
     }
 
     public void test1() {
@@ -159,6 +164,16 @@ public class PCTCreateBaseTest extends BuildFileTest {
         executeTarget("test9");
         f = new File("build/sandbox/test.r");
         assertTrue(f.exists());
+    }
+
+    public void test10() {
+        executeTarget("test10-init");
+        executeTarget("test10");
+        File f = new File("sandbox/test.db");
+        assertTrue(f.exists());
+        f = new File("build/sandbox/test.r");
+        assertTrue(f.exists());
+        expectBuildException("test10-2", "Should throw BuildException as schema doesn't exist");
     }
 
 }

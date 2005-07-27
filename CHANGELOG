@@ -4,6 +4,7 @@ Version 0.9 (??/??/????)
  * Manifest in PCT.jar
  * Added debugReady parameter in PCTRun task
  * Useless i18n :-)
+ * Bug #1245992 : PCTCreateBase, schema files and absolute paths
 
 Version 0.8 (05/13/2005)
 ==============================

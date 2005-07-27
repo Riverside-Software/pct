@@ -64,7 +64,8 @@
 	</tr>
 	<tr>
 		<td>schemaFile</td>
-		<td>Initial dump file(s) to load into database. Separate dump filenames with commas.</td>
+		<td>Initial dump file(s) to load into database. Separate dump filenames with commas. Files are resolved first
+		    as an absolute path, then relative to base directory.</td>
 		<td align="center">String</td>
 		<td align="center">Optional</td>
 		<td>No default value</td>
@@ -121,10 +122,13 @@ propath is only used during schema update.</p>
 line used is <code>procopy empty8 MyDB</code></p>
 
 <pre>
-&lt;PCTCreateBase dbName="MyDB" destDir="MyDir" dlcHome="${env.DLC}" schemaFile="MySchema.df,YourSchema.df"/&gt;
+&lt;PCTCreateBase dbName="MyDB" destDir="MyDir" dlcHome="${env.DLC}" schemaFile="/home/test/MySchema.df,YourSchema.df"/&gt;
 </pre>
 <p>Creates an empty database named MyDB in MyDir subdir of the current
-directory, then loads schema from files ./MySchema.df and ./YourSchema.df</p>
+directory, then loads schema from files /home/test/MySchema.df and YourSchema.df.
+/home/testMySchema.df will be resolved as an absolute filename, and if it's not found,
+PCT will search a file of the same name in the ${basedir} directory. Same thing will
+happen with YourSchema.df</p>
 
 <pre>
 &lt;echo file="test.st"&gt;
