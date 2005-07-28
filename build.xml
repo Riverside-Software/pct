@@ -9,15 +9,15 @@
   <property environment="env" />
 
   <!-- Some directories definitions -->
-  <property name="src.java" value="src/java" />
-  <property name="src.progress" value="src/progress" />
-  <property name="src.test" value="src/test" />
-  <property name="build" value="build" />
-  <property name="dist" value="lib" />
-  <property name="doc" value="javadoc" />
-  <property name="check" value="check" />
-  <property name="website" value="website" />
-  <property name="testdir" value="testbox" />
+  <property name="src.java" location="src/java" />
+  <property name="src.progress" location="src/progress" />
+  <property name="src.test" location="src/test" />
+  <property name="build" location="build" />
+  <property name="dist" location="lib" />
+  <property name="doc" location="javadoc" />
+  <property name="check" location="check" />
+  <property name="website" location="website" />
+  <property name="testdir" location="testbox" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="false" />
@@ -189,7 +189,7 @@
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
     <zip destfile="pct-bin.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="${dist}/PCT.jar" />
+        <include name="lib/PCT.jar" />
         <include name="CHANGELOG" />
         <include name="website/**" />
       </zipfileset>
