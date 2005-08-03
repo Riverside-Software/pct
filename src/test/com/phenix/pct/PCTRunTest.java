@@ -204,4 +204,20 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
         expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
     }
+    
+    public void test15() {
+        expectBuildException("test15", "Cannot connect to database");
+    }
+    
+    public void test16() {
+        executeTarget("test16");
+        File f = new File("sandbox/subdir/Output.txt");
+        assertTrue(f.exists());
+    }
+    
+    public void test17() {
+        executeTarget("test17");
+        File f = new File("sandbox/subdir2/Output.txt");
+        assertTrue(f.exists());
+    }
 }

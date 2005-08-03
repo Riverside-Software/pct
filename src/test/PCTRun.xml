@@ -182,5 +182,34 @@
   	<property name="prop9" value="prop 3" />
     <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop7} -prop2=${prop8} -prop3=${prop9}" />
   </target>
-	
+  
+  <target name="test15">
+    <echo file="sandbox/test.p">
+      MESSAGE "This is a test".
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <PCTConnection dbName="testdb" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+
+  <target name="test16">
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE(SESSION:TEMP-DIRECTORY + "/Output.txt").
+      OUTPUT CLOSE.
+      RETURN "0".
+    </echo>
+    <mkdir dir="sandbox/subdir" />
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" tempDir="sandbox/subdir" />
+  </target>
+
+  <target name="test17">
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE("subdir2/Output.txt").
+      OUTPUT CLOSE.
+      RETURN "0".
+    </echo>
+    <mkdir dir="sandbox/subdir2" />
+    <PCTRun procedure="test.p" dlcHome="${env.DLC}" baseDir="sandbox" />
+  </target>
 </project>

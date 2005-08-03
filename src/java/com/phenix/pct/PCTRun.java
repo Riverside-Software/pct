@@ -91,6 +91,8 @@ public class PCTRun extends PCT {
     private File paramFile = null;
     private File status = null;
     private File iniFile = null;
+    private File tempDir = null;
+    private File baseDir = null;
     private int inputChars = 0;
     private int dirSize = 0;
     private int centuryYearOffset = 0;
@@ -116,7 +118,7 @@ public class PCTRun extends PCT {
      * 
      */
     public PCTRun() {
-        this (true);
+        this(true);
     }
 
     /**
@@ -126,7 +128,7 @@ public class PCTRun extends PCT {
      */
     public PCTRun(boolean tmp) {
         super();
-        
+
         if (tmp) {
             try {
                 status = File.createTempFile("PCTResult", ".out"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -136,7 +138,7 @@ public class PCTRun extends PCT {
             }
         }
     }
-    
+
     /**
      * Adds a database connection
      * 
@@ -195,13 +197,13 @@ public class PCTRun extends PCT {
         this.debugPCT = debugPCT;
     }
 
-// En prévision du passage en v10 uniquement 
-//    public void setDebugReady(int debugReady) {
-//    	if ((debugReady >= 0) && (debugReady <= 65535))
-//    		this.debugReady = debugReady;
-//    	else
-//    		log("Port number for debugReady should be between 0 and 65535");
-//    }
+    // En prévision du passage en v10 uniquement
+    // public void setDebugReady(int debugReady) {
+    // if ((debugReady >= 0) && (debugReady <= 65535))
+    // this.debugReady = debugReady;
+    // else
+    // log("Port number for debugReady should be between 0 and 65535");
+    // }
 
     /**
      * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
@@ -366,12 +368,30 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Temporary directory for Progress runtime (-T parameter)
+     * 
+     * @param tempDir File
+     */
+    public void setTempDir(File tempDir) {
+        this.tempDir = tempDir;
+    }
+
+    /**
+     * The directory in which the Progress runtime should be executed.
+     * 
+     * @param baseDir File
+     */
+    public void setBaseDir(File baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    /**
      * Exec task is prepared ?
      * 
      * @return boolean
      */
     public boolean isPrepared() {
-    	return this.prepared;
+        return this.prepared;
     }
 
     /**
@@ -458,88 +478,88 @@ public class PCTRun extends PCT {
     }
 
     protected List getCmdLineParameters() {
-    	List list = new Vector();
+        List list = new Vector();
 
         // Parameter file
         if (this.paramFile != null) {
-        	list.add("-pf"); //$NON-NLS-1$
-        	list.add(this.paramFile.getAbsolutePath());
+            list.add("-pf"); //$NON-NLS-1$
+            list.add(this.paramFile.getAbsolutePath());
         }
 
         // Batch mode
         list.add("-b"); //$NON-NLS-1$
         list.add("-q"); //$NON-NLS-1$
-        
+
         // DebugReady
         if (this.debugReady != -1) {
-        	list.add("-debugReady"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.debugReady));
+            list.add("-debugReady"); //$NON-NLS-1$
+            list.add(Integer.toString(this.debugReady));
         }
 
         // Inifile
         if (this.iniFile != null) {
-        	list.add("-basekey"); //$NON-NLS-1$
-        	list.add("INI"); //$NON-NLS-1$
-        	list.add("-ininame"); //$NON-NLS-1$
-        	list.add(Commandline.quoteArgument(this.iniFile.getAbsolutePath()));
+            list.add("-basekey"); //$NON-NLS-1$
+            list.add("INI"); //$NON-NLS-1$
+            list.add("-ininame"); //$NON-NLS-1$
+            list.add(Commandline.quoteArgument(this.iniFile.getAbsolutePath()));
         }
 
         // Max length of a line
         if (this.inputChars != 0) {
-        	list.add("-inp"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.inputChars));
+            list.add("-inp"); //$NON-NLS-1$
+            list.add(Integer.toString(this.inputChars));
         }
 
         // Stream code page
         if (this.cpStream != null) {
-        	list.add("-cpstream"); //$NON-NLS-1$
-        	list.add(this.cpStream);
+            list.add("-cpstream"); //$NON-NLS-1$
+            list.add(this.cpStream);
         }
 
         // Internal code page
         if (this.cpInternal != null) {
-        	list.add("-cpinternal"); //$NON-NLS-1$
-        	list.add(this.cpInternal);
+            list.add("-cpinternal"); //$NON-NLS-1$
+            list.add(this.cpInternal);
         }
 
         // Directory size
         if (this.dirSize != 0) {
-        	list.add("-D"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.dirSize));
+            list.add("-D"); //$NON-NLS-1$
+            list.add(Integer.toString(this.dirSize));
         }
 
         if (this.centuryYearOffset != 0) {
-        	list.add("-yy"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.centuryYearOffset));
+            list.add("-yy"); //$NON-NLS-1$
+            list.add(Integer.toString(this.centuryYearOffset));
         }
 
         if (this.maximumMemory != 0) {
-        	list.add("-mmax"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.maximumMemory));
+            list.add("-mmax"); //$NON-NLS-1$
+            list.add(Integer.toString(this.maximumMemory));
         }
 
         if (this.stackSize != 0) {
-        	list.add("-s"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.stackSize));
+            list.add("-s"); //$NON-NLS-1$
+            list.add(Integer.toString(this.stackSize));
         }
 
         if (this.token != 0) {
-        	list.add("-tok"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.token));
+            list.add("-tok"); //$NON-NLS-1$
+            list.add(Integer.toString(this.token));
         }
 
         if (this.messageBufferSize != 0) {
-        	list.add("-Mm"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.messageBufferSize));
+            list.add("-Mm"); //$NON-NLS-1$
+            list.add(Integer.toString(this.messageBufferSize));
         }
 
         if (this.compileUnderscore) {
-        	list.add("-zn"); //$NON-NLS-1$
+            list.add("-zn"); //$NON-NLS-1$
         }
 
         if (this.ttBufferSize != 0) {
-        	list.add("-Bt"); //$NON-NLS-1$
-        	list.add(Integer.toString(this.ttBufferSize));
+            list.add("-Bt"); //$NON-NLS-1$
+            list.add(Integer.toString(this.ttBufferSize));
         }
 
         if (this.numsep != null) {
@@ -574,19 +594,36 @@ public class PCTRun extends PCT {
 
         // Parameter
         if (this.parameter != null) {
-        	list.add("-param"); //$NON-NLS-1$
-        	list.add(this.parameter);
+            list.add("-param"); //$NON-NLS-1$
+            list.add(this.parameter);
         }
-        
-    	return list;
+
+        // Temp directory
+        if (this.tempDir != null) {
+            // TODO Isn't exists method redundant with isDirectory ? Check JRE sources...
+            if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
+                throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
+                        new Object[]{this.tempDir}));
+            }
+            list.add("-T");
+            list.add(this.tempDir.getAbsolutePath());
+        }
+
+        return list;
     }
-    
+
     protected void setExecTaskParams() {
         File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
         exec.setExecutable(a.toString());
+
+        for (Iterator i = getCmdLineParameters().iterator(); i.hasNext();) {
+            exec.createArg().setValue((String) i.next());
+        }
         
-        for (Iterator i = getCmdLineParameters().iterator(); i.hasNext(); ) {
-        	exec.createArg().setValue((String) i.next());
+        // Check for base directory
+        // TODO Check previous TODO about redundancy :)
+        if (this.baseDir != null && this.baseDir.exists() && this.baseDir.isDirectory()) {
+            exec.setDir(this.baseDir);
         }
     }
 
@@ -601,11 +638,18 @@ public class PCTRun extends PCT {
             if (dbConnList != null) {
                 for (Iterator i = dbConnList.iterator(); i.hasNext();) {
                     PCTConnection dbc = (PCTConnection) i.next();
-                    bw.write("CONNECT VALUE(\"" + dbc.createConnectString() + "\") NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
+                    String connect = dbc.createConnectString();
+                    bw.write("CONNECT VALUE(\"" + connect + "\") NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
                     bw.newLine();
-                    bw.write("IF ERROR-STATUS:ERROR THEN RUN returnValue(14)."); //$NON-NLS-1$
+                    bw.write("IF ERROR-STATUS:ERROR THEN DO:");
                     bw.newLine();
-                    
+                    bw.write("  MESSAGE 'Unable to connect to " + connect + "'.");
+                    bw.newLine();
+                    bw.write("  RUN returnValue(14)."); //$NON-NLS-1$
+                    bw.newLine();
+                    bw.write("END.");
+                    bw.newLine();
+
                     Collection aliases = dbc.getAliases();
                     if (aliases != null) {
                         for (Iterator i2 = aliases.iterator(); i2.hasNext();) {
