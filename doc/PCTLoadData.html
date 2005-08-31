@@ -53,7 +53,7 @@ Load tables data from plain .d files
 <th>Default value</th>
 </tr>
 <tr>
-<td>SourceDir</td>
+<td>srcDir</td>
 <td>Source directory from where to load data</td>
 <td align="center">File</td>
 <td align="center">Required</td>
@@ -65,11 +65,11 @@ Load tables data from plain .d files
 have <strong>one and only one</strong> PCTConnection.</p>
 
 <h2>Parameters as nested elements</h2>
-None
+<p>None</p>
 
 <h2>Examples</h2>
 <pre>
-&lt;PCTLoadData sourceDir="datas" dlcHome="${env.DLC}"&gt;
+&lt;PCTLoadData srcDir="datas" dlcHome="${env.DLC}"&gt;
   &lt;PCTConnection dbName="test" singleUser="true"/&gt;
 &lt;/PCTLoadData&gt;
 </pre>
