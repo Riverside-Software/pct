@@ -212,4 +212,26 @@
     <mkdir dir="sandbox/subdir2" />
     <PCTRun procedure="test.p" dlcHome="${env.DLC}" baseDir="sandbox" />
   </target>
+  
+  <target name="test18">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:CPRCODEOUT.
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
+      <PCTRunOption value="-cprcodeout" />
+      <PCTRunOption value="utf-8" />
+    </PCTRun>
+  </target>
+    
+  <target name="test19">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:CPRCODEOUT.
+      RETURN "0".
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
+      <PCTRunOption value="-cprcodeout utf-8" />
+    </PCTRun>
+  </target>
+  
 </project>
