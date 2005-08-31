@@ -77,7 +77,7 @@ public class PCTDumpData extends PCTRun {
     }
 
     /**
-     * Output directory for dump
+     * Tables list to dump
      * @param tables the tables to dump
      */
     public void setTables(String tables) {
