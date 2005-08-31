@@ -6,6 +6,7 @@ Version 0.9 (??/??/????)
  * Useless i18n :-)
  * Bug #1245992 : PCTCreateBase, schema files and absolute paths
  * Added tempDir and baseDir attributes to PCTRun task
+ * Feature request #1229640 : PCTLoadData task (really really simple version at the moment)
 
 Version 0.8 (05/13/2005)
 ==============================
