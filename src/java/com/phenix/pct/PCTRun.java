@@ -106,6 +106,7 @@ public class PCTRun extends PCT {
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
     protected Collection dbConnList = null;
+    private Collection options = null;
     protected Path propath = null;
 
     // Internal use
@@ -150,6 +151,26 @@ public class PCTRun extends PCT {
         }
 
         this.dbConnList.add(dbConn);
+    }
+
+    /**
+     * Adds a new command line option
+     * 
+     * @param option Instance of PCTRunOption class
+     */
+    public void addOption(PCTRunOption option) {
+        if (this.options == null) {
+            this.options = new Vector();
+        }
+        
+        this.options.add(option);
+    }
+    public void addPCTRunOption(PCTRunOption option) {
+        if (this.options == null) {
+            this.options = new Vector();
+        }
+        
+        this.options.add(option);
     }
 
     /**
@@ -609,6 +630,14 @@ public class PCTRun extends PCT {
             list.add(this.tempDir.getAbsolutePath());
         }
 
+        // Additional command line options
+        if (this.options != null) {
+            for (Iterator i = this.options.iterator(); i.hasNext(); ) {
+                PCTRunOption opt = (PCTRunOption) i.next();
+                list.add(opt.getValue());
+            }
+        }
+        
         return list;
     }
 
@@ -619,7 +648,7 @@ public class PCTRun extends PCT {
         for (Iterator i = getCmdLineParameters().iterator(); i.hasNext();) {
             exec.createArg().setValue((String) i.next());
         }
-        
+
         // Check for base directory
         // TODO Check previous TODO about redundancy :)
         if (this.baseDir != null && this.baseDir.exists() && this.baseDir.isDirectory()) {
@@ -693,7 +722,8 @@ public class PCTRun extends PCT {
             bw.newLine();
             bw.write("  IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("RUN returnValue(i)."); //$NON-NLS-1$
+            bw.write("  RUN returnValue(i)."); //$NON-NLS-1$
+            bw.newLine();
             bw.newLine();
             bw.write("PROCEDURE returnValue PRIVATE."); //$NON-NLS-1$
             bw.newLine();

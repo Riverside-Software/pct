@@ -220,4 +220,13 @@ public class PCTRunTest extends BuildFileTest {
         File f = new File("sandbox/subdir2/Output.txt");
         assertTrue(f.exists());
     }
+    
+    public void test18() {
+        expectLog("test18", "utf-8");
+    }
+    
+    public void test19() {
+        expectLog("test18", "utf-8");
+    }
+    
 }

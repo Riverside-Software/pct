@@ -236,6 +236,11 @@ Adds a database connection on startup
 <p>
 Creates a nested propath, and adds it to the implicit propath.
 </p>
+<h3>Option (<a href="PCTRunOption.html">com.phenix.pct.PCTRun.PCTRunOption</a>)</h3>
+<p>
+Adds an additional command line option to prowin32 or _progres executable. These options are always appended
+at the end of the standard command line 
+</p>
 
 <h2>Examples</h2>
 <pre>
@@ -255,16 +260,18 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
 <pre>
 &lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"&gt;
   &lt;PCTConnection dbName="foo" dbDir="base" singleUser="true"&gt;
-    &lt;PCTAlias name="foo2"/&gt;
-    &lt;PCTAlias name="foo3"/&gt;
+    &lt;PCTAlias name="foo2" /&gt;
+    &lt;PCTAlias name="foo3" /&gt;
   &lt;/PCTConnection&gt;
   &lt;propath&gt;
-    &lt;pathelement path="src/include"/&gt;
-    &lt;pathelement path="src/include2"/&gt;
+    &lt;pathelement path="src/include" /&gt;
+    &lt;pathelement path="src/include2" /&gt;
   &lt;/propath&gt;
+  &lt;option value="-cprcodeout utf-8" /&gt;
 &lt;/PCTRun&gt;
 </pre>
-<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -p pctinitxxxx.p -param foobar -db base/foo -1</code></p>
+<!--  TODO Reflect latest changes on database connections -->
+<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -p pctinitxxxx.p -param foobar -db base/foo -1 -cprcodeout utf-8</code></p>
 <p>Procedure pctinitxxxx.p: <br/><code>
 CREATE ALIAS 'foo2' FOR foo.<br/>
 CREATE ALIAS 'foo3' FOR foo.<br/>
