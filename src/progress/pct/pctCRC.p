@@ -69,6 +69,9 @@ ASSIGN hBuffer = hCRC:DEFAULT-BUFFER-HANDLE
        hCRCTab = hBuffer:BUFFER-FIELD('ttTable')
        hCRCVal = hBuffer:BUFFER-FIELD('ttCRC').
 DO i = 1 TO NUM-DBS:
+  /* Flavio Cordova : no CRC for dataservers */
+  /* TODO : I'll have to add testcases for dataservers... */
+  IF DBTYPE(i) NE "PROGRESS":U THEN NEXT.
   CREATE BUFFER h_File FOR TABLE LDBNAME(i) + '._file'.
   CREATE QUERY hQuery.
   hQuery:SET-BUFFERS(h_File).
