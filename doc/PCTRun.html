@@ -270,17 +270,27 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
   &lt;option value="-cprcodeout utf-8" /&gt;
 &lt;/PCTRun&gt;
 </pre>
-<!--  TODO Reflect latest changes on database connections -->
-<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -p pctinitxxxx.p -param foobar -db base/foo -1 -cprcodeout utf-8</code></p>
-<p>Procedure pctinitxxxx.p: <br/><code>
-CREATE ALIAS 'foo2' FOR foo.<br/>
-CREATE ALIAS 'foo3' FOR foo.<br/>
-ASSIGN PROPATH='src/include2,' + PROPATH.<br/>
-ASSIGN PROPATH='src/include,' + PROPATH.<br/>
-RUN VALUE('test/test.p') NO-ERROR.<br/>
-// Check errors<br/>
-// Quit<br/></code>
-</p>
+<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p pctinitxxxx.p -cprcodeout utf-8</code></p>
+<p>Procedure pctinitxxxx.p :</p><pre class="source">
+CONNECT VALUE("-db base/foo -1").
+IF ERROR-STATUS:ERROR THEN DO:
+  MESSAGE 'Unable to connect to -db base/foo -1'.
+  RUN returnValue(14).
+END.
+CREATE ALIAS 'foo2' FOR foo.
+CREATE ALIAS 'foo3' FOR foo.
+ASSIGN PROPATH='src/include2,' + PROPATH.
+ASSIGN PROPATH='src/include,' + PROPATH.
+RUN VALUE('test/test.p') NO-ERROR.
+// Check errors and call returnValue
+PROCEDURE returnValue PRIVATE.
+  DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO.
+  OUTPUT TO VALUE('pctresultxxxxx.out').
+  PUT UNFORMATTED retVal SKIP.
+  OUTPUT CLOSE.
+  QUIT.
+END PROCEDURE.
+</pre>
 
 </div>
 
