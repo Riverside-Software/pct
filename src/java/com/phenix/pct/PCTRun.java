@@ -162,14 +162,14 @@ public class PCTRun extends PCT {
         if (this.options == null) {
             this.options = new Vector();
         }
-        
+
         this.options.add(option);
     }
     public void addPCTRunOption(PCTRunOption option) {
         if (this.options == null) {
             this.options = new Vector();
         }
-        
+
         this.options.add(option);
     }
 
@@ -217,14 +217,6 @@ public class PCTRun extends PCT {
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
     }
-
-    // En prévision du passage en v10 uniquement
-    // public void setDebugReady(int debugReady) {
-    // if ((debugReady >= 0) && (debugReady <= 65535))
-    // this.debugReady = debugReady;
-    // else
-    // log("Port number for debugReady should be between 0 and 65535");
-    // }
 
     /**
      * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
@@ -632,12 +624,12 @@ public class PCTRun extends PCT {
 
         // Additional command line options
         if (this.options != null) {
-            for (Iterator i = this.options.iterator(); i.hasNext(); ) {
+            for (Iterator i = this.options.iterator(); i.hasNext();) {
                 PCTRunOption opt = (PCTRunOption) i.next();
                 list.add(opt.getValue());
             }
         }
-        
+
         return list;
     }
 
@@ -737,7 +729,7 @@ public class PCTRun extends PCT {
             bw.newLine();
             bw.write("  QUIT."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("END PROCEDURE"); //$NON-NLS-1$
+            bw.write("END PROCEDURE."); //$NON-NLS-1$
             bw.newLine();
             bw.close();
         } catch (IOException ioe) {
