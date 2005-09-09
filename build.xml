@@ -29,6 +29,13 @@
   <!-- PCT Version -->
   <property name="pct.version" value="0.9-dev" />
 
+  <!-- If $DLC/servlets is here, we're using Progress v10 -->
+  <available file="${DLC}/servlets" type="dir" property="dlc.version" value="dlc10" />
+  <!-- Not here ? We're using Progress v9 -->
+  <condition property="dlc.version" value="dlc9">
+    <not><isset property="dlc.version" /></not>  
+  </condition>
+
   <tstamp>
     <format property="year" pattern="yyyy" />
   </tstamp>
@@ -187,7 +194,7 @@
   </target>
 
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
-    <zip destfile="pct-bin.zip">
+    <zip destfile="pct-bin-${pct.version}-${dlc.version}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="lib/PCT.jar" />
         <include name="CHANGELOG" />
@@ -205,7 +212,7 @@
   </target>
 
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <zip destfile="pct-src.zip">
+    <zip destfile="pct-src-${pct.version}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**" />
         <include name="build.xml" />
@@ -270,6 +277,9 @@
     <zip destfile="${website}/sample4.zip" whenempty="create">
       <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject" />
     </zip>
+    <zip destfile="${website}/sample5.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step5" prefix="MyProject" />
+    </zip>
   </target>
 
   <target name="sports2000doc" depends="pbuild">
@@ -291,4 +301,13 @@
     </style>
   </target>
 
+  <target name="upload" depends="website" description="Quick reminder on how to upload files">
+    <scp todir="${username}:${password}@shell.sourceforge.net:/home/groups/p/pc/pct/htdocs/">
+      <fileset dir="website" />
+    </scp>
+    <ftp userid="anonymous" password="" server="upload.sourceforge.net" binary="true" remotedir="/incoming">
+      <fileset dir="." includes="pct*.zip" />
+    </ftp>
+  </target>
+  
 </project>
