@@ -47,8 +47,8 @@ To obtain more information about this wonderful build tool, visit the official A
 </p>
 <h2>Installation (binary package)</h2>
 <p>
-The PCT plug-in comes either as a single .zip or as a tarball.
-Unzipping one of these files into a directory of your choice (referred to as <em>&lt;INST_DIR&gt;</em>)
+The PCT plug-in comes as a single .zip file. Unzipping this file into a directory of your choice
+(referred to as <em>&lt;INST_DIR&gt;</em>)
 will produce four subdirectories&nbsp;: /lib, /gui, /tty and /website. 
 </p>
 <p>You first have to copy Progress&reg; code (to $DLC/tty and $DLC/gui). Just copy the pct subdir from <i>tty</i> and <i>gui</i>
@@ -60,7 +60,7 @@ subdirectories of the binary archive.
 Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. Maybe the simplest way 
 is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
 </p>
-<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar"/&gt;</pre>
+<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar" /&gt;</pre>
 <h1>Tasks overview</h1>
 <p>
 11 tasks are available in PCT :</p>
