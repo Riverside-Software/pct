@@ -34,7 +34,37 @@
   :: <a href="links.html">Links</a>
 </div>
 
-@RIGHT_BANNER@
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+    <li><a href="PLReader.html">PLReader</a></li>
+    <li><a href="quickstart.html">Quick start</a> <span id="new">!!NEW!!</span></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpData.html">PCTDumpData</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+    <li><a href="PCTCRC.html">PCTCRC</a></li>
+    <li><a href="PCTXCode.html">PCTXCode</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTConnection.html">PCTConnection</a></li>
+    <li><a href="PCTAlias.html">PCTAlias</a></li>
+  </ul>
+</div>
 
 <div class="Text">
 <h1>Quick start</h1>
@@ -111,7 +141,7 @@ Download the <a href="sample1.zip">sample</a>
 <p>
 We'll create a subdir called db, containing the database dump file (called db.df).
 Just create this file :</p>
-<pre class="source">
+<pre class="source"">
 ADD TABLE "MyTable"
   AREA "Schema Area"
   DUMP-NAME "MyTable"
@@ -139,7 +169,7 @@ ASSIGN MyTable.Fld1 = "ABC"
 &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
 </pre>
 <p>and this one after line 10 :</p>
-<pre class="source">
+<pre class="source"">
 &lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
 </pre>
 <p>Now run ant build from the shell prompt. You should get the following :</p>
@@ -273,12 +303,22 @@ upgrade ADM2 version, the second one contains my own customizations.
 
 
 <h2>Step 5 : let's proxygen... [Download <a href="sample5.zip">sample</a>]</h2>
-<p>WORK IN PROGRESS</p>
-<p>A use case for PCTProxygen task.</p>
-
-<h2>Step 6 : a cup of Java ? [Download <a href="sample6.zip">sample</a>]</h2>
-<p>WORK IN PROGRESS</p>
-<p>On how to write Java classes which depends on proxygen classes</p>
+<p>We'll here explain how to use the <em>Java</em> proxygen. Using .Net and DLL proxygen should work identically.</p>
+<p>In the provided example, we're using a Progress 10.0A XPXG file, but 9.1 PXG files are OK too.</p>
+<p><em>Warning</em> : 10.1 XPXG files don't work for now ; 10.1 doesn't accept relative paths anymore, which is
+really annoying...</p>
+<p>Declaring a proxygen task is simple :</p>
+<pre class="source">
+  &lt;PCTProxygen workingDirectory="src" srcFile="src/MyApp.xpxg" dlcHome="${env.DLC}" /&gt;
+</pre>
+<p>Which gives the following result :</p>
+<pre class="output">
+pxg:
+[PCTProxygen] Batch ProxyGen, Version Progress 10.0A
+[PCTProxygen] Generating Proxies...
+[PCTProxygen] Proxy Generation Succeeded.
+[PCTProxygen] For details see the log file  ..\build-pxg\MyProduct.log
+</pre>
 
 </div>
 
