@@ -30,7 +30,7 @@
   <property name="pct.version" value="0.9-dev" />
 
   <!-- If $DLC/servlets is here, we're using Progress v10 -->
-  <available file="${DLC}/servlets" type="dir" property="dlc.version" value="dlc10" />
+  <available file="${env.DLC}/servlets" type="dir" property="dlc.version" value="dlc10" />
   <!-- Not here ? We're using Progress v9 -->
   <condition property="dlc.version" value="dlc9">
     <not><isset property="dlc.version" /></not>  
