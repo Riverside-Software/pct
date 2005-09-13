@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<project name="ProUnit-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+  
+  <!-- Should throw BuildException : no project file -->
+  <target name="test1">
+    <ProUnit dlcHome="${env.DLC}" />
+  </target>
+  
+  <!-- Simple test : one successful test case, no result file, no template -->
+  <target name="test2">
+    <echo file="sandbox/test.xml"><![CDATA[<?xml version="1.0" ?>
+      <ProUnitTestSuite><TestSet seq="1" name="JUnit"><TestCase seq="2" name="sandbox/test1.p"/></TestSet></ProUnitTestSuite>
+      ]]>
+    </echo>
+    <echo file="sandbox/test1.p">
+      PROCEDURE initialize:
+      END PROCEDURE.
+      PROCEDURE setUp:
+      END PROCEDURE.
+      PROCEDURE tearDown:
+      END PROCEDURE.
+      PROCEDURE dispose:
+      END PROCEDURE.
+      PROCEDURE testMyTest:
+        RUN assertTrue(TRUE).
+      END PROCEDURE.
+    </echo>
+    <ProUnit project="sandbox/test.xml"  dlcHome="${env.DLC}" >
+      <propath>
+        <path location="${env.PROUNIT_HOME}" />
+      </propath>
+    </ProUnit>
+  </target>
+
+  <!-- Simple test : one failure, no result file, no template ; should throw BuildException -->
+  <target name="test3">
+    <echo file="sandbox/test.xml"><![CDATA[<?xml version="1.0" ?>
+      <ProUnitTestSuite><TestSet seq="1" name="JUnit"><TestCase seq="2" name="sandbox/test1.p"/></TestSet></ProUnitTestSuite>
+      ]]>
+    </echo>
+    <echo file="sandbox/test1.p">
+      PROCEDURE initialize:
+      END PROCEDURE.
+      PROCEDURE setUp:
+      END PROCEDURE.
+      PROCEDURE tearDown:
+      END PROCEDURE.
+      PROCEDURE dispose:
+      END PROCEDURE.
+      PROCEDURE testMyTest:
+        RUN assertTrue(FALSE).
+      END PROCEDURE.
+    </echo>
+    <ProUnit project="sandbox/test.xml" dlcHome="${env.DLC}" >
+      <propath>
+        <path location="${env.PROUNIT_HOME}" />
+      </propath>
+    </ProUnit>
+  </target>
+  
+  <target name="test4">
+    <echo file="sandbox/test.xml"><![CDATA[<?xml version="1.0" ?>
+      <ProUnitTestSuite><TestSet seq="1" name="JUnit"><TestCase seq="2" name="sandbox/test1.p"/></TestSet></ProUnitTestSuite>
+      ]]>
+    </echo>
+    <echo file="sandbox/test1.p">
+      PROCEDURE initialize:
+      END PROCEDURE.
+      PROCEDURE setUp:
+      END PROCEDURE.
+      PROCEDURE tearDown:
+      END PROCEDURE.
+      PROCEDURE dispose:
+      END PROCEDURE.
+      PROCEDURE testMyTest:
+        RUN assertTrue(TRUE).
+      END PROCEDURE.
+    </echo>
+    <ProUnit project="sandbox/test.xml" result="sandbox/result.xml" dlcHome="${env.DLC}" >
+      <propath>
+        <path location="${env.PROUNIT_HOME}" />
+      </propath>
+    </ProUnit>
+  </target>
+
+</project>
