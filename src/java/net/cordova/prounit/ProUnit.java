@@ -9,10 +9,10 @@ import com.phenix.pct.Messages;
 import com.phenix.pct.PCTRun;
 
 /**
- * Ant task for ProUnit tests.
+ * Ant task for ProUnit tests. For more details about ProUnit, see
+ * <a href="http://sourceforge.net/projects/prounit/">the SourceForge project's page</a>
+ * or <a href="http://www.mycgiserver.com/~flaviocordova/prounit/index.htm">ProUnit's website</a>.
  * 
- * @see http://www.mycgiserver.com/~flaviocordova/prounit/index.htm
- * @see http://www.mycgiserver.com/~flaviocordova/prounit/doc/index.html
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision$
  */
