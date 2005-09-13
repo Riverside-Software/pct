@@ -20,7 +20,7 @@
   <property name="testdir" location="testbox" />
 
   <!-- Properties that control various build options -->
-  <property name="debug" value="false" />
+  <property name="debug" value="true" />
   <property name="deprecation" value="false" />
   <property name="optimize" value="false" />
   <property name="javac.source" value="1.2" />
@@ -46,7 +46,10 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" includes="com/phenix/pct/*.java" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" />
+    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
+      <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
+    </javac>
     <copy todir="${build}">
       <fileset dir="${src.java}" includes="**/*.properties" />
     </copy>
@@ -57,6 +60,7 @@
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class" />
       	<include name="com/phenix/pct/*.properties" />
+        <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
@@ -126,6 +130,7 @@
     <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
       <classpath>
         <pathelement location="${build}" />
         <pathelement location="junit.jar" />
@@ -170,6 +175,7 @@
       <batchtest>
         <fileset dir="${build}">
           <include name="com/phenix/pct/PCT*Test.class" />
+          <include name="net/cordova/prounit/*Test.class" />
         </fileset>
       </batchtest>
     </junit>
