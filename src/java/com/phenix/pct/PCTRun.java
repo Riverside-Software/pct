@@ -457,6 +457,8 @@ public class PCTRun extends PCT {
                         Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }
         } catch (FileNotFoundException fnfe) {
+            try { br.close(); }
+            catch (IOException ioe2) { }
             this.cleanup();
             throw new BuildException(Messages.getString("PCTRun.1")); //$NON-NLS-1$
         } catch (IOException ioe) {
@@ -467,6 +469,7 @@ public class PCTRun extends PCT {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTRun.2")); //$NON-NLS-1$
         } catch (NumberFormatException nfe) {
+            this.cleanup(); // Ce truc là ne serait pas manquant ??
             throw new BuildException(Messages.getString("PCTRun.3")); //$NON-NLS-1$
         }
     }
@@ -706,15 +709,15 @@ public class PCTRun extends PCT {
                 }
             }
 
-            bw.write("  RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
+            bw.write("RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
             bw.newLine();
-            bw.write("  IF ERROR-STATUS:ERROR THEN ASSIGN i = 1."); //$NON-NLS-1$
+            bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("  IF (i EQ ?) THEN ASSIGN i = INTEGER (RETURN-VALUE) NO-ERROR."); //$NON-NLS-1$
+            bw.write("IF (i EQ ?) THEN ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, ' ')) NO-ERROR."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("  IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
+            bw.write("IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
-            bw.write("  RUN returnValue(i)."); //$NON-NLS-1$
+            bw.write("RUN returnValue(i)."); //$NON-NLS-1$
             bw.newLine();
             bw.newLine();
             bw.write("PROCEDURE returnValue PRIVATE."); //$NON-NLS-1$
