@@ -6,9 +6,15 @@
 
   <property environment="env"/>
   
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+  
   <!-- Should throw BuildException : no procedure defined -->
   <target name="test1">
-    <PCTRun dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" dlcHome="${env.DLC}"/>
   </target>
    
    <!-- Simple case : displays 'Hello world' and exits properly -->
@@ -17,7 +23,7 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Simple case 2 : return value is 1 : Expect build exception -->
@@ -25,12 +31,12 @@
     <echo file="sandbox/test.p">
       RETURN "1".
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Procedure doesn't exists : Expect build exception -->
   <target name="test4">
-    <PCTRun procedure="sandbox/not_existing.p" dlcHome="${env.DLC}"/>	
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/not_existing.p" dlcHome="${env.DLC}"/>	
   </target>
   
   <!-- Return value is non numeric : Expect build exception -->
@@ -38,7 +44,7 @@
     <echo file="sandbox/test.p">
       RETURN "ABC".
     </echo>
-  	<PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+  	<PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Impossible to compile procedure : Expect build exception -->
@@ -46,7 +52,7 @@
     <echo file="sandbox/test.p">
       En voila du code qui ne compile pas.
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>	
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>	
   </target>
   
   <!-- Test propath -->
@@ -54,7 +60,7 @@
     <echo file="sandbox/test.p">
       RETURN "0".
     </echo>
-    <PCTRun procedure="test.p" dlcHome="${env.DLC}">
+    <PCTRun graphicalMode="${graph}" procedure="test.p" dlcHome="${env.DLC}">
       <propath>
         <pathelement location="sandbox"/>	
       </propath>	
@@ -67,7 +73,7 @@
     <echo file="sandbox/wizz~~'~.p">
       RETURN "0".
     </echo>
-    <PCTRun procedure="sandbox/wizz~~'~.p" dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/wizz~~'~.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Test -param attribute -->
@@ -78,10 +84,10 @@
     </echo>
   </target>
   <target name="test9">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter=" PCT"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter=" PCT"/>
   </target>
   <target name="test9bis">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Test -yy attribute - Default is 1950 -->
@@ -92,10 +98,10 @@
     </echo>
   </target>
   <target name="test10">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60" centuryYearOffset="1970"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60" centuryYearOffset="1970"/>
   </target>
   <target name="test10bis">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="60"/>
   </target>
   
   <!-- RETURN statement but no return value : considered OK -->
@@ -103,7 +109,7 @@
     <echo file="sandbox/test.p">
       RETURN.
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- Numsep and numdec tests -->
@@ -114,16 +120,16 @@
     </echo>
   </target>
   <target name="test12-part1">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="44" numdec="46"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="44" numdec="46"/>
   </target>
   <target name="test12-part2">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="46" numdec="44"/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="46" numdec="44"/>
   </target>
   <target name="test12-part3">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="." numdec=","/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="." numdec=","/>
   </target>
   <target name="test12-part4">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="," numdec="."/>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" numsep="," numdec="."/>
   </target>
   
   <!-- Propath order -->
@@ -142,7 +148,7 @@
   	</echo>
   </target>
   <target name="test13-part1">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
       <propath>
       	<pathelement location="sandbox/dir1"/>
       	<pathelement location="sandbox/dir2"/>
@@ -150,7 +156,7 @@
     </PCTRun>
   </target>
   <target name="test13-part2">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
       <propath>
       	<pathelement location="sandbox/dir2"/>
       	<pathelement location="sandbox/dir1"/>
@@ -168,19 +174,19 @@
   	<property name="prop1" value="prop1" />
   	<property name="prop2" value="prop2" />
   	<property name="prop3" value="'prop3'" />
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop1} -prop2=${prop2} -prop3=${prop3}" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop1} -prop2=${prop2} -prop3=${prop3}" />
   </target>
   <target name="test14-2">
   	<property name="prop4" value="prop1" />
   	<property name="prop5" value="prop2" />
   	<property name="prop6" value='"prop3"' />
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop4} -prop2=${prop5} -prop3=${prop6}" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop4} -prop2=${prop5} -prop3=${prop6}" />
   </target>
   <target name="test14-3">
   	<property name="prop7" value="prop1" />
   	<property name="prop8" value="prop2" />
   	<property name="prop9" value="prop 3" />
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop7} -prop2=${prop8} -prop3=${prop9}" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="-prop1=${prop7} -prop2=${prop8} -prop3=${prop9}" />
   </target>
   
   <target name="test15">
@@ -188,7 +194,7 @@
       MESSAGE "This is a test".
       RETURN "0".
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
       <PCTConnection dbName="testdb" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
@@ -200,7 +206,7 @@
       RETURN "0".
     </echo>
     <mkdir dir="sandbox/subdir" />
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" tempDir="sandbox/subdir" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" tempDir="sandbox/subdir" />
   </target>
 
   <target name="test17">
@@ -210,7 +216,7 @@
       RETURN "0".
     </echo>
     <mkdir dir="sandbox/subdir2" />
-    <PCTRun procedure="test.p" dlcHome="${env.DLC}" baseDir="sandbox" />
+    <PCTRun graphicalMode="${graph}" procedure="test.p" dlcHome="${env.DLC}" baseDir="sandbox" />
   </target>
   
   <target name="test18">
@@ -218,7 +224,7 @@
       MESSAGE SESSION:CPRCODEOUT.
       RETURN "0".
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
       <PCTRunOption value="-cprcodeout" />
       <PCTRunOption value="utf-8" />
     </PCTRun>
@@ -229,7 +235,7 @@
       MESSAGE SESSION:CPRCODEOUT.
       RETURN "0".
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
       <PCTRunOption value="-cprcodeout utf-8" />
     </PCTRun>
   </target>

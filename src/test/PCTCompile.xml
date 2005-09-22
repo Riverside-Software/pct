@@ -6,14 +6,20 @@
 
   <property environment="env"/>
   
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+  
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTCompile dlcHome="${env.DLC}" propath="tty"/>
+    <PCTCompile graphicalMode="${graph}" dlcHome="${env.DLC}" propath="tty"/>
   </target>
   
   <!-- Do nothing : should not hurt -->
   <target name="test2">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty"/>
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty"/>
   </target>
   
   <!-- Simple compilation -->
@@ -22,7 +28,7 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test.p"/>	
       </fileset>	
@@ -34,7 +40,7 @@
   	<echo file="sandbox/temp.p">
       MESSGE "Hello world!".
   	</echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>
@@ -47,14 +53,14 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test4bis">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" minSize="true" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" minSize="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -67,7 +73,7 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/wizz~~'~.p"/>
       </fileset>
@@ -81,7 +87,7 @@
   	</echo>
   </target>
   <target name="test6">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -89,7 +95,7 @@
   </target>
   <target name="test6bis">
     <sleep seconds="3"/>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -103,7 +109,7 @@
   	</echo>
   </target>
   <target name="test7">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -112,7 +118,7 @@
   <target name="test7bis">
     <sleep seconds="3"/>
     <touch file="sandbox/temp.p"/>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -126,14 +132,14 @@
   	</echo>
   </target>
   <target name="test8">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
     </PCTCompile>	
   </target>
   <target name="test8bis">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -151,7 +157,7 @@
   	</echo>
   </target>
   <target name="test9">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -159,7 +165,7 @@
   </target>
   <target name="test9bis">
   	<touch file="sandbox/temp.i"/>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -177,7 +183,7 @@
   	</echo>
   </target>
   <target name="test10">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -185,7 +191,7 @@
   </target>
   <target name="test10bis">
   	<touch file="sandbox/temp.i"/>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -202,7 +208,7 @@
   	</echo>
   </target>
   <target name="test11">
-    <PCTCompile failOnError="true" destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" failOnError="true" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -219,14 +225,14 @@
   	</echo>
   </target>
   <target name="test12">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test12bis">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" compileUnderscore="true" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" compileUnderscore="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -248,7 +254,7 @@
     </echo>
   </target>
   <target name="test13">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -257,7 +263,7 @@
   <target name="test13bis">
     <sleep seconds="3"/>
     <touch file="sandbox/temp2.i"/>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -303,7 +309,7 @@
       CREATE tt.
       ASSIGN tt.fld1 = 1.
     </echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -321,10 +327,10 @@
         COLUMN-LABEL "Fld2"
         ORDER 20
     </echo>
-    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${env.DLC}" propath="tty">
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -368,7 +374,7 @@
       CREATE abc.tab1.
       ASSIGN abc.tab1.fld1 = 1.
     </echo>
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -376,7 +382,7 @@
     </PCTCompile>
   </target>
   <target name="test15bis">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -398,7 +404,7 @@
     </PCTXCode>
   </target>
   <target name="test16">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
         <include name="xcode/temp.p"/>
@@ -420,14 +426,14 @@
     </PCTXCode>
   </target>
   <target name="test17-part1">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true">
       <fileset dir=".">
         <include name="xcode/temp.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test17-part2">
-    <PCTCompile destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true" xcodekey="pct">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty" xcode="true" xcodekey="pct">
       <fileset dir=".">
         <include name="xcode/temp.p"/>
       </fileset>
