@@ -18,7 +18,8 @@
   <property name="check" location="check" />
   <property name="website" location="website" />
   <property name="testdir" location="testbox" />
-
+  <property name="junit" location="junit-report" />
+  
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
   <property name="deprecation" value="false" />
@@ -158,13 +159,13 @@
   	<!--  * In Classpath tab, add ant-junit and ant-launcher in User Entries -->
   	<!--  * In Environment entries, add a DLC variable pointing to your DLC installation -->
   	<!--  * And remember you always have to run the prepare-test task ... -->
-  	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+  	<!--<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" onerror="report">
       <classpath>
         <pathelement location="${basedir}/ant-junit.jar" />
         <pathelement location="${basedir}/junit.jar" />
         <pathelement location="${basedir}/ant-launcher.jar" />
       </classpath>
-    </taskdef>
+    </taskdef>-->
   </target>
   	
   <target name="test" depends="prepare-test" description="Starts tests">
@@ -184,7 +185,7 @@
       <fileset dir="${basedir}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" styledir="${basedir}"/>
+      <report format="frames" styledir="${basedir}" todir="${junit}"/>
     </junitreport>
   </target>
 
@@ -239,6 +240,7 @@
     <delete dir="${check}" />
     <delete dir="${website}" />
     <delete dir="sports2000" />
+    <delete dir="${junit}" />
     <delete>
       <fileset dir=".">
         <include name="pct*.tar.gz" />
@@ -247,7 +249,7 @@
     </delete>
   </target>
 
-  <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
+  <target name="website" depends="javadoc,sports2000doc,test" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}" />
     <mkdir dir="${website}" />
     <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include"/>
@@ -269,6 +271,16 @@
     </copy>
     <copy todir="${website}/sports2000">
       <fileset dir="sports2000/doc">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit">
+      <fileset dir="${junit}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/javadoc">
+      <fileset dir="${doc}">
         <include name="**" />
       </fileset>
     </copy>
