@@ -637,7 +637,7 @@ public class PCTRun extends PCT {
     }
 
     protected void setExecTaskParams() {
-        File a = this.getExecPath((this.graphMode ? "prowin32.exe" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
+        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
         exec.setExecutable(a.toString());
 
         for (Iterator i = getCmdLineParameters().iterator(); i.hasNext();) {
