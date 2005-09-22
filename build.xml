@@ -168,10 +168,11 @@
   </target>
   	
   <target name="test" depends="prepare-test" description="Starts tests">
-    <junit printsummary="yes" haltonfailure="yes" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
+    <junit printsummary="yes" haltonfailure="no" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="${build}" />
       </classpath>
+      <formatter type="xml" />
       <batchtest>
         <fileset dir="${build}">
           <include name="com/phenix/pct/PCT*Test.class" />
@@ -179,12 +180,12 @@
         </fileset>
       </batchtest>
     </junit>
-    <!--<junitreport>
-      <fileset dir="${build}">
+    <junitreport>
+      <fileset dir="${basedir}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="noframes" styledir="${basedir}"/>
-    </junitreport>-->
+      <report format="frames" styledir="${basedir}"/>
+    </junitreport>
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
