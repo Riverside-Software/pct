@@ -7,3 +7,7 @@ website
 pct-bin*
 pct-src*
 testbox
+TEST*.xml
+*.html
+*.css
+junit-report

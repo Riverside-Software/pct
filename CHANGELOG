@@ -10,6 +10,7 @@ Version 0.9 (??/??/????)
  * Bug #1276486 : patch from Flavio Cordova (bug not closed for now, waiting for further testing)
  * Feature request #1276506 : now possible to add custom parameters in PCTRun
  * Added a ProUnit task -- Some attributes are missing and doc is not written for now...
+ * JUnit reports in documentation
 
 Version 0.8 (05/13/2005)
 ==============================
