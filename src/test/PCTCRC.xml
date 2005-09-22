@@ -5,15 +5,21 @@
   <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
+
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
   
   <!-- Should throw BuildException : no dest file -->
   <target name="test1">
-    <PCTCRC dlcHome="${env.DLC}"/>
+    <PCTCRC graphicalMode="${graph}" dlcHome="${env.DLC}"/>
   </target>
   
   <!-- No database connection : should throw BuildException -->
   <target name="test2">
-    <PCTCRC destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty"/>
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty"/>
   </target>
   <target name="test2post">
     <delete file="sandbox/crc"/>
@@ -49,7 +55,7 @@
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
   </target>
   <target name="test3">
-    <PCTCRC destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTCRC>
   </target>
@@ -85,7 +91,7 @@
     <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
   </target>
   <target name="test4">
-    <PCTCRC destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
     </PCTCRC>
