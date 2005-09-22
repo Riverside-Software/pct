@@ -139,6 +139,7 @@
     </PCTCompile>	
   </target>
   <target name="test8bis">
+    <sleep seconds="3" />
     <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
@@ -164,7 +165,8 @@
     </PCTCompile>
   </target>
   <target name="test9bis">
-  	<touch file="sandbox/temp.i"/>
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
     <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
@@ -190,7 +192,8 @@
     </PCTCompile>	
   </target>
   <target name="test10bis">
-  	<touch file="sandbox/temp.i"/>
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
     <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="tty">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
@@ -330,6 +333,7 @@
     <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${env.DLC}" propath="tty">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
+    <sleep seconds="2" />
     <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="tty">
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
