@@ -86,8 +86,8 @@ public class PCTCompileTest extends BuildFileTest {
         del.execute();
         del.setDir(new File("sandbox"));
         del.execute();
-        /*del.setDir(new File("xcode"));
-        del.execute();*/
+        del.setDir(new File("xcode"));
+        del.execute();
     }
 
     public void test1() {
