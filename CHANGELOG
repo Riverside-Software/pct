@@ -11,7 +11,9 @@ Version 0.9 (??/??/????)
  * Feature request #1276506 : now possible to add custom parameters in PCTRun
  * Added a ProUnit task -- Some attributes are missing and doc is not written for now...
  * JUnit reports in documentation
-
+ * Bug #1311746 : mixed case extension are not handled correctly.
+ * Always forking Java task : the previous behaviour was to fork only when working directory was specified.
+ 
 Version 0.8 (05/13/2005)
 ==============================
  * PCT can be compiled with JDK 1.5 (just added source attribute in javac task)
