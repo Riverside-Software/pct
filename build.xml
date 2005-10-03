@@ -143,8 +143,8 @@
   	<!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
   	<copy todir="${testdir}">
-  	  <fileset dir="${src.test}" includes="*.xml" />
-      <fileset dir="${src.progress}" includes="**" />
+  	  <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg" />
+      <fileset dir="src" includes="progress/**" />
   	</copy>
     <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
     <!-- To have consistent behavior between command line ANT and eclipse -->
