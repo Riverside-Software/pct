@@ -1,30 +1,32 @@
 <?xml version="1.0"?>
 
 <project name="PCTCRC-test" default="">
+  <!-- $Revision$ -->
 
-  <taskdef resource="PCT.properties" classpath="."/>
+  <taskdef resource="PCT.properties" classpath="." />
 
-  <property environment="env"/>
+  <property environment="env" />
+  <property name="pct-propath" location="progress" />
 
   <!-- Test prowin32 on Windows, _progres on everything else -->
   <property name="graph" value="false" />
   <condition property="graph" value="true">
     <os family="windows" />
   </condition>
-  
+
   <!-- Should throw BuildException : no dest file -->
   <target name="test1">
-    <PCTCRC graphicalMode="${graph}" dlcHome="${env.DLC}"/>
+    <PCTCRC graphicalMode="${graph}" dlcHome="${env.DLC}" propath="${pct-propath}" />
   </target>
-  
+
   <!-- No database connection : should throw BuildException -->
   <target name="test2">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty"/>
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="${pct-propath}" />
   </target>
   <target name="test2post">
-    <delete file="sandbox/crc"/>
+    <delete file="sandbox/crc" />
   </target>
-  
+
   <!-- One database -->
   <target name="test3pre">
     <echo file="sandbox/schema.df">
@@ -52,11 +54,11 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
   <target name="test3">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
-      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTCRC>
   </target>
 
@@ -87,13 +89,13 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
   <target name="test4">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="tty">
-      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
-      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
     </PCTCRC>
   </target>
 </project>

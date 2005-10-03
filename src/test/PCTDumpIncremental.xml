@@ -5,7 +5,8 @@
   <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
-  
+  <property name="pct-propath" location="progress" />
+
   <target name="test1init">
     <echo file="sandbox/schema.df">
       UPDATE DATABASE "?"
@@ -32,11 +33,11 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" propath="tty"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}"/>
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" propath="${pct-propath}"/>
   </target>
   <target name="test1">
-    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="tty">
+    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb"/>
       </PCTConnection>
@@ -46,14 +47,14 @@
     </PCTDumpIncremental>
   </target>
   <target name="test1bis">
-    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="tty">
+    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${env.DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
     <echo file="sandbox/test1.p">
       CREATE Tab1.
       ASSIGN Tab1.Fld1 = 0.
     </echo>
-    <PCTCompile destDir="sandbox" dlcHome="${env.DLC}" propath="tty">
+    <PCTCompile destDir="sandbox" dlcHome="${env.DLC}" propath="${pct-propath}">
       <fileset dir="sandbox">
         <include name="test1.p"/>	
       </fileset>
