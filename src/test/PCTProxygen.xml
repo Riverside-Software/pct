@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="PCTProxygen-test" default="">
+  <!-- $Revision$ -->
+
+  <taskdef resource="PCT.properties" classpath="." />
+  
+  <property environment="env" />
+  <property name="pct-propath" location="progress" />
+
+  <!-- Missing file, should throw BuildException -->
+  <target name="test1">
+    <PCTProxygen srcFile="test.pxg" />
+  </target>
+
+  <!-- Simple v9 PXG file, we should get a class -->
+  <target name="test2-init">
+    <echo file="sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="pxg" />
+  </target>
+  <target name="test2">
+    <PCTProxygen srcFile="test1.pxg" dlcHome="${env.DLC}" />
+  </target>
+
+  <!-- Simple v10 XPXG file, we should get a class -->
+  <target name="test3-init">
+    <echo file="sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="pxg" />
+  </target>
+  <target name="test3">
+    <PCTProxygen srcFile="test1.xpxg" dlcHome="${env.DLC}" />
+  </target>
+
+  <!-- Simple v10 XPXG file with working directory, we should get a class -->
+  <target name="test4-init">
+    <mkdir dir="sandbox/sandbox" />
+    <echo file="sandbox/sandbox/test.p">
+      MESSAGE "This is a test".
+    </echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}" basedir="sandbox">
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="sandbox/pxg" />
+  </target>
+  <target name="test4">
+    <PCTProxygen srcFile="test1.xpxg" dlcHome="${env.DLC}" workingDirectory="sandbox" />
+  </target>
+  
+</project>
