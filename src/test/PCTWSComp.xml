@@ -5,15 +5,16 @@
   <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
+  <property name="pct-propath" location="progress" />
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTWSComp dlcHome="${env.DLC}"/>
+    <PCTWSComp dlcHome="${env.DLC}" propath="${pct-propath}" />
   </target>
   
   <!-- Do nothing : should not hurt -->
   <target name="test2">
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty"/>
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}" />
   </target>
   
   <!-- Simple compilation -->
@@ -26,7 +27,7 @@
         &lt;p&gt;Today : 'vdate'&lt;/p&gt;
       &lt;/body&gt;
     </echo>
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
       <fileset dir=".">
         <include name="sandbox/simple.html"/>	
       </fileset>	
@@ -34,7 +35,7 @@
   </target>
   <!-- And now with include directive -->
   <target name="test3-part2">
-    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="tty" webObject="false">
+    <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}" webObject="false">
       <fileset dir=".">
         <include name="sandbox/simple.html"/>	
       </fileset>	

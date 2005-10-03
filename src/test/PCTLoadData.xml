@@ -5,15 +5,16 @@
   <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
+  <property name="pct-propath" location="progress" />
 
   <!-- Should throw BuildException : no filesets and no connection -->
   <target name="test1">
-    <PCTLoadData dlcHome="${env.DLC}" />
+    <PCTLoadData dlcHome="${env.DLC}" propath="${pct-propath}" />
   </target>
 
   <!-- Should throw BuildException : no filesets (or srcDir) defined -->
   <target name="test2">
-    <PCTLoadData dlcHome="${env.DLC}">
+    <PCTLoadData dlcHome="${env.DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadData>
   </target>
@@ -21,7 +22,7 @@
   <!-- Should throw BuildException : no connection defined -->
   <target name="test3">
     <!-- When using PCTLoadData -->
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" />
+    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" propath="${pct-propath}" />
     <!-- When using PCTBgLoadData -->
     <!--
     <PCTLoadData dlcHome="${env.DLC}">
@@ -77,11 +78,11 @@ cpstream=utf-8
       MESSAGE Tab1.Fld1.
       RETURN "0".
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="tty"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}"/>
   </target>
   <target name="test4init2">
     <!-- When using PCTLoadData : -->
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" numsep="44" numdec="46">
+    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" numsep="44" numdec="46" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadData>
     <!-- When using PCTBgLoadData : -->
@@ -93,7 +94,7 @@ cpstream=utf-8
     -->
   </target>
   <target name="test4">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
