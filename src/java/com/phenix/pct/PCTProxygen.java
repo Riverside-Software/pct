@@ -125,10 +125,15 @@ public class PCTProxygen extends PCT {
         pxg.setTaskName(this.getTaskName());
         pxg.setDescription(this.getDescription());
 
+        // The previous behaviour was to fork only when working directory was specified.
+        // This caused problems with JUnit testing, as I think there are System.exit statements
+        // in proxygen code
+        pxg.setFork(true);
         if (this.workingDirectory != null) {
-            // Bug #1081209 : fork needed to change working directory
-            pxg.setFork(true);
             pxg.setDir(this.workingDirectory);
+        }
+        else {
+            pxg.setDir(this.getProject().getBaseDir());
         }
 
         pxg.setClassname(PROXYGEN_CLASS); //$NON-NLS-1$
@@ -139,7 +144,11 @@ public class PCTProxygen extends PCT {
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
         Environment.Variable var = new Environment.Variable();
-        if (this.srcFile.toString().endsWith(".xpxg")) //$NON-NLS-1$
+        // Bug #1311746 : mixed case extension are not handled correctly
+        // So, at first extract extension and then compare ignore case
+        int ext_pos = this.srcFile.toString().lastIndexOf('.');
+        String extension = (ext_pos == -1 ? "" : this.srcFile.toString().substring(ext_pos));
+        if (extension.equalsIgnoreCase(".xpxg")) //$NON-NLS-1$
             var.setKey("XPXGFile"); //$NON-NLS-1$
         else
             var.setKey("PXGFile"); //$NON-NLS-1$
