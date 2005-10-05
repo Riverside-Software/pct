@@ -236,7 +236,7 @@ Adds a database connection on startup
 <p>
 Creates a nested propath, and adds it to the implicit propath.
 </p>
-<h3>Option (<a href="PCTRunOption.html">com.phenix.pct.PCTRun.PCTRunOption</a>)</h3>
+<h3>PCTRunOption (<a href="PCTRunOption.html">com.phenix.pct.PCTRun.PCTRunOption</a>)</h3>
 <p>
 Adds an additional command line option to prowin32 or _progres executable. These options are always appended
 at the end of the standard command line 
@@ -267,7 +267,7 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
     &lt;pathelement path="src/include" /&gt;
     &lt;pathelement path="src/include2" /&gt;
   &lt;/propath&gt;
-  &lt;option value="-cprcodeout utf-8" /&gt;
+  &lt;PCTRunOption value="-cprcodeout utf-8" /&gt;
 &lt;/PCTRun&gt;
 </pre>
 <p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p pctinitxxxx.p -cprcodeout utf-8</code></p>
