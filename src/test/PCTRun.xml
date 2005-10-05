@@ -239,5 +239,18 @@
       <PCTRunOption value="-cprcodeout utf-8" />
     </PCTRun>
   </target>
-  
+
+  <target name="test20">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/profiler.pf">
+      -FILENAME sandbox/profiler.out
+      -LISTINGS sandbox
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
+      <PCTRunOption value="-zprofile sandbox/profiler.pf" />
+    </PCTRun>
+  </target>
+
 </project>
