@@ -228,5 +228,8 @@ public class PCTRunTest extends BuildFileTest {
     public void test19() {
         expectLog("test18", "utf-8");
     }
-    
+
+    public void test20() {
+        executeTarget("test20");
+    }
 }
