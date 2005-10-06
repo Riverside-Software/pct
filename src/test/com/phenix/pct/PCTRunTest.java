@@ -221,15 +221,40 @@ public class PCTRunTest extends BuildFileTest {
         assertTrue(f.exists());
     }
     
+    /**
+     * Run option test
+     */
     public void test18() {
         expectLog("test18", "utf-8");
     }
     
+    /**
+     * Spaces in parameter, this should fail 
+     */
     public void test19() {
-        expectBuildException("test19", "Spaces in PCTRunOption");
+        expectBuildException("test19", "Should fail because of spaces");
     }
 
+    /**
+     * Name parameter is mandatory in PCTRunOption
+     */
     public void test20() {
-        expectBuildException("test20", "Spaces in PCTRunOption");
+        expectBuildException("test20", "Name parameter is mandatory in PCTRunOption");
+    }
+    
+    /**
+     * Profiler should be started, and sandbox/profiler.out created
+     */
+    public void test21() {
+        File f = new File("sandbox/profiler.out");
+        executeTarget("test21");
+        assertTrue(f.exists());
+    }
+    
+    /**
+     * Parameter should be in quotes
+     */
+    public void test22() {
+        expectLog("test22", "Message with spaces");
     }
 }

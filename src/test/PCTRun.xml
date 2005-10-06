@@ -225,8 +225,8 @@
       RETURN "0".
     </echo>
     <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
-      <PCTRunOption value="-cprcodeout" />
-      <PCTRunOption value="utf-8" />
+      <PCTRunOption name="-cprcodeout" />
+      <PCTRunOption name="utf-8" />
     </PCTRun>
   </target>
     
@@ -236,7 +236,7 @@
       RETURN "0".
     </echo>
     <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
-      <PCTRunOption value="-cprcodeout utf-8" />
+      <PCTRunOption name="-cprcodeout utf-8" />
     </PCTRun>
   </target>
 
@@ -244,12 +244,31 @@
     <echo file="sandbox/test.p">
       RETURN "0".
     </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <PCTRunOption value="-zprofile sandbox/profiler.pf" />
+    </PCTRun>
+  </target>
+
+  <target name="test21">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
     <echo file="sandbox/profiler.pf">
       -FILENAME sandbox/profiler.out
       -LISTINGS sandbox
     </echo>
-    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" cpInternal="iso8859-1">
-      <PCTRunOption value="-zprofile sandbox/profiler.pf" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <PCTRunOption name="-zprofile" value="sandbox/profiler.pf" />
+    </PCTRun>
+  </target>
+
+  <target name="test22">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:PARAMETER.
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <PCTRunOption name="-param" value="Message with spaces" />
     </PCTRun>
   </target>
 
