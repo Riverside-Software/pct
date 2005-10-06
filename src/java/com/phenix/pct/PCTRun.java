@@ -457,8 +457,10 @@ public class PCTRun extends PCT {
                         Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }
         } catch (FileNotFoundException fnfe) {
-            try { br.close(); }
-            catch (IOException ioe2) { }
+            try {
+                br.close();
+            } catch (IOException ioe2) {
+            }
             this.cleanup();
             throw new BuildException(Messages.getString("PCTRun.1")); //$NON-NLS-1$
         } catch (IOException ioe) {
@@ -629,7 +631,12 @@ public class PCTRun extends PCT {
         if (this.options != null) {
             for (Iterator i = this.options.iterator(); i.hasNext();) {
                 PCTRunOption opt = (PCTRunOption) i.next();
-                list.add(opt.getValue());
+                if (opt.getName() == null) {
+                    throw new BuildException("PCTRun.8"); //$NON-NLS-1$
+                }
+                list.add(opt.getName());
+                if (opt.getValue() != null)
+                    list.add(opt.getValue());
             }
         }
 
