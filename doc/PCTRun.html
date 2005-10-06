@@ -240,8 +240,8 @@ Creates a nested propath, and adds it to the implicit propath.
 <p>
 Adds an additional command line option to prowin32 or _progres executable. These options are always appended
 at the end of the standard command line (before -p parameter).</p>
-<p><em>WARNING</em> : an option containing a space will be surrounded by quotes. So, if you want to add
-<b>-profile file_name.pf</b>, you have to create two different PCTRunOption nodes.</p>
+<p><em>WARNING</em> : an option containing a space will be surrounded by quotes. If a value is needed by a
+parameter, add it in the value attribute. This is needed if the value contains spaces for example.</p>
 
 <h2>Examples</h2>
 <pre>
@@ -268,8 +268,7 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</cod
     &lt;pathelement path="src/include" /&gt;
     &lt;pathelement path="src/include2" /&gt;
   &lt;/propath&gt;
-  &lt;PCTRunOption value="-cprcodeout" /&gt;
-  &lt;PCTRunOption value="utf-8" /&gt;
+  &lt;PCTRunOption name="-cprcodeout" value="utf-8" /&gt;
 &lt;/PCTRun&gt;
 </pre>
 <p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -cprcodeout utf-8 -p pctinitxxxx.p</code></p>
