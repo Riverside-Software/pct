@@ -226,10 +226,10 @@ public class PCTRunTest extends BuildFileTest {
     }
     
     public void test19() {
-        expectLog("test19", "utf-8");
+        expectBuildException("test19", "Spaces in PCTRunOption");
     }
 
     public void test20() {
-        executeTarget("test20");
+        expectBuildException("test20", "Spaces in PCTRunOption");
     }
 }
