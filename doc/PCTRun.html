@@ -239,8 +239,9 @@ Creates a nested propath, and adds it to the implicit propath.
 <h3>PCTRunOption (<a href="PCTRunOption.html">com.phenix.pct.PCTRun.PCTRunOption</a>)</h3>
 <p>
 Adds an additional command line option to prowin32 or _progres executable. These options are always appended
-at the end of the standard command line 
-</p>
+at the end of the standard command line (before -p parameter).</p>
+<p><em>WARNING</em> : an option containing a space will be surrounded by quotes. So, if you want to add
+<b>-profile file_name.pf</b>, you have to create two different PCTRunOption nodes.</p>
 
 <h2>Examples</h2>
 <pre>
@@ -254,7 +255,7 @@ Commandline : <code>${env.DLC}/bin/_progres -b -p test.p</code>
 &lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"/&gt;
 </pre>
 <p>
-Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</code>
+Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</code>
 </p>
 
 <pre>
@@ -267,10 +268,11 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -p test/test.p -param foobar</cod
     &lt;pathelement path="src/include" /&gt;
     &lt;pathelement path="src/include2" /&gt;
   &lt;/propath&gt;
-  &lt;PCTRunOption value="-cprcodeout utf-8" /&gt;
+  &lt;PCTRunOption value="-cprcodeout" /&gt;
+  &lt;PCTRunOption value="utf-8" /&gt;
 &lt;/PCTRun&gt;
 </pre>
-<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p pctinitxxxx.p -cprcodeout utf-8</code></p>
+<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -cprcodeout utf-8 -p pctinitxxxx.p</code></p>
 <p>Procedure pctinitxxxx.p :</p><pre class="source">
 CONNECT VALUE("-db base/foo -1").
 IF ERROR-STATUS:ERROR THEN DO:
