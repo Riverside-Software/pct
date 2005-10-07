@@ -88,4 +88,29 @@
     </ProUnit>
   </target>
 
+  <target name="test5">
+    <echo file="sandbox/test.xml"><![CDATA[<?xml version="1.0" ?>
+      <ProUnitTestSuite><TestSet seq="1" name="JUnit"><TestCase seq="2" name="sandbox/test1.p"/></TestSet></ProUnitTestSuite>
+      ]]>
+    </echo>
+    <echo file="sandbox/test1.p">
+      PROCEDURE initialize:
+      END PROCEDURE.
+      PROCEDURE setUp:
+      END PROCEDURE.
+      PROCEDURE tearDown:
+      END PROCEDURE.
+      PROCEDURE dispose:
+      END PROCEDURE.
+      PROCEDURE testMyTest:
+        RUN assertTrue(TRUE).
+      END PROCEDURE.
+    </echo>
+    <ProUnit project="sandbox/test.xml" result="sandbox/result.xml" dlcHome="${env.DLC}" template="default">
+      <propath>
+        <path location="${env.PROUNIT_HOME}" />
+      </propath>
+    </ProUnit>
+  </target>
+  
 </project>
