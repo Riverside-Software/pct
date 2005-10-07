@@ -1,4 +1,4 @@
-Version 0.9 (??/??/????)
+Version 0.9 (07/10/2005)
 ==============================
  * Upgrading to ANT 1.6.5
  * Manifest in PCT.jar
@@ -9,7 +9,7 @@ Version 0.9 (??/??/????)
  * Feature request #1229640 : PCTLoadData task (really really simple version at the moment)
  * Bug #1276486 : patch from Flavio Cordova (bug not closed for now, waiting for further testing)
  * Feature request #1276506 : now possible to add custom parameters in PCTRun
- * Added a ProUnit task -- Some attributes are missing and doc is not written for now...
+ * Added a ProUnit task
  * JUnit reports in documentation
  * Bug #1311746 : mixed case extension are not handled correctly.
  * Always forking Java task : the previous behaviour was to fork only when working directory was specified.
