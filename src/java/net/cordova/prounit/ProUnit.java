@@ -19,7 +19,7 @@ import com.phenix.pct.PCTRun;
 public class ProUnit extends PCTRun {
     private File project = null;
     private File result = null;
-    private File template = null;
+    private String template = null;
     private boolean verbose = false;
 
     /**
@@ -45,8 +45,7 @@ public class ProUnit extends PCTRun {
      * 
      * @param template Optional
      */
-    public void setTemplate(File template) {
-        log(Messages.getString("ProUnit.1"));
+    public void setTemplate(String template) {
         this.template = template;
     }
 
@@ -81,8 +80,7 @@ public class ProUnit extends PCTRun {
         }
 
         if (this.template != null) {
-            // TODO See how to handle template...
-            // sb.append(" -resultTemplate=").append(this.template.getAbsolutePath());
+            sb.append(" -resultTemplate=").append(this.template);
         }
 
         if (this.verbose) {

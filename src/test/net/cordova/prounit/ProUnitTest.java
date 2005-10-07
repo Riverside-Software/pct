@@ -94,4 +94,16 @@ public class ProUnitTest extends BuildFileTest {
         executeTarget("test4");
         assertTrue(f.exists());
     }
+    
+    public void test5() {
+        // Testing result attribute
+        File f1 = new File("sandbox/result.xml");
+        File f2 = new File("sandbox/template.xsl");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        executeTarget("test5");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        
+    }
 }
