@@ -80,6 +80,7 @@ public class PCTCompile extends PCTRun {
     private boolean xcode = false;
     private boolean noCompile = false;
     private boolean runList = false;
+    private boolean listing = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -120,6 +121,17 @@ public class PCTCompile extends PCTRun {
      */
     public void setForceCompile(boolean forceCompile) {
         this.forceCompile = forceCompile;
+    }
+
+    /**
+     * Create listing files during compilation
+     * 
+     * @param listing "true|false|on|off|yes|no"
+     * 
+     * @since 0.10
+     */
+    public void setListing(boolean listing) {
+        this.listing = listing;
     }
 
     /**
@@ -273,6 +285,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("RUNLIST=" + (this.runList ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            bw.write("LISTING=" + (this.listing ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$
                 bw.newLine();
@@ -327,6 +341,12 @@ public class PCTCompile extends PCTRun {
         }
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
+
+        // Checking xcode and listing attributes -- They're mutually exclusive
+        if (this.xcode && this.listing) {
+            log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$
+            this.listing = false; // Useless for now, but just in case...
+        }
 
         try {
             writeFileList();
