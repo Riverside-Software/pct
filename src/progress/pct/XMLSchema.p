@@ -55,15 +55,11 @@
 DEFINE OUTPUT PARAMETER pmXML AS MEMPTR NO-UNDO.
 
 /* Handles for table _Database */
-DEFINE VARIABLE hDatabase  AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hBDatabase AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hCreateDt  AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hBlkSize   AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hVersion   AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hVersMin   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE qDatabase  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bDatabase  AS HANDLE     NO-UNDO.
 /* Handles for table _Db */
-DEFINE VARIABLE hDB        AS HANDLE     NO-UNDO.
-DEFINE VARIABLE hBDB       AS HANDLE     NO-UNDO.
+DEFINE VARIABLE qDB        AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bDB        AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hCodepage  AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hCollation AS HANDLE     NO-UNDO.
 /* Handles for table _File */
@@ -73,6 +69,7 @@ DEFINE VARIABLE hDump      AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hTable     AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hTableDesc AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hPrime     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bfFileNum  AS HANDLE     NO-UNDO.
 /* Handles for table _Field */
 DEFINE VARIABLE hField     AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBField    AS HANDLE     NO-UNDO.
@@ -92,6 +89,7 @@ DEFINE VARIABLE hIndexName AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hActive    AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hIndexDesc AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hUnique    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bfIdxNum   AS HANDLE     NO-UNDO.
 /* Handles for table _File-Trig */
 DEFINE VARIABLE hTrig      AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBTrig     AS HANDLE     NO-UNDO.
@@ -102,6 +100,16 @@ DEFINE VARIABLE hOverride  AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hIdxField   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBIdxField  AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hFieldRecID AS HANDLE     NO-UNDO.
+/* Handles for table _Area */
+DEFINE VARIABLE qArea      AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bArea      AS HANDLE     NO-UNDO.
+/* Handles for table _StorageObject */
+DEFINE VARIABLE qStorage   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bStorage   AS HANDLE     NO-UNDO.
+/* Handles for table _Sequence */
+DEFINE VARIABLE qSequence   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE bSequence   AS HANDLE     NO-UNDO.
+
 /* Handles for XML nodes */
 DEFINE VARIABLE xRoot       AS HANDLE     NO-UNDO.
 DEFINE VARIABLE xDB         AS HANDLE     NO-UNDO.
@@ -111,6 +119,8 @@ DEFINE VARIABLE xIndex      AS HANDLE     NO-UNDO.
 DEFINE VARIABLE xIndexFld   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE xTrigger    AS HANDLE     NO-UNDO.
 DEFINE VARIABLE xText       AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xArea       AS HANDLE     NO-UNDO.
+DEFINE VARIABLE xSequence   AS HANDLE     NO-UNDO.
 
 DEFINE VARIABLE cQuery AS CHARACTER  NO-UNDO.
 
@@ -125,48 +135,56 @@ CREATE X-NODEREF xIndex.
 CREATE X-NODEREF xIndexFld.
 CREATE X-NODEREF xTrigger.
 CREATE X-NODEREF xText.
+CREATE X-NODEREF xArea.
+CREATE X-NODEREF xSequence.
 
 xRoot:CREATE-NODE(xDB, 'database':U, 'ELEMENT':U).
 xRoot:APPEND-CHILD(xDB).
 
 /* Creating queries */
-CREATE QUERY hDatabase.
-CREATE QUERY hDB.
+CREATE QUERY qDatabase.
+CREATE QUERY qDB.
 CREATE QUERY hFile.
 CREATE QUERY hField.
 CREATE QUERY hIndex.
 CREATE QUERY hTrig.
 CREATE QUERY hIdxField.
+CREATE QUERY qArea.
+CREATE QUERY qStorage.
+CREATE QUERY qSequence.
 
 /* Creating buffers */
-CREATE BUFFER hBDatabase FOR TABLE '_DbStatus'.
-CREATE BUFFER hBDB       FOR TABLE '_Db'.
-CREATE BUFFER hBFile     FOR TABLE '_File'.
-CREATE BUFFER hBField    FOR TABLE '_Field'.
-CREATE BUFFER hBIndex    FOR TABLE '_Index'.
-CREATE BUFFER hBTrig     FOR TABLE '_File-Trig'.
-CREATE BUFFER hBIdxField FOR TABLE '_Index-Field'.
+CREATE BUFFER bDatabase FOR TABLE '_DbStatus':U.
+CREATE BUFFER bDB       FOR TABLE '_Db':U.
+CREATE BUFFER hBFile     FOR TABLE '_File':U.
+CREATE BUFFER hBField    FOR TABLE '_Field':U.
+CREATE BUFFER hBIndex    FOR TABLE '_Index':U.
+CREATE BUFFER hBTrig     FOR TABLE '_File-Trig':U.
+CREATE BUFFER hBIdxField FOR TABLE '_Index-Field':U.
+CREATE BUFFER bArea      FOR TABLE '_Area':U.
+CREATE BUFFER bStorage   FOR TABLE '_StorageObject':U.
+CREATE BUFFER bSequence  FOR TABLE '_Sequence':U.
 
 /* Assigning buffers */
-hDatabase:SET-BUFFERS(hBDatabase).
-hDB:SET-BUFFERS(hBDB).
+qDatabase:SET-BUFFERS(bDatabase).
+qDB:SET-BUFFERS(bDB).
 hFile:SET-BUFFERS(hBFile).
 hField:SET-BUFFERS(hBField).
 hIndex:SET-BUFFERS(hBIndex).
 hTrig:SET-BUFFERS(hBTrig).
 hIdxField:SET-BUFFERS(hBIdxField).
+qArea:SET-BUFFERS(bArea).
+qStorage:SET-BUFFERS(bStorage).
+qSequence:SET-BUFFERS(bSequence).
 
 /* Getting buffer fields -- 9.1C compatibility */
-ASSIGN hCreateDt  = hBDatabase:BUFFER-FIELD('_DbStatus-CreateDate')
-       hBlkSize   = hBDatabase:BUFFER-FIELD('_DbStatus-DbBlkSize')
-       hVersion   = hBDatabase:BUFFER-FIELD('_DbStatus-DbVers')
-       hVersMin   = hBDatabase:BUFFER-FIELD('_DbStatus-DbVersMinor')
-       hCodepage  = hBDB:BUFFER-FIELD('_Db-xl-name')
-       hCollation = hBDB:BUFFER-FIELD('_Db-coll-name')
+ASSIGN hCodepage  = bDB:BUFFER-FIELD('_Db-xl-name')
+       hCollation = bDB:BUFFER-FIELD('_Db-coll-name')
        hDump      = hBFile:BUFFER-FIELD ('_Dump-Name')
        hTable     = hBFile:BUFFER-FIELD ('_File-Name')
        hTableDesc = hBFile:BUFFER-FIELD ('_Desc')
        hPrime     = hBFile:BUFFER-FIELD ('_Prime-Index')
+       bfFileNum  = hBFile:BUFFER-FIELD('_File-Number':U)
        hOrder     = hBField:BUFFER-FIELD ('_Order')
        hFieldName = hBField:BUFFER-FIELD ('_Field-Name')
        hDataType  = hBField:BUFFER-FIELD ('_Data-Type')
@@ -183,23 +201,56 @@ ASSIGN hCreateDt  = hBDatabase:BUFFER-FIELD('_DbStatus-CreateDate')
        hUnique    = hBIndex:BUFFER-FIELD ('_Unique')
        hActive    = hBIndex:BUFFER-FIELD ('_Active')
        hIndexDesc = hBIndex:BUFFER-FIELD ('_Desc')
+       bfIdxNum   = hBIndex:BUFFER-FIELD('_Idx-num':U)
        hFieldRecID = hBIdxField:BUFFER-FIELD ('_Field-recid').
 
 /* Checking _Database record */
-hDatabase:QUERY-PREPARE ('FOR EACH _DbStatus').
-hDatabase:QUERY-OPEN().
-hDatabase:GET-FIRST(NO-LOCK).
-xDB:SET-ATTRIBUTE('creation', hCreateDt:BUFFER-VALUE).
-xDB:SET-ATTRIBUTE('blockSize', hBlkSize:BUFFER-VALUE).
-xDB:SET-ATTRIBUTE('version', hVersion:BUFFER-VALUE + '.' + hVersMin:BUFFER-VALUE).
-hDatabase:QUERY-CLOSE().
+qDatabase:QUERY-PREPARE ('FOR EACH _DbStatus').
+qDatabase:QUERY-OPEN().
+qDatabase:GET-FIRST(NO-LOCK).
+xDB:SET-ATTRIBUTE('blockSize', STRING(bDatabase:BUFFER-FIELD('_DbStatus-DbBlkSize'):BUFFER-VALUE)).
+xDB:SET-ATTRIBUTE('creation', bDatabase:BUFFER-FIELD('_DbStatus-CreateDate'):BUFFER-VALUE).
+xDB:SET-ATTRIBUTE('version', bDatabase:BUFFER-FIELD('_DbStatus-DbVers'):BUFFER-VALUE + '.' + bDatabase:BUFFER-FIELD('_DbStatus-DbVersMinor'):BUFFER-VALUE).
+qDatabase:QUERY-CLOSE().
 
-hDB:QUERY-PREPARE('FOR EACH _Db').
-hDB:QUERY-OPEN().
-hDB:GET-FIRST(NO-LOCK).
+qDB:QUERY-PREPARE('FOR EACH _Db').
+qDB:QUERY-OPEN().
+qDB:GET-FIRST(NO-LOCK).
 xDB:SET-ATTRIBUTE('codepage', hCodepage:BUFFER-VALUE).
 xDB:SET-ATTRIBUTE('collation', hCollation:BUFFER-VALUE).
-hDB:QUERY-CLOSE().
+qDB:QUERY-CLOSE().
+
+/* Parsing every _Area record */
+qArea:QUERY-PREPARE('FOR EACH _Area WHERE _Area._Area-Number GT 5':U).
+qArea:QUERY-OPEN().
+qArea:GET-FIRST(NO-LOCK).
+REPEAT:
+    IF qArea:QUERY-OFF-END THEN LEAVE.
+    xRoot:CREATE-NODE(xArea, 'area':U, 'ELEMENT':U).
+    xDB:APPEND-CHILD(xArea).
+    xArea:SET-ATTRIBUTE('num', STRING(bArea:BUFFER-FIELD('_Area-number':U):BUFFER-VALUE)).
+    xArea:SET-ATTRIBUTE('name', bArea:BUFFER-FIELD('_Area-name':U):BUFFER-VALUE).
+    qArea:GET-NEXT(NO-LOCK).
+END.
+qArea:QUERY-CLOSE().
+
+/* Parsing every _Sequence record */
+qSequence:QUERY-PREPARE('FOR EACH _Sequence':U).
+qSequence:QUERY-OPEN().
+qSequence:GET-FIRST(NO-LOCK).
+REPEAT:
+	IF qSequence:QUERY-OFF-END THEN LEAVE.
+	xRoot:CREATE-NODE(xSequence, 'sequence':U, 'ELEMENT':U).
+	xDB:APPEND-CHILD(xSequence).
+	xSequence:SET-ATTRIBUTE('name', STRING(bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE)).
+	xSequence:SET-ATTRIBUTE('init', STRING(bSequence:BUFFER-FIELD('_Seq-init':U):BUFFER-VALUE)).
+	xSequence:SET-ATTRIBUTE('incr', STRING(bSequence:BUFFER-FIELD('_Seq-incr':U):BUFFER-VALUE)).
+	xSequence:SET-ATTRIBUTE('min', STRING(bSequence:BUFFER-FIELD('_Seq-min':U):BUFFER-VALUE)).
+	xSequence:SET-ATTRIBUTE('max', STRING(bSequence:BUFFER-FIELD('_Seq-max':U):BUFFER-VALUE)) NO-ERROR.
+	xSequence:SET-ATTRIBUTE('cycle', STRING(bSequence:BUFFER-FIELD('_Cycle-ok':U):BUFFER-VALUE)).
+	qSequence:GET-NEXT(NO-LOCK).
+END.
+qSequence:QUERY-CLOSE().
 
 /* Parsing every _File record */
 hFile:QUERY-PREPARE ('FOR EACH _File WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS") BY _File._File-Name').
@@ -216,6 +267,17 @@ REPEAT:
         xText:NODE-VALUE = hTableDesc:BUFFER-VALUE.
         xTable:APPEND-CHILD(xText).
     END.
+    
+    /* Searching area number */
+    qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfFileNum:BUFFER-VALUE) + ' AND _Object-type EQ 1').
+    qStorage:QUERY-OPEN().
+    qStorage:GET-FIRST(NO-LOCK).
+    REPEAT:
+        IF qStorage:QUERY-OFF-END THEN LEAVE.
+        xTable:SET-ATTRIBUTE('areaNum', STRING(bStorage:BUFFER-FIELD('_Area-number':U):BUFFER-VALUE)).
+        qStorage:GET-NEXT(NO-LOCK).
+    END.
+    qStorage:QUERY-CLOSE().
     
     /* Parsing table's fields */
     ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
@@ -279,6 +341,17 @@ REPEAT:
             xIndex:APPEND-CHILD(xText).
         END.
         
+	    /* Searching area number */
+	    qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfIdxNum:BUFFER-VALUE) + ' AND _Object-type EQ 2').
+	    qStorage:QUERY-OPEN().
+	    qStorage:GET-FIRST(NO-LOCK).
+	    REPEAT:
+	        IF qStorage:QUERY-OFF-END THEN LEAVE.
+	        xIndex:SET-ATTRIBUTE('areaNum', STRING(bStorage:BUFFER-FIELD('_Area-number':U):BUFFER-VALUE)).
+	        qStorage:GET-NEXT(NO-LOCK).
+	    END.
+	    qStorage:QUERY-CLOSE().
+
         /* Parsing index's fields */
         ASSIGN cQuery = 'FOR EACH _Index-Field WHERE _Index-Field._Index-recid EQ ' + STRING (hBIndex:RECID).
         hIdxField:QUERY-PREPARE (cQuery).
@@ -308,10 +381,6 @@ hFile:QUERY-CLOSE().
 
 /* Freeing up memory */
 /* Starting with buffer field handles */
-DELETE OBJECT hCreateDt.
-DELETE OBJECT hBlkSize.
-DELETE OBJECT hVersion.
-DELETE OBJECT hVersMin.
 DELETE OBJECT hCodepage.
 DELETE OBJECT hCollation.
 DELETE OBJECT hDump.
@@ -336,16 +405,16 @@ DELETE OBJECT hActive.
 DELETE OBJECT hIndexDesc.
 DELETE OBJECT hFieldRecID.
 /* Continue with buffer handles */
-DELETE OBJECT hBDatabase.
-DELETE OBJECT hBDB.
+DELETE OBJECT bDatabase.
+DELETE OBJECT bDB.
 DELETE OBJECT hBFile.
 DELETE OBJECT hBField.
 DELETE OBJECT hBIndex.
 DELETE OBJECT hBTrig.
 DELETE OBJECT hBIdxField.
 /* And ends up with query handles */
-DELETE OBJECT hDatabase.
-DELETE OBJECT hDB.
+DELETE OBJECT qDatabase.
+DELETE OBJECT qDB.
 DELETE OBJECT hFile.
 DELETE OBJECT hField.
 DELETE OBJECT hIndex.
@@ -356,6 +425,7 @@ xRoot:SAVE("MEMPTR":U, pmXML).
 
 DELETE OBJECT xRoot.
 DELETE OBJECT xDB.
+DELETE OBJECT xArea.
 DELETE OBJECT xTable.
 DELETE OBJECT xField.
 DELETE OBJECT xIndex.
