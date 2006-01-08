@@ -22,6 +22,8 @@
    
 -->
 
+  <xsl:key name="tables" match="table" use="substring(@name, 1, 1)" />
+
   <xsl:output method="html" indent="yes" encoding="utf-8"/>
   <xsl:decimal-format decimal-separator="." grouping-separator="," />
   
@@ -43,7 +45,15 @@
     <redirect:write file="{$outputdir}/database.html">
       <xsl:apply-templates select="." mode="overview"/>
     </redirect:write>
-    <!-- process all files -->
+    <redirect:write file="{$outputdir}/areas.html">
+      <xsl:apply-templates select="." mode="all.areas"/>
+    </redirect:write>
+    <redirect:write file="{$outputdir}/sequences.html">
+      <xsl:apply-templates select="." mode="all.sequences"/>
+    </redirect:write>
+    <!-- process all tables -->
+    <xsl:apply-templates select="area"/>
+    <!-- process all tables -->
     <xsl:apply-templates select="table"/>
   </xsl:template>
 
@@ -87,12 +97,114 @@
       <body>
         <h1>Database</h1>
         <h2>Creation date : <xsl:value-of select="@creation"/></h2>
-        <h2>Blocksize : <xsl:value-of select="@blockSize"/></h2>
+        <h2>Blocksize : <xsl:value-of select="@blockSize"/> bytes</h2>
         <h2>Version : <xsl:value-of select="@version"/></h2>
         <h2>Codepage : <xsl:value-of select="@codepage"/></h2>
         <h2>Collation : <xsl:value-of select="@collation"/></h2>
       </body>
     </html>
+  </xsl:template>
+
+  <!-- Sequences overview -->
+  <xsl:template match="database" mode="all.sequences">
+    <html>
+      <head>
+        <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+      </head>
+      <body>
+        <h1>Sequences</h1>
+        <table width="100%">
+          <tr>
+            <th>Sequence name</th>
+            <th>Initial</th>
+            <th>Increment</th>
+            <th>Minimum</th>
+            <th>Maximum</th>
+            <th>Cycle</th>
+          </tr>
+          <!-- For each file create its part -->
+          <xsl:apply-templates select="sequence" mode="all.sequences"/>
+        </table>
+      </body>
+    </html>
+  </xsl:template>
+  
+  <!-- Areas (right frame) -->
+  <xsl:template match="sequence" mode="all.sequences">
+    <tr>
+      <td><xsl:value-of select="@name"/></td>
+      <td><xsl:value-of select="@init"/></td>
+      <td><xsl:value-of select="@incr"/></td>
+      <td><xsl:value-of select="@min"/></td>
+      <td><xsl:value-of select="@max"/></td>
+      <td><xsl:value-of select="@cycle"/></td>
+    </tr>
+  </xsl:template>
+
+  <!-- Areas overview -->
+  <xsl:template match="database" mode="all.areas">
+    <html>
+      <head>
+        <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+      </head>
+      <body>
+        <h1>Areas</h1>
+        <table width="100%">
+          <tr>
+            <th>Area name</th>
+            <th>Tables</th>
+            <th>Indexes</th>
+          </tr>
+          <!-- For each file create its part -->
+          <xsl:apply-templates select="area" mode="all.areas"/>
+        </table>
+      </body>
+    </html>
+  </xsl:template>
+  
+  <!-- Areas (right frame) -->
+  <xsl:template match="area" mode="all.areas">
+    <tr>
+      <td nowrap="nowrap">
+        <a target="fileFrame">
+          <xsl:attribute name="href">
+            <xsl:text>files/Area</xsl:text>
+            <xsl:value-of select="@num"/>
+            <xsl:text>.html</xsl:text>
+          </xsl:attribute>
+          <xsl:value-of select="@num"/> -- <xsl:value-of select="@name"/>
+        </a>
+      </td>
+      <td>
+        <xsl:apply-templates select="../table[@areaNum = current()/@num]" mode="all.areas" />
+      </td>
+      <td>
+        <xsl:apply-templates select="../table/index[@areaNum = current()/@num]" mode="all.areas" />
+      </td>
+    </tr>
+  </xsl:template>
+
+  <xsl:template match="table" mode="all.areas">
+    <a>
+          <xsl:attribute name="href">
+            <xsl:text>files/</xsl:text>
+            <xsl:value-of select="@name"/>
+            <xsl:text>.html</xsl:text>
+          </xsl:attribute>
+          <xsl:value-of select="@name"/>
+    </a><br />
+  </xsl:template>
+
+  <xsl:template match="index" mode="all.areas">
+    <a>
+          <xsl:attribute name="href">
+            <xsl:text>files/</xsl:text>
+            <xsl:value-of select="../@name"/>
+            <xsl:text>.html#</xsl:text>
+            <xsl:value-of select="@name"/>
+          </xsl:attribute>
+          <xsl:value-of select="@name"/>
+    </a><br />
   </xsl:template>
   
   <!-- Table list : left frame -->
@@ -102,11 +214,50 @@
         <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
       </head>
       <body>
-        <h1>Files</h1>
-        <table width="100%">
-          <!-- For each file create its part -->
+        <h2><a target="fileFrame" href="sequences.html">S</a> ::
+        <a target="fileFrame" href="database.html">DB</a> ::
+        <a target="fileFrame" href="areas.html">A</a></h2>
+        <h1>Tables</h1>
+          <xsl:for-each select="table[generate-id(.) = generate-id(key('tables', substring(@name, 1, 1))[1])]">
+            <xsl:sort select="@name" />
+            <xsl:variable name="firstletter" select="substring(@name, 1, 1)" />
+            <a>
+              <xsl:attribute name="href">
+                <xsl:text>#</xsl:text>
+                <xsl:value-of select="$firstletter" />
+              </xsl:attribute>
+              <xsl:value-of select="$firstletter" />
+            </a>
+          </xsl:for-each>
+		  
+		  <table width="100%">
+          <xsl:for-each select="table[generate-id(.) = generate-id(key('tables', substring(@name, 1, 1))[1])]">
+            <xsl:sort select="@name" />
+            <xsl:variable name="firstletter" select="substring(@name, 1, 1)" />
+              <tr><td><h3><a>
+                <xsl:attribute name="name">
+                  <xsl:value-of select="$firstletter" />
+                </xsl:attribute>
+                <xsl:value-of select="$firstletter" />
+              </a></h3></td></tr>
+            
+            <xsl:for-each select="key('tables', $firstletter)">
+              <tr><td><a target="fileFrame">
+                <xsl:attribute name="href">
+                  <xsl:text>files/</xsl:text>
+                  <xsl:value-of select="@name"/>
+                  <xsl:text>.html</xsl:text>
+                </xsl:attribute>
+                <xsl:value-of select="@name"/>
+              </a></td></tr>
+            </xsl:for-each>
+          </xsl:for-each>
+          </table>
+          
+        <!--<table width="100%">
           <xsl:apply-templates select="table" mode="all.tables"/>
-        </table>
+        </table>-->
+        
       </body>
     </html>
   </xsl:template>
@@ -141,6 +292,7 @@
           <h3>
             <xsl:value-of select="text()"/>
           </h3>
+          <h2>Area <xsl:value-of select = "..//area[@num = current()/@areaNum]/@name" />  </h2>
           <h2>Field list</h2>
           <table>
             <tr>
@@ -251,7 +403,7 @@
         <xsl:value-of select="@procedure"/>
       </td>
       <td>
-        <xsl:value-of select="@overridable"></xsl:value-of>
+        <xsl:value-of select="@overridable" />
       </td>
     </tr>
   </xsl:template>
