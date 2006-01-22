@@ -15,15 +15,16 @@
     <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
     <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
     <li><a href="PCTDumpData.html">PCTDumpData</a></li>
-    <li><a href="PCTLoadData.html">PCTLoadData</a> <span id="new">!!NEW!!</span></li>
+    <li><a href="PCTLoadData.html">PCTLoadData</a></li>
     <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryDump.html">PCTBinaryDump</a> <span id="new">!!NEW!!</span></li>
     <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
     <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
     <li><a href="PCTLibrary.html">PCTLibrary</a></li>
     <li><a href="PCTProxygen.html">PCTProxygen</a></li>
     <li><a href="PCTCRC.html">PCTCRC</a></li>
     <li><a href="PCTXCode.html">PCTXCode</a></li>
-    <li><a href="ProUnit.html">ProUnit</a></li> <span id="new">!!NEW!!</span></li>
+    <li><a href="ProUnit.html">ProUnit</a></li>
   </ul>
   <h1>Types</h1>
   <ul>
