@@ -130,7 +130,7 @@
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
-  <target name="test">
+  <target name="test7">
     <PCTBinaryDump dest="sandbox" dlcHome="${env.DLC}" propath="${pct-propath}">
       <include name="aa*" />
       <exclude name="aab*" />
