@@ -39,11 +39,29 @@
         DESCRIPTION ""
         DUMP-NAME "Tab1"
 
+      ADD FIELD "Fld1" OF "Tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
       ADD TABLE "Tab2"
         AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab2"
+
+      ADD FIELD "Fld1" OF "Tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
@@ -56,19 +74,37 @@
   <!-- Simple test : we should get Tab1.bd and Tab2.bd (specified * in includes) -->
   <target name="test5pre">
     <echo file="sandbox/schema.df">
-      UPDATE DATABASE "?"
-      
-      ADD TABLE "Tab1"
-        AREA "Schema Area"
-        LABEL ""
-        DESCRIPTION ""
-        DUMP-NAME "Tab1"
+        UPDATE DATABASE "?"
+        
+        ADD TABLE "Tab1"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab1"
 
-      ADD TABLE "Tab2"
-        AREA "Schema Area"
-        LABEL ""
-        DESCRIPTION ""
-        DUMP-NAME "Tab2"
+        ADD FIELD "Fld1" OF "Tab1" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          SQL-WIDTH 4
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+
+        ADD TABLE "Tab2"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab2"
+
+        ADD FIELD "Fld1" OF "Tab2" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          SQL-WIDTH 4
+          COLUMN-LABEL "Fld1"
+          ORDER 10
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
@@ -81,19 +117,37 @@
   <!-- Simple test : we should get Tab1.bd only (Tab2 is in exclude list) -->
   <target name="test6pre">
     <echo file="sandbox/schema.df">
-      UPDATE DATABASE "?"
-      
-      ADD TABLE "Tab1"
-        AREA "Schema Area"
-        LABEL ""
-        DESCRIPTION ""
-        DUMP-NAME "Tab1"
+        UPDATE DATABASE "?"
+        
+        ADD TABLE "Tab1"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab1"
 
-      ADD TABLE "Tab2"
-        AREA "Schema Area"
-        LABEL ""
-        DESCRIPTION ""
-        DUMP-NAME "Tab2"
+        ADD FIELD "Fld1" OF "Tab1" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          SQL-WIDTH 4
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+
+        ADD TABLE "Tab2"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab2"
+
+        ADD FIELD "Fld1" OF "Tab2" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          SQL-WIDTH 4
+          COLUMN-LABEL "Fld1"
+          ORDER 10
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
@@ -116,17 +170,44 @@
         DESCRIPTION ""
         DUMP-NAME "aa"
 
+      ADD FIELD "Fld1" OF "aa" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
       ADD TABLE "aab"
         AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "aab"
   
+      ADD FIELD "Fld1" OF "aab" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+    	
       ADD TABLE "aabc"
         AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "aabc"
+      
+      ADD FIELD "Fld1" OF "aabc" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          SQL-WIDTH 4
+          COLUMN-LABEL "Fld1"
+          ORDER 10
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
