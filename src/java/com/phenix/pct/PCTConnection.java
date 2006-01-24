@@ -55,13 +55,17 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
 
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Object to add a database connection to a PCTRun task
@@ -260,6 +264,84 @@ public class PCTConnection {
     }
 
     /**
+     * Returns an ordered list of connection parameters
+     * 
+     * @return List of String
+     * @throws BuildException Something went wrong (dbName not defined)
+     */
+    public List getConnectParametersList() throws BuildException {
+        if (this.dbName == null) {
+            throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
+        }
+
+        List list = new Vector();
+        list.add("-db"); //$NON-NLS-1$
+
+        if ((this.dbDir == null) || (this.hostName != null)) {
+            list.add(this.dbName);
+        } else {
+            list.add(this.dbDir.toString() + File.separatorChar + this.dbName);
+        }
+
+        if (this.paramFile != null) {
+            list.add("-pf");
+            list.add(this.paramFile.getAbsolutePath()); //$NON-NLS-1$
+        }
+
+        if (this.protocol != null) {
+            list.add("-N");
+            list.add(this.protocol); //$NON-NLS-1$
+        }
+
+        if (this.dbPort != null) {
+            list.add("-S");
+            list.add(this.dbPort); //$NON-NLS-1$
+        }
+
+        if (this.logicalName != null) {
+            list.add("-ld");
+            list.add(this.logicalName); //$NON-NLS-1$
+        }
+
+        if (this.singleUser) {
+            list.add("-1"); //$NON-NLS-1$
+        }
+
+        if (this.cacheFile != null) {
+            list.add("-cache");
+            list.add(this.cacheFile.getAbsolutePath()); //$NON-NLS-1$
+        }
+
+        if (this.dataService != null) {
+            list.add("-DataService");
+            list.add(this.dataService); //$NON-NLS-1$
+        }
+
+        if (this.dbType != null) {
+            list.add("-dt");
+            list.add(this.dbType); //$NON-NLS-1$
+        }
+
+        if (this.hostName != null) {
+            list.add("-H");
+            list.add(this.hostName); //$NON-NLS-1$
+        }
+
+        if (this.readOnly) {
+            list.add("-RO"); //$NON-NLS-1$
+        }
+
+        if ((this.userName != null) && (this.password != null)) {
+            list.add("-U");
+            list.add(this.userName);
+            list.add("-P");
+            list.add(this.password); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        return list;
+
+    }
+    /**
      * Returns a string which could be used by a CONNECT statement or directly in a _progres or
      * prowin32 command line
      * 
@@ -267,63 +349,11 @@ public class PCTConnection {
      * @throws BuildException If DB name not defined
      */
     public String createConnectString() throws BuildException {
-        if (this.dbName == null) {
-            throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
-        }
-
+        List list = getConnectParametersList();
         StringBuffer sb = new StringBuffer();
-        sb.append("-db "); //$NON-NLS-1$
-
-        if ((this.dbDir == null) || (this.hostName != null)) {
-            sb.append(this.dbName);
-        } else {
-            sb.append(this.dbDir.toString()).append(File.separatorChar).append(this.dbName);
+        for (Iterator i = list.iterator(); i.hasNext();) {
+            sb.append((String) i.next()).append(' ');
         }
-
-        if (this.paramFile != null) {
-            sb.append(" -pf ").append(this.paramFile.getAbsolutePath()); //$NON-NLS-1$
-        }
-
-        if (this.protocol != null) {
-            sb.append(" -N ").append(this.protocol); //$NON-NLS-1$
-        }
-
-        if (this.dbPort != null) {
-            sb.append(" -S ").append(this.dbPort); //$NON-NLS-1$
-        }
-
-        if (this.logicalName != null) {
-            sb.append(" -ld ").append(this.logicalName); //$NON-NLS-1$
-        }
-
-        if (this.singleUser) {
-            sb.append(" -1 "); //$NON-NLS-1$
-        }
-
-        if (this.cacheFile != null) {
-            sb.append(" -cache ").append(this.cacheFile.getAbsolutePath()); //$NON-NLS-1$
-        }
-
-        if (this.dataService != null) {
-            sb.append(" -DataService ").append(this.dataService); //$NON-NLS-1$
-        }
-
-        if (this.dbType != null) {
-            sb.append(" -dt ").append(this.dbType); //$NON-NLS-1$
-        }
-
-        if (this.hostName != null) {
-            sb.append(" -H ").append(this.hostName); //$NON-NLS-1$
-        }
-
-        if (this.readOnly) {
-            sb.append(" -RO "); //$NON-NLS-1$
-        }
-
-        if ((this.userName != null) && (this.password != null)) {
-            sb.append(" -U ").append(this.userName).append(" -P ").append(this.password); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
         return sb.toString();
     }
 
@@ -334,7 +364,10 @@ public class PCTConnection {
      * @throws BuildException Something went wrong
      */
     public void createArguments(ExecTask task) throws BuildException {
-        task.createArg().setValue(createConnectString());
+        List list = getConnectParametersList();
+        for (Iterator i = list.iterator(); i.hasNext();) {
+            task.createArg().setValue((String) i.next());
+        }
     }
 
     /**
