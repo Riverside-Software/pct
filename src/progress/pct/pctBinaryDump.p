@@ -87,7 +87,7 @@ DO i = 1 TO NUM-DBS:
     ASSIGN lInc = TRUE.
     FOR EACH ttIncExc NO-LOCK BY order:
       IF (lInc EQ TRUE) AND (ttIncExc.inc EQ FALSE) THEN DO:
-        ASSIGN lInc = (bfFileName:BUFFER-VALUE MATCHES ttIncExc.pattern).
+        ASSIGN lInc = NOT (bfFileName:BUFFER-VALUE MATCHES ttIncExc.pattern).
       END.
       ELSE IF (lInc EQ FALSE) AND (ttIncExc.inc EQ TRUE) THEN DO:
         ASSIGN lInc = (bfFileName:BUFFER-VALUE MATCHES ttIncExc.pattern).
