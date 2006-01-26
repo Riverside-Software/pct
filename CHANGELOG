@@ -1,6 +1,7 @@
 Version 0.10 (??/??/????)
 ==============================
  * Added PCTBinaryDump task
+ * Added listing and preprocess attributes in PCTCompile task
 
 Version 0.9 (07/10/2005)
 ==============================
