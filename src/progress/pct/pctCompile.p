@@ -86,7 +86,7 @@ DEFINE STREAM sParams.
 DEFINE STREAM sFileset.
 DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
-
+/*DEFINE STREAM sPreProcess.*/
 
 /** Parameters from ANT call */
 DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
@@ -98,7 +98,8 @@ DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
-DEFINE VARIABLE Lst       AS LOGICAl    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
@@ -160,6 +161,8 @@ REPEAT:
             ASSIGN RunList = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'LISTING':U THEN
             ASSIGN Lst = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'PREPROCESS':U THEN
+            ASSIGN PrePro = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -300,13 +303,16 @@ PROCEDURE PCTCompile.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
 
     DEFINE VARIABLE i AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
 
     COMPILE VALUE(pcInDir + pcInFile) SAVE INTO VALUE(pcOutDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = COMPILER:ERROR.
     IF (NOT plOK) THEN DO:
+        ASSIGN c = '':U.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-            MESSAGE ERROR-STATUS:GET-MESSAGE(i).
+            ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
+        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
 END PROCEDURE.
@@ -322,24 +328,56 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
     DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
 
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     ASSIGN plOK = createDir(pcPCTDir, cBase).
     IF (NOT plOK) THEN RETURN.
-    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
         RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
         /* Il faut verifier le code de retour */
     END.
     ELSE DO:
+        ASSIGN c = '':U.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-            MESSAGE ERROR-STATUS:GET-MESSAGE(i). /* A verifier */
+            ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
+        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
+END PROCEDURE.
+
+PROCEDURE displayCompileErrors.
+    DEFINE INPUT  PARAMETER pcInit    AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcFile    AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER piRow     AS INTEGER    NO-UNDO.
+    DEFINE INPUT  PARAMETER piColumn  AS INTEGER    NO-UNDO.
+    DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
+    
+    DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
+    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+
+    IF (pcInit EQ pcFile) THEN    
+        MESSAGE "Error compiling file" pcInit "at line" STRING(piRow) "column" STRING(piColumn).
+    ELSE
+        MESSAGE "Error compiling file" pcInit "in included file" pcFile "at line" STRING(piRow) "column" STRING(piColumn).
+    INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
+    DO WHILE (i LT piRow):
+        IMPORT STREAM sXref UNFORMATTED c.
+        ASSIGN i = i + 1.
+    END.
+    IMPORT STREAM sXref UNFORMATTED c.
+    MESSAGE c.
+    MESSAGE FILL('-':U, piColumn - 2) + '-^':U.
+    MESSAGE pcMsg.
+    MESSAGE '':U.
+    
+    INPUT STREAM sXref CLOSE.
+    
 END PROCEDURE.
 
 PROCEDURE PCTCompileXCode.
@@ -352,6 +390,7 @@ PROCEDURE PCTCompileXCode.
     DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
     DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
 
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     ASSIGN plOK = createDir(pcOutDir, cBase).
@@ -362,9 +401,11 @@ PROCEDURE PCTCompileXCode.
         COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF (NOT plOK) THEN DO:
+        ASSIGN c = '':U.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-            MESSAGE ERROR-STATUS:GET-MESSAGE(i).
+            ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
+        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
 END PROCEDURE.
