@@ -360,7 +360,7 @@ public class PCTCompile extends PCTRun {
         if (this.xcode && (this.listing || this.preprocess)) {
             log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$ // TODO Update this message
             this.listing = false; // Useless for now, but just in case...
-            this.preprocess = false; // Useless for now, but just in case...k
+            this.preprocess = false; // Useless for now, but just in case...
         }
 
         try {
