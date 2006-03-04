@@ -71,6 +71,7 @@ ASSIGN hBuffer = hCRC:DEFAULT-BUFFER-HANDLE
 DO i = 1 TO NUM-DBS:
   /* Flavio Cordova : no CRC for dataservers */
   /* TODO : I'll have to add testcases for dataservers... */
+  /* TODO : is this still useful ? Check with Flavio */
   IF DBTYPE(i) NE "PROGRESS":U THEN NEXT.
   CREATE BUFFER h_File FOR TABLE LDBNAME(i) + '._file'.
   CREATE QUERY hQuery.
@@ -83,9 +84,16 @@ DO i = 1 TO NUM-DBS:
     hQuery:GET-NEXT().
     IF hQuery:QUERY-OFF-END THEN LEAVE.
     hBuffer:BUFFER-CREATE().
+    /* NO-ERROR, because when using multiple schema holders on the same Progress DB */
+    /* We get the identical table names for tablespace_name */
+    /* In fact, there's still a problem, as I assume the ldbname(i) shouldn't be the one used here */
+    /* CRC support with PCTCompile is broken in this revision */
     ASSIGN hCRCTab:BUFFER-VALUE = LDBNAME(i) + "." + hFld1:BUFFER-VALUE
-           hCRCVal:BUFFER-VALUE = hFld2:BUFFER-VALUE.
-    hBuffer:BUFFER-RELEASE().
+           hCRCVal:BUFFER-VALUE = hFld2:BUFFER-VALUE NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN
+        hBuffer:BUFFER-DELETE().
+    ELSE
+        hBuffer:BUFFER-RELEASE().
   END.
   hQuery:QUERY-CLOSE().
   DELETE OBJECT hFld1.
