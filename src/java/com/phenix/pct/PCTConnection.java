@@ -55,7 +55,6 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
 
