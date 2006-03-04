@@ -62,6 +62,8 @@ import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -84,6 +86,8 @@ public class PCTCreateBase extends PCT {
     private String schema = null;
     private Path propath = null;
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
+    private int wordRule = -1;
+    private List holders = null;
 
     /**
      * Structure file (.st)
@@ -191,6 +195,27 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * 
+     * @param word Integer (0-255)
+     */
+    public void setWordRules(int wordRule) {
+        if ((wordRule < 0) || (wordRule > 255))
+            throw new BuildException("wordRule value should be between 0 and 255");
+        this.wordRule = wordRule;
+    }
+
+    /**
+     * 
+     * @param holder
+     */
+    public void addHolder(SchemaHolder holder) {
+        if (this.holders == null) {
+            this.holders = new Vector();
+        }
+        System.out.println("adding holder");
+    }
+
+    /**
      * Do the work
      * 
      * @throws BuildException Something went wrong
@@ -207,6 +232,17 @@ public class PCTCreateBase extends PCT {
         // Checking dbName is defined
         if (this.dbName == null) {
             throw new BuildException(Messages.getString("PCTCreateBase.3")); //$NON-NLS-1$
+        }
+
+        // If schema holders defined, then no Progress schema can be loaded
+        if ((this.holders != null) && (this.holders.size() > 0)) {
+            if ((this.schema != null) && (this.schema.trim().length() > 0)) {
+                throw new BuildException("On peut pas !!!");
+            }
+            // noInit also cannot be set to true
+            if (this.noInit) {
+                throw new BuildException("on peut pas non plus !!");
+            }
         }
 
         // Update destDir if not defined
@@ -280,6 +316,49 @@ public class PCTCreateBase extends PCT {
                 }
             }
         }
+
+        if (this.wordRule != -1) {
+            exec = wordRuleCmdLine();
+            exec.execute();
+        }
+
+        if (this.holders != null) {
+            for (Iterator i = holders.iterator(); i.hasNext();) {
+                SchemaHolder holder = (SchemaHolder) i.next();
+                PCTRun run = (PCTRun) getProject().createTask("PCTRun"); //$NON-NLS-1$
+                run.setOwningTarget(this.getOwningTarget());
+                run.setTaskName(this.getTaskName());
+                run.setDescription(this.getDescription());
+                run.setDlcHome(this.getDlcHome());
+                run.setDlcBin(this.getDlcBin());
+                run.setPropath(this.propath);
+                run.setProcedure("pct/holders.p");
+                run.setParameter(holder.getDbName() + ";" + holder.getDbType() + ";"
+                        + holder.getCodepage() + ";" + holder.getCollation() + ";"
+                        + holder.getMisc());
+
+                PCTConnection pc = new PCTConnection();
+                pc.setDbName(this.dbName);
+                pc.setDbDir(this.destDir);
+                pc.setSingleUser(true);
+                run.addPCTConnection(pc);
+                run.execute();
+
+                if (holder.getSchemaFile() != null) {
+                    PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
+                    pls.setOwningTarget(this.getOwningTarget());
+                    pls.setTaskName(this.getTaskName());
+                    pls.setDescription(this.getDescription());
+                    pls.setSrcFile(holder.getSchemaFile());
+                    pls.setDlcHome(this.getDlcHome());
+                    pls.setDlcBin(this.getDlcBin());
+                    pls.setPropath(this.propath);
+                    pls.addPCTConnection(pc);
+                    pls.execute();
+
+                }
+            }
+        }
     }
 
     /**
@@ -335,6 +414,28 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(this.structFile.getAbsolutePath());
         exec.createArg().setValue("-blocksize"); //$NON-NLS-1$
         exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
+        return exec;
+    }
+
+    private ExecTask wordRuleCmdLine() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
+
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+
+        exec.setExecutable(getExecPath("_proutil").toString()); //$NON-NLS-1$
+        exec.setDir(this.destDir);
+        exec.createArg().setValue(this.dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("word-rules"); //$NON-NLS-1$
+        exec.createArg().setValue(String.valueOf(this.wordRule));
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
