@@ -106,6 +106,14 @@
 		<td align="center">No</td>
 		<td>No default value (undefined)</td>
 	</tr>
+	<tr>
+		<td>wordRules</td>
+		<td>Assign a specific word rules table to a database (ie runs a proutil dbname -C word-rules XXX). This
+        command is run before loading schema (if available). This command is not run if parameter not defined.</td>
+		<td align="center">Integer</td>
+		<td align="center">No</td>
+		<td>No default value (undefined)</td>
+	</tr>
 </table>
 <p>PCTCreateBase inherits attributes from <a href="PCT.html">PCT</a>.</p>
 
@@ -113,6 +121,9 @@
 <h3>propath (org.apache.tools.types.Path)</h3>
 <p>Creates a nested propath, and adds it to the implicit propath. The
 propath is only used during schema update.</p>
+<h3>holder (com.phenix.pct.SchemaHolder)</h3>
+<p>Creates a new schema holder inside a database. If a schema holder is defined,
+no schema can be loaded in the main database.</p>
 
 <h2>Examples</h2>
 <pre>
@@ -122,10 +133,11 @@ propath is only used during schema update.</p>
 line used is <code>procopy empty8 MyDB</code></p>
 
 <pre>
-&lt;PCTCreateBase dbName="MyDB" destDir="MyDir" dlcHome="${env.DLC}" schemaFile="/home/test/MySchema.df,YourSchema.df"/&gt;
+&lt;PCTCreateBase dbName="MyDB" destDir="MyDir" dlcHome="${env.DLC}" schemaFile="/home/test/MySchema.df,YourSchema.df" wordRules="1" /&gt;
 </pre>
 <p>Creates an empty database named MyDB in MyDir subdir of the current
-directory, then loads schema from files /home/test/MySchema.df and YourSchema.df.
+directory, then load proword.1 word break table (<code>_proutil MyDB -C word-rules 1</code>),
+and then loads schema from files /home/test/MySchema.df and YourSchema.df.
 /home/testMySchema.df will be resolved as an absolute filename, and if it's not found,
 PCT will search a file of the same name in the ${basedir} directory. Same thing will
 happen with YourSchema.df</p>
@@ -142,6 +154,14 @@ happen with YourSchema.df</p>
 <p>Creates a database structure from test.st file (<code>_proutil
 prostrct create test test.st</code>) and then <code>procopy
 $DLC/prolang/utf/empty8 test</code>.</p>
+
+<pre>
+&lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}" codepage="utf" &gt;
+  &lt;Holder dbName="ora1" dbType="oracle" misc="8" codepage="iso8859-1" collation="BASIC" /&gt;
+&lt;/PCTCreateBase&gt;
+</pre>
+<p>Creates a new empty database, containing a schema holder for an <code>ora1</code>
+oracle database, using a specific codepage and collation table.</p>
 </div>
 
 <div class="LastUpdate">$Date$</div>
