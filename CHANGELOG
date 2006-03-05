@@ -2,6 +2,8 @@ Version 0.10 (??/??/????)
 ==============================
  * Added PCTBinaryDump task
  * Added listing and preprocess attributes in PCTCompile task
+ * Added schema holder support in PCTCreateBase
+ * Added wordRules option in PCTCreateBase
 
 Version 0.9 (07/10/2005)
 ==============================
