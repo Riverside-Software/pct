@@ -195,8 +195,9 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Set the word file rule number applied to this database
      * 
-     * @param word Integer (0-255)
+     * @param wordRule Integer (0-255)
      */
     public void setWordRules(int wordRule) {
         if ((wordRule < 0) || (wordRule > 255))
@@ -212,7 +213,7 @@ public class PCTCreateBase extends PCT {
         if (this.holders == null) {
             this.holders = new Vector();
         }
-        System.out.println("adding holder");
+        this.holders.add(holder);
     }
 
     /**
