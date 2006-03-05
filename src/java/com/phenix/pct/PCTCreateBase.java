@@ -283,6 +283,12 @@ public class PCTCreateBase extends PCT {
             exec.execute();
         }
 
+        // Word rules are loaded before schema to avoid problems with newly created indexes
+        if (this.wordRule != -1) {
+            exec = wordRuleCmdLine();
+            exec.execute();
+        }
+
         if (this.schema != null) {
             Vector v = StringUtils.split(this.schema, ',');
             for (int i = 0; i < v.size(); i++) {
@@ -316,11 +322,6 @@ public class PCTCreateBase extends PCT {
                             .getString("PCTCreateBase.5"), new Object[]{f}));
                 }
             }
-        }
-
-        if (this.wordRule != -1) {
-            exec = wordRuleCmdLine();
-            exec.execute();
         }
 
         if (this.holders != null) {
