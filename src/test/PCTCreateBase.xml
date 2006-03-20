@@ -241,4 +241,9 @@
     <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="${sch2}" propath="${pct-propath}"/>
   </target>
   
+  <!-- Add schema holders testcases... -->
+  <target name="test11">
+  
+  </target>
+
 </project>
