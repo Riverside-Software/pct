@@ -53,7 +53,6 @@
  */
 package com.phenix.pct;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -64,12 +63,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Commandline.Argument;
-
-import com.progress.ubroker.util.PropFilename;
 
 /**
  * Class managing appservers tasks
@@ -89,72 +83,159 @@ public class PCTASBroker extends PCTBroker {
     private File workDir = null;
     private File brokerLogFile = null;
     private File serverLogFile = null;
-    private int brokerLogLevel = 1;
-    private int serverLogLevel = 1;
-    private int initialPool = 1;
-    private int minPool = 1;
-    private int maxPool = 1;
+    private int brokerLogLevel = -1;
+    private int serverLogLevel = -1;
+    private int initialPool = -1;
+    private int minPool = -1;
+    private int maxPool = -1;
     private ServerProcess server = null;
 
     private File tmp = null;
-    
+
+    /**
+     * Creates a new PCTASBroker object. Temp files initialization.
+     */
+    public PCTASBroker() {
+        super();
+
+        try {
+            tmp = File.createTempFile("pct_delta", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        } catch (IOException ioe) {
+            throw new BuildException(Messages.getString("PCTASBroker.0")); //$NON-NLS-1$
+        }
+    }
+
+    /**
+     * AutoStart property. Default value is false.
+     * 
+     * @param autoStart Boolean
+     */
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
     }
 
+    /**
+     * Broker log file property. No default value.
+     * 
+     * @param brokerLogFile File
+     */
     public void setBrokerLogFile(File brokerLogFile) {
         this.brokerLogFile = brokerLogFile;
     }
 
+    /**
+     * Broker logging level. No default value. Should be between 1 and 5.
+     * 
+     * @param brokerLogLevel int
+     */
     public void setBrokerLogLevel(int brokerLogLevel) {
+        if ((brokerLogLevel < 1) || (brokerLogLevel > 5))
+            throw new BuildException("Log level should be between 1 and 5");
         this.brokerLogLevel = brokerLogLevel;
     }
 
+    /**
+     * Initial number of servers to start.
+     * 
+     * @param initialPool int
+     */
     public void setInitialPool(int initialPool) {
         this.initialPool = initialPool;
     }
 
+    /**
+     * Maximum number of servers.
+     * 
+     * @param maxPool int
+     */
     public void setMaxPool(int maxPool) {
         this.maxPool = maxPool;
     }
 
+    /**
+     * Minimum number of servers.
+     * 
+     * @param minPool int
+     */
     public void setMinPool(int minPool) {
         this.minPool = minPool;
     }
 
+    /**
+     * Operating mode. Should be stateless, state-reset, state-aware or state-free
+     * 
+     * @param operatingMode String
+     */
     public void setOperatingMode(String operatingMode) {
+        if ((!operatingMode.equalsIgnoreCase(STATELESS))
+                && (!operatingMode.equalsIgnoreCase(STATE_AWARE))
+                && (!operatingMode.equalsIgnoreCase(STATE_RESET))
+                && (!operatingMode.equalsIgnoreCase(STATE_FREE)))
+            throw new BuildException("Invalid operating mode");
         this.operatingMode = operatingMode;
     }
 
+    /**
+     * Port number (or name).
+     * 
+     * @param portNumber String
+     */
     public void setPortNumber(String portNumber) {
         this.portNumber = portNumber;
     }
 
+    /**
+     * Server log file property. No default value.
+     * 
+     * @param serverLogFile File
+     */
     public void setServerLogFile(File serverLogFile) {
         this.serverLogFile = serverLogFile;
     }
 
+    /**
+     * Server logging level property. No default value. Should be between 1 and 5.
+     * 
+     * @param serverLogLevel
+     */
     public void setServerLogLevel(int serverLogLevel) {
+        if ((serverLogLevel < 1) || (brokerLogLevel > 5))
+            throw new BuildException("Log level should be between 1 and 5");
         this.serverLogLevel = serverLogLevel;
     }
 
+    /**
+     * Working directory of servers. No default value.
+     * 
+     * @param workDir File
+     */
     public void setWorkDir(File workDir) {
         this.workDir = workDir;
     }
 
+    /**
+     * Server settings
+     * 
+     * @param sp ServerProcess (customized version of PCTRun)
+     */
     public void addConfiguredServer(ServerProcess sp) {
         if (this.server == null) {
-            // Faire quelques vérifications ici
+            // TODO Insert checks here
             this.server = sp;
         } else {
             throw new BuildException("Only one server process...");
         }
     }
 
+    /**
+     * Do the work
+     * 
+     * @throws BuildException Something went wrong
+     */
     public void execute() throws BuildException {
         File propFile = null;
 
-        // Quelques vérifications de base sur la conformité des attributs
+        // TODO Check attributes are OK
 
         // Choix du fichier properties
         if (this.file == null) {
@@ -163,17 +244,25 @@ public class PCTASBroker extends PCTBroker {
             propFile = new File(this.file);
         }
         if (!propFile.exists()) {
-            throw new BuildException("pas le bon fichier");
+            throw new BuildException("Unable to find properties file " + propFile.getAbsolutePath());
         }
 
-        // Traitement spécifique pour delete...
-        
-        // Pour le add/update
-        writeDeltaFile();
-        Task task = getCmdLineMergeTask(propFile, tmp);
-        task.execute();
+        if (this.action.equals("delete")) {
+            
+        }
+        else {
+            writeDeltaFile();
+            Task task = getCmdLineMergeTask(propFile, tmp);
+            task.execute();
+        }
     }
 
+    /**
+     * Write files to be used as a parameter for the MergeProp shell script.
+     * 
+     * @throws BuildException Something went wrong during write.
+     *
+     */
     private void writeDeltaFile() {
         try {
             // A remonter à l'initialisation
@@ -181,17 +270,26 @@ public class PCTASBroker extends PCTBroker {
             log(tmp.getAbsolutePath(), Project.MSG_INFO);
             PrintWriter bw = new PrintWriter(new FileWriter(tmp));
             bw.println("[UBroker.AS." + this.name + "]");
-            bw.println("portNumber=" + this.portNumber);
             bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-            bw.println("brokerLogFile=" + this.brokerLogFile);
-            bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
-            bw.println("srvrLogFile=" + this.serverLogFile);
-            bw.println("srvrLoggingLevel=" + this.serverLogLevel);
             bw.println("operatingMode=" + this.operatingMode);
-            bw.println("workDir=" + this.workDir);
-            bw.println("initialSrvrInstance=" + this.initialPool);
-            bw.println("minSrvrInstance=" + this.minPool);
-            bw.println("maxSrvrInstance=" + this.maxPool);
+            if (this.portNumber != null)
+                bw.println("portNumber=" + this.portNumber);
+            if (this.brokerLogFile != null)
+                bw.println("brokerLogFile=" + this.brokerLogFile);
+            if (this.brokerLogLevel != -1)
+                bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
+            if (this.serverLogFile != null)
+                bw.println("srvrLogFile=" + this.serverLogFile);
+            if (this.serverLogLevel != -1)
+                bw.println("srvrLoggingLevel=" + this.serverLogLevel);
+            if (this.workDir != null)
+                bw.println("workDir=" + this.workDir);
+            if (this.initialPool != -1)
+                bw.println("initialSrvrInstance=" + this.initialPool);
+            if (this.minPool != -1)
+                bw.println("minSrvrInstance=" + this.minPool);
+            if (this.maxPool != -1)
+                bw.println("maxSrvrInstance=" + this.maxPool);
             if (this.server.getActivateProc() != null) {
                 bw.println("srvrActivateProc=" + this.server.getActivateProc());
             }
@@ -212,38 +310,39 @@ public class PCTASBroker extends PCTBroker {
             }
             if (this.UID.equalsIgnoreCase("auto")) {
                 bw.println("uuid=" + new UID().toString());
-            }
-            else if (!this.UID.equalsIgnoreCase("none")) {
+            } else if (!this.UID.equalsIgnoreCase("none")) {
                 bw.println("uuid=" + this.UID);
             }
             bw.close();
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new BuildException("Unable to create temp file");
         }
     }
-    
-    private Task getMergeTask() {
-        Java task = (Java) getProject().createTask("java");
-        task.setOwningTarget(this.getOwningTarget());
-        task.setTaskName(this.getTaskName());
-        task.setDescription(this.getDescription());
-        task.setFork(true);
-        task.setDir(this.getProject().getBaseDir());
-        task.setClassname(MERGE_CLASS);
-        task.createClasspath().addFileset(this.getJavaFileset());
-        Environment.Variable var2 = new Environment.Variable();
-        var2.setKey("Install.Dir"); //$NON-NLS-1$
-        var2.setValue(this.getDlcHome().toString());
-        task.addSysproperty(var2);
-        Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DLC"); //$NON-NLS-1$
-        var4.setValue(this.getDlcHome().toString());
-        task.addEnv(var4);
 
-        return task;
-    }
-    
+    // private Task getMergeTask() {
+    // Java task = (Java) getProject().createTask("java");
+    // task.setOwningTarget(this.getOwningTarget());
+    // task.setTaskName(this.getTaskName());
+    // task.setDescription(this.getDescription());
+    // task.setFork(true);
+    // task.setDir(this.getProject().getBaseDir());
+    // task.setClassname(MERGE_CLASS);
+    // task.createClasspath().addFileset(this.getJavaFileset());
+    // Environment.Variable var2 = new Environment.Variable();
+    // var2.setKey("Install.Dir"); //$NON-NLS-1$
+    // var2.setValue(this.getDlcHome().toString());
+    // task.addSysproperty(var2);
+    // Environment.Variable var4 = new Environment.Variable();
+    // var4.setKey("DLC"); //$NON-NLS-1$
+    // var4.setValue(this.getDlcHome().toString());
+    // task.addEnv(var4);
+    //
+    // return task;
+    // }
+
+    /**
+     * Creates an Exec task, calling mergeprop shell script.
+     */
     private Task getCmdLineMergeTask(File propFile, File deltaFile) {
         ExecTask task = (ExecTask) getProject().createTask("exec");
         task.setOwningTarget(this.getOwningTarget());
@@ -251,12 +350,12 @@ public class PCTASBroker extends PCTBroker {
         task.setDescription(this.getDescription());
         task.setDir(this.getProject().getBaseDir());
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
-        
+
         Environment.Variable var4 = new Environment.Variable();
         var4.setKey("DLC"); //$NON-NLS-1$
         var4.setValue(this.getDlcHome().toString());
         task.addEnv(var4);
-        
+
         task.createArg().setValue("-type");
         task.createArg().setValue("ubroker");
         task.createArg().setValue("-action");
@@ -265,8 +364,7 @@ public class PCTASBroker extends PCTBroker {
         task.createArg().setValue(propFile.getAbsolutePath());
         task.createArg().setValue("-delta");
         task.createArg().setValue(deltaFile.getAbsolutePath());
-        
-        
+
         return task;
     }
 }
