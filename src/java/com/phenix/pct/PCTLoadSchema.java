@@ -54,8 +54,10 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 /**
  * Loads schema into database
@@ -97,6 +99,9 @@ public class PCTLoadSchema extends PCTRun {
 
         this.setProcedure("pct/pctLoadSchema.p"); //$NON-NLS-1$
         this.setParameter(srcFile.getAbsolutePath());
+        log(
+                MessageFormat.format(Messages.getString("PCTLoadSchema.3"),
+                        new Object[]{ this.srcFile }), Project.MSG_INFO);
         super.execute();
     }
 }
