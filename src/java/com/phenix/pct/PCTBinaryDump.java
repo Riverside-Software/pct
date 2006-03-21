@@ -142,17 +142,19 @@ public class PCTBinaryDump extends PCT {
         this.dbConnList.add(dbConn);
     }
 
-    public void addInclude(Pattern inc) {
+    public void addConfiguredInclude(Pattern inc) {
         if (this.patterns == null) {
             this.patterns = new Vector();
         }
+        inc.setInclude(true);
         this.patterns.add(inc);
     }
 
-    public void addExclude(Pattern exc) {
+    public void addConfiguredExclude(Pattern exc) {
         if (this.patterns == null) {
             this.patterns = new Vector();
         }
+        exc.setInclude(false);
         this.patterns.add(exc);
     }
 
@@ -269,7 +271,7 @@ public class PCTBinaryDump extends PCT {
             Pattern p = (Pattern) i.next();
             StringBuffer sb2 = new StringBuffer();
             sb2.append(':');
-            sb2.append((p instanceof Include ? 'I' : 'E'));
+            sb2.append((p.isInclude() ? 'I' : 'E'));
             sb2.append('$');
             sb2.append(p.getName());
             sb.append(sb2);
