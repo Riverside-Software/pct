@@ -5,7 +5,8 @@ Version 0.10 (??/??/????)
  * Added schema holder support in PCTCreateBase
  * Added wordRules option in PCTCreateBase
  * Added PCTASBroker task to create/remove/update appservers definition
-
+ * Bug #1455512 : corrected bug on include/exclude patterns in PCTBinaryDump
+ 
 Version 0.9 (07/10/2005)
 ==============================
  * Upgrading to ANT 1.6.5
