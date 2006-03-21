@@ -24,7 +24,7 @@
         &lt;script language="SpeedScript"&gt;
         DEFINE VARIABLE vdate AS DATE INITIAL TODAY.
         &lt;/script&gt;
-        &lt;p&gt;Today : 'vdate'&lt;/p&gt;
+        &lt;p&gt;Today : `vdate`&lt;/p&gt;
       &lt;/body&gt;
     </echo>
     <PCTWSComp destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">

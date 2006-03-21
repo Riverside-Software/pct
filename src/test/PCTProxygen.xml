@@ -21,7 +21,7 @@
     <mkdir dir="pxg" />
   </target>
   <target name="test2">
-    <PCTProxygen srcFile="test1.pxg" dlcHome="${env.DLC}" />
+    <PCTProxygen srcFile="Test1.pxg" dlcHome="${env.DLC}" />
   </target>
 
   <!-- Simple v10 XPXG file, we should get a class -->
@@ -33,7 +33,7 @@
     <mkdir dir="pxg" />
   </target>
   <target name="test3">
-    <PCTProxygen srcFile="test1.xpxg" dlcHome="${env.DLC}" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${env.DLC}" />
   </target>
 
   <!-- Simple v10 XPXG file with working directory, we should get a class -->
@@ -48,7 +48,7 @@
     <mkdir dir="sandbox/pxg" />
   </target>
   <target name="test4">
-    <PCTProxygen srcFile="test1.xpxg" dlcHome="${env.DLC}" workingDirectory="sandbox" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${env.DLC}" workingDirectory="sandbox" />
   </target>
   
 </project>
