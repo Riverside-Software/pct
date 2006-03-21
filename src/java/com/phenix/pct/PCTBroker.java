@@ -75,7 +75,7 @@ public abstract class PCTBroker extends PCT {
     protected String action = null;
     protected String name = null;
     protected String file = null;
-    protected String UID = null;
+    protected String UID = "none";
     
     public abstract void execute() throws BuildException;
 
@@ -103,14 +103,16 @@ public abstract class PCTBroker extends PCT {
     }
 
     /**
+     * Set broker name. No default value.
      * 
-     * @param name
+     * @param name String
      */
     public void setName(String name) {
         this.name = name;
     }
     
     /**
+     * Set unique identifier for broker. Default value is none.
      * 
      * @param uid String auto|none|uid
      */
