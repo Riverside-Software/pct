@@ -197,6 +197,7 @@ public class PCTRunTest extends BuildFileTest {
 
     /**
      * Tests parameter containing quotes and so on...
+     * Doesn't work on UNIX
      */
     public void test14() {
         executeTarget("test14-init");
