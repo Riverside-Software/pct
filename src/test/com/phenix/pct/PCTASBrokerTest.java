@@ -56,19 +56,12 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Exec;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import com.freeware.inifiles.INIFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Class for testing PCTASBroker task
@@ -208,18 +201,22 @@ public class PCTASBrokerTest extends BuildFileTest {
     }
 
     public void testApsvUpdate() {
-        executeTarget("TestApsvUpdate");
+        executeTarget("TestApsvUpdate-Part1");
 
         File f1 = new File("sandbox/ubroker.properties");
         assertTrue("ubroker.properties not found", f1.exists());
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
-        Map map = ini.getProperties("UBroker.AS.Test");
-        assertTrue("No properties (null) in UBroker.AS.Test", (map != null));
-        assertTrue("portNumber section not found !", map.containsKey("portNumber"));
-        String uuid = ini.getStringProperty("UBroker.AS.Test", "portNumber");
-        assertTrue("Null portNumber", (uuid != null));
-        assertTrue("Wrong portNumber", (uuid.equals("YYY")));
+        String portNumber = ini.getStringProperty("UBroker.AS.Test", "portNumber");
+        assertTrue("Null portNumber (before update)", (portNumber != null));
+        assertTrue("Wrong portNumber (before update)", (portNumber.equals("12345")));
+        ini = null;
+        
+        executeTarget("TestApsvUpdate-Part2");
+        ini = new INIFile(f1.getAbsolutePath());
+        portNumber = ini.getStringProperty("UBroker.AS.Test", "portNumber");
+        assertTrue("Null portNumber (after update)", (portNumber != null));
+        assertTrue("Wrong portNumber (after update)", (portNumber.equals("12346")));
     }
 
     public void testDoubleCreate() {

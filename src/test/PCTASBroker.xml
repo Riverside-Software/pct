@@ -49,9 +49,11 @@
   </target>
 
   <!-- Testing appserver update -->
-  <target name="TestApsvUpdate">
-    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" portNumber="XXX" />
-    <PCTASBroker action="update" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" portNumber="YYY" />
+  <target name="TestApsvUpdate-Part1">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" portNumber="12345" />
+  </target>
+  <target name="TestApsvUpdate-Part2">
+    <PCTASBroker action="update" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" portNumber="12346" />
   </target>
 
   <!-- Second create should throw BuildException -->
