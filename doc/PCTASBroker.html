@@ -138,7 +138,6 @@ Definition of servers processes ; Inherits from attributes of PCTRun task, excep
 <li><em>graphicalMode</em> attribute is removed</li>
 <li><em>debugPCT</em> attribute is removed</li>
 <li><em>baseDir</em> attribute is removed</li>
-<li><em>procedure</em> attribute is removed</li>
 <li><em>activateProc</em> attribute is added</li>
 <li><em>deactivateProc</em> attribute is added</li>
 <li><em>startupProc</em> attribute is added</li>
@@ -149,8 +148,43 @@ Definition of servers processes ; Inherits from attributes of PCTRun task, excep
 
 
 <h2>Examples</h2>
+<pre>
+&lt;PCTASBroker action="create" name="Test" dlcHome="${env.DLC}" /&gt;
+</pre>
 <p>
-None
+Simplest declaration : this will create a [UBroker.AS.Test] section in the $DLC/properties/ubroker.properties file.
+In this case, every attribute is inherited from parent sections.
+</p>
+
+<pre>
+&lt;PCTASBroker action="update" name="Test" dlcHome="${env.DLC}" portNumber="1234" /&gt;
+</pre>
+<p>
+Updates the previously created appserver, by adding portNumber property.
+</p>
+
+<pre>
+&lt;PCTASBroker action="delete" name="Test" dlcHome="${env.DLC}" /&gt;
+</pre>
+<p>
+Deletes the previously created appserver.
+</p>
+
+<pre>
+&lt;PCTASBroker action="delete" name="Test" dlcHome="${env.DLC}" file="myubroker.properties"&gt;
+  &lt;server startupProc="apsv/startup.p" shutdownProc="apsv/shutdown.p" paramFile="conf/param.pf"&lt;
+    &lt;propath&gt;
+      &lt;pathelement path="build" /&gt;
+      &lt;pathelement path="src" /&gt;
+    &lt;/propath&gt;
+    &lt;PCTConnection dbName="foo" dbDir="base" /&gt;
+  &lt;/server&gt;
+&lt;/PCTASBroker&gt;
+</pre>
+<p>
+Creates a new [UBroker.AS.Test] section in file myubroker.properties (instead of default file). Startup and shutdown
+procedures are defined, propath is set to <code>build:src</code>, and command line parameters are set to
+<code>-db base/foo -pf conf/param.pf</code>
 </p>
 
 </div>
