@@ -78,11 +78,11 @@ public class PCTASBroker extends PCTBroker {
     private final static String STATE_FREE = "state-free";
 
     private String operatingMode = STATELESS;
-    private String portNumber = null;
     private boolean autoStart = false;
     private File workDir = null;
     private File brokerLogFile = null;
     private File serverLogFile = null;
+    private int portNumber = -1;
     private int brokerLogLevel = -1;
     private int serverLogLevel = -1;
     private int initialPool = -1;
@@ -180,7 +180,7 @@ public class PCTASBroker extends PCTBroker {
      * 
      * @param portNumber String
      */
-    public void setPortNumber(String portNumber) {
+    public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
     }
 
@@ -237,7 +237,14 @@ public class PCTASBroker extends PCTBroker {
 
         // TODO Check attributes are OK
 
-        // Choix du fichier properties
+        if (this.name == null) {
+            throw new BuildException("Name attribute is missing");
+        }
+        if (this.action == null) {
+            throw new BuildException("Action attribute is missing");
+        }
+
+        // Choosing right properties file
         if (this.file == null) {
             propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
         } else {
@@ -247,21 +254,17 @@ public class PCTASBroker extends PCTBroker {
             throw new BuildException("Unable to find properties file " + propFile.getAbsolutePath());
         }
 
-        if (this.action.equals("delete")) {
-            
-        }
-        else {
-            writeDeltaFile();
-            Task task = getCmdLineMergeTask(propFile, tmp);
-            task.execute();
-        }
+        writeDeltaFile();
+        Task task = getCmdLineMergeTask(propFile, tmp);
+        task.execute();
+
     }
 
     /**
      * Write files to be used as a parameter for the MergeProp shell script.
      * 
      * @throws BuildException Something went wrong during write.
-     *
+     * 
      */
     private void writeDeltaFile() {
         try {
@@ -270,48 +273,50 @@ public class PCTASBroker extends PCTBroker {
             log(tmp.getAbsolutePath(), Project.MSG_INFO);
             PrintWriter bw = new PrintWriter(new FileWriter(tmp));
             bw.println("[UBroker.AS." + this.name + "]");
-            bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-            bw.println("operatingMode=" + this.operatingMode);
-            if (this.portNumber != null)
-                bw.println("portNumber=" + this.portNumber);
-            if (this.brokerLogFile != null)
-                bw.println("brokerLogFile=" + this.brokerLogFile);
-            if (this.brokerLogLevel != -1)
-                bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
-            if (this.serverLogFile != null)
-                bw.println("srvrLogFile=" + this.serverLogFile);
-            if (this.serverLogLevel != -1)
-                bw.println("srvrLoggingLevel=" + this.serverLogLevel);
-            if (this.workDir != null)
-                bw.println("workDir=" + this.workDir);
-            if (this.initialPool != -1)
-                bw.println("initialSrvrInstance=" + this.initialPool);
-            if (this.minPool != -1)
-                bw.println("minSrvrInstance=" + this.minPool);
-            if (this.maxPool != -1)
-                bw.println("maxSrvrInstance=" + this.maxPool);
-            if (this.server.getActivateProc() != null) {
-                bw.println("srvrActivateProc=" + this.server.getActivateProc());
-            }
-            if (this.server.getDeactivateProc() != null) {
-                bw.println("srvrDeactivateProc=" + this.server.getDeactivateProc());
-            }
-            if (this.server.getConnectProc() != null) {
-                bw.println("srvrConnectProc=" + this.server.getConnectProc());
-            }
-            if (this.server.getDisconnectProc() != null) {
-                bw.println("srvrDisconnectProc=" + this.server.getDisconnectProc());
-            }
-            if (this.server.getStartupProc() != null) {
-                bw.println("srvrStartupProc=" + this.server.getStartupProc());
-            }
-            if (this.server.getShutdownProc() != null) {
-                bw.println("srvrShutdownProc=" + this.server.getShutdownProc());
-            }
-            if (this.UID.equalsIgnoreCase("auto")) {
-                bw.println("uuid=" + new UID().toString());
-            } else if (!this.UID.equalsIgnoreCase("none")) {
-                bw.println("uuid=" + this.UID);
+            if (!this.action.equalsIgnoreCase("delete")) {
+                bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
+                bw.println("operatingMode=" + this.operatingMode);
+                if (this.portNumber != -1)
+                    bw.println("portNumber=" + this.portNumber);
+                if (this.brokerLogFile != null)
+                    bw.println("brokerLogFile=" + this.brokerLogFile);
+                if (this.brokerLogLevel != -1)
+                    bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
+                if (this.serverLogFile != null)
+                    bw.println("srvrLogFile=" + this.serverLogFile);
+                if (this.serverLogLevel != -1)
+                    bw.println("srvrLoggingLevel=" + this.serverLogLevel);
+                if (this.workDir != null)
+                    bw.println("workDir=" + this.workDir);
+                if (this.initialPool != -1)
+                    bw.println("initialSrvrInstance=" + this.initialPool);
+                if (this.minPool != -1)
+                    bw.println("minSrvrInstance=" + this.minPool);
+                if (this.maxPool != -1)
+                    bw.println("maxSrvrInstance=" + this.maxPool);
+                if ((this.server != null) && (this.server.getActivateProc() != null)) {
+                    bw.println("srvrActivateProc=" + this.server.getActivateProc());
+                }
+                if ((this.server != null) && (this.server.getDeactivateProc() != null)) {
+                    bw.println("srvrDeactivateProc=" + this.server.getDeactivateProc());
+                }
+                if ((this.server != null) && (this.server.getConnectProc() != null)) {
+                    bw.println("srvrConnectProc=" + this.server.getConnectProc());
+                }
+                if ((this.server != null) && (this.server.getDisconnectProc() != null)) {
+                    bw.println("srvrDisconnectProc=" + this.server.getDisconnectProc());
+                }
+                if ((this.server != null) && (this.server.getStartupProc() != null)) {
+                    bw.println("srvrStartupProc=" + this.server.getStartupProc());
+                }
+                if ((this.server != null) && (this.server.getShutdownProc() != null)) {
+                    bw.println("srvrShutdownProc=" + this.server.getShutdownProc());
+                }
+                if (this.UID.equalsIgnoreCase("auto")) {
+                    bw.println("uuid=" + new UID().toString());
+                } else if (!this.UID.equalsIgnoreCase("none")) {
+                    bw.println("uuid=" + this.UID);
+                }
             }
             bw.close();
         } catch (IOException ioe) {
@@ -350,7 +355,8 @@ public class PCTASBroker extends PCTBroker {
         task.setDescription(this.getDescription());
         task.setDir(this.getProject().getBaseDir());
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
-
+        task.setFailonerror(true);
+        
         Environment.Variable var4 = new Environment.Variable();
         var4.setKey("DLC"); //$NON-NLS-1$
         var4.setValue(this.getDlcHome().toString());
