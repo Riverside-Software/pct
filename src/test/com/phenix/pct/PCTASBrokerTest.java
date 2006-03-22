@@ -225,4 +225,45 @@ public class PCTASBrokerTest extends BuildFileTest {
                 "Already created, should throw BuilException");
     }
 
+    public void testAttributes1() {
+        executeTarget("TestAttributes-1");
+        
+        File f1 = new File("sandbox/ubroker.properties");
+        assertTrue("ubroker.properties not found", f1.exists());
+
+        INIFile ini = new INIFile(f1.getAbsolutePath());
+        assertTrue("Wrong operatingMode", (ini.getStringProperty("UBroker.AS.Test", "operatingMode").equals("state-reset")));
+        assertTrue("Wrong autoStart", (ini.getStringProperty("UBroker.AS.Test", "autoStart").equals("1")));
+        assertTrue("Wrong initialPool", (ini.getStringProperty("UBroker.AS.Test", "initialSrvrInstance").equals("4")));
+        assertTrue("Wrong minPool", (ini.getStringProperty("UBroker.AS.Test", "minSrvrInstance").equals("3")));
+        assertTrue("Wrong maxPool", (ini.getStringProperty("UBroker.AS.Test", "maxSrvrInstance").equals("5")));
+    }
+
+    public void testAttributes2() {
+        executeTarget("TestAttributes-2");
+        
+        File f1 = new File("sandbox/ubroker.properties");
+        assertTrue("ubroker.properties not found", f1.exists());
+
+        INIFile ini = new INIFile(f1.getAbsolutePath());
+        assertTrue("Wrong activateProc", (ini.getStringProperty("UBroker.AS.Test", "srvrActivateProc").equals("activate.p")));
+        assertTrue("Wrong deactivateProc", (ini.getStringProperty("UBroker.AS.Test", "srvrDeactivateProc").equals("deactivate.p")));
+        assertTrue("Wrong connectProc", (ini.getStringProperty("UBroker.AS.Test", "srvrConnectProc").equals("connect.p")));
+        assertTrue("Wrong disconnectProc", (ini.getStringProperty("UBroker.AS.Test", "srvrDisconnProc").equals("disconnect.p")));
+        assertTrue("Wrong startupProc", (ini.getStringProperty("UBroker.AS.Test", "srvrStartupProc").equals("startup.p")));
+        assertTrue("Wrong shutdownProc", (ini.getStringProperty("UBroker.AS.Test", "srvrShutdownProc").equals("shutdown.p")));
+    }
+
+    public void testForbiddenAttributes1() {
+        expectBuildException("TestForbiddenAttributes-1", "Forbidden attribute : procedure");
+    }
+    public void testForbiddenAttributes2() {
+        expectBuildException("TestForbiddenAttributes-2", "Forbidden attribute : graphicalMode");
+    }
+    public void testForbiddenAttributes3() {
+        expectBuildException("TestForbiddenAttributes-3", "Forbidden attribute : debugPCT");
+    }
+    public void testForbiddenAttributes4() {
+        expectBuildException("TestForbiddenAttributes-4", "Forbidden attribute : baseDir");
+    }
 }

@@ -64,4 +64,38 @@
     <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" />
   </target>
 
+  <!-- Testing a few attributes : -->
+  <target name="TestAttributes-1">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" operatingMode="state-reset" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" />
+  </target>
+
+  <!-- Testing forbidden attributes of Server -->
+  <target name="TestForbiddenAttributes-1">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
+      <Server procedure="test.p" />
+    </PCTASBroker>
+  </target>
+  <target name="TestForbiddenAttributes-2">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
+      <Server graphicalMode="true" />
+    </PCTASBroker>
+  </target>
+  <target name="TestForbiddenAttributes-3">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
+      <Server debugPCT="true" />
+    </PCTASBroker>
+  </target>
+  <target name="TestForbiddenAttributes-4">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
+      <Server baseDir="." />
+    </PCTASBroker>
+  </target>
+
+  <!-- Testing serverAttributes -->
+  <target name="TestAttributes-2">
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
+      <Server startupProc="startup.p" shutdownProc="shutdown.p" activateProc="activate.p" deactivateProc="deactivate.p" connectProc="connect.p" disconnectProc="disconnect.p"/>
+    </PCTASBroker>
+  </target>
+  
 </project>
