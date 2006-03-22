@@ -270,7 +270,7 @@ public class PCTBinaryDump extends PCT {
         for (Iterator i = patterns.iterator(); i.hasNext();) {
             Pattern p = (Pattern) i.next();
             StringBuffer sb2 = new StringBuffer();
-            sb2.append(':');
+            sb2.append('|');
             sb2.append((p.isInclude() ? 'I' : 'E'));
             sb2.append('$');
             sb2.append(p.getName());
