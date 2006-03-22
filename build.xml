@@ -188,6 +188,9 @@
       </fileset>
       <report format="frames" styledir="${basedir}" todir="${junit}"/>
     </junitreport>
+    <delete>
+      <fileset dir="." includes="TEST-*.xml" />
+    </delete>
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
@@ -246,6 +249,7 @@
       <fileset dir=".">
         <include name="pct*.tar.gz" />
         <include name="pct*.zip" />
+        <include name="TEST-*.xml" />
       </fileset>
     </delete>
   </target>
