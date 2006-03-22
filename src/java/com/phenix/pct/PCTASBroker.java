@@ -58,6 +58,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.server.UID;
+import java.text.MessageFormat;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -251,12 +252,18 @@ public class PCTASBroker extends PCTBroker {
             propFile = new File(this.file);
         }
         if (!propFile.exists()) {
+            cleanup();
             throw new BuildException("Unable to find properties file " + propFile.getAbsolutePath());
         }
 
-        writeDeltaFile();
-        Task task = getCmdLineMergeTask(propFile, tmp);
-        task.execute();
+        try {
+            writeDeltaFile();
+            Task task = getCmdLineMergeTask(propFile, tmp);
+            task.execute();
+        } catch (BuildException be) {
+            this.cleanup();
+            throw be;
+        }
 
     }
 
@@ -268,7 +275,6 @@ public class PCTASBroker extends PCTBroker {
      */
     private void writeDeltaFile() {
         try {
-            // A remonter à l'initialisation
             tmp = File.createTempFile("pct_delta", ".txt");
             log(tmp.getAbsolutePath(), Project.MSG_INFO);
             PrintWriter bw = new PrintWriter(new FileWriter(tmp));
@@ -304,7 +310,7 @@ public class PCTASBroker extends PCTBroker {
                     bw.println("srvrConnectProc=" + this.server.getConnectProc());
                 }
                 if ((this.server != null) && (this.server.getDisconnectProc() != null)) {
-                    bw.println("srvrDisconnectProc=" + this.server.getDisconnectProc());
+                    bw.println("srvrDisconnProc=" + this.server.getDisconnectProc());
                 }
                 if ((this.server != null) && (this.server.getStartupProc() != null)) {
                     bw.println("srvrStartupProc=" + this.server.getStartupProc());
@@ -356,7 +362,7 @@ public class PCTASBroker extends PCTBroker {
         task.setDir(this.getProject().getBaseDir());
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
         task.setFailonerror(true);
-        
+
         Environment.Variable var4 = new Environment.Variable();
         var4.setKey("DLC"); //$NON-NLS-1$
         var4.setValue(this.getDlcHome().toString());
@@ -373,4 +379,14 @@ public class PCTASBroker extends PCTBroker {
 
         return task;
     }
+
+    private void cleanup() {
+        if (this.tmp.exists() && !this.tmp.delete()) {
+            log(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmp.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        }
+    }
+
 }
