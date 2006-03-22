@@ -249,7 +249,7 @@
       <fileset dir=".">
         <include name="pct*.tar.gz" />
         <include name="pct*.zip" />
-        <include name="TEST-*.xml" />
+        <include name="TEST*.xml" />
       </fileset>
     </delete>
   </target>
