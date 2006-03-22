@@ -172,12 +172,9 @@ public abstract class PCT extends Task {
 
         File f = new File(dlcBin, exec);
         File f2 = new File(dlcBin, exec + ".exe");
-
-        if (f.exists()) {
-            return f;
-        } else {
-            return (f2.exists() ? f2 : f);
-        }
+        File f3 = new File(dlcBin, exec + ".bat");
+        
+        return (f.exists() ? f : (f2.exists() ? f2 : (f3.exists() ? f3 : f)));
     }
 
     /**
