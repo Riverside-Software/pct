@@ -64,13 +64,13 @@ DEFINE VARIABLE qry        AS HANDLE     NO-UNDO.
 DEFINE VARIABLE bfFileName AS HANDLE     NO-UNDO.
 DEFINE VARIABLE lInc       AS LOGICAL    NO-UNDO.
 
-OUTPUT TO VALUE(ENTRY(1, SESSION:PARAMETER, ':':U)).
+OUTPUT TO VALUE(ENTRY(1, SESSION:PARAMETER, '|':U)).
 
-DO i = 2 TO NUM-ENTRIES(SESSION:PARAMETER, ':':U):
+DO i = 2 TO NUM-ENTRIES(SESSION:PARAMETER, '|':U):
   CREATE ttIncExc.
   ASSIGN ttIncExc.order = i
-         ttIncExc.inc   = (ENTRY(1, ENTRY(i, SESSION:PARAMETER, ':':U), '$':U) EQ 'I':U)
-         ttIncExc.pattern = ENTRY(2, ENTRY(i, SESSION:PARAMETER, ':':U), '$':U).
+         ttIncExc.inc   = (ENTRY(1, ENTRY(i, SESSION:PARAMETER, '|':U), '$':U) EQ 'I':U)
+         ttIncExc.pattern = ENTRY(2, ENTRY(i, SESSION:PARAMETER, '|':U), '$':U).
 END.
 
 DO i = 1 TO NUM-DBS:
