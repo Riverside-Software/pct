@@ -243,6 +243,7 @@
     <delete dir="${doc}" />
     <delete dir="${check}" />
     <delete dir="${website}" />
+    <delete dir="${testdir}" />
     <delete dir="sports2000" />
     <delete dir="${junit}" />
     <delete>
