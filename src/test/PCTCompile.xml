@@ -445,5 +445,99 @@
       </fileset>
     </PCTCompile>
   </target>
+
   
+  <!-- Dataservers -->
+  <!-- CRC check -->
+  <target name="test18init">
+    <echo file="sandbox/schema.df">
+      
+      UPDATE DATABASE "holder"
+      
+      ADD TABLE "Tab1"
+        FOREIGN-NAME "TAB1"
+        FOREIGN-TYPE "TABLE"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FOREIGN-NAME "FLD1"
+        FORMAT "9"
+        FOREIGN-TYPE "NUMBER"
+        FIELD-MISC13 22
+        FIELD-MISC14 1
+        FOREIGN-MAXIMUM 22
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      UPDATE FIELD "Fld1" OF "tab1"
+        FOREIGN-POS 1
+      
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        INDEX-NUM 1
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        FOREIGN-NAME "TAB1##TAB1_PK"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <Holder dbName="holder" dbType="oracle" misc="8" codepage="iso8859-1" collation="BASIC" schemaFile="sandbox/schema.df" />
+    </PCTCreateBase>
+  </target>
+  <target name="test18">
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <echo file="sandbox/test2.p">
+      DEFINE TEMP-TABLE tt NO-UNDO LIKE Tab1.
+      CREATE tt.
+      ASSIGN tt.fld1 = 1.
+    </echo>
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  <target name="test18bis">
+    <echo file="sandbox/update.df">
+      UPDATE DATABASE "holder"
+      
+      ADD FIELD "Fld2" OF "tab1" AS integer 
+        FOREIGN-NAME "FLD2"
+        FORMAT "9"
+        FOREIGN-TYPE "NUMBER"
+        FIELD-MISC13 22
+        FIELD-MISC14 1
+        FOREIGN-MAXIMUM 22
+        INITIAL "0"
+        LABEL "Fld2"
+        POSITION 3
+        COLUMN-LABEL "Fld2"
+        ORDER 20
+
+      UPDATE FIELD "Fld2" OF "tab1"
+        FOREIGN-POS 2
+    </echo>
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadSchema>
+    <sleep seconds="2" />
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="dictdb"/>
+      </PCTConnection>
+    </PCTCompile>
+  </target>
+
 </project>

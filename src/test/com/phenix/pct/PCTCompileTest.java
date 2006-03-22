@@ -255,4 +255,21 @@ public class PCTCompileTest extends BuildFileTest {
     	File f = new File("build/xcode/temp.r");
     	assertTrue(f.exists());
     }
+    
+    public void test18() {
+        executeTarget("test18init");
+        executeTarget("test18");
+
+        File f = new File("build/sandbox/test.r");
+        File f2 = new File("build/sandbox/test2.r");
+        assertTrue(f.exists());
+        assertTrue(f2.exists());
+
+        long mod = f.lastModified();
+        long mod2 = f2.lastModified();
+        executeTarget("test18bis");
+        assertTrue(mod < f.lastModified());
+        assertTrue(mod2 < f2.lastModified());
+    }
+
 }
