@@ -63,9 +63,9 @@ import org.apache.tools.ant.BuildException;
  */
 
 public abstract class PCTBroker extends PCT {
-    private final static String UPDATE = "update";
-    private final static String CREATE = "create";
-    private final static String DELETE = "delete";
+    protected final static String UPDATE = "update";
+    protected final static String CREATE = "create";
+    protected final static String DELETE = "delete";
     
     protected final static String UBROKER_PROPERTIES = "ubroker.properties";
     protected final static String CONMGR_PROPERTIES = "conmgr.properties";
@@ -85,9 +85,6 @@ public abstract class PCTBroker extends PCT {
      * @param action String - Must be create|update|delete
      */
     public void setAction(String action) {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE)) && (!action.equalsIgnoreCase(DELETE))) {
-            throw new BuildException("Unknown action : " + action);
-        }
         this.action = action;
     }
 

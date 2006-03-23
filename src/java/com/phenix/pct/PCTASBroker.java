@@ -130,8 +130,6 @@ public class PCTASBroker extends PCTBroker {
      * @param brokerLogLevel int
      */
     public void setBrokerLogLevel(int brokerLogLevel) {
-        if ((brokerLogLevel < 1) || (brokerLogLevel > 5))
-            throw new BuildException("Log level should be between 1 and 5");
         this.brokerLogLevel = brokerLogLevel;
     }
 
@@ -168,11 +166,6 @@ public class PCTASBroker extends PCTBroker {
      * @param operatingMode String
      */
     public void setOperatingMode(String operatingMode) {
-        if ((!operatingMode.equalsIgnoreCase(STATELESS))
-                && (!operatingMode.equalsIgnoreCase(STATE_AWARE))
-                && (!operatingMode.equalsIgnoreCase(STATE_RESET))
-                && (!operatingMode.equalsIgnoreCase(STATE_FREE)))
-            throw new BuildException("Invalid operating mode");
         this.operatingMode = operatingMode;
     }
 
@@ -200,8 +193,6 @@ public class PCTASBroker extends PCTBroker {
      * @param serverLogLevel
      */
     public void setServerLogLevel(int serverLogLevel) {
-        if ((serverLogLevel < 1) || (brokerLogLevel > 5))
-            throw new BuildException("Log level should be between 1 and 5");
         this.serverLogLevel = serverLogLevel;
     }
 
@@ -236,35 +227,29 @@ public class PCTASBroker extends PCTBroker {
     public void execute() throws BuildException {
         File propFile = null;
 
-        // TODO Check attributes are OK
-
-        if (this.name == null) {
-            throw new BuildException("Name attribute is missing");
-        }
-        if (this.action == null) {
-            throw new BuildException("Action attribute is missing");
-        }
-
-        // Choosing right properties file
-        if (this.file == null) {
-            propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
-        } else {
-            propFile = new File(this.file);
-        }
-        if (!propFile.exists()) {
-            cleanup();
-            throw new BuildException("Unable to find properties file " + propFile.getAbsolutePath());
-        }
-
         try {
+            this.checkAttributes();
+            // Choosing right properties file
+            if (this.file == null) {
+                propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
+            } else {
+                propFile = new File(this.file);
+            }
+            if (!propFile.exists())
+                throw new BuildException("Unable to find properties file "
+                        + propFile.getAbsolutePath());
+            // And do the work
             writeDeltaFile();
             Task task = getCmdLineMergeTask(propFile, tmp);
             task.execute();
         } catch (BuildException be) {
-            this.cleanup();
             throw be;
+        } finally {
+            // Unwanted side effect of using PCTRun in server attribute, empty temporary files need to be cleaned
+            if (this.server != null)
+                this.server.cleanup();
+            this.cleanup();
         }
-
     }
 
     /**
@@ -275,8 +260,6 @@ public class PCTASBroker extends PCTBroker {
      */
     private void writeDeltaFile() {
         try {
-            tmp = File.createTempFile("pct_delta", ".txt");
-            log(tmp.getAbsolutePath(), Project.MSG_INFO);
             PrintWriter bw = new PrintWriter(new FileWriter(tmp));
             bw.println("[UBroker.AS." + this.name + "]");
             if (!this.action.equalsIgnoreCase("delete")) {
@@ -378,6 +361,30 @@ public class PCTASBroker extends PCTBroker {
         task.createArg().setValue(deltaFile.getAbsolutePath());
 
         return task;
+    }
+
+    private void checkAttributes() throws BuildException {
+        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE)) && (!action.equalsIgnoreCase(DELETE))) {
+            throw new BuildException("Unknown action : " + action);
+        }
+        if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {
+            throw new BuildException("Log level should be between 1 and 5");
+        }
+        if ((serverLogLevel != -1) && ((serverLogLevel < 1) || (brokerLogLevel > 5)))
+            throw new BuildException("Log level should be between 1 and 5");
+
+        if (this.name == null) {
+            throw new BuildException("Name attribute is missing");
+        }
+        if (this.action == null) {
+            throw new BuildException("Action attribute is missing");
+        }
+        if ((!operatingMode.equalsIgnoreCase(STATELESS))
+                && (!operatingMode.equalsIgnoreCase(STATE_AWARE))
+                && (!operatingMode.equalsIgnoreCase(STATE_RESET))
+                && (!operatingMode.equalsIgnoreCase(STATE_FREE)))
+            throw new BuildException("Invalid operating mode");
+        // Server's attribute should be checked there... 
     }
 
     private void cleanup() {
