@@ -58,6 +58,9 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 
 /**
@@ -75,6 +78,7 @@ public abstract class PCT extends Task {
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
+    private boolean includedPL = true;
 
     /**
      * Progress installation directory
@@ -141,6 +145,26 @@ public abstract class PCT extends Task {
     }
 
     /**
+     * Add default pct.pl included in JAR file into PROPATH. Default value is true.
+     * 
+     * @param inc
+     * @since 0.10
+     */
+    public final void setIncludedPL(boolean inc) {
+        this.includedPL = inc;
+    }
+
+    /**
+     * Use default pct.pl included in JAR file into PROPATH
+     * 
+     * @return boolean
+     * @since 0.10
+     */
+    protected final boolean getIncludedPL() {
+        return this.includedPL;
+    }
+
+    /**
      * Returns Progress installation directory
      * 
      * @return File
@@ -172,9 +196,12 @@ public abstract class PCT extends Task {
 
         File f = new File(dlcBin, exec);
         File f2 = new File(dlcBin, exec + ".exe");
-        File f3 = new File(dlcBin, exec + ".bat");
-        
-        return (f.exists() ? f : (f2.exists() ? f2 : (f3.exists() ? f3 : f)));
+
+        if (f.exists()) {
+            return f;
+        } else {
+            return (f2.exists() ? f2 : f);
+        }
     }
 
     /**
@@ -198,4 +225,29 @@ public abstract class PCT extends Task {
      * @throws BuildException
      */
     public abstract void execute() throws BuildException;
+
+    /**
+     * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file
+     * 
+     * @return Handle on pct.pl (File)
+     */
+    protected File extractPL() {
+        try {
+            File f = null;
+            InputStream is = this.getClass().getResourceAsStream("/pct.pl");
+            if (is == null)
+                return null;
+            f = File.createTempFile("PCT", ".pl");
+            OutputStream os = new FileOutputStream(f);
+            byte[] b = new byte[2048];
+            int k = 0;
+            while ((k = is.read(b)) != -1)
+                os.write(b, 0, k);
+            os.close();
+            is.close();
+            return f;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
