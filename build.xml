@@ -70,6 +70,26 @@
     </jar>
   </target>
 
+  <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
+    <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
+  </target>
+
+  <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
+    <bootstrapCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
+      <fileset dir="${src.progress}">
+        <include name="pct/*.p" />
+      </fileset>
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/pct.pl" dlcHome="${env.DLC}">
+      <fileset dir="${build}/tty">
+        <include name="pct/*.r" />
+      </fileset>
+    </bootstrapLibrary>
+  </target>
+
   <target name="jar" depends="pbuild" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
@@ -94,60 +114,8 @@
     </jar>
   </target>
 
-  <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
-    <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
-  </target>
-
   <target name="declare" depends="jar" description="PCT tasks declaration">
     <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
-  </target>
-  
-  <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
-    <bootstrapCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
-      <fileset dir="${src.progress}">
-        <include name="pct/*.p" />
-      </fileset>
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-    </bootstrapCompile>
-    <bootstrapLibrary destfile="${build}/pct.pl" dlcHome="${env.DLC}">
-      <fileset dir="${build}/tty">
-      <include name="pct/*.r" /> </fileset>
-    </bootstrapLibrary>
-    <copy todir="${build}/tty">
-      <fileset dir="${src.progress}">
-        <include name="prodict/**/*.p" />
-        <include name="prodict/**/*.i" />
-        <include name="adecomm/*.i" />
-      </fileset>
-    </copy>
-    <!--    <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
-      <fileset dir="${src.progress}">
-        <include name="pct/*.p" />
-      </fileset>
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-    </PCTCompile>
-    <copy todir="${build}/gui">
-      <fileset dir="${src.progress}">
-        <include name="prodict/**/*.p" />
-        <include name="prodict/**/*.i" />
-        <include name="adecomm/*.i" />
-      </fileset>
-    </copy> -->
-  </target>
-
-  <target name="check" depends="build" description="Check source code convention">
-    <taskdef resource="checkstyletask.properties" />
-    <mkdir dir="${check}" />
-    <checkstyle config="conf/check-config.xml" failOnViolation="false">
-      <formatter type="xml" toFile="${check}/check.xml" />
-      <fileset dir="${src.java}" includes="com/phenix/pct/*.java" />
-      <!--<fileset dir="${src.test}" includes="com/phenix/pct/*.java"/>-->
-    </checkstyle>
-    <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html" />
   </target>
 
   <target name="test-build" depends="jar" description="Builds junit tests">
@@ -167,7 +135,7 @@
     <mkdir dir="${testdir}" />
     <copy todir="${testdir}">
       <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template" />
-<!--      <fileset dir="src" includes="progress/**" /> -->
+      <!--      <fileset dir="src" includes="progress/**" /> -->
     </copy>
     <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
     <!-- To have consistent behavior between command line ANT and eclipse -->
@@ -222,7 +190,7 @@
       <packageset dir="${src.java}" />
       <group title="PCT Core" packages="com.phenix.pct.*" />
       <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
-      <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       <!-- Seems down -->
       <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
     </javadoc>
@@ -234,14 +202,6 @@
         <include name="lib/PCT.jar" />
         <include name="CHANGELOG" />
         <include name="website/**" />
-      </zipfileset>
-      <zipfileset prefix="pct" dir="build" filemode="644">
-        <include name="tty/**/*.r" />
-        <include name="tty/**/*.i" />
-        <include name="tty/**/*.p" />
-        <include name="gui/**/*.r" />
-        <include name="gui/**/*.i" />
-        <include name="gui/**/*.p" />
       </zipfileset>
     </zip>
   </target>
@@ -334,7 +294,7 @@
     </zip>
   </target>
 
-  <target name="sports2000doc" depends="pbuild">
+  <target name="sports2000doc" depends="jar">
     <mkdir dir="sports2000" />
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
