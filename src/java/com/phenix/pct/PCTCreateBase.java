@@ -310,6 +310,7 @@ public class PCTCreateBase extends PCT {
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
                     pls.setPropath(this.propath);
+                    pls.setIncludedPL(this.getIncludedPL());
 
                     PCTConnection pc = new PCTConnection();
                     pc.setDbName(this.dbName);
@@ -334,6 +335,7 @@ public class PCTCreateBase extends PCT {
                 run.setDlcHome(this.getDlcHome());
                 run.setDlcBin(this.getDlcBin());
                 run.setPropath(this.propath);
+                run.setIncludedPL(this.getIncludedPL());
                 run.setProcedure("pct/holders.p");
                 run.setParameter(holder.getDbName() + ";" + holder.getDbType() + ";"
                         + holder.getCodepage() + ";" + holder.getCollation() + ";"

@@ -14,12 +14,13 @@
   <property name="src.test" location="src/test" />
   <property name="build" location="build" />
   <property name="dist" location="lib" />
+  <property name="dist-lite" location="bootstrap" />
   <property name="doc" location="javadoc" />
   <property name="check" location="check" />
   <property name="website" location="website" />
   <property name="testdir" location="testbox" />
   <property name="junit" location="junit-report" />
-  
+
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
   <property name="deprecation" value="false" />
@@ -34,7 +35,9 @@
   <available file="${env.DLC}/servlets" type="dir" property="dlc.version" value="dlc10" />
   <!-- Not here ? We're using Progress v9 -->
   <condition property="dlc.version" value="dlc9">
-    <not><isset property="dlc.version" /></not>  
+    <not>
+      <isset property="dlc.version" />
+    </not>
   </condition>
 
   <tstamp>
@@ -56,13 +59,25 @@
     </copy>
   </target>
 
-  <target name="jar" depends="build" description="JAR file generation">
+  <target name="jar-lite" depends="build" description="Bootstrap JAR file">
+    <jar jarfile="${dist}/bootstrap.jar">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class" />
+        <include name="com/phenix/pct/*.properties" />
+        <include name="bootstrap.properties" />
+        <exclude name="com/phenix/pct/*Test.class" />
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="jar" depends="pbuild" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class" />
-      	<include name="com/phenix/pct/*.properties" />
+        <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
+        <include name="pct.pl" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
       <manifest>
@@ -79,19 +94,27 @@
     </jar>
   </target>
 
+  <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
+    <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
+  </target>
+
   <target name="declare" depends="jar" description="PCT tasks declaration">
     <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
   </target>
-
-  <target name="pbuild" depends="declare" description="Progress code compilation">
-    <PCTCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
+  
+  <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
+    <bootstrapCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
         <include name="pct/*.p" />
       </fileset>
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
-    </PCTCompile>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/pct.pl" dlcHome="${env.DLC}">
+      <fileset dir="${build}/tty">
+      <include name="pct/*.r" /> </fileset>
+    </bootstrapLibrary>
     <copy todir="${build}/tty">
       <fileset dir="${src.progress}">
         <include name="prodict/**/*.p" />
@@ -99,7 +122,7 @@
         <include name="adecomm/*.i" />
       </fileset>
     </copy>
-    <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
+    <!--    <PCTCompile destdir="${build}/gui" md5="true" minSize="true" graphicalMode="true" dlcHome="${env.DLC}">
       <fileset dir="${src.progress}">
         <include name="pct/*.p" />
       </fileset>
@@ -113,7 +136,7 @@
         <include name="prodict/**/*.i" />
         <include name="adecomm/*.i" />
       </fileset>
-    </copy>
+    </copy> -->
   </target>
 
   <target name="check" depends="build" description="Check source code convention">
@@ -127,7 +150,7 @@
     <style in="${check}/check.xml" style="conf/checkstyle-simple.xsl" out="${check}/output.html" />
   </target>
 
-  <target name="test-build" depends="pbuild" description="Builds junit tests">
+  <target name="test-build" depends="jar" description="Builds junit tests">
     <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
@@ -140,26 +163,26 @@
   </target>
 
   <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
-  	<!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
+    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
-  	<copy todir="${testdir}">
-  	  <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template" />
-      <fileset dir="src" includes="progress/**" />
-  	</copy>
+    <copy todir="${testdir}">
+      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template" />
+<!--      <fileset dir="src" includes="progress/**" /> -->
+    </copy>
     <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
     <!-- To have consistent behavior between command line ANT and eclipse -->
-  	<!-- WARNING 1 : If you want to run this task from command line, be sure to remove -->
-  	<!-- ant-junit.jar from you %ANT_HOME%/lib directory -->
-  	<!-- WARNING 2 : If you want to run this task from Eclipse's Ant plugin, be sure to -->
-  	<!-- remove ant-junit.jar from your ClassPath : Window -> Preferences, section Ant -> Runtime -->
-  	<!-- Classpath tab, and remove ant-junit.jar from Ant Home Entries -->
-  	<!-- WARNING 3 : If you want to run tests from Eclipse's JUnit plugin, be sure to add -->
-  	<!-- the followings : -->
-  	<!--  * In Arguments tab, working directory should be set to ${workspace_loc:PCT/testbox} -->
-  	<!--  * In Classpath tab, add ant-junit and ant-launcher in User Entries -->
-  	<!--  * In Environment entries, add a DLC variable pointing to your DLC installation -->
-  	<!--  * And remember you always have to run the prepare-test task ... -->
-  	<!--<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" onerror="report">
+    <!-- WARNING 1 : If you want to run this task from command line, be sure to remove -->
+    <!-- ant-junit.jar from you %ANT_HOME%/lib directory -->
+    <!-- WARNING 2 : If you want to run this task from Eclipse's Ant plugin, be sure to -->
+    <!-- remove ant-junit.jar from your ClassPath : Window -> Preferences, section Ant -> Runtime -->
+    <!-- Classpath tab, and remove ant-junit.jar from Ant Home Entries -->
+    <!-- WARNING 3 : If you want to run tests from Eclipse's JUnit plugin, be sure to add -->
+    <!-- the followings : -->
+    <!--  * In Arguments tab, working directory should be set to ${workspace_loc:PCT/testbox} -->
+    <!--  * In Classpath tab, add ant-junit and ant-launcher in User Entries -->
+    <!--  * In Environment entries, add a DLC variable pointing to your DLC installation -->
+    <!--  * And remember you always have to run the prepare-test task ... -->
+    <!--<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" onerror="report">
       <classpath>
         <pathelement location="${basedir}/ant-junit.jar" />
         <pathelement location="${basedir}/junit.jar" />
@@ -167,7 +190,7 @@
       </classpath>
     </taskdef>-->
   </target>
-  	
+
   <target name="test" depends="prepare-test" description="Starts tests">
     <junit printsummary="yes" haltonfailure="no" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
       <classpath>
@@ -184,9 +207,9 @@
     </junit>
     <junitreport>
       <fileset dir="${basedir}">
-        <include name="TEST-*.xml"/>
+        <include name="TEST-*.xml" />
       </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit}"/>
+      <report format="frames" styledir="${basedir}" todir="${junit}" />
     </junitreport>
     <delete>
       <fileset dir="." includes="TEST-*.xml" />
@@ -258,7 +281,7 @@
   <target name="website" depends="javadoc,sports2000doc,test" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}" />
     <mkdir dir="${website}" />
-    <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include"/>
+    <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
     <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html" />
@@ -270,7 +293,7 @@
         <include name="${doc}/**" />
       </fileset>
       <filterset>
-        <filter token="RIGHT_BANNER" value="${right-banner}"/>
+        <filter token="RIGHT_BANNER" value="${right-banner}" />
       </filterset>
     </copy>
     <copy todir="${website}">
@@ -338,5 +361,5 @@
       <fileset dir="." includes="pct*.zip" />
     </ftp>
   </target>
-  
+
 </project>

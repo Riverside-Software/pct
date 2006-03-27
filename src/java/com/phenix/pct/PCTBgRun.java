@@ -119,6 +119,8 @@ public abstract class PCTBgRun extends PCTRun {
         if (!this.isPrepared()) {
             this.prepareExecTask();
         }
+
+        this.preparePropath();
         this.setExecTaskParams();
         exec.createArg().setValue("-p"); //$NON-NLS-1$
         exec.createArg().setValue("pct/_server.p"); //$NON-NLS-1$
@@ -129,6 +131,7 @@ public abstract class PCTBgRun extends PCTRun {
             listener.start();
             this.port = listener.getLocalPort();
         } catch (IOException ioe) {
+            this.cleanup();
             throw new BuildException(ioe.getMessage());
         }
 
@@ -137,10 +140,12 @@ public abstract class PCTBgRun extends PCTRun {
         this.setExecTaskEnv();
         // And executes Exec task
         exec.execute();
+        cleanup();
         try {
             // Waiting for listener thread to stop
             listener.join();
         } catch (InterruptedException ie) {
+            this.cleanup();
             throw new BuildException(ie);
         }
 

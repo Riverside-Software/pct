@@ -58,6 +58,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
 import java.io.BufferedReader;
@@ -89,7 +90,6 @@ public class PCTRun extends PCT {
     private String numsep = null;
     private String numdec = null;
     private File paramFile = null;
-    private File status = null;
     private File iniFile = null;
     private File tempDir = null;
     private File baseDir = null;
@@ -111,7 +111,9 @@ public class PCTRun extends PCT {
 
     // Internal use
     protected ExecTask exec = null;
-    private File initProc = null;
+    protected File initProc = null;
+    protected File status = null;
+    protected File pctLib = null;
     private boolean prepared = false;
 
     /**
@@ -428,6 +430,7 @@ public class PCTRun extends PCT {
             this.prepareExecTask();
         }
 
+        this.preparePropath();
         this.createInitProcedure();
         this.setExecTaskParams();
 
@@ -747,6 +750,20 @@ public class PCTRun extends PCT {
         }
     }
 
+    protected void preparePropath() {
+        if (this.getIncludedPL()) {
+            pctLib = extractPL();
+            if (pctLib != null) {
+                FileList list = new FileList();
+                list.setDir(pctLib.getParentFile().getAbsoluteFile());
+                FileList.FileName fn = new FileList.FileName();
+                fn.setName(pctLib.getName());
+                list.addConfiguredFile(fn);
+                createPropath().addFilelist(list);
+            }
+        }
+    }
+
     /**
      * Escapes a string so it does not accidentally contain Progress escape characters
      * 
@@ -803,19 +820,26 @@ public class PCTRun extends PCT {
      */
     protected void cleanup() {
         if (!this.debugPCT) {
-            if (this.initProc.exists() && !this.initProc.delete()) {
+            if ((this.initProc != null) && (this.initProc.exists() && !this.initProc.delete())) {
                 log(
                         MessageFormat
                                 .format(
                                         Messages.getString("PCTRun.5"), new Object[]{this.initProc.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
-            if (this.status.exists() && !this.status.delete()) {
+            if ((this.status != null) && (this.status.exists() && !this.status.delete())) {
                 log(
                         MessageFormat
                                 .format(
                                         Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
+        }
+        // pct.pl is always deleted
+        if ((this.pctLib != null) && this.pctLib.exists() && !this.pctLib.delete()) {
+            log(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCTRun.5"), new Object[]{this.pctLib.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
         }
     }
 }
