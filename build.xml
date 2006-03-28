@@ -186,10 +186,10 @@
 
   <target name="javadoc" depends="build" description="API documentation creation">
     <mkdir dir="${doc}" />
-    <javadoc destdir="${doc}" useexternalfile="yes">
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8">
       <packageset dir="${src.java}" />
       <group title="PCT Core" packages="com.phenix.pct.*" />
-      <bottom>Copyright &#169; 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
       <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
       <!-- Seems down -->
       <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
@@ -294,7 +294,7 @@
     </zip>
   </target>
 
-  <target name="sports2000doc" depends="jar">
+  <target name="sports2000doc" depends="declare">
     <mkdir dir="sports2000" />
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
