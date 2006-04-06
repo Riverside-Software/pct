@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.server.UID;
 import java.text.MessageFormat;
+import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -77,8 +78,10 @@ public class PCTASBroker extends PCTBroker {
     private final static String STATE_AWARE = "state-aware";
     private final static String STATE_RESET = "state-reset";
     private final static String STATE_FREE = "state-free";
+    private final static String DEFAULT_NS = "NS1";
 
     private String operatingMode = STATELESS;
+    private String nameServer = DEFAULT_NS;
     private boolean autoStart = false;
     private File workDir = null;
     private File brokerLogFile = null;
@@ -206,13 +209,21 @@ public class PCTASBroker extends PCTBroker {
     }
 
     /**
+     * Controlling name server. Default value is NS1
+     * 
+     * @param ns String
+     */
+    public void setNameServer(String ns) {
+        this.nameServer = ns;
+    }
+
+    /**
      * Server settings
      * 
      * @param sp ServerProcess (customized version of PCTRun)
      */
     public void addConfiguredServer(ServerProcess sp) {
         if (this.server == null) {
-            // TODO Insert checks here
             this.server = sp;
         } else {
             throw new BuildException("Only one server process...");
@@ -245,7 +256,8 @@ public class PCTASBroker extends PCTBroker {
         } catch (BuildException be) {
             throw be;
         } finally {
-            // Unwanted side effect of using PCTRun in server attribute, empty temporary files need to be cleaned
+            // Unwanted side effect of using PCTRun in server attribute, empty temporary files need
+            // to be cleaned
             if (this.server != null)
                 this.server.cleanup();
             this.cleanup();
@@ -263,8 +275,21 @@ public class PCTASBroker extends PCTBroker {
             PrintWriter bw = new PrintWriter(new FileWriter(tmp));
             bw.println("[UBroker.AS." + this.name + "]");
             if (!this.action.equalsIgnoreCase("delete")) {
-                bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
+                bw.println("appserviceNameList=" + this.name);
+                bw.println("registerNameServer=1");
+                bw.println("controllingNameServer=" + this.nameServer);
+                bw.println("registrationMode=Register-IP");
                 bw.println("operatingMode=" + this.operatingMode);
+                bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
+                // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
+                if (this.server != null) {
+                    bw.print("srvrStartupParam=");
+                    for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
+                        bw.print((String) i.next());
+                        bw.print(' ');
+                    }
+                    bw.println("");
+                }
                 if (this.portNumber != -1)
                     bw.println("portNumber=" + this.portNumber);
                 if (this.brokerLogFile != null)
@@ -363,8 +388,14 @@ public class PCTASBroker extends PCTBroker {
         return task;
     }
 
+    /**
+     * Cross-attributes check
+     * 
+     * @throws BuildException Attributes are wrong...
+     */
     private void checkAttributes() throws BuildException {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE)) && (!action.equalsIgnoreCase(DELETE))) {
+        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
+                && (!action.equalsIgnoreCase(DELETE))) {
             throw new BuildException("Unknown action : " + action);
         }
         if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {
@@ -384,7 +415,7 @@ public class PCTASBroker extends PCTBroker {
                 && (!operatingMode.equalsIgnoreCase(STATE_RESET))
                 && (!operatingMode.equalsIgnoreCase(STATE_FREE)))
             throw new BuildException("Invalid operating mode");
-        // Server's attribute should be checked there... 
+        // TODO Server's attribute should be checked there...
     }
 
     private void cleanup() {

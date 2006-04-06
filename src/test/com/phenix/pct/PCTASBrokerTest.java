@@ -237,6 +237,10 @@ public class PCTASBrokerTest extends BuildFileTest {
         assertTrue("Wrong initialPool", (ini.getStringProperty("UBroker.AS.Test", "initialSrvrInstance").equals("4")));
         assertTrue("Wrong minPool", (ini.getStringProperty("UBroker.AS.Test", "minSrvrInstance").equals("3")));
         assertTrue("Wrong maxPool", (ini.getStringProperty("UBroker.AS.Test", "maxSrvrInstance").equals("5")));
+        assertTrue("Wrong registerNameServer", (ini.getStringProperty("UBroker.AS.Test", "registerNameServer").equals("1")));
+        assertTrue("Wrong appserviceNameList", (ini.getStringProperty("UBroker.AS.Test", "appserviceNameList").equalsIgnoreCase("Test")));
+        assertTrue("Wrong registrationMode", (ini.getStringProperty("UBroker.AS.Test", "registrationMode").equalsIgnoreCase("Register-IP")));
+        assertTrue("Wrong controllingNameServer", (ini.getStringProperty("UBroker.AS.Test", "controllingNameServer").equalsIgnoreCase("NS1")));
     }
 
     public void testAttributes2() {

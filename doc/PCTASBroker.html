@@ -127,7 +127,13 @@
 <td align="center">Optional</td>
 <td>No default value</td>
 </tr>
-
+<tr>
+<td>NameServer</td>
+<td>Controlling name server</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>NS1</td>
+</tr>
 </table>
 
 <h2>Parameters as nested elements</h2>
@@ -171,22 +177,35 @@ Deletes the previously created appserver.
 </p>
 
 <pre>
-&lt;PCTASBroker action="delete" name="Test" dlcHome="${env.DLC}" file="myubroker.properties"&gt;
+&lt;PCTASBroker action="delete" name="Test" dlcHome="${env.DLC}" file="myubroker.properties" uid="auto"&gt;
   &lt;server startupProc="apsv/startup.p" shutdownProc="apsv/shutdown.p" paramFile="conf/param.pf"&gt;
     &lt;propath&gt;
       &lt;pathelement path="build" /&gt;
       &lt;pathelement path="src" /&gt;
     &lt;/propath&gt;
     &lt;PCTConnection dbName="foo" dbDir="base" /&gt;
+    &lt;PCTRunOption name="-pf" value="conf/runtime.fp" /&gt;
   &lt;/server&gt;
 &lt;/PCTASBroker&gt;
 </pre>
 <p>
-Creates a new [UBroker.AS.Test] section in file myubroker.properties (instead of default file). Startup and shutdown
-procedures are defined, propath is set to <code>build:src</code>, and command line parameters are set to
-<code>-db base/foo -pf conf/param.pf</code>
-</p>
-
+Appserver's definition will look like this :</p>
+<pre class="source">
+[UBroker.AS.Test]
+appserviceNameList=Test
+registerNameServer=1
+controllingNameServer=NS1
+registrationMode=Register-IP
+operatingMode=stateless
+autoStart=0
+srvrStartupParam=-db base/foo -pf conf/param.pf -pf conf/runtime.pf
+srvrStartupProc=apsv/startup.p
+srvrShutdownProc=apsv/shutdown.p
+propath=build,src
+uuid=!!! A RANDOMLY GENERATED UUID !!!
+</pre>
+<p>This definition will be integrated in <code>myubroker.properties</code> instead of standard
+<code>$DLC/properties/ubroker.properties</code>
 </div>
 
 <div class="LastUpdate">
