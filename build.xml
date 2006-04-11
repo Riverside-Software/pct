@@ -13,6 +13,8 @@
   <property name="src.progress" location="src/progress" />
   <property name="src.test" location="src/test" />
   <property name="build" location="build" />
+  <property name="build-v9" location="build-v9" />
+  <property name="build-v10" location="build-v10" />
   <property name="dist" location="lib" />
   <property name="dist-lite" location="bootstrap" />
   <property name="doc" location="javadoc" />
@@ -31,21 +33,14 @@
   <!-- PCT Version -->
   <property name="pct.version" value="0.10-pre" />
 
-  <!-- If $DLC/servlets is here, we're using Progress v10 -->
-  <available file="${env.DLC}/servlets" type="dir" property="dlc.version" value="dlc10" />
-  <!-- Not here ? We're using Progress v9 -->
-  <condition property="dlc.version" value="dlc9">
-    <not>
-      <isset property="dlc.version" />
-    </not>
-  </condition>
-
   <tstamp>
     <format property="year" pattern="yyyy" />
   </tstamp>
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}" />
+    <mkdir dir="${build-v9}" />
+    <mkdir dir="${build-v10}" />
     <mkdir dir="${dist}" />
   </target>
 
@@ -75,7 +70,7 @@
   </target>
 
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
-    <bootstrapCompile destdir="${build}/tty" md5="true" minSize="true" graphicalMode="false" dlcHome="${env.DLC}">
+    <bootstrapCompile destdir="${build-v9}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC9}">
       <fileset dir="${src.progress}">
         <include name="pct/*.p" />
       </fileset>
@@ -83,8 +78,21 @@
         <pathelement location="${src.progress}" />
       </propath>
     </bootstrapCompile>
-    <bootstrapLibrary destfile="${build}/pct.pl" dlcHome="${env.DLC}">
-      <fileset dir="${build}/tty">
+    <bootstrapCompile destdir="${build-v10}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC10}">
+      <fileset dir="${src.progress}">
+        <include name="pct/*.p" />
+      </fileset>
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/pct9.pl" dlcHome="${DLC9}">
+      <fileset dir="${build-v9}">
+        <include name="pct/*.r" />
+      </fileset>
+    </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct10.pl" dlcHome="${DLC10}">
+      <fileset dir="${build-v10}">
         <include name="pct/*.r" />
       </fileset>
     </bootstrapLibrary>
@@ -197,7 +205,7 @@
   </target>
 
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
-    <zip destfile="pct-bin-${pct.version}-${dlc.version}.zip">
+    <zip destfile="pct-bin-${pct.version}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="lib/PCT.jar" />
         <include name="CHANGELOG" />
