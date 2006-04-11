@@ -61,6 +61,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 
 /**
@@ -224,14 +228,33 @@ public abstract class PCT extends Task {
     public abstract void execute() throws BuildException;
 
     /**
-     * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file
+     * Returns Progress major version number
+     */
+    private int getProgressVersion() {
+        File f = new File(dlcJava, "progress.jar");
+        try {
+            System.setProperty("Install.Dir", dlcHome.getAbsolutePath());
+            ClassLoader cl = new URLClassLoader(new URL[] { f.toURL() });
+            Class cls = cl.loadClass("com.progress.common.util.ProgressVersion");
+            Method m = cls.getMethod("getMajorNumber", new Class[] { });
+            Object o = m.invoke(null, new Object[] { });
+            return ((Integer) o).intValue(); 
+        } catch (Exception e) { return -1; }
+    }
+    
+    /**
+     * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file.
+     * Automatically extract v9 or v10 PL
      * 
      * @return Handle on pct.pl (File)
      */
     protected File extractPL() {
+        int version = getProgressVersion();
+        if (version == -1)
+            return null;
         try {
             File f = null;
-            InputStream is = this.getClass().getResourceAsStream("/pct.pl");
+            InputStream is = this.getClass().getResourceAsStream("/pct" + version + ".pl");
             if (is == null)
                 return null;
             f = File.createTempFile("PCT", ".pl");
