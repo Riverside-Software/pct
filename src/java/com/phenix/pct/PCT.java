@@ -64,7 +64,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.logging.Level;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -84,7 +83,6 @@ public abstract class PCT extends Task {
     private File dlcBin = null;
     private File dlcJava = null;
     private boolean includedPL = true;
-    private ClassLoader dlcCL = null;
 
     /**
      * Progress installation directory
