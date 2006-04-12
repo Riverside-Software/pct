@@ -70,7 +70,7 @@
   </target>
 
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
-    <bootstrapCompile destdir="${build-v9}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC9}">
+    <bootstrapCompile destdir="${build-v9}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC9}" includedPL="false">
       <fileset dir="${src.progress}">
         <include name="pct/*.p" />
       </fileset>
@@ -78,7 +78,7 @@
         <pathelement location="${src.progress}" />
       </propath>
     </bootstrapCompile>
-    <bootstrapCompile destdir="${build-v10}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC10}">
+    <bootstrapCompile destdir="${build-v10}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC10}" includedPL="false">
       <fileset dir="${src.progress}">
         <include name="pct/*.p" />
       </fileset>
@@ -105,7 +105,8 @@
         <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
-        <include name="pct.pl" />
+        <include name="pct9.pl" />
+        <include name="pct10.pl" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
       <manifest>
@@ -313,7 +314,7 @@
       <arg path="${env.DLC}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}" propath="${build}/tty">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
