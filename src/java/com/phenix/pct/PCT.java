@@ -54,18 +54,17 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.text.MessageFormat;
+import java.util.logging.Level;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -78,11 +77,14 @@ public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
     private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
+    // Used class to detect a v10 installation
+    private final static String V10_DETECTION_CLASS = "com.progress.wsa.open4gl.WsaResponse";
 
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
     private boolean includedPL = true;
+    private ClassLoader dlcCL = null;
 
     /**
      * Progress installation directory
@@ -201,7 +203,7 @@ public abstract class PCT extends Task {
         File f1 = new File(dlcBin, exec);
         File f2 = new File(dlcBin, exec + ".exe");
         File f3 = new File(dlcBin, exec + ".bat");
-        
+
         return (f1.exists() ? f1 : (f2.exists() ? f2 : (f3.exists() ? f3 : f1)));
     }
 
@@ -228,25 +230,37 @@ public abstract class PCT extends Task {
     public abstract void execute() throws BuildException;
 
     /**
-     * Returns Progress major version number
+     * Returns Progress major version number. I tried using
+     * com.progress.common.utils.ProgressVersion but failed with ClassLoader and JNI
+     * (ProgressVersion.java makes native calls to ProgressVersion shared library). So I'm using a
+     * workaround, trying to load a class which is only available under version 10.
+     * 
+     * @since PCT 0.10
      */
     private int getProgressVersion() {
-        File f = new File(dlcJava, "progress.jar");
         try {
-            System.setProperty("Install.Dir", dlcHome.getAbsolutePath());
-            ClassLoader cl = new URLClassLoader(new URL[] { f.toURL() });
-            Class cls = cl.loadClass("com.progress.common.util.ProgressVersion");
-            Method m = cls.getMethod("getMajorNumber", new Class[] { });
-            Object o = m.invoke(null, new Object[] { });
-            return ((Integer) o).intValue(); 
-        } catch (Exception e) { return -1; }
+            Path path = new Path(this.getProject());
+            path.addFileset(getJavaFileset());
+            ClassLoader cl = this.getProject().createClassLoader(path);
+
+            cl.loadClass(V10_DETECTION_CLASS);
+            log(
+                    MessageFormat
+                            .format(Messages.getString("PCT.2"), new Object[]{new Integer(10)}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            return 10;
+        } catch (ClassNotFoundException e) {
+            log(
+                    MessageFormat.format(Messages.getString("PCT.2"), new Object[]{new Integer(9)}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            return 9;
+        }
     }
-    
+
     /**
      * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file.
      * Automatically extract v9 or v10 PL
      * 
      * @return Handle on pct.pl (File)
+     * @since PCT 0.10
      */
     protected File extractPL() {
         int version = getProgressVersion();
