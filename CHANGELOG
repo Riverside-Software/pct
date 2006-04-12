@@ -6,7 +6,8 @@ Version 0.10 (??/??/????)
  * Added wordRules option in PCTCreateBase
  * Added PCTASBroker task to create/remove/update appservers definition
  * Bug #1455512 : corrected bug on include/exclude patterns in PCTBinaryDump
- * No need to copy tty/ and gui/ subdirs in $DLC. Everything is included in PCT.jar 
+ * No need to copy tty/ and gui/ subdirs in $DLC. Everything is included in PCT.jar (both v9 and v10)
+   The Progress version used is auto-detected.
 
 Version 0.9 (07/10/2005)
 ==============================
