@@ -1,0 +1,3 @@
+RUN pct/protomssql.p
+    (INPUT ENTRY(1, SESSION:PARAMETER, ';':U),
+     INPUT ENTRY(2, SESSION:PARAMETER, ';':U)).
