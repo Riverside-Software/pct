@@ -54,9 +54,10 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
 import java.util.Random;
@@ -70,6 +71,9 @@ import java.util.Random;
  * @since 0.10
  */
 public class DFConvert extends PCT {
+    private final static String ORA = "ORACLE";
+    private final static String MSS = "MSSQL";
+
     private String dbVersion = null;
     private String dbType = null;
     private String tblArea = null;
@@ -79,10 +83,9 @@ public class DFConvert extends PCT {
     private File destDFFile = null;
     private File destSQLFile = null;
 
-    // private String tmpDb = null;
     private int tmpNum = -1;
     private File tmpDir = null;
-    
+
     /**
      * Schema holder name
      * 
@@ -91,6 +94,7 @@ public class DFConvert extends PCT {
     public void setHolderName(String holderName) {
         this.holderName = holderName;
     }
+
     /**
      * Source dump file
      * 
@@ -103,23 +107,25 @@ public class DFConvert extends PCT {
     /**
      * Target dump file
      * 
-     * @param destDFFile File
+     * @param destFile File
      */
     public void setDestDFFile(File destFile) {
         this.destDFFile = destFile;
     }
+
     /**
      * Target dump file
      * 
-     * @param destDFFile File
+     * @param destFile File
      */
-    public void setDestsQLFile(File destFile) {
+    public void setDestSQLFile(File destFile) {
         this.destSQLFile = destFile;
     }
+
     /**
-     * Database type. Only ORACLE accepted for now
+     * Database type. Only ORACLE and MSSQL accepted for now
      * 
-     * @param dbType String -- ORACLE | MSSQL | ODBC
+     * @param dbType String -- ORACLE | MSSQL
      */
     public void setDbType(String dbType) {
         this.dbType = dbType;
@@ -135,12 +141,21 @@ public class DFConvert extends PCT {
     }
 
     /**
-     * Tablespace used for tables and indexes
+     * Tablespace used for tables
      * 
      * @param tblSpace String
      */
-    public void setTableSpace(String tblSpace) {
+    public void setTableTblSpc(String tblSpace) {
         this.tblArea = tblSpace;
+        // this.idxArea = tblSpace;
+    }
+
+    /**
+     * Tablespace used for indexes
+     * 
+     * @param tblSpace String
+     */
+    public void setIndexTblSpc(String tblSpace) {
         this.idxArea = tblSpace;
     }
 
@@ -151,33 +166,51 @@ public class DFConvert extends PCT {
      */
     public void execute() throws BuildException {
         // Creates a unique temporary directory name
-        while ((tmpDir != null) && (!tmpDir.exists())) {
+        while ((tmpDir == null) || ((tmpDir != null) && (tmpDir.exists()))) {
             tmpNum = new Random().nextInt() & 0xffff;
             tmpDir = new File(System.getProperty("java.io.tmpdir"), "pct" + tmpNum);
         }
-        
+
         if ((this.srcFile == null) || (this.destDFFile == null) || (this.destSQLFile == null)) {
             throw new BuildException(Messages.getString("DFConvert.0")); //$NON-NLS-1$
         }
 
-        if (!this.dbType.equalsIgnoreCase("ORACLE")) {
+        if (this.dbType.equalsIgnoreCase(ORA))
+            checkOracleAttributes();
+        else if (this.dbType.equalsIgnoreCase(MSS))
+            checkMSSQLAttributes();
+        else
             throw new BuildException(Messages.getString("DFConvert.1")); //$NON-NLS-1$
-        }
 
-        // Creates directory -- Yes, potentially directory could already be created...
+        // Creates directory -- Yes, potentially, directory could already be created...
         tmpDir.mkdir();
         try {
             tmpDbTask().execute();
-            convertToOracleTask().execute();
+            if (this.dbType.equalsIgnoreCase(ORA))
+                convertToOracleTask().execute();
+            else if (this.dbType.equalsIgnoreCase(MSS))
+                convertToMSSQLTask().execute();
             File f1 = new File(this.tmpDir, this.holderName + ".sql");
             File f2 = new File(this.tmpDir, this.holderName + ".df");
             copyTask(f1, this.destSQLFile).execute();
             copyTask(f2, this.destDFFile).execute();
+
+            // .e files can be generated during DF conversion
+            FileSet fs = new FileSet();
+            fs.setDir(this.tmpDir);
+            fs.setIncludes("*.e");
+
+            // Parse every file, and log their content
+            DirectoryScanner ds = fs.getDirectoryScanner(this.getProject());
+            for (int k = 0; k < ds.getIncludedFiles().length; k++) {
+                File f = new File(this.tmpDir, ds.getIncludedFiles()[k]);
+
+            }
         } catch (BuildException be) {
             this.cleanup();
             throw be;
         }
-        
+
     }
 
     private Task tmpDbTask() {
@@ -185,7 +218,7 @@ public class DFConvert extends PCT {
         task.setOwningTarget(this.getOwningTarget());
         task.setTaskName(this.getTaskName());
         task.setDlcHome(this.getDlcHome());
-        task.setDBName("oratmp");
+        task.setDBName("holder");
         task.setDestDir(this.tmpDir);
 
         return task;
@@ -204,13 +237,45 @@ public class DFConvert extends PCT {
 
         PCTConnection pc = new PCTConnection();
         pc.setDbDir(this.tmpDir);
-        pc.setDbName("oratmp");
+        pc.setDbName("holder");
         pc.setSingleUser(true);
         task.addPCTConnection(pc);
 
         return task;
     }
-    
+
+    private Task convertToMSSQLTask() {
+        PCTRun task = (PCTRun) getProject().createTask("PCTRun"); //$NON-NLS-1$
+        task.setOwningTarget(this.getOwningTarget());
+        task.setTaskName(this.getTaskName());
+        task.setDlcHome(this.getDlcHome());
+        task.setBaseDir(this.tmpDir);
+        task.setProcedure("pct/protomssql_wrapper.p");
+        task.setParameter(this.srcFile + ";" + this.holderName);
+
+        PCTConnection pc = new PCTConnection();
+        pc.setDbDir(this.tmpDir);
+        pc.setDbName("holder");
+        pc.setSingleUser(true);
+        task.addPCTConnection(pc);
+
+        return task;
+    }
+
+    private void checkOracleAttributes() throws BuildException {
+        if (this.tblArea == null)
+            throw new BuildException("Tablespace for tables should be assigned");
+        if (this.idxArea == null)
+            throw new BuildException("Tablespace for indexes should be assigned");
+    }
+
+    private void checkMSSQLAttributes() throws BuildException {
+        if (this.tblArea != null)
+            log("TableTblSpc attribute is not used with MSSQL");
+        if (this.idxArea != null)
+            log("IndexTblSpc attribute is not used with MSSQL");
+    }
+
     /**
      * Gee, what a shame :-)
      * 
@@ -219,15 +284,19 @@ public class DFConvert extends PCT {
      * @return
      */
     private Task copyTask(File src, File target) {
-        Copy task = (Copy) getProject().createTask("Copy"); //$NON-NLS-1$
+        Copy task = (Copy) getProject().createTask("copy"); //$NON-NLS-1$
+        task.setOwningTarget(this.getOwningTarget());
+        task.setTaskName(this.getTaskName());
         task.setFile(src);
         task.setTofile(target);
-        
+
         return task;
     }
-    
-    
+
     private void cleanup() {
-        // Don't forget cleanup
+        if ((this.tmpDir != null) && this.tmpDir.exists()) {
+            // FIXME This won't work -- Need to empty directory before
+            this.tmpDir.delete();
+        }
     }
 }
