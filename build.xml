@@ -231,6 +231,8 @@
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}" />
+    <delete dir="${build-v9}" />
+    <delete dir="${build-v10}" />
     <delete dir="${dist}" />
     <delete dir="${doc}" />
     <delete dir="${check}" />
