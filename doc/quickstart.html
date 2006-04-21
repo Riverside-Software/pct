@@ -289,6 +289,14 @@ pxg:
 [PCTProxygen] For details see the log file  ..\build-pxg\MyProduct.log
 </pre>
 
+
+<h2>Step 6 : using schema holders [Download <a href="sample6.zip">sample</a>]</h2>
+<p>We'll explain here how to compile your application against both a Progress database and an Oracle schema holder.</p>
+<p>In our example, we have an application made of a few programs, and a dump file. What we expect is to get a set
+of .r files compiled against the generated Progress database, as well as a set of .r files compiled against the
+corresponding Oracle schema holder, without any human intervention and without any real Oracle database.</p>
+<p>First step is to generate a .df file, to be loaded in a database. This is done through the use of prodict/ora/_gendsql.p.
+A program is available in PCT, called pct/protoora.p
 </div>
 
 <div class="LastUpdate">
