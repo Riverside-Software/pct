@@ -1,23 +1,7 @@
 /*********************************************************************
-* Copyright (C) 2000 by Progress Software Corporation ("PSC"),       *
-* 14 Oak Park, Bedford, MA 01730, and other contributors as listed   *
-* below.  All Rights Reserved.                                       *
-*                                                                    *
-* The Initial Developer of the Original Code is PSC.  The Original   *
-* Code is Progress IDE code released to open source December 1, 2000.*
-*                                                                    *
-* The contents of this file are subject to the Possenet Public       *
-* License Version 1.0 (the "License"); you may not use this file     *
-* except in compliance with the License.  A copy of the License is   *
-* available as of the date of this notice at                         *
-* http://www.possenet.org/license.html                               *
-*                                                                    *
-* Software distributed under the License is distributed on an "AS IS"*
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. You*
-* should refer to the License for the specific language governing    *
-* rights and limitations under the License.                          *
-*                                                                    *
-* Contributors:                                                      *
+* Copyright (C) 2005 by Progress Software Corporation. All rights    *
+* reserved.  Prior versions of this work may contain portions        *
+* contributed by participants of Possenet.                           *
 *                                                                    *
 *********************************************************************/
 
@@ -35,6 +19,10 @@
 
    Please contact Documentation to make changes to this file. 
    Thanks. 
+   
+   History:
+     kmcintos June 7, 2005  Added context help ids for auditing options.
+     
 */
 
 /* Admin Help Contents screen */
@@ -145,6 +133,48 @@
 
 /* Load Stuff Dialog Box (used for sequences, views and user records) */
 &Global-define Load_Stuff_Dlg_Box 49188
+
+/* Load Database Options Dialog Box */
+&GLOBAL-DEFINE Load_Database_Options_Dialog_Box 123
+
+/* Load Database Identification Properties Dialog Box */
+&GLOBAL-DEFINE Load_Database_Identification_Properties_Dialog_Box 122
+
+/* Load Application Audit Events Dialog Box */
+&GLOBAL-DEFINE Load_Application_Audit_Events_Dialog_Box 121
+
+/* Dump Database Options Dialog Box */
+&GLOBAL-DEFINE Dump_Database_Options_Dialog_Box 120
+
+/* Dump Audit Data -- Filter Dialog Box */
+&GLOBAL-DEFINE Dump_Audit_Data_Filter_Dialog_Box 119
+
+/* Database Identification Maintenance Dialog Box */
+&GLOBAL-DEFINE Database_Identification_Maintenance_Dialog_Box 116
+
+/* New Database Passkey/Identifier Dialog Box */
+&GLOBAL-DEFINE Database_Passkey_Identifier_Dialog_Box 117
+
+/* Database Identification History Dialog Box */
+&GLOBAL-DEFINE Database_Identification_History_Dialog_Box 115
+
+/* Database Options Dialog Box */
+&GLOBAL-DEFINE Database_Options_Dialog_Box 109
+
+/* Authentication Systems Dialog Box */
+&GLOBAL-DEFINE Authentication_Systems_Dialog_Box 101
+
+/* Edit Audit Permissions Dialog Box */
+&GLOBAL-DEFINE Edit_Audit_Permissions_Dialog_Box 5
+
+/* Cascade Revoke Dialog Box*/
+&GLOBAL-DEFINE Cascade_Revoke_Permissions_Dialog_Box 6
+
+/* Authentication System Domains Dialog Box */
+&GLOBAL-DEFINE Authentication_System_Domains_Dialog_Box 80
+
+/* Select Audit Policies for Dump Dialog Box */
+&GLOBAL-DEFINE Select_Audit_Policies_for_Dump_Dialog_Box 118
 
 /* Load Definitions Dialog Box */
 &Global-define Load_Data_Definitions_Dlg_Box 49189
