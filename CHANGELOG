@@ -8,6 +8,7 @@ Version 0.10 (??/??/????)
  * Bug #1455512 : corrected bug on include/exclude patterns in PCTBinaryDump
  * No need to copy tty/ and gui/ subdirs in $DLC. Everything is included in PCT.jar (both v9 and v10)
    The Progress version used is auto-detected.
+ * Corrected crash when using a DB connection where directory name contains spaces
 
 Version 0.9 (07/10/2005)
 ==============================
