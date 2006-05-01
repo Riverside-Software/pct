@@ -677,7 +677,7 @@ public class PCTRun extends PCT {
                     bw.newLine();
                     bw.write("IF ERROR-STATUS:ERROR THEN DO:");
                     bw.newLine();
-                    bw.write("  MESSAGE 'Unable to connect to " + connect + "'.");
+                    bw.write("  MESSAGE \"Unable to connect to " + connect + "\".");
                     bw.newLine();
                     bw.write("  RUN returnValue(14)."); //$NON-NLS-1$
                     bw.newLine();
@@ -770,7 +770,7 @@ public class PCTRun extends PCT {
      * @param str the input string
      * @return the escaped string
      */
-    protected String escapeString(String str) {
+    protected static String escapeString(String str) {
         if (str == null) {
             return null;
         }
@@ -782,17 +782,17 @@ public class PCTRun extends PCT {
             char c = str.charAt(i);
 
             switch (c) {
-                case '\u007E' :
+                case '\u007E' : // TILDE converted to TILDE TILDE
                     res.append("\u007E\u007E"); //$NON-NLS-1$
 
                     break;
 
-                case '\u0022' :
+                case '\u0022' : // QUOTATION MARK converted to TILDE APOSTROPHE
                     res.append("\u007E\u0027"); //$NON-NLS-1$
 
                     break;
 
-                case '\'' :
+                case '\'' : // APOSTROPHE converted to TILDE APOSTROPHE
                     res.append("\u007E\u0027"); //$NON-NLS-1$
 
                     break;
