@@ -277,9 +277,9 @@ public class PCTConnection {
         list.add("-db"); //$NON-NLS-1$
 
         if ((this.dbDir == null) || (this.hostName != null)) {
-            list.add(this.dbName);
+            list.add("'" + PCTRun.escapeString(this.dbName) + "'");
         } else {
-            list.add(this.dbDir.toString() + File.separatorChar + this.dbName);
+            list.add("'" + PCTRun.escapeString(this.dbDir.toString() + File.separatorChar + this.dbName) + "'");
         }
 
         if (this.paramFile != null) {

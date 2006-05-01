@@ -176,4 +176,15 @@ public class PCTCreateBaseTest extends BuildFileTest {
         expectBuildException("test10-2", "Should throw BuildException as schema doesn't exist");
     }
 
+    public void test11() {
+        executeTarget("test11init");
+
+        File f = new File("sandbox/dir with spaces/test.db");
+        assertTrue(f.exists());
+        executeTarget("test11");
+        f = new File("build/sandbox/test.r");
+        assertTrue(f.exists());
+    }
+
+
 }
