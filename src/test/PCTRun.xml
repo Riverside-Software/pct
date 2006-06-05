@@ -272,4 +272,13 @@
     </PCTRun>
   </target>
 
+  <target name="test23">
+    <mkdir dir="sandbox/temp dir" />
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE(SESSION:TEMP-DIRECTORY + "/test.txt").
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" tempDir="sandbox/temp dir" />
+  </target>
+
 </project>
