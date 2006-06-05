@@ -258,4 +258,14 @@ public class PCTRunTest extends BuildFileTest {
     public void test22() {
         expectLog("test22", "Message with spaces");
     }
+    
+    /**
+     * Temp dir with space
+     */
+    public void test23(){
+        File f = new File("sandbox/temp dir/test.txt");
+        assertFalse(f.exists());
+        executeTarget("test23");
+        assertTrue(f.exists());
+    }
 }
