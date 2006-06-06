@@ -2,10 +2,7 @@
 
 <project name="PCT" default="dist">
 
-  <!-- Give user a chance to override without editing this file
-       (and without typing -D each time it compiles it) -->
-  <property file=".pct.properties" />
-  <property file="${user.home}/.pctrc" />
+  <property file="${basedir}/pct.build.properties" />
   <property environment="env" />
 
   <!-- Some directories definitions -->
@@ -310,13 +307,13 @@
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
     <property name="sports2000-doc" location="sports2000/doc" />
-    <exec executable="${env.DLC}/bin/_dbutil" dir="sports2000">
-      <env key="DLC" value="${env.DLC}" />
+    <exec executable="${DLC10}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC10}" />
       <arg value="procopy" />
-      <arg path="${env.DLC}/sports2000" />
+      <arg path="${DLC10}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${env.DLC}">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
