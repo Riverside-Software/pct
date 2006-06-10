@@ -540,4 +540,32 @@
     </PCTCompile>
   </target>
 
+  <!-- Same as test9, but using a temp dir with spaces and quotes -->
+  <target name="test19init">
+  	<echo file="sandbox/temp.p">
+      {sandbox/temp.i}.
+      MESSAGE "World".
+  	</echo>
+  	<echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+  	</echo>
+  </target>
+  <target name="test19">
+    <mkdir dir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" />
+    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+  <target name="test19bis">
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
+    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" destDir="build" dlcHome="${env.DLC}" forceCompile="true" propath="${pct-propath}">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+
 </project>
