@@ -4,6 +4,7 @@
     <li><a href="manual.html">Installation</a></li>
     <li><a href="PLReader.html">PLReader</a></li>
     <li><a href="quickstart.html">Quick start</a></li>
+    <li><a href="developers.html">Improving PCT</a> <span id="new">!!NEW!!</span></li>
   </ul>
   <h1>Tasks</h1>
   <ul>
@@ -24,7 +25,7 @@
     <li><a href="PCTProxygen.html">PCTProxygen</a></li>
     <li><a href="PCTCRC.html">PCTCRC</a></li>
     <li><a href="PCTXCode.html">PCTXCode</a></li>
-    <li><a href="PCTASBroker.html">PCTASBroker</a></li> <span id="new">!!NEW!!</span></li>
+    <li><a href="PCTASBroker.html">PCTASBroker</a> <span id="new">!!NEW!!</span></li>
     <li><a href="ProUnit.html">ProUnit</a></li>
   </ul>
   <h1>Types</h1>
