@@ -1,4 +1,8 @@
-Version 0.10 (??/??/????)
+TODO for 0.11
+==============================
+ * Add the DFConvert task
+
+Version 0.10 (06/10/2006)
 ==============================
  * Added PCTBinaryDump task
  * Added listing and preprocess attributes in PCTCompile task
