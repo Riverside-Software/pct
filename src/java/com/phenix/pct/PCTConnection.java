@@ -277,9 +277,9 @@ public class PCTConnection {
         list.add("-db"); //$NON-NLS-1$
 
         if ((this.dbDir == null) || (this.hostName != null)) {
-            list.add("'" + PCTRun.escapeString(this.dbName) + "'");
+            list.add(this.dbName);
         } else {
-            list.add("'" + PCTRun.escapeString(this.dbDir.toString() + File.separatorChar + this.dbName) + "'");
+            list.add(this.dbDir.toString() + File.separatorChar + this.dbName);
         }
 
         if (this.paramFile != null) {
@@ -351,7 +351,8 @@ public class PCTConnection {
         List list = getConnectParametersList();
         StringBuffer sb = new StringBuffer();
         for (Iterator i = list.iterator(); i.hasNext();) {
-            sb.append((String) i.next()).append(' ');
+            String s = PCTRun.escapeString((String) i.next());
+            sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' ');
         }
         return sb.toString();
     }
