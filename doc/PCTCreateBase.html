@@ -156,13 +156,14 @@ prostrct create test test.st</code>) and then <code>procopy
 $DLC/prolang/utf/empty8 test</code>.</p>
 
 <pre>
-&lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}" codepage="utf" &gt;
+&lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}"&gt;
   &lt;Holder dbName="ora1" dbType="oracle" misc="8" codepage="iso8859-1" collation="BASIC" schemaFile="oradump.df" /&gt;
 &lt;/PCTCreateBase&gt;
 </pre>
 <p>Creates a new empty database, containing a schema holder for an <code>ora1</code>
 oracle database, using a specific codepage and collation table, and loads oradump.df into database.
-The .df file should be generated using prodict/ora/_gendsql.p program (prodict.pl package in $DLC)</p>
+The .df file should be generated using prodict/ora/_gendsql.p program (prodict.pl package in $DLC), or
+using the not-developed-yet DFConvert task</p>
 </div>
 
 <div class="LastUpdate">$Date$</div>
