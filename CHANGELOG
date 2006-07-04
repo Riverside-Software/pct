@@ -1,6 +1,8 @@
-TODO for 0.11
+Version 0.11 (??/??/????)
 ==============================
- * Add the DFConvert task
+ * Corrected bug when temp directory contains '~' character (e.g. on Windows when using C:\DOCUME~1\login\LOCALS~1\Temp)
+   Added testcase for this bug
+   Bugfix provided by Peter KULLMANN
 
 Version 0.10 (06/10/2006)
 ==============================

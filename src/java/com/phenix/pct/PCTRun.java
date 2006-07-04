@@ -713,7 +713,7 @@ public class PCTRun extends PCT {
                 String[] lst = this.propath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
                     bw.write("ASSIGN PROPATH='"); //$NON-NLS-1$
-                    bw.write(lst[k]);
+                    bw.write(escapeString(lst[k]));
                     bw.write(File.pathSeparatorChar + "' + PROPATH."); //$NON-NLS-1$
                     bw.newLine();
                 }

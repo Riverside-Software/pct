@@ -88,7 +88,7 @@ public class PCTRunTest extends BuildFileTest {
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.getProject());
-        del.setDir(new File("src/test/sandbox"));
+        del.setDir(new File("sandbox"));
         del.execute();
     }
 
@@ -196,8 +196,7 @@ public class PCTRunTest extends BuildFileTest {
     }
 
     /**
-     * Tests parameter containing quotes and so on...
-     * Doesn't work on UNIX
+     * Tests parameter containing quotes and so on... Doesn't work on UNIX
      */
     public void test14() {
         executeTarget("test14-init");
@@ -205,32 +204,32 @@ public class PCTRunTest extends BuildFileTest {
         expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
         expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
     }
-    
+
     public void test15() {
         expectBuildException("test15", "Cannot connect to database");
     }
-    
+
     public void test16() {
         executeTarget("test16");
         File f = new File("sandbox/subdir/Output.txt");
         assertTrue(f.exists());
     }
-    
+
     public void test17() {
         executeTarget("test17");
         File f = new File("sandbox/subdir2/Output.txt");
         assertTrue(f.exists());
     }
-    
+
     /**
      * Run option test
      */
     public void test18() {
         expectLog("test18", "utf-8");
     }
-    
+
     /**
-     * Spaces in parameter, this should fail 
+     * Spaces in parameter, this should fail
      */
     public void test19() {
         expectBuildException("test19", "Should fail because of spaces");
@@ -242,7 +241,7 @@ public class PCTRunTest extends BuildFileTest {
     public void test20() {
         expectBuildException("test20", "Name parameter is mandatory in PCTRunOption");
     }
-    
+
     /**
      * Profiler should be started, and sandbox/profiler.out created
      */
@@ -251,21 +250,29 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test21");
         assertTrue(f.exists());
     }
-    
+
     /**
      * Parameter should be in quotes
      */
     public void test22() {
         expectLog("test22", "Message with spaces");
     }
-    
+
     /**
      * Temp dir with space
      */
-    public void test23(){
+    public void test23() {
         File f = new File("sandbox/temp dir/test.txt");
         assertFalse(f.exists());
         executeTarget("test23");
         assertTrue(f.exists());
+    }
+
+    /**
+     * Parameter should be in quotes
+     */
+    public void test24() {
+        executeTarget("test24-pre");
+        expectLog("test24", "TEST");
     }
 }
