@@ -14,7 +14,7 @@ import java.io.RandomAccessFile;
  */
 public class RCodeInfo {
     private final static int MAGIC1 = 0x56CED309;
-    private final static int MAGIC2 = 0x09D3CE56; // Bytes wrapped
+    private final static int MAGIC2 = 0x09D3CE56; // Bytes swapped
     
     private final static short HEADER_SIZE = 68;
 
@@ -27,7 +27,9 @@ public class RCodeInfo {
     private final static short ISEGMENT_OFFSET = 0;
     // private final static short DEBUG_SEGMENT_OFFSET = 24;
 
-    private final static short CRC_OFFSET = 70;
+    private final static short CRC_OFFSET_V9 = 70;
+    private final static short CRC_OFFSET_V10 = 110;
+    
     private File file;
     private boolean swapped;
     private long magic;
@@ -80,7 +82,7 @@ public class RCodeInfo {
             long iSegmentOffset = readUnsignedInt(raf, segmentsListOffset + ISEGMENT_OFFSET, this.swapped);
             // long debugSegmentOffset = readUnsignedInt(raf, segmentsListOffset + DEBUG_SEGMENT_OFFSET, this.swapped);
             
-            this.crc = readUnsignedShort(raf, segmentsListOffset + iSegmentOffset + segmentSize + CRC_OFFSET, this.swapped);
+            this.crc = readUnsignedShort(raf, segmentsListOffset + iSegmentOffset + segmentSize + (this.version < 1000 ? CRC_OFFSET_V9 : CRC_OFFSET_V10), this.swapped);
             
             raf.close();
             return true;
@@ -117,7 +119,7 @@ public class RCodeInfo {
     }
 
     public static void main(String[] args) throws Exception {
-        RCodeInfo rci = new RCodeInfo("C:\\Eclipse\\CodexiaDlc\\build\\smt\\dAppliGed.r");
+        RCodeInfo rci = new RCodeInfo("C:\\Eclipse\\CodexiaDlc\\build\\smt\\dappliged.r");
         System.out.println("CRC : " + rci.getCRC());
     }
 }
