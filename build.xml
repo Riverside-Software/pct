@@ -143,7 +143,6 @@
     <mkdir dir="${testdir}" />
     <copy todir="${testdir}">
       <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template" />
-      <!--      <fileset dir="src" includes="progress/**" /> -->
     </copy>
     <!-- New taskdef... JUnit testing ANT tasks is a real pain... -->
     <!-- To have consistent behavior between command line ANT and eclipse -->
