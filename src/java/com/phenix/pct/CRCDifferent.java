@@ -27,7 +27,6 @@ import java.io.File;
  * @since PCT 0.11
  */
 public class CRCDifferent extends MappingSelector {
-
     /**
      * Compares two rcodes for CRC, and returns true if CRC are either different or one file is
      * missing (or not rcode). Returns false if both files are rcode with an equal CRC
@@ -50,5 +49,8 @@ public class CRCDifferent extends MappingSelector {
         }
         return (file1.getCRC() != file2.getCRC());
     }
-
+    
+    public void setGranularity(int granularity) {
+        log("Unused attribute");
+    }
 }
