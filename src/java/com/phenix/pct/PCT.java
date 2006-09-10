@@ -210,10 +210,22 @@ public abstract class PCT extends Task {
      * 
      * @since 0.8
      * @return FileSet
-     * @throws BuildException
+     * @deprecated Since 0.11, use getJavaFileset(Project) instead
      */
-    protected FileSet getJavaFileset() throws BuildException {
+    protected FileSet getJavaFileset() {
+        return getJavaFileset(this.getProject());
+    }
+
+    /**
+     * Returns a fileset containing every JAR/ZIP files needed for proxygen task
+     * 
+     * @since 0.11
+     * @param p Project
+     * @return FileSet
+     */
+    protected FileSet getJavaFileset(Project p)  {
         FileSet fs = new FileSet();
+        fs.setProject(p);
         fs.setDir(this.dlcJava);
         fs.setIncludes(JAVA_CP);
 
@@ -238,7 +250,7 @@ public abstract class PCT extends Task {
     private int getProgressVersion() {
         try {
             Path path = new Path(this.getProject());
-            path.addFileset(getJavaFileset());
+            path.addFileset(getJavaFileset(this.getProject()));
             ClassLoader cl = this.getProject().createClassLoader(path);
 
             cl.loadClass(V10_DETECTION_CLASS);
