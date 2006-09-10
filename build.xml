@@ -33,8 +33,20 @@
   <tstamp>
     <format property="year" pattern="yyyy" />
   </tstamp>
-  <echo message="Using ${DLC9} to compile in v9" />
-  <echo message="Using ${DLC10} to compile in v10" />
+
+  <!-- Checking v9 and v10 availability -->
+  <available file="${DLC9}" property="dlc.v9.present" />
+<!--  <condition property="dlc.v9.present" value="false">
+    <not>
+      <isset property="dlc.v9.present" />
+    </not>
+  </condition> -->
+  <available file="${DLC10}" property="dlc.v10.present" />
+<!--  <condition property="dlc.v10.present" value="false">
+    <not>
+      <isset property="dlc.v10.present" />
+    </not>
+  </condition> -->
 
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}" />
@@ -68,33 +80,38 @@
     <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
   </target>
 
+  <target name="cond.pbuild" if="${build.this.version}" >
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false">
+      <fileset dir="${src.progress}">
+        <include name="pct/*.p" />
+      </fileset>
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}">
+      <fileset dir="${buildDir}">
+        <include name="pct/*.r" />
+      </fileset>
+    </bootstrapLibrary>
+  </target>
+
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
-    <bootstrapCompile destdir="${build-v9}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC9}" includedPL="false">
-      <fileset dir="${src.progress}">
-        <include name="pct/*.p" />
-      </fileset>
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-    </bootstrapCompile>
-    <bootstrapCompile destdir="${build-v10}" md5="true" minSize="true" graphicalMode="false" dlcHome="${DLC10}" includedPL="false">
-      <fileset dir="${src.progress}">
-        <include name="pct/*.p" />
-      </fileset>
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-    </bootstrapCompile>
-    <bootstrapLibrary destfile="${build}/pct9.pl" dlcHome="${DLC9}">
-      <fileset dir="${build-v9}">
-        <include name="pct/*.r" />
-      </fileset>
-    </bootstrapLibrary>
-    <bootstrapLibrary destfile="${build}/pct10.pl" dlcHome="${DLC10}">
-      <fileset dir="${build-v10}">
-        <include name="pct/*.r" />
-      </fileset>
-    </bootstrapLibrary>
+    <echo message="Checking v9 in ${DLC9}" />
+    <echo message="Checking v10 in ${DLC10}" />
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="buildDir" value="${build-v9}" />
+      <param name="libName" value="pct9.pl" />
+    </antcall>
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="buildDir" value="${build-v10}" />
+      <param name="libName" value="pct10.pl" />
+    </antcall>
+
   </target>
 
   <target name="jar" depends="pbuild" description="JAR file generation">
