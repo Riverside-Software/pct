@@ -66,6 +66,7 @@ import java.io.IOException;
 
 import java.text.MessageFormat;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -74,6 +75,7 @@ import java.util.Vector;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTLibrary extends PCT {
+    private int tmpFileID = -1;
     private File tmpFile = null;
     private File destFile = null;
     private String encoding = null;
@@ -88,12 +90,8 @@ public class PCTLibrary extends PCT {
      */
     public PCTLibrary() {
         super();
-
-        try {
-            tmpFile = File.createTempFile("PCTLib", ".txt");
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTLibrary.0"));
-        }
+        tmpFileID = new Random().nextInt() & 0xffff;
+        tmpFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -198,7 +196,6 @@ public class PCTLibrary extends PCT {
 
         // Library name must be defined
         if (this.destFile == null) {
-            this.cleanup();
             throw new BuildException(Messages.getString("PCTLibrary.1"));
         }
 

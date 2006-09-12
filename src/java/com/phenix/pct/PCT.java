@@ -271,6 +271,7 @@ public abstract class PCT extends Task {
      * 
      * @return Handle on pct.pl (File)
      * @since PCT 0.10
+     * @deprecated PCT 0.11 Use extractPL(File) instead
      */
     protected File extractPL() {
         int version = getProgressVersion();
@@ -293,5 +294,34 @@ public abstract class PCT extends Task {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    /**
+     * Extracts pct.pl from PCT.jar into a file, and returns true if the operation was OK
+     * Automatically extract v9 or v10 PL
+     * 
+     * @return Handle on pct.pl (File)
+     * @since PCT 0.10
+     */
+    protected boolean extractPL(File f) {
+        int version = getProgressVersion();
+        if (version == -1)
+            return false;
+        try {
+            InputStream is = this.getClass().getResourceAsStream("/pct" + version + ".pl");
+            if (is == null)
+                return false;
+            OutputStream os = new FileOutputStream(f);
+            byte[] b = new byte[2048];
+            int k = 0;
+            while ((k = is.read(b)) != -1)
+                os.write(b, 0, k);
+            os.close();
+            is.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }
