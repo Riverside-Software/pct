@@ -3,6 +3,8 @@ Version 0.11 (??/??/????)
  * Corrected bug when temp directory contains '~' character (e.g. on Windows when using C:\DOCUME~1\login\LOCALS~1\Temp)
    Added testcase for this bug
    Bugfix provided by Peter KULLMANN
+ * Bugfix : temp files deletion in PCTRun task (and subtasks) when an unknown procedure was defined
+ * Fixed compatibility with upcoming 1.7 ANT release
 
 Version 0.10 (06/10/2006)
 ==============================
