@@ -66,6 +66,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -80,6 +81,7 @@ public class PCTBinaryDump extends PCT {
     private File dest = null;
     private Path propath = null;
 
+    private int tblListID = -1;
     private File tblListFile = null;
 
     /**
@@ -98,13 +100,8 @@ public class PCTBinaryDump extends PCT {
     public PCTBinaryDump(boolean tmp) {
         super();
 
-        if (tmp) {
-            try {
-                tblListFile = File.createTempFile("tblList", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
-            } catch (IOException ioe) {
-                throw new BuildException(Messages.getString("PCTBinaryDump.2")); //$NON-NLS-1$
-            }
-        }
+        tblListID = new Random().nextInt() & 0xffff;
+        tblListFile = new File(System.getProperty("java.io.tmpdir"), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

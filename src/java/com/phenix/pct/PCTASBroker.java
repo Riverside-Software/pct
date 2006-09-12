@@ -60,6 +60,7 @@ import java.io.PrintWriter;
 import java.rmi.server.UID;
 import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -94,7 +95,8 @@ public class PCTASBroker extends PCTBroker {
     private int maxPool = -1;
     private ServerProcess server = null;
 
-    private File tmp = null;
+    private int tmpFileID = -1;
+    private File tmpFile = null;
 
     /**
      * Creates a new PCTASBroker object. Temp files initialization.
@@ -102,11 +104,8 @@ public class PCTASBroker extends PCTBroker {
     public PCTASBroker() {
         super();
 
-        try {
-            tmp = File.createTempFile("pct_delta", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTASBroker.0")); //$NON-NLS-1$
-        }
+        tmpFileID = new Random().nextInt() & 0xffff;
+        tmpFile = new File(System.getProperty("java.io.tmpdir"), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -251,7 +250,7 @@ public class PCTASBroker extends PCTBroker {
                         + propFile.getAbsolutePath());
             // And do the work
             writeDeltaFile();
-            Task task = getCmdLineMergeTask(propFile, tmp);
+            Task task = getCmdLineMergeTask(propFile, tmpFile);
             task.execute();
         } catch (BuildException be) {
             throw be;
@@ -272,7 +271,7 @@ public class PCTASBroker extends PCTBroker {
      */
     private void writeDeltaFile() {
         try {
-            PrintWriter bw = new PrintWriter(new FileWriter(tmp));
+            PrintWriter bw = new PrintWriter(new FileWriter(tmpFile));
             bw.println("[UBroker.AS." + this.name + "]");
             if (!this.action.equalsIgnoreCase("delete")) {
                 bw.println("appserviceNameList=" + this.name);
@@ -419,11 +418,11 @@ public class PCTASBroker extends PCTBroker {
     }
 
     private void cleanup() {
-        if (this.tmp.exists() && !this.tmp.delete()) {
+        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
             log(
                     MessageFormat
                             .format(
-                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmp.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmpFile.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
         }
     }
 

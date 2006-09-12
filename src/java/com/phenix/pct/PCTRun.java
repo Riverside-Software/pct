@@ -73,6 +73,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -111,6 +112,9 @@ public class PCTRun extends PCT {
 
     // Internal use
     protected ExecTask exec = null;
+    protected int statusID = -1; // Unique ID when creating temp files
+    protected int initID = -1; // Unique ID when creating temp files
+    protected int plID = -1; // Unique ID when creating temp files
     protected File initProc = null;
     protected File status = null;
     protected File pctLib = null;
@@ -133,12 +137,13 @@ public class PCTRun extends PCT {
         super();
 
         if (tmp) {
-            try {
-                status = File.createTempFile("PCTResult", ".out"); //$NON-NLS-1$ //$NON-NLS-2$
-                initProc = File.createTempFile("pct_init", ".p"); //$NON-NLS-1$ //$NON-NLS-2$
-            } catch (IOException ioe) {
-                throw new BuildException(Messages.getString("PCTRun.0")); //$NON-NLS-1$
-            }
+            statusID = new Random().nextInt() & 0xffff;
+            initID = new Random().nextInt() & 0xffff;
+            plID = new Random().nextInt() & 0xffff;
+
+            status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -430,15 +435,15 @@ public class PCTRun extends PCT {
             this.prepareExecTask();
         }
 
-        this.preparePropath();
-        this.createInitProcedure();
-        this.setExecTaskParams();
-
-        // Startup procedure
-        exec.createArg().setValue("-p"); //$NON-NLS-1$
-        exec.createArg().setValue(this.initProc.getAbsolutePath());
-
         try {
+            this.preparePropath();
+            this.createInitProcedure();
+            this.setExecTaskParams();
+
+            // Startup procedure
+            exec.createArg().setValue("-p"); //$NON-NLS-1$
+            exec.createArg().setValue(this.initProc.getAbsolutePath());
+            extractPL(pctLib);
             exec.execute();
         } catch (BuildException be) {
             this.cleanup();
@@ -460,10 +465,7 @@ public class PCTRun extends PCT {
                         Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }
         } catch (FileNotFoundException fnfe) {
-            try {
-                br.close();
-            } catch (IOException ioe2) {
-            }
+            // No need to clean BufferedReader as it's null in this case
             this.cleanup();
             throw new BuildException(Messages.getString("PCTRun.1")); //$NON-NLS-1$
         } catch (IOException ioe) {
@@ -752,15 +754,13 @@ public class PCTRun extends PCT {
 
     protected void preparePropath() {
         if (this.getIncludedPL()) {
-            pctLib = extractPL();
-            if (pctLib != null) {
-                FileList list = new FileList();
-                list.setDir(pctLib.getParentFile().getAbsoluteFile());
-                FileList.FileName fn = new FileList.FileName();
-                fn.setName(pctLib.getName());
-                list.addConfiguredFile(fn);
-                createPropath().addFilelist(list);
-            }
+            // PL is extracted later, we just have a reference on filename
+            FileList list = new FileList();
+            list.setDir(pctLib.getParentFile().getAbsoluteFile());
+            FileList.FileName fn = new FileList.FileName();
+            fn.setName(pctLib.getName());
+            list.addConfiguredFile(fn);
+            createPropath().addFilelist(list);
         }
     }
 
