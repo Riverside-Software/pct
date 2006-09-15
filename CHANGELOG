@@ -1,3 +1,8 @@
+Version 0.12 (??/??/????)
+==============================
+ * Added testcase for RCodeInfo
+ * Upgrading to JUnit 4.1
+
 Version 0.11 (09/12/2006)
 ==============================
  * Corrected bug when temp directory contains '~' character (e.g. on Windows when using C:\DOCUME~1\login\LOCALS~1\Temp)
