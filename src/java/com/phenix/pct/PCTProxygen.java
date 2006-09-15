@@ -139,7 +139,7 @@ public class PCTProxygen extends PCT {
         pxg.setClassname(PROXYGEN_CLASS); //$NON-NLS-1$
 
         // Bug #1114731 : new way of handling JAR dependencies
-        pxg.createClasspath().addFileset(this.getJavaFileset());
+        pxg.createClasspath().addFileset(this.getJavaFileset(this.getProject()));
 
         // As Progress doesn't know command line parameters,
         // arguments are given via environment variables
