@@ -17,5 +17,5 @@
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="DLC" value="C:\Program Files\DLC-10.1A"/>
 </mapAttribute>
-<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
 </launchConfiguration>
