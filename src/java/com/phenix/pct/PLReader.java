@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -246,19 +247,22 @@ public class PLReader {
         }
     }
 
-    public void printFiles() {
+    public String toString() {
         if (!this.init) {
-            return;
+            return Messages.getString("PLReader.13"); //$NON-NLS-1$
         }
 
         if (this.files == null) {
-            return;
+            return Messages.getString("PLReader.14"); //$NON-NLS-1$
         }
 
+        StringBuffer sb = new StringBuffer();
         for (Enumeration e = files.elements(); e.hasMoreElements();) {
             FileEntry fe = (FileEntry) e.nextElement();
-            System.out.println(fe.toString());
+            sb.append(fe.toString());
+            sb.append("\n");
         }
+        return sb.toString();
     }
 
     public boolean checkMagic() {
@@ -291,9 +295,31 @@ public class PLReader {
         return false;
     }
 
+    public boolean extractFile(FileEntry fe, File dest) {
+        try {
+            if (!dest.getParentFile().exists())
+                if (!dest.getParentFile().mkdirs())
+                    return false;
+
+            RandomAccessFile raf = new RandomAccessFile(this.f, "r");
+            raf.seek(fe.getOffset());
+            RandomAccessFile out = new RandomAccessFile(dest, "rw");
+            for (long l = 0; l < fe.getSize(); l++) {
+                out.writeByte(raf.readUnsignedByte()); // TODO Use packets of byte
+            }
+            out.close();
+            raf.close();
+        } catch (FileNotFoundException fnfe) {
+            System.out.println("Unable to find file " + fnfe.getMessage());
+        } catch (IOException ioe) {
+            System.out.println("oel"); // TODO Message
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
         PLReader t = new PLReader(new File(args[0]));
-        t.printFiles();
+        System.out.println(t);
     }
 
     /**
