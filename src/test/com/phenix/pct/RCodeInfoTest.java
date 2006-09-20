@@ -49,6 +49,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
 
 import junit.framework.TestCase;
@@ -64,14 +66,21 @@ public class RCodeInfoTest extends TestCase {
     protected Project project;
 
     public void setUp() {
-        sandbox.mkdir();
         project = new Project();
         project.init();
+        
+        Mkdir mk = new Mkdir();
+        mk.setProject(project);
+        mk.setDir(sandbox);
+        mk.execute();
 
     }
 
     public void tearDown() {
-        sandbox.delete();
+        Delete del = new Delete();
+        del.setProject(project);
+        del.setDir(sandbox);
+        del.execute();
     }
 
     public void test1() {
