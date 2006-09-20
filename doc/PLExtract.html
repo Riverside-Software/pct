@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - PLExtract task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>PLExtract task</h1>
+
+<h2>Description</h2>
+<p>
+Extracts files from a Progress Library file. Note that prolib executable isn't required, so the dlcHome
+attribute isn't needed as with other tasks.
+</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>src</td>
+<td>PL file to expand</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>dest</td>
+<td>Directory where to store expanded files</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>overwrite</td>
+<td>Overwrite files, even if they are newer than the corresponding entries in the archive (true or false, default is true)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<h3>PatternSet (org.apache.tools.ant.types.PatternSet)</h3>
+<p>
+PatternSets are used to select files to extract from the archive. If no patternset is used, all files are extracted.
+</p>
+
+<h2>Examples</h2>
+<pre>
+&lt;PLExtract src="${DLC}/src/prodict.pl" dest="prodict" /&gt;
+</pre>
+<p>Extracts prodict.pl from DLC/src directory to prodict subdirectory (in your base dir).</p>
+
+<pre>
+&lt;PLExtract src="${DLC}/src/prodict.pl" dest="${tools.home}"&gt;
+  &lt;patternset&gt;
+    &lt;include name="**/*.p" /&gt;
+    &lt;exclude name="**/mss/*.p" /&gt;
+  &lt;/patternset&gt;
+&lt;/PLExtract&gt;
+</pre>
+<p>Extracts prodict.pl from DLC/src directory to prodict subdirectory (in your base dir). *.p files from mss subdir are excluded.</p>
+
+</div>
+
+<div class="LastUpdate">
+  $Date: 2006-03-22 14:42:02 +0100 (mer., 22 mars 2006) $
+</div>
+
+</div>
+
+</body>
+</html>
