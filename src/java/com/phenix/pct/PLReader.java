@@ -69,7 +69,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * Class for reading the content of a Progress Library file. Only basic actions for now : file list
+ * Class for reading and extracting contents of a Progress Library file.
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
