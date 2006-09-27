@@ -3,6 +3,7 @@ Version 0.12 (??/??/????)
  * Added testcase for RCodeInfo
  * Upgrading to JUnit 4.1
  * Bug #1507272 : added PCTWSBroker task
+ * Bug #1566571 : corrected failed compilation warning when fileset not in PROPATH
 
 Version 0.11 (09/12/2006)
 ==============================
