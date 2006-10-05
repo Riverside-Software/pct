@@ -66,6 +66,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Random;
 
 import java.util.Vector;
 
@@ -78,6 +79,7 @@ public class PCTXCode extends PCT {
     private Vector filesets = new Vector();
     private String key = null;
     private File destDir = null;
+    private int tmpLogId = -1;
     private File tmpLog = null;
     private boolean overwrite = false;
     private boolean lowercase = false;
@@ -92,11 +94,9 @@ public class PCTXCode extends PCT {
     public PCTXCode() {
         super();
 
-        try {
-            this.tmpLog = File.createTempFile("pct_outp", ".log"); //$NON-NLS-1$ //$NON-NLS-2$
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTXCode.2")); //$NON-NLS-1$
-        }
+        tmpLogId = new Random().nextInt() & 0xffff;
+
+        tmpLog = new File(System.getProperty("java.io.tmpdir"), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
