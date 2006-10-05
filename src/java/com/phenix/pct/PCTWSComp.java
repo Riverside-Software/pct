@@ -63,6 +63,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -80,18 +81,19 @@ public class PCTWSComp extends PCTRun {
     private File destDir = null;
 
     // Internal use
+    private int fsListId = -1;
     private File fsList = null;
+    private int paramsId = -1;
     private File params = null;
-
+    
     public PCTWSComp() {
         super();
 
-        try {
-            fsList = File.createTempFile("pct_filesets", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
-            params = File.createTempFile("pct_params", ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTWSComp.4")); //$NON-NLS-1$
-        }
+        fsListId = new Random().nextInt() & 0xffff;
+        paramsId = new Random().nextInt() & 0xffff;
+
+        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
