@@ -22,13 +22,13 @@
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
-  <property name="deprecation" value="false" />
+  <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
   <property name="javac.source" value="1.2" />
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.11" />
+  <property name="pct.version" value="0.12-pre" />
 
   <tstamp>
     <format property="year" pattern="yyyy" />
