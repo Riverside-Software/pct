@@ -84,7 +84,7 @@ import java.util.Vector;
  */
 public class PCTRun extends PCT {
     // Attributes
-    private String procedure = null;
+    protected String procedure = null;
     private String cpStream = null;
     private String cpInternal = null;
     private String parameter = null;
