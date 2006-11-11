@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<propath>
+<propathentry env="all" kind="src" path="@{ROOT}\src"/>
+<propathentry env="gui" kind="con" name="Standard GUI Libraries" path="com.openedge.pdt.text.GUI_LIBRARIES"/>
+<propathentry env="tty" kind="con" name="Standard TTY Libraries" path="com.openedge.pdt.text.TTY_LIBRARIES"/>
+<propathentry env="all" kind="con" name="Standard DLC Paths" path="com.openedge.pdt.text.DLC_PATHS"/>
+<propathentry env="web" kind="con" name="Standard Web Libraries" path="com.openedge.pdt.text.WEB_LIBRARIES"/>
+</propath>
