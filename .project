@@ -13,5 +13,13 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>com.openedge.pdt.text.progressNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>linked_resources</name>
+			<type>2</type>
+			<location>C:/EclipseWS/.metadata/.plugins/com.openedge.pdt.text/linked_PCT</location>
+		</link>
+	</linkedResources>
 </projectDescription>
