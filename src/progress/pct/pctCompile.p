@@ -432,14 +432,14 @@ PROCEDURE importXref.
     INPUT STREAM sXREF CLOSE.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
-    FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK GROUP BY ttXref.xObjID:
+    FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
             EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
     
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
-    FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK GROUP BY ttXref.xObjID:
+    FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK BREAK BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
@@ -451,7 +451,7 @@ PROCEDURE importXref.
 
     IF RunList THEN DO:
         OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.run':U).
-        FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*~~.p') OR (ttXref.xObjID MATCHES '*~~.w')) NO-LOCK GROUP BY ttXref.xObjID:
+        FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*~~.p') OR (ttXref.xObjID MATCHES '*~~.w')) NO-LOCK BREAK BY ttXref.xObjID:
             IF FIRST-OF (ttXref.xObjID) THEN DO:
                 FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
                 IF (NOT AVAILABLE TimeStamps) THEN DO:
