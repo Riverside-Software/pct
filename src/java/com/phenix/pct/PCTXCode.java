@@ -61,7 +61,6 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.text.MessageFormat;
 import java.util.Enumeration;
