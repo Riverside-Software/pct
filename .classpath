@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="ant-src.jar" kind="lib" path="ant.jar"/>
-	<classpathentry sourcepath="junit-src.jar" kind="lib" path="junit.jar"/>
-	<classpathentry kind="lib" path="ant-junit.jar"/>
-	<classpathentry kind="lib" path="ant-launcher.jar"/>
+	<classpathentry kind="lib" path="ant.jar" sourcepath="ant-src.jar"/>
+	<classpathentry kind="lib" path="junit.jar" sourcepath="junit-src.jar"/>
+	<classpathentry kind="lib" path="ant-junit.jar" sourcepath="ant-src.jar"/>
+	<classpathentry kind="lib" path="ant-launcher.jar" sourcepath="ant-src.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
