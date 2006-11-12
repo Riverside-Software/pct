@@ -26,13 +26,9 @@ public class RCodeInfo {
     // Offsets in header
     private final static short MAGIC_OFFSET = 0;
     private final static short TS_OFFSET = 4;
-    private final static short SEGMENTS_LISTS_OFFSET = 8;
+    private final static short PROCEDURES_LIST_OFFSET = 8;
     private final static short VERSION_OFFSET = 14;
     private final static short SEGMENTS_LIST_SIZE = 30;
-
-    // Offsets in segments list
-    // private final static short ISEGMENT_OFFSET = 0;
-    // private final static short DEBUG_SEGMENT_OFFSET = 24;
 
     // Offsets in segments location segment
     private static final short ISEGMENT_OFFSET = 0;
@@ -160,50 +156,50 @@ public class RCodeInfo {
             // Extract informations from header
             this.timeStamp = readUnsignedInt(this.segHeader, TS_OFFSET, this.swapped) * 1000L;
             this.version = readUnsignedInt(this.segHeader, VERSION_OFFSET, this.swapped);
-            int szProcsList = readUnsignedShort(this.segHeader, SEGMENTS_LISTS_OFFSET, this.swapped);
+            int offsetProcsList = readUnsignedShort(this.segHeader, PROCEDURES_LIST_OFFSET, this.swapped);
             long szSegLocations = readUnsignedInt(this.segHeader, SEGMENTS_LIST_SIZE, this.swapped);
 
             // Reads action code segment from file, and extracts informations
-            this.segProcsList = new byte[szProcsList];
+            this.segProcsList = new byte[offsetProcsList];
             raf.seek(HEADER_SIZE);
-            raf.read(this.segProcsList, 0, szProcsList);
-            this.procedures = processActionCodeSegment(this.segProcsList);
+            raf.read(this.segProcsList, 0, offsetProcsList);
+            this.procedures = processProcsList(this.segProcsList);
 
             // Reads segments list from file, and extracts informations
             this.segSegLocations = new byte[(int) szSegLocations];
-            raf.seek(HEADER_SIZE + szProcsList);
+            raf.seek(HEADER_SIZE + offsetProcsList);
             raf.read(this.segSegLocations, 0, (int) szSegLocations);
 
             long initialValueSegmentOffset = readUnsignedInt(this.segSegLocations, ISEGMENT_OFFSET,
-                    this.swapped);
+                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
             long initialValueSegmentSize = readUnsignedInt(this.segSegLocations, ISEGMENT_SIZE,
                     this.swapped);
             this.segInitialValues = new byte[(int) initialValueSegmentSize];
 
             long actionSegmentOffset = readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_OFFSET,
-                    this.swapped);
+                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
             long actionSegmentSize = readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_SIZE,
                     this.swapped);
             this.segActionMain = new byte[(int) actionSegmentSize];
 
             long debugSegmentOffset = readUnsignedInt(this.segSegLocations, DEBUG_SEGMENT_OFFSET,
-                    this.swapped);
+                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
             long debugSegmentSize = readUnsignedInt(this.segSegLocations, DEBUG_SEGMENT_SIZE,
                     this.swapped);
             this.segDebug = new byte[(int) debugSegmentSize];
 
             long offsetECode1 = readUnsignedInt(this.segSegLocations, ECODE1_SEGMENT_OFFSET,
-                    this.swapped);
+                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
             long szECode1 = readUnsignedInt(this.segSegLocations, ECODE1_SEGMENT_SIZE, this.swapped);
             this.segECode1 = new byte[(int) szECode1];
 
             long offsetText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_OFFSET,
-                    this.swapped);
+                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
             long szText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_SIZE, this.swapped);
             this.segText = new byte[(int) szText];
 
             // Reads initial values segment
-            raf.seek(HEADER_SIZE + szProcsList + szSegLocations + initialValueSegmentOffset);
+            raf.seek(initialValueSegmentOffset);
             raf.read(this.segInitialValues, 0, (int) initialValueSegmentSize);
             this.crc = readUnsignedShort(this.segInitialValues, (this.version < 1000
                     ? CRC_OFFSET_V9
@@ -213,19 +209,19 @@ public class RCodeInfo {
             }
 
             // Reads debug segment
-            raf.seek(HEADER_SIZE + szProcsList + szSegLocations + debugSegmentOffset);
+            raf.seek(debugSegmentOffset);
             raf.read(this.segDebug, 0, (int) debugSegmentSize);
 
             // Reads main action code segment
-            raf.seek(HEADER_SIZE + szProcsList + szSegLocations + actionSegmentOffset);
+            raf.seek(actionSegmentOffset);
             raf.read(this.segActionMain, 0, (int) actionSegmentSize);
 
             // Reads ecode segment 1
-            raf.seek(HEADER_SIZE + szProcsList + szSegLocations + offsetECode1);
+            raf.seek(offsetECode1);
             raf.read(this.segECode1, 0, (int) szECode1);
 
             // Reads text segment
-            raf.seek(HEADER_SIZE + szProcsList + szSegLocations + offsetText);
+            raf.seek(offsetText);
             raf.read(this.segText, 0, (int) szText);
             this.strings = processTextSegment(this.segText);
 
@@ -277,7 +273,7 @@ public class RCodeInfo {
      * @param b Action code segment as an array of bytes
      * @return List<ActionCodeEntry>
      */
-    private List processActionCodeSegment(byte[] b) {
+    private List processProcsList(byte[] b) {
         List procs = new Vector();
         int i = 8;
         StringBuffer codepage = new StringBuffer();
@@ -303,7 +299,7 @@ public class RCodeInfo {
 
     private List processTextSegment(byte[] b) {
         List strings = new Vector();
-        int i = 5;
+        int i = 4;
         StringBuffer str;
         while ((i < b.length) && (b[i] != 0)) {
             str = new StringBuffer();
@@ -334,6 +330,7 @@ public class RCodeInfo {
     }
 
     public static void main(String[] args) throws Exception {
+        // RCodeInfo rci = new RCodeInfo("C:\\EclipseWS\\PCT\\testbox\\rcode\\strings1.r");
         RCodeInfo rci = new RCodeInfo("C:\\EclipseWS\\PCT\\build-v10\\pct\\pctCompile.r");
         System.out.println("CRC : " + rci.getCRC());
         System.out.println("MD5 : " + rci.getMD5());
