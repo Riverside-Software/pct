@@ -40,6 +40,28 @@
 <p>
 This is a description of r-code file format. It's just an attempt based on guessing the content of a file.
 </p>
+<pre>
++-----------------------------------+
+| Object header                     |
++-----------------------------------+
+| Segments location table           |
++-----------------------------------+
+| Initial value segment             |
++-----------------------------------+
+| Action code segment (MAIN)        |
++-----------------------------------+
+| ECode segment (1 to 4)            |
++-----------------------------------+
+| Action code segment (procedures)  |
++-----------------------------------+
+| One segment per frame             |
++-----------------------------------+
+| One segment par language          |
++-----------------------------------+
+| Debugger segment                  |
++-----------------------------------+
+</pre>
+Object header overview :
 <table cellpadding="2">
 <tr>
 <th colspan="3">Header (68 bytes long)</th>
@@ -62,7 +84,7 @@ This is a description of r-code file format. It's just an attempt based on guess
 <tr>
 <td align="center">0x08</td>
 <td align="center">2</td>
-<td>Action code segment size</td>
+<td>Procedures list segment size</td>
 </tr>
 <tr>
 <td align="center">0x0A</td>
@@ -82,13 +104,13 @@ This is a description of r-code file format. It's just an attempt based on guess
 <tr>
 <td align="center">0x1E</td>
 <td align="center">4</td>
-<td>Segment size</td>
+<td>Segments location size</td>
 </tr>
 </table>
 
 <table cellpadding="2">
 <tr>
-<th colspan="3">Action code segment (starting at offset 0x44) -- Length is found in header</th>
+<th colspan="3">Procedures list segment (starting at offset 0x44) -- Length is found in header</th>
 </tr>
 <tr>
 <th>Offset</th>
@@ -102,10 +124,10 @@ This is a description of r-code file format. It's just an attempt based on guess
 </tr>
 <tr>
 <td align="center">0x08</td>
-<td align="center">Action segment size - 8 bytes</td>
-<td>String with separator 0x00. First entry is codepage, next entries are for each procedure/function contained in the file.
+<td align="center">Procedures list size - 8 bytes</td>
+<td>Only available if file is compiled with minSize=FALSE. String with separator 0x00. First entry is codepage, next entries are for each procedure/function contained in the file.
 Each entry is made of strings (separator ,) ; first one is [MAIN|PROCEDURE|FUNCTION|DLL-ENTRY] identifier, second one is return type,
-next ones are parameters.
+next ones are parameters. Encoding may be skipped if there are no strings in rcode.
 </td>
 </tr>
 </table>
