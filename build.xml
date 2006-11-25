@@ -10,6 +10,7 @@
   <property name="src.progress" location="src/progress" />
   <property name="src.test" location="src/test" />
   <property name="build" location="build" />
+  <property name="build-v8" location="build-v8" />
   <property name="build-v9" location="build-v9" />
   <property name="build-v10" location="build-v10" />
   <property name="dist" location="lib" />
@@ -34,12 +35,36 @@
     <format property="year" pattern="yyyy" />
   </tstamp>
 
-  <!-- Checking v9 and v10 availability -->
+  <!-- Checking V8, v9 and v10 availability -->
+  <available file="${DLC8}" property="dlc.v8.present" />
   <available file="${DLC9}" property="dlc.v9.present" />
   <available file="${DLC10}" property="dlc.v10.present" />
 
+  <!-- Different filesets depending on version -->
+  <fileset id="fs.v8" dir="${src.progress}">
+    <include name="pct/pctCompileV8.p" />
+    <include name="pct/pctCRCV8.p" />
+    <include name="pct/pctDumpData.p" />
+    <include name="pct/pctDumpSchema.p" />
+    <include name="pct/pctLoadData.p" />
+    <include name="pct/pctLoadSchema.p" />
+  </fileset>
+  <fileset id="fs.v9" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/pctCRCExtractV8.p" />
+  </fileset>
+  <fileset id="fs.v10" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/pctCRCExtractV8.p" />
+  </fileset>
+  
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}" />
+    <mkdir dir="${build-v8}" />
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${dist}" />
@@ -71,10 +96,8 @@
   </target>
 
   <target name="cond.pbuild" if="${build.this.version}" >
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false">
-      <fileset dir="${src.progress}">
-        <include name="pct/*.p" />
-      </fileset>
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false">
+      <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
@@ -87,19 +110,35 @@
   </target>
 
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
+    <echo message="Checking v8 in ${DLC8}" />
     <echo message="Checking v9 in ${DLC9}" />
     <echo message="Checking v10 in ${DLC10}" />
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v8.present" />
+      <param name="dlcHome" value="${DLC8}" />
+      <param name="buildDir" value="${build-v8}" />
+      <param name="libName" value="pct8.pl" />
+      <param name="fsid" value="fs.v8" />
+    </antcall>
+    <bootstrapLibrary destfile="${build}/pct8.pl" dlcHome="${DLC8}"> <!-- FIXME -->
+      <fileset dir="${src.progress}">
+        <include name="pct/pctCRCExtractV8.p" />
+      </fileset>
+    </bootstrapLibrary>
+
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v9.present" />
       <param name="dlcHome" value="${DLC9}" />
       <param name="buildDir" value="${build-v9}" />
       <param name="libName" value="pct9.pl" />
+      <param name="fsid" value="fs.v9" />
     </antcall>
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10.present" />
       <param name="dlcHome" value="${DLC10}" />
       <param name="buildDir" value="${build-v10}" />
       <param name="libName" value="pct10.pl" />
+      <param name="fsid" value="fs.v10" />
     </antcall>
 
   </target>
@@ -111,6 +150,7 @@
         <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
+        <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <exclude name="com/phenix/pct/*Test.class" />
@@ -156,7 +196,7 @@
   <target name="test" depends="prepare-test" description="Starts tests">
     <junit printsummary="yes" haltonfailure="no" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
       <classpath>
-        <pathelement location="${build}" />
+        <pathelement location="${dist}/PCT.jar" />
       </classpath>
       <formatter type="xml" />
       <batchtest>
@@ -257,6 +297,7 @@
       <fileset dir="doc">
         <include name="back.png" />
         <include name="ss*.png" />
+        <include name="developers*.png" />
       </fileset>
     </copy>
     <copy todir="${website}/sports2000">
