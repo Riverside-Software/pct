@@ -57,13 +57,18 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -76,13 +81,16 @@ public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
     private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
-    // Used class to detect a v10 installation
-    private final static String V10_DETECTION_CLASS = "com.progress.wsa.open4gl.WsaResponse";
 
     private File dlcHome = null;
     private File dlcBin = null;
     private File dlcJava = null;
     private boolean includedPL = true;
+    private ProgressProcedures pp = null;
+    private int majorVersion = -1;
+    private int minorVersion = -1;
+    private String minVer = null;
+    private String patchLevel = null;
 
     /**
      * Progress installation directory
@@ -113,6 +121,22 @@ public abstract class PCT extends Task {
                 this.setDlcJava(new File(dlcHome, "java")); //$NON-NLS-1$
             } catch (BuildException be) {
             }
+        }
+
+        setProgressVersion();
+        switch (this.majorVersion) {
+            case 8 :
+                this.pp = new ProgressV8();
+                break;
+            case 9 :
+                this.pp = new ProgressV9();
+                break;
+            case 10 :
+                this.pp = new ProgressV10();
+                break;
+            default :
+                this.pp = new ProgressV10();
+                break;
         }
     }
 
@@ -223,13 +247,21 @@ public abstract class PCT extends Task {
      * @param p Project
      * @return FileSet
      */
-    protected FileSet getJavaFileset(Project p)  {
+    protected FileSet getJavaFileset(Project p) {
         FileSet fs = new FileSet();
         fs.setProject(p);
         fs.setDir(this.dlcJava);
         fs.setIncludes(JAVA_CP);
-
         return fs;
+    }
+
+    /**
+     * Returns an instance of ProgressProcedure
+     * 
+     * @since 0.12
+     */
+    protected ProgressProcedures getProgressProcedures() {
+        return this.pp;
     }
 
     /**
@@ -247,22 +279,36 @@ public abstract class PCT extends Task {
      * 
      * @since PCT 0.10
      */
-    private int getProgressVersion() {
-        try {
-            Path path = new Path(this.getProject());
-            path.addFileset(getJavaFileset(this.getProject()));
-            ClassLoader cl = this.getProject().createClassLoader(path);
-
-            cl.loadClass(V10_DETECTION_CLASS);
-            log(
-                    MessageFormat
-                            .format(Messages.getString("PCT.2"), new Object[]{new Integer(10)}), Project.MSG_VERBOSE); //$NON-NLS-1$
-            return 10;
-        } catch (ClassNotFoundException e) {
-            log(
-                    MessageFormat.format(Messages.getString("PCT.2"), new Object[]{new Integer(9)}), Project.MSG_VERBOSE); //$NON-NLS-1$
-            return 9;
+    private void setProgressVersion() {
+        File version = new File(dlcHome, "version");
+        if (!version.exists()) {
+            return;
         }
+
+        BufferedReader reader = null;
+        String line = null;
+        try {
+            reader = new BufferedReader(new FileReader(version));
+            line = reader.readLine();
+        } catch (IOException ioe) {
+            return;
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ioe) {
+            }
+        }
+
+        Pattern p = Pattern
+                .compile("\\w+\\s+\\w+\\s+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
+        Matcher m = p.matcher(line);
+        if (m.matches()) {
+            this.majorVersion = Integer.parseInt(m.group(1));
+            this.minorVersion = Integer.parseInt(m.group(2));
+            this.minVer = m.group(3);
+            this.patchLevel = m.group(4);
+        }
+
     }
 
     /**
@@ -274,28 +320,14 @@ public abstract class PCT extends Task {
      * @deprecated PCT 0.11 Use extractPL(File) instead
      */
     protected File extractPL() {
-        int version = getProgressVersion();
-        if (version == -1)
-            return null;
-        try {
-            File f = null;
-            InputStream is = this.getClass().getResourceAsStream("/pct" + version + ".pl");
-            if (is == null)
-                return null;
-            f = File.createTempFile("PCT", ".pl");
-            OutputStream os = new FileOutputStream(f);
-            byte[] b = new byte[2048];
-            int k = 0;
-            while ((k = is.read(b)) != -1)
-                os.write(b, 0, k);
-            os.close();
-            is.close();
+        int plID = new Random().nextInt() & 0xffff;
+        File f = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        if (extractPL(f))
             return f;
-        } catch (Exception e) {
+        else
             return null;
-        }
     }
-    
+
     /**
      * Extracts pct.pl from PCT.jar into a file, and returns true if the operation was OK
      * Automatically extract v9 or v10 PL
@@ -304,11 +336,11 @@ public abstract class PCT extends Task {
      * @since PCT 0.10
      */
     protected boolean extractPL(File f) {
-        int version = getProgressVersion();
-        if (version == -1)
+        if (this.majorVersion == -1)
             return false;
         try {
-            InputStream is = this.getClass().getResourceAsStream("/pct" + version + ".pl");
+            InputStream is = this.getClass()
+                    .getResourceAsStream("/pct" + this.majorVersion + ".pl");
             if (is == null)
                 return false;
             OutputStream os = new FileOutputStream(f);
