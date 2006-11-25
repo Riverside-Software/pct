@@ -238,6 +238,7 @@
     <delete dir="${website}" />
     <mkdir dir="${website}" />
     <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
+    <loadfile property="changelog" srcFile="${basedir}/CHANGELOG" />
     <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html" />
@@ -245,11 +246,11 @@
         <include name="*.xsl" />
       </fileset>
       <fileset dir=".">
-        <include name="CHANGELOG" />
         <include name="${doc}/**" />
       </fileset>
       <filterset>
         <filter token="RIGHT_BANNER" value="${right-banner}" />
+        <filter token="CHANGELOG" value="${changelog}" />
       </filterset>
     </copy>
     <copy todir="${website}">
