@@ -115,9 +115,11 @@ public class PCTRun extends PCT {
     protected int statusID = -1; // Unique ID when creating temp files
     protected int initID = -1; // Unique ID when creating temp files
     protected int plID = -1; // Unique ID when creating temp files
+    protected int outputStreamID = -1; // Unique ID when creating temp files
     protected File initProc = null;
     protected File status = null;
     protected File pctLib = null;
+    protected File outputStream = null;
     private boolean prepared = false;
 
     /**
@@ -450,6 +452,17 @@ public class PCTRun extends PCT {
             throw be;
         }
 
+        if (this.getProgressProcedures().needRedirector()) {
+            String s = null;
+            try {
+            BufferedReader br2 = new BufferedReader(new FileReader(this.outputStream));
+            while ((s = br2.readLine()) != null) {
+                log(s, Project.MSG_INFO);
+            }
+            br2.close();
+            } catch (Exception e) { System.out.println(e);}
+        }
+
         // Now read status file
         try {
             br = new BufferedReader(new FileReader(status));
@@ -670,6 +683,14 @@ public class PCTRun extends PCT {
             bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?."); //$NON-NLS-1$
             bw.newLine();
 
+            if (this.getProgressProcedures().needRedirector()) {
+                outputStreamID = new Random().nextInt() & 0xffff;
+                outputStream = new File(System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+                bw.write("OUTPUT TO VALUE('" + this.outputStream.getAbsolutePath() + "').");
+                bw.newLine();
+            }
+
             // Defines aliases
             if (dbConnList != null) {
                 for (Iterator i = dbConnList.iterator(); i.hasNext();) {
@@ -729,10 +750,15 @@ public class PCTRun extends PCT {
             bw.newLine();
             bw.write("IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
             bw.newLine();
+            if (this.getProgressProcedures().needRedirector()) {
+                bw.write("OUTPUT CLOSE.");
+                bw.newLine();
+            }
+
             bw.write("RUN returnValue(i)."); //$NON-NLS-1$
             bw.newLine();
             bw.newLine();
-            bw.write("PROCEDURE returnValue PRIVATE."); //$NON-NLS-1$
+            bw.write("PROCEDURE returnValue."); //$NON-NLS-1$
             bw.newLine();
             bw.write("  DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO."); //$NON-NLS-1$
             bw.newLine();
@@ -832,6 +858,12 @@ public class PCTRun extends PCT {
                         MessageFormat
                                 .format(
                                         Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            }
+            if ((this.outputStream != null) && (this.outputStream.exists() && !this.outputStream.delete())) {
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
         // pct.pl is always deleted
