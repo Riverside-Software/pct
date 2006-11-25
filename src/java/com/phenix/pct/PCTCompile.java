@@ -368,7 +368,7 @@ public class PCTCompile extends PCTRun {
         try {
             writeFileList();
             writeParams();
-            this.setProcedure("pct/pctCompile.p"); //$NON-NLS-1$
+            this.setProcedure(this.getProgressProcedures().getCompileProcedure());
             this.setParameter(params.getAbsolutePath());
             super.execute();
             this.cleanup();
