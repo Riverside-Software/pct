@@ -193,13 +193,17 @@
     </copy>
   </target>
 
-  <target name="test" depends="prepare-test" description="Starts tests">
-    <junit printsummary="yes" haltonfailure="no" filtertrace="off" fork="yes" dir="${testdir}" showoutput="true">
+  <target name="test" description="Starts tests">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
+        <pathelement location="junit.jar" />
+        <pathelement location="ant-junit.jar" />
+        <pathelement location="ant-launcher.jar" />
         <pathelement location="${dist}/PCT.jar" />
+        <pathelement location="${build}" />
       </classpath>
       <formatter type="xml" />
-      <batchtest>
+      <batchtest fork="yes" todir="${basedir}">
         <fileset dir="${build}">
           <include name="com/phenix/pct/*Test.class" />
           <!-- A few problems for now... -->
@@ -347,9 +351,9 @@
     <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
-    <style in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
+    <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
       <param name="outputdir" expression="${sports2000-doc}" />
-    </style>
+    </xslt>
   </target>
 
   <target name="upload" description="Quick reminder on how to upload files">
