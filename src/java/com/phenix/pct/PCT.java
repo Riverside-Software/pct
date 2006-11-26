@@ -89,7 +89,7 @@ public abstract class PCT extends Task {
     private ProgressProcedures pp = null;
     private int majorVersion = -1;
     private int minorVersion = -1;
-    private String minVer = null;
+    private String revision = null;
     private String patchLevel = null;
 
     /**
@@ -305,7 +305,7 @@ public abstract class PCT extends Task {
         if (m.matches()) {
             this.majorVersion = Integer.parseInt(m.group(1));
             this.minorVersion = Integer.parseInt(m.group(2));
-            this.minVer = m.group(3);
+            this.revision = m.group(3);
             this.patchLevel = m.group(4);
         }
 
@@ -355,5 +355,18 @@ public abstract class PCT extends Task {
             return false;
         }
 
+    }
+
+    public int getMajorVersion() {
+        return this.majorVersion;
+    }
+    public int getMinorVersion() {
+        return this.minorVersion;
+    }
+    public String getRevision() {
+        return this.revision;
+    }
+    public String getPatchLevel() {
+        return this.patchLevel;
     }
 }
