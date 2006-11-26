@@ -33,7 +33,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab1"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab1"
@@ -42,13 +41,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab1-PK" ON "tab1" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
@@ -104,7 +100,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab1"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab1"
@@ -113,13 +108,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab1-PK" ON "tab1" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
@@ -129,7 +121,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab2"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab3"
@@ -138,13 +129,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab2-PK" ON "tab2" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
@@ -154,7 +142,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab3"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab3"
@@ -163,13 +150,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab3-PK" ON "tab3" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
@@ -200,7 +184,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab1"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab1"
@@ -209,13 +192,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab1-PK" ON "tab1" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
@@ -248,7 +228,6 @@
       UPDATE DATABASE "?"
       
       ADD TABLE "Tab1"
-        AREA "Schema Area"
         LABEL ""
         DESCRIPTION ""
         DUMP-NAME "Tab1"
@@ -257,13 +236,10 @@
         FORMAT "9"
         INITIAL "0"
         LABEL "Fld1"
-        POSITION 2
-        SQL-WIDTH 4
         COLUMN-LABEL "Fld1"
         ORDER 10
 
       ADD INDEX "Tab1-PK" ON "tab1" 
-        AREA "Schema Area"
         UNIQUE
         PRIMARY
         DESCRIPTION "Primary key"
