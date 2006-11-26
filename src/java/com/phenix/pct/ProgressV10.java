@@ -53,7 +53,12 @@
  */
 package com.phenix.pct;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 public class ProgressV10 implements ProgressProcedures {
+    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV10"; //$NON-NLS-1$
+    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
         return "pct/pctCompile.p";
@@ -61,6 +66,38 @@ public class ProgressV10 implements ProgressProcedures {
 
     public boolean needRedirector() {
         return false;
+    }
+
+    public String getInitString() {
+        return getString("ProgressV10.0"); //$NON-NLS-1$
+    }
+
+    public String getConnectString() {
+        return getString("ProgressV10.1"); //$NON-NLS-1$
+    }
+
+    public String getAliasString() {
+        return getString("ProgressV10.2"); //$NON-NLS-1$
+    }
+
+    public String getPropathString() {
+        return getString("ProgressV10.3"); //$NON-NLS-1$
+    }
+
+    public String getRunString() {
+        return getString("ProgressV10.4"); //$NON-NLS-1$
+    }
+
+    public String getReturnProc() {
+        return getString("ProgressV10.5"); //$NON-NLS-1$
+    }
+    
+    public String getString(String key) {
+        try {
+            return RESOURCE_BUNDLE.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
     }
 
 }

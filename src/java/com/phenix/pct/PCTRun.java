@@ -455,12 +455,14 @@ public class PCTRun extends PCT {
         if (this.getProgressProcedures().needRedirector()) {
             String s = null;
             try {
-            BufferedReader br2 = new BufferedReader(new FileReader(this.outputStream));
-            while ((s = br2.readLine()) != null) {
-                log(s, Project.MSG_INFO);
+                BufferedReader br2 = new BufferedReader(new FileReader(this.outputStream));
+                while ((s = br2.readLine()) != null) {
+                    log(s, Project.MSG_INFO);
+                }
+                br2.close();
+            } catch (Exception e) {
+                System.out.println(e);
             }
-            br2.close();
-            } catch (Exception e) { System.out.println(e);}
         }
 
         // Now read status file
@@ -680,52 +682,35 @@ public class PCTRun extends PCT {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
 
-            bw.write("DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?."); //$NON-NLS-1$
-            bw.newLine();
-
             if (this.getProgressProcedures().needRedirector()) {
                 outputStreamID = new Random().nextInt() & 0xffff;
-                outputStream = new File(System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-                bw.write("OUTPUT TO VALUE('" + this.outputStream.getAbsolutePath() + "').");
-                bw.newLine();
+                outputStream = new File(
+                        System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
+
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
+                    new Object[]{(this.outputStream == null ? null : this.outputStream
+                            .getAbsolutePath())}));
 
             // Defines aliases
             if (dbConnList != null) {
                 for (Iterator i = dbConnList.iterator(); i.hasNext();) {
                     PCTConnection dbc = (PCTConnection) i.next();
                     String connect = dbc.createConnectString();
-                    bw.write("CONNECT VALUE(\"" + connect + "\") NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
-                    bw.newLine();
-                    bw.write("IF ERROR-STATUS:ERROR THEN DO:");
-                    bw.newLine();
-                    bw.write("  MESSAGE \"Unable to connect to " + connect + "\".");
-                    bw.newLine();
-                    bw.write("  RUN returnValue(14)."); //$NON-NLS-1$
-                    bw.newLine();
-                    bw.write("END.");
-                    bw.newLine();
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
+                            new Object[]{connect}));
 
                     Collection aliases = dbc.getAliases();
                     if (aliases != null) {
                         for (Iterator i2 = aliases.iterator(); i2.hasNext();) {
                             PCTAlias alias = (PCTAlias) i2.next();
-                            bw.write("CREATE ALIAS '"); //$NON-NLS-1$
-                            bw.write(alias.getName());
-                            bw.write("' FOR DATABASE "); //$NON-NLS-1$
-                            bw.write(dbc.getDbName());
-
-                            if (alias.getNoError()) {
-                                bw.write(" NO-ERROR"); //$NON-NLS-1$
-                            }
-
-                            bw.write("."); //$NON-NLS-1$
+                            bw.write(MessageFormat.format(this.getProgressProcedures()
+                                    .getAliasString(), new Object[]{alias.getName(),
+                                    dbc.getDbName()}));
                             bw.newLine();
                         }
                     }
                 }
-                bw.newLine();
             }
 
             // Defines PROPATH
@@ -735,43 +720,16 @@ public class PCTRun extends PCT {
                 // statement--use -inp parm)
                 String[] lst = this.propath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
-                    bw.write("ASSIGN PROPATH='"); //$NON-NLS-1$
-                    bw.write(escapeString(lst[k]));
-                    bw.write(File.pathSeparatorChar + "' + PROPATH."); //$NON-NLS-1$
-                    bw.newLine();
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
+                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
                 }
             }
 
-            bw.write("RUN VALUE('" + escapeString(this.procedure) + "') NO-ERROR."); //$NON-NLS-1$ //$NON-NLS-2$
-            bw.newLine();
-            bw.write("IF ERROR-STATUS:ERROR THEN ASSIGN i = 1."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("IF (i EQ ?) THEN ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, ' ')) NO-ERROR."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("IF (i EQ ?) THEN ASSIGN i = 1."); //$NON-NLS-1$
-            bw.newLine();
-            if (this.getProgressProcedures().needRedirector()) {
-                bw.write("OUTPUT CLOSE.");
-                bw.newLine();
-            }
+            bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
+                    new Object[]{escapeString(this.procedure)}));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getReturnProc(),
+                    new Object[]{escapeString(status.getAbsolutePath())}));
 
-            bw.write("RUN returnValue(i)."); //$NON-NLS-1$
-            bw.newLine();
-            bw.newLine();
-            bw.write("PROCEDURE returnValue."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("  DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("  OUTPUT TO VALUE('" + escapeString(status.getAbsolutePath()) + "')."); //$NON-NLS-1$ //$NON-NLS-2$
-            bw.newLine();
-            bw.write("  PUT UNFORMATTED retVal SKIP."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("  OUTPUT CLOSE."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("  QUIT."); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("END PROCEDURE."); //$NON-NLS-1$
-            bw.newLine();
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException();
@@ -859,7 +817,8 @@ public class PCTRun extends PCT {
                                 .format(
                                         Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
-            if ((this.outputStream != null) && (this.outputStream.exists() && !this.outputStream.delete())) {
+            if ((this.outputStream != null)
+                    && (this.outputStream.exists() && !this.outputStream.delete())) {
                 log(
                         MessageFormat
                                 .format(
