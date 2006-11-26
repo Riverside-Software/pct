@@ -63,4 +63,10 @@ package com.phenix.pct;
 public abstract interface ProgressProcedures {
     public String getCompileProcedure();
     public boolean needRedirector();
+    public String getInitString();
+    public String getConnectString();
+    public String getAliasString();
+    public String getPropathString();
+    public String getRunString();
+    public String getReturnProc();
 }
