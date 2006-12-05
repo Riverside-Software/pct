@@ -300,13 +300,13 @@ public abstract class PCT extends Task {
         }
 
         Pattern p = Pattern
-                .compile("\\w+\\s+\\w+\\s+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
+                .compile("([a-zA-Z]+\\s+)+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
         Matcher m = p.matcher(line);
         if (m.matches()) {
-            this.majorVersion = Integer.parseInt(m.group(1));
-            this.minorVersion = Integer.parseInt(m.group(2));
-            this.revision = m.group(3);
-            this.patchLevel = m.group(4);
+            this.majorVersion = Integer.parseInt(m.group(2));
+            this.minorVersion = Integer.parseInt(m.group(3));
+            this.revision = m.group(4);
+            this.patchLevel = m.group(5);
         }
 
     }
