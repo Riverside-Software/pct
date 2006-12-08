@@ -95,7 +95,7 @@ public class PCTDumpSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctDumpSchema.p"); //$NON-NLS-1$
+        this.setProcedure("pct/dumpSch.p"); //$NON-NLS-1$
         this.setParameter(destFile.toString());
         super.execute();
     }

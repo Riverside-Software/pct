@@ -97,7 +97,7 @@ public class PCTLoadSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTLoadSchema.2")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/pctLoadSchema.p"); //$NON-NLS-1$
+        this.setProcedure("pct/loadSch.p"); //$NON-NLS-1$
         this.setParameter(srcFile.getAbsolutePath());
         log(
                 MessageFormat.format(Messages.getString("PCTLoadSchema.3"),
