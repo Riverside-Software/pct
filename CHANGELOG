@@ -6,7 +6,7 @@ Version 0.12 (??/??/????)
  * Bug #1566571 : corrected failed compilation warning when fileset not in PROPATH
  * Updated developer's documentation
  * Limited support for Progress 8
- * Upgrading to ANT 1.7RC1
+ * Upgrading to ANT 1.7
 
 Version 0.11 (09/12/2006)
 ==============================
