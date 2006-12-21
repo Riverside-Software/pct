@@ -75,10 +75,10 @@ import org.apache.tools.ant.types.Environment;
  * @version $Revision$
  */
 public class PCTASBroker extends PCTBroker {
-    private final static String STATELESS = "stateless";
-    private final static String STATE_AWARE = "state-aware";
-    private final static String STATE_RESET = "state-reset";
-    private final static String STATE_FREE = "state-free";
+    private final static String STATELESS = "Stateless";
+    private final static String STATE_AWARE = "State-aware";
+    private final static String STATE_RESET = "State-reset";
+    private final static String STATE_FREE = "State-free";
     private final static String DEFAULT_NS = "NS1";
 
     private String operatingMode = STATELESS;
@@ -289,6 +289,8 @@ public class PCTASBroker extends PCTBroker {
                     }
                     bw.println("");
                 }
+                // FIXME Add DB connections
+                
                 if (this.portNumber != -1)
                     bw.println("portNumber=" + this.portNumber);
                 if (this.brokerLogFile != null)
@@ -409,11 +411,13 @@ public class PCTASBroker extends PCTBroker {
         if (this.action == null) {
             throw new BuildException("Action attribute is missing");
         }
-        if ((!operatingMode.equalsIgnoreCase(STATELESS))
-                && (!operatingMode.equalsIgnoreCase(STATE_AWARE))
-                && (!operatingMode.equalsIgnoreCase(STATE_RESET))
-                && (!operatingMode.equalsIgnoreCase(STATE_FREE)))
-            throw new BuildException("Invalid operating mode");
+        // FIXME Operating mode is case-sensitive, so we should always replace value with the correct one
+        if ((!operatingMode.equals(STATELESS))
+                && (!operatingMode.equals(STATE_AWARE))
+                && (!operatingMode.equals(STATE_RESET))
+                && (!operatingMode.equals(STATE_FREE)))
+            throw new BuildException("Invalid operating mode (warning : operatingMode attribute is case sensitive)");
+
         // TODO Server's attribute should be checked there...
     }
 
