@@ -61,10 +61,8 @@ import java.io.File;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  * @version $Revision$
  */
-public class SchemaHolder {
+public abstract class SchemaHolder {
     private String dbName = null;
-    private String dbType = null;
-    private String misc = null;
     private File schemaFile = null;
     private String codepage = null;
     private String collation = null;
@@ -85,42 +83,6 @@ public class SchemaHolder {
      */
     public void setDbName(String dbName) {
         this.dbName = dbName;
-    }
-
-    /**
-     * Returns schema holder type
-     * 
-     * @return String - Schema holder type (ORACLE, MSSQL, and so on)
-     */
-    public String getDbType() {
-        return dbType;
-    }
-
-    /**
-     * Sets schema holder type
-     * 
-     * @param dbType String - Schema holder type
-     */
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-
-    /**
-     * Returns miscellaneous informations (oracle version number for example)
-     * 
-     * @return String - Misc infos
-     */
-    public String getMisc() {
-        return misc;
-    }
-
-    /**
-     * Sets miscellaneous informations (oracle version number for example)
-     * 
-     * @param misc String - Misc infos
-     */
-    public void setMisc(String misc) {
-        this.misc = misc;
     }
 
     /**
@@ -178,15 +140,13 @@ public class SchemaHolder {
     }
 
     /**
-     * Validation of schema holder parameters. Use with care for now. Oh now, not really care, but
+     * Validation of schema holder parameters. Use with care for now. Oh no, not really care, but
      * it isn't validating many things for now. In fact, this should be subclassed for every
      * database type.
      * 
      * @return True if parameters are correct
      */
-    public boolean validate() {
-        return ((dbName != null) && (dbType != null));
-
-    }
-
+    public abstract boolean validate();
+    public abstract String getProcedure();
+    public abstract String getParameterString();
 }

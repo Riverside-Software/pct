@@ -209,7 +209,14 @@ public class PCTCreateBase extends PCT {
      * 
      * @param holder
      */
-    public void addHolder(SchemaHolder holder) {
+    public void addOracleHolder(OracleHolder holder) {
+        if (this.holders == null) {
+            this.holders = new Vector();
+        }
+        this.holders.add(holder);
+    }
+
+    public void addMSSHolder(MSSHolder holder) {
         if (this.holders == null) {
             this.holders = new Vector();
         }
@@ -336,10 +343,8 @@ public class PCTCreateBase extends PCT {
                 run.setDlcBin(this.getDlcBin());
                 run.setPropath(this.propath);
                 run.setIncludedPL(this.getIncludedPL());
-                run.setProcedure("pct/holders.p");
-                run.setParameter(holder.getDbName() + ";" + holder.getDbType() + ";"
-                        + holder.getCodepage() + ";" + holder.getCollation() + ";"
-                        + holder.getMisc());
+                run.setProcedure(holder.getProcedure());
+                run.setParameter(holder.getParameterString());
 
                 PCTConnection pc = new PCTConnection();
                 pc.setDbName(this.dbName);
