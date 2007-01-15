@@ -70,7 +70,14 @@ ASSIGN shName     = ENTRY(1, SESSION:PARAMETER, ';':U)
        oraVersion = ENTRY(4, SESSION:PARAMETER, ';':U).
 
 CREATE BUFFER bDB FOR TABLE '_Db':U.
-DO TRANSACTION:
+
+DbRecord:
+DO TRANSACTION ON ERROR UNDO, RETRY:
+    IF RETRY THEN DO:
+        MESSAGE "Unable to create _db record".
+        LEAVE DbRecord.
+    END.
+    
     bDB:BUFFER-CREATE().
 		ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
 		       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
