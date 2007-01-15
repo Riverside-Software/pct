@@ -75,8 +75,8 @@ DO TRANSACTION:
 		       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
 		       bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
 		       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = 'MSS':U
-		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[1]  = (IF caseSens EQ 1 THEN '1':U ELSE '0':U)
-		       bDB:BUFFER-FIELD('_db-misc2'):BUFFER-VALUE[8]  = ?
+		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[1]  = (IF caseSens EQ '1' THEN 1 ELSE 0)
+		       bDB:BUFFER-FIELD('_Db-misc2'):BUFFER-VALUE[8]  = ?
 		       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = 'mss_codepage':U
 		       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll.
 END.
