@@ -45,9 +45,9 @@
     <include name="pct/pctCompileV8.p" />
     <include name="pct/pctCRCV8.p" />
     <include name="pct/pctDumpData.p" />
-    <include name="pct/pctDumpSchema.p" />
+    <include name="pct/dumpSch.p" />
     <include name="pct/pctLoadData.p" />
-    <include name="pct/pctLoadSchema.p" />
+    <include name="pct/loadSch.p" />
   </fileset>
   <fileset id="fs.v9" dir="${src.progress}">
     <include name="pct/*.p" />
