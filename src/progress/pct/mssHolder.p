@@ -52,30 +52,32 @@
  * <http://www.apache.org/>.
  */
 
-DEFINE VARIABLE shName AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE shType AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE cp     AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE coll   AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE misc   AS CHARACTER  NO-UNDO.
+/** See prodict/mss/_mss_md2.p */
+
+DEFINE VARIABLE shName   AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE coll     AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE caseSens AS CHARACTER  NO-UNDO.
+
 DEFINE VARIABLE bDB AS HANDLE NO-UNDO.
 
 IF (NUM-ENTRIES(SESSION:PARAMETER, ';':U) NE 5) THEN
-   RETURN '1':U.
-ASSIGN shName = ENTRY(1, SESSION:PARAMETER, ';':U)
-       shType = ENTRY(2, SESSION:PARAMETER, ';':U)
-       cp     = ENTRY(3, SESSION:PARAMETER, ';':U)
-       coll   = ENTRY(4, SESSION:PARAMETER, ';':U)
-       misc   = ENTRY(5, SESSION:PARAMETER, ';':U).
+    RETURN '1':U.
+
+ASSIGN shName   = ENTRY(1, SESSION:PARAMETER, ';':U)
+       coll     = ENTRY(2, SESSION:PARAMETER, ';':U)
+       caseSens = ENTRY(3, SESSION:PARAMETER, ';':U).
 
 CREATE BUFFER bDB FOR TABLE '_Db':U.
 DO TRANSACTION:
-bDB:BUFFER-CREATE().
-ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
-       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
-       bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
-       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
-       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
-       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = shType
-       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[3]  = misc.
+		bDB:BUFFER-CREATE().
+		ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
+		       bDB:BUFFER-FIELD('_Db-addr'):BUFFER-VALUE      = shName
+		       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
+		       bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
+		       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = 'MSS':U
+		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[1]  = (IF caseSens EQ 1 THEN '1':U ELSE '0':U)
+		       bDB:BUFFER-FIELD('_db-misc2'):BUFFER-VALUE[8]  = ?
+		       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = 'mss_codepage':U
+		       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll.
 END.
 RETURN '0'.
