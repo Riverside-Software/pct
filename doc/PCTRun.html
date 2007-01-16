@@ -47,13 +47,17 @@ parameters, and then runs the specified procedure.</p>
 and with the specified arguments.</p>
 <p>The generated procedure follows this template :</p>
 <pre>
+// Call this function in your procedures to retrieve parameters
+FUNCTION getParameter RETURNS CHARACTER (k AS CHARACTER).
+CONNECT VALUE('…') NO-ERROR. // 1 line for each database to connect
 CREATE ALIAS '…' FOR DATABASE … [NO-ERROR]. // 1 line for each alias
 ASSIGN PROPATH = '…' + PROPATH. // 1 line for each propath entry
 RUN VALUE('…') NO-ERROR.
-Check error status, return-value and outputs result to a file
-Quit
+// Check error status, return-value and outputs result to a file
+// Quit
 </pre>
-<p>TODO : explain return values</p>
+<h2>Return values</h2>
+<p>PCT assumes a RETURN-VALUE of 0 is a success. Database connection failure will always returns 14.</p>
 
 <h2>Parameters</h2>
 <table class="params">
@@ -242,6 +246,14 @@ Adds an additional command line option to prowin32 or _progres executable. These
 at the end of the standard command line (before -p parameter).</p>
 <p><em>WARNING</em> : an option containing a space will be surrounded by quotes. If a value is needed by a
 parameter, add it in the value attribute. This is needed if the value contains spaces for example.</p>
+<h3>Parameter (<a href="Parameter.html">com.phenix.pct.RunParameter</a>)</h3>
+<p>
+Creates a parameter which can be read in the called procedure using
+DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'ParameterName'). Returned value type is CHARACTER.
+If parameter is not defined, the function returns ?.
+</p>
+<p><em>WARNING</em> : these parameters are written in a temp-table without unique index. Defining a parameter
+with same name multiple times may lead to weird results (it will return ?).
 
 <h2>Examples</h2>
 <pre>
@@ -269,19 +281,39 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</cod
     &lt;pathelement path="src/include2" /&gt;
   &lt;/propath&gt;
   &lt;PCTRunOption name="-cprcodeout" value="utf-8" /&gt;
+  &lt;Parameter name="Param1" value="Value1" /&gt;
+  &lt;Parameter name="Param2" value="Value2" /&gt;
 &lt;/PCTRun&gt;
 </pre>
 <p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -cprcodeout utf-8 -p pctinitxxxx.p</code></p>
 <p>Procedure pctinitxxxx.p :</p><pre class="source">
+DEFINE TEMP-TABLE ttParams NO-UNDO
+  FIELD key AS CHARACTER
+  FIELD val AS CHARACTER.
+FUNCTION getParameter RETURNS CHARACTER (k AS CHARACTER).
+  FIND ttParams WHERE ttParams.key EQ k NO-LOCK NO-ERROR.
+  RETURN (IF AVAILABLE ttParams THEN ttParams.val ELSE ?).
+END FUNCTION.
 CONNECT VALUE("-db base/foo -1").
 IF ERROR-STATUS:ERROR THEN DO:
   MESSAGE 'Unable to connect to -db base/foo -1'.
   RUN returnValue(14).
+  QUIT.
 END.
 CREATE ALIAS 'foo2' FOR foo.
 CREATE ALIAS 'foo3' FOR foo.
 ASSIGN PROPATH='src/include2,' + PROPATH.
 ASSIGN PROPATH='src/include,' + PROPATH.
+DO ON ERROR UNDO, LEAVE:
+  CREATE ttParams.
+  ASSIGN ttParams.key = "Param1"
+         ttParams.val = "Value1".
+END.
+DO ON ERROR UNDO, LEAVE:
+  CREATE ttParams.
+  ASSIGN ttParams.key = "Param2"
+         ttParams.val = "Value2".
+END.
 RUN VALUE('test/test.p') NO-ERROR.
 // Check errors and call returnValue
 PROCEDURE returnValue PRIVATE.

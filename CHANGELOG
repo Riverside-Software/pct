@@ -7,6 +7,7 @@ Version 0.12 (??/??/????)
  * Updated developer's documentation
  * Limited support for Progress 8
  * Upgrading to ANT 1.7
+ * Added Parameter nested attribute to PCTRun
 
 Version 0.11 (09/12/2006)
 ==============================
