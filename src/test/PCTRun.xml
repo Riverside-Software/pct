@@ -299,4 +299,72 @@
     </PCTRun>
   </target>
 
+  <target name="test25">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ 'PCT') THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" >
+      <parameter name="TEST" value="PCT" />
+    </PCTRun>
+  </target>
+
+  <target name="test26">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ "AA''BB") THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" >
+      <parameter name="TEST" value="AA''BB" />
+    </PCTRun>
+  </target>
+
+  <target name="test27">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ 'AA~~BB') THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" >
+      <parameter name="TEST" value="AA~BB" />
+    </PCTRun>
+  </target>
+
+  <target name="test28">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ ?) THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" />
+  </target>
+
+  <target name="test29">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ ?) THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" >
+      <parameter name="TEST" value="AA" />
+      <parameter name="TEST" value="BB" />
+    </PCTRun>
+  </target>
 </project>

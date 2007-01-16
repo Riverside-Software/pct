@@ -53,55 +53,64 @@
  */
 package com.phenix.pct;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+/**
+ * Describes a parameter which will be passed to a progress procedure within a temp-table
+ * 
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @version $Revision: 663 $
+ */
+public class RunParameter {
+    private String name = null;
+    private String value = null;
 
-public class ProgressV9 implements ProgressProcedures {
-    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV9"; //$NON-NLS-1$
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
-    public String getCompileProcedure() {
-        return "pct/pctCompile.p";
+    /**
+     * Default constructor
+     */
+    public RunParameter() {
     }
 
-    public boolean needRedirector() {
-        return false;
-    }
-    
-    public String getInitString() {
-        return getString("ProgressV9.0"); //$NON-NLS-1$
+    public RunParameter(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-    public String getConnectString() {
-        return getString("ProgressV9.1"); //$NON-NLS-1$
+    /**
+     * Parameter name
+     * 
+     * @param name String
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getAliasString() {
-        return getString("ProgressV9.2"); //$NON-NLS-1$
+    /**
+     * Parameter value
+     * 
+     * @param value String
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public String getPropathString() {
-        return getString("ProgressV9.3"); //$NON-NLS-1$
+    /**
+     * Returns parameter name
+     * 
+     * @return Parameter name
+     */
+    public String getName() {
+        return this.name;
     }
 
-    public String getRunString() {
-        return getString("ProgressV9.4"); //$NON-NLS-1$
+    /**
+     * Returns parameter value
+     * 
+     * @return Parameter value
+     */
+    public String getValue() {
+        return this.value;
     }
 
-    public String getReturnProc() {
-        return getString("ProgressV9.5"); //$NON-NLS-1$
+    public boolean validate() {
+        return ((this.name != null) && (this.value != null));
     }
-    
-    public String getParameterString() {
-        return getString("ProgressV9.6"); //$NON-NLS-1$
-    }
-
-    public String getString(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
-
 }

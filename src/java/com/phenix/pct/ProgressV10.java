@@ -92,6 +92,10 @@ public class ProgressV10 implements ProgressProcedures {
         return getString("ProgressV10.5"); //$NON-NLS-1$
     }
     
+    public String getParameterString() {
+        return getString("ProgressV10.6"); //$NON-NLS-1$
+    }
+
     public String getString(String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);
