@@ -66,7 +66,7 @@
 
   <!-- Testing a few attributes : -->
   <target name="TestAttributes-1">
-    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" operatingMode="state-reset" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" />
+    <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}" operatingMode="State-reset" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" />
   </target>
 
   <!-- Testing forbidden attributes of Server -->
