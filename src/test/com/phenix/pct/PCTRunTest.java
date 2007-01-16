@@ -275,4 +275,39 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test24-pre");
         expectLog("test24", "TEST");
     }
+    
+    /**
+     * Parameters collection : simple test
+     */
+    public void test25() {
+        executeTarget("test25");
+    }
+
+    /**
+     * Parameters collection : quotes
+     */
+    public void test26() {
+        executeTarget("test26");
+    }
+
+    /**
+     * Parameters collection : tilde
+     */
+    public void test27() {
+        executeTarget("test27");
+    }
+
+    /**
+     * Parameters collection : not defined
+     */
+    public void test28() {
+        executeTarget("test28");
+    }
+
+    /**
+     * Parameters collection : duplicate values
+     */
+    public void test29() {
+        executeTarget("test29");
+    }
 }

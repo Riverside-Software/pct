@@ -109,6 +109,7 @@ public class PCTRun extends PCT {
     protected Collection dbConnList = null;
     private Collection options = null;
     protected Path propath = null;
+    protected Collection runParameters = null;
 
     // Internal use
     protected ExecTask exec = null;
@@ -180,6 +181,18 @@ public class PCTRun extends PCT {
         }
 
         this.options.add(option);
+    }
+
+    /**
+     * Add a new parameter which will be passed to the progress procedure in a temp-table
+     * 
+     * @param param Instance of RunParameter class
+     */
+    public void addParameter(RunParameter param) {
+        if (this.runParameters == null) {
+            this.runParameters = new Vector();
+        }
+        this.runParameters.add(param);
     }
 
     /**
@@ -682,12 +695,13 @@ public class PCTRun extends PCT {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
 
+            // Progress v8 is unable to write to standard output, so output is redirected in a file,
+            // which is parsed in a later stage
             if (this.getProgressProcedures().needRedirector()) {
                 outputStreamID = new Random().nextInt() & 0xffff;
                 outputStream = new File(
                         System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
-
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     new Object[]{(this.outputStream == null ? null : this.outputStream
                             .getAbsolutePath())}));
@@ -722,6 +736,16 @@ public class PCTRun extends PCT {
                 for (int k = lst.length - 1; k >= 0; k--) {
                     bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
                             new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                }
+            }
+
+            // Defines parameters
+            if (this.runParameters != null) {
+                for (Iterator i = this.runParameters.iterator(); i.hasNext(); ) {
+                    RunParameter param = (RunParameter) i.next();
+                    if (param.validate()) {
+                        bw.write(MessageFormat.format(this.getProgressProcedures().getParameterString(), new Object[]{escapeString(param.getName()), escapeString(param.getValue())}));
+                    }
                 }
             }
 

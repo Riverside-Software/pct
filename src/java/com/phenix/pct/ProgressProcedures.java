@@ -69,4 +69,5 @@ public abstract interface ProgressProcedures {
     public String getPropathString();
     public String getRunString();
     public String getReturnProc();
+    public String getParameterString();
 }
