@@ -121,8 +121,14 @@
 <h3>propath (org.apache.tools.types.Path)</h3>
 <p>Creates a nested propath, and adds it to the implicit propath. The
 propath is only used during schema update.</p>
-<h3>holder (<a href="SchemaHolder.html">com.phenix.pct.SchemaHolder</a>)</h3>
-<p>Creates a new schema holder inside a database. If a schema holder is defined,
+<h3>OracleHolder (<a href="OracleHolder.html">com.phenix.pct.OracleHolder</a>)</h3>
+<p>Creates a new Oracle schema holder inside a database. If a schema holder is defined,
+no schema can be loaded in the main database.</p>
+<h3>MSSHolder (<a href="MSSHolder.html">com.phenix.pct.MSSHolder</a>)</h3>
+<p>Creates a new SQL Server schema holder inside a database. If a schema holder is defined,
+no schema can be loaded in the main database.</p>
+<h3>ODBCHolder (<a href="ODBCHolder.html">com.phenix.pct.ODBCHolder</a>)</h3>
+<p>Creates a new ODBC schema holder inside a database. If a schema holder is defined,
 no schema can be loaded in the main database.</p>
 
 <h2>Examples</h2>
@@ -157,7 +163,7 @@ $DLC/prolang/utf/empty8 test</code>.</p>
 
 <pre>
 &lt;PCTCreateBase dbName="test" dlcHome="${env.DLC}"&gt;
-  &lt;Holder dbName="ora1" dbType="oracle" misc="8" codepage="iso8859-1" collation="BASIC" schemaFile="oradump.df" /&gt;
+  &lt;OracleHolder dbName="ora1" oracleVersion="8" codepage="iso8859-1" collation="BASIC" schemaFile="oradump.df" /&gt;
 &lt;/PCTCreateBase&gt;
 </pre>
 <p>Creates a new empty database, containing a schema holder for an <code>ora1</code>

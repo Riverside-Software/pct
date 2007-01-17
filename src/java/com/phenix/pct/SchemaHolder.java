@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import java.io.File;
+import java.util.Collection;
 
 /**
  * Schema holders class. Used as a nested element of PCTCreateBase.
@@ -66,6 +67,24 @@ public abstract class SchemaHolder {
     private File schemaFile = null;
     private String codepage = null;
     private String collation = null;
+    private String username = null;
+    private String password = null;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     /**
      * Returns schema holder name
@@ -148,5 +167,5 @@ public abstract class SchemaHolder {
      */
     public abstract boolean validate();
     public abstract String getProcedure();
-    public abstract String getParameterString();
+    public abstract Collection getParameters();
 }

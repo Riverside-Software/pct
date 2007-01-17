@@ -3,8 +3,25 @@ package com.phenix.pct;
 import java.util.Collection;
 import java.util.Vector;
 
-public class MSSHolder extends SchemaHolder {
-    public boolean caseSensitive;
+public class ODBCHolder extends SchemaHolder {
+    private String user;
+    private String password;
+    
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
 
     public boolean validate() {
         return true;
@@ -15,7 +32,6 @@ public class MSSHolder extends SchemaHolder {
         c.add(new RunParameter("SchemaHolderName", this.getDbName()));
         c.add(new RunParameter("Collation", this.getCollation()));
         c.add(new RunParameter("Codepage", this.getCodepage()));
-        c.add(new RunParameter("CaseSensitive", Boolean.toString(this.caseSensitive)));
         c.add(new RunParameter("UserName", this.getUsername()));
         c.add(new RunParameter("Password", this.getPassword()));
 
@@ -24,13 +40,5 @@ public class MSSHolder extends SchemaHolder {
 
     public String getProcedure() {
         return "pct/mssHolder.p";
-    }
-
-    public boolean isCaseSensitive() {
-        return caseSensitive;
-    }
-
-    public void setCaseSensitive(boolean caseSensitive) {
-        this.caseSensitive = caseSensitive;
     }
 }

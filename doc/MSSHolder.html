@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="en" />
-<title>PCT documentation - SchemaHolder abstract type</title>
+<title>PCT documentation - MSSHolder type</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -36,11 +36,11 @@
 @RIGHT_BANNER@
 
 <div class="Text">
-<h1>SchemaHolder type</h1>
+<h1>MSSHolder type</h1>
 
 <h2>Description</h2>
 <p>
-Abstract type for schema holders
+Creates an SQL Server schema holder in a Progress database
 </p>
 
 <h2>Parameters</h2>
@@ -53,49 +53,14 @@ Abstract type for schema holders
 <th>Default value</th>
 </tr>
 <tr>
-<td>dbName</td>
-<td>Database name</td>
-<td align="center">String</td>
+<td>caseSensitive</td>
+<td>Is DB case sensitive</td>
+<td align="center">logical</td>
 <td align="center">Required</td>
 <td>No default value</td>
 </tr>
-<tr>
-<td>codepage</td>
-<td>Codepage</td>
-<td align="center">String</td>
-<td align="center">Required</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>collation</td>
-<td>Collation table</td>
-<td align="center">String</td>
-<td align="center">Required</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>userName</td>
-<td>User name used to connect remote database</td>
-<td align="center">String</td>
-<td align="center">Optional</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>password</td>
-<td>Password used to connect remote database</td>
-<td align="center">String</td>
-<td align="center">Optional</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>schemaFile</td>
-<td>Schema file to load</td>
-<td align="center">String</td>
-<td align="center">Optional</td>
-<td>No default value</td>
-</tr>
-
 </table>
+<p>MSSHolder inherits attributes from <a href="SchemaHolder.html">SchemaHolder</a>.</p>
 
 <h2>Parameters as nested elements</h2>
 <p>None</p>

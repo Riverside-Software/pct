@@ -1,5 +1,8 @@
 package com.phenix.pct;
 
+import java.util.Collection;
+import java.util.Vector;
+
 public class OracleHolder extends SchemaHolder {
     private int oracleVersion;
     
@@ -15,14 +18,16 @@ public class OracleHolder extends SchemaHolder {
         return (this.getDbName() != null);
     }
 
-    public String getParameterString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.getDbName()).append(';');
-        sb.append(this.getCodepage()).append(';');
-        sb.append(this.getCollation()).append(';');
-        sb.append(this.oracleVersion);
-        
-        return sb.toString();
+    public Collection getParameters() {
+        Collection c = new Vector();
+        c.add(new RunParameter("SchemaHolderName", this.getDbName()));
+        c.add(new RunParameter("Collation", this.getCollation()));
+        c.add(new RunParameter("Codepage", this.getCodepage()));
+        c.add(new RunParameter("OracleVersion", Integer.toString(this.oracleVersion)));
+        c.add(new RunParameter("UserName", this.getUsername()));
+        c.add(new RunParameter("Password", this.getPassword()));
+
+        return c;
     }
 
     public String getProcedure() {
