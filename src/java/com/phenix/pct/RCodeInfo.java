@@ -53,12 +53,12 @@ public class RCodeInfo {
     private byte[] segInitialValues;
     private byte[] segActionMain;
     // TODO Prévoir de l'espace pour les actions segments de chaque procédure
-    private byte[] segECode1, segECode2, segECode3, segECode4;
+    private byte[] segECode1; //, segECode2, segECode3, segECode4;
     private byte[] segDebug;
     private byte[] segText;
 
     private File file;
-    private boolean error;
+//    private boolean error;
     private boolean swapped;
     private long magic;
     private long version;
@@ -73,7 +73,7 @@ public class RCodeInfo {
      * @param file
      * @throws Exception
      */
-    public RCodeInfo(String file) throws InvalidRCodeException, FileNotFoundException {
+    public RCodeInfo(String file) throws InvalidRCodeException, IOException {
         this(new File(file));
     }
 
@@ -82,7 +82,7 @@ public class RCodeInfo {
      * @param file
      * @throws Exception
      */
-    public RCodeInfo(File file) throws InvalidRCodeException, FileNotFoundException {
+    public RCodeInfo(File file) throws InvalidRCodeException, IOException {
         this.file = file;
         processFile();
     }
@@ -127,7 +127,16 @@ public class RCodeInfo {
         return this.procedures;
     }
 
-    private boolean processFile() throws InvalidRCodeException, FileNotFoundException {
+    /**
+     * Returns strings list
+     * 
+     * @return List<String>
+     */
+    public List getStrings() {
+        return this.strings;
+    }
+
+    private boolean processFile() throws InvalidRCodeException, IOException {
         RandomAccessFile raf = null;
         try {
             raf = new RandomAccessFile(this.file, "r");
@@ -225,21 +234,21 @@ public class RCodeInfo {
             raf.read(this.segText, 0, (int) szText);
             this.strings = processTextSegment(this.segText);
 
-            error = false;
+            // error = false;
             raf.close();
 
             return true;
         } catch (FileNotFoundException fnfe) {
-            error = true;
+            // error = true;
             throw fnfe;
         } catch (IOException ioe) {
-            error = true;
+            // error = true;
             if (raf != null)
                 try {
                     raf.close();
                 } catch (IOException ioe2) {
                 }
-            return false;
+            throw ioe;
         }
     }
 
