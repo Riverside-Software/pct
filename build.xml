@@ -53,13 +53,13 @@
     <include name="pct/*.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/pctCRCExtractV8.p" />
+    <exclude name="pct/crcV8.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/pctCRCExtractV8.p" />
+    <exclude name="pct/crcV8.p" />
   </fileset>
   
   <target name="init" description="Creates required directories">
@@ -120,11 +120,11 @@
       <param name="libName" value="pct8.pl" />
       <param name="fsid" value="fs.v8" />
     </antcall>
-    <bootstrapLibrary destfile="${build}/pct8.pl" dlcHome="${DLC8}"> <!-- FIXME -->
+    <!-- FIXME <bootstrapLibrary destfile="${build}/pct8.pl" dlcHome="${DLC8}">
       <fileset dir="${src.progress}">
         <include name="pct/pctCRCExtractV8.p" />
       </fileset>
-    </bootstrapLibrary>
+    </bootstrapLibrary> -->
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v9.present" />
@@ -193,7 +193,7 @@
     </copy>
   </target>
 
-  <target name="test" description="Starts tests">
+  <target name="test" depends="prepare-test" description="Starts tests">
     <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
@@ -211,11 +211,13 @@
         </fileset>
       </batchtest>
     </junit>
-    <junitreport>
+    <delete dir="${junit}" />
+    <mkdir dir="${junit}" />
+    <junitreport todir="${junit}">
       <fileset dir="${basedir}">
-        <include name="TEST-*.xml" />
+        <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit}" />
+      <report format="frames" styledir="${basedir}" todir="${junit}"/>
     </junitreport>
     <delete>
       <fileset dir="." includes="TEST*.xml" />
