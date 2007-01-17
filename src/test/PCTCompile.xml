@@ -475,7 +475,7 @@
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" >
-      <Holder dbName="holder" dbType="oracle" misc="8" codepage="iso8859-1" collation="BASIC" schemaFile="sandbox/schema.df" />
+      <OracleHolder dbName="holder" oracleVersion="8" codepage="iso8859-1" collation="BASIC" schemaFile="sandbox/schema.df" />
     </PCTCreateBase>
   </target>
   <target name="test18">

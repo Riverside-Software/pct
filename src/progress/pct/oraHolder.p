@@ -54,20 +54,17 @@
 
 /** See prodict/ora/_ora_md2.p */
 
-DEFINE VARIABLE shName     AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE cp         AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE coll       AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE oraVersion AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE shName   AS CHARACTER  NO-UNDO.
+DEFINE VARIABlE cp       AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE coll     AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE oraVers  AS CHARACTER  NO-UNDO.
 
 DEFINE VARIABLE bDB AS HANDLE NO-UNDO.
 
-IF (NUM-ENTRIES(SESSION:PARAMETER, ';':U) NE 4) THEN
-    RETURN '1':U.
-
-ASSIGN shName     = ENTRY(1, SESSION:PARAMETER, ';':U)
-       cp         = ENTRY(2, SESSION:PARAMETER, ';':U)
-       coll       = ENTRY(3, SESSION:PARAMETER, ';':U)
-       oraVersion = ENTRY(4, SESSION:PARAMETER, ';':U).
+ASSIGN shName   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'SchemaHolderName')
+       coll     = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'Collation')
+       oraVers  = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'OracleVersion')
+       cp       = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'Codepage').
 
 CREATE BUFFER bDB FOR TABLE '_Db':U.
 
@@ -75,7 +72,7 @@ DbRecord:
 DO TRANSACTION ON ERROR UNDO, RETRY:
     IF RETRY THEN DO:
         MESSAGE "Unable to create _db record".
-        LEAVE DbRecord.
+        RETURN '1'.
     END.
     
     bDB:BUFFER-CREATE().
@@ -85,6 +82,6 @@ DO TRANSACTION ON ERROR UNDO, RETRY:
 		       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
 		       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
 		       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = "ORACLE"
-		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[3]  = oraVersion.
+		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[3]  = INTEGER(oraVers).
 END.
 RETURN '0'.

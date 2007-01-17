@@ -206,8 +206,9 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Adds an Oracle schema holder
      * 
-     * @param holder
+     * @param holder Instance of OracleHolder
      */
     public void addOracleHolder(OracleHolder holder) {
         if (this.holders == null) {
@@ -216,7 +217,24 @@ public class PCTCreateBase extends PCT {
         this.holders.add(holder);
     }
 
+    /**
+     * Adds an SQL Server schema holder
+     * 
+     * @param holder Instance of MSSHolder
+     */
     public void addMSSHolder(MSSHolder holder) {
+        if (this.holders == null) {
+            this.holders = new Vector();
+        }
+        this.holders.add(holder);
+    }
+
+    /**
+     * Adds an ODBC schema holder
+     * 
+     * @param holder Instance of ODBCHolder
+     */
+    public void addODBCHolder(ODBCHolder holder) {
         if (this.holders == null) {
             this.holders = new Vector();
         }
@@ -344,7 +362,7 @@ public class PCTCreateBase extends PCT {
                 run.setPropath(this.propath);
                 run.setIncludedPL(this.getIncludedPL());
                 run.setProcedure(holder.getProcedure());
-                run.setParameter(holder.getParameterString());
+                run.setParameters(holder.getParameters());
 
                 PCTConnection pc = new PCTConnection();
                 pc.setDbName(this.dbName);
