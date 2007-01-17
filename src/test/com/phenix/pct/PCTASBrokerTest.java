@@ -234,7 +234,7 @@ public class PCTASBrokerTest extends BuildFileTest {
         assertTrue("ubroker.properties not found", f1.exists());
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
-        assertTrue("Wrong operatingMode", (ini.getStringProperty("UBroker.AS.Test", "operatingMode").equals("state-reset")));
+        assertTrue("Wrong operatingMode", (ini.getStringProperty("UBroker.AS.Test", "operatingMode").equals("State-reset")));
         assertTrue("Wrong autoStart", (ini.getStringProperty("UBroker.AS.Test", "autoStart").equals("1")));
         assertTrue("Wrong initialPool", (ini.getStringProperty("UBroker.AS.Test", "initialSrvrInstance").equals("4")));
         assertTrue("Wrong minPool", (ini.getStringProperty("UBroker.AS.Test", "minSrvrInstance").equals("3")));
