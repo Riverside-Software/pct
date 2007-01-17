@@ -196,6 +196,15 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Defines a new collection of parameters
+     * 
+     * @param params Collection<RunParameter>
+     */
+    public void setParameters(Collection params) {
+        this.runParameters = params;
+    }
+
+    /**
      * Parameter file (-pf attribute)
      * 
      * @param pf File
