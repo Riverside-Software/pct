@@ -55,7 +55,7 @@ public final class INIFile
     private String mstrTimeStampFmt = "yyyy-MM-dd HH:mm:ss";
 
     /** Variable to denote the successfull load operation. */
-    private boolean mblnLoaded = false;
+    // private boolean mblnLoaded = false;
 
     /** Variable to hold the ini file name and full path */
     private String mstrFile;
@@ -839,7 +839,7 @@ public final class INIFile
                     }
                     if (objSec != null)
                         this.mhmapSections.put(strSection.trim(), objSec);
-                    this.mblnLoaded = true;
+                    // this.mblnLoaded = true;
                 }
             }
         }
