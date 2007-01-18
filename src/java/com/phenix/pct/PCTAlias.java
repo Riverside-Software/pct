@@ -63,7 +63,7 @@ public class PCTAlias {
     private String name = null;
     private boolean noError = false;
 
-    // TODO : vérifier que deux alias identiques ne peuvent être définis
+    // TODO Issue a warning if two identical aliases are defined for database connections
 
     /**
      * Alias name
