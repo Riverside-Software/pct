@@ -8,6 +8,7 @@ Version 0.12 (??/??/????)
  * Limited support for Progress 8
  * Upgrading to ANT 1.7
  * Added Parameter nested attribute to PCTRun
+ * Changed schema holders support in PCTCreateBase
 
 Version 0.11 (09/12/2006)
 ==============================
