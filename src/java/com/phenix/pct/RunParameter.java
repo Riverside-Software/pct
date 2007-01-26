@@ -111,6 +111,8 @@ public class RunParameter {
     }
 
     public boolean validate() {
-        return ((this.name != null) && (this.value != null));
+        if (this.value == null)
+            this.value = "";
+        return (this.name != null);
     }
 }

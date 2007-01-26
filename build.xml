@@ -96,17 +96,32 @@
   </target>
 
   <target name="cond.pbuild" if="${build.this.version}" >
+    <exec executable="${dlcHome}/bin/_dbutil.exe">
+      <arg value="procopy" />
+      <arg value="${dlcHome}/empty.db" />
+      <arg value="empty" />
+    </exec>
+
     <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
+      <PCTConnection dbName="empty" singleUser="true">
+        <PCTAlias name="dictdb" />
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
     </bootstrapCompile>
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}">
       <fileset dir="${buildDir}">
         <include name="pct/*.r" />
       </fileset>
     </bootstrapLibrary>
+
+    <delete>
+      <fileset dir="${basedir}" includes="empty*.*" />
+    </delete>
+
   </target>
 
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
@@ -133,6 +148,7 @@
       <param name="libName" value="pct9.pl" />
       <param name="fsid" value="fs.v9" />
     </antcall>
+
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10.present" />
       <param name="dlcHome" value="${DLC10}" />
