@@ -218,7 +218,7 @@
   </target>
 
   <target name="test" depends="prepare-test" description="Starts tests">
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+    <junit fork="true" forkmode="once" printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
@@ -230,13 +230,13 @@
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v9}">
         <fileset dir="${build}">
-          <include name="com/phenix/pct/PCTDumpIncrementalTest.class" />
+          <include name="com/phenix/pct/*Test.class" />
           <!-- A few problems for now... -->
           <!--<include name="net/cordova/prounit/*Test.class" />-->
         </fileset>
       </batchtest>
     </junit>
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+    <junit fork="true" forkmode="once" printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
@@ -248,7 +248,7 @@
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v10}">
         <fileset dir="${build}">
-          <include name="com/phenix/pct/PCTDumpIncrementalTest.class" />
+          <include name="com/phenix/pct/*Test.class" />
           <!-- A few problems for now... -->
           <!--<include name="net/cordova/prounit/*Test.class" />-->
         </fileset>
