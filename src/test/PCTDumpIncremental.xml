@@ -246,9 +246,7 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <echo file="sandbox/rename.txt">
-      F,tab1,Fld2,Fld3
-    </echo>
+    <echo file="sandbox/rename.txt" message="F,tab1,Fld3,Fld2${line.separator}" />
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
     <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema2.df" propath="${pct-propath}" />
   </target>
