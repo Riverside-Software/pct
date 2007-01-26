@@ -19,7 +19,10 @@
   <property name="check" location="check" />
   <property name="website" location="website" />
   <property name="testdir" location="testbox" />
-  <property name="junit" location="junit-report" />
+  <property name="junit-v9" location="junit-v9" />
+  <property name="junit-v10" location="junit-v10" />
+  <property name="junit-report-v9" location="junit-report-v9" />
+  <property name="junit-report-v10" location="junit-report-v10" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -51,12 +54,14 @@
   </fileset>
   <fileset id="fs.v9" dir="${src.progress}">
     <include name="pct/*.p" />
+    <include name="prodict/**/*.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
+    <include name="prodict/**/*.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
@@ -68,6 +73,10 @@
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${dist}" />
+    <mkdir dir="${junit-v9}" />
+    <mkdir dir="${junit-v10}" />
+    <mkdir dir="${junit-report-v9}" />
+    <mkdir dir="${junit-report-v10}" />
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
@@ -102,7 +111,7 @@
       <arg value="empty" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -117,7 +126,7 @@
         <include name="pct/*.r" />
       </fileset>
     </bootstrapLibrary>
-
+    
     <delete>
       <fileset dir="${basedir}" includes="empty*.*" />
     </delete>
@@ -140,7 +149,6 @@
         <include name="pct/pctCRCExtractV8.p" />
       </fileset>
     </bootstrapLibrary> -->
-
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v9.present" />
       <param name="dlcHome" value="${DLC9}" />
@@ -218,22 +226,45 @@
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
+      <env key="DLC" value="${DLC9}" />
       <formatter type="xml" />
-      <batchtest fork="yes" todir="${basedir}">
+      <batchtest fork="yes" todir="${junit-v9}">
         <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
+          <include name="com/phenix/pct/PCTDumpIncrementalTest.class" />
           <!-- A few problems for now... -->
           <!--<include name="net/cordova/prounit/*Test.class" />-->
         </fileset>
       </batchtest>
     </junit>
-    <delete dir="${junit}" />
-    <mkdir dir="${junit}" />
-    <junitreport todir="${junit}">
-      <fileset dir="${basedir}">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+      <classpath>
+        <pathelement location="junit.jar" />
+        <pathelement location="ant-junit.jar" />
+        <pathelement location="ant-launcher.jar" />
+        <pathelement location="${dist}/PCT.jar" />
+        <pathelement location="${build}" />
+      </classpath>
+      <env key="DLC" value="${DLC10}" />
+      <formatter type="xml" />
+      <batchtest fork="yes" todir="${junit-v10}">
+        <fileset dir="${build}">
+          <include name="com/phenix/pct/PCTDumpIncrementalTest.class" />
+          <!-- A few problems for now... -->
+          <!--<include name="net/cordova/prounit/*Test.class" />-->
+        </fileset>
+      </batchtest>
+    </junit>
+    <junitreport todir="${junit-report-v9}">
+      <fileset dir="${junit-v9}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit}"/>
+      <report format="frames" styledir="${basedir}" todir="${junit-report-v9}"/>
+    </junitreport>
+    <junitreport todir="${junit-report-v10}">
+      <fileset dir="${junit-v10}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" styledir="${basedir}" todir="${junit-report-v10}"/>
     </junitreport>
     <delete>
       <fileset dir="." includes="TEST*.xml" />
