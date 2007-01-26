@@ -58,11 +58,18 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
-
+import java.io.FileInputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.regex.Matcher;
 
 /**
  * Class for testing PCTDumpIncremental task
  * Assertion - following classes should work properly : PCTCreateBase PCTCompile PCTLoadSchema
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTDumpIncrementalTest extends BuildFileTest {
@@ -96,5 +103,117 @@ public class PCTDumpIncrementalTest extends BuildFileTest {
         assertTrue(f.exists());
         executeTarget("test1bis");
         assertTrue(f2.exists());
+    }
+
+    public void test2() {
+        File f1 = new File("sandbox/incr1.df");
+        File f2 = new File("sandbox/incr2.df");
+
+        executeTarget("test2init");
+        executeTarget("test2");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+
+        java.util.regex.Pattern regexp = java.util.regex.Pattern.compile("INACTIVE",
+                java.util.regex.Pattern.MULTILINE);
+        // Get a Channel for the source file
+        try {
+            FileInputStream fis = new FileInputStream(f1);
+            FileChannel fc = fis.getChannel();
+
+            // Get a CharBuffer from the source file
+            ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
+            Charset cs = Charset.forName("8859_1");
+            CharsetDecoder cd = cs.newDecoder();
+            CharBuffer cb = cd.decode(bb);
+
+            Matcher m = regexp.matcher(cb);
+            if (m.find())
+                fail("Index was declared inactive but activeIndexes is set to TRUE");
+        } catch (Exception e) {
+            fail("Unable to parse file incr1.df");
+        }
+
+        regexp = java.util.regex.Pattern.compile("INACTIVE", java.util.regex.Pattern.MULTILINE);
+        // Get a Channel for the source file
+        try {
+            FileInputStream fis = new FileInputStream(f2);
+            FileChannel fc = fis.getChannel();
+
+            // Get a CharBuffer from the source file
+            ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
+            Charset cs = Charset.forName("8859_1");
+            CharsetDecoder cd = cs.newDecoder();
+            CharBuffer cb = cd.decode(bb);
+
+            // Run some matches
+            Matcher m = regexp.matcher(cb);
+            if (!m.find())
+                fail("Index wasn't declared inactive but activeIndexes is set to FALSE");
+        } catch (Exception e) {
+            fail("Unable to parse file incr2.df");
+        }
+    }
+
+    public void test3() {
+        File f1 = new File("sandbox/incr1.df");
+        File f2 = new File("sandbox/incr2.df");
+
+        executeTarget("test3init");
+        executeTarget("test3");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+
+        java.util.regex.Pattern regexp = java.util.regex.Pattern.compile("cpstream=iso8859-1",
+                java.util.regex.Pattern.MULTILINE);
+        // Get a Channel for the source file
+        try {
+            FileInputStream fis = new FileInputStream(f1);
+            FileChannel fc = fis.getChannel();
+
+            // Get a CharBuffer from the source file
+            ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
+            Charset cs = Charset.forName("ISO-8859-1");
+            CharsetDecoder cd = cs.newDecoder();
+            CharBuffer cb = cd.decode(bb);
+
+            Matcher m = regexp.matcher(cb);
+            if (!m.find())
+                fail("Codepage declared was iso8859-1");
+        } catch (Exception e) {
+            fail("Unable to parse file incr1.df");
+        }
+
+        regexp = java.util.regex.Pattern.compile("cpstream=utf-8",
+                java.util.regex.Pattern.MULTILINE);
+        // Get a Channel for the source file
+        try {
+            FileInputStream fis = new FileInputStream(f2);
+            FileChannel fc = fis.getChannel();
+
+            // Get a CharBuffer from the source file
+            ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
+            Charset cs = Charset.forName("utf-8");
+            CharsetDecoder cd = cs.newDecoder();
+            CharBuffer cb = cd.decode(bb);
+
+            // Run some matches
+            Matcher m = regexp.matcher(cb);
+            if (!m.find())
+                fail("Codepage declared was iso8859-1");
+        } catch (Exception e) {
+            fail("Unable to parse file incr2.df");
+        }
+    }
+
+    public void test4() {
+        File f1 = new File("sandbox/incr1.df");
+        File f2 = new File("sandbox/incr2.df");
+
+        executeTarget("test4init");
+        executeTarget("test4");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f1.length() != f2.length());
     }
 }

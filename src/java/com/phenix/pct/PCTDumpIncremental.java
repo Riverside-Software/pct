@@ -54,7 +54,6 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Environment;
 
 import java.io.File;
 
@@ -173,37 +172,13 @@ public class PCTDumpIncremental extends PCTRun {
 
         this.prepareExecTask();
 
-        this.setProcedure("prodict/dump_inc.p"); //$NON-NLS-1$
-
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DUMP_INC_DFFILE"); //$NON-NLS-1$
-        var.setValue(this.destFile.toString());
-        this.exec.addEnv(var);
-
-        if (this.codePage != null) {
-            Environment.Variable var2 = new Environment.Variable();
-            var2.setKey("DUMP_INC_CODEPAGE"); //$NON-NLS-1$
-            var2.setValue(this.codePage.toString());
-            this.exec.addEnv(var2);
-        }
-
-        if (this.renameFile != null) {
-            Environment.Variable var3 = new Environment.Variable();
-            var3.setKey("DUMP_INC_RENAMEFILE"); //$NON-NLS-1$
-            var3.setValue(this.renameFile.toString());
-            this.exec.addEnv(var3);
-        }
-
-        Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DUMP_INC_INDEXMODE"); //$NON-NLS-1$
-        var4.setValue(this.activeIndexes ? "active" : "inactive"); //$NON-NLS-1$ //$NON-NLS-2$
-        this.exec.addEnv(var4);
-
-        Environment.Variable var5 = new Environment.Variable();
-        var5.setKey("DUMP_INC_DEBUG"); //$NON-NLS-1$
-        var5.setValue(Integer.toString(this.debugLevel));
-        this.exec.addEnv(var5);
-
+        this.setProcedure("pct/dump_inc.p"); //$NON-NLS-1$
+        this.addParameter(new RunParameter("DFFileName", this.destFile.getAbsolutePath()));
+        this.addParameter(new RunParameter("CodePage", this.codePage));
+        this.addParameter(new RunParameter("RenameFile", (this.renameFile == null ? "" : this.renameFile.getAbsolutePath())));
+        this.addParameter(new RunParameter("IndexMode", (this.activeIndexes ? "active" : "inactive")));
+        this.addParameter(new RunParameter("DebugMode", Integer.toString(this.debugLevel)));
+        
         super.execute();
     }
 
