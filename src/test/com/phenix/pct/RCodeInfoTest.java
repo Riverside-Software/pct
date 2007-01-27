@@ -63,12 +63,13 @@ import junit.framework.TestCase;
 
 public class RCodeInfoTest extends TestCase {
     File sandbox = new File("sandbox");
+    File rcode = new File("rcode");
     protected Project project;
 
     public void setUp() {
         project = new Project();
         project.init();
-        
+
         Mkdir mk = new Mkdir();
         mk.setProject(project);
         mk.setDir(sandbox);
@@ -83,8 +84,13 @@ public class RCodeInfoTest extends TestCase {
         del.execute();
     }
 
+    /**
+     * Compares CRC using RCodeInfo and RCODE-INFO:CRC-VALUE
+     */
     public void test1() {
         BufferedWriter bw = null;
+        String md5_1, md5_2, crc1, crc2;
+
         try {
             // Test files
             bw = new BufferedWriter(new FileWriter(new File(sandbox, "test1.p")));
@@ -94,54 +100,73 @@ public class RCodeInfoTest extends TestCase {
             bw.write("MESSAGE 'Hello galaxy !'");
             bw.close();
 
-            // Extracting CRC
-            bw = new BufferedWriter(new FileWriter(new File(sandbox, "crc.p")));
-            bw.write("RCODE-INFO:FILE-NAME = ENTRY(1, SESSION:PARAMETER, ':').");
-            bw.newLine();
-            bw.write("OUTPUT TO VALUE(ENTRY(1, SESSION:PARAMETER, ':')).");
-            bw.newLine();
-            bw.write("MESSAGE RCODE-INFO:CRC-VALUE.");
-            bw.newLine();
-            bw.write("OUTPUT CLOSE.");
-            bw.newLine();
-            bw.write("RETURN '0'.");
-            bw.close();
-
             PCTCompile comp = new PCTCompile();
             comp.setProject(project);
             comp.setBaseDir(sandbox);
             comp.setDlcHome(new File(System.getenv("DLC")));
             comp.setDestDir(sandbox);
+            comp.setMinSize(false);
             FileSet fs = new FileSet();
             fs.setDir(sandbox);
             fs.setIncludes("test*.p");
             comp.addFileset(fs);
             comp.execute();
 
+            // Extracting CRC
+            bw = new BufferedWriter(new FileWriter(new File(sandbox, "crc.p")));
+            bw.write("RCODE-INFO:FILE-NAME = ENTRY(1, SESSION:PARAMETER, ':').");
+            bw.newLine();
+            bw.write("OUTPUT TO VALUE(ENTRY(2, SESSION:PARAMETER, ':')).");
+            bw.newLine();
+            bw.write("MESSAGE RCODE-INFO:CRC-VALUE.");
+            bw.newLine();
+            if (comp.getMajorVersion() >= 10) {
+                bw.write("MESSAGE RCODE-INFO:MD5-VALUE.");
+                bw.newLine();
+            }
+            bw.write("OUTPUT CLOSE.");
+            bw.newLine();
+            bw.write("RETURN '0'.");
+            bw.close();
+
             PCTRun run = new PCTRun();
             run.setProject(project);
             run.setBaseDir(sandbox);
             run.setDlcHome(new File(System.getenv("DLC")));
             run.setProcedure("crc.p");
-            run.setParameter("test1.p:" + sandbox.getAbsolutePath() + File.pathSeparator
-                    + "test1.p");
+            run.setParameter("test1.p:test1.crc");
             run.execute();
 
-            BufferedReader br = new BufferedReader(new FileReader(new File(sandbox, "test1.p")));
-            String crc1 = br.readLine();
+            BufferedReader br = new BufferedReader(new FileReader(new File(sandbox, "test1.crc")));
+            crc1 = br.readLine();
+            if (comp.getMajorVersion() >= 10) {
+                md5_1 = br.readLine();
+            }
+            else {
+                md5_1 = "-1";
+            }
             br.close();
 
-            run.setParameter("test2.p:" + sandbox.getAbsolutePath() + File.pathSeparator
-                    + "test2.p");
+            run.setParameter("test2.p:test2.crc");
             run.execute();
-            br = new BufferedReader(new FileReader(new File(sandbox, "test2.p")));
-            String crc2 = br.readLine();
+            br = new BufferedReader(new FileReader(new File(sandbox, "test2.crc")));
+            crc2 = br.readLine();
+            if (comp.getMajorVersion() >= 10) {
+                md5_2 = br.readLine();
+            }
+            else {
+                md5_2 = "-1";
+            }
             br.close();
 
             RCodeInfo file1 = new RCodeInfo(new File(sandbox, "test1.r"));
             RCodeInfo file2 = new RCodeInfo(new File(sandbox, "test2.r"));
             assertEquals(Long.parseLong(crc1), file1.getCRC());
             assertEquals(Long.parseLong(crc2), file2.getCRC());
+            if (comp.getMajorVersion() >= 10) {
+                assertEquals(md5_1, file1.getMD5());
+                assertEquals(md5_2, file2.getMD5());
+            }
 
         } catch (IOException ioe) {
             fail("Unable to write Progress procedure -- Test case is broken");
@@ -149,4 +174,5 @@ public class RCodeInfoTest extends TestCase {
 
         }
     }
+
 }

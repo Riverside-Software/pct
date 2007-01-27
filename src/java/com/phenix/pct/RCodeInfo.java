@@ -34,11 +34,14 @@ public class RCodeInfo {
     private static final short ISEGMENT_OFFSET = 0;
     private static final short ISEGMENT_SIZE = 4;
     private static final short ACTION_SEGMENT_OFFSET = 40;
-    private static final short ACTION_SEGMENT_SIZE = 44;
+    private static final short ACTION_SEGMENT_SIZE_V9 = 30;
+    private static final short ACTION_SEGMENT_SIZE_V10 = 44;
     private static final short DEBUG_SEGMENT_OFFSET = 36;
-    private static final short DEBUG_SEGMENT_SIZE = 76;
+    private static final short DEBUG_SEGMENT_SIZE_V9 = 40;
+    private static final short DEBUG_SEGMENT_SIZE_V10 = 76;
     private static final short ECODE1_SEGMENT_OFFSET = 20;
-    private static final short ECODE1_SEGMENT_SIZE = 60;
+    private static final short ECODE1_SEGMENT_SIZE_V9 = 32;
+    private static final short ECODE1_SEGMENT_SIZE_V10 = 60;
     private static final short TEXT_SEGMENT_OFFSET = 90;
     private static final short TEXT_SEGMENT_SIZE = 94;
 
@@ -187,25 +190,25 @@ public class RCodeInfo {
 
             long actionSegmentOffset = readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_OFFSET,
                     this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long actionSegmentSize = readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_SIZE,
-                    this.swapped);
+            long actionSegmentSize =  (this.version < 1000 ? readUnsignedShort(this.segSegLocations, ACTION_SEGMENT_SIZE_V9, this.swapped) : readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_SIZE_V10,
+                    this.swapped));
             this.segActionMain = new byte[(int) actionSegmentSize];
 
             long debugSegmentOffset = readUnsignedInt(this.segSegLocations, DEBUG_SEGMENT_OFFSET,
                     this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long debugSegmentSize = readUnsignedInt(this.segSegLocations, DEBUG_SEGMENT_SIZE,
+            long debugSegmentSize = readUnsignedInt(this.segSegLocations, (this.version < 1000 ? DEBUG_SEGMENT_SIZE_V9 : DEBUG_SEGMENT_SIZE_V10),
                     this.swapped);
             this.segDebug = new byte[(int) debugSegmentSize];
 
             long offsetECode1 = readUnsignedInt(this.segSegLocations, ECODE1_SEGMENT_OFFSET,
                     this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long szECode1 = readUnsignedInt(this.segSegLocations, ECODE1_SEGMENT_SIZE, this.swapped);
+            long szECode1 = readUnsignedInt(this.segSegLocations, (this.version < 1000 ? ECODE1_SEGMENT_SIZE_V9 : ECODE1_SEGMENT_SIZE_V10), this.swapped);
             this.segECode1 = new byte[(int) szECode1];
 
-            long offsetText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_OFFSET,
-                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long szText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_SIZE, this.swapped);
-            this.segText = new byte[(int) szText];
+//            long offsetText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_OFFSET,
+//                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
+//            long szText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_SIZE, this.swapped);
+//            this.segText = new byte[(int) szText];
 
             // Reads initial values segment
             raf.seek(initialValueSegmentOffset);
@@ -230,9 +233,9 @@ public class RCodeInfo {
             raf.read(this.segECode1, 0, (int) szECode1);
 
             // Reads text segment
-            raf.seek(offsetText);
-            raf.read(this.segText, 0, (int) szText);
-            this.strings = processTextSegment(this.segText);
+//            raf.seek(offsetText);
+//            raf.read(this.segText, 0, (int) szText);
+//            this.strings = processTextSegment(this.segText);
 
             // error = false;
             raf.close();
