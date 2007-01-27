@@ -33,6 +33,7 @@
     <mkdir dir="pxg" />
   </target>
   <target name="test3">
+    <echo message="v10 only test" />
     <PCTProxygen srcFile="Test1.xpxg" dlcHome="${env.DLC}" />
   </target>
 
@@ -48,6 +49,7 @@
     <mkdir dir="sandbox/pxg" />
   </target>
   <target name="test4">
+    <echo message="v10 only test" />
     <PCTProxygen srcFile="Test1.xpxg" dlcHome="${env.DLC}" workingDirectory="sandbox" />
   </target>
   
