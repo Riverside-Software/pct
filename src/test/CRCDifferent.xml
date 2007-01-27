@@ -8,7 +8,7 @@
   <property environment="env" />
   <property name="pct-propath" location="progress" />
 
-  <typedef name="CRCDifferent" classname="com.phenix.pct.CRCDifferent" />
+  <taskdef resource="PCT.properties" classpath="." />
 
   <!-- Test prowin32 on Windows, _progres on everything else -->
   <property name="graph" value="false" />
@@ -40,8 +40,10 @@
 
   <target name="copy">
     <copy todir="copy">
-      <fileset dir="build">
-        <CRCDifferent targetdir="copy" />
+      <fileset dir="build" includes="**/*.r">
+        <custom classname="com.phenix.pct.CRCDifferent">
+          <param name="targetdir" value="copy" />
+        </custom>
       </fileset>
     </copy>
   </target>
