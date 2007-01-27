@@ -17,16 +17,30 @@
 
 package com.phenix.pct;
 
-import org.apache.tools.ant.types.selectors.MappingSelector;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.Parameter;
+import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
 import java.io.File;
 
 /**
  * Selector for rcode
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  * @since PCT 0.11
  */
-public class CRCDifferent extends MappingSelector {
+public class CRCDifferent extends BaseExtendSelector {
+    private File targetDir = null;
+
+    private void setTargetDir() {
+        Parameter[] params = this.getParameters();
+        for (int i = 0; i < params.length; i++) {
+            if (params[i].getName().equalsIgnoreCase("targetDir")) {
+                this.targetDir = new File(params[i].getValue());
+            }
+        }
+    }
+
     /**
      * Compares two rcodes for CRC, and returns true if CRC are either different or one file is
      * missing (or not rcode). Returns false if both files are rcode with an equal CRC
@@ -35,22 +49,23 @@ public class CRCDifferent extends MappingSelector {
      * @param destFile the destination file
      * @return true if the files are different
      */
-    protected boolean selectionTest(File srcFile, File destFile) {
+    public boolean isSelected(File basedir, String filename, File file) throws BuildException {
         RCodeInfo file1, file2;
+        if (this.targetDir == null)
+            setTargetDir();
+        if (this.targetDir == null) {
+            throw new BuildException("Unable to find targetDir attribute in CRCDifferent mapper");
+        }
         try {
-            file1 = new RCodeInfo(srcFile);
+            file1 = new RCodeInfo(file);
         } catch (Exception e) {
             return true;
         }
         try {
-            file2 = new RCodeInfo(destFile);
+            file2 = new RCodeInfo(new File(this.targetDir, filename));
         } catch (Exception e) {
             return true;
         }
         return (file1.getCRC() != file2.getCRC());
-    }
-    
-    public void setGranularity(int granularity) {
-        log("Unused attribute");
     }
 }
