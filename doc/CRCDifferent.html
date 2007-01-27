@@ -66,14 +66,15 @@ Files are removed of the fileset if and only if their CRC is identical.
 <p>None</p>
 
 <h2>Examples</h2>
-<p>None</p>
 <pre>
 &lt;!-- Selector has to be declared in build.xml --&gt;
 &lt;typedef name="CRCDifferent" classname="com.phenix.pct.CRCDifferent" /&gt;
 &lt;target name="copy"&gt;
   &lt;copy todir="DestDir"&gt;
     &lt;fileset dir="build"&gt;
-      &lt;CRCDifferent targetdir="DestDir" /&gt;
+      &lt;custom classname="com.phenix.pct.CRCDifferent"&gt;
+        &lt;param name="targetdir" value="DestDir" /&gt;
+      &lt;/custom&gt;
     &lt;/fileset&gt;
   &lt;/copy&gt;
 &lt;/target&gt;
