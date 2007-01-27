@@ -6,6 +6,8 @@
     <li><a href="quickstart.html">Quick start</a></li>
     <li><a href="developers.html">Improving PCT</a></li>
     <li><a href="changelog.html">Changelog</a></li>
+    <li><a href="junit-v9/index.html">JUnit report (v9)</a></li>
+    <li><a href="junit-v10/index.html">JUnit report (v10)</a></li>
   </ul>
   <h1>Tasks</h1>
   <ul>

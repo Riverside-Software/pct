@@ -1,4 +1,4 @@
-Version 0.12 (??/??/????)
+Version 0.12 (01/27/2007)
 ==============================
  * Added testcase for RCodeInfo
  * Upgrading to JUnit 4.1
@@ -9,6 +9,7 @@ Version 0.12 (??/??/????)
  * Upgrading to ANT 1.7
  * Added Parameter nested attribute to PCTRun
  * Changed schema holders support in PCTCreateBase
+ * Updated PCTDumpIncremental support with v9
 
 Version 0.11 (09/12/2006)
 ==============================

@@ -32,7 +32,7 @@
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.12-pre" />
+  <property name="pct.version" value="0.12" />
 
   <tstamp>
     <format property="year" pattern="yyyy" />
@@ -218,7 +218,7 @@
   </target>
 
   <target name="test" depends="prepare-test" description="Starts tests">
-    <junit fork="true" forkmode="once" printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
@@ -236,7 +236,7 @@
         </fileset>
       </batchtest>
     </junit>
-    <junit fork="true" forkmode="once" printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
@@ -318,7 +318,10 @@
     <delete dir="${website}" />
     <delete dir="${testdir}" />
     <delete dir="sports2000" />
-    <delete dir="${junit}" />
+    <delete dir="${junit-v9}" />
+    <delete dir="${junit-v10}" />
+    <delete dir="${junit-report-v9}" />
+    <delete dir="${junit-report-v10}" />
     <delete>
       <fileset dir=".">
         <include name="pct*.tar.gz" />
@@ -359,8 +362,13 @@
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/junit">
-      <fileset dir="${junit}">
+    <copy todir="${website}/junit-v9">
+      <fileset dir="${junit-report-v9}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit-v10">
+      <fileset dir="${junit-report-v10}">
         <include name="**" />
       </fileset>
     </copy>
