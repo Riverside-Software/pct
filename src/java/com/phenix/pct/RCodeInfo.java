@@ -111,7 +111,7 @@ public class RCodeInfo {
     /**
      * Returns r-code timestamp (in milliseconds)
      * 
-     * @return
+     * @return Timestamp
      */
     public long getTimeStamp() {
         return this.timeStamp;
