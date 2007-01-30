@@ -1,3 +1,7 @@
+Version 0.12a (01/30/2007)
+==============================
+ * Fixed PCTDumpSchema task (invalid procedure call)
+
 Version 0.12 (01/27/2007)
 ==============================
  * Added testcase for RCodeInfo
