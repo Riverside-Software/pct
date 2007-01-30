@@ -45,9 +45,11 @@ public class CRCDifferent extends BaseExtendSelector {
      * Compares two rcodes for CRC, and returns true if CRC are either different or one file is
      * missing (or not rcode). Returns false if both files are rcode with an equal CRC
      * 
-     * @param srcFile the source file
-     * @param destFile the destination file
-     * @return true if the files are different
+     * @param basedir A java.io.File object for the base directory
+     * @param filename The name of the file to check
+     * @param file A File object for this filename
+     * 
+     * @return whether the file should be selected or not
      */
     public boolean isSelected(File basedir, String filename, File file) throws BuildException {
         RCodeInfo file1, file2;
