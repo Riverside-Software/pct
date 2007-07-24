@@ -336,6 +336,7 @@
     <mkdir dir="${website}" />
     <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
     <loadfile property="changelog" srcFile="${basedir}/CHANGELOG" />
+    <loadfile property="analytics" srcFile="${basedir}/doc/analytics.include" />
     <copy todir="${website}">
       <fileset dir="doc">
         <include name="*.html" />
@@ -348,6 +349,7 @@
       <filterset>
         <filter token="RIGHT_BANNER" value="${right-banner}" />
         <filter token="CHANGELOG" value="${changelog}" />
+        <filter token="ANALYTICS" value="${analytics}" />
       </filterset>
     </copy>
     <copy todir="${website}">
