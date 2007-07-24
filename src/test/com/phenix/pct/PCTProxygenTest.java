@@ -101,8 +101,13 @@ public class PCTProxygenTest extends BuildFileTest {
 
         File f1 = new File("pxg/Test.class");
         File f2 = new File("pxg/TestImpl.class");
+        File f3 = new File("pxg/TestImpl.java");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
+        assertFalse(f3.exists());
+        
+        executeTarget("test2-bis");
+        assertTrue(f3.exists());
     }
 
     public void test3() {
@@ -111,8 +116,13 @@ public class PCTProxygenTest extends BuildFileTest {
 
         File f1 = new File("pxg/Test.class");
         File f2 = new File("pxg/TestImpl.class");
+        File f3 = new File("pxg/TestImpl.java");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
+        assertFalse(f3.exists());
+        
+        executeTarget("test3-bis");
+        assertTrue(f3.exists());
     }
     
     public void test4() {

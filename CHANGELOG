@@ -1,3 +1,8 @@
+Version 0.13 (??/??/????)
+==============================
+ * Fixed keepFiles attribute in PCTProxygen
+   Bugfix provided by Michael Heist
+
 Version 0.12a (01/30/2007)
 ==============================
  * Fixed PCTDumpSchema task (invalid procedure call)

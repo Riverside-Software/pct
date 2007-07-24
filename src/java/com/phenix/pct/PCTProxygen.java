@@ -162,8 +162,8 @@ public class PCTProxygen extends PCT {
         pxg.addSysproperty(var2);
 
         Environment.Variable var3 = new Environment.Variable();
-        var3.setKey("Proxygen.LeaveProxyFiles"); //$NON-NLS-1$
-        var3.setValue((this.keepFiles ? "true" : "false")); //$NON-NLS-1$ //$NON-NLS-2$
+        var3.setKey("ProxyGen.LeaveProxyFiles"); //$NON-NLS-1$
+        var3.setValue((this.keepFiles ? "yes" : "no")); //$NON-NLS-1$ //$NON-NLS-2$
         pxg.addSysproperty(var3);
 
         Environment.Variable var4 = new Environment.Variable();
