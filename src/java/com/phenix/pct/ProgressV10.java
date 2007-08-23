@@ -61,7 +61,7 @@ public class ProgressV10 implements ProgressProcedures {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
-        return "pct/pctCompile.p";
+        return "pct/pctCompileV10.p";
     }
 
     public boolean needRedirector() {
