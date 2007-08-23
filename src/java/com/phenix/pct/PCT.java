@@ -274,8 +274,7 @@ public abstract class PCT extends Task {
     /**
      * Returns Progress major version number. I tried using
      * com.progress.common.utils.ProgressVersion but failed with ClassLoader and JNI
-     * (ProgressVersion.java makes native calls to ProgressVersion shared library). So I'm using a
-     * workaround, trying to load a class which is only available under version 10.
+     * (ProgressVersion.java makes native calls to ProgressVersion shared library).
      * 
      * @since PCT 0.10
      */
