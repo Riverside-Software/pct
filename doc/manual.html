@@ -53,16 +53,21 @@ The PCT plug-in comes as a single .zip file. Unzipping this file into a director
 (referred to as <em>&lt;INST_DIR&gt;</em>)
 will produce two subdirectories&nbsp;: /lib and /website. 
 </p>
-<p>Website subdirectory is a copy of the Sourceforge's PCT website.</p>
-<p>PCT uses .r files for its internal use : these files had previously
+<p>
+Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. The simplest way to install
+PCT is to copy <em>&lt;INST_DIR&gt;</em>lib/PCT.jar in the <em>&lt;ANT_HOME&gt;</em>/lib directory. In this case, you just have
+to declare the tasks in your build script as follows :
+</p>
+<pre>&lt;taskdef resource="PCT.properties" /&gt;</pre>
+<p>
+It's also possible to keep PCT.jar in a separate directory. In this case, declare the tasks as follows :
+</p>
+<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar" /&gt;</pre>
+<p><b>Note for previous versions users</b> : PCT uses .r files for its internal use : these files had previously
 to be copied to your $DLC directory. This is no longer the case as of 0.10 : r-code is wrapped in
 PL, extracted on the fly from PCT.jar when running a PCT tasks. PCT.jar contains both the v9 and v10
 r-code versions.</p>
-<p>
-Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. Maybe the simplest way 
-is to use the &lt;<b>taskdef</b>&gt; element in your build script as follows :
-</p>
-<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar" /&gt;</pre>
+
 <h1>Tasks overview</h1>
 <p>
 11 tasks are available in PCT :</p>
