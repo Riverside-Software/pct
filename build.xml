@@ -56,6 +56,7 @@
     <include name="pct/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompileV10.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
@@ -63,10 +64,20 @@
     <include name="pct/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
   
+  <!-- Classpath for PCT compilation -->
+  <path id="pct.compil">
+    <pathelement location="ant.jar" />
+  </path>
+  <path id="pct.test.compil">
+    <path refid="pct.compil" />
+    <pathelement location="junit.jar" />
+  </path>
+
   <target name="init" description="Creates required directories">
     <mkdir dir="${build}" />
     <mkdir dir="${build-v8}" />
@@ -83,6 +94,7 @@
     <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
+      <classpath refid="pct.compil" />
     </javac>
     <copy todir="${build}">
       <fileset dir="${src.java}" includes="**/*.properties" />
@@ -202,10 +214,7 @@
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
-      <classpath>
-        <pathelement location="${build}" />
-        <pathelement location="junit.jar" />
-      </classpath>
+      <classpath refid="pct.test.compil" />
     </javac>
   </target>
 
