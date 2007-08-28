@@ -367,4 +367,30 @@
       <parameter name="TEST" value="BB" />
     </PCTRun>
   </target>
+
+  <target name="test30-init">
+    <path id="my.propath">
+      <pathelement location="sandbox" />
+    </path>
+    <echo file="sandbox/test.p">
+      { test.i }
+    </echo>
+    <echo file="sandbox/test.i">
+      RETURN "0".
+    </echo>
+  </target>
+  <target name="test30-part1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" />
+  </target>
+  <target name="test30-part2">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+  <target name="test30-part3">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${env.DLC}" includedPL="false">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+
 </project>

@@ -109,6 +109,7 @@ public class PCTRun extends PCT {
     protected Collection dbConnList = null;
     private Collection options = null;
     protected Path propath = null;
+    private Path internalPropath = null;
     protected Collection runParameters = null;
 
     // Internal use
@@ -736,6 +737,15 @@ public class PCTRun extends PCT {
                 }
             }
 
+            // Defines internal propath
+            if (this.internalPropath != null) {
+                String[] lst = this.internalPropath.list();
+                for (int k = lst.length - 1; k >= 0; k--) {
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
+                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                }
+            }
+
             // Defines PROPATH
             if (this.propath != null) {
                 // Bug #1058733 : multiple assignments for propath, as a long propath
@@ -777,7 +787,8 @@ public class PCTRun extends PCT {
             FileList.FileName fn = new FileList.FileName();
             fn.setName(pctLib.getName());
             list.addConfiguredFile(fn);
-            createPropath().addFilelist(list);
+            this.internalPropath = new Path(this.getProject());
+            this.internalPropath.addFilelist(list);
         }
     }
 
