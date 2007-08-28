@@ -239,6 +239,7 @@ public class PCTLibrary extends PCT {
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
+        exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
         exec.createArg().setValue(this.destFile.getAbsolutePath());
@@ -265,6 +266,7 @@ public class PCTLibrary extends PCT {
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
+        exec.setFailonerror(true);
         exec.setDir(dir);
 
         exec.setExecutable(getExecPath("prolib").toString());
@@ -286,6 +288,7 @@ public class PCTLibrary extends PCT {
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
+        exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
         exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
