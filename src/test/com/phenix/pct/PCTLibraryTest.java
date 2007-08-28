@@ -180,4 +180,20 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(v != null);
         assertTrue(v.size() == 2);
     }
+    
+    /**
+     * Do not run this test for now, as it will always fail.
+     * Prolib doesn't seem to be able to handle spaces in file names
+     */
+//    public void test9() {
+//        executeTarget("test9");
+//        
+//        File pl = new File("sandbox/lib/test.pl");
+//        assertTrue(pl.exists());
+//
+//        PLReader r = new PLReader(pl);
+//        Vector v = r.getFileList();
+//        assertTrue(v != null);
+//        assertTrue(v.size() == 1);
+//    }
 }

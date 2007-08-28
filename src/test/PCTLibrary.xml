@@ -93,5 +93,11 @@
     <echo file="sandbox/files/test3">Empty file 3</echo>
   	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${env.DLC}" basedir="sandbox/files/" excludes="test3"/>
   </target>
-  
+
+  <!-- Demonstrates failure when file name contains spaces -->
+  <target name="test9">
+    <echo file="sandbox/files/foo space">Empty file 1</echo>
+  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${env.DLC}" basedir="sandbox/files/" />
+  </target>
+
 </project>
