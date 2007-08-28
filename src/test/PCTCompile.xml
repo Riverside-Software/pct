@@ -333,9 +333,7 @@
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
-      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
-        <PCTAlias name="dictdb"/>
-      </PCTConnection>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTCompile>
   </target>
 
