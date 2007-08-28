@@ -2,6 +2,7 @@ Version 0.13 (??/??/????)
 ==============================
  * Fixed keepFiles attribute in PCTProxygen
    Bugfix provided by Michael Heist
+ * Bug #1711731 : fixed propath references
 
 Version 0.12a (01/30/2007)
 ==============================

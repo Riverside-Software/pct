@@ -310,4 +310,14 @@ public class PCTRunTest extends BuildFileTest {
     public void test29() {
         executeTarget("test29");
     }
+
+    /**
+     * Using propath refid
+     */
+    public void test30() {
+        executeTarget("test30-init");
+        expectBuildException("test30-part1", "Shouldn't work");
+        executeTarget("test30-part2");
+        executeTarget("test30-part3");
+    }
 }
