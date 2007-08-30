@@ -128,6 +128,7 @@ public class PCTBinaryLoad extends PCT {
     public void execute() throws BuildException {
         ExecTask exec = null;
 
+        checkDlcHome();
         if (this.dbConnList == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
         }

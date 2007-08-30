@@ -114,10 +114,7 @@ public class PCTProxygen extends PCT {
             throw new BuildException(Messages.getString("PCTProxygen.1")); //$NON-NLS-1$
         }
 
-        if (this.getDlcHome() == null) {
-            throw new BuildException(Messages.getString("PCTProxygen.2")); //$NON-NLS-1$
-        }
-
+        checkDlcHome();
         // Creates a new Java task to launch proxygen task
         Java pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
 

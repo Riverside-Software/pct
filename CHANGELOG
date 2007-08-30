@@ -3,6 +3,8 @@ Version 0.13 (??/??/????)
  * Fixed keepFiles attribute in PCTProxygen
    Bugfix provided by Michael Heist
  * Bug #1711731 : fixed propath references
+ * Added error message when dlcHome attribute is not defined.
+   Prevents hard-to-understand further error messages
 
 Version 0.12a (01/30/2007)
 ==============================

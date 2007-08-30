@@ -167,6 +167,7 @@ public class PCTBinaryDump extends PCT {
     public void execute() throws BuildException {
         BufferedReader reader = null;
 
+        checkDlcHome();
         if (this.dbConnList == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
         }
