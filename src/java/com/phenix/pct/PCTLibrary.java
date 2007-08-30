@@ -194,6 +194,7 @@ public class PCTLibrary extends PCT {
     public void execute() throws BuildException {
         ExecTask exec = null;
 
+        checkDlcHome();
         // Library name must be defined
         if (this.destFile == null) {
             throw new BuildException(Messages.getString("PCTLibrary.1"));

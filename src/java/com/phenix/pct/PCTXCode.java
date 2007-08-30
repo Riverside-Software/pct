@@ -178,6 +178,7 @@ public class PCTXCode extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
+        checkDlcHome();
         if (this.destDir == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTXCode.4")); //$NON-NLS-1$

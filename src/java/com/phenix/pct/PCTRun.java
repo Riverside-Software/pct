@@ -456,6 +456,7 @@ public class PCTRun extends PCT {
     public void execute() throws BuildException {
         BufferedReader br = null;
 
+        checkDlcHome();
         if (!this.prepared) {
             this.prepareExecTask();
         }

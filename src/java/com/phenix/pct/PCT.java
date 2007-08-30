@@ -271,6 +271,10 @@ public abstract class PCT extends Task {
      */
     public abstract void execute() throws BuildException;
 
+    protected void checkDlcHome() throws BuildException {
+        if (this.getDlcHome() == null) throw new BuildException(Messages.getString("PCT.3"));
+    }
+
     /**
      * Returns Progress major version number. I tried using
      * com.progress.common.utils.ProgressVersion but failed with ClassLoader and JNI
