@@ -255,10 +255,6 @@ public class PCTASBroker extends PCTBroker {
         } catch (BuildException be) {
             throw be;
         } finally {
-            // Unwanted side effect of using PCTRun in server attribute, empty temporary files need
-            // to be cleaned
-            if (this.server != null)
-                this.server.cleanup();
             this.cleanup();
         }
     }
@@ -280,16 +276,27 @@ public class PCTASBroker extends PCTBroker {
                 bw.println("registrationMode=Register-IP");
                 bw.println("operatingMode=" + this.operatingMode);
                 bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-                // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
                 if (this.server != null) {
+                    bw.print("PROPATH=");
+                    bw.println(this.server.getPropath());
+                    
+                    // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
                     bw.print("srvrStartupParam=");
                     for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
                         bw.print((String) i.next());
                         bw.print(' ');
                     }
+                    
+                    if (this.server.dbConnList != null) {
+                        for (Iterator i = this.server.dbConnList.iterator(); i.hasNext();) {
+                            PCTConnection dbc = (PCTConnection) i.next();
+                            String connect = dbc.createConnectString();
+                            bw.write(connect);
+                            bw.print(' ');
+                        }
+                    }                    
                     bw.println("");
                 }
-                // FIXME Add DB connections
                 
                 if (this.portNumber != -1)
                     bw.println("portNumber=" + this.portNumber);

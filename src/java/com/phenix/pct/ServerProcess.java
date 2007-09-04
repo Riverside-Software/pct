@@ -12,6 +12,10 @@ public class ServerProcess extends PCTRun {
     private String startupProc = null;
     private String shutdownProc = null;
     
+    public ServerProcess() {
+        super(false, false);
+    }
+
     public void setActivateProc(String activateProc) {
         this.activateProc = activateProc;
     }
@@ -61,4 +65,17 @@ public class ServerProcess extends PCTRun {
         return startupProc;
     }
     
+    /**
+     * Get the current propath as a path-separated list
+     * 
+     * @return String
+     */
+    public String getPropath() {
+        StringBuffer propathList = new StringBuffer("");
+        String[] lst = this.propath.list();
+        for (int k = 0; k < lst.length ; k++) {
+            propathList.append(lst[k] + File.pathSeparatorChar);
+        }                   
+        return propathList.toString();
+    }
 }

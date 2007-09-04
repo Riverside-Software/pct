@@ -94,7 +94,14 @@
   <!-- Testing serverAttributes -->
   <target name="TestAttributes-2">
     <PCTASBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${env.DLC}">
-      <Server startupProc="startup.p" shutdownProc="shutdown.p" activateProc="activate.p" deactivateProc="deactivate.p" connectProc="connect.p" disconnectProc="disconnect.p"/>
+      <Server startupProc="startup.p" shutdownProc="shutdown.p" activateProc="activate.p" deactivateProc="deactivate.p" connectProc="connect.p" disconnectProc="disconnect.p">
+        <propath>
+          <path location="build" />
+          <path location="build2" />
+        </propath>
+        <PCTConnection dbName="myDB" />
+        <PCTConnection dbName="myDB2" />
+      </Server>
     </PCTASBroker>
   </target>
   

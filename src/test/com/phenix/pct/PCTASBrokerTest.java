@@ -62,6 +62,7 @@ import com.freeware.inifiles.INIFile;
 
 import java.io.File;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Class for testing PCTASBroker task
@@ -258,6 +259,17 @@ public class PCTASBrokerTest extends BuildFileTest {
         assertTrue("Wrong disconnectProc", (ini.getStringProperty("UBroker.AS.Test", "srvrDisconnProc").equals("disconnect.p")));
         assertTrue("Wrong startupProc", (ini.getStringProperty("UBroker.AS.Test", "srvrStartupProc").equals("startup.p")));
         assertTrue("Wrong shutdownProc", (ini.getStringProperty("UBroker.AS.Test", "srvrShutdownProc").equals("shutdown.p")));
+
+        // Checking PROPATH
+        String propath = ini.getStringProperty("UBroker.AS.Test", "PROPATH");
+        StringTokenizer tokenizer = new StringTokenizer(propath, Character.toString(File.pathSeparatorChar));
+        assertTrue("Wrong number of entries in PROPATH", (tokenizer.countTokens() == 2));
+        assertTrue("First entry should be build", (tokenizer.nextToken().endsWith("build")));
+        assertTrue("Second entry should be build2", (tokenizer.nextToken().endsWith("build2")));
+
+        String startup = ini.getStringProperty("UBroker.AS.Test", "srvrStartupParam");
+        assertTrue("Unable to find myDB connection", (startup.indexOf("-db myDB") != -1));
+        assertTrue("Unable to find myDB2 connection", (startup.indexOf("-db myDB2") != -1));
     }
 
     public void testForbiddenAttributes1() {
