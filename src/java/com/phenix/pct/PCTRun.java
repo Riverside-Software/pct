@@ -111,7 +111,8 @@ public class PCTRun extends PCT {
     protected Path propath = null;
     private Path internalPropath = null;
     protected Collection runParameters = null;
-
+    private boolean batchMode = true;
+    
     // Internal use
     protected ExecTask exec = null;
     protected int statusID = -1; // Unique ID when creating temp files
@@ -149,6 +150,11 @@ public class PCTRun extends PCT {
             initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
+    }
+
+    public PCTRun(boolean tmp, boolean batchMode) {
+        this(tmp);
+        this.batchMode = batchMode;
     }
 
     /**
@@ -549,8 +555,10 @@ public class PCTRun extends PCT {
         }
 
         // Batch mode
-        list.add("-b"); //$NON-NLS-1$
-        list.add("-q"); //$NON-NLS-1$
+        if (this.batchMode) {
+            list.add("-b"); //$NON-NLS-1$
+            list.add("-q"); //$NON-NLS-1$
+        }
 
         // DebugReady
         if (this.debugReady != -1) {
