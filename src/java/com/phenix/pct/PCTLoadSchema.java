@@ -66,6 +66,7 @@ import java.text.MessageFormat;
  */
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
+    private boolean unfreeze = false;
 
     /**
      * Dump file
@@ -74,6 +75,15 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
+    }
+
+    /**
+     * Unfreeze
+     * 
+     * @param unfreeze boolean
+     */
+    public void setUnfreeze(boolean unfreeze) {
+        this.unfreeze = unfreeze;
     }
 
     /**
@@ -97,11 +107,18 @@ public class PCTLoadSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTLoadSchema.2")); //$NON-NLS-1$
         }
 
+        if (!this.srcFile.exists()) {
+            this.cleanup();
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("PCTLoadSchema.4"), new Object[]{this.srcFile})); //$NON-NLS-1$
+        }
+
         this.setProcedure("pct/loadSch.p"); //$NON-NLS-1$
-        this.setParameter(srcFile.getAbsolutePath());
+        this.addParameter(new RunParameter("unfreeze", Boolean.toString(this.unfreeze))); //$NON-NLS-1$
+        this.addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath())); //$NON-NLS-1$
         log(
                 MessageFormat.format(Messages.getString("PCTLoadSchema.3"),
-                        new Object[]{ this.srcFile }), Project.MSG_INFO);
+                        new Object[]{this.srcFile}), Project.MSG_INFO);
         super.execute();
     }
 }

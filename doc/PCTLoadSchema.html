@@ -59,6 +59,14 @@ Loads database schema
 <td align="center">Required</td>
 <td>No default value</td>
 </tr>
+<tr>
+<td>unfreeze</td>
+<td>Unfreeze the tables in the database before loading the schema, then refreeze everything that was unfrozen after the load</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+
 </table>
 <p>PCTLoadSchema inherits attributes from <a href="PCT.html">PCT</a> and
 <a href="PCTRun.html">PCTRun</a>. However, PCTLoadSchema <strong>must</strong>
