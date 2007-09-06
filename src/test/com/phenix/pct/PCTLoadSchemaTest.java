@@ -51,57 +51,80 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+package com.phenix.pct;
 
-DEFINE VARIABLE hQuery  AS HANDLE    NO-UNDO.
-DEFINE VARIABLE hBuffer AS HANDLE    NO-UNDO.
-DEFINE TEMP-TABLE ttUnfrozen NO-UNDO
-   FIELD cTable AS CHARACTER.
+import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
 
-/*
- * Parameters from ANT call 
+import java.io.File;
+
+/**
+ * Class for testing PCTLoadSchema task
+ * 
+ * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
-DEFINE VARIABLE cSrcFile  AS CHARACTER NO-UNDO.
-DEFINE VARIABLE lUnfreeze AS LOGICAL   NO-UNDO.
+public class PCTLoadSchemaTest extends BuildFileTest {
 
+    /**
+     * Sets up the fixture
+     */
+    public void setUp() {
+        configureProject("PCTLoadSchema.xml");
 
-ASSIGN cSrcFile = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
-       lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U.
+        // Creates a sandbox directory to play with
+        Mkdir mkdir = new Mkdir();
+        mkdir.setProject(this.getProject());
+        mkdir.setDir(new File("sandbox"));
+        mkdir.execute();
+    }
 
-/** Added by Evan Todd */
-IF lUnfreeze THEN DO:
-   CREATE BUFFER hBuffer FOR TABLE "_file".
-   CREATE QUERY hQuery.
-   hQuery:SET-BUFFERS(hBuffer).
-   hQuery:QUERY-PREPARE("for each _file where _file-number > 0 " +
-                        "and _File-Number < 32768 " +
-                        "and _frozen = yes").
-   hQuery:QUERY-OPEN.
-   hQuery:GET-FIRST().
-   DO TRANSACTION WHILE NOT hQuery:QUERY-OFF-END:
-      hQuery:GET-CURRENT(EXCLUSIVE-LOCK).
-      CREATE ttUnfrozen.
-      ASSIGN ttUnfrozen.cTable = hBuffer:BUFFER-FIELD("_file-name"):BUFFER-VALUE
-             hBuffer:BUFFER-FIELD("_frozen"):BUFFER-VALUE = FALSE.
-      hQuery:GET-NEXT.
-   END.
-   hQuery:QUERY-CLOSE.   
-end.
+    /**
+     * Tears down the fixture
+     */
+    public void tearDown() {
+        Delete del = new Delete();
+        del.setProject(this.getProject());
+        del.setDir(new File("sandbox"));
+        del.execute();
+    }
 
-RUN prodict/load_df.p (INPUT cSrcFile) NO-ERROR.
+    /**
+     * Should throw BuildException : no srcFile and no connection
+     */
+    public void test1() {
+        expectBuildException("test1", "Should throw BuildException : no srcFile and no connection");
+    }
 
-IF lUnfreeze THEN DO:
-   FOR EACH ttUnfrozen:
-      hQuery:QUERY-PREPARE("for each _file where _file-name = '" + ttUnfrozen.cTable + "'").
-      hQuery:QUERY-OPEN.
-      hQuery:GET-FIRST.
-      IF NOT hQuery:QUERY-OFF-END THEN DO TRANSACTION:
-         hQuery:GET-CURRENT(EXCLUSIVE-LOCK).
-         hBuffer:BUFFER-FIELD("_frozen"):BUFFER-VALUE = TRUE.
-      END.
-      hQuery:QUERY-CLOSE.
-   END.
-   DELETE OBJECT hQuery.
-   DELETE OBJECT hBuffer.
-END.
+    /**
+     * Should throw BuildException : no srcFile defined
+     */
+    public void test2() {
+        expectBuildException("test2", "Should throw BuildException : no srcFile defined ");
+    }
 
-RETURN RETURN-VALUE.
+    /**
+     * Should throw BuildException : no connection defined
+     */
+    public void test3() {
+        expectBuildException("test3", "Should throw BuildException : no connection defined");
+    }
+
+    /**
+     */
+    public void test4() {
+        executeTarget("test4-init");
+        executeTarget("test4-part1");
+        expectBuildException("test4-part2", "Tab2 shouldn't be found");
+    }
+
+    public void test5() {
+        executeTarget("test5-init");
+        executeTarget("test5-part1");
+        expectBuildException("test5-part2", "");
+        executeTarget("test5-part3");
+        executeTarget("test5-part4");
+        expectBuildException("test5-part5", "");
+    }
+
+}

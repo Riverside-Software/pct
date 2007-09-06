@@ -6,7 +6,9 @@ Version 0.13 (??/??/????)
  * Added error message when dlcHome attribute is not defined.
    Prevents hard-to-understand further error messages
  * Added PROPATH and DB Connection support in PCTASBroker task
-   Enhancement provided by QAD teams
+   Enhancement provided by Evan Todd
+ * Added unfreeze option in PCTLoadSchema task
+   Enhancement provided by Evan Todd
 
 Version 0.12a (01/30/2007)
 ==============================

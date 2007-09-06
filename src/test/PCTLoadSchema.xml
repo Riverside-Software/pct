@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+
+<project name="PCTLoadSchema-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <!-- Should throw BuildException : no srcFile and no connection -->
+  <target name="test1">
+    <PCTLoadSchema dlcHome="${env.DLC}" />
+  </target>
+
+  <!-- Should throw BuildException : no srcFile defined -->
+  <target name="test2">
+    <PCTLoadSchema dlcHome="${env.DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadSchema>
+  </target>
+  
+  <!-- Should throw BuildException : no connection defined -->
+  <target name="test3">
+    <PCTLoadSchema dlcHome="${env.DLC}" srcFile="sandbox/schema.df" />
+  </target>
+
+  <target name="test4-init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      FIND FIRST _File WHERE _File._File-Name EQ SESSION:PARAMETER NO-LOCK NO-ERROR.
+      RETURN (IF AVAILABLE _File THEN "0" ELSE "1").
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" />
+    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${env.DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+  <target name="test4-part1">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="Tab1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test4-part2">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="Tab2">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  
+  <target name="test5-init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        FROZEN
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/update.df">
+      UPDATE DATABASE "?"
+      
+      ADD INDEX "Tab1-Idx1" ON "Tab1"
+        AREA "Schema Area"
+        UNIQUE
+        DESCRIPTION "Index number 1"
+        INDEX-FIELD "Fld1" DESCENDING
+    </echo>    
+    <echo file="sandbox/test.p">
+      FIND FIRST _File WHERE _File._File-Name EQ SESSION:PARAMETER NO-LOCK NO-ERROR.
+      RETURN (IF AVAILABLE _File THEN "0" ELSE "1").
+    </echo>
+    <echo file="sandbox/test2.p">
+      FIND FIRST _File WHERE _File._File-Name EQ ENTRY(1, SESSION:PARAMETER, ",") NO-LOCK NO-ERROR.
+      IF (AVAILABLE _File) THEN DO:
+        FIND FIRST _Index WHERE _Index._File-recid EQ RECID(_File) AND _Index._Index-Name EQ ENTRY(2, SESSION:PARAMETER, ",") NO-LOCK NO-ERROR.
+        RETURN (IF AVAILABLE _Index THEN "0" ELSE "2").
+      END.
+      ELSE RETURN "1".
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" />
+    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${env.DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+  <target name="test5-part1">
+    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${env.DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+  <target name="test5-part2">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test5-part3">
+    <PCTLoadSchema srcFile="sandbox/update.df" unfreeze="true" dlcHome="${env.DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+  <target name="test5-part4">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test5-part5">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx2">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+
+</project>
