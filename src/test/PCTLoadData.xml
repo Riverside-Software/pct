@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="PCTRun-test" default="">
+<project name="PCTLoadData-test" default="">
 
   <taskdef resource="PCT.properties" classpath="."/>
 
@@ -9,12 +9,12 @@
 
   <!-- Should throw BuildException : no filesets and no connection -->
   <target name="test1">
-    <PCTLoadData dlcHome="${env.DLC}" propath="${pct-propath}" />
+    <PCTLoadData dlcHome="${env.DLC}" />
   </target>
 
   <!-- Should throw BuildException : no filesets (or srcDir) defined -->
   <target name="test2">
-    <PCTLoadData dlcHome="${env.DLC}" propath="${pct-propath}">
+    <PCTLoadData dlcHome="${env.DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadData>
   </target>
@@ -22,7 +22,7 @@
   <!-- Should throw BuildException : no connection defined -->
   <target name="test3">
     <!-- When using PCTLoadData -->
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" propath="${pct-propath}" />
+    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" />
     <!-- When using PCTBgLoadData -->
     <!--
     <PCTLoadData dlcHome="${env.DLC}">
