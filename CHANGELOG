@@ -9,6 +9,8 @@ Version 0.13 (??/??/????)
    Enhancement provided by Evan Todd
  * Added unfreeze option in PCTLoadSchema task
    Enhancement provided by Evan Todd
+ * Added Table attribute in PCTLoadData task
+   Enhancement provided by Evan Todd
 
 Version 0.12a (01/30/2007)
 ==============================
