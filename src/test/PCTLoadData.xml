@@ -8,12 +8,12 @@
 
   <!-- Should throw BuildException : no filesets and no connection -->
   <target name="test1">
-    <PCTLoadData dlcHome="${env.DLC}" />
+    <PCTLoadData dlcHome="${DLC}" />
   </target>
 
   <!-- Should throw BuildException : no filesets (or srcDir) defined -->
   <target name="test2">
-    <PCTLoadData dlcHome="${env.DLC}">
+    <PCTLoadData dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadData>
   </target>
@@ -21,10 +21,10 @@
   <!-- Should throw BuildException : no connection defined -->
   <target name="test3">
     <!-- When using PCTLoadData -->
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" />
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" />
     <!-- When using PCTBgLoadData -->
     <!--
-    <PCTLoadData dlcHome="${env.DLC}">
+    <PCTLoadData dlcHome="${DLC}">
       <fileset dir="sandbox" includes="*.d" />
     </PCTLoadData>
     -->
@@ -77,23 +77,23 @@ cpstream=utf-8
       MESSAGE Tab1.Fld1.
       RETURN "0".
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test4init2">
     <!-- When using PCTLoadData : -->
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" numsep="44" numdec="46">
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadData>
     <!-- When using PCTBgLoadData : -->
     <!--
-    <PCTLoadData dlcHome="${env.DLC}" numsep="44" numdec="46">
+    <PCTLoadData dlcHome="${DLC}" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
       <fileset dir="sandbox" includes="*.d" />
     </PCTLoadData>
     -->
   </target>
   <target name="test4">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
@@ -188,26 +188,26 @@ cpstream=utf-8
       MESSAGE (IF AVAILABLE Tab2 THEN STRING(Tab2.Fld1) ELSE "---").
       RETURN "0".
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test5-part1">
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" numsep="44" numdec="46">
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
       <Table name="Tab1" />
     </PCTLoadData>
   </target>
   <target name="test5-part2">
-    <PCTRun procedure="sandbox/testTab1.p" dlcHome="${env.DLC}">
+    <PCTRun procedure="sandbox/testTab1.p" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
   <target name="test5-part3">
-    <PCTRun procedure="sandbox/testTab2.p" dlcHome="${env.DLC}">
+    <PCTRun procedure="sandbox/testTab2.p" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
   <target name="test5-part4">
-    <PCTLoadData dlcHome="${env.DLC}" srcDir="sandbox" numsep="44" numdec="46">
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
       <Table name="Tab2" />
     </PCTLoadData>

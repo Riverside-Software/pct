@@ -34,28 +34,28 @@
       CREATE tab1.
       ASSIGN tab1.fld1 = 1.
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
   </target>
   <target name="test1">
     <!-- Should throw BuildException - no destFile defined -->
-    <PCTDumpSchema dlcHome="${env.DLC}" propath="${pct-propath}">
+    <PCTDumpSchema dlcHome="${DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTDumpSchema>
   </target>
   <target name="test2">
     <!-- Should throw BuildException - no db connection -->
-    <PCTDumpSchema dlcHome="${env.DLC}" propath="${pct-propath}" />
+    <PCTDumpSchema dlcHome="${DLC}" propath="${pct-propath}" />
   </target>
   <target name="test3">
     <!-- Should throw BuildException - more than one db connection -->
-    <PCTDumpSchema dlcHome="${env.DLC}" propath="${pct-propath}">
+    <PCTDumpSchema dlcHome="${DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
     </PCTDumpSchema>      
   </target>
   <target name="test4">
     <!-- Should create sandbox/sch.df -->
-    <PCTDumpSchema destFile="sandbox/sch.df" dlcHome="${env.DLC}" propath="${pct-propath}">
+    <PCTDumpSchema destFile="sandbox/sch.df" dlcHome="${DLC}" propath="${pct-propath}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTDumpSchema>
   </target>

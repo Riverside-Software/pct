@@ -235,7 +235,7 @@
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
-      <env key="DLC" value="${DLC9}" />
+      <jvmarg line="-DDLC=&quot;${DLC9}&quot;" />
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v9}">
         <fileset dir="${build}">
@@ -253,7 +253,7 @@
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
-      <env key="DLC" value="${DLC10}" />
+      <jvmarg line="-DDLC=&quot;${DLC10}&quot;" />
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v10}">
         <fileset dir="${build}">

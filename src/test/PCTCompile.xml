@@ -15,12 +15,12 @@
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTCompile graphicalMode="${graph}" dlcHome="${env.DLC}" />
+    <PCTCompile graphicalMode="${graph}" dlcHome="${DLC}" />
   </target>
   
   <!-- Do nothing : should not hurt -->
   <target name="test2">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" />
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" />
   </target>
   
   <!-- Simple compilation -->
@@ -29,7 +29,7 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test.p"/>	
       </fileset>	
@@ -41,7 +41,7 @@
   	<echo file="sandbox/temp.p">
       MESSGE "Hello world!".
   	</echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>
@@ -54,14 +54,14 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test4bis">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" minSize="true" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" minSize="true" >
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -74,7 +74,7 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/wizz~~'~.p"/>
       </fileset>
@@ -88,7 +88,7 @@
   	</echo>
   </target>
   <target name="test6">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -96,7 +96,7 @@
   </target>
   <target name="test6bis">
     <sleep seconds="3"/>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -110,7 +110,7 @@
   	</echo>
   </target>
   <target name="test7">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -119,7 +119,7 @@
   <target name="test7bis">
     <sleep seconds="3"/>
     <touch file="sandbox/temp.p"/>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -133,7 +133,7 @@
   	</echo>
   </target>
   <target name="test8">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -141,7 +141,7 @@
   </target>
   <target name="test8bis">
     <sleep seconds="3" />
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
@@ -159,7 +159,7 @@
   	</echo>
   </target>
   <target name="test9">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -168,7 +168,7 @@
   <target name="test9bis">
     <touch file="sandbox/temp.i"/>
     <sleep seconds="3" />
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -186,7 +186,7 @@
   	</echo>
   </target>
   <target name="test10">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -195,7 +195,7 @@
   <target name="test10bis">
     <touch file="sandbox/temp.i"/>
     <sleep seconds="3" />
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" forceCompile="true" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -212,7 +212,7 @@
   	</echo>
   </target>
   <target name="test11">
-    <PCTCompile graphicalMode="${graph}" failOnError="true" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" failOnError="true" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -229,14 +229,14 @@
   	</echo>
   </target>
   <target name="test12">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test12bis">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" compileUnderscore="true" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" compileUnderscore="true" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -258,7 +258,7 @@
     </echo>
   </target>
   <target name="test13">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -267,7 +267,7 @@
   <target name="test13bis">
     <sleep seconds="3"/>
     <touch file="sandbox/temp2.i"/>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -297,7 +297,7 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test14">
     <echo file="sandbox/test.p">
@@ -309,7 +309,7 @@
       CREATE tt.
       ASSIGN tt.fld1 = 1.
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -325,11 +325,11 @@
         COLUMN-LABEL "Fld2"
         ORDER 20
     </echo>
-    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${env.DLC}" >
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${DLC}" >
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
     <sleep seconds="2" />
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -360,14 +360,14 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test15">
     <echo file="sandbox/test.p">
       CREATE abc.tab1.
       ASSIGN abc.tab1.fld1 = 1.
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -375,7 +375,7 @@
     </PCTCompile>
   </target>
   <target name="test15bis">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -390,14 +390,14 @@
       RETURN "1".
   	</echo>
     <mkdir dir="xcode"/>
-    <PCTXCode destDir="xcode" dlcHome="${env.DLC}">
+    <PCTXCode destDir="xcode" dlcHome="${DLC}">
       <fileset dir="sandbox">
         <include name="temp.p"/>
       </fileset>
     </PCTXCode>
   </target>
   <target name="test16">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
         <include name="xcode/temp.p"/>
@@ -412,21 +412,21 @@
       RETURN "1".
   	</echo>
     <mkdir dir="xcode"/>
-    <PCTXCode destDir="xcode" dlcHome="${env.DLC}" key="pct">
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="pct">
       <fileset dir="sandbox">
         <include name="temp.p"/>
       </fileset>
     </PCTXCode>
   </target>
   <target name="test17-part1">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}"  xcode="true">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}"  xcode="true">
       <fileset dir=".">
         <include name="xcode/temp.p"/>
       </fileset>
     </PCTCompile>
   </target>
   <target name="test17-part2">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}"  xcode="true" xcodekey="pct">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}"  xcode="true" xcodekey="pct">
       <fileset dir=".">
         <include name="xcode/temp.p"/>
       </fileset>
@@ -472,7 +472,7 @@
         FOREIGN-NAME "TAB1##TAB1_PK"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" >
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" >
       <OracleHolder dbName="holder" oracleVersion="8" codepage="iso8859-1" collation="BASIC" schemaFile="sandbox/schema.df" />
     </PCTCreateBase>
   </target>
@@ -486,7 +486,7 @@
       CREATE tt.
       ASSIGN tt.fld1 = 1.
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -513,11 +513,11 @@
       UPDATE FIELD "Fld2" OF "tab1"
         FOREIGN-POS 2
     </echo>
-    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${env.DLC}" >
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${DLC}" >
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
     <sleep seconds="2" />
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/test*.p"/>
       </fileset>
@@ -539,7 +539,7 @@
   </target>
   <target name="test19">
     <mkdir dir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" />
-    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes" destDir="build" dlcHome="${env.DLC}" >
+    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes" destDir="build" dlcHome="${DLC}" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
@@ -548,7 +548,7 @@
   <target name="test19bis">
     <touch file="sandbox/temp.i"/>
     <sleep seconds="3" />
-    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" destDir="build" dlcHome="${env.DLC}" forceCompile="true" >
+    <PCTCompile graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" destDir="build" dlcHome="${DLC}" forceCompile="true" >
       <fileset dir=".">
         <include name="sandbox/temp.p"/>
       </fileset>
