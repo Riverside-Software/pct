@@ -8,12 +8,12 @@
   
   <!-- Should throw BuildException : no dest dir -->
   <target name="test1">
-    <PCTXCode dlcHome="${env.DLC}"/>
+    <PCTXCode dlcHome="${DLC}"/>
   </target>
   
   <!-- Do nothing : should not hurt -->
   <target name="test2">
-    <PCTXCode destDir="build" dlcHome="${env.DLC}"/>
+    <PCTXCode destDir="build" dlcHome="${DLC}"/>
   </target>
 
   <!-- Simple test -->
@@ -22,7 +22,7 @@
       DISPLAY "Hello world!".
       RETURN "0".
     </echo>
-    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode destDir="build" dlcHome="${DLC}">
       <fileset dir="sandbox">
         <include name="test.p"/>
       </fileset>
@@ -36,7 +36,7 @@
       DISPLAY "Hello world!".
       RETURN "0".
     </echo>
-    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/foo/test.p"/>
       </fileset>
@@ -49,14 +49,14 @@
       MESSAGE "Hello world!".
       RETURN "0".
     </echo>
-    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode destDir="build" dlcHome="${DLC}">
       <fileset dir="sandbox">
         <include name="test.p"/>
       </fileset>
     </PCTXCode>
   </target>
   <target name="test5bis">
-    <PCTXCode key="foobar" destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode key="foobar" destDir="build" dlcHome="${DLC}">
       <fileset dir="sandbox">
         <include name="test.p"/>
       </fileset>
@@ -73,7 +73,7 @@
       MESSAGE "Hello world n°2 !".
       RETURN "0".
     </echo>
-    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode destDir="build" dlcHome="${DLC}">
       <fileset dir="sandbox">
         <include name="*.p"/>
       </fileset>
@@ -88,7 +88,7 @@
     <echo file="sandbox/test2.p">
       RETURN "1".
     </echo>
-    <PCTXCode destDir="build" dlcHome="${env.DLC}">
+    <PCTXCode destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/*.p"/>
       </fileset>
@@ -97,10 +97,10 @@
     <delete file="sandbox/test2.p"/>
   </target>
   <target name="test7">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" propath="build"/>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" propath="build"/>
   </target>  
   <target name="test7bis">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" propath="build"/>
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}" propath="build"/>
   </target>  
   
 </project>

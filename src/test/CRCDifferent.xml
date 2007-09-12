@@ -31,7 +31,7 @@
 
   <!-- Compilation -->
   <target name="compile">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${env.DLC}" propath="${pct-propath}">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
       <fileset dir=".">
         <include name="sandbox/*.p" />
       </fileset>

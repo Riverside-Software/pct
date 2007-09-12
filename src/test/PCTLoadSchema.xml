@@ -8,19 +8,19 @@
 
   <!-- Should throw BuildException : no srcFile and no connection -->
   <target name="test1">
-    <PCTLoadSchema dlcHome="${env.DLC}" />
+    <PCTLoadSchema dlcHome="${DLC}" />
   </target>
 
   <!-- Should throw BuildException : no srcFile defined -->
   <target name="test2">
-    <PCTLoadSchema dlcHome="${env.DLC}">
+    <PCTLoadSchema dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTLoadSchema>
   </target>
   
   <!-- Should throw BuildException : no connection defined -->
   <target name="test3">
-    <PCTLoadSchema dlcHome="${env.DLC}" srcFile="sandbox/schema.df" />
+    <PCTLoadSchema dlcHome="${DLC}" srcFile="sandbox/schema.df" />
   </target>
 
   <target name="test4-init">
@@ -53,18 +53,18 @@
       FIND FIRST _File WHERE _File._File-Name EQ SESSION:PARAMETER NO-LOCK NO-ERROR.
       RETURN (IF AVAILABLE _File THEN "0" ELSE "1").
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" />
-    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${env.DLC}">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
+    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
   </target>
   <target name="test4-part1">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="Tab1">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" parameter="Tab1">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
   <target name="test4-part2">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${env.DLC}" parameter="Tab2">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" parameter="Tab2">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
@@ -117,33 +117,33 @@
       END.
       ELSE RETURN "1".
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${env.DLC}" />
-    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${env.DLC}">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
+    <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
   </target>
   <target name="test5-part1">
-    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${env.DLC}">
+    <PCTLoadSchema srcFile="sandbox/update.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
   </target>
   <target name="test5-part2">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx1">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}" parameter="Tab1,Tab1-Idx1">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
   <target name="test5-part3">
-    <PCTLoadSchema srcFile="sandbox/update.df" unfreeze="true" dlcHome="${env.DLC}">
+    <PCTLoadSchema srcFile="sandbox/update.df" unfreeze="true" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
   </target>
   <target name="test5-part4">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx1">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}" parameter="Tab1,Tab1-Idx1">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
   <target name="test5-part5">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${env.DLC}" parameter="Tab1,Tab1-Idx2">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}" parameter="Tab1,Tab1-Idx2">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>

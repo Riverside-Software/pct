@@ -103,7 +103,7 @@ public class RCodeInfoTest extends TestCase {
             PCTCompile comp = new PCTCompile();
             comp.setProject(project);
             comp.setBaseDir(sandbox);
-            comp.setDlcHome(new File(System.getenv("DLC")));
+            comp.setDlcHome(new File(System.getProperty("DLC")));
             comp.setDestDir(sandbox);
             comp.setMinSize(false);
             FileSet fs = new FileSet();
@@ -132,7 +132,7 @@ public class RCodeInfoTest extends TestCase {
             PCTRun run = new PCTRun();
             run.setProject(project);
             run.setBaseDir(sandbox);
-            run.setDlcHome(new File(System.getenv("DLC")));
+            run.setDlcHome(new File(System.getProperty("DLC")));
             run.setProcedure("crc.p");
             run.setParameter("test1.p:test1.crc");
             run.execute();
