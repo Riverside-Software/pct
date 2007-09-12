@@ -51,6 +51,60 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
+function FileExists returns logical (input cFile as character) forward.
 
-RUN prodict/load_d.p ("ALL":U, SESSION:PARAMETER).
-RETURN "0":U.
+define variable cLine as character no-undo.
+define variable i     as integer   no-undo.
+
+/*
+ * Parameters from ANT call 
+ */
+define variable cSrcDir    as character no-undo.
+define variable cTableList as character no-undo.
+
+define stream sParams.
+
+/* 
+ * Checks for valid parameters 
+ */
+if (session:parameter = ?) then
+   return '1'.
+   
+if not FileExists(session:parameter) then
+   return '2'.
+   
+/* 
+ * Reads config 
+ */
+input stream sParams from value(file-info:full-pathname).
+repeat:
+   import stream sParams unformatted cLine.
+   if (num-entries(cLine, '=':U) = 2) then
+   case entry(1, cLine, '=':U):
+      when 'TABLES':U then
+         assign cTableList = entry(2, cLine, '=':U).
+      when 'SRCDIR':U then
+         assign cSrcDir = entry(2, cLine, '=':U).
+      otherwise
+         message "Unknown parameter: " + cLine.
+   end case.
+end.
+input stream sParams close.
+
+if not FileExists(cSrcDir) then do:
+   message "Source Directory does not exist".
+   return "1":U.
+end.
+
+if cTableList = '':U then
+   run prodict/load_d.p ("ALL":U, cSrcDir).
+else do i = 1 to num-entries(cTableList):
+   run prodict/load_d.p (entry(i, cTableList), cSrcDir).   
+end.
+   
+return "0":U.
+
+function FileExists returns logical (input cFile as character):
+   assign file-info:file-name = cFile.
+   return (file-info:full-pathname <> ?).
+end function.

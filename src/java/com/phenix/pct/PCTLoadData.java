@@ -53,34 +53,90 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Vector;
 
+import org.apache.tools.ant.BuildException;
 
 /**
  * Loads data into database
- *
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class PCTLoadData extends PCTRun {
     private File srcDir = null;
+    private Collection tables = null;
+
+    // Internal use
+    private int paramsId = -1;
+    private File params = null;
+
+    /**
+     * Creates a new PCTLoadData object
+     */
+    public PCTLoadData() {
+        super();
+
+        paramsId = new Random().nextInt() & 0xffff;
+
+        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
 
     /**
      * Input directory
+     * 
      * @param srcDir directory
      */
     public void setSrcDir(File srcDir) {
         this.srcDir = srcDir;
     }
 
+    public void addConfiguredTable(PCTTable table) {
+        if (this.tables == null) {
+            tables = new Vector();
+        }
+        tables.add(table);
+    }
+
+    /**
+     * 
+     * @throws BuildException
+     */
+    private void writeParams() throws BuildException {
+
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
+            if (this.tables != null) {
+                bw.write("TABLES=");
+                for (Iterator i = tables.iterator(); i.hasNext();) {
+                    PCTTable table = (PCTTable) i.next();
+                    bw.write(table.getName());
+                    if (i.hasNext())
+                        bw.write(",");
+                }
+                bw.newLine();
+            }
+            bw.write("SRCDIR=" + srcDir.getAbsolutePath()); //$NON-NLS-1$
+            bw.newLine();
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException(Messages.getString("PCTCompile.3")); //$NON-NLS-1$
+        }
+    }
+
     /**
      * Do the work
+     * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        String param = null;
 
         if (this.dbConnList == null) {
             this.cleanup();
@@ -97,10 +153,15 @@ public class PCTLoadData extends PCTRun {
             throw new BuildException(Messages.getString("PCTLoadData.2")); //$NON-NLS-1$
         }
 
-        param = srcDir.toString();
-
-        this.setProcedure("pct/pctLoadData.p"); //$NON-NLS-1$
-        this.setParameter(param);
-        super.execute();
+        try {
+            writeParams();
+            this.setProcedure("pct/pctLoadData.p"); //$NON-NLS-1$
+            this.setParameter(params.getAbsolutePath());
+            super.execute();
+            this.cleanup();
+        } catch (BuildException be) {
+            this.cleanup();
+            throw be;
+        }
     }
 }

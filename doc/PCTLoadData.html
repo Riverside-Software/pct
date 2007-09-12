@@ -65,15 +65,28 @@ Load tables data from plain .d files
 have <strong>one and only one</strong> PCTConnection.</p>
 
 <h2>Parameters as nested elements</h2>
-<p>None</p>
+<h3>Table</h3>
+<p>
+Loads a specific table. If no Table nodes are used, then PCTLoadData tries to load every table in dictionary.
+</p>
 
 <h2>Examples</h2>
 <pre>
-&lt;PCTLoadData srcDir="datas" dlcHome="${env.DLC}"&gt;
-  &lt;PCTConnection dbName="test" singleUser="true"/&gt;
+&lt;PCTLoadData srcDir="data" dlcHome="${env.DLC}"&gt;
+  &lt;PCTConnection dbName="test" singleUser="true" /&gt;
 &lt;/PCTLoadData&gt;
 </pre>
-<p>Connects in single-user mode to test.db and loads each file from datas directory in it</p>
+<p>Connects in single-user mode to test.db and loads each file from data directory in it</p>
+
+<pre>
+&lt;PCTLoadData srcDir="data" dlcHome="${env.DLC}"&gt;
+  &lt;PCTConnection dbName="test" singleUser="true" /&gt;
+  &lt;Table name="Table1" /&gt;
+  &lt;Table name="Table2" /&gt;
+&lt;/PCTLoadData&gt;
+</pre>
+<p>Connects in single-user mode to test.db and tries to load only Table1.d and Table2.d from data directory. If Table3 is present in dictionary,
+and Table3.d is present in data directory, then this file will be skipped.</p>
 
 </div>
 

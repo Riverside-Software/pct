@@ -60,7 +60,7 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 import java.io.File;
 
 /**
- * Class for testing PCTRun task
+ * Class for testing PCTLoadData task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
@@ -114,7 +114,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     }
 
     /**
-     * Should load datas into database, and expect first result in FOR EACH be 14 
+     * Should load data into database, and expect first result in FOR EACH be 14 
      */
     public void test4() {
         executeTarget("test4init");
@@ -122,4 +122,18 @@ public class PCTLoadDataTest extends BuildFileTest {
         expectLog("test4", "14");
     }
 
+    /**
+     * Should first load data into table Tab1, then in Tab2, using PCTTable attribute 
+     */
+    public void test5() {
+        executeTarget("test5-init");
+        expectLog("test5-part2", "---"); // No data
+        expectLog("test5-part3", "---"); // No data
+        executeTarget("test5-part1");
+        expectLog("test5-part2", "14"); // No data
+        expectLog("test5-part3", "---"); // No data
+        executeTarget("test5-part4");
+        expectLog("test5-part2", "14"); // No data
+        expectLog("test5-part3", "15"); // No data
+    }
 }
