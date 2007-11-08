@@ -555,4 +555,25 @@
     </PCTCompile>
   </target>
 
+  <!-- Test simple recompile if file has changed (.r timestamp based) -->
+  <target name="test20-init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+  	</echo>
+  </target>
+  <target name="test20-part1">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="false" preprocess="false" debugListing="false">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompile>
+  </target>
+  <target name="test20-part2">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="true" preprocess="true" debugListing="true">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompile>
+  </target>
+
 </project>

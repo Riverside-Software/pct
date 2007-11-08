@@ -287,4 +287,21 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod2 < f2.lastModified());
     }
 
+    public void test20() {
+        executeTarget("test20-init");
+        executeTarget("test20-part1");
+        
+        File dotR = new File("build/sandbox/temp.r");
+        File f1 = new File("build/.pct/sandbox/temp.p");
+        File f2 = new File("build/.pct/sandbox/temp.p.preprocess");
+        File f3 = new File("build/.pct/sandbox/temp.dbg");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        assertFalse(f3.exists());
+        dotR.delete();
+        executeTarget("test20-part2");
+        assertTrue("Unable to find listing file", f1.exists());
+        assertTrue("Unable to find preprocess file", f2.exists());
+        assertTrue("Unable to find debug-listing file", f3.exists());
+    }
 }
