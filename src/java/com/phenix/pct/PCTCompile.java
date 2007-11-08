@@ -83,6 +83,7 @@ public class PCTCompile extends PCTRun {
     private boolean runList = false;
     private boolean listing = false;
     private boolean preprocess = false;
+    private boolean debugListing = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -146,6 +147,17 @@ public class PCTCompile extends PCTRun {
      */
     public void setPreprocess(boolean preprocess) {
         this.preprocess = preprocess;
+    }
+
+    /**
+     * Create debug list files during compilation
+     * 
+     * @param debugListing "true|false|on|off|yes|no"
+     * 
+     * @since PCT 0.13
+     */
+    public void setDebugListing(boolean debugListing) {
+        this.debugListing = debugListing;
     }
 
     /**
@@ -302,6 +314,8 @@ public class PCTCompile extends PCTRun {
             bw.write("LISTING=" + (this.listing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("DEBUGLISTING=" + (this.debugListing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$

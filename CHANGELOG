@@ -11,6 +11,7 @@ Version 0.13 (??/??/????)
    Enhancement provided by Evan Todd
  * Added Table attribute in PCTLoadData task
    Enhancement provided by Evan Todd
+ * Added debugListing attribute in PCTCompile task
 
 Version 0.12a (01/30/2007)
 ==============================

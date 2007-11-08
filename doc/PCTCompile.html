@@ -82,14 +82,21 @@ Compiles Progress procedures.
 </tr>
 <tr>
 <td>Listing</td>
-<td>Generates a listing file for each compiled file (LISTING attribute of COMPILE statement)</td>
+<td>Generates a listing file for each compiled file (LISTING attribute of COMPILE statement). Generated file name is identical to source file name.</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
 <td>False</td>
 </tr>
 <tr>
 <td>Preprocess</td>
-<td>Generates a preprocessed file for each compiled file (PREPROCESS attribute of COMPILE statement)</td>
+<td>Generates a preprocessed file for each compiled file (PREPROCESS attribute of COMPILE statement). Generated file name appends .preprocess to source file name.</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>DebugListing</td>
+<td>Generates a debug-listing file for each compiled file (DEBUG-LIST attribute of COMPILE statement). Generated file name replaces extension of source file name with .dbg</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
 <td>False</td>
@@ -110,10 +117,10 @@ Compiles Progress procedures.
 </tr>
 <tr>
 <td>XRefDir</td>
-<td>Where temporary files (CRC and includes) should be created</td>
+<td>Where PCT files (CRC, includes, preprocess, listing and debug-listing) should be created</td>
 <td align="center">File</td>
 <td align="center">Optional</td>
-<td>Same as destDir</td>
+<td><em>&lt;destDir&gt;</em>/.pct</td>
 </tr>
 <tr>
 <td>forceCompile</td>
