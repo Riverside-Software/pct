@@ -18,6 +18,12 @@
   <condition property="DLC10" value="CMD_DLC10">
     <isset property="CMD_DLC10" />
   </condition>
+  <condition property="DBUTIL" value="_dbutil.exe">
+    <os family="windows" />
+  </condition>
+  <condition property="DBUTIL" value="_dbutil">
+    <os family="unix" />
+  </condition>
 
   <property environment="env" />
 
@@ -133,11 +139,10 @@
   </target>
 
   <target name="cond.pbuild" if="${build.this.version}" >
-    <exec executable="${dlcHome}/bin/_dbutil.exe">
+    <exec executable="${dlcHome}/bin/dbutil">
       <arg value="procopy" />
       <arg value="${dlcHome}/empty.db" />
       <arg value="empty" />
-      <env key="DLC" value="${dlcHome}" />
     </exec>
 
     <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
