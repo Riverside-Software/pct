@@ -139,7 +139,7 @@
   </target>
 
   <target name="cond.pbuild" if="${build.this.version}" >
-    <exec executable="${dlcHome}/bin/dbutil">
+    <exec executable="${dlcHome}/bin/_dbutil">
       <arg value="procopy" />
       <arg value="${dlcHome}/empty.db" />
       <arg value="empty" />
