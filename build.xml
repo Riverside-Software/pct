@@ -145,7 +145,7 @@
       <arg value="empty" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
