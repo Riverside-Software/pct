@@ -2,7 +2,23 @@
 
 <project name="PCT" default="dist">
 
+  <!-- Saving definitions from command-line -->
+  <!-- Quick and dirty hack for testing -->
+  <property name="CMD_DLC8" value="DLC8" />
+  <property name="CMD_DLC9" value="DLC9" />
+  <property name="CMD_DLC10" value="DLC10" />
   <property file="${basedir}/pct.build.properties" />
+  <!-- Restoring from command-line if set -->
+  <condition property="DLC8" value="CMD_DLC8">
+    <isset property="CMD_DLC8" />
+  </condition>
+  <condition property="DLC9" value="CMD_DLC9">
+    <isset property="CMD_DLC9" />
+  </condition>
+  <condition property="DLC10" value="CMD_DLC10">
+    <isset property="CMD_DLC10" />
+  </condition>
+
   <property environment="env" />
 
   <!-- Some directories definitions -->
