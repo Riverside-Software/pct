@@ -137,6 +137,7 @@
       <arg value="procopy" />
       <arg value="${dlcHome}/empty.db" />
       <arg value="empty" />
+      <env key="DLC" value="${dlcHome}" />
     </exec>
 
     <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
