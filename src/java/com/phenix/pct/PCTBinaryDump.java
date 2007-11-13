@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
 
 import java.io.BufferedReader;
@@ -223,7 +224,12 @@ public class PCTBinaryDump extends PCT {
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
-        
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
         exec.setExecutable(a.toString());
 
         // Database connections
