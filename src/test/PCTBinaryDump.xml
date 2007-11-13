@@ -9,12 +9,12 @@
 
   <!-- Should throw BuildException : no database connection -->
   <target name="test1">
-    <PCTBinaryDump dlcHome="${DLC}" propath="${pct-propath}" dest="sandbox" />
+    <PCTBinaryDump dlcHome="${DLC}"  dest="sandbox" />
   </target>
 
   <!-- Should throw BuildException : more than one database connection -->
   <target name="test2">
-    <PCTBinaryDump dlcHome="${DLC}" propath="${pct-propath}" dest="sandbox">
+    <PCTBinaryDump dlcHome="${DLC}"  dest="sandbox">
       <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
   	</PCTBinaryDump>
@@ -22,7 +22,7 @@
 
   <!-- Should throw BuildException : no destdir -->
   <target name="test3">
-    <PCTBinaryDump dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTBinaryDump dlcHome="${DLC}" >
       <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
   	</PCTBinaryDump>
   </target>
