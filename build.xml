@@ -2,30 +2,25 @@
 
 <project name="PCT" default="dist">
 
-  <!-- Saving definitions from command-line -->
-  <!-- Quick and dirty hack for testing -->
-  <property name="CMD_DLC8" value="DLC8" />
-  <property name="CMD_DLC9" value="DLC9" />
-  <property name="CMD_DLC10" value="DLC10" />
-  <property file="${basedir}/pct.build.properties" />
-  <!-- Restoring from command-line if set -->
-  <condition property="DLC8" value="CMD_DLC8">
-    <isset property="CMD_DLC8" />
+  <property environment="env" />
+
+  <!-- If DLC8, DLC9, DLC10 and DLC10-64 are provided as properties, then skip loading properties from file -->
+  <condition property="skip.properties">
+    <and>
+      <isset property="DLC8" />
+      <isset property="DLC9" />
+      <isset property="DLC10" />
+      <isset property="DLC10-64" />
+    </and>
   </condition>
-  <condition property="DLC9" value="CMD_DLC9">
-    <isset property="CMD_DLC9" />
-  </condition>
-  <condition property="DLC10" value="CMD_DLC10">
-    <isset property="CMD_DLC10" />
-  </condition>
+
+  <!-- Different values for UNIX/Win32 -->
   <condition property="DBUTIL" value="_dbutil.exe">
     <os family="windows" />
   </condition>
   <condition property="DBUTIL" value="_dbutil">
     <os family="unix" />
   </condition>
-
-  <property environment="env" />
 
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
@@ -35,6 +30,7 @@
   <property name="build-v8" location="build-v8" />
   <property name="build-v9" location="build-v9" />
   <property name="build-v10" location="build-v10" />
+  <property name="build-v10-64" location="build-v10-64" />
   <property name="dist" location="lib" />
   <property name="dist-lite" location="bootstrap" />
   <property name="doc" location="javadoc" />
@@ -43,8 +39,10 @@
   <property name="testdir" location="testbox" />
   <property name="junit-v9" location="junit-v9" />
   <property name="junit-v10" location="junit-v10" />
+  <property name="junit-v10-64" location="junit-v10-64" />
   <property name="junit-report-v9" location="junit-report-v9" />
   <property name="junit-report-v10" location="junit-report-v10" />
+  <property name="junit-report-v10-64" location="junit-report-v10-64" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -56,14 +54,6 @@
   <!-- PCT Version -->
   <property name="pct.version" value="0.13-pre" />
 
-  <tstamp>
-    <format property="year" pattern="yyyy" />
-  </tstamp>
-
-  <!-- Checking V8, v9 and v10 availability -->
-  <available file="${DLC8}" property="dlc.v8.present" />
-  <available file="${DLC9}" property="dlc.v9.present" />
-  <available file="${DLC10}" property="dlc.v10.present" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
@@ -90,7 +80,7 @@
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
-  
+
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="ant.jar" />
@@ -100,7 +90,11 @@
     <pathelement location="junit.jar" />
   </path>
 
-  <target name="init" description="Creates required directories">
+  <target name="init" description="Initialize PCT builder" depends="init-properties">
+    <tstamp>
+      <format property="year" pattern="yyyy" />
+    </tstamp>
+
     <mkdir dir="${build}" />
     <mkdir dir="${build-v8}" />
     <mkdir dir="${build-v9}" />
@@ -110,6 +104,17 @@
     <mkdir dir="${junit-v10}" />
     <mkdir dir="${junit-report-v9}" />
     <mkdir dir="${junit-report-v10}" />
+
+    <!-- Checking V8, v9 and v10 availability -->
+    <available file="${DLC8}/version" property="dlc.v8.present" />
+    <available file="${DLC9}/version" property="dlc.v9.present" />
+    <available file="${DLC10}/version" property="dlc.v10.present" />
+    <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+  </target>
+
+  <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
+    <echo message="Loading properties from pct.build.properties" />
+    <property file="${basedir}/pct.build.properties" />
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
@@ -138,7 +143,7 @@
     <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
   </target>
 
-  <target name="cond.pbuild" if="${build.this.version}" >
+  <target name="cond.pbuild" if="${build.this.version}">
     <exec executable="${dlcHome}/bin/_dbutil">
       <arg value="procopy" />
       <arg value="${dlcHome}/empty.db" />
@@ -161,17 +166,17 @@
         <include name="pct/*.r" />
       </fileset>
     </bootstrapLibrary>
-    
+
     <delete>
       <fileset dir="${basedir}" includes="empty*.*" />
     </delete>
-
   </target>
 
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
     <echo message="Checking v8 in ${DLC8}" />
     <echo message="Checking v9 in ${DLC9}" />
     <echo message="Checking v10 in ${DLC10}" />
+    <echo message="Checking v10-64 in ${DLC10-64}" />
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v8.present" />
       <param name="dlcHome" value="${DLC8}" />
@@ -200,6 +205,14 @@
       <param name="fsid" value="fs.v10" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="buildDir" value="${build-v10-64}" />
+      <param name="libName" value="pct10-64.pl" />
+      <param name="fsid" value="fs.v10" />
+    </antcall>
+
   </target>
 
   <target name="jar" depends="pbuild" description="JAR file generation">
@@ -212,6 +225,7 @@
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
+        <include name="pct10-64.pl" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
       <manifest>
@@ -286,17 +300,41 @@
         </fileset>
       </batchtest>
     </junit>
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+      <classpath>
+        <pathelement location="junit.jar" />
+        <pathelement location="ant-junit.jar" />
+        <pathelement location="ant-launcher.jar" />
+        <pathelement location="${dist}/PCT.jar" />
+        <pathelement location="${build}" />
+      </classpath>
+      <jvmarg line="-DDLC=&quot;${DLC10-64}&quot;" />
+      <formatter type="xml" />
+      <batchtest fork="yes" todir="${junit-v10-64}">
+        <fileset dir="${build}">
+          <include name="com/phenix/pct/*Test.class" />
+          <!-- A few problems for now... -->
+          <!--<include name="net/cordova/prounit/*Test.class" />-->
+        </fileset>
+      </batchtest>
+    </junit>
     <junitreport todir="${junit-report-v9}">
       <fileset dir="${junit-v9}">
-        <include name="TEST-*.xml"/>
+        <include name="TEST-*.xml" />
       </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report-v9}"/>
+      <report format="frames" styledir="${basedir}" todir="${junit-report-v9}" />
     </junitreport>
     <junitreport todir="${junit-report-v10}">
       <fileset dir="${junit-v10}">
-        <include name="TEST-*.xml"/>
+        <include name="TEST-*.xml" />
       </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report-v10}"/>
+      <report format="frames" styledir="${basedir}" todir="${junit-report-v10}" />
+    </junitreport>
+    <junitreport todir="${junit-report-v10-64}">
+      <fileset dir="${junit-v10-64}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" styledir="${basedir}" todir="${junit-report-v10-64}" />
     </junitreport>
     <delete>
       <fileset dir="." includes="TEST*.xml" />
