@@ -5,7 +5,6 @@
   <taskdef resource="PCT.properties" classpath="." />
 
   <property environment="env" />
-  <property name="pct-propath" location="progress" />
 
   <target name="test1init">
     <echo file="sandbox/schema.df">
@@ -33,11 +32,11 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}"  />
   </target>
   <target name="test1">
-    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTDumpIncremental destFile="sandbox/incr.df" dlcHome="${DLC}" >
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -47,14 +46,14 @@
     </PCTDumpIncremental>
   </target>
   <target name="test1bis">
-    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTLoadSchema srcFile="sandbox/incr.df" dlcHome="${DLC}" >
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
     <echo file="sandbox/test1.p">
       CREATE Tab1.
       ASSIGN Tab1.Fld1 = 0.
     </echo>
-    <PCTCompile destDir="sandbox" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCompile destDir="sandbox" dlcHome="${DLC}" >
       <fileset dir="sandbox">
         <include name="test1.p" />
       </fileset>
@@ -97,11 +96,11 @@
         DESCRIPTION "Index number 1"
         INDEX-FIELD "Fld1" DESCENDING
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df,sandbox/schema2.df" propath="${pct-propath}" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df,sandbox/schema2.df"  />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
   </target>
   <target name="test2">
-    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}" propath="${pct-propath}" activeIndexes="true">
+    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}"  activeIndexes="true">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -109,7 +108,7 @@
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </PCTDumpIncremental>
-    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}" propath="${pct-propath}" activeIndexes="false">
+    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}"  activeIndexes="false">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -157,11 +156,11 @@
         COLUMN-LABEL ""
         ORDER 20
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df,sandbox/schema2.df" propath="${pct-propath}" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df,sandbox/schema2.df"  />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
   </target>
   <target name="test3">
-    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}" propath="${pct-propath}" codepage="iso8859-1">
+    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}"  codepage="iso8859-1">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -169,7 +168,7 @@
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </PCTDumpIncremental>
-    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}" propath="${pct-propath}" codepage="utf-8">
+    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}"  codepage="utf-8">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -247,11 +246,11 @@
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
     <echo file="sandbox/rename.txt" message="F,tab1,Fld3,Fld2${line.separator}" />
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema2.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema2.df"  />
   </target>
   <target name="test4">
-    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}" >
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -259,7 +258,7 @@
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </PCTDumpIncremental>
-    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}" propath="${pct-propath}" renameFile="sandbox/rename.txt">
+    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}"  renameFile="sandbox/rename.txt">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>

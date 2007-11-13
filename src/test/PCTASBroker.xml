@@ -5,7 +5,6 @@
   <taskdef resource="PCT.properties" classpath="." />
 
   <property environment="env" />
-  <property name="pct-propath" location="progress" />
 
   <!-- Missing parameters #1 -->
   <target name="failure1">

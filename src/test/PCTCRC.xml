@@ -6,7 +6,6 @@
   <taskdef resource="PCT.properties" classpath="." />
 
   <property environment="env" />
-  <property name="pct-propath" location="progress" />
 
   <!-- Test prowin32 on Windows, _progres on everything else -->
   <property name="graph" value="false" />
@@ -16,12 +15,12 @@
 
   <!-- Should throw BuildException : no dest file -->
   <target name="test1">
-    <PCTCRC graphicalMode="${graph}" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCRC graphicalMode="${graph}" dlcHome="${DLC}" />
   </target>
 
   <!-- No database connection : should throw BuildException -->
   <target name="test2">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}" />
   </target>
   <target name="test2post">
     <delete file="sandbox/crc" />
@@ -54,10 +53,10 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test3">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTCRC>
   </target>
@@ -89,11 +88,11 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
   </target>
   <target name="test4">
-    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCRC graphicalMode="${graph}" destFile="sandbox/crc" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
       <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
     </PCTCRC>
