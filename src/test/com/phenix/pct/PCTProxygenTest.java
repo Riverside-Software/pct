@@ -102,12 +102,13 @@ public class PCTProxygenTest extends BuildFileTest {
         File f1 = new File("pxg/Test.class");
         File f2 = new File("pxg/TestImpl.class");
         File f3 = new File("pxg/TestImpl.java");
-        assertTrue(f1.exists());
-        assertTrue(f2.exists());
-        assertFalse(f3.exists());
+        // 10.1B doesn't handle relative paths...
+        assertTrue("Failure expected on 10.1B...", f1.exists());
+        assertTrue("Failure expected on 10.1B...", f2.exists());
+        assertFalse("Failure expected on 10.1B...", f3.exists());
         
         executeTarget("test2-bis");
-        assertTrue(f3.exists());
+        assertTrue("Failure expected on 10.1B...", f3.exists());
     }
 
     public void test3() {
@@ -117,12 +118,13 @@ public class PCTProxygenTest extends BuildFileTest {
         File f1 = new File("pxg/Test.class");
         File f2 = new File("pxg/TestImpl.class");
         File f3 = new File("pxg/TestImpl.java");
-        assertTrue(f1.exists());
-        assertTrue(f2.exists());
-        assertFalse(f3.exists());
+        // 10.1B doesn't handle relative paths...
+        assertTrue("Failure expected on 10.1B...", f1.exists());
+        assertTrue("Failure expected on 10.1B...", f2.exists());
+        assertFalse("Failure expected on 10.1B...", f3.exists());
         
         executeTarget("test3-bis");
-        assertTrue(f3.exists());
+        assertTrue("Failure expected on 10.1B...", f3.exists());
     }
     
     public void test4() {
@@ -131,8 +133,9 @@ public class PCTProxygenTest extends BuildFileTest {
 
         File f1 = new File("sandbox/pxg/Test.class");
         File f2 = new File("sandbox/pxg/TestImpl.class");
-        assertTrue(f1.exists());
-        assertTrue(f2.exists());
+        // 10.1B doesn't handle relative paths...
+        assertTrue("Failure expected on 10.1B...", f1.exists());
+        assertTrue("Failure expected on 10.1B...", f2.exists());
     }
 
 }
