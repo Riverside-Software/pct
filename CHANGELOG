@@ -12,6 +12,8 @@ Version 0.13 (??/??/????)
  * Added Table attribute in PCTLoadData task
    Enhancement provided by Evan Todd
  * Added debugListing attribute in PCTCompile task
+ * Added support for 64 bits Progress
+ * Fixed problem with PCTBinaryDump under UNIX systems
 
 Version 0.12a (01/30/2007)
 ==============================
