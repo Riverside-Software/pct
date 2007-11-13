@@ -6,7 +6,6 @@
   <taskdef resource="PCT.properties" classpath="." />
 
   <property environment="env" />
-  <property name="pct-propath" location="progress" />
 
   <taskdef resource="PCT.properties" classpath="." />
 
@@ -31,7 +30,7 @@
 
   <!-- Compilation -->
   <target name="compile">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/*.p" />
       </fileset>
