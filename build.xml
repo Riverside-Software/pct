@@ -99,6 +99,7 @@
     <mkdir dir="${build-v8}" />
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
+    <mkdir dir="${build-v10-64}" />
     <mkdir dir="${dist}" />
     <mkdir dir="${junit-v9}" />
     <mkdir dir="${junit-v10}" />
@@ -384,6 +385,7 @@
     <delete dir="${build-v8}" />
     <delete dir="${build-v9}" />
     <delete dir="${build-v10}" />
+    <delete dir="${build-v10-64}" />
     <delete dir="${dist}" />
     <delete dir="${doc}" />
     <delete dir="${check}" />
@@ -392,8 +394,10 @@
     <delete dir="sports2000" />
     <delete dir="${junit-v9}" />
     <delete dir="${junit-v10}" />
+    <delete dir="${junit-v10-64}" />
     <delete dir="${junit-report-v9}" />
     <delete dir="${junit-report-v10}" />
+    <delete dir="${junit-report-v10-64}" />
     <delete>
       <fileset dir=".">
         <include name="pct*.tar.gz" />
@@ -443,6 +447,11 @@
     </copy>
     <copy todir="${website}/junit-v10">
       <fileset dir="${junit-report-v10}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit-v10-64">
+      <fileset dir="${junit-report-v10-64}">
         <include name="**" />
       </fileset>
     </copy>
