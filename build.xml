@@ -102,8 +102,10 @@
     <mkdir dir="${dist}" />
     <mkdir dir="${junit-v9}" />
     <mkdir dir="${junit-v10}" />
+    <mkdir dir="${junit-v10-64}" />
     <mkdir dir="${junit-report-v9}" />
     <mkdir dir="${junit-report-v10}" />
+    <mkdir dir="${junit-report-v10-64}" />
 
     <!-- Checking V8, v9 and v10 availability -->
     <available file="${DLC8}/version" property="dlc.v8.present" />
