@@ -218,12 +218,12 @@ public class PCTBinaryDump extends PCT {
 
     private ExecTask dumpTask(String table) throws BuildException {
         ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-        File a = this.getExecPath("_proutil"); //$NON-NLS-1$
+        File a = this.getExecPath("_dbutil"); //$NON-NLS-1$
 
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
-
+        
         exec.setExecutable(a.toString());
 
         // Database connections
