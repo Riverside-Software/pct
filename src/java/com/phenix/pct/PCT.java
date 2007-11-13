@@ -92,7 +92,7 @@ public abstract class PCT extends Task {
     private String revision = null;
     private String patchLevel = null;
     private boolean x64 = false; // True if 64-bits version of Progress
-    
+
     /**
      * Progress installation directory
      * 
@@ -274,7 +274,8 @@ public abstract class PCT extends Task {
     public abstract void execute() throws BuildException;
 
     protected void checkDlcHome() throws BuildException {
-        if (this.getDlcHome() == null) throw new BuildException(Messages.getString("PCT.3"));
+        if (this.getDlcHome() == null)
+            throw new BuildException(Messages.getString("PCT.3"));
     }
 
     /**
@@ -318,6 +319,7 @@ public abstract class PCT extends Task {
 
     /**
      * Detects 32/64 bits version
+     * 
      * @since PCT 0.13
      */
     private void setArch() {
@@ -359,8 +361,8 @@ public abstract class PCT extends Task {
         if (this.majorVersion == -1)
             return false;
         try {
-            InputStream is = this.getClass()
-                    .getResourceAsStream("/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
+            InputStream is = this.getClass().getResourceAsStream(
+                    "/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
             if (is == null)
                 return false;
             OutputStream os = new FileOutputStream(f);
