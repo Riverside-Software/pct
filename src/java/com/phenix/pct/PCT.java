@@ -91,7 +91,8 @@ public abstract class PCT extends Task {
     private int minorVersion = -1;
     private String revision = null;
     private String patchLevel = null;
-
+    private boolean x64 = false; // True if 64-bits version of Progress
+    
     /**
      * Progress installation directory
      * 
@@ -124,6 +125,7 @@ public abstract class PCT extends Task {
         }
 
         setProgressVersion();
+        setArch();
         switch (this.majorVersion) {
             case 8 :
                 this.pp = new ProgressV8();
@@ -315,6 +317,21 @@ public abstract class PCT extends Task {
     }
 
     /**
+     * Detects 32/64 bits version
+     * @since PCT 0.13
+     */
+    private void setArch() {
+        try {
+            RCodeInfo rci = new RCodeInfo(new File(this.dlcHome, "tty/prostart.r"));
+            this.x64 = ((rci.getVersion() & 0x4000) != 0);
+        } catch (IOException ioe) {
+            log("$DLC/tty/prostart.r not found. Assuming 32-bits architecture");
+        } catch (RCodeInfo.InvalidRCodeException irce) {
+            log("$DLC/tty/prostart.r : parser failure. Assuming 32-bits architecture");
+        }
+    }
+
+    /**
      * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file.
      * Automatically extract v9 or v10 PL
      * 
@@ -343,7 +360,7 @@ public abstract class PCT extends Task {
             return false;
         try {
             InputStream is = this.getClass()
-                    .getResourceAsStream("/pct" + this.majorVersion + ".pl");
+                    .getResourceAsStream("/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
             if (is == null)
                 return false;
             OutputStream os = new FileOutputStream(f);
