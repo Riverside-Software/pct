@@ -5,26 +5,25 @@
   <taskdef resource="PCT.properties" classpath="."/>
 
   <property environment="env"/>
-  <property name="pct-propath" location="progress" />
   
   <!-- Should throw BuildException : no database name -->
   <target name="test1">
-    <PCTCreateBase dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase dlcHome="${DLC}" />
   </target>
 
   <!-- Should throw BuildException : dbName longer than 11 characters -->
   <target name="test2">
-    <PCTCreateBase dbName="VeryLongName" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase dbName="VeryLongName" dlcHome="${DLC}" />
   </target>
   
   <!-- Simple test : creates a database -->
   <target name="test3">
-    <PCTCreateBase dbName="test3" destDir="sandbox" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test3" destDir="sandbox" dlcHome="${DLC}" />
   </target>
   
   <!-- Should throw BuildException : noInit and noStruct both defined -->
   <target name="test4">
-    <PCTCreateBase noInit="true" noStruct="true" dbName="test3" destDir="sandbox" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase noInit="true" noStruct="true" dbName="test3" destDir="sandbox" dlcHome="${DLC}" />
   </target>
   
   <!-- Database with table creation -->
@@ -54,10 +53,10 @@
       CREATE tab1.
       ASSIGN tab1.fld1 = 1.
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}"/>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"/>
   </target>
   <target name="test5">
-    <PCTCompile destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>	
@@ -67,12 +66,12 @@
   
   <!-- Checks database is not overwritten when overwrite=false -->
   <target name="test6">
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
   </target>
   
   <!-- Checks database is overwritten when overwrite=true -->
   <target name="test7">
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" overwrite="true" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" overwrite="true" />
   </target>
   
   <!-- Checks structure creation -->
@@ -83,13 +82,13 @@
       d "Schema Area":6,64 test.d1 f 1024
       d "Schema Area":6,64 test.d2 v 2048
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" structFile="test.st" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" structFile="test.st" />
   </target>
   <target name="test8bis">
     <echo file="sandbox/test.p">
       RETURN '0'.
     </echo>
-    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
   </target>
@@ -167,10 +166,10 @@
       CREATE tab3.
       ASSIGN tab3.fld1 = 3.
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema1.df,sandbox/schema2.df,sandbox/schema3.df" propath="${pct-propath}" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema1.df,sandbox/schema2.df,sandbox/schema3.df" />
   </target>
   <target name="test9">
-    <PCTCompile destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -208,8 +207,8 @@
   </target>
   <target name="test10">
     <property name="sch" location="${user.home}/schema.df" />
-    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch}" propath="${pct-propath}"/>
-    <PCTCompile destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch}"/>
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>
@@ -218,7 +217,7 @@
   </target>
   <target name="test10-2">
     <property name="sch2" location="${user.home}/non_existing_file.df" />
-    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch2}" propath="${pct-propath}"/>
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch2}"/>
   </target>
 
   <!-- Database with table creation -->
@@ -249,10 +248,10 @@
       CREATE tab1.
       ASSIGN tab1.fld1 = 1.
     </echo>
-    <PCTCreateBase dbName="test" destDir="sandbox/dir with spaces" dlcHome="${DLC}" schemaFile="sandbox/schema.df" propath="${pct-propath}"/>
+    <PCTCreateBase dbName="test" destDir="sandbox/dir with spaces" dlcHome="${DLC}" schemaFile="sandbox/schema.df"/>
   </target>
   <target name="test11">
-    <PCTCompile destDir="build" dlcHome="${DLC}" propath="${pct-propath}">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir=".">
         <include name="sandbox/test.p"/>
       </fileset>	
