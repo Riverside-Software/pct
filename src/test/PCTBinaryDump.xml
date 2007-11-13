@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="PCTCRC-test" default="">
+<project name="PCTBinaryDump-test" default="">
   <!-- $Revision$ -->
 
   <taskdef resource="PCT.properties" classpath="." />
