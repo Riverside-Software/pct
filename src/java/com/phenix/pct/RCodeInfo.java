@@ -216,10 +216,15 @@ public class RCodeInfo {
             this.crc = readUnsignedShort(this.segInitialValues, (this.version < 1000
                     ? CRC_OFFSET_V9
                     : CRC_OFFSET_V10), swapped);
-            for (int i = MD5_OFFSET_V10; i < MD5_OFFSET_V10 + 16; i++) {
-                this.md5 = bufferToHex(this.segInitialValues, MD5_OFFSET_V10, 16);
+            // If r-code not compiled with MD5, segment size is lesser than 256 bytes
+            if (initialValueSegmentSize >= MD5_OFFSET_V10 + 16) {
+                for (int i = MD5_OFFSET_V10; i < MD5_OFFSET_V10 + 16; i++) {
+                    this.md5 = bufferToHex(this.segInitialValues, MD5_OFFSET_V10, 16);
+                }
+            } else {
+                this.md5 = "0000000000000000"; // Default value
             }
-
+        
             // Reads debug segment
             raf.seek(debugSegmentOffset);
             raf.read(this.segDebug, 0, (int) debugSegmentSize);
@@ -342,10 +347,11 @@ public class RCodeInfo {
     }
 
     public static void main(String[] args) throws Exception {
-        // RCodeInfo rci = new RCodeInfo("C:\\EclipseWS\\PCT\\testbox\\rcode\\strings1.r");
-        RCodeInfo rci = new RCodeInfo("C:\\EclipseWS\\PCT\\build-v10\\pct\\pctCompile.r");
+        RCodeInfo rci = new RCodeInfo("C:\\Projects\\PCT\\prostart.r");
         System.out.println("CRC : " + rci.getCRC());
         System.out.println("MD5 : " + rci.getMD5());
+        System.out.println("Val : " + rci.getVersion());
+        System.out.println("64 bits : " + ((rci.getVersion() & 0x4000) != 0));
     }
 
     private class ActionCodeEntry {
