@@ -58,7 +58,6 @@
  
 DEFINE VARIABLE hSocket AS HANDLE  NO-UNDO.
 DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
-DEFINE VARIABLE lEmpty  AS LOGICAL NO-UNDO.
 
 DEFINE VARIABLE portNumber AS CHARACTER  NO-UNDO INITIAL ?.
 
@@ -76,20 +75,20 @@ DO WHILE aOk:
 END.
 QUIT.
 
-/* Connexion à la session ANT */
+/* Connects ANT session */
 PROCEDURE ConnectToServer.
     
     IF (portNumber EQ ?) THEN
         RETURN ERROR "No port number defined. Please log a bug".
     ASSIGN aOk = hSocket:CONNECT("-H localhost -S " + portNumber) NO-ERROR.
     if NOT aOK THEN
-        RETURN ERROR "Connection to PCT failed on port " + portNumber.
+        RETURN ERROR "Connection to ANT failed on port " + portNumber.
     ELSE 
         RUN SendConnectionGreeting.
 
 END PROCEDURE.
 
-/* Envoi du message de bienvenue et ajout du callback */
+/* Sends greeting message and declaring socket callback */
 PROCEDURE SendConnectionGreeting:
     DEFINE VARIABLE greeting AS CHARACTER NO-UNDO.
   
@@ -98,7 +97,7 @@ PROCEDURE SendConnectionGreeting:
     RUN WriteToSocket(greeting).
 END.
 
-/* handles writing of response data back to the eclipse session */
+/* Handles writing of response data back to the eclipse session */
 PROCEDURE WriteToSocket:
     DEFINE INPUT PARAMETER packet AS CHARACTER NO-UNDO.
   
@@ -112,122 +111,102 @@ PROCEDURE WriteToSocket:
 	        SET-SIZE(packetBuffer) = 0.    
         END.
         ELSE DO:
-		    RUN QUIT ("").
+		    RUN Quit("").
   	    END.
     END.
 END.
 
-/* Respond to events from eclipse */
+/* Respond to events from ANT */
 PROCEDURE ReceiveCommand:
-  /* Read procedure for socket */
-  DEFINE VARIABLE cCmd AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE i1   AS INTEGER  NO-UNDO.
-  DEFINE VARIABLE mReadBuffer AS MEMPTR NO-UNDO.
-  DEFINE VARIABLE iBytes  AS INTEGER.
+    DEFINE VARIABLE cCmd AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE i1   AS INTEGER  NO-UNDO.
+    DEFINE VARIABLE mReadBuffer AS MEMPTR NO-UNDO.
+    DEFINE VARIABLE iBytes  AS INTEGER.
 
-  IF NOT SELF:CONNECTED() THEN DO:
-     RETURN ERROR "Socket disconnected".
-  END.
+    IF NOT SELF:CONNECTED() THEN DO:
+        RETURN ERROR "Socket disconnected".
+    END.
 
-  iBytes = SELF:GET-BYTES-AVAILABLE().
-  SET-SIZE(mReadBuffer) = iBytes.
-  aOk = SELF:READ (mReadBuffer,1,iBytes).
-  cCmd = GET-STRING(mReadBuffer,1,iBytes).  /*Unmarshal data*/
-  
-  SET-SIZE(mReadBuffer) = 0.
-  cCmd = REPLACE(cCmd,CHR(13),'').  /* strip linefeed and cr */
-  
-  /* Check if a full command */
-  SELF:PRIVATE-DATA = "".
-  cCmd = SELF:PRIVATE-DATA + cCmd.
-  i1   = INDEX(cCmd,CHR(10)).
-  
-  IF NOT aOk THEN DO:
-      APPLY "close" TO THIS-PROCEDURE.
-      RETURN ERROR "Something bad happened.".
-  END.
+    ASSIGN iBytes = SELF:GET-BYTES-AVAILABLE()
+           SET-SIZE(mReadBuffer) = iBytes
+           aOk  = SELF:READ(mReadBuffer, 1, iBytes)
+           cCmd = GET-STRING(mReadBuffer, 1, iBytes)
+           SET-SIZE(mReadBuffer) = 0.
+    ASSIGN cCmd = REPLACE(cCmd, CHR(13), '').  /* Strip CR */
 
-  IF i1 > 0 THEN DO:
-    RUN executeCmd( TRIM(SUBSTRING(cCmd,1,i1 - 1)) ). 
-    SELF:PRIVATE-DATA = ENTRY(1,SUBSTRING(cCmd,i1),CHR(10)).
-  END.
-  ELSE 
-    SELF:PRIVATE-DATA = cCmd.
+    /* Check if a full command */
+    ASSIGN cCmd = (IF SELF:PRIVATE-DATA EQ ? THEN "" ELSE SELF:PRIVATE-DATA) + cCmd
+           i1   = INDEX(cCmd, CHR(10)).
+
+    IF NOT aOk THEN DO:
+        APPLY "close" TO THIS-PROCEDURE.
+        RETURN ERROR "Something bad happened".
+    END.
+
+    IF (i1 > 0) THEN DO:
+        RUN executeCmd(TRIM(SUBSTRING(cCmd, 1, i1 - 1))).
+        SELF:PRIVATE-DATA = (IF LENGTH(cCmd) GT i1 THEN SUBSTRING(cCmd, i1 + 1) ELSE "").
+    END.
+    ELSE
+        SELF:PRIVATE-DATA = cCmd.
 
 END PROCEDURE.
 
 /* If a command was received from eclipse then process it here and
-*  call the appropriate procedure
-*/
-
+ * call the appropriate procedure */
 PROCEDURE executeCmd:
-  /* Read procedure for socket */
-  DEFINE INPUT PARAMETER cCmd AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE cRet AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE cPrm AS CHARACTER NO-UNDO.
-  def var hproc as handle no-undo.
+    DEFINE INPUT PARAMETER cCmd AS CHARACTER NO-UNDO.
+    
+    DEFINE VARIABLE cRet  AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cPrm  AS CHARACTER  NO-UNDO INITIAL "".
+    DEFINE VARIABLE hProc AS HANDLE     NO-UNDO.
+    DEFINE VARIABLE idx   AS INTEGER    NO-UNDO.
 
-    ERROR-STATUS:ERROR = FALSE NO-ERROR.
-    DO ON ERROR UNDO, LEAVE ON STOP UNDO, LEAVE:
-    ASSIGN
-      lEmpty = FALSE
-      cRet = "Command not found (" + cCmd + ")"
-      cCmd = cCmd + " "
-      cPrm = TRIM(SUBSTRING(cCmd,INDEX(cCmd,' ') + 1))
-      cCmd = TRIM(ENTRY(1,cCmd,' '))
-      cRet = "".
-    /* MESSAGE cCmd "--" THIS-PROCEDURE:INTERNAL-ENTRIES VIEW-AS ALERT-BOX INFO BUTTONS OK. */
-
-        /* Si méthode nondisponible en interne */
-        IF NOT CAN-DO(THIS-PROCEDURE:INTERNAL-ENTRIES, cCmd) THEN DO:
-            /* Vérification si dispo dans les procédures persistentes */
-            ASSIGN hproc = SESSION:FIRST-PROCEDURE.
-            Rech:
-            do while (NOT CAN-DO(hProc:INTERNAL-ENTRIES,cCmd)):
-                assign hproc = hproc:next-sibling.
-                if (hproc eq ?) then do:
-                    ccmd = "".
-                    leave rech.
-                end.
-            end.
-            if (hproc eq ?) then return "ERROR:".
-            DontQuit:
-            DO ON ERROR     UNDO, LEAVE DontQuit
-               ON STOP      UNDO, LEAVE DontQuit
-               ON ENDKEY    UNDO, LEAVE DontQuit
-               ON QUIT      UNDO, LEAVE DontQuit:
-                run value(ccmd) in hProc(cPrm).
-            END.
-            cret = return-value.
-            RUN WriteToSocket(cRet).
-            return ''.
-        end.
-
-    IF cCmd > "" THEN do: 
-      ERROR-STATUS:ERROR = FALSE.
-      DONTQUIT:
-      DO ON ERROR     UNDO, LEAVE DONTQUIT
-         ON STOP      UNDO, LEAVE DONTQUIT
-         ON ENDKEY    UNDO, LEAVE DONTQUIT
-         ON QUIT      UNDO, LEAVE DONTQUIT:
-	      RUN VALUE(cCmd)(cPrm). 
-      END.
-      cRet = RETURN-VALUE.
+    ASSIGN idx = INDEX(cCmd, ' ').
+    IF (idx NE 0) THEN DO:
+        ASSIGN cPrm = TRIM(SUBSTRING(cCmd, idx + 1))
+               cCmd = TRIM(SUBSTRING(cCmd, 1, idx)).
     END.
-    ELSE
-    	cRet = "ERROR:FileNotFound".
-  END.
-  IF cRet = "" AND (ERROR-STATUS:ERROR OR ERROR-STATUS:GET-MESSAGE(1) > "") THEN 
-    cRet = "ERROR:" + ERROR-STATUS:GET-MESSAGE(1).
- 
-  IF lEmpty THEN RETURN. 
-  cRet = cRet + "~nEND.~n".
-  RUN WriteToSocket(cRet).
+
+    /* Checks if internal method */
+    IF (CAN-DO(THIS-PROCEDURE:INTERNAL-ENTRIES, cCmd)) THEN DO:
+        ASSIGN hProc = THIS-PROCEDURE.
+    END.
+    ELSE DO:
+        /* Checking super procedures */
+        ASSIGN hProc = SESSION:FIRST-PROCEDURE.
+        ProcSearch:
+        DO WHILE (VALID-HANDLE(hProc) AND NOT CAN-DO(hProc:INTERNAL-ENTRIES, cCmd)):
+            ASSIGN hProc = hProc:NEXT-SIBLING.
+            IF (hProc EQ ?) THEN DO:
+                LEAVE ProcSearch.
+            END.
+        END.
+    END.
+    IF (hProc EQ ?) OR (NOT VALID-HANDLE(hProc)) THEN DO:
+        RUN WriteToSocket("ERR:Unable to execute " + cCmd + "~nEND.~n").
+        RETURN ''.
+    END.
+        
+    DontQuit:
+    DO ON ERROR UNDO, RETRY ON STOP UNDO, RETRY ON ENDKEY UNDO, RETRY ON QUIT UNDO, RETRY:
+        IF RETRY THEN DO:
+            ASSIGN cRet = "ERR:".
+            LEAVE DontQuit.
+        END.
+        
+        RUN VALUE(cCmd) IN hProc (INPUT cPrm).
+        ASSIGN cRet = RETURN-VALUE.
+        ASSIGN cRet = "OK:" + (IF cRet EQ ? THEN "" ELSE cRet).
+    END.
+        
+    ASSIGN cRet = cRet + "~nEND.~n".
+    RUN WriteToSocket(cRet).
+    
 END PROCEDURE.
 
-/* this will terminate the infinite loop of waiting for commands and
-*  quit out of the Progress session
-*/
+/* This will terminate the infinite loop of waiting for commands and
+ * quit out of the Progress session */
 PROCEDURE QUIT:
     DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
     
@@ -237,39 +216,48 @@ PROCEDURE QUIT:
 
 END PROCEDURE.
 
+/* Changes PROPATH */
 PROCEDURE PROPATH:
     DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
 
-    /* FIXME File.separatorChar */
-    IF cPrm <> "" THEN PROPATH = cPrm + ";" + propath.
+    IF cPrm <> "" THEN PROPATH = cPrm + PROPATH.
     RETURN "OK:" + PROPATH.
 
 END PROCEDURE.
 
 
-/* connect to databases
-*/
+/* Connect to databases */
 PROCEDURE Connect :
   DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
+  
   DEFINE VARIABLE c1          AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE i1          AS INTEGER.
-  DEFINE VARIABLE cStatus     AS CHARACTER INIT "Connecting databases:".
-  cPrm = TRIM(cPrm).
+  DEFINE VARIABLE cStatus     AS CHARACTER  NO-UNDO.
+  
   CONNECT VALUE(cPrm) NO-ERROR.
-  IF ERROR-STATUS:ERROR 
-  THEN cStatus = "ERR:" + ERROR-STATUS:GET-MESSAGE(1).
-  ELSE cStatus = "OK:" + cStatus.
+  IF ERROR-STATUS:ERROR THEN
+      ASSIGN cStatus = "ERR:" + ERROR-STATUS:GET-MESSAGE(1).
+  ELSE
+      ASSIGN cStatus = "OK:".
+      
   RETURN cStatus.
+  
 END PROCEDURE.
 
 
-/* run a particular procedure persistently
-*/
+/* Run a particular procedure persistently */
 PROCEDURE launch:
-  DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE h as HANDLE.
-  RUN VALUE(cPrm) PERSISTENT SET h.
-  RETURN "OK:" + cPrm .
+    DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
+  
+    DEFINE VARIABLE cStatus AS CHARACTER  NO-UNDO.
+    
+    RUN VALUE(cPrm) PERSISTENT NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN
+        ASSIGN cStatus = "ERR:" + ERROR-STATUS:GET-MESSAGE(1).
+    ELSE
+        ASSIGN cStatus = "OK:".
+  
+    RETURN cStatus.
+  
 END PROCEDURE.
 
 
