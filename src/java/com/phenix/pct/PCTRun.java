@@ -109,7 +109,7 @@ public class PCTRun extends PCT {
     protected Collection dbConnList = null;
     private Collection options = null;
     protected Path propath = null;
-    private Path internalPropath = null;
+    protected Path internalPropath = null;
     protected Collection runParameters = null;
     private boolean batchMode = true;
     
