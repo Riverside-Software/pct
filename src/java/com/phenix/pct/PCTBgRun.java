@@ -55,10 +55,11 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.Environment;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -70,6 +71,7 @@ import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -82,12 +84,14 @@ public abstract class PCTBgRun extends PCTRun {
 
     // Internal use : socket communication
     private int port;
-
+    // Internal use : throw BuildException 
+    private boolean buildException;
+    
     /**
      * Default constructor
      */
     public PCTBgRun() {
-        super(false);
+        super(true);
     }
 
     /**
@@ -120,11 +124,6 @@ public abstract class PCTBgRun extends PCTRun {
             this.prepareExecTask();
         }
 
-        this.preparePropath();
-        this.setExecTaskParams();
-        exec.createArg().setValue("-p"); //$NON-NLS-1$
-        exec.createArg().setValue("pct/_server.p"); //$NON-NLS-1$
-
         // Starting the listener thread
         try {
             listener = getListener(this);
@@ -135,9 +134,22 @@ public abstract class PCTBgRun extends PCTRun {
             throw new BuildException(ioe.getMessage());
         }
 
-        // Setting environment variables needed by pct/_server.p
-        // ECLIPSE_PORT for example...
-        this.setExecTaskEnv();
+        super.setProcedure("pct/_server.p"); //$NON-NLS-1$
+        this.addParameter(new RunParameter("portNumber", Integer.toString(this.port))); //$NON-NLS-1$
+        
+        this.preparePropath();
+        this.createInitProcedure();
+        this.setExecTaskParams();
+        exec.createArg().setValue("-p"); //$NON-NLS-1$
+        exec.createArg().setValue(this.initProc.getAbsolutePath());
+        
+        exec.createArg().setValue("-clientlog");
+        exec.createArg().setValue("C:/truc.txt");
+        exec.createArg().setValue("-logentrytypes");
+        exec.createArg().setValue("4GLTrace:4");
+        
+        extractPL(pctLib);
+        
         // And executes Exec task
         exec.execute();
         cleanup();
@@ -147,35 +159,58 @@ public abstract class PCTBgRun extends PCTRun {
         } catch (InterruptedException ie) {
             this.cleanup();
             throw new BuildException(ie);
-        }
-
+        } 
+        if (buildException) throw new BuildException("Build failed");
     }
 
-    private void setExecTaskEnv() {
-        Environment.Variable var = null;
+    
+    /**
+     * This is a customized copy of PCTRun.createInitProcedure. The only difference is that database connections and
+     * propath modifications are not made in this file (it's delayed in the background process).
+     */
+    private void createInitProcedure() throws BuildException {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
 
-        // TODO Check if necessary
-        var = new Environment.Variable();
-        var.setKey("ECLIPSE_PROJECT"); //$NON-NLS-1$
-        var.setValue("ANT BUILD"); //$NON-NLS-1$
-        exec.addEnv(var);
+            // Progress v8 is unable to write to standard output, so output is redirected in a file,
+            // which is parsed in a later stage
+            if (this.getProgressProcedures().needRedirector()) {
+                outputStreamID = new Random().nextInt() & 0xffff;
+                outputStream = new File(
+                        System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            }
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
+                    new Object[]{(this.outputStream == null ? null : this.outputStream
+                            .getAbsolutePath())}));
 
-        var = new Environment.Variable();
-        var.setKey("ECLIPSE_ROOT"); //$NON-NLS-1$
-        var.setValue(this.getProject().getBaseDir().getAbsolutePath());
-        exec.addEnv(var);
+            // Defines internal propath
+            if (this.internalPropath != null) {
+                String[] lst = this.internalPropath.list();
+                for (int k = lst.length - 1; k >= 0; k--) {
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
+                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                }
+            }
 
-        // TODO Vérifier le répertoire linked_resources
-        var = new Environment.Variable();
-        var.setKey("ECLIPSE_WORK"); //$NON-NLS-1$
-        var.setValue(this.getProject().getBaseDir().getAbsolutePath());
-        exec.addEnv(var);
+           // Defines parameters
+            if (this.runParameters != null) {
+                for (Iterator i = this.runParameters.iterator(); i.hasNext(); ) {
+                    RunParameter param = (RunParameter) i.next();
+                    if (param.validate()) {
+                        bw.write(MessageFormat.format(this.getProgressProcedures().getParameterString(), new Object[]{escapeString(param.getName()), escapeString(param.getValue())}));
+                    }
+                }
+            }
 
-        var = new Environment.Variable();
-        var.setKey("ECLIPSE_PORT"); //$NON-NLS-1$
-        var.setValue(Integer.toString(this.port));
-        exec.addEnv(var);
+            bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
+                    new Object[]{escapeString(this.procedure)}));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getReturnProc(),
+                    new Object[]{escapeString(status.getAbsolutePath())}));
 
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException();
+        }
     }
 
     /**
@@ -290,26 +325,41 @@ public abstract class PCTBgRun extends PCTRun {
                         PCTConnection dbc = (PCTConnection) iter.next();
                         String s = dbc.createConnectString();
                         sendCommand("CONNECT " + s); //$NON-NLS-1$
+                        // FIXME Ajouter les alias
                     }
                 }
                 if (this.parent.propath != null) {
                     String[] lst = this.parent.propath.list();
                     for (int k = lst.length - 1; k >= 0; k--) {
-                        sendCommand("PROPATH " + lst[k]); //$NON-NLS-1$
+                        sendCommand("propath " + lst[k]); //$NON-NLS-1$
                     }
                 }
-                custom();
+                buildException = custom();
                 sendCommand("QUIT"); //$NON-NLS-1$
-            } catch (Throwable be) {
+            } 
+            catch (Throwable be) {
                 this.parent.cleanup();
             }
 
         }
 
         /**
+         * Handles propath response
+         */
+        public void handlePropath(String param, String ret, List strings) {
+            // Nothing
+        }
+        
+        /**
+         * Handles connect response 
+         */
+        public void handleConnect(String param, String ret, List strings) {
+            // Nothing
+        }
+
+        /**
          * This is where you code the task's logic
          */
-        protected abstract void custom() throws IOException;
-
+        protected abstract boolean custom() throws IOException;
     }
 }
