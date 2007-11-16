@@ -555,7 +555,7 @@
     </PCTCompile>
   </target>
 
-  <!-- Test simple recompile if file has changed (.r timestamp based) -->
+  <!-- Test listing, preprocess and debugListing attributes -->
   <target name="test20-init">
   	<echo file="sandbox/temp.p">
       MESSAGE "Hello world".
@@ -575,5 +575,5 @@
       </fileset>	
     </PCTCompile>
   </target>
-
+  
 </project>
