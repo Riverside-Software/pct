@@ -5,7 +5,7 @@
   <property environment="env" />
 
   <!-- If DLC8, DLC9, DLC10 and DLC10-64 are provided as properties, then skip loading properties from file -->
-  <condition property="skip.properties">
+  <condition property="skip.properties" value="true">
     <and>
       <isset property="DLC8" />
       <isset property="DLC9" />
@@ -290,6 +290,8 @@
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
         <pathelement location="ant-launcher.jar" />
+        <pathelement location="jakarta-regexp.jar" />
+        <pathelement location="ant-apache-regexp.jar" />
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
