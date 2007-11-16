@@ -58,7 +58,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Mapper;
 import org.apache.tools.ant.util.FileNameMapper;
-import org.apache.tools.ant.util.FlatFileNameMapper;
 import org.apache.tools.ant.util.IdentityMapper;
 
 import java.io.File;
@@ -270,7 +269,7 @@ public class PCTBgCompile extends PCTBgRun {
         if (mapperElement != null) {
             mapper = mapperElement.getImplementation();
         } else {
-            mapper = new IdentityMapper();
+            mapper = new RCodeMapper();
         }
         return mapper;
     }
@@ -329,45 +328,8 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         super.execute();
-// try {
-// writeFileList();
-// writeParams();
-// this.setProcedure(this.getProgressProcedures().getCompileProcedure());
-// this.setParameter(params.getAbsolutePath());
-// super.execute();
-// this.cleanup();
-// } catch (BuildException be) {
-// this.cleanup();
-// throw be;
-// }
     }
 
-    /**
-     * Delete temporary files if debug not activated
-     * 
-     * @see PCTRun#cleanup
-     */
-// protected void cleanup() {
-// super.cleanup();
-//
-// if (!this.getDebugPCT()) {
-// if (this.fsList.exists() && !this.fsList.delete()) {
-// log(
-// MessageFormat
-// .format(
-// Messages.getString("PCTCompile.42"), new Object[]{this.fsList.getAbsolutePath()}),
-// Project.MSG_VERBOSE); //$NON-NLS-1$
-// }
-//
-// if (this.params.exists() && !this.params.delete()) {
-// log(
-// MessageFormat
-// .format(
-// Messages.getString("PCTCompile.42"), new Object[]{this.params.getAbsolutePath()}),
-// Project.MSG_VERBOSE); //$NON-NLS-1$
-// }
-// }
-// }
     protected PCTListener getListener(PCTBgRun parent) throws IOException {
         return new PCTCompileListener(this);
     }
@@ -421,14 +383,24 @@ public class PCTBgCompile extends PCTBgRun {
                 for (int i = 0; i < dsfiles.length && !leave; i++) {
                     // File to be compiled
                     File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
+                    int srcExtPos = dsfiles[i].lastIndexOf('.');
+                    
                     // Output directory for .r file
                     String[] outputNames = getMapper().mapFileName(dsfiles[i]);
                     if ((outputNames != null) && (outputNames.length >= 1)) {
-                        File outputDir = new File(destDir, outputNames[0]).getParentFile();
+                        File outputFile = new File(destDir, outputNames[0]);
+                        File outputDir = outputFile.getParentFile();
                         if (!outputDir.exists())
                             outputDir.mkdirs();
+                        
+                        // File produced by Progress compiler (always source file name with extension .r)
+                        int extPos = inputFile.getName().lastIndexOf('.');
+                        File progressFile = new File(outputDir, inputFile.getName().substring(0, extPos) + ".r");
+//                        File outputFile = new File(destDir, outputNames[0]);
+                        
                         // Output directory for PCT files appended with filename
-                        File PCTRoot = new File(dotPCTDir, outputNames[0]);
+                        int extPos2 = outputNames[0].lastIndexOf('.');
+                        File PCTRoot = new File(dotPCTDir, outputNames[0].substring(0, extPos2) + dsfiles[i].substring(srcExtPos));
                         int rIndex = PCTRoot.getAbsolutePath().lastIndexOf('.');
                         // Output directory for PCT files
                         File PCTDir = PCTRoot.getParentFile();
@@ -453,6 +425,9 @@ public class PCTBgCompile extends PCTBgRun {
                         sb.append(new File(destDir, "XREF").getAbsolutePath());
                         sb.append('|');
                         sb.append(PCTRoot.getAbsolutePath());
+                        sb.append('|');
+                        if (progressFile.compareTo(outputFile) != 0)
+                            sb.append(outputFile.getAbsolutePath());
                         sendCommand(sb.toString());
                     }
                 }
@@ -520,6 +495,36 @@ public class PCTBgCompile extends PCTBgRun {
             while (i.hasNext()) {
                 log((String) i.next());
             }
+        }
+    }
+
+    public class RCodeMapper implements FileNameMapper {
+
+        /**
+         * Ignored.
+         * @param from ignored.
+         */
+        public void setFrom(String from) {
+        }
+
+        /**
+         * Ignored.
+         * @param to ignored.
+         */
+        public void setTo(String to) {
+        }
+
+        /**
+         * Returns an one-element array containing the source file name.
+         * @param sourceFileName the name to map.
+         * @return the source filename in a one-element array.
+         */
+        public String[] mapFileName(String sourceFileName) {
+            if (sourceFileName == null)
+                return null;
+            int extPos = sourceFileName.lastIndexOf('.');
+            
+            return new String[] {sourceFileName.substring(0, extPos) + ".r"};
         }
     }
 

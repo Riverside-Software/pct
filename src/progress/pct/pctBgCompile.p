@@ -186,17 +186,19 @@ PROCEDURE pctCompile.
      *   -> Listing file : Full pathname of listing file
      *      If empty, don't create a listing file
      *   -> PCT base : Root file name for PCT temp files, i.e. .crc and .inc files
+     *   -> Target file : if file name is different from what Progress generates
+     *      If empty, keep generated file as is
      */
 
-	DEFINE VARIABLE inputFile AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE outputDir AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE dbgList   AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE prepro    AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE inputFile   AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE prepro      AS CHARACTER  NO-UNDO.
 	DEFINE VARIABLE listingFile AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE xrefFile  AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE pctDir   AS CHARACTER  NO-UNDO.
-	
-	DEFINE VARIABLE retval AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE xrefFile    AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE pctDir      AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE retval      AS CHARACTER  NO-UNDO.
 	
 	DEFINE VARIABLE Recompile AS LOGICAL NO-UNDO.
 	
@@ -216,13 +218,15 @@ PROCEDURE pctCompile.
 	       prepro      = ENTRY(4, cPrm, {&SEPARATOR})
 	       listingFile = ENTRY(5, cPrm, {&SEPARATOR})
 	       xrefFile    = ENTRY(6, cPrm, {&SEPARATOR})
-	       pctDir      = ENTRY(7, cPrm, {&SEPARATOR}).
+	       pctDir      = ENTRY(7, cPrm, {&SEPARATOR})
+	       targetFile  = ENTRY(8, cPrm, {&SEPARATOR}).
 
     /* Empty paths are set to NULL */
     ASSIGN dbgList     = (IF dbgList EQ '' THEN ? ELSE dbgList)
            prepro      = (IF prepro EQ '' THEN ? ELSE prepro)
            listingFile = (IF listingFile EQ '' THEN ? ELSE listingFile)
-           xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile).
+           xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
+           targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
 
     IF (ForceComp OR lXCode) THEN DO:
         ASSIGN Recompile = TRUE.
@@ -268,8 +272,13 @@ PROCEDURE pctCompile.
             ASSIGN retVal = retVal + getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).
         END.
         ELSE DO:
+            IF (targetFile NE ?) THEN DO:
+                OS-COPY VALUE(outputDir + "/" + RCodeName) VALUE(targetFile).
+                OS-DELETE VALUE(outputDir + "/" + RCodeName).
+            END.
             ASSIGN retVal = "0~n".
             RUN ImportXref (INPUT xreffile, INPUT pctdir) NO-ERROR.
+            OS-DELETE VALUE(xrefFile).
         END.
         RETURN SUBSTITUTE({&MESSAGE}, retVal).
     END.
