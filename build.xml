@@ -272,6 +272,8 @@
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
         <pathelement location="ant-launcher.jar" />
+        <pathelement location="jakarta-regexp-1.5.jar" />
+        <pathelement location="ant-apache-regexp.jar" />
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
@@ -290,7 +292,7 @@
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
         <pathelement location="ant-launcher.jar" />
-        <pathelement location="jakarta-regexp.jar" />
+        <pathelement location="jakarta-regexp-1.5.jar" />
         <pathelement location="ant-apache-regexp.jar" />
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
@@ -310,6 +312,8 @@
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
         <pathelement location="ant-launcher.jar" />
+        <pathelement location="jakarta-regexp-1.5.jar" />
+        <pathelement location="ant-apache-regexp.jar" />
         <pathelement location="${dist}/PCT.jar" />
         <pathelement location="${build}" />
       </classpath>
