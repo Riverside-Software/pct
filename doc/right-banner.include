@@ -4,16 +4,18 @@
     <li><a href="manual.html">Installation</a></li>
     <li><a href="PLReader.html">PLReader</a></li>
     <li><a href="quickstart.html">Quick start</a></li>
-    <li><a href="developers.html">Improving PCT</a> <span id="new">!!NEW!!</span></li>
+    <li><a href="developers.html">Improving PCT</a>
     <li><a href="changelog.html">Changelog</a></li>
-    <li><a href="junit-v9/index.html">JUnit report (v9)</a> <span id="new">!!NEW!!</span></li>
-    <li><a href="junit-v10/index.html">JUnit report (v10)</a> <span id="new">!!NEW!!</span></li>
+    <li><a href="junit-v9/index.html">JUnit report (v9)</a> 
+    <li><a href="junit-v10/index.html">JUnit report (v10)</a> 
+    <li><a href="junit-v10-64/index.html">JUnit report (v10 64 bits)</a><span id="new">!!NEW!!</span></li>
   </ul>
   <h1>Tasks</h1>
   <ul>
     <li><a href="PCT.html">PCT</a></li>
     <li><a href="PCTRun.html">PCTRun</a></li>
     <li><a href="PCTCompile.html">PCTCompile</a></li>
+    <li><a href="PCTCompileExt.html">PCTCompileExt</a></li><span id="new">!!NEW!!</span></li>
     <li><a href="PCTWSComp.html">PCTWSComp</a></li>
     <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
     <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
@@ -41,7 +43,7 @@
   </ul>
   <h1>Selectors</h1>
   <ul>
-    <li><a href="CRCDifferent.html">CRCDifferent</a> <span id="new">!!NEW!!</span></li>
+    <li><a href="CRCDifferent.html">CRCDifferent</a>
   </ul>
 
 </div>
