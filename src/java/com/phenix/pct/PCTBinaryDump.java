@@ -218,9 +218,14 @@ public class PCTBinaryDump extends PCT {
     }
 
     private ExecTask dumpTask(String table) throws BuildException {
+        File executable = null;
         ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-        File a = this.getExecPath("_dbutil"); //$NON-NLS-1$
-
+        
+        if (getMajorVersion() >= 10)
+            executable = this.getExecPath("_dbutil"); //$NON-NLS-1$
+        else
+            executable = this.getExecPath("_proutil"); //$NON-NLS-1$
+        
         exec.setOwningTarget(this.getOwningTarget());
         exec.setTaskName(this.getTaskName());
         exec.setDescription(this.getDescription());
@@ -230,7 +235,7 @@ public class PCTBinaryDump extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
-        exec.setExecutable(a.toString());
+        exec.setExecutable(executable.toString());
 
         // Database connections
         for (Iterator e = dbConnList.iterator(); e.hasNext();) {
