@@ -58,7 +58,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Mapper;
 import org.apache.tools.ant.util.FileNameMapper;
-import org.apache.tools.ant.util.IdentityMapper;
 
 import java.io.File;
 import java.io.IOException;
