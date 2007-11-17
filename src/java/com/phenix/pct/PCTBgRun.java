@@ -143,11 +143,6 @@ public abstract class PCTBgRun extends PCTRun {
         exec.createArg().setValue("-p"); //$NON-NLS-1$
         exec.createArg().setValue(this.initProc.getAbsolutePath());
         
-        exec.createArg().setValue("-clientlog");
-        exec.createArg().setValue("C:/truc.txt");
-        exec.createArg().setValue("-logentrytypes");
-        exec.createArg().setValue("4GLTrace:4");
-        
         extractPL(pctLib);
         
         // And executes Exec task
