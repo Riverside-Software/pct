@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="dist">
 
@@ -488,13 +488,13 @@
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
     <property name="sports2000-doc" location="sports2000/doc" />
-    <exec executable="${DLC10}/bin/_dbutil" dir="sports2000">
-      <env key="DLC" value="${DLC10}" />
+    <exec executable="${DLC10-64}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC10-64}" />
       <arg value="procopy" />
-      <arg path="${DLC10}/sports2000" />
+      <arg path="${DLC10-64}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10}">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10-64}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
