@@ -97,7 +97,7 @@ if not FileExists(cSrcDir) then do:
 end.
 
 if cTableList = '':U then
-   run prodict/load_d.p ("ALL":U, cSrcDir).
+   run prodict/load_d.p ("ALL":U, cSrcDir + '/').
 else do i = 1 to num-entries(cTableList):
    run prodict/load_d.p (entry(i, cTableList), cSrcDir).   
 end.
