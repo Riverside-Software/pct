@@ -60,7 +60,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 
@@ -75,13 +77,16 @@ import java.util.Vector;
  */
 public class PLReader {
     private static final int MAGIC = 0xD707;
+    private static final int ENCODING_OFFSET = 0x02;
     private static final int FILE_LIST_OFFSET = 0x1E;
     private static final int RECORD_MIN_SIZE = 29;
     private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
+
     private File f;
     private Vector files = null;
     private boolean init = false;
-
+//    private String encoding = null;
+    
     public PLReader(File f) {
         this.f = f;
         init();
@@ -156,7 +161,8 @@ public class PLReader {
         ByteBuffer bb = ByteBuffer.allocate(RECORD_MAX_SIZE);
         long offset = 0;
         int br = 0;
-
+        Charset charset = null;
+        
         if (!checkMagic()) {
             return;
         }
@@ -164,6 +170,23 @@ public class PLReader {
         try {
             FileInputStream fis = new FileInputStream(f);
             FileChannel in = fis.getChannel();
+            
+            // Reads encoding from library
+            ByteBuffer bEncoding = ByteBuffer.allocate(20); 
+            in.read(bEncoding, ENCODING_OFFSET);
+            bEncoding.position(0);
+            byte bb3;
+            StringBuffer sbEncoding = new StringBuffer();
+            while((bb3 = bEncoding.get()) != 0) {
+                sbEncoding.append((char) bb3);
+            }
+            try {
+                charset = Charset.forName(sbEncoding.toString());
+            } catch (IllegalArgumentException iae) {
+                System.out.println("Unknown charset : " + sbEncoding.toString() + " - Defaulting to US-ASCII");
+                charset = Charset.forName("US-ASCII");
+            }
+            
             ByteBuffer b = ByteBuffer.allocate(4);
             int f_offs = in.read(b, FILE_LIST_OFFSET);
 
@@ -196,10 +219,11 @@ public class PLReader {
 
                         if (fnsz > 0) {
                             sb.setLength(0);
-
-                            for (int k = 0; k < fnsz; k++) {
-                                sb.append((char) (bb.get(k + 2) & 0xff));
-                            }
+                            
+                            bb.position(1);
+                            ByteBuffer bb2 = bb.duplicate();
+                            bb2.limit(bb2.get(1) + 2);
+                            CharBuffer fileName = charset.decode(bb2);
 
                             offset += (RECORD_MIN_SIZE + fnsz);
 
@@ -209,7 +233,7 @@ public class PLReader {
                             long modDate = ((long) bb.getInt(fnsz + 17) & 0xffffffffL);
 
                             // Creates new file entry and adds it to vector
-                            FileEntry fe = new FileEntry(sb.toString(), modDate, addDate,
+                            FileEntry fe = new FileEntry(fileName.toString(), modDate, addDate,
                                     fileOffset, (int) fileSize);
                             files.add(fe);
 
