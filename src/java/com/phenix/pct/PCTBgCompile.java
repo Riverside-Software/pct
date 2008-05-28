@@ -383,12 +383,22 @@ public class PCTBgCompile extends PCTBgRun {
                     // File to be compiled
                     File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
                     int srcExtPos = dsfiles[i].lastIndexOf('.');
+                    String extension = dsfiles[i].substring(srcExtPos);
                     
                     // Output directory for .r file
                     String[] outputNames = getMapper().mapFileName(dsfiles[i]);
                     if ((outputNames != null) && (outputNames.length >= 1)) {
+                        File outputDir = null;
                         File outputFile = new File(destDir, outputNames[0]);
-                        File outputDir = outputFile.getParentFile();
+                        if (extension.equalsIgnoreCase(".cls")) {
+                            // Specific case, as Progress prepends package name automatically
+                            // So outputDir has to be rootDir
+                            outputDir = destDir;
+                        }
+                        else {
+                            outputDir = new File(destDir, outputNames[0]).getParentFile();
+                        }
+                        
                         if (!outputDir.exists())
                             outputDir.mkdirs();
                         

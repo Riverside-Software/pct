@@ -304,4 +304,12 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue("Unable to find preprocess file", f2.exists());
         assertTrue("Unable to find debug-listing file", f3.exists());
     }
+
+    public void test21() {
+        executeTarget("test21");
+        File f1 = new File("build/package/package/testclass.r");
+        assertFalse(f1.exists());
+        File f2 = new File("build/package/testclass.r");
+        assertTrue(f2.exists());
+    }
 }

@@ -620,4 +620,17 @@
     </PCTCompileExt>	
   </target>
   
+  <target name="test23">
+    <mkdir dir="sandbox/package"/>
+  	<echo file="sandbox/package/testclass.cls">
+  	   CLASS package.testclass:
+  	   END CLASS.
+  	</echo>
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="package/testclass.cls"/>
+      </fileset>
+    </PCTCompile>	
+  </target>
+
 </project>
