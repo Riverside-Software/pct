@@ -332,6 +332,7 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
 
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
@@ -339,7 +340,8 @@ PROCEDURE PCTCompileXref.
     IF (NOT plOK) THEN RETURN.
     ASSIGN plOK = createDir(pcPCTDir, cBase).
     IF (NOT plOK) THEN RETURN.
-    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+    cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
         RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.

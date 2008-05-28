@@ -324,5 +324,13 @@ public class PCTCompileExtTest extends BuildFileTest {
         assertTrue(f2.exists());
         assertTrue(f3.exists());
     }
+   
+    public void test23() {
+        executeTarget("test23");
+        File f1 = new File("build/package/package/testclass.r");
+        assertFalse(f1.exists());
+        File f2 = new File("build/package/testclass.r");
+        assertTrue(f2.exists());
+    }
 
 }
