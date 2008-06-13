@@ -106,11 +106,7 @@ public class PCTDumpData extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpData.2")); //$NON-NLS-1$
         }
 
-        param = destDir.toString();
-
-        if (this.tables != null) {
-            param = param + ',' + this.tables;
-        }
+        param = destDir.toString() + "," + (this.tables == null ? "ALL" : this.tables);
 
         this.setProcedure("pct/pctDumpData.p"); //$NON-NLS-1$
         this.setParameter(param);
