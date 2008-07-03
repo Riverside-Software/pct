@@ -112,6 +112,7 @@ public class PCTRun extends PCT {
     protected Path internalPropath = null;
     protected Collection runParameters = null;
     private boolean batchMode = true;
+    private boolean failOnError = true;
     
     // Internal use
     protected ExecTask exec = null;
@@ -291,6 +292,15 @@ public class PCTRun extends PCT {
      */
     public void setIniFile(File iniFile) {
         this.iniFile = iniFile;
+    }
+
+    /**
+     * Sets the failOnError parameter. Defaults to true.
+     * 
+     * @param failOnError
+     */
+    public void setFailOnError(boolean failOnError){
+        this.failOnError = failOnError;
     }
 
     /**
@@ -505,7 +515,7 @@ public class PCTRun extends PCT {
             this.cleanup();
             int ret = Integer.parseInt(s);
 
-            if (ret != 0) {
+            if (ret != 0 && failOnError) {
                 throw new BuildException(MessageFormat.format(
                         Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }

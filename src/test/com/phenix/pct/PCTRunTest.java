@@ -320,4 +320,12 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test30-part2");
         executeTarget("test30-part3");
     }
+    
+    /**
+     * test failOnError attribute
+     */
+    public void test31() {
+        expectBuildException("test31-a", "Shouldn't work");
+        executeTarget("test31-b");
+    }
 }

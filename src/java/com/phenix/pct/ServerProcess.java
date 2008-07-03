@@ -46,6 +46,10 @@ public class ServerProcess extends PCTRun {
     public void setBaseDir(File baseDir) {
         throw new BuildException("Unknown attribute");
     }
+    public void setFailOnError(boolean failOnError) {
+        throw new BuildException("Unknown attribute");
+    }
+    
     public String getActivateProc() {
         return activateProc;
     }
