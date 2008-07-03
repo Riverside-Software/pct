@@ -2,6 +2,8 @@ Version 0.14 (??/??/????)
 ==============================
  * Fixed duplicate hierarchy when compiling .cls files
    Bugfix provided by Peter KULLMANN
+ * Added failOnError attribute in PCTRun
+   Patch provided by Peter KULLMANN
 
 Version 0.13 (11/18/2007)
 ==============================

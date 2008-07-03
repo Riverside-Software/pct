@@ -21,6 +21,9 @@ public class WSServerProcess extends PCTRun {
     public void setBaseDir(File baseDir) {
         throw new BuildException("Unknown attribute");
     }
+    public void setFailOnError(boolean failOnError) {
+        throw new BuildException("Unknown attribute");
+    }
 
     public boolean isWebLogError() {
         return webLogError;

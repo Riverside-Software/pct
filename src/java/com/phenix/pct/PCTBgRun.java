@@ -84,9 +84,9 @@ public abstract class PCTBgRun extends PCTRun {
 
     // Internal use : socket communication
     private int port;
-    // Internal use : throw BuildException 
+    // Internal use : throw BuildException
     private boolean buildException;
-    
+
     /**
      * Default constructor
      */
@@ -101,7 +101,13 @@ public abstract class PCTBgRun extends PCTRun {
      * @throws BuildException Always throws a BuildException
      */
     public void setProcedure(String procedure) {
-        throw new BuildException(Messages.getString("PCTBgRun.0")); //$NON-NLS-1$
+        throw new BuildException(MessageFormat.format(
+                Messages.getString("PCTBgRun.0"), new Object[]{"procedure"})); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public void setFailOnError(boolean failOnError) {
+        throw new BuildException(MessageFormat.format(
+                Messages.getString("PCTBgRun.0"), new Object[]{"failOnError"})); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -136,15 +142,15 @@ public abstract class PCTBgRun extends PCTRun {
 
         super.setProcedure("pct/_server.p"); //$NON-NLS-1$
         this.addParameter(new RunParameter("portNumber", Integer.toString(this.port))); //$NON-NLS-1$
-        
+
         this.preparePropath();
         this.createInitProcedure();
         this.setExecTaskParams();
         exec.createArg().setValue("-p"); //$NON-NLS-1$
         exec.createArg().setValue(this.initProc.getAbsolutePath());
-        
+
         extractPL(pctLib);
-        
+
         // And executes Exec task
         exec.execute();
         cleanup();
@@ -154,14 +160,15 @@ public abstract class PCTBgRun extends PCTRun {
         } catch (InterruptedException ie) {
             this.cleanup();
             throw new BuildException(ie);
-        } 
-        if (buildException) throw new BuildException("Build failed");
+        }
+        if (buildException)
+            throw new BuildException("Build failed");
     }
 
-    
     /**
-     * This is a customized copy of PCTRun.createInitProcedure. The only difference is that database connections and
-     * propath modifications are not made in this file (it's delayed in the background process).
+     * This is a customized copy of PCTRun.createInitProcedure. The only difference is that database
+     * connections and propath modifications are not made in this file (it's delayed in the
+     * background process).
      */
     private void createInitProcedure() throws BuildException {
         try {
@@ -187,12 +194,14 @@ public abstract class PCTBgRun extends PCTRun {
                 }
             }
 
-           // Defines parameters
+            // Defines parameters
             if (this.runParameters != null) {
-                for (Iterator i = this.runParameters.iterator(); i.hasNext(); ) {
+                for (Iterator i = this.runParameters.iterator(); i.hasNext();) {
                     RunParameter param = (RunParameter) i.next();
                     if (param.validate()) {
-                        bw.write(MessageFormat.format(this.getProgressProcedures().getParameterString(), new Object[]{escapeString(param.getName()), escapeString(param.getValue())}));
+                        bw.write(MessageFormat.format(this.getProgressProcedures()
+                                .getParameterString(), new Object[]{escapeString(param.getName()),
+                                escapeString(param.getValue())}));
                     }
                 }
             }
@@ -331,8 +340,7 @@ public abstract class PCTBgRun extends PCTRun {
                 }
                 buildException = custom();
                 sendCommand("QUIT"); //$NON-NLS-1$
-            } 
-            catch (Throwable be) {
+            } catch (Throwable be) {
                 this.parent.cleanup();
             }
 
@@ -344,9 +352,9 @@ public abstract class PCTBgRun extends PCTRun {
         public void handlePropath(String param, String ret, List strings) {
             // Nothing
         }
-        
+
         /**
-         * Handles connect response 
+         * Handles connect response
          */
         public void handleConnect(String param, String ret, List strings) {
             // Nothing
