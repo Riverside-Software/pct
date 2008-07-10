@@ -4,6 +4,7 @@ Version 0.14 (??/??/????)
    Bugfix provided by Peter KULLMANN
  * Added failOnError attribute in PCTRun
    Patch provided by Peter KULLMANN
+ * Upgrading to ANT 1.7.1
 
 Version 0.13 (11/18/2007)
 ==============================
