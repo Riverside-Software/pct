@@ -120,7 +120,7 @@ public class RCodeInfoTest extends TestCase {
             bw.newLine();
             bw.write("MESSAGE RCODE-INFO:CRC-VALUE.");
             bw.newLine();
-            if (comp.getMajorVersion() >= 10) {
+            if (comp.getDLCMajorVersion() >= 10) {
                 bw.write("MESSAGE RCODE-INFO:MD5-VALUE.");
                 bw.newLine();
             }
@@ -139,7 +139,7 @@ public class RCodeInfoTest extends TestCase {
 
             BufferedReader br = new BufferedReader(new FileReader(new File(sandbox, "test1.crc")));
             crc1 = br.readLine();
-            if (comp.getMajorVersion() >= 10) {
+            if (comp.getDLCMajorVersion() >= 10) {
                 md5_1 = br.readLine();
             }
             else {
@@ -151,7 +151,7 @@ public class RCodeInfoTest extends TestCase {
             run.execute();
             br = new BufferedReader(new FileReader(new File(sandbox, "test2.crc")));
             crc2 = br.readLine();
-            if (comp.getMajorVersion() >= 10) {
+            if (comp.getDLCMajorVersion() >= 10) {
                 md5_2 = br.readLine();
             }
             else {
@@ -163,7 +163,7 @@ public class RCodeInfoTest extends TestCase {
             RCodeInfo file2 = new RCodeInfo(new File(sandbox, "test2.r"));
             assertEquals(Long.parseLong(crc1), file1.getCRC());
             assertEquals(Long.parseLong(crc2), file2.getCRC());
-            if (comp.getMajorVersion() >= 10) {
+            if (comp.getDLCMajorVersion() >= 10) {
                 assertEquals(md5_1, file1.getMD5());
                 assertEquals(md5_2, file2.getMD5());
             }
