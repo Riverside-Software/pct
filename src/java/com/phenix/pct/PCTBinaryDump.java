@@ -221,7 +221,7 @@ public class PCTBinaryDump extends PCT {
         File executable = null;
         ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
         
-        if (getMajorVersion() >= 10)
+        if (getDLCMajorVersion() >= 10)
             executable = this.getExecPath("_dbutil"); //$NON-NLS-1$
         else
             executable = this.getExecPath("_proutil"); //$NON-NLS-1$
