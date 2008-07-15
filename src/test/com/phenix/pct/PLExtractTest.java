@@ -108,7 +108,7 @@ public class PLExtractTest extends TestCase {
             PCTLibrary lib = new PCTLibrary();
             lib.setProject(project);
             lib.setBasedir(baseDir);
-            lib.setDlcHome(new File(System.getProperty("DLC")));
+            lib.setDlcHome(new File(project.getProperty("DLC")));
             lib.setDestFile(destFile);
             lib.setIncludes(inc);
             lib.setExcludes(exc);
