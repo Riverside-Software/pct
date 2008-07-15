@@ -223,6 +223,7 @@ public class PLReader {
                             bb.position(1);
                             ByteBuffer bb2 = bb.duplicate();
                             bb2.limit(bb2.get(1) + 2);
+                            bb2.position(2);
                             CharBuffer fileName = charset.decode(bb2);
 
                             offset += (RECORD_MIN_SIZE + fnsz);
