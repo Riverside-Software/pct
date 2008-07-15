@@ -67,7 +67,6 @@ import java.io.File;
  */
 public class PCTProxygenTest extends BuildFileTest {
     private int majorVersion, minorVersion;
-    private String revision;
     
     public PCTProxygenTest(String name) {
         super(name);
@@ -92,7 +91,6 @@ public class PCTProxygenTest extends BuildFileTest {
         
         majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
         minorVersion = Integer.parseInt(getProject().getProperty("minorVersion"));
-        revision = getProject().getProperty("revision");
     }
 
     public void tearDown() {
