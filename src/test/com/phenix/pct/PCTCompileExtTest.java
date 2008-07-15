@@ -59,9 +59,9 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-
 /**
  * Class for testing PCTCompileExt task
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTCompileExtTest extends BuildFileTest {
@@ -77,6 +77,12 @@ public class PCTCompileExtTest extends BuildFileTest {
         mkdir.setProject(this.getProject());
         mkdir.setDir(new File("sandbox"));
         mkdir.execute();
+
+        ProgressVersion version = new ProgressVersion();
+        version.setProject(getProject());
+        version.setDlcHome(new File(getProject().getProperty("DLC")));
+        version.setMajorVersion("majorVersion");
+        version.execute();
     }
 
     public void tearDown() {
@@ -238,24 +244,24 @@ public class PCTCompileExtTest extends BuildFileTest {
         executeTarget("test15bis");
         assertTrue(mod == f.lastModified());
     }
-    
+
     public void test16() {
-    	executeTarget("test16init");
-    	executeTarget("test16");
+        executeTarget("test16init");
+        executeTarget("test16");
         File f = new File("build/sandbox/temp.r");
         assertTrue(f.exists());
         File f2 = new File("build/xcode/temp.r");
         assertTrue(f2.exists());
     }
-    
+
     public void test17() {
-    	executeTarget("test17init");
-    	expectBuildException("test17-part1", "Should fail - No key specified");
-    	executeTarget("test17-part2");
-    	File f = new File("build/xcode/temp.r");
-    	assertTrue(f.exists());
+        executeTarget("test17init");
+        expectBuildException("test17-part1", "Should fail - No key specified");
+        executeTarget("test17-part2");
+        File f = new File("build/xcode/temp.r");
+        assertTrue(f.exists());
     }
-    
+
     public void test18() {
         executeTarget("test18init");
         executeTarget("test18");
@@ -290,7 +296,7 @@ public class PCTCompileExtTest extends BuildFileTest {
     public void test20() {
         executeTarget("test20-init");
         executeTarget("test20-part1");
-        
+
         File dotR = new File("build/sandbox/temp.r");
         File f1 = new File("build/.pct/sandbox/temp.p");
         File f2 = new File("build/.pct/sandbox/temp.p.preprocess");
@@ -304,7 +310,7 @@ public class PCTCompileExtTest extends BuildFileTest {
         assertTrue("Unable to find preprocess file", f2.exists());
         assertTrue("Unable to find debug-listing file", f3.exists());
     }
-    
+
     public void test21() {
         executeTarget("test21");
 
@@ -324,13 +330,16 @@ public class PCTCompileExtTest extends BuildFileTest {
         assertTrue(f2.exists());
         assertTrue(f3.exists());
     }
-   
+
     public void test23() {
-        executeTarget("test23");
-        File f1 = new File("build/package/package/testclass.r");
-        assertFalse(f1.exists());
-        File f2 = new File("build/package/testclass.r");
-        assertTrue(f2.exists());
+        int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
+        if (majorVersion >= 10) {
+            executeTarget("test23");
+            File f1 = new File("build/package/package/testclass.r");
+            assertFalse(f1.exists());
+            File f2 = new File("build/package/testclass.r");
+            assertTrue(f2.exists());
+        }
     }
 
 }
