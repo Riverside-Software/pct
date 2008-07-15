@@ -21,4 +21,5 @@
   <taskdef name="wsbroker" classname="com.phenix.pct.PCTWSBroker" />
   <taskdef name="unlib" classname="com.phenix.pct.PLExtract" />
   <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
+  <taskdef name="progress_version" classname="com.phenix.pct.ProgressVersion" />
 </antlib>

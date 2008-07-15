@@ -87,6 +87,8 @@ public abstract class PCT extends Task {
     private File dlcJava = null;
     private boolean includedPL = true;
     private ProgressProcedures pp = null;
+    private String fullVersion = null;
+    private long rcodeVersion = -1;
     private int majorVersion = -1;
     private int minorVersion = -1;
     private String revision = null;
@@ -309,6 +311,7 @@ public abstract class PCT extends Task {
                 .compile("([a-zA-Z]+\\s+)+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
         Matcher m = p.matcher(line);
         if (m.matches()) {
+            this.fullVersion = line;
             this.majorVersion = Integer.parseInt(m.group(2));
             this.minorVersion = Integer.parseInt(m.group(3));
             this.revision = m.group(4);
@@ -325,7 +328,8 @@ public abstract class PCT extends Task {
     private void setArch() {
         try {
             RCodeInfo rci = new RCodeInfo(new File(this.dlcHome, "tty/prostart.r"));
-            this.x64 = ((rci.getVersion() & 0x4000) != 0);
+            this.rcodeVersion = rci.getVersion();
+            this.x64 = ((this.rcodeVersion & 0x4000) != 0);
         } catch (IOException ioe) {
             log("$DLC/tty/prostart.r not found. Assuming 32-bits architecture");
         } catch (RCodeInfo.InvalidRCodeException irce) {
@@ -379,16 +383,66 @@ public abstract class PCT extends Task {
 
     }
 
-    public int getMajorVersion() {
+    /**
+     * Returns major version number
+     * 
+     * @return 10.0B02 returns 10
+     */
+    protected int getDLCMajorVersion() {
         return this.majorVersion;
     }
-    public int getMinorVersion() {
+
+    /**
+     * Returns minor version number
+     * 
+     * @return 10.0B02 returns 0
+     */
+    protected int getDLCMinorVersion() {
         return this.minorVersion;
     }
-    public String getRevision() {
+
+    /**
+     * Returns revision letter
+     * 
+     * @return 10.0B02 returns B
+     */
+    protected String getDLCRevision() {
         return this.revision;
     }
-    public String getPatchLevel() {
+
+    /**
+     * Returns patch level string
+     * 
+     * @return 10.0B02 returns 02
+     */
+    protected String getDLCPatchLevel() {
         return this.patchLevel;
+    }
+
+    /**
+     * Returns full version string
+     * 
+     * @return 10.0B02 as of Dec 12 1998
+     */
+    protected String getFullVersion() {
+        return this.fullVersion;
+    }
+
+    /**
+     * Returns reduced version
+     * 
+     * @return 10.0B02 for example
+     */
+    protected String getReducedVersion() {
+        return this.majorVersion + "." + this.minorVersion + this.revision + this.patchLevel;
+    }
+
+    /**
+     * Returns r-code version
+     * 
+     * @return
+     */
+    protected long getRCodeVersion() {
+        return this.rcodeVersion;
     }
 }
