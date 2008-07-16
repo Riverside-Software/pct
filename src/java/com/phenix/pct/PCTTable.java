@@ -57,7 +57,7 @@ package com.phenix.pct;
  * Table object for PCTLoadData
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision: $
+ * @version $Revision$
  */
 public class PCTTable {
     private String name = null;

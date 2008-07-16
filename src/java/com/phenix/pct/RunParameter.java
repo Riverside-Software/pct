@@ -57,7 +57,7 @@ package com.phenix.pct;
  * Describes a parameter which will be passed to a progress procedure within a temp-table
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
- * @version $Revision: 663 $
+ * @version $Revision$
  */
 public class RunParameter {
     private String name = null;
