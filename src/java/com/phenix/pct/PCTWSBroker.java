@@ -272,8 +272,12 @@ public class PCTWSBroker extends PCTBroker {
                 bw.println("controllingNameServer=" + this.nameServer);
                 bw.println("registrationMode=Register-IP");
                 bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-                // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
+                // TODO Erm, this is crap... I should use something else to handle correctly quotes
+                // in command line
                 if (this.server != null) {
+                    bw.print("PROPATH=");
+                    bw.println(this.server.getPropath());
+
                     bw.print("srvrStartupParam=");
                     for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
                         bw.print((String) i.next());
@@ -304,7 +308,7 @@ public class PCTWSBroker extends PCTBroker {
                 if (this.binUploadMaxSize != -1)
                     bw.println("binaryUploadMaxSize=" + this.binUploadMaxSize);
                 if (this.cookiePath != null)
-                    bw.println("defaultCookiePath="  + this.cookiePath);
+                    bw.println("defaultCookiePath=" + this.cookiePath);
                 if (this.cookieDomain != null)
                     bw.println("defaultCookieDomain=" + this.cookieDomain);
                 if (this.uploadDir != null)
