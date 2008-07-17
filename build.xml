@@ -352,7 +352,7 @@
 
   <target name="javadoc" depends="build" description="API documentation creation">
     <mkdir dir="${doc}" />
-    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8">
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
       <packageset dir="${src.java}" />
       <group title="PCT Core" packages="com.phenix.pct.*" />
       <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
