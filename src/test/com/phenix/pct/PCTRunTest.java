@@ -58,6 +58,7 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  * Class for testing PCTRun task
@@ -199,10 +200,12 @@ public class PCTRunTest extends BuildFileTest {
      * Tests parameter containing quotes and so on... Doesn't work on UNIX
      */
     public void test14() {
-        executeTarget("test14-init");
-        expectLog("test14-1", "-prop1=prop1 -prop2=prop2 -prop3='prop3'");
-        expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
-        expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
+        if (System.getProperty("os.name").toLowerCase(Locale.US).indexOf("windows") > -1) {
+            executeTarget("test14-init");
+            expectLog("test14-1", "-prop1=prop1 -prop2=prop2 -prop3='prop3'");
+            expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
+            expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
+        }
     }
 
     public void test15() {
@@ -275,7 +278,7 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test24-pre");
         expectLog("test24", "TEST");
     }
-    
+
     /**
      * Parameters collection : simple test
      */
@@ -320,7 +323,7 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test30-part2");
         executeTarget("test30-part3");
     }
-    
+
     /**
      * test failOnError attribute
      */
