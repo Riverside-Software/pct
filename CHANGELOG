@@ -1,5 +1,7 @@
 Version 0.14 (??/??/????)
 ==============================
+ * Added sharedFile attribute in PCTLibrary
+   Patch provided by Cameron David Wright
  * Fixed duplicate hierarchy when compiling .cls files
    Bugfix provided by Peter KULLMANN
  * Added failOnError attribute in PCTRun
