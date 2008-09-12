@@ -83,6 +83,7 @@ public class PCTLibrary extends PCT {
     private FileSet fileset = new FileSet();
     private Vector filesets = new Vector();
     private File baseDir = null;
+    private File sharedFile = null;
 
     /**
      * Default constructor
@@ -92,6 +93,16 @@ public class PCTLibrary extends PCT {
         super();
         tmpFileID = new Random().nextInt() & 0xffff;
         tmpFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    /**
+     * Shared library name
+     * 
+     * @param sharedName File name
+     * @since 0.14
+     */
+    public void setSharedFile (File sharedName){
+     this.sharedFile = sharedName;   
     }
 
     /**
@@ -223,6 +234,11 @@ public class PCTLibrary extends PCT {
                 exec.execute();
             }
             this.cleanup();
+            // Creates shared library if name defined
+            if (this.sharedFile != null){
+                exec = makeSharedTask();
+                exec.execute();
+            }
             // Compress library if noCompress set to false
             if (!this.noCompress) {
                 exec = compressTask();
@@ -303,6 +319,27 @@ public class PCTLibrary extends PCT {
         return exec;
     }
 
+    private ExecTask makeSharedTask() {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
+
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+        exec.setFailonerror(true);
+
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue("-makeshared");
+        exec.createArg().setValue(this.sharedFile.getAbsolutePath().toString());
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
+        return exec;
+    }
+
     /**
      * 
      * @param fs FileSet to be written
@@ -325,6 +362,8 @@ public class PCTLibrary extends PCT {
                 bw.write(dsfiles[i] + " ");
             }
             bw.write("-nowarn ");
+            // TODO Il faut que je m'occupe de ce probleme
+            // if (this.encoding != null) bw.write("-cpstream " + this.encoding);
 
             bw.close();
         } catch (IOException ioe) {
