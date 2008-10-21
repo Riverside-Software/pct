@@ -2,102 +2,125 @@
 
 <project name="PCTLibrary-test" default="">
 
-  <taskdef resource="PCT.properties" classpath="."/>
+  <taskdef resource="PCT.properties" classpath="." />
 
-  <property environment="env"/>
-  
+  <property environment="env" />
+
   <!-- No destFile -->
   <target name="test1">
-    <PCTLibrary dlcHome="${DLC}"/>
+    <PCTLibrary dlcHome="${DLC}" />
   </target>
-   
+
   <!-- No fileset defined -->
   <target name="test2">
-    <PCTLibrary destFile="sandbox/lib/test.pl" dlcHome="${DLC}"/>
+    <PCTLibrary destFile="sandbox/lib/test.pl" dlcHome="${DLC}" />
   </target>
-  
+
   <!-- Simplest test : one file in library -->
   <target name="test3">
-  	<echo file="sandbox/files/test">
-  		Empty file
-    </echo>
+    <echo file="sandbox/files/test">Empty file</echo>
     <PCTLibrary destFile="sandbox/lib/test.pl" dlcHome="${DLC}">
       <fileset dir=".">
-        <include name="sandbox/files/test"/>
+        <include name="sandbox/files/test" />
       </fileset>
     </PCTLibrary>
   </target>
 
   <!-- Don't know anything about this test :-) -->
   <target name="test4pre">
-  	<echo file="sandbox/files/test">
-  		Empty file
-    </echo>
+    <echo file="sandbox/files/test">Empty file</echo>
     <PCTLibrary destFile="sandbox/lib/test.pl" dlcHome="${DLC}">
       <fileset dir=".">
-        <include name="sandbox/files/test"/>
+        <include name="sandbox/files/test" />
       </fileset>
     </PCTLibrary>
   </target>
   <target name="test4">
-    <touch file="sandbox/test"/>
+    <touch file="sandbox/test" />
     <PCTLibrary destFile="sandbox/lib/test.pl" dlcHome="${DLC}">
       <fileset dir=".">
-        <include name="sandbox/files/test"/>
+        <include name="sandbox/files/test" />
       </fileset>
     </PCTLibrary>
   </target>
-  
+
   <target name="test5">
-  	<echo file="sandbox/files/test">
-  		Empty file
-  	</echo>
-  	<echo file="sandbox/files/test2">
-  		Empty file again
-  	</echo>
-  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}" noCompress="true">
-  		<fileset dir=".">
-  			<include name="sandbox/files/test"/>
-  		</fileset>
-  		<fileset dir=".">
-  			<include name="sandbox/files/test2"/>
-  		</fileset>
-  	</PCTLibrary>
+    <echo file="sandbox/files/test">Empty file</echo>
+    <echo file="sandbox/files/test2">Empty file again</echo>
+    <PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}"
+      noCompress="true">
+      <fileset dir=".">
+        <include name="sandbox/files/test" />
+      </fileset>
+      <fileset dir=".">
+        <include name="sandbox/files/test2" />
+      </fileset>
+    </PCTLibrary>
   </target>
   <target name="test5bis">
-  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}" noCompress="false">
-  		<fileset dir=".">
-  			<include name="sandbox/files/test"/>
-  		</fileset>
-  		<fileset dir=".">
-  			<include name="sandbox/files/test2"/>
-  		</fileset>
-  	</PCTLibrary>
+    <PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}"
+      noCompress="false">
+      <fileset dir=".">
+        <include name="sandbox/files/test" />
+      </fileset>
+      <fileset dir=".">
+        <include name="sandbox/files/test2" />
+      </fileset>
+    </PCTLibrary>
   </target>
-  
+
   <target name="test6">
     <echo file="sandbox/files/test1">Empty file 1</echo>
     <echo file="sandbox/files/test2">Empty file 2</echo>
     <echo file="sandbox/files/test3">Empty file 3</echo>
-  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}" basedir="sandbox/files/"/>
+    <PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}"
+      basedir="sandbox/files/" />
   </target>
-  
+
   <target name="test7">
     <echo file="sandbox/files/test1">Empty file 1</echo>
-  	<PCTLibrary destfile="sandbox/files/test.pl" dlcHome="${DLC}" basedir="sandbox/files/"/>
+    <PCTLibrary destfile="sandbox/files/test.pl" dlcHome="${DLC}"
+      basedir="sandbox/files/" />
   </target>
-  
+
   <target name="test8">
     <echo file="sandbox/files/test1">Empty file 1</echo>
     <echo file="sandbox/files/test2">Empty file 2</echo>
     <echo file="sandbox/files/test3">Empty file 3</echo>
-  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}" basedir="sandbox/files/" excludes="test3"/>
+    <PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}"
+      basedir="sandbox/files/" excludes="test3" />
   </target>
 
   <!-- Demonstrates failure when file name contains spaces -->
   <target name="test9">
     <echo file="sandbox/files/foo space">Empty file 1</echo>
-  	<PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}" basedir="sandbox/files/" />
+    <PCTLibrary destfile="sandbox/lib/test.pl" dlcHome="${DLC}"
+      basedir="sandbox/files/" />
   </target>
 
+  <target name="test10-exec">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build/lib.pl" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test10-lib">
+    <PCTLibrary destFile="build/lib.pl" dlcHome="${DLC}" encoding="iso8859-1">
+      <fileset dir="build"  includes="**/*" excludes="*.pl" />
+    </PCTLibrary>
+  </target>
+  <target name="test10-part1">
+    <echo file="sandbox/files/test.p" encoding="iso-8859-1">
+      message "éèà". return '0'.
+    </echo>
+    <PCTCompile dlcHome="${DLC}" destDir="build">
+      <fileset dir="sandbox/files" includes="*.p" />
+    </PCTCompile>
+  </target>
+  <target name="test10-part2">
+    <echo file="build/éèà.txt" encoding="iso-8859-1">
+      some text...
+    </echo>
+  </target>
 </project>
