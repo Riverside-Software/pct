@@ -93,6 +93,8 @@ public class PCTLibraryTest extends BuildFileTest {
         del.setProject(this.project);
         del.setDir(new File("sandbox"));
         del.execute();
+        del.setDir(new File("build"));
+        del.execute();
     }
 
     /**
@@ -180,20 +182,41 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(v != null);
         assertTrue(v.size() == 2);
     }
-    
+
+    /**
+     * Waiting for next release...
+     */
+//    public void test10() {
+//        File pl = new File("build/lib.pl");
+//        executeTarget("test10-part1");
+//        executeTarget("test10-lib");
+//        expectLog("test10-exec", "éèà");
+////        pl.delete();
+//        
+//        executeTarget("test10-part2");
+//        executeTarget("test10-lib");
+//        assertTrue(pl.exists());
+//        
+//        PLReader r = new PLReader(pl);
+//        Vector v = r.getFileList();
+//        assertTrue(v != null);
+////        assertTrue(v.size() == 2);
+//        assertTrue(v.contains(new String("éèà.txt")));
+//    }
+
     /**
      * Do not run this test for now, as it will always fail.
      * Prolib doesn't seem to be able to handle spaces in file names
      */
-//    public void test9() {
-//        executeTarget("test9");
-//        
-//        File pl = new File("sandbox/lib/test.pl");
-//        assertTrue(pl.exists());
-//
-//        PLReader r = new PLReader(pl);
-//        Vector v = r.getFileList();
-//        assertTrue(v != null);
-//        assertTrue(v.size() == 1);
-//    }
+    public void test9() {
+        executeTarget("test9");
+        
+        File pl = new File("sandbox/lib/test.pl");
+        assertTrue(pl.exists());
+
+        PLReader r = new PLReader(pl);
+        Vector v = r.getFileList();
+        assertTrue(v != null);
+        assertTrue(v.size() == 1);
+    }
 }
