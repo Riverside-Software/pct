@@ -65,7 +65,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -85,6 +88,10 @@ public class PCTLibrary extends PCT {
     private File baseDir = null;
     private File sharedFile = null;
 
+    // Files containing at least one space in file name : these files are handled separately (prolib
+    // bug)
+    private List spaceFiles = new ArrayList();
+
     /**
      * Default constructor
      * 
@@ -101,8 +108,8 @@ public class PCTLibrary extends PCT {
      * @param sharedName File name
      * @since 0.14
      */
-    public void setSharedFile (File sharedName){
-     this.sharedFile = sharedName;   
+    public void setSharedFile(File sharedName) {
+        this.sharedFile = sharedName;
     }
 
     /**
@@ -233,12 +240,22 @@ public class PCTLibrary extends PCT {
                 writeFileList(fs);
                 exec.execute();
             }
+            // Now adding files containing spaces
+            if (this.spaceFiles.size() > 0) {
+                for (Iterator iter = this.spaceFiles.iterator(); iter.hasNext();) {
+                    ExecTask task = spaceFileReplace((String) iter.next());
+                    task.execute();
+                }
+            }
+
             this.cleanup();
+
             // Creates shared library if name defined
-            if (this.sharedFile != null){
+            if (this.sharedFile != null) {
                 exec = makeSharedTask();
                 exec.execute();
             }
+
             // Compress library if noCompress set to false
             if (!this.noCompress) {
                 exec = compressTask();
@@ -354,21 +371,47 @@ public class PCTLibrary extends PCT {
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
             for (int i = 0; i < dsfiles.length; i++) {
+                // check not including the pl itself in the pl
                 File resourceAsFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
                 if (resourceAsFile.equals(this.destFile)) {
                     bw.close();
                     throw new BuildException(Messages.getString("PCTLibrary.3"));
                 }
-                bw.write(dsfiles[i] + " ");
+
+                // If there are spaces, don't put in the pf file
+                if (dsfiles[i].indexOf(' ') == -1) {
+                    bw.write(dsfiles[i] + " ");
+                } else {
+                    spaceFiles.add(resourceAsFile.getAbsolutePath());
+                }
             }
             bw.write("-nowarn ");
-            // TODO Il faut que je m'occupe de ce probleme
-            // if (this.encoding != null) bw.write("-cpstream " + this.encoding);
-
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTLibrary.4"));
         }
+    }
+
+    private ExecTask spaceFileReplace(String fileName) {
+        ExecTask exec = (ExecTask) getProject().createTask("exec");
+
+        exec.setOwningTarget(this.getOwningTarget());
+        exec.setTaskName(this.getTaskName());
+        exec.setDescription(this.getDescription());
+        exec.setFailonerror(true);
+
+        exec.setExecutable(getExecPath("prolib").toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue("-replace");
+        exec.createArg().setValue(fileName);
+        exec.createArg().setValue("-nowarn");
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC");
+        var.setValue(this.getDlcHome().toString());
+        exec.addEnv(var);
+
+        return exec;
     }
 
     /**
