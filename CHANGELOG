@@ -8,6 +8,8 @@ Version 0.14 (??/??/????)
    Patch provided by Peter KULLMANN
  * Upgrading to ANT 1.7.1
  * Added ProgressVersion task
+ * Patch for PCTLibrary when filenames contains space
+   Patch provided by Nathanael SHERGOLD
 
 Version 0.13 (11/18/2007)
 ==============================
