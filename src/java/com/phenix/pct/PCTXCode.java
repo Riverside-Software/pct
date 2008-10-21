@@ -209,6 +209,9 @@ public class PCTXCode extends PCT {
                                         .format(
                                                 Messages.getString("PCTXCode.6"), new Object[]{trgFile.toString()}), Project.MSG_VERBOSE); //$NON-NLS-1$
                         arg.setValue(dsfiles[i]);
+                        if (this.overwrite) {
+                            if (!trgFile.delete()) throw new BuildException(Messages.getString("PCTXCode.7"));
+                        }
                         exec.execute();
                     }
                 }
