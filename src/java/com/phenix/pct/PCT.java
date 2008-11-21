@@ -440,7 +440,7 @@ public abstract class PCT extends Task {
     /**
      * Returns r-code version
      * 
-     * @return
+     * @return Long (1005 for 10.1B 32 bits for example)
      */
     protected long getRCodeVersion() {
         return this.rcodeVersion;
