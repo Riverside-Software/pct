@@ -406,4 +406,17 @@
     <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" failOnError="false"/>
   </target>
 
+  <target name="test32-a">
+    <echo file="sandbox/test1.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" resultProperty="myResult" />
+  </target>
+  <target name="test32-b">
+    <echo file="sandbox/test2.p">
+      RETURN "17".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test2.p" dlcHome="${DLC}" failOnError="false" resultProperty="myNewResult" />
+  </target>
+  
 </project>

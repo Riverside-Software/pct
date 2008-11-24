@@ -331,4 +331,14 @@ public class PCTRunTest extends BuildFileTest {
         expectBuildException("test31-a", "Shouldn't work");
         executeTarget("test31-b");
     }
+    
+    public void test32() {
+        assertPropertyUnset("myResult");
+        executeTarget("test32-a");
+        assertPropertyEquals("myResult", "0");
+        
+        assertPropertyUnset("myNewResult");
+        executeTarget("test32-b");
+        assertPropertyEquals("myNewResult", "17");
+    }
 }

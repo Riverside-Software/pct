@@ -113,7 +113,8 @@ public class PCTRun extends PCT {
     protected Collection runParameters = null;
     private boolean batchMode = true;
     private boolean failOnError = true;
-    
+    private String resultProperty = null;
+
     // Internal use
     protected ExecTask exec = null;
     protected int statusID = -1; // Unique ID when creating temp files
@@ -447,6 +448,31 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Sets the name of a property in which the return valeur of the
+     * Progress procedure should be stored. Only of interest if failonerror=false.
+     *
+     * @since PCT 0.14
+     *
+     * @param resultProperty name of property.
+     */
+    public void setResultProperty(String resultProperty) {
+        this.resultProperty = resultProperty;
+    }
+
+    /**
+     * Helper method to set result property to the
+     * passed in value if appropriate.
+     *
+     * @param result value desired for the result property value.
+     */
+    protected void maybeSetResultPropertyValue(int result) {
+        if (resultProperty != null) {
+            String res = Integer.toString(result);
+            getProject().setNewProperty(resultProperty, res);
+        }
+    }
+
+    /**
      * Exec task is prepared ?
      * 
      * @return boolean
@@ -519,6 +545,7 @@ public class PCTRun extends PCT {
                 throw new BuildException(MessageFormat.format(
                         Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
             }
+            maybeSetResultPropertyValue(ret);
         } catch (FileNotFoundException fnfe) {
             // No need to clean BufferedReader as it's null in this case
             this.cleanup();
