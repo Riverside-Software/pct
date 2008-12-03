@@ -418,5 +418,38 @@
     </echo>
     <PCTRun graphicalMode="${graph}" procedure="sandbox/test2.p" dlcHome="${DLC}" failOnError="false" resultProperty="myNewResult" />
   </target>
+
+  <target name="test33-a">
+    <echo file="sandbox/test1.p">
+      DEFINE OUTPUT PARAMETER prm1 AS CHAR NO-UNDO.
+      ASSIGN prm1 = "PCT".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" resultProperty="myResult" />
+  </target>
+  <target name="test33-b">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" failOnError="false">
+      <OutputParameter name="firstParam" />
+    </PCTRun>
+  </target>
   
+  <target name="test34">
+    <echo file="sandbox/test1.p">
+      DEFINE OUTPUT PARAMETER prm1 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm2 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm3 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm4 AS CHAR NO-UNDO.
+      ASSIGN prm1 = "PCT1"
+             prm2 = "PCT2"
+             prm3 = "PCT3"
+             prm4 = "PCT4".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" failOnError="false">
+      <OutputParameter name="firstParam" />
+      <OutputParameter name="secondParam" />
+      <OutputParameter name="thirdParam" />
+      <OutputParameter name="fourthParam" />
+    </PCTRun>
+  </target>
 </project>

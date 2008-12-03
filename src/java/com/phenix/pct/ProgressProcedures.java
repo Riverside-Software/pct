@@ -70,4 +70,9 @@ public abstract interface ProgressProcedures {
     public String getRunString();
     public String getReturnProc();
     public String getParameterString();
+    public String getOutputParameterDeclaration();
+    public String getOutputParameterProc();
+    public String getAfterRun();
+    public String getOutputParameterCall();
+    public String getQuit();
 }

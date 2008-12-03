@@ -104,4 +104,29 @@ public class ProgressV8 implements ProgressProcedures {
         }
     }
 
+    public String getAfterRun() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getOutputParameterCall() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getOutputParameterDeclaration() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getOutputParameterProc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getQuit() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
