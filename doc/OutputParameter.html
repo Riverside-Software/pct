@@ -10,10 +10,9 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="en" />
-<title>Download PCT</title>
+<title>PCT documentation - OutputParameter type</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
-
 <body>
 
 <div class="Main">
@@ -27,31 +26,54 @@
 
 <div class="Menu">
   <a href="index.html">Overview</a>
-  :: <span class="selected">Download</span>
+  :: <a href="download.html">Download</a>
   :: <a href="screenshots.html">Screenshots</a>
-  :: <a href="manual.html">Documentation</a>
+  :: <span class="selected">Documentation</span>
   :: <a href="javadoc/index.html">JavaDoc</a>
   :: <a href="links.html">Links</a>
 </div>
 
+@RIGHT_BANNER@
+
 <div class="Text">
+<h1>Parameter type</h1>
 
-<h1>Your download should begin shortly</h1>
-<p>If your download does not start in approximately 10 seconds, you
-can click here to <a href="http://kent.dl.sourceforge.net/sourceforge/pct/pct-src-0.14.zip">launch the download</a>.</p>
+<h2>Description</h2>
+<p>
+Add an output parameter to the called procedure, and set an Ant property with its value.
+</p>
 
-<script type="text/javascript">
-var downloadLocation = 'http://kent.dl.sourceforge.net/sourceforge/pct/pct-src-0.14.zip';
-window.onload = function () {
-t = setTimeout('document.location = downloadLocation', 2000);
-}
-</script>
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>name</td>
+<td>Command line option</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<p>None</p>
+
+<h2>Examples</h2>
+<p>None</p>
+
+</div>
 
 <div class="LastUpdate">
-  $Date: 2007-09-12 14:05:11 +0200 (mer., 12 sept. 2007) $
+  $Date: 2006-03-22 14:42:02 +0100 (mer., 22 mars 2006) $
 </div>
 
 </div>
+
 @ANALYTICS@</body>
-
 </html>

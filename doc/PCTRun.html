@@ -91,7 +91,7 @@ Error during procedure execution returns 1.</p>
 <td>Current Ant's directory</td>
 </tr>
 <tr>
-<td>failOnError</td>
+<td>failOnError <span id="new">!!NEW!!</span></td>
 <td>Stop the buildprocess if the Progress procedure exits with a return value other than 0.</td>
 <td align="center">Boolean</td>
 <td align="center">Optional</td>
@@ -238,7 +238,7 @@ Error during procedure execution returns 1.</p>
 <td>Progress config file default</td>
 </tr>
 <tr>
-<td>resultProperty</td>
+<td>resultProperty <span id="new">!!NEW!!</span></td>
 <td>The name of a property in which the return code of the Progress procedure should be stored. Only of interest if failonerror=false.</td>
 <td align="center">String</td>
 <td align="center">Optional</td>
@@ -269,7 +269,7 @@ If parameter is not defined, the function returns ?.
 </p>
 <p><em>WARNING</em> : these parameters are written in a temp-table without unique index. Defining a parameter
 with same name multiple times may lead to weird results (it will return ?).
-<h3>OutputParameter (<a href="OutputParameter.html">com.phenix.pct.OutputParameter</a>)</h3>
+<h3>OutputParameter (<a href="OutputParameter.html">com.phenix.pct.OutputParameter</a>) <span id="new">!!NEW!!</span></h3>
 <p>
 Adds an character OUTPUT PARAMETER to the called procedure. This value is then written to the specified Ant property.  
 </p>
