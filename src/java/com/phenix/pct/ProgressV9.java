@@ -67,7 +67,7 @@ public class ProgressV9 implements ProgressProcedures {
     public boolean needRedirector() {
         return false;
     }
-    
+
     public String getInitString() {
         return getString("ProgressV9.0"); //$NON-NLS-1$
     }
@@ -91,7 +91,7 @@ public class ProgressV9 implements ProgressProcedures {
     public String getReturnProc() {
         return getString("ProgressV9.5"); //$NON-NLS-1$
     }
-    
+
     public String getParameterString() {
         return getString("ProgressV9.6"); //$NON-NLS-1$
     }
@@ -102,6 +102,26 @@ public class ProgressV9 implements ProgressProcedures {
         } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
+    }
+
+    public String getAfterRun() {
+        return getString("ProgressV9.10"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterCall() {
+        return getString("ProgressV9.11"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterDeclaration() {
+        return getString("ProgressV9.8"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterProc() {
+        return getString("ProgressV9.9"); //$NON-NLS-1$
+    }
+
+    public String getQuit() {
+        return getString("ProgressV9.12"); //$NON-NLS-1$
     }
 
 }

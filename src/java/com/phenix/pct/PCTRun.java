@@ -111,6 +111,7 @@ public class PCTRun extends PCT {
     protected Path propath = null;
     protected Path internalPropath = null;
     protected Collection runParameters = null;
+    protected List outputParameters = null;
     private boolean batchMode = true;
     private boolean failOnError = true;
     private String resultProperty = null;
@@ -202,6 +203,18 @@ public class PCTRun extends PCT {
             this.runParameters = new Vector();
         }
         this.runParameters.add(param);
+    }
+
+    /**
+     * Add a new output param which will be passed to progress procedure
+     * 
+     * @param param Instance of OutputParameter
+     * @since PCT 0.14
+     */
+    public void addOutputParameter(OutputParameter param) {
+        if (this.outputParameters == null)
+            this.outputParameters = new Vector();
+        this.outputParameters.add(param);
     }
 
     /**
@@ -300,7 +313,7 @@ public class PCTRun extends PCT {
      * 
      * @param failOnError
      */
-    public void setFailOnError(boolean failOnError){
+    public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
     }
 
@@ -448,11 +461,11 @@ public class PCTRun extends PCT {
     }
 
     /**
-     * Sets the name of a property in which the return valeur of the
-     * Progress procedure should be stored. Only of interest if failonerror=false.
-     *
+     * Sets the name of a property in which the return valeur of the Progress procedure should be
+     * stored. Only of interest if failonerror=false.
+     * 
      * @since PCT 0.14
-     *
+     * 
      * @param resultProperty name of property.
      */
     public void setResultProperty(String resultProperty) {
@@ -460,9 +473,8 @@ public class PCTRun extends PCT {
     }
 
     /**
-     * Helper method to set result property to the
-     * passed in value if appropriate.
-     *
+     * Helper method to set result property to the passed in value if appropriate.
+     * 
      * @param result value desired for the result property value.
      */
     protected void maybeSetResultPropertyValue(int result) {
@@ -531,6 +543,32 @@ public class PCTRun extends PCT {
             }
         }
 
+        // Reads output parameter
+        if (this.outputParameters != null) {
+            for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
+                OutputParameter param = (OutputParameter) iter.next();
+                File f = param.getTempFileName();
+                try {
+                    br = new BufferedReader(new FileReader(f));
+                    String s = br.readLine();
+                    br.close();
+                    getProject().setNewProperty(param.getName(), s);
+                } catch (FileNotFoundException fnfe) {
+                    log(
+                            MessageFormat.format(
+                                    Messages.getString("PCTRun.10"), new Object[]{param.getName()}), Project.MSG_ERR); //$NON-NLS-1$
+                } catch (IOException ioe) {
+                    try {
+                        br.close();
+                    } catch (IOException ioe2) {
+                    }
+                    log(
+                            MessageFormat.format(
+                                    Messages.getString("PCTRun.10"), new Object[]{param.getName()}), Project.MSG_ERR); //$NON-NLS-1$
+                }
+            }
+        }
+
         // Now read status file
         try {
             br = new BufferedReader(new FileReader(status));
@@ -561,6 +599,7 @@ public class PCTRun extends PCT {
             this.cleanup(); // Ce truc là ne serait pas manquant ??
             throw new BuildException(Messages.getString("PCTRun.3")); //$NON-NLS-1$
         }
+
     }
 
     /**
@@ -806,18 +845,75 @@ public class PCTRun extends PCT {
 
             // Defines parameters
             if (this.runParameters != null) {
-                for (Iterator i = this.runParameters.iterator(); i.hasNext(); ) {
+                for (Iterator i = this.runParameters.iterator(); i.hasNext();) {
                     RunParameter param = (RunParameter) i.next();
                     if (param.validate()) {
-                        bw.write(MessageFormat.format(this.getProgressProcedures().getParameterString(), new Object[]{escapeString(param.getName()), escapeString(param.getValue())}));
+                        bw.write(MessageFormat.format(this.getProgressProcedures()
+                                .getParameterString(), new Object[]{escapeString(param.getName()),
+                                escapeString(param.getValue())}));
+                    } else {
+                        log(
+                                MessageFormat
+                                        .format(
+                                                Messages.getString("PCTRun.9"), new Object[]{param.getName()}), Project.MSG_WARN); //$NON-NLS-1$
                     }
                 }
             }
 
+            // Defines variables for OUTPUT parameters
+            if (this.outputParameters != null) {
+                int zz = 0;
+                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
+                    OutputParameter param = (OutputParameter) iter.next();
+                    param.setProgressVar("outParam" + zz++);
+                    bw
+                            .write(MessageFormat.format(this.getProgressProcedures()
+                                    .getOutputParameterDeclaration(), new Object[]{param
+                                    .getProgressVar()}));
+                }
+            }
+
+            // Creates a StringBuffer containing output parameters when calling the progress
+            // procedure
+            StringBuffer sb = new StringBuffer();
+            if ((this.outputParameters != null) && (this.outputParameters.size() > 0)) {
+                sb.append('(');
+                int zz = 0;
+                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
+                    OutputParameter param = (OutputParameter) iter.next();
+                    if (zz++ > 0)
+                        sb.append(',');
+                    sb.append("OUTPUT ").append(param.getProgressVar());
+                }
+                sb.append(')');
+            }
+
+            // Calls progress procedure
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    new Object[]{escapeString(this.procedure)}));
+                    new Object[]{escapeString(this.procedure), sb.toString()}));
+            // Checking return value
+            bw.write(MessageFormat.format(this.getProgressProcedures().getAfterRun(),
+                    new Object[]{}));
+            // Writing output parameters to temporary files
+            if (this.outputParameters != null) {
+                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
+                    OutputParameter param = (OutputParameter) iter.next();
+                    File tmpFile = new File(
+                            System.getProperty("java.io.tmpdir"), param.getProgressVar() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    param.setTempFileName(tmpFile);
+                    bw.write(MessageFormat.format(this.getProgressProcedures()
+                            .getOutputParameterCall(), new Object[]{param.getProgressVar(),
+                            escapeString(tmpFile.getAbsolutePath())}));
+                }
+            }
+            // Quit
+            bw.write(MessageFormat.format(this.getProgressProcedures().getQuit(), new Object[]{}));
+
+            // Private procedures
             bw.write(MessageFormat.format(this.getProgressProcedures().getReturnProc(),
                     new Object[]{escapeString(status.getAbsolutePath())}));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getOutputParameterProc(),
+                    new Object[]{}));
 
             bw.close();
         } catch (IOException ioe) {
@@ -913,6 +1009,19 @@ public class PCTRun extends PCT {
                         MessageFormat
                                 .format(
                                         Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            }
+            if (this.outputParameters != null) {
+                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
+                    OutputParameter param = (OutputParameter) iter.next();
+                    if ((param.getTempFileName() != null)
+                            && (param.getTempFileName().exists() && !param.getTempFileName()
+                                    .delete())) {
+                        log(
+                                MessageFormat
+                                        .format(
+                                                Messages.getString("PCTRun.5"), new Object[]{param.getTempFileName().getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                    }
+                }
             }
         }
         // pct.pl is always deleted

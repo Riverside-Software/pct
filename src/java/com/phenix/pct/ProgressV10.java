@@ -91,7 +91,7 @@ public class ProgressV10 implements ProgressProcedures {
     public String getReturnProc() {
         return getString("ProgressV10.5"); //$NON-NLS-1$
     }
-    
+
     public String getParameterString() {
         return getString("ProgressV10.6"); //$NON-NLS-1$
     }
@@ -104,4 +104,23 @@ public class ProgressV10 implements ProgressProcedures {
         }
     }
 
+    public String getOutputParameterDeclaration() {
+        return getString("ProgressV10.8"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterProc() {
+        return getString("ProgressV10.9"); //$NON-NLS-1$
+    }
+
+    public String getAfterRun() {
+        return getString("ProgressV10.10"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterCall() {
+        return getString("ProgressV10.11"); //$NON-NLS-1$
+    }
+
+    public String getQuit() {
+        return getString("ProgressV10.12"); //$NON-NLS-1$
+    }
 }

@@ -341,4 +341,24 @@ public class PCTRunTest extends BuildFileTest {
         executeTarget("test32-b");
         assertPropertyEquals("myNewResult", "17");
     }
+    
+    public void test33() {
+        expectBuildException("test33-a", "No output parameter defined");
+
+        assertPropertyUnset("firstParam");
+        executeTarget("test33-b");
+        assertPropertyEquals("firstParam", "PCT");
+    }
+
+    public void test34() {
+        assertPropertyUnset("firstParam");
+        assertPropertyUnset("secondParam");
+        assertPropertyUnset("thirdParam");
+        assertPropertyUnset("fourthParam");
+        executeTarget("test34");
+        assertPropertyEquals("firstParam", "PCT1");
+        assertPropertyEquals("secondParam", "PCT2");
+        assertPropertyEquals("thirdParam", "PCT3");
+        assertPropertyEquals("fourthParam", "PCT4");
+    }
 }
