@@ -264,11 +264,15 @@ parameter, add it in the value attribute. This is needed if the value contains s
 <h3>Parameter (<a href="Parameter.html">com.phenix.pct.RunParameter</a>)</h3>
 <p>
 Creates a parameter which can be read in the called procedure using
-DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'ParameterName'). Returned value type is CHARACTER.
+<code>DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'ParameterName')</code>. Returned value type is CHARACTER.
 If parameter is not defined, the function returns ?.
 </p>
 <p><em>WARNING</em> : these parameters are written in a temp-table without unique index. Defining a parameter
 with same name multiple times may lead to weird results (it will return ?).
+<h3>OutputParameter (<a href="OutputParameter.html">com.phenix.pct.OutputParameter</a>)</h3>
+<p>
+Adds an character OUTPUT PARAMETER to the called procedure. This value is then written to the specified Ant property.  
+</p>
 
 <h2>Examples</h2>
 <pre>
@@ -277,6 +281,7 @@ with same name multiple times may lead to weird results (it will return ?).
 <p>
 Commandline : <code>${env.DLC}/bin/_progres -b -p test.p</code>
 </p>
+<hr />
 
 <pre>
 &lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"/&gt;
@@ -284,6 +289,7 @@ Commandline : <code>${env.DLC}/bin/_progres -b -p test.p</code>
 <p>
 Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</code>
 </p>
+<hr />
 
 <pre>
 &lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"&gt;
@@ -298,10 +304,12 @@ Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</cod
   &lt;PCTRunOption name="-cprcodeout" value="utf-8" /&gt;
   &lt;Parameter name="Param1" value="Value1" /&gt;
   &lt;Parameter name="Param2" value="Value2" /&gt;
+  &lt;OutputParameter name="FirstParam" /&gt;
+  &lt;OutputParameter name="SecondParam" /&gt;
 &lt;/PCTRun&gt;
 </pre>
 <p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -cprcodeout utf-8 -p pctinitxxxx.p</code></p>
-<p>Procedure pctinitxxxx.p :</p><pre class="source">
+<p>Procedure pctinitxxxx.p will approximately look like that :</p><pre class="source">
 DEFINE TEMP-TABLE ttParams NO-UNDO
   FIELD key AS CHARACTER
   FIELD val AS CHARACTER.
@@ -329,7 +337,11 @@ DO ON ERROR UNDO, LEAVE:
   ASSIGN ttParams.key = "Param2"
          ttParams.val = "Value2".
 END.
-RUN VALUE('test/test.p') NO-ERROR.
+DEFINE VARIABLE outPrm0 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE outPrm1 AS CHARACTER NO-UNDO.
+RUN VALUE('test/test.p') (OUTPUT outPrm0, OUTPUT outPrm1) NO-ERROR.
+RUN writeOutputParam (INPUT outPrm0, INPUT "someTempFile").
+RUN writeOutputParam (INPUT outPrm1, INPUT "anotherTempFile").
 // Check errors and call returnValue
 PROCEDURE returnValue PRIVATE.
   DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO.
@@ -338,8 +350,15 @@ PROCEDURE returnValue PRIVATE.
   OUTPUT CLOSE.
   QUIT.
 END PROCEDURE.
+PROCEDURE writeOutputParam PRIVATE.
+  DEFINE INPUT PARAMETER prm AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER outFile AS CHARACTER NO-UNDO.
+  OUTPUT TO VALUE(outFile).
+  PUT UNFORMATTED prm SKIP.
+  OUTPUT CLOSE.
+END PROCEDURE.
 </pre>
-
+<p>After PCTRun task execution, properties FirstParam and SecondParam will be set with the content assigned by test/test.p.
 </div>
 
 <div class="LastUpdate">
