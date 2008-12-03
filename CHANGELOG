@@ -12,6 +12,7 @@ Version 0.14 (??/??/????)
    Patch provided by Nathanael SHERGOLD
  * Compilation and tests with OpenEdge 10.2 (replacing 10.1B)
  * Added resultProperty in PCTRun
+ * Added OutputParameter in PCTRun
 
 Version 0.13 (11/18/2007)
 ==============================
