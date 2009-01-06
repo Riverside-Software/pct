@@ -42,7 +42,7 @@
 
   <!-- Testing a few attributes : -->
   <target name="TestAttributes-1">
-    <PCTWSBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${DLC}" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" />
+    <PCTWSBroker action="create" name="Test" file="sandbox/ubroker.properties" dlcHome="${DLC}" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" brokerLogFileAppend="true" serverLogFileAppend="false" />
   </target>
 
   
