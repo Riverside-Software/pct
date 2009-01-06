@@ -244,8 +244,8 @@ public class PCTASBrokerTest extends BuildFileTest {
         assertTrue("Wrong appserviceNameList", (ini.getStringProperty("UBroker.AS.Test", "appserviceNameList").equalsIgnoreCase("Test")));
         assertTrue("Wrong registrationMode", (ini.getStringProperty("UBroker.AS.Test", "registrationMode").equalsIgnoreCase("Register-IP")));
         assertTrue("Wrong controllingNameServer", (ini.getStringProperty("UBroker.AS.Test", "controllingNameServer").equalsIgnoreCase("NS1")));
-        assertTrue("Wrong brkrLogFileAppend", (ini.getStringProperty("UBroker.AS.Test", "brkrLogFileAppend").equalsIgnoreCase("1")));
-        assertTrue("Wrong srvrLogFileAppend", (ini.getStringProperty("UBroker.AS.Test", "srvrLogFileAppend").equalsIgnoreCase("0")));
+        assertTrue("Wrong brkrLogAppend", (ini.getStringProperty("UBroker.AS.Test", "brkrLogAppend").equalsIgnoreCase("1")));
+        assertTrue("Wrong srvrLogAppend", (ini.getStringProperty("UBroker.AS.Test", "srvrLogAppend").equalsIgnoreCase("0")));
     }
 
     public void testAttributes2() {

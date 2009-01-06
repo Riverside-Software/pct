@@ -174,6 +174,8 @@ public class PCTWSBrokerTest extends BuildFileTest {
                 "registrationMode").equalsIgnoreCase("Register-IP")));
         assertTrue("Wrong controllingNameServer", (ini.getStringProperty("UBroker.WS.Test",
                 "controllingNameServer").equalsIgnoreCase("NS1")));
+        assertTrue("Wrong brkrLogAppend", (ini.getStringProperty("UBroker.WS.Test", "brkrLogAppend").equalsIgnoreCase("1")));
+        assertTrue("Wrong srvrLogAppend", (ini.getStringProperty("UBroker.WS.Test", "srvrLogAppend").equalsIgnoreCase("0")));
     }
 
 }
