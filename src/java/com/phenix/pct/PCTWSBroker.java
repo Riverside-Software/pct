@@ -85,7 +85,9 @@ public class PCTWSBroker extends PCTBroker {
     private boolean autoStart = false;
     private File workDir = null;
     private File brokerLogFile = null;
+    private boolean brokerLogFileAppend = true;
     private File serverLogFile = null;
+    private boolean serverLogFileAppend = true;
     private int portNumber = -1;
     private int brokerLogLevel = -1;
     private int serverLogLevel = -1;
@@ -135,6 +137,15 @@ public class PCTWSBroker extends PCTBroker {
      */
     public void setBrokerLogLevel(int brokerLogLevel) {
         this.brokerLogLevel = brokerLogLevel;
+    }
+
+    /**
+     * Broker log file append. Default value is true.
+     * 
+     * @param append Boolean
+     */
+    public void setBrokerLogFileAppend(boolean append) {
+        this.brokerLogFileAppend = append;
     }
 
     /**
@@ -189,6 +200,15 @@ public class PCTWSBroker extends PCTBroker {
      */
     public void setServerLogLevel(int serverLogLevel) {
         this.serverLogLevel = serverLogLevel;
+    }
+
+    /**
+     * Server log file append. Default value is true.
+     * 
+     * @param append Boolean
+     */
+    public void setServerLogFileAppend(boolean append) {
+        this.serverLogFileAppend = append;
     }
 
     /**
@@ -291,10 +311,12 @@ public class PCTWSBroker extends PCTBroker {
                     bw.println("brokerLogFile=" + this.brokerLogFile);
                 if (this.brokerLogLevel != -1)
                     bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
+                bw.println("brkrLogAppend=" + (this.brokerLogFileAppend ? "1" : "0"));
                 if (this.serverLogFile != null)
                     bw.println("srvrLogFile=" + this.serverLogFile);
                 if (this.serverLogLevel != -1)
                     bw.println("srvrLoggingLevel=" + this.serverLogLevel);
+                bw.println("srvrLogAppend=" + (this.serverLogFileAppend ? "1" : "0"));
                 if (this.workDir != null)
                     bw.println("workDir=" + this.workDir);
                 if (this.initialPool != -1)
