@@ -67,6 +67,7 @@ import java.text.MessageFormat;
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
     private boolean unfreeze = false;
+    private boolean commitWhenErrors = false;
 
     /**
      * Dump file
@@ -84,6 +85,15 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void setUnfreeze(boolean unfreeze) {
         this.unfreeze = unfreeze;
+    }
+
+    /**
+     * Commit transaction when errors during load
+     * 
+     * @param commit boolean
+     */
+    public void setCommitWhenErrors(boolean commit) {
+        this.commitWhenErrors = commit;
     }
 
     /**
@@ -116,6 +126,8 @@ public class PCTLoadSchema extends PCTRun {
         this.setProcedure("pct/loadSch.p"); //$NON-NLS-1$
         this.addParameter(new RunParameter("unfreeze", Boolean.toString(this.unfreeze))); //$NON-NLS-1$
         this.addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath())); //$NON-NLS-1$
+        this.addParameter(new RunParameter(
+                "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
         log(
                 MessageFormat.format(Messages.getString("PCTLoadSchema.3"),
                         new Object[]{this.srcFile}), Project.MSG_INFO);
