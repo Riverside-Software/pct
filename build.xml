@@ -301,7 +301,7 @@
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v10}">
         <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
+          <include name="com/phenix/pct/PCTSchemaDocTest.class" />
           <!-- A few problems for now... -->
           <!--<include name="net/cordova/prounit/*Test.class" />-->
         </fileset>
@@ -321,7 +321,7 @@
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-v10-64}">
         <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
+          <include name="com/phenix/pct/PCTSchemaDocTest.class" />
           <!-- A few problems for now... -->
           <!--<include name="net/cordova/prounit/*Test.class" />-->
         </fileset>
