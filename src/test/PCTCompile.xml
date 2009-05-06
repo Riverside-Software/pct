@@ -555,21 +555,21 @@
     </PCTCompile>
   </target>
 
-  <!-- Test listing, preprocess and debugListing attributes -->
+  <!-- Test keepxref, listing, preprocess and debugListing attributes -->
   <target name="test20-init">
   	<echo file="sandbox/temp.p">
       MESSAGE "Hello world".
   	</echo>
   </target>
   <target name="test20-part1">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="false" preprocess="false" debugListing="false">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" keepXref="false" listing="false" preprocess="false" debugListing="false">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	
     </PCTCompile>
   </target>
   <target name="test20-part2">
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="true" preprocess="true" debugListing="true">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true">
       <fileset dir=".">
         <include name="sandbox/temp.p"/>	
       </fileset>	

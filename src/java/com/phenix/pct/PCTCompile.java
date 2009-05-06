@@ -84,6 +84,7 @@ public class PCTCompile extends PCTRun {
     private boolean listing = false;
     private boolean preprocess = false;
     private boolean debugListing = false;
+    private boolean keepXref = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -179,6 +180,15 @@ public class PCTCompile extends PCTRun {
     public void setNoXref(boolean noXref) {
         log(Messages.getString("PCTCompile.1")); //$NON-NLS-1$
         this.forceCompile = noXref;
+    }
+
+    /**
+     * Generates a .xref in the .pct directory, result of XREF option in the COMPILE statement
+     * 
+     * @param keepXref "true|false|on|off|yes|no"
+     */
+    public void setKeepXref(boolean keepXref) {
+        this.keepXref = keepXref;
     }
 
     /**
@@ -316,6 +326,8 @@ public class PCTCompile extends PCTRun {
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("DEBUGLISTING=" + (this.debugListing ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$

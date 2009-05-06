@@ -100,6 +100,7 @@ DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
@@ -165,6 +166,8 @@ REPEAT:
             ASSIGN PrePro = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'DEBUGLISTING':U THEN
             ASSIGN DebugLst = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'KEEPXREF':U THEN
+            ASSIGN keepXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -346,6 +349,8 @@ PROCEDURE PCTCompileXref.
     IF plOK THEN DO:
         RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
         /* Il faut verifier le code de retour */
+        IF keepXref THEN
+          OS-COPY VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") VALUE(pcPCTDir + '/':U + pcInFile + '.xref':U).
     END.
     ELSE DO:
         ASSIGN c = '':U.
