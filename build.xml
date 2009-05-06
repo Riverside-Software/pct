@@ -167,6 +167,7 @@
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}">
       <fileset dir="${buildDir}">
         <include name="pct/*.r" />
+        <include name="prodict/dump/*.r" />
       </fileset>
     </bootstrapLibrary>
 
@@ -266,85 +267,52 @@
     </copy>
   </target>
 
+  <target name="cond.test" if="${test.this.version}">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+      <classpath>
+        <pathelement location="junit.jar" />
+        <pathelement location="ant-junit.jar" />
+        <pathelement location="ant-launcher.jar" />
+        <pathelement location="jakarta-regexp-1.5.jar" />
+        <pathelement location="ant-apache-regexp.jar" />
+        <pathelement location="${dist}/PCT.jar" />
+        <pathelement location="${build}" />
+      </classpath>
+      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
+      <formatter type="xml" />
+      <batchtest fork="yes" todir="${junit-result}">
+        <fileset dir="${build}">
+          <include name="com/phenix/pct/*Test.class" />
+        </fileset>
+      </batchtest>
+    </junit>
+    <junitreport todir="${junit-report}">
+      <fileset dir="${junit-result}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" styledir="${basedir}" todir="${junit-report}" />
+    </junitreport>
+  </target>
+    
   <target name="test" depends="prepare-test" description="Starts tests">
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
-      <classpath>
-        <pathelement location="junit.jar" />
-        <pathelement location="ant-junit.jar" />
-        <pathelement location="ant-launcher.jar" />
-        <pathelement location="jakarta-regexp-1.5.jar" />
-        <pathelement location="ant-apache-regexp.jar" />
-        <pathelement location="${dist}/PCT.jar" />
-        <pathelement location="${build}" />
-      </classpath>
-      <jvmarg line="-DDLC=&quot;${DLC9}&quot;" />
-      <formatter type="xml" />
-      <batchtest fork="yes" todir="${junit-v9}">
-        <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
-          <!-- A few problems for now... -->
-          <!--<include name="net/cordova/prounit/*Test.class" />-->
-        </fileset>
-      </batchtest>
-    </junit>
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
-      <classpath>
-        <pathelement location="junit.jar" />
-        <pathelement location="ant-junit.jar" />
-        <pathelement location="ant-launcher.jar" />
-        <pathelement location="jakarta-regexp-1.5.jar" />
-        <pathelement location="ant-apache-regexp.jar" />
-        <pathelement location="${dist}/PCT.jar" />
-        <pathelement location="${build}" />
-      </classpath>
-      <jvmarg line="-DDLC=&quot;${DLC10}&quot;" />
-      <formatter type="xml" />
-      <batchtest fork="yes" todir="${junit-v10}">
-        <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
-          <!-- A few problems for now... -->
-          <!--<include name="net/cordova/prounit/*Test.class" />-->
-        </fileset>
-      </batchtest>
-    </junit>
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
-      <classpath>
-        <pathelement location="junit.jar" />
-        <pathelement location="ant-junit.jar" />
-        <pathelement location="ant-launcher.jar" />
-        <pathelement location="jakarta-regexp-1.5.jar" />
-        <pathelement location="ant-apache-regexp.jar" />
-        <pathelement location="${dist}/PCT.jar" />
-        <pathelement location="${build}" />
-      </classpath>
-      <jvmarg line="-DDLC=&quot;${DLC10-64}&quot;" />
-      <formatter type="xml" />
-      <batchtest fork="yes" todir="${junit-v10-64}">
-        <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
-          <!-- A few problems for now... -->
-          <!--<include name="net/cordova/prounit/*Test.class" />-->
-        </fileset>
-      </batchtest>
-    </junit>
-    <junitreport todir="${junit-report-v9}">
-      <fileset dir="${junit-v9}">
-        <include name="TEST-*.xml" />
-      </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report-v9}" />
-    </junitreport>
-    <junitreport todir="${junit-report-v10}">
-      <fileset dir="${junit-v10}">
-        <include name="TEST-*.xml" />
-      </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report-v10}" />
-    </junitreport>
-    <junitreport todir="${junit-report-v10-64}">
-      <fileset dir="${junit-v10-64}">
-        <include name="TEST-*.xml" />
-      </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report-v10-64}" />
-    </junitreport>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="junit-result" value="${junit-v9}" />
+      <param name="junit-report" value="${junit-report-v9}" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="junit-result" value="${junit-v10}" />
+      <param name="junit-report" value="${junit-report-v10}" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="junit-result" value="${junit-v10-64}" />
+      <param name="junit-report" value="${junit-report-v10-64}" />
+    </antcall>
     <delete>
       <fileset dir="." includes="TEST*.xml" />
     </delete>
@@ -505,12 +473,12 @@
   <target name="upload" description="Quick reminder on how to upload files">
     <input message="Sourceforge username : " addproperty="sf.user" />
     <input message="Sourceforge password : " addproperty="sf.pass" />
-    <scp todir="${sf.user}:${sf.pass}@shell.sourceforge.net:/home/groups/p/pc/pct/htdocs/">
+    <scp todir="${sf.user}:${sf.pass}@frs.sourceforge.net:/home/groups/p/pc/pct/htdocs/">
       <fileset dir="website" />
     </scp>
-    <ftp userid="anonymous" password="" server="upload.sourceforge.net" binary="true" remotedir="/incoming">
-      <fileset dir="." includes="pct*.zip" />
-    </ftp>
+    <scp todir="${sf.user}:${sf.pass}@frs.sourceforge.net:/home/users/j/ju/justus_phenix/uploads/">
+      <fileset dir="." includes="pct-*-${pct.version}.zip" />
+    </scp>
   </target>
 
 </project>
