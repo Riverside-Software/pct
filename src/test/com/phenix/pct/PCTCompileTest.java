@@ -301,14 +301,18 @@ public class PCTCompileTest extends BuildFileTest {
         File f1 = new File("build/.pct/sandbox/temp.p");
         File f2 = new File("build/.pct/sandbox/temp.p.preprocess");
         File f3 = new File("build/.pct/sandbox/temp.dbg");
+        File f4 = new File("build/.pct/sandbox/temp.p.xref");
         assertFalse(f1.exists());
         assertFalse(f2.exists());
         assertFalse(f3.exists());
+        assertFalse(f4.exists());
         dotR.delete();
         executeTarget("test20-part2");
         assertTrue("Unable to find listing file", f1.exists());
         assertTrue("Unable to find preprocess file", f2.exists());
         assertTrue("Unable to find debug-listing file", f3.exists());
+        assertTrue("Unable to find xref file", f4.exists());
+        assertTrue("Empty xref file", (f4.length() > 0));
     }
 
     public void test21() {
