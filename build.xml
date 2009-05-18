@@ -22,6 +22,12 @@
     <os family="unix" />
   </condition>
 
+  <condition property="BUILD_NUMBER" value="ANT">
+    <not>
+      <isset property="BUILD_NUMBER" />
+    </not>
+  </condition>
+
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
   <property name="src.progress" location="src/progress" />
@@ -52,8 +58,7 @@
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.15pre" />
-
+  <property name="pct.version" value="0.15" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
@@ -237,10 +242,10 @@
         <section name="common">
           <attribute name="Specification-Title" value="PCT" />
           <attribute name="Specification-Version" value="${pct.version}" />
-          <attribute name="Specification-Vendor" value="Phenix Engineering" />
+          <attribute name="Specification-Vendor" value="Riverside Software" />
           <attribute name="Implementation-Title" value="PCT" />
-          <attribute name="Implementation-Version" value="${pct.version} ${TODAY}" />
-          <attribute name="Implementation-Vendor" value="Phenix Engineering" />
+          <attribute name="Implementation-Version" value="Build ${BUILD_NUMBER}" />
+          <attribute name="Implementation-Vendor" value="Riverside Software" />
         </section>
       </manifest>
     </jar>
@@ -331,7 +336,7 @@
   </target>
 
   <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
-    <zip destfile="pct-bin-${pct.version}.zip">
+    <zip destfile="pct-bin-${BUILD_NUMBER}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="lib/PCT.jar" />
         <include name="CHANGELOG" />
@@ -341,7 +346,7 @@
   </target>
 
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <zip destfile="pct-src-${pct.version}.zip">
+    <zip destfile="pct-src-${BUILD_NUMBER}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**" />
         <include name="build.xml" />
@@ -477,7 +482,7 @@
       <fileset dir="website" />
     </scp>
     <scp todir="${sf.user}:${sf.pass}@frs.sourceforge.net:/home/users/j/ju/justus_phenix/uploads/">
-      <fileset dir="." includes="pct-*-${pct.version}.zip" />
+      <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip" />
     </scp>
   </target>
 
