@@ -2,6 +2,7 @@ Version 0.15 (??/??/????)
 ==============================
  * Added brokerLogFileAppend and serverLogFileAppend attributes to PCTASBroker and PCTWSBroker
  * Added keepXref attribute in PCTCompile
+ * Corrected documentation for msgBufferSize attribute in PCTRun
 
 Version 0.14 (12/03/2008)
 ==============================
