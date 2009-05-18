@@ -52,7 +52,7 @@
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.14" />
+  <property name="pct.version" value="0.15pre" />
 
 
   <!-- Different filesets depending on version -->
