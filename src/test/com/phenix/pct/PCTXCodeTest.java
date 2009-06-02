@@ -127,4 +127,19 @@ public class PCTXCodeTest extends BuildFileTest {
     	executeTarget("test7");
     	expectBuildException("test7bis", "RETURN 1");
     }
+    
+    public void test8() {
+        executeTarget("test8init");
+        executeTarget("test8");
+        
+        File f1 = new File("sandbox/test.p");
+        File f2 = new File("sandbox/test2.p");
+        File f3 = new File("build/test.p");
+        File f4 = new File("build/test2.p");
+        
+        assertTrue(f1.lastModified() < f3.lastModified());
+        assertTrue(f1.length() != f3.length());
+        assertTrue(f2.lastModified() < f4.lastModified());
+        assertTrue(f2.length() != f4.length());
+    }
 }
