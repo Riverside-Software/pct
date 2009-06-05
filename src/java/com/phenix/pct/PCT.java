@@ -445,4 +445,45 @@ public abstract class PCT extends Task {
     protected long getRCodeVersion() {
         return this.rcodeVersion;
     }
+
+    /**
+     * Escapes a string so it does not accidentally contain Progress escape characters
+     * 
+     * @param str the input string
+     * @return the escaped string
+     */
+    protected static String escapeString(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        int slen = str.length();
+        StringBuffer res = new StringBuffer();
+
+        for (int i = 0; i < slen; i++) {
+            char c = str.charAt(i);
+
+            switch (c) {
+                case '\u007E' : // TILDE converted to TILDE TILDE
+                    res.append("\u007E\u007E"); //$NON-NLS-1$
+
+                    break;
+
+                case '\u0022' : // QUOTATION MARK converted to TILDE APOSTROPHE
+                    res.append("\u007E\u0027"); //$NON-NLS-1$
+
+                    break;
+
+                case '\'' : // APOSTROPHE converted to TILDE APOSTROPHE
+                    res.append("\u007E\u0027"); //$NON-NLS-1$
+
+                    break;
+
+                default :
+                    res.append(c);
+            }
+        }
+
+        return res.toString();
+    }
 }

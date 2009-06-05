@@ -100,71 +100,36 @@ DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
 PROCEDURE getCRC.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-	/* Gets CRC list */
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+	
+    /* Gets CRC list */
 	DEFINE VARIABLE h AS HANDLE     NO-UNDO.
 	h = TEMP-TABLE CRCList:HANDLE.
 	RUN pct/pctCRC.p (INPUT-OUTPUT TABLE-HANDLE h) NO-ERROR.
-	IF (RETURN-VALUE NE '0') THEN
-	    RETURN SUBSTITUTE({&MESSAGE}, RETURN-VALUE).
-
-    RETURN {&NO_ERROR}.
-END PROCEDURE.
-
-PROCEDURE setRunList.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-	ASSIGN RunList = TRUE.
-    RETURN {&NO_ERROR}.
+    ASSIGN opOK = (RETURN-VALUE EQ '0').
+    
+    RETURN.
 
 END PROCEDURE.
 
-PROCEDURE setMinSize.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
+PROCEDURE setOptions:
+    DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
 
-	ASSIGN MinSize = TRUE.
-    RETURN {&NO_ERROR}.
+    /* Définition des options de compilation */
+    /* Liste avec séparateur ; où chaque valeur est un logical sous forme true/false ou une chaine de caractères */
+    /* Les options définies sont (dans l'ordre) : runList, minSize, md5, xcode, xcodekey, forceCompil, noCompil */
+    ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
+           minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
+           md5       = ENTRY(3, ipPrm, ';') EQ 'true'
+           lXCode    = ENTRY(4, ipPrm, ';') EQ 'true'
+           xcodekey  = ENTRY(5, ipPrm, ';')
+           forceComp = ENTRY(6, ipPrm, ';') EQ 'true'
+           noComp    = ENTRY(7, ipPrm, ';') EQ 'true'.
 
-END PROCEDURE.
-
-PROCEDURE setMD5.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-	ASSIGN MD5 = TRUE.
-    RETURN {&NO_ERROR}.
-
-END PROCEDURE.
-
-PROCEDURE setXCode.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-	ASSIGN lXCode = TRUE.
-    RETURN {&NO_ERROR}.
-
-END PROCEDURE.
-
-PROCEDURE setXCodeKey.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-    ASSIGN XCodeKey = cPrm.
-    RETURN {&NO_ERROR}.
-
-END PROCEDURE.
-
-PROCEDURE setForceCompilation.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-    ASSIGN ForceComp = TRUE.
-    RETURN {&NO_ERROR}.
-
-END PROCEDURE.
-
-PROCEDURE setNoCompile.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-
-    ASSIGN NoComp = TRUE.
-    RETURN {&NO_ERROR}.
+    ASSIGN opOk = TRUE.
+    RETURN.
 
 END PROCEDURE.
 
@@ -175,6 +140,7 @@ END PROCEDURE.
  */
 PROCEDURE pctCompile.
     DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
 
     /* Input parameter is a pipe-delimited list consisting of these entries :
      *   -> Input File : Full pathname of file to compile
@@ -190,6 +156,7 @@ PROCEDURE pctCompile.
      *      If empty, keep generated file as is
      */
 
+    
 	DEFINE VARIABLE inputFile   AS CHARACTER  NO-UNDO.
 	DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
 	DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
@@ -265,13 +232,18 @@ PROCEDURE pctCompile.
         ELSE
             COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         IF COMPILER:ERROR THEN DO:
-            ASSIGN retVal = STRING(ERROR-STATUS:NUM-MESSAGES) + "~n".
+            ASSIGN opOK = FALSE.
+
+            /* ASSIGN retVal = STRING(ERROR-STATUS:NUM-MESSAGES) + "~n". */
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
-                ASSIGN errMsgs = errMsgs + ERROR-STATUS:GET-MESSAGE(zz) + '~n':U.
+                RUN logError IN SOURCE-PROCEDURE (ERROR-STATUS:GET-MESSAGE(zz)).
+                /* ASSIGN errMsgs = errMsgs + ERROR-STATUS:GET-MESSAGE(zz) + '~n':U. */
             END.
-            ASSIGN retVal = retVal + getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).
+            RUN logError IN SOURCE-PROCEDURE(getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs)).
+            /* ASSIGN retVal = retVal + getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).*/
         END.
         ELSE DO:
+            ASSIGN opOK = TRUE.
             IF (targetFile NE ?) THEN DO:
                 OS-COPY VALUE(outputDir + "/" + RCodeName) VALUE(targetFile).
                 OS-DELETE VALUE(outputDir + "/" + RCodeName).
@@ -280,10 +252,11 @@ PROCEDURE pctCompile.
             RUN ImportXref (INPUT xreffile, INPUT pctdir) NO-ERROR.
             OS-DELETE VALUE(xrefFile).
         END.
-        RETURN SUBSTITUTE({&MESSAGE}, retVal).
+        RETURN /*SUBSTITUTE({&MESSAGE}, retVal)*/.
     END.
     ELSE DO:
-        RETURN SUBSTITUTE({&MESSAGE}, "-1").
+        ASSIGN opOK = TRUE.
+        RETURN /* SUBSTITUTE({&MESSAGE}, "-1")*/ . 
     END.
         	
 END PROCEDURE.
@@ -344,15 +317,15 @@ FUNCTION getCompileErrors RETURNS CHARACTER (pcInit AS CHAR, pcFile AS CHAR, piR
     DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
     IF (pcInit EQ pcFile) THEN
-        ASSIGN c = SUBSTITUTE("Error compiling file &1 at line &2 column &3~n", pcInit, piRow, piColumn).
+        ASSIGN c = SUBSTITUTE("Error compiling file &1 at line &2 column &3~t", pcInit, piRow, piColumn).
     ELSE
-        ASSIGN c = SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3~n", pcInit, piRow, piColumn, pcFile).
+        ASSIGN c = SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3~t", pcInit, piRow, piColumn, pcFile).
     INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
         IMPORT STREAM sXref UNFORMATTED tmp.
     END.
     IMPORT STREAM sXref UNFORMATTED tmp.
-    ASSIGN c = c + tmp + FILL('-':U, piColumn - 2) + '-^~n':U + pcMsg + '~n'.
+    ASSIGN c = c + tmp + FILL('-':U, piColumn - 2) + '-^~t':U + pcMsg + '~t'.
     
     INPUT STREAM sXref CLOSE.
     RETURN c.
