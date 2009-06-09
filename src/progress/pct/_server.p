@@ -62,13 +62,12 @@ DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
 DEFINE TEMP-TABLE ttMsgs NO-UNDO
  FIELD msgLine AS CHARACTER.
 
-DEFINE VARIABLE portNumber AS CHARACTER  NO-UNDO INITIAL ?.
-DEFINE VARIABLE threadNumber AS INTEGER NO-UNDO INITIAL -1.
-
-log-manager:logfile-name = "c:/truc.txt".
+DEFINE VARIABLE portNumber   AS CHARACTER  NO-UNDO INITIAL ?.
+DEFINE VARIABLE threadNumber AS INTEGER    NO-UNDO INITIAL -1.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
 IF (portNumber EQ ?) THEN RETURN '17'.
+/* Thread number is used during communication with ANT process */
 ASSIGN threadNumber = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'threadNumber')) NO-ERROR.
 IF (threadNumber EQ -1) THEN RETURN '18'.
 
@@ -84,74 +83,54 @@ DO WHILE aOk:
     END.
 END.
 RETURN '0'.
-/* QUIT. */
 
 /* Connects ANT session */
 PROCEDURE ConnectToServer.
     
-    /* IF (portNumber EQ ?) THEN
-        RETURN ERROR "No port number defined. Please log a bug". */
+    DEFINE VARIABLE packet       AS LONGCHAR    NO-UNDO.
+    DEFINE VARIABLE packetBuffer AS MEMPTR      NO-UNDO.
+    
     ASSIGN aOk = hSocket:CONNECT("-H localhost -S " + portNumber) NO-ERROR.
     if NOT aOK THEN
         RETURN ERROR "Connection to ANT failed on port " + portNumber.
     ELSE DO:
         hSocket:SET-READ-RESPONSE-PROCEDURE("ReceiveCommand").
-        DEFINE VARIABLE packet AS LONGCHAR NO-UNDO.
-        DEFINE VARIABLE packetBuffer AS MEMPTR      NO-UNDO.
         packet = STRING(threadNumber) + "~n".
         COPY-LOB FROM packet TO packetBuffer.
         hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
         SET-SIZE(packetBuffer) = 0.    
     END.
-        /* RUN SendConnectionGreeting. */
+
 END PROCEDURE.
 
-/* Sends greeting message and declaring socket callback */
-PROCEDURE SendConnectionGreeting:
-    DEFINE VARIABLE greeting AS CHARACTER NO-UNDO.
-  
-    hSocket:SET-READ-RESPONSE-PROCEDURE("ReceiveCommand").
-    CREATE ttMsgs.
-    assign ttMsgs.msgLine = "Connected".
-    /* ASSIGN greeting = "Hello from _server.p~n END.~n". */
-    RUN WriteToSocket(/*greeting*/ TRUE, "Init", "").
-END.
-
 /* Handles writing of response data back to the eclipse session */
+/* First line is in this format : */
+/* threadNumber:[OK|ERR]:CommandExecuted:Parameters */
+/* Following lines are in this format */
+/* threadNumber:message_line */
+/* Last line is in this format */
+/* threadNumber:END */
+/* Message lines are read from the ttMsgs temp-table */
+/* This temp-table is emptied when a new command is run */
 PROCEDURE WriteToSocket:
-    DEFINE INPUT PARAMETER plOK AS LOGICAL NO-UNDO.
-    DEFINE INPUT PARAMETER pcCmd AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER plOK  AS LOGICAL NO-UNDO.
+    DEFINE INPUT  PARAMETER pcCmd AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcPrm AS CHARACTER   NO-UNDO.
 
-    /* DEFINE INPUT PARAMETER packet AS CHARACTER NO-UNDO. */
-  
-    DEFINE VARIABLE packetBuffer AS MEMPTR NO-UNDO.
-	/*DEFINE VARIABLE packetLength AS INTEGER NO-UNDO.*/
-	define variable packet as longchar no-undo.
-	define variable lfirst as logical no-undo.
+    DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
+	DEFINE VARIABLE packet       as longchar no-undo.
+	DEFINE VARIABLE lfirst       as logical  no-undo.
 	
-    packet = string(threadNumber) + ":" + (if plok then "OK" else "ERR") + ":" + pcCmd + ":" + pcPrm + "~n".
-	for each ttmsgs:
-	  /* if (lfirst) then do:
-	    packet = string(threadNumber) + ":" + (if plok then "OK" else "ERR") + ":" + pcCmd + ":" + ttMsgs.msgLine + "~n".
-	    lfirst = false.
-	  end.
-	  else do: */
+    ASSIGN packet = string(threadNumber) + ":" + (if plok then "OK" else "ERR") + ":" + pcCmd + ":" + pcPrm + "~n".
+	FOR EACH ttmsgs:
 	    packet = packet + string(threadNumber) + ":MSG:" + ttMsgs.msgLine + "~n".
-	  /* end. */
-	end.
+	END.
 	packet = packet + string(threadNumber) + ":END~n".
 
 	copy-lob from packet to packetBuffer. 
-	/*log-manager:write-message("ecriture du paquet " + packet).*/
-	/*ASSIGN packetLength = LENGTH(packet) + LENGTH(STRING(threadNumber)) + 2.*/
     IF VALID-HANDLE(hSocket) THEN DO:
         IF hSocket:CONNECTED() THEN DO:
-	        /* SET-SIZE(packetBuffer) = packetLength.
-	        PUT-STRING(packetBuffer, 1, packetLength - 1) = STRING(threadNumber) + ':' + packet. */
-            LOG-MANAGER:WRITE-MESSAGE(string(threadNumber) + " Avant écriture socket").
 	        hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
-            LOG-MANAGER:WRITE-MESSAGE(string(threadNumber) + " Après écriture socket").
 	        SET-SIZE(packetBuffer) = 0.    
         END.
         ELSE DO:
@@ -230,10 +209,8 @@ PROCEDURE executeCmd:
         END.
     END.
     IF (hProc EQ ?) OR (NOT VALID-HANDLE(hProc)) THEN DO:
-        CREATE ttmsgs.
-        ASSIGN ttmsgs.msgline = "Unable to execute procedure".
+        RUN logMessage ("Unable to execute procedure").
         RUN writeToSocket(FALSE, cCmd, "").
-        /*RUN WriteToSocket("ERR:Unable to execute " + cCmd + "~nEND.~n").*/
         RETURN ''.
     END.
         
@@ -242,95 +219,89 @@ PROCEDURE executeCmd:
     DontQuit:
     DO ON ERROR UNDO, RETRY ON STOP UNDO, RETRY ON ENDKEY UNDO, RETRY ON QUIT UNDO, RETRY:
         IF RETRY THEN DO:
-            /*ASSIGN cRet = "ERR:".*/
             ASSIGN lOK = FALSE.
-            CREATE ttmsgs.
-            ASSIGN ttmsgs.msgline = "Error during execution".
+            RUN logMessage ("Error during execution").
             LEAVE DontQuit.
         END.
-        LOG-MANAGER:WRITE-MESSAGE(STRING(threadNumber) + " avant exec commande " + ccmd).
         RUN VALUE(cCmd) IN hProc (INPUT cPrm, OUTPUT lOK).
-        LOG-MANAGER:WRITE-MESSAGE(STRING(threadNumber) + " apres exec commande " + ccmd).
-        /*ASSIGN cRet = RETURN-VALUE.
-        ASSIGN cRet = "OK:" + (IF cRet EQ ? THEN "" ELSE cRet).*/
     END.
         
-    /*ASSIGN cRet = cRet + "~nEND.~n".*/
     RUN WriteToSocket(lOK, cCmd, cprm).
     
 END PROCEDURE.
 
-/* This will terminate the infinite loop of waiting for commands and
- * quit out of the Progress session */
-PROCEDURE QUIT:
-    DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
-	define output parameter opok as logical no-undo.
-	
-	opok = true.    
-    ASSIGN aOk = FALSE.
-    APPLY "close" TO THIS-PROCEDURE.
-    RETURN "TERMINATED.".
-
-END PROCEDURE.
-
-/* Changes PROPATH */
-PROCEDURE PROPATH:
-    DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
-	define output parameter opok as logical no-undo.
-
-opok = true.
-    IF cPrm <> "" THEN PROPATH = cPrm + PROPATH.
-    RETURN .
-
-END PROCEDURE.
-
-
-/* Connect to databases */
-PROCEDURE Connect :
-  DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
-	define output parameter opok as logical no-undo.
-  
-  
-    CONNECT VALUE(cPrm) NO-ERROR.
-    IF ERROR-STATUS:ERROR THEN do:
-        opok = false.
-      create ttmsgs.
-      assign ttmsgs.msgline = error-status:get-message(1).
-    end.
-    ELSE do:
-      opOk = true.
-    end.
-      
-  RETURN .
-  
-END PROCEDURE.
-
-
-/* Run a particular procedure persistently */
-PROCEDURE launch:
-    DEFINE INPUT PARAMETER cPrm AS CHARACTER NO-UNDO.
-    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
-  
-    
-    RUN VALUE(cPrm) PERSISTENT NO-ERROR.
-    IF ERROR-STATUS:ERROR THEN do:
-        ASSIGN opOK = false.
-        create ttmsgs.
-        assign ttmsgs.msgline = error-status:get-message(1).
-    end.
-    ELSE do:
-        opOk = true.
-    end.
-
-    RETURN .
-  
-END PROCEDURE.
-
-
+/* To be removed */
 PROCEDURE logError:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     CREATE ttMsgs.
     ASSIGN ttMsgs.msgLine = ipMsg.
-
 END.
+
+PROCEDURE logMessage:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+
+    CREATE ttMsgs.
+    ASSIGN ttMsgs.msgLine = ipMsg.
+END.
+
+/* Commands to be executed from executeCmd */
+/* Each command should have an input param as char (command parameters) and */
+/* an output param as logical, to tell ANT if command was executed successfully or not */
+
+
+/* This will terminate the infinite loop of waiting for commands and
+ * quit out of the Progress session */
+PROCEDURE QUIT:
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+	
+    ASSIGN opok = TRUE
+           aOk  = FALSE.
+    APPLY "close" TO THIS-PROCEDURE.
+
+END PROCEDURE.
+
+/* Changes PROPATH */
+PROCEDURE PROPATH:
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+
+    ASSIGN opOK = TRUE.
+    IF cPrm <> "" THEN PROPATH = cPrm + PROPATH.
+
+END PROCEDURE.
+
+/* Connect to databases */
+PROCEDURE Connect :
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+  
+    CONNECT VALUE(cPrm) NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN DO:
+        ASSIGN opok = FALSE.
+        RUN logMessage (ERROR-STATUS:GET-MESSAGE(1)).
+    END.
+    ELSE DO:
+        ASSIGN opOk = TRUE.
+    END.
+      
+END PROCEDURE.
+
+/* Run a particular procedure persistently */
+PROCEDURE launch:
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    
+    RUN VALUE(cPrm) PERSISTENT NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN DO:
+        ASSIGN opOK = FALSE.
+        RUN logMessage (ERROR-STATUS:GET-MESSAGE(1)).
+    END.
+    ELSE DO:
+        ASSIGN opOk = TRUE.
+    END.
+  
+END PROCEDURE.
+
+
