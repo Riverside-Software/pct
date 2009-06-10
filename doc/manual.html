@@ -67,6 +67,24 @@ It's also possible to keep PCT.jar in a separate directory. In this case, declar
 to be copied to your $DLC directory. This is no longer the case as of 0.10 : r-code is wrapped in
 PL, extracted on the fly from PCT.jar when running a PCT tasks. PCT.jar contains both the v9 and v10
 r-code versions.</p>
+<p><span id="new">!!!NEW!!!</span>PCT tasks can be used with XML namespaces. Check <a href="http://ant.apache.org/manual/CoreTypes/antlib.html#antlibnamespace">Antllib namespaces</a>
+before using that. One way to use PCT this way is to declare the pct namespace in your project :</p>
+<pre>
+&lt;project xmlns:pct="antlib:eu/rssw/pct" &gt;
+  &lt;!-- Only if PCT.jar doesn't live in $ANT_HOME/lib --&gt;
+  &lt;taskdef uri="antlib:eu/rssw/pct"
+              resource="eu/rssw/pct/antlib.xml"
+              classpath="path/to/PCT.jar" /&gt;
+...
+&lt;/project&gt;
+</pre>
+<p>After having declared PCT, you'll be able to use PCT tasks in this manner :</p>
+<pre>
+  &lt;pct:run procedure="..." /&gt;
+  &lt;pct:compile ... /&gt; 
+</pre>
+<p>Documentation shows "old" names first, followed by the name in the pct namespace.</p>
+<p>Please note that the behavior of PCT remains unchanged whichever style you're choosing. Old names are not deprecated, and will live a long life...</p>
 
 <h1>Tasks overview</h1>
 <p>
