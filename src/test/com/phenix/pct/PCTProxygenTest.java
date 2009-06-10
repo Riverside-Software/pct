@@ -164,4 +164,26 @@ public class PCTProxygenTest extends BuildFileTest {
         assertTrue("Failure expected on 10.1B...", f2.exists());
     }
 
+    public void test5() {
+        // Stupid 10.1...
+        if ((majorVersion == 10) && (minorVersion == 1)) return;
+        // XPXG files are only in v10
+        if (majorVersion == 9) return;
+
+        executeTarget("test5-init");
+        
+        File f1 = new File("sandbox/pxg/Test.class");
+        File f2 = new File("sandbox/pxg/TestImpl.class");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        executeTarget("test5");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+
+        executeTarget("test5-part2");
+        // 10.1B doesn't handle relative paths...
+        assertTrue("Failure expected on 10.1B...", f1.exists());
+        assertTrue("Failure expected on 10.1B...", f2.exists());
+    }
+
 }
