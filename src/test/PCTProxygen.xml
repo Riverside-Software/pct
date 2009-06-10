@@ -58,5 +58,38 @@
     <echo message="v10 only test" />
     <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox" />
   </target>
+
+  <!-- Simple v10 XPXG file with JVM args -->
+  <target name="test5-init">
+    <mkdir dir="sandbox/sandbox" />
+    <echo file="sandbox/sandbox/test.p">
+      MESSAGE "This is a test".
+    </echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}"  basedir="sandbox">
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="sandbox/pxg" />
+  </target>
+  <target name="test5">
+    <!-- This one should fail, because of bad Java argument -->
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-foobar" />
+    </PCTProxygen>
+  </target>
+  <target name="test5-part2">
+    <!-- This one should fail, because of insufficent memory -->
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-Xmx64k" />
+    </PCTProxygen>
+  </target>
+  <target name="test5-part3">
+    <!-- This one should succeed -->
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-Xmx128m" />
+    </PCTProxygen>
+  </target>
   
 </project>
