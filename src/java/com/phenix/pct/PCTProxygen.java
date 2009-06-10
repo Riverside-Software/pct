@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 
 import java.io.File;
@@ -72,6 +73,8 @@ public class PCTProxygen extends PCT {
     private File srcFile = null;
     private boolean keepFiles = false;
     private File workingDirectory = null;
+
+    private Java pxg = null;
 
     /**
      * Keep files
@@ -104,6 +107,14 @@ public class PCTProxygen extends PCT {
         this.srcFile = srcFile;
     }
 
+    public Commandline.Argument createJvmarg() {
+        if (pxg == null) {
+            pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
+        }
+
+        return pxg.getCommandLine().createVmArgument();
+    }
+
     /**
      * Do the work
      * 
@@ -116,7 +127,9 @@ public class PCTProxygen extends PCT {
 
         checkDlcHome();
         // Creates a new Java task to launch proxygen task
-        Java pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
+        if (pxg == null) {
+            pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
+        }
 
         pxg.setOwningTarget(this.getOwningTarget());
         pxg.setTaskName(this.getTaskName());
