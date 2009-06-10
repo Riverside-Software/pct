@@ -52,9 +52,8 @@
  * <http://www.apache.org/>.
  */
 
-&GLOBAL-DEFINE NO_ERROR "OK:"
-&GLOBAL-DEFINE MESSAGE "OK:~~n&1"
 &GLOBAL-DEFINE SEPARATOR '|'
+&GLOBAL-DEFINE SEPARATOR2 '#'
 
 DEFINE TEMP-TABLE CRCList NO-UNDO
   FIELD ttTable AS CHARACTER
@@ -99,7 +98,7 @@ DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 
-PROCEDURE getCRC.
+PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
 	
@@ -109,28 +108,75 @@ PROCEDURE getCRC.
 	RUN pct/pctCRC.p (INPUT-OUTPUT TABLE-HANDLE h) NO-ERROR.
     ASSIGN opOK = (RETURN-VALUE EQ '0').
     
-    RETURN.
-
 END PROCEDURE.
 
 PROCEDURE setOptions:
     DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
 
-    /* Définition des options de compilation */
-    /* Liste avec séparateur ; où chaque valeur est un logical sous forme true/false ou une chaine de caractères */
-    /* Les options définies sont (dans l'ordre) : runList, minSize, md5, xcode, xcodekey, forceCompil, noCompil */
+    /* Defines compilation option -- This is a ';' separated string containing */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
            lXCode    = ENTRY(4, ipPrm, ';') EQ 'true'
            xcodekey  = ENTRY(5, ipPrm, ';')
            forceComp = ENTRY(6, ipPrm, ';') EQ 'true'
-           noComp    = ENTRY(7, ipPrm, ';') EQ 'true'.
+           noComp    = ENTRY(7, ipPrm, ';') EQ 'true' NO-ERROR.
 
-    ASSIGN opOk = TRUE.
-    RETURN.
+    ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
+END PROCEDURE.
+
+PROCEDURE pctCompile:
+    DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL TRUE.
+    
+    /* Input parameter is a #-separated list of compilation units */
+    /* Each compilation unit is a pipe-separated list of infos : */
+    /*  -> Input file to compile - Complete path (CHAR) */
+    /*  -> Output dir for compiled file (CHAR) */
+    /*  -> Debug listing file (CHAR) - Empty to disable generation */
+    /*  -> Preprocessor file (CHAR) - Empty to disable generation */
+    /*  -> Listing file (CHAR) - Empty to disable generation */
+    /*  -> xref file (CHAR) */
+    /*  -> PCT dir (CHAR) - */
+    /*  -> Target file name (CHAR) */
+	DEFINE VARIABLE inputFile   AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE prepro      AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE listingFile AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE xrefFile    AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE pctDir      AS CHARACTER  NO-UNDO.
+	DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
+
+    DEFINE VARIABLE zz  AS INTEGER     NO-UNDO.
+    DEFINE VARIABLE cc  AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
+
+    DO zz = 1 TO NUM-ENTRIES(ipPrm, {&SEPARATOR2}):
+        ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
+
+      	ASSIGN inputFile   = ENTRY(1, cc, {&SEPARATOR})
+	           outputDir   = ENTRY(2, cc, {&SEPARATOR})
+	           dbgList     = ENTRY(3, cc, {&SEPARATOR})
+	           prepro      = ENTRY(4, cc, {&SEPARATOR})
+	           listingFile = ENTRY(5, cc, {&SEPARATOR})
+	           xrefFile    = ENTRY(6, cc, {&SEPARATOR})
+	           pctDir      = ENTRY(7, cc, {&SEPARATOR})
+	           targetFile  = ENTRY(8, cc, {&SEPARATOR}).
+        /* Setting to null if needed */
+	    ASSIGN dbgList     = (IF dbgList EQ '' THEN ? ELSE dbgList)
+               prepro      = (IF prepro EQ '' THEN ? ELSE prepro)
+               listingFile = (IF listingFile EQ '' THEN ? ELSE listingFile)
+               xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
+               targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
+	       
+      RUN pctCompile2 (inputfile, outputdir, dbglist, prepro, listingfile, xreffile, pctdir, targetfile, OUTPUT lok).
+      if (opok eq true) then assign opok = lok.
+    END.
+   
 END PROCEDURE.
 
 /* Return value of this procedure follows this pattern :
@@ -138,10 +184,18 @@ END PROCEDURE.
  *  -1 if not recompiled, 0 if compilation successful, or the numbers of compilation problems
  *  Zero to n lines of compiler output
  */
-PROCEDURE pctCompile.
-    DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
-    DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
-
+PROCEDURE pctCompile2 PRIVATE:
+    
+	DEFINE INPUT PARAM inputFile   AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM outputDir   AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM dbgList     AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM prepro      AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM listingFile AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM xrefFile    AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM pctDir      AS CHARACTER  NO-UNDO.
+	DEFINE INPUT PARAM targetFile  AS CHARACTER  NO-UNDO.
+	DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
+	
     /* Input parameter is a pipe-delimited list consisting of these entries :
      *   -> Input File : Full pathname of file to compile
      *   -> Output directory : Full pathname of directory in which to put compiled file
@@ -151,22 +205,11 @@ PROCEDURE pctCompile.
      *      If empty, don't create a preprocessor file
      *   -> Listing file : Full pathname of listing file
      *      If empty, don't create a listing file
-     *   -> PCT base : Root file name for PCT temp files, i.e. .crc and .inc files
+     *   -> PCT base : Root dir for PCT temp files, i.e. .crc and .inc files
      *   -> Target file : if file name is different from what Progress generates
      *      If empty, keep generated file as is
      */
 
-    
-	DEFINE VARIABLE inputFile   AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE prepro      AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE listingFile AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE xrefFile    AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE pctDir      AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE retval      AS CHARACTER  NO-UNDO.
-	
 	DEFINE VARIABLE Recompile AS LOGICAL NO-UNDO.
 	
     DEFINE VARIABLE FileExt   AS CHARACTER   NO-UNDO.
@@ -177,23 +220,6 @@ PROCEDURE pctCompile.
     DEFINE VARIABLE errMsgs   AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE cBase     AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE cFile     AS CHARACTER   NO-UNDO.
-
-    /* Extracts path from parameter */
-	ASSIGN inputFile   = ENTRY(1, cPrm, {&SEPARATOR})
-	       outputDir   = ENTRY(2, cPrm, {&SEPARATOR})
-	       dbgList     = ENTRY(3, cPrm, {&SEPARATOR})
-	       prepro      = ENTRY(4, cPrm, {&SEPARATOR})
-	       listingFile = ENTRY(5, cPrm, {&SEPARATOR})
-	       xrefFile    = ENTRY(6, cPrm, {&SEPARATOR})
-	       pctDir      = ENTRY(7, cPrm, {&SEPARATOR})
-	       targetFile  = ENTRY(8, cPrm, {&SEPARATOR}).
-
-    /* Empty paths are set to NULL */
-    ASSIGN dbgList     = (IF dbgList EQ '' THEN ? ELSE dbgList)
-           prepro      = (IF prepro EQ '' THEN ? ELSE prepro)
-           listingFile = (IF listingFile EQ '' THEN ? ELSE listingFile)
-           xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
-           targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
 
     IF (ForceComp OR lXCode) THEN DO:
         ASSIGN Recompile = TRUE.
@@ -234,13 +260,10 @@ PROCEDURE pctCompile.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
 
-            /* ASSIGN retVal = STRING(ERROR-STATUS:NUM-MESSAGES) + "~n". */
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
-                RUN logError IN SOURCE-PROCEDURE (ERROR-STATUS:GET-MESSAGE(zz)).
-                /* ASSIGN errMsgs = errMsgs + ERROR-STATUS:GET-MESSAGE(zz) + '~n':U. */
+                RUN logMessage IN SOURCE-PROCEDURE (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
-            RUN logError IN SOURCE-PROCEDURE(getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs)).
-            /* ASSIGN retVal = retVal + getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).*/
+            RUN logMessage IN SOURCE-PROCEDURE(getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs)).
         END.
         ELSE DO:
             ASSIGN opOK = TRUE.
@@ -248,15 +271,14 @@ PROCEDURE pctCompile.
                 OS-COPY VALUE(outputDir + "/" + RCodeName) VALUE(targetFile).
                 OS-DELETE VALUE(outputDir + "/" + RCodeName).
             END.
-            ASSIGN retVal = "0~n".
             RUN ImportXref (INPUT xreffile, INPUT pctdir) NO-ERROR.
             OS-DELETE VALUE(xrefFile).
         END.
-        RETURN /*SUBSTITUTE({&MESSAGE}, retVal)*/.
+        RETURN.
     END.
     ELSE DO:
         ASSIGN opOK = TRUE.
-        RETURN /* SUBSTITUTE({&MESSAGE}, "-1")*/ . 
+        RETURN. 
     END.
         	
 END PROCEDURE.
