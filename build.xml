@@ -76,6 +76,8 @@
     <exclude name="pct/pctCompileV10.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
+    <exclude name="pct/_server.p" />
+    <exclude name="pct/pctBgCompile.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
