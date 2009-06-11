@@ -124,10 +124,11 @@ public class PCTBgCRC extends PCTBgRun {
         /**
          * This task will run the pct/pctBgCRC.p, run its internal procedure getCRC, and then output
          * the result to destFile
+         * FIXME Reprendre ce code !!!! Correction erreur de compilation...
          */
-        public boolean custom() throws IOException {
-            sendCommand("launch pct/pctBgCrc.p");
-            sendCommand("getCRC");
+        public boolean custom(int threadNumber) throws IOException {
+            sendCommand(threadNumber, "launch pct/pctBgCrc.p");
+            sendCommand(threadNumber, "getCRC");
             
             return false;
         }
