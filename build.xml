@@ -79,6 +79,10 @@
     <exclude name="pct/_server.p" />
     <exclude name="pct/pctBgCompile.p" />
   </fileset>
+  <fileset id="test.v9" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
+    <exclude name="com/phenix/pct/PCTCompileExtTest" />
+  </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="prodict/**/*.p" />
@@ -86,6 +90,9 @@
     <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="test.v10" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -288,9 +295,7 @@
       <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
       <formatter type="xml" />
       <batchtest fork="yes" todir="${junit-result}">
-        <fileset dir="${build}">
-          <include name="com/phenix/pct/*Test.class" />
-        </fileset>
+        <fileset refid="${testid}" />
       </batchtest>
     </junit>
     <junitreport todir="${junit-report}">
@@ -307,18 +312,21 @@
       <param name="dlcHome" value="${DLC9}" />
       <param name="junit-result" value="${junit-v9}" />
       <param name="junit-report" value="${junit-report-v9}" />
+      <param name="testid" value="test.v9" />
     </antcall>
     <antcall target="cond.test">
       <param name="test.this.version" value="dlc.v10.present" />
       <param name="dlcHome" value="${DLC10}" />
       <param name="junit-result" value="${junit-v10}" />
       <param name="junit-report" value="${junit-report-v10}" />
+      <param name="testid" value="test.v10" />
     </antcall>
     <antcall target="cond.test">
       <param name="test.this.version" value="dlc.v10-64.present" />
       <param name="dlcHome" value="${DLC10-64}" />
       <param name="junit-result" value="${junit-v10-64}" />
       <param name="junit-report" value="${junit-report-v10-64}" />
+      <param name="testid" value="test.v10" />
     </antcall>
     <delete>
       <fileset dir="." includes="TEST*.xml" />
