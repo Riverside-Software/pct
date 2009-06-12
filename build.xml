@@ -81,7 +81,7 @@
   </fileset>
   <fileset id="test.v9" dir="${build}">
     <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/PCTCompileExtTest" />
+    <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
@@ -464,6 +464,8 @@
     <zip destfile="${website}/sample5.zip" whenempty="create">
       <zipfileset dir="doc/quickstart-samples/step5" prefix="MyProject" />
     </zip>
+    
+    <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website} "/>
   </target>
 
   <target name="sports2000doc" depends="declare">
