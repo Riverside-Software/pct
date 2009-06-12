@@ -465,7 +465,7 @@
       <zipfileset dir="doc/quickstart-samples/step5" prefix="MyProject" />
     </zip>
     
-    <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website} "/>
+    <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website}"/>
   </target>
 
   <target name="sports2000doc" depends="declare">
