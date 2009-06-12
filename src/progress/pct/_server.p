@@ -276,14 +276,33 @@ END PROCEDURE.
 PROCEDURE Connect :
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
-  
-    CONNECT VALUE(cPrm) NO-ERROR.
+
+    /* Input parameter is a pipe separated list */
+    /* First entry is connection string */
+    /* If there are aliases, second entry is logical DB name, followed by aliases */
+    DEFINE VARIABLE connectStr AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE zz         AS INTEGER     NO-UNDO.
+
+    ASSIGN connectStr = ENTRY(1, cPrm, '|').
+    CONNECT VALUE(connectStr) NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opok = FALSE.
         RUN logMessage (ERROR-STATUS:GET-MESSAGE(1)).
     END.
     ELSE DO:
         ASSIGN opOk = TRUE.
+
+        DbAliases:
+        DO zz = 3 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
+            IF RETRY THEN DO:
+                RUN logMessage('Unable to create alias ' + ENTRY(zz, cPrm, '|')).
+                ASSIGN opOK = FALSE.
+                DISCONNECT VALUE(ENTRY(2, cPrm, '|')).
+                LEAVE DbAliases.
+            END.
+
+            CREATE ALIAS VALUE(ENTRY(zz, cPrm, '|')) FOR DATABASE VALUE(ENTRY(2, cPrm, '|')).
+        END.
     END.
       
 END PROCEDURE.
