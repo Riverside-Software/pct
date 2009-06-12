@@ -342,6 +342,11 @@ public class PCTBgCompile extends PCTBgRun {
         private File listingFile;
         private File xrefFile;
         private File pctRoot;
+
+        public String toString() {
+            return inputFile + "|" + outputDir + "|" + debugFile + "|" + preprocessFile + "|" + listingFile + "|" + xrefFile + "|" + pctRoot + "|";
+        }
+
     }
     
     private class PCTCompileListener extends PCTListener {
@@ -570,9 +575,22 @@ public class PCTBgCompile extends PCTBgRun {
         public void handlePctCompile(Integer threadNumber, String param) throws IOException {
             if (statuses[threadNumber.intValue()].lastCmdStatus == 2) buildException = true;
             synchronized (units) {
-                if (units.size() > 0) {
-                    CompilationUnit cu = (CompilationUnit) units.remove(0);
-                    sendCommand(threadNumber.intValue(), "PctCompile " + cu.inputFile + "|" + cu.outputDir + "|" + cu.debugFile + "|" + cu.preprocessFile + "|" + cu.listingFile + "|" + cu.xrefFile + "|" + cu.pctRoot + "|");
+                int size = units.size();
+                if (size > 0) {
+                    int numCU = 1;
+                    if (size > 1000)
+                        numCU = 50;
+                    else if (size > 100)
+                        numCU = 10;
+                    StringBuffer sb = new StringBuffer();
+                    for (int zz = 0; zz < numCU; zz++) {
+                        CompilationUnit cu = (CompilationUnit) units.remove(0);
+                        if (sb.length() > 0)
+                            sb.append('#');
+                        sb.append(cu.toString());
+                    }
+                    
+                    sendCommand(threadNumber.intValue(), "PctCompile " + sb.toString());
                 }
                 else {
                     sendCommand(threadNumber.intValue(), "Quit");
