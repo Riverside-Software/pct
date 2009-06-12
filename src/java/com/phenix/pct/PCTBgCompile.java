@@ -578,9 +578,9 @@ public class PCTBgCompile extends PCTBgRun {
                 int size = units.size();
                 if (size > 0) {
                     int numCU = 1;
-                    if (size > 1000)
+                    /* if (size > 1000)
                         numCU = 50;
-                    else if (size > 100)
+                    else */ if (size > 100)
                         numCU = 10;
                     StringBuffer sb = new StringBuffer();
                     for (int zz = 0; zz < numCU; zz++) {
