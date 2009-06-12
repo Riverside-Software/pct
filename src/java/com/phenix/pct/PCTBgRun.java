@@ -803,6 +803,17 @@ public abstract class PCTBgRun extends PCT {
                     statuses[i].reader = rr;
                     statuses[i].writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                     statuses[i].dbConnections = (dbConnList == null ? null : dbConnList.iterator());
+
+                    List list = new ArrayList();
+                    if (this.parent.propath != null) {
+                    String[] lst = this.parent.propath.list();
+                    for (int k = lst.length - 1; k >= 0; k--) {
+                        list.add(lst[k]);
+//                        sendCommand(threadNumber.intValue(), "propath " + lst[k]); //$NON-NLS-1$
+                    }
+                    }
+                    statuses[i].propath = list.iterator();
+
                     Runnable r = new Runnable() {
                         public void run() {
                             try {
@@ -881,8 +892,15 @@ public abstract class PCTBgRun extends PCT {
             } else 
             if (statuses[threadNumber.intValue()].dbConnections.hasNext()) {
                 PCTConnection dbc = (PCTConnection) statuses[threadNumber.intValue()].dbConnections.next();
-                String s = dbc.createConnectString();
-                sendCommand(threadNumber.intValue(), "Connect " + s);
+                StringBuffer sb = new StringBuffer(dbc.createConnectString());
+                if (dbc.hasAliases()) {
+                    sb.append('|').append(dbc.getDbName());
+                    for (Iterator iter = dbc.getAliases().iterator(); iter.hasNext(); ) {
+                        PCTAlias alias = (PCTAlias) iter.next();
+                        sb.append('|').append(alias.getName());
+                    }
+                }
+                sendCommand(threadNumber.intValue(), "Connect " + sb.toString());
             } else {
                 handlePropath(threadNumber, "");
             }
@@ -892,24 +910,36 @@ public abstract class PCTBgRun extends PCT {
          * Handles propath response
          */
         public void handlePropath(Integer threadNumber , String param /*, String param, String ret, List strings*/ ) throws IOException {
-            if (statuses[threadNumber.intValue()].status == 3) {
+            statuses[threadNumber.intValue()].status = 3;
+            
+            if (statuses[threadNumber.intValue()].propath == null) {
                 // On passe la main aux customs
                 custom(threadNumber.intValue());
+            } else if (statuses[threadNumber.intValue()].propath.hasNext()) {
+                String s = (String) statuses[threadNumber.intValue()].propath.next();
+                sendCommand(threadNumber.intValue(), "Propath " + s + File.pathSeparatorChar);
             } else {
-                if (this.parent.propath != null) {
-                    String[] lst = this.parent.propath.list();
-                    for (int k = lst.length - 1; k >= 0; k--) {
-                        sendCommand(threadNumber.intValue(), "propath " + lst[k]); //$NON-NLS-1$
-                    }
-                    statuses[threadNumber.intValue()].status = 3;
-                } else {
-                    statuses[threadNumber.intValue()].status = 3;
-                    // On passe la main aux customs
-                    custom(threadNumber.intValue());
-                    
-                }
-
+                custom(threadNumber.intValue());
             }
+            
+//            if (statuses[threadNumber.intValue()].status == 3) {
+//                // On passe la main aux customs
+//                custom(threadNumber.intValue());
+//            } else {
+//                if (this.parent.propath != null) {
+//                    String[] lst = this.parent.propath.list();
+//                    for (int k = lst.length - 1; k >= 0; k--) {
+//                        sendCommand(threadNumber.intValue(), "propath " + lst[k]); //$NON-NLS-1$
+//                    }
+//                    statuses[threadNumber.intValue()].status = 3;
+//                } else {
+//                    statuses[threadNumber.intValue()].status = 3;
+//                    // On passe la main aux customs
+//                    custom(threadNumber.intValue());
+//                    
+//                }
+//
+//            }
         }
 
         /**
@@ -1085,7 +1115,8 @@ protected void cleanup() {
         // Dernière base de données connectée dans la liste
         private Iterator dbConnections;
         // Dernière entrée de propath ajoutée dans la liste
-        private int lastPropathEntry;
+        private Iterator propath;
+//        private int lastPropathEntry;
         
         // Dernière commande envoyée
         private String lastCommand;
