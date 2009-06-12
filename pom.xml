@@ -14,6 +14,13 @@
       <scope>system</scope>
       <systemPath>${basedir}/junit.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>deps</groupId>
+      <artifactId>dep2</artifactId>
+      <version>0.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ant.jar</systemPath>
+    </dependency>
   </dependencies>
   <build>
         <sourceDirectory>src/java</sourceDirectory>
