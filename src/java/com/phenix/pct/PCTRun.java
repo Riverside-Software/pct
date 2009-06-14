@@ -587,17 +587,17 @@ public class PCTRun extends PCT {
         } catch (FileNotFoundException fnfe) {
             // No need to clean BufferedReader as it's null in this case
             this.cleanup();
-            throw new BuildException(Messages.getString("PCTRun.1")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTRun.1"), fnfe); //$NON-NLS-1$
         } catch (IOException ioe) {
             try {
                 br.close();
             } catch (IOException ioe2) {
             }
             this.cleanup();
-            throw new BuildException(Messages.getString("PCTRun.2")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTRun.2"), ioe); //$NON-NLS-1$
         } catch (NumberFormatException nfe) {
             this.cleanup(); // Ce truc là ne serait pas manquant ??
-            throw new BuildException(Messages.getString("PCTRun.3")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTRun.3"), nfe); //$NON-NLS-1$
         }
 
     }
@@ -717,7 +717,7 @@ public class PCTRun extends PCT {
                     tmpSep = this.numsep.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numsep"})); //$NON-NLS-1$
+                            new Object[]{"numsep"}), nfe); //$NON-NLS-1$
             }
             list.add("-numsep"); //$NON-NLS-1$
             list.add(Integer.toString(tmpSep));
@@ -732,7 +732,7 @@ public class PCTRun extends PCT {
                     tmpDec = this.numdec.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numdec"})); //$NON-NLS-1$
+                            new Object[]{"numdec"}), nfe); //$NON-NLS-1$
             }
             list.add("-numdec"); //$NON-NLS-1$
             list.add(Integer.toString(tmpDec));
@@ -917,7 +917,7 @@ public class PCTRun extends PCT {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException();
+            throw new BuildException(ioe);
         }
     }
 

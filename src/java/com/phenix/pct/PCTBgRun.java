@@ -521,7 +521,7 @@ public abstract class PCTBgRun extends PCT {
             this.port = listener.getLocalPort();
         } catch (IOException ioe) {
             this.cleanup();
-            throw new BuildException(ioe.getMessage());
+            throw new BuildException(ioe);
         }
 
 //        setProcedure("pct/_server.p"); //$NON-NLS-1$
@@ -620,7 +620,7 @@ public abstract class PCTBgRun extends PCT {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException();
+            throw new BuildException(ioe);
         }
     }
 
@@ -1043,7 +1043,7 @@ public abstract class PCTBgRun extends PCT {
                     tmpSep = this.numsep.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numsep"})); //$NON-NLS-1$
+                            new Object[]{"numsep"}), nfe); //$NON-NLS-1$
             }
             list.add("-numsep"); //$NON-NLS-1$
             list.add(Integer.toString(tmpSep));
