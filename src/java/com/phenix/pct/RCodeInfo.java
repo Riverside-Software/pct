@@ -354,7 +354,7 @@ public class RCodeInfo {
         System.out.println("64 bits : " + ((rci.getVersion() & 0x4000) != 0));
     }
 
-    private class ActionCodeEntry {
+    private static class ActionCodeEntry {
         public static final int INPUT = 1;
         public static final int OUTPUT = 2;
         public static final int INPUT_OUTPUT = 3;
@@ -399,7 +399,7 @@ public class RCodeInfo {
         }
     }
 
-    public class InvalidRCodeException extends Exception {
+    public static class InvalidRCodeException extends Exception {
         private static final long serialVersionUID = 1L;
 
         public InvalidRCodeException(String s) {

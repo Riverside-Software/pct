@@ -332,7 +332,7 @@ public class PCTBgCompile extends PCTBgRun {
         return new PCTCompileListener(this);
     }
     
-    private class CompilationUnit {
+    private static class CompilationUnit {
         private File inputFile;
         private File outputDir;
         private File debugFile;
@@ -610,7 +610,7 @@ public class PCTBgCompile extends PCTBgRun {
         }*/
     }
 
-    public class RCodeMapper implements FileNameMapper {
+    public static class RCodeMapper implements FileNameMapper {
 
         /**
          * Ignored.
