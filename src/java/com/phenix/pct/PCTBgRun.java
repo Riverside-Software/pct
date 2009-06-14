@@ -1102,7 +1102,7 @@ protected void cleanup() {
 
 }
 
-    protected class ThreadStatus {
+    protected static class ThreadStatus {
         private final int threadNumber;
 
         private Socket socket;

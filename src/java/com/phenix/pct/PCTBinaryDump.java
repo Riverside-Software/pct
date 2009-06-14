@@ -304,9 +304,9 @@ public class PCTBinaryDump extends PCT {
 
     }
 
-    public class Include extends Pattern {
+    public static class Include extends Pattern {
     }
-    public class Exclude extends Pattern {
+    public static class Exclude extends Pattern {
     }
 
 }

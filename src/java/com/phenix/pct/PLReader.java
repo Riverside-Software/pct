@@ -351,7 +351,7 @@ public class PLReader {
     /**
      * Class representing a static file entry in a PL file
      */
-    public class FileEntry {
+    public static class FileEntry {
         private String fileName;
         private Date modDate;
         private Date addDate;
