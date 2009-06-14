@@ -59,7 +59,7 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
 
-import java.util.Vector;
+import java.util.List;
 
 
 /**
@@ -121,7 +121,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
-        Vector v = r.getFileList();
+        List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
     }
@@ -136,7 +136,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
-        Vector v = r.getFileList();
+        List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
     }
@@ -162,7 +162,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
-        Vector v = r.getFileList();
+        List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 3);
     }
@@ -178,7 +178,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
-        Vector v = r.getFileList();
+        List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 2);
     }
@@ -215,7 +215,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
-        Vector v = r.getFileList();
+        List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
     }
