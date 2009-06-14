@@ -254,7 +254,7 @@ public class PCTASBroker extends PCTBroker {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    public void execute() {
         File propFile = null;
 
         try {
