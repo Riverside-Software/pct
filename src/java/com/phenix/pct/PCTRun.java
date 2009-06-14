@@ -581,7 +581,7 @@ public class PCTRun extends PCT {
 
             if (ret != 0 && failOnError) {
                 throw new BuildException(MessageFormat.format(
-                        Messages.getString("PCTRun.6"), new Object[]{new Integer(ret)})); //$NON-NLS-1$
+                        Messages.getString("PCTRun.6"), new Object[]{Integer.valueOf(ret)})); //$NON-NLS-1$
             }
             maybeSetResultPropertyValue(ret);
         } catch (FileNotFoundException fnfe) {
