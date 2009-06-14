@@ -59,12 +59,12 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 import java.io.File;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Object to add a database connection to a PCTRun task
@@ -273,7 +273,7 @@ public class PCTConnection {
             throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
 
-        List list = new Vector();
+        List list = new ArrayList();
         list.add("-db"); //$NON-NLS-1$
 
         if ((this.dbDir == null) || (this.hostName != null)) {

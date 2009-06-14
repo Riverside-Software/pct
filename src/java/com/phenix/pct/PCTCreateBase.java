@@ -58,13 +58,12 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Class for creating Progress databases
@@ -212,7 +211,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addOracleHolder(OracleHolder holder) {
         if (this.holders == null) {
-            this.holders = new Vector();
+            this.holders = new ArrayList();
         }
         this.holders.add(holder);
     }
@@ -224,7 +223,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addMSSHolder(MSSHolder holder) {
         if (this.holders == null) {
-            this.holders = new Vector();
+            this.holders = new ArrayList();
         }
         this.holders.add(holder);
     }
@@ -236,7 +235,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addODBCHolder(ODBCHolder holder) {
         if (this.holders == null) {
-            this.holders = new Vector();
+            this.holders = new ArrayList();
         }
         this.holders.add(holder);
     }
@@ -316,9 +315,10 @@ public class PCTCreateBase extends PCT {
         }
 
         if (this.schema != null) {
-            Vector v = StringUtils.split(this.schema, ',');
-            for (int i = 0; i < v.size(); i++) {
-                String sc = (String) v.elementAt(i);
+            
+            String[] v = this.schema.split(",");
+            for (int i = 0; i < v.length; i++) {
+                String sc = v[i];
                 // Bug #1245992 : first try as an absolute path
                 File f = new File(sc);
                 if (f.isFile() && !f.canRead())

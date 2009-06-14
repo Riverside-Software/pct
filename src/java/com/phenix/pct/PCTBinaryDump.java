@@ -65,10 +65,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Binary dump task
@@ -78,7 +78,7 @@ import java.util.Vector;
  */
 public class PCTBinaryDump extends PCT {
     private List dbConnList = null;
-    private List patterns = new Vector();
+    private List patterns = new ArrayList();
     private File dest = null;
     private Path propath = null;
 
@@ -134,7 +134,7 @@ public class PCTBinaryDump extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new Vector();
+            this.dbConnList = new ArrayList();
         }
 
         this.dbConnList.add(dbConn);
@@ -142,7 +142,7 @@ public class PCTBinaryDump extends PCT {
 
     public void addConfiguredInclude(Pattern inc) {
         if (this.patterns == null) {
-            this.patterns = new Vector();
+            this.patterns = new ArrayList();
         }
         inc.setInclude(true);
         this.patterns.add(inc);
@@ -150,7 +150,7 @@ public class PCTBinaryDump extends PCT {
 
     public void addConfiguredExclude(Pattern exc) {
         if (this.patterns == null) {
-            this.patterns = new Vector();
+            this.patterns = new ArrayList();
         }
         exc.setInclude(false);
         this.patterns.add(exc);

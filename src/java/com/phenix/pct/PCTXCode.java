@@ -63,11 +63,10 @@ import org.apache.tools.ant.types.FileSet;
 import java.io.File;
 
 import java.text.MessageFormat;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-
-import java.util.Vector;
 
 /**
  * Procedure encryption task using xcode utility from Progress
@@ -75,7 +74,7 @@ import java.util.Vector;
  * @author <a href="mailto:d.knol@steeg-software.nl">Dick Knol</a>
  */
 public class PCTXCode extends PCT {
-    private Vector filesets = new Vector();
+    private List filesets = new ArrayList();
     private String key = null;
     private File destDir = null;
     private int tmpLogId = -1;
@@ -140,7 +139,7 @@ public class PCTXCode extends PCT {
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
-        filesets.addElement(set);
+        filesets.add(set);
     }
 
     /**
@@ -149,8 +148,8 @@ public class PCTXCode extends PCT {
      * @throws BuildException Something went wrong
      */
     private void createDirectories() throws BuildException {
-        for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
-            FileSet fs = (FileSet) e.nextElement();
+        for (Iterator e = filesets.iterator(); e.hasNext();) {
+            FileSet fs = (FileSet) e.next();
 
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 

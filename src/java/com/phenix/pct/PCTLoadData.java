@@ -57,10 +57,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
 
@@ -100,7 +100,7 @@ public class PCTLoadData extends PCTRun {
 
     public void addConfiguredTable(PCTTable table) {
         if (this.tables == null) {
-            tables = new Vector();
+            tables = new ArrayList();
         }
         tables.add(table);
     }

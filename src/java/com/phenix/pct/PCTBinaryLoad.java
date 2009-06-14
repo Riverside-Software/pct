@@ -60,9 +60,9 @@ import org.apache.tools.ant.types.FileSet;
 import java.io.File;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Binary load task
@@ -72,7 +72,7 @@ import java.util.Vector;
  */
 public class PCTBinaryLoad extends PCT {
     private List dbConnList = null;
-    private List filesets = new Vector();
+    private List filesets = new ArrayList();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
 
@@ -83,7 +83,7 @@ public class PCTBinaryLoad extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new Vector();
+            this.dbConnList = new ArrayList();
         }
 
         this.dbConnList.add(dbConn);

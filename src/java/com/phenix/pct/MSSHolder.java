@@ -1,7 +1,7 @@
 package com.phenix.pct;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 public class MSSHolder extends SchemaHolder {
     public boolean caseSensitive;
@@ -11,7 +11,7 @@ public class MSSHolder extends SchemaHolder {
     }
 
     public Collection getParameters() {
-        Collection c = new Vector();
+        Collection c = new ArrayList();
         c.add(new RunParameter("SchemaHolderName", this.getDbName()));
         c.add(new RunParameter("Collation", this.getCollation()));
         c.add(new RunParameter("Codepage", this.getCodepage()));
