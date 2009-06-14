@@ -290,7 +290,7 @@ public class PCTCompile extends PCTRun {
 
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.2")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCompile.2"), ioe); //$NON-NLS-1$
         }
     }
 
@@ -336,7 +336,7 @@ public class PCTCompile extends PCTRun {
             }
             bw.close();
         } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.3")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
         }
     }
 
