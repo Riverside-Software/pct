@@ -302,9 +302,9 @@ public class PCTLibrary extends PCT {
         exec.setDir(dir);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
         exec.createArg().setValue("-pf");
-        exec.createArg().setValue(this.tmpFile.getAbsolutePath().toString());
+        exec.createArg().setValue(this.tmpFile.getAbsolutePath());
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
@@ -323,7 +323,7 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
         exec.createArg().setValue("-compress");
 
         Environment.Variable var = new Environment.Variable();
