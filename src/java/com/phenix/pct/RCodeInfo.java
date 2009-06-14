@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * Gathers informations from r-code, as the RCODE-INFO system handle could provide. This class is
@@ -291,7 +291,7 @@ public class RCodeInfo {
      * @return List<ActionCodeEntry>
      */
     private List processProcsList(byte[] b) {
-        List procs = new Vector();
+        List procs = new ArrayList();
         int i = 8;
         StringBuffer codepage = new StringBuffer();
         StringBuffer procName;
@@ -315,7 +315,7 @@ public class RCodeInfo {
     }
 
     private List processTextSegment(byte[] b) {
-        List strings = new Vector();
+        List strings = new ArrayList();
         int i = 4;
         StringBuffer str;
         while ((i < b.length) && (b[i] != 0)) {

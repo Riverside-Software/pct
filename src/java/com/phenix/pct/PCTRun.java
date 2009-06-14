@@ -70,11 +70,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Run a Progress procedure.
@@ -167,7 +167,7 @@ public class PCTRun extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new Vector();
+            this.dbConnList = new ArrayList();
         }
 
         this.dbConnList.add(dbConn);
@@ -180,14 +180,14 @@ public class PCTRun extends PCT {
      */
     public void addOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new Vector();
+            this.options = new ArrayList();
         }
 
         this.options.add(option);
     }
     public void addPCTRunOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new Vector();
+            this.options = new ArrayList();
         }
 
         this.options.add(option);
@@ -200,7 +200,7 @@ public class PCTRun extends PCT {
      */
     public void addParameter(RunParameter param) {
         if (this.runParameters == null) {
-            this.runParameters = new Vector();
+            this.runParameters = new ArrayList();
         }
         this.runParameters.add(param);
     }
@@ -213,7 +213,7 @@ public class PCTRun extends PCT {
      */
     public void addOutputParameter(OutputParameter param) {
         if (this.outputParameters == null)
-            this.outputParameters = new Vector();
+            this.outputParameters = new ArrayList();
         this.outputParameters.add(param);
     }
 
@@ -622,7 +622,7 @@ public class PCTRun extends PCT {
     }
 
     protected List getCmdLineParameters() {
-        List list = new Vector();
+        List list = new ArrayList();
 
         // Parameter file
         if (this.paramFile != null) {

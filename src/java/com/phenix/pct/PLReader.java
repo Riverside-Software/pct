@@ -66,9 +66,10 @@ import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class for reading and extracting contents of a Progress Library file.
@@ -83,7 +84,7 @@ public class PLReader {
     private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
 
     private File f;
-    private Vector files = null;
+    private List files = null;
     private boolean init = false;
 //    private String encoding = null;
     
@@ -102,7 +103,7 @@ public class PLReader {
             throw new NullPointerException();
         }
 
-        this.files = new Vector();
+        this.files = new ArrayList();
 
         try {
             readFileList();
@@ -144,7 +145,7 @@ public class PLReader {
      * 
      * @return Vector of FileEntry
      */
-    public Vector getFileList() {
+    public List getFileList() {
         if (this.init) {
             return this.files;
         } else {
@@ -282,8 +283,8 @@ public class PLReader {
         }
 
         StringBuffer sb = new StringBuffer();
-        for (Enumeration e = files.elements(); e.hasMoreElements();) {
-            FileEntry fe = (FileEntry) e.nextElement();
+        for (Iterator e = files.iterator(); e.hasNext();) {
+            FileEntry fe = (FileEntry) e.next();
             sb.append(fe.toString());
             sb.append("\n");
         }

@@ -59,12 +59,11 @@ import org.apache.tools.ant.types.selectors.SelectorUtils;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import java.util.Vector;
 
 /**
  * Extracts files from a PL archive
@@ -72,7 +71,7 @@ import java.util.Vector;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PLExtract extends PCT {
-    private Vector patternSet = null;
+    private List patternSet = null;
     private File src = null;
     private File dest = null;
     private boolean overwrite = false;
@@ -118,9 +117,9 @@ public class PLExtract extends PCT {
      */
     public void addPatternset(PatternSet set) {
         if (this.patternSet == null)
-            this.patternSet = new Vector();
+            this.patternSet = new ArrayList();
 
-        patternSet.addElement(set);
+        patternSet.add(set);
     }
 
     /**
@@ -175,7 +174,7 @@ public class PLExtract extends PCT {
     private void getPatterns(Set includePatterns, Set excludePatterns) {
         if (this.patternSet != null && this.patternSet.size() > 0) {
             for (int v = 0, size = this.patternSet.size(); v < size; v++) {
-                PatternSet p = (PatternSet) this.patternSet.elementAt(v);
+                PatternSet p = (PatternSet) this.patternSet.get(v);
                 String[] incls = p.getIncludePatterns(getProject());
                 if (incls == null || incls.length == 0) {
                     // no include pattern implicitly means includes="**"

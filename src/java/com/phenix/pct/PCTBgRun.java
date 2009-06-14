@@ -79,7 +79,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Run a background Progress procedure.
@@ -167,7 +166,7 @@ public abstract class PCTBgRun extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new Vector();
+            this.dbConnList = new ArrayList();
         }
 
         this.dbConnList.add(dbConn);
@@ -180,7 +179,7 @@ public abstract class PCTBgRun extends PCT {
      */
     public void addOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new Vector();
+            this.options = new ArrayList();
         }
 
         this.options.add(option);
@@ -188,7 +187,7 @@ public abstract class PCTBgRun extends PCT {
     
     public void addPCTRunOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new Vector();
+            this.options = new ArrayList();
         }
 
         this.options.add(option);
@@ -201,7 +200,7 @@ public abstract class PCTBgRun extends PCT {
      */
     public void addParameter(RunParameter param) {
         if (this.runParameters == null) {
-            this.runParameters = new Vector();
+            this.runParameters = new ArrayList();
         }
         this.runParameters.add(param);
     }
@@ -214,7 +213,7 @@ public abstract class PCTBgRun extends PCT {
      */
     public void addOutputParameter(OutputParameter param) {
         if (this.outputParameters == null)
-            this.outputParameters = new Vector();
+            this.outputParameters = new ArrayList();
         this.outputParameters.add(param);
     }
 
@@ -949,7 +948,7 @@ public abstract class PCTBgRun extends PCT {
     }
     
     protected List getCmdLineParameters() {
-        List list = new Vector();
+        List list = new ArrayList();
 
         // Parameter file
         if (this.paramFile != null) {

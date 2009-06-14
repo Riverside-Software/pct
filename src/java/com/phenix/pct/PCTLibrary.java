@@ -66,11 +66,9 @@ import java.io.IOException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Class for managing Progress library files
@@ -84,7 +82,7 @@ public class PCTLibrary extends PCT {
     private String encoding = null;
     private boolean noCompress = false;
     private FileSet fileset = new FileSet();
-    private Vector filesets = new Vector();
+    private List filesets = new ArrayList();
     private File baseDir = null;
     private File sharedFile = null;
 
@@ -118,7 +116,7 @@ public class PCTLibrary extends PCT {
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
-        filesets.addElement(set);
+        filesets.add(set);
     }
 
     /**
@@ -234,8 +232,8 @@ public class PCTLibrary extends PCT {
                 exec.execute();
             }
             // Parses filesets
-            for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
-                FileSet fs = (FileSet) e.nextElement();
+            for (Iterator e = filesets.iterator(); e.hasNext();) {
+                FileSet fs = (FileSet) e.next();
                 exec = addFilesTask(fs.getDir(this.getProject()));
                 writeFileList(fs);
                 exec.execute();

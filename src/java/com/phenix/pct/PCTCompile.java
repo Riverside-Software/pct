@@ -63,9 +63,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.text.MessageFormat;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Class for compiling Progress procedures
@@ -73,7 +74,7 @@ import java.util.Vector;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
-    private Vector filesets = new Vector();
+    private List filesets = new ArrayList();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
@@ -261,7 +262,7 @@ public class PCTCompile extends PCTRun {
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
-        filesets.addElement(set);
+        filesets.add(set);
     }
 
     /**
@@ -272,9 +273,9 @@ public class PCTCompile extends PCTRun {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(fsList));
 
-            for (Enumeration e = filesets.elements(); e.hasMoreElements();) {
+            for (Iterator e = filesets.iterator(); e.hasNext();) {
                 // Parse filesets
-                FileSet fs = (FileSet) e.nextElement();
+                FileSet fs = (FileSet) e.next();
                 bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString()); //$NON-NLS-1$
                 bw.newLine();
 
