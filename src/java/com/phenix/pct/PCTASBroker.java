@@ -75,11 +75,11 @@ import org.apache.tools.ant.types.Environment;
  * @version $Revision$
  */
 public class PCTASBroker extends PCTBroker {
-    private final static String STATELESS = "Stateless";
-    private final static String STATE_AWARE = "State-aware";
-    private final static String STATE_RESET = "State-reset";
-    private final static String STATE_FREE = "State-free";
-    private final static String DEFAULT_NS = "NS1";
+    private static final String STATELESS = "Stateless";
+    private static final String STATE_AWARE = "State-aware";
+    private static final String STATE_RESET = "State-reset";
+    private static final String STATE_FREE = "State-free";
+    private static final String DEFAULT_NS = "NS1";
 
     private String operatingMode = STATELESS;
     private String nameServer = DEFAULT_NS;
