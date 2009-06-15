@@ -487,13 +487,13 @@
     </xslt>
   </target>
 
-  <target name="upload" description="Quick reminder on how to upload files">
+  <target name="upload">
     <input message="Sourceforge username : " addproperty="sf.user" />
     <input message="Sourceforge password : " addproperty="sf.pass" />
-    <scp todir="${sf.user}:${sf.pass}@frs.sourceforge.net:/home/groups/p/pc/pct/htdocs/">
+    <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\Jetty-7.0.0.M2\PCT">
       <fileset dir="website" />
     </scp>
-    <scp todir="${sf.user}:${sf.pass}@frs.sourceforge.net:/home/users/j/ju/justus_phenix/uploads/">
+    <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\Jetty-7.0.0.M2\PCTDrops">
       <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip" />
     </scp>
   </target>
