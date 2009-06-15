@@ -80,7 +80,7 @@
     <exclude name="pct/pctBgCompile.p" />
   </fileset>
   <fileset id="test.v9" dir="${build}">
-    <include name="com/phenix/pct/PCTSchemaDocTest.class" />
+    <include name="com/phenix/pct/*Test.class" />
     <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
@@ -488,7 +488,7 @@
   </target>
 
   <target name="upload">
-    <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\Jetty-7.0.0.M2\PCT">
+    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\Jetty-7.0.0.M2\PCT">
       <fileset dir="website" />
     </scp>
     <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\Jetty-7.0.0.M2\PCTDrops">
