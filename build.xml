@@ -488,11 +488,13 @@
   </target>
 
   <target name="upload">
+    <!--
+    Bloque pour une raison inconnue....
     <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true">
       <fileset dir="website" />
-    </scp>
+    </scp>-->
     <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCTDrops" verbose="true">
-      <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip" />
+      <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip,website*.zip" />
     </scp>
   </target>
 
