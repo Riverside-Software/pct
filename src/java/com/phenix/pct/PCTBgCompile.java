@@ -342,7 +342,7 @@ public class PCTBgCompile extends PCTBgRun {
         private File pctRoot;
 
         public String toString() {
-            return inputFile + "|" + outputDir + "|" + debugFile + "|" + preprocessFile + "|" + listingFile + "|" + xrefFile + "|" + pctRoot + "|";
+            return inputFile + "|" + outputDir + "|" + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|" + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|" + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile + "|" + pctRoot + "|";
         }
 
     }
@@ -409,9 +409,9 @@ public class PCTBgCompile extends PCTBgRun {
                         units.add(unit);
                         unit.inputFile=inputFile;
                         unit.outputDir=outputDir;
-                        unit.debugFile = new File((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex)) + ".dbg");
-                        unit.preprocessFile = new File(PCTRoot.getAbsolutePath() + ".preprocess");
-                        unit.listingFile = new File(PCTRoot.getAbsolutePath());
+                        unit.debugFile = (debugListing ? new File((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex)) + ".dbg") : null);
+                        unit.preprocessFile = (preprocess ? new File(PCTRoot.getAbsolutePath() + ".preprocess") : null);
+                        unit.listingFile = (listing ? new File(PCTRoot.getAbsolutePath()) : null);
                         unit.xrefFile=new File(PCTRoot.getAbsolutePath() + ".xref");
                         unit.pctRoot = PCTRoot;
 //                        StringBuffer sb = new StringBuffer("pctCompile ");
