@@ -488,10 +488,10 @@
   </target>
 
   <target name="upload">
-    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true" sftp="true">
+    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true">
       <fileset dir="website" />
     </scp>
-    <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCTDrops" verbose="true" sftp="true">
+    <scp todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCTDrops" verbose="true">
       <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip" />
     </scp>
   </target>
