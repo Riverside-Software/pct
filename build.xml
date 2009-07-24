@@ -396,7 +396,7 @@
     </delete>
   </target>
 
-  <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
+  <target name="website" depends="javadoc,sports2000doc,test" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}" />
     <mkdir dir="${website}" />
     <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
