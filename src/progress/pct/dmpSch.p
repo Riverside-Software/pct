@@ -52,5 +52,5 @@
  * <http://www.apache.org/>.
  */
 
-RUN prodict/dump_df.p (INPUT 'ALL':U, INPUT SESSION:PARAMETER, INPUT ?).
+RUN prodict/dump_df.p (INPUT 'ALL':U, INPUT SESSION:PARAMETER, INPUT SESSION:CPSTREAM).
 RETURN RETURN-VALUE.
