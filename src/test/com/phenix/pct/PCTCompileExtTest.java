@@ -350,19 +350,21 @@ public class PCTCompileExtTest extends BuildFileTest {
 
     public void test24() throws IOException {
         File inputDir = new File("sandbox");
-        for (int zz = 0; zz < 1000; zz++) {
-            copy (new File("query-tester.w"), new File(inputDir, "test" + zz + ".p"));
-//            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(inputDir, "test" + zz + ".p")));
-//            writer.write("MESSAGE 'Hello world'.");
-//            writer.newLine();
+        for (int ii = 0; ii < 10; ii++) {
+            for (int jj = 0; jj < 10; jj++) {
+                for (int kk = 0; kk < 10; kk++) {
+                    copy (new File("query-tester.w"), new File(inputDir, "test" + ii + jj + kk + ".p"));
+                }
+            }
         }
         executeTarget("test24");
 
-        File f = new File("build/sandbox/test0.r");
+        File f = new File("build/sandbox/test000.r");
         assertTrue(f.exists());
         f = new File("build/sandbox/test999.r");
         assertTrue(f.exists());
     }
+
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
         FileChannel srcChannel = new FileInputStream(src).getChannel();
