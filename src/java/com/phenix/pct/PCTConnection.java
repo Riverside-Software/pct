@@ -346,6 +346,8 @@ public class PCTConnection {
      * 
      * @return Connection string
      * @throws BuildException If DB name not defined
+     *
+     * FIXME Exception not thrown
      */
     public String createConnectString() throws BuildException {
         List list = getConnectParametersList();
@@ -357,6 +359,27 @@ public class PCTConnection {
         return sb.toString();
     }
 
+    /**
+     * Returns a string which could be used to connect a database from a background worker
+     * 
+     * @return Connection string
+     * @throws BuildException
+     *
+     * FIXME Not thrown in createConnectString
+     */
+    public String createBackgroundConnectString() throws BuildException {
+        StringBuffer sb = new StringBuffer(createConnectString());
+        if (hasAliases()) {
+            sb.append('|').append(getDbName());
+            for (Iterator iter = getAliases().iterator(); iter.hasNext(); ) {
+                PCTAlias alias = (PCTAlias) iter.next();
+                sb.append('|').append(alias.getName());
+            }
+        }
+
+        return sb.toString();
+    }
+    
     /**
      * Populates a command line with the needed arguments to connect to the specified database
      * 
