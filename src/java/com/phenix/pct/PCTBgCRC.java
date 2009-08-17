@@ -59,8 +59,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generates a file containing CRC for each table (multiple databases allowed)
@@ -84,11 +86,48 @@ public class PCTBgCRC extends PCTBgRun {
         return this.destFile;
     }
 
-    /**
-     * Returns a new listener
-     */
-    protected PCTListener getListener(PCTBgRun parent) throws IOException {
-        return new PCTCRCListener(this);
+    public class CRCThreadStatus extends BackgroundWorker {
+        public CRCThreadStatus(PCTBgRun parent) {
+            super(parent);
+            // TODO Auto-generated constructor stub
+        }
+
+        private int customStatus = 0;
+
+        protected boolean performCustomAction(int threadNumber) throws IOException {
+            if (customStatus == 0) {
+                customStatus = 1;
+                sendCommand(0, "launch", "pct/pctBgCRC.p");
+            } else if (customStatus == 1) {
+                sendCommand(0, "getCRC", "");
+                quit();
+            }
+            return false;
+        }
+
+        public void setCustomOptions(Map options) {
+
+        }
+
+        public void handleGetCRC(String param, String ret, List strings) throws IOException {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(getDestFile()));
+            for (Iterator i = strings.iterator(); i.hasNext();) {
+                bw.write((String) i.next());
+                bw.newLine();
+            }
+            bw.close();
+        }
+    }
+
+    protected BackgroundWorker createOpenEdgeWorker(Socket socket) {
+        CRCThreadStatus worker = new CRCThreadStatus(this); 
+        try {
+            worker.initialize(socket);
+        } catch (Throwable uncaught) {
+            throw new BuildException(uncaught);
+        }
+
+        return worker;
     }
 
     /**
@@ -102,66 +141,12 @@ public class PCTBgCRC extends PCTBgRun {
             throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList == null) {
+        if (getOptions().getDBConnections() == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCRC.1")); //$NON-NLS-1$
         }
 
         super.execute();
-    }
-
-    private class PCTCRCListener extends PCTListener {
-        /**
-         * Creates a new PCTCRCListener
-         * 
-         * @param parent PCTBgRun instance
-         * @throws IOException Server socket fails
-         */
-        public PCTCRCListener(PCTBgCRC parent) throws IOException {
-            super(parent);
-        }
-
-        /**
-         * This task will run the pct/pctBgCRC.p, run its internal procedure getCRC, and then output
-         * the result to destFile
-         * FIXME Reprendre ce code !!!! Correction erreur de compilation...
-         */
-        public boolean custom(int threadNumber) throws IOException {
-            sendCommand(threadNumber, "launch pct/pctBgCrc.p");
-            sendCommand(threadNumber, "getCRC");
-            
-            return false;
-        }
-
-        /**
-         * Reads response from Progress session. Write to destFile one line for each CRC found
-         * 
-         * @param param Procedure's parameter (empty for getCRC)
-         * @param ret Return value
-         * @param strings List of returned values
-         * @throws IOException
-         */
-        public void handleGetCRC(String param, String ret, List strings) throws IOException {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(((PCTBgCRC) this.parent)
-                    .getDestFile()));
-            for (Iterator i = strings.iterator(); i.hasNext();) {
-                bw.write((String) i.next());
-                bw.newLine();
-            }
-            bw.close();
-        }
-
-        /**
-         * Does nothing
-         * 
-         * @param param Procedure's parameter
-         * @param ret Return value
-         * @param strings List of returned values
-         * @throws IOException
-         */
-        public void handleLaunch(String param, String ret, List strings) throws IOException {
-
-        }
     }
 
 }
