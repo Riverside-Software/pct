@@ -4,6 +4,8 @@ Version 0.15 (??/??/????)
  * Added keepXref attribute in PCTCompile
  * Corrected documentation for msgBufferSize attribute in PCTRun
  * Added jvmarg option to PCTProxygen
+ * Added numThreads attribute in PCTCompileExt...
+ * ... And rewrote PCTBgRun task
 
 Version 0.14 (12/03/2008)
 ==============================
