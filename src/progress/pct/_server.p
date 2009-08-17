@@ -63,13 +63,11 @@ DEFINE TEMP-TABLE ttMsgs NO-UNDO
  FIELD msgLine AS CHARACTER.
 
 DEFINE VARIABLE portNumber   AS CHARACTER  NO-UNDO INITIAL ?.
-DEFINE VARIABLE threadNumber AS INTEGER    NO-UNDO INITIAL -1.
+DEFINE VARIABLE threadNumber AS INTEGER    NO-UNDO INITIAL 0.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
 IF (portNumber EQ ?) THEN RETURN '17'.
 /* Thread number is used during communication with ANT process */
-ASSIGN threadNumber = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'threadNumber')) NO-ERROR.
-IF (threadNumber EQ -1) THEN RETURN '18'.
 
 CREATE SOCKET hSocket.
 RUN ConnectToServer NO-ERROR.
@@ -91,8 +89,9 @@ PROCEDURE ConnectToServer.
     DEFINE VARIABLE packetBuffer AS MEMPTR      NO-UNDO.
     
     ASSIGN aOk = hSocket:CONNECT("-H localhost -S " + portNumber) NO-ERROR.
-    if NOT aOK THEN
+    if NOT aOK THEN DO:
         RETURN ERROR "Connection to ANT failed on port " + portNumber.
+    END.
     ELSE DO:
         hSocket:SET-READ-RESPONSE-PROCEDURE("ReceiveCommand").
         packet = STRING(threadNumber) + "~n".
@@ -255,7 +254,7 @@ END.
 PROCEDURE QUIT:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
-	
+
     ASSIGN opok = TRUE
            aOk  = FALSE.
     APPLY "close" TO THIS-PROCEDURE.
@@ -305,6 +304,15 @@ PROCEDURE Connect :
         END.
     END.
       
+END PROCEDURE.
+
+PROCEDURE setThreadNumber:
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+
+    ASSIGN threadNumber = INTEGER(cPrm).
+    ASSIGN opOK = TRUE.
+
 END PROCEDURE.
 
 /* Run a particular procedure persistently */
