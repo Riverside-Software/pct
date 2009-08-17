@@ -61,10 +61,12 @@ import org.apache.tools.ant.util.FileNameMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class for compiling Progress procedures
@@ -87,6 +89,9 @@ public class PCTBgCompile extends PCTBgRun {
     private File destDir = null;
     private File xRefDir = null;
     private Mapper mapperElement = null;
+
+    boolean leave = false;
+    private List units = new ArrayList();
 
     /**
      * Reduce r-code size ? MIN-SIZE option of the COMPILE statement
@@ -328,8 +333,144 @@ public class PCTBgCompile extends PCTBgRun {
         super.execute();
     }
 
-    protected PCTListener getListener(PCTBgRun parent) throws IOException {
-        return new PCTCompileListener(this);
+    private void initializeCompilationUnits() {
+        // Génération des unités de compilation
+        File dotPCTDir = new File(destDir, ".pct");
+        for (Iterator e = filesets.iterator(); e.hasNext() && !leave;) {
+            FileSet fs = (FileSet) e.next();
+
+            // And get files from fileset
+            String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
+            for (int i = 0; i < dsfiles.length && !leave; i++) {
+                // File to be compiled
+                File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
+                int srcExtPos = dsfiles[i].lastIndexOf('.');
+                String extension = dsfiles[i].substring(srcExtPos);
+                
+                // Output directory for .r file
+                String[] outputNames = getMapper().mapFileName(dsfiles[i]);
+                if ((outputNames != null) && (outputNames.length >= 1)) {
+                    File outputDir = null;
+                    File outputFile = new File(destDir, outputNames[0]);
+                    if (extension.equalsIgnoreCase(".cls")) {
+                        // Specific case, as Progress prepends package name automatically
+                        // So outputDir has to be rootDir
+                        outputDir = destDir;
+                    }
+                    else {
+                        outputDir = new File(destDir, outputNames[0]).getParentFile();
+                    }
+                    
+                    if (!outputDir.exists())
+                        outputDir.mkdirs();
+                    
+                    // File produced by Progress compiler (always source file name with extension .r)
+                    int extPos = inputFile.getName().lastIndexOf('.');
+                    File progressFile = new File(outputDir, inputFile.getName().substring(0, extPos) + ".r");
+//                    File outputFile = new File(destDir, outputNames[0]);
+                    
+                    // Output directory for PCT files appended with filename
+                    int extPos2 = outputNames[0].lastIndexOf('.');
+                    File PCTRoot = new File(dotPCTDir, outputNames[0].substring(0, extPos2) + dsfiles[i].substring(srcExtPos));
+                    int rIndex = PCTRoot.getAbsolutePath().lastIndexOf('.');
+                    // Output directory for PCT files
+                    File PCTDir = PCTRoot.getParentFile();
+                    if (!PCTDir.exists())
+                        PCTDir.mkdirs();
+                    
+                    CompilationUnit unit = new CompilationUnit();
+                    units.add(unit);
+                    unit.inputFile=inputFile;
+                    unit.outputDir=outputDir;
+                    unit.debugFile = (debugListing ? new File((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex)) + ".dbg") : null);
+                    unit.preprocessFile = (preprocess ? new File(PCTRoot.getAbsolutePath() + ".preprocess") : null);
+                    unit.listingFile = (listing ? new File(PCTRoot.getAbsolutePath()) : null);
+                    unit.xrefFile=new File(PCTRoot.getAbsolutePath() + ".xref");
+                    unit.pctRoot = PCTRoot;
+                }
+            }
+        }
+        
+    }
+
+    protected BackgroundWorker createOpenEdgeWorker(Socket socket) {
+        CompilationBackgroundWorker worker = new CompilationBackgroundWorker(this);
+        try {
+            worker.initialize(socket);
+        } catch (Throwable uncaught) {
+            throw new BuildException(uncaught);
+        }
+
+        return worker;
+    }
+    
+    public class CompilationBackgroundWorker extends BackgroundWorker {
+        private int customStatus = 0;
+        
+        public CompilationBackgroundWorker(PCTBgCompile parent) {
+            super(parent);
+            initializeCompilationUnits();
+        }
+        
+        protected boolean performCustomAction(int threadNumber) throws IOException {
+            if (customStatus == 0) {
+                customStatus = 1;
+                sendCommand(0, "launch", "pct/pctBgCRC.p");
+                return true;
+            } else if (customStatus == 1) {
+              customStatus = 2;
+              sendCommand(0, "launch", "pct/pctBgCompile.p");
+              return true;
+            } else if (customStatus == 2) {
+                customStatus = 3;
+                sendCommand(0, "setOptions", getOptions());
+                return true;
+            } else if (customStatus == 3) {
+                customStatus = 4;
+                sendCommand(0, "getCRC", "");
+                return true;
+            } else if (customStatus == 4) {
+                synchronized (units) {
+                    int size = units.size();
+                    if (size > 0) {
+                        int numCU = 1;
+                        if (size > 100)
+                            numCU = 10;
+                        StringBuffer sb = new StringBuffer();
+                        for (int zz = 0; zz < numCU; zz++) {
+                            CompilationUnit cu = (CompilationUnit) units.remove(0);
+                            if (sb.length() > 0)
+                                sb.append('#');
+                            sb.append(cu.toString());
+                        }
+                        
+                        sendCommand(0, "PctCompile " , sb.toString());
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+
+            } else return false;
+        }
+
+        public void setCustomOptions(Map options) {
+            
+        }
+        
+        private String getOptions() {
+            StringBuffer sb = new StringBuffer();
+            sb.append(Boolean.toString(runList)).append(';');
+            sb.append(Boolean.toString(minSize)).append(';');
+            sb.append(Boolean.toString(md5)).append(';');
+            sb.append(Boolean.toString(xcode)).append(';');
+            sb.append(xcodeKey).append(';');
+            sb.append(Boolean.toString(forceCompile)).append(';');
+            sb.append(Boolean.toString(noCompile));
+            
+            return sb.toString();
+        }
     }
     
     private static class CompilationUnit {
@@ -345,269 +486,6 @@ public class PCTBgCompile extends PCTBgRun {
             return inputFile + "|" + outputDir + "|" + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|" + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|" + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile + "|" + pctRoot + "|";
         }
 
-    }
-    
-    private class PCTCompileListener extends PCTListener {
-        boolean leave = false;
-        boolean error = false;
-        private List units = new ArrayList();
-        
-        /**
-         * Creates a new PCTCRCListener
-         * 
-         * @param parent PCTBgRun instance
-         * @throws IOException Server socket fails
-         */
-        public PCTCompileListener(PCTBgCompile parent) throws IOException {
-            super(parent);
-            
-            // Génération des unités de compilation
-            File dotPCTDir = new File(destDir, ".pct");
-            for (Iterator e = filesets.iterator(); e.hasNext() && !leave;) {
-                FileSet fs = (FileSet) e.next();
-
-                // And get files from fileset
-                String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
-                for (int i = 0; i < dsfiles.length && !leave; i++) {
-                    // File to be compiled
-                    File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
-                    int srcExtPos = dsfiles[i].lastIndexOf('.');
-                    String extension = dsfiles[i].substring(srcExtPos);
-                    
-                    // Output directory for .r file
-                    String[] outputNames = getMapper().mapFileName(dsfiles[i]);
-                    if ((outputNames != null) && (outputNames.length >= 1)) {
-                        File outputDir = null;
-                        File outputFile = new File(destDir, outputNames[0]);
-                        if (extension.equalsIgnoreCase(".cls")) {
-                            // Specific case, as Progress prepends package name automatically
-                            // So outputDir has to be rootDir
-                            outputDir = destDir;
-                        }
-                        else {
-                            outputDir = new File(destDir, outputNames[0]).getParentFile();
-                        }
-                        
-                        if (!outputDir.exists())
-                            outputDir.mkdirs();
-                        
-                        // File produced by Progress compiler (always source file name with extension .r)
-                        int extPos = inputFile.getName().lastIndexOf('.');
-                        File progressFile = new File(outputDir, inputFile.getName().substring(0, extPos) + ".r");
-//                        File outputFile = new File(destDir, outputNames[0]);
-                        
-                        // Output directory for PCT files appended with filename
-                        int extPos2 = outputNames[0].lastIndexOf('.');
-                        File PCTRoot = new File(dotPCTDir, outputNames[0].substring(0, extPos2) + dsfiles[i].substring(srcExtPos));
-                        int rIndex = PCTRoot.getAbsolutePath().lastIndexOf('.');
-                        // Output directory for PCT files
-                        File PCTDir = PCTRoot.getParentFile();
-                        if (!PCTDir.exists())
-                            PCTDir.mkdirs();
-                        
-                        CompilationUnit unit = new CompilationUnit();
-                        units.add(unit);
-                        unit.inputFile=inputFile;
-                        unit.outputDir=outputDir;
-                        unit.debugFile = (debugListing ? new File((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex)) + ".dbg") : null);
-                        unit.preprocessFile = (preprocess ? new File(PCTRoot.getAbsolutePath() + ".preprocess") : null);
-                        unit.listingFile = (listing ? new File(PCTRoot.getAbsolutePath()) : null);
-                        unit.xrefFile=new File(PCTRoot.getAbsolutePath() + ".xref");
-                        unit.pctRoot = PCTRoot;
-//                        StringBuffer sb = new StringBuffer("pctCompile ");
-//    
-//                        sb.append(inputFile.getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(outputDir);
-//                        sb.append('|');
-//                        if (debugListing)
-//                            sb.append((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex))).append(".dbg");
-//                        sb.append('|');
-//                        if (preprocess)
-//                            sb.append(PCTRoot.getAbsolutePath()).append(".preprocess");
-//                        sb.append('|');
-//                        if (listing)
-//                            sb.append(PCTRoot.getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(new File(destDir, "XREF").getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(PCTRoot.getAbsolutePath());
-//                        sb.append('|');
-//                        if (progressFile.compareTo(outputFile) != 0)
-//                            sb.append(outputFile.getAbsolutePath());
-//                        sendCommand(sb.toString());
-                    }
-                }
-            }
-        }
-
-        /**
-         * This task will run the pct/pctBgCRC.p, run its internal procedure getCRC, and then output
-         * the result to destFile
-         */
-        public boolean custom(int threadNumber) throws IOException {
-            // Starting background process
-            sendCommand(threadNumber, "launch pct/pctBgCompile.p");
-            // Getting CRC
-//            sendCommand("getCRC");
-
-            // Setting global options
-//            if (minSize)
-//                sendCommand("setMinSize");
-//            if (md5)
-//                sendCommand("setMD5");
-//            if (xcode)
-//                sendCommand("setXCode");
-//            if (xcodeKey != null)
-//                sendCommand("setXCodeKey " + xcodeKey);
-//            if (forceCompile)
-//                sendCommand("setForceCompilation");
-//            if (runList)
-//                sendCommand("setRunList");
-//            if (noCompile)
-//                sendCommand("setNoCompile");
-            
-            // .pct subdirectory handles .crc and .inc files 
-//            File dotPCTDir = new File(destDir, ".pct");
-//            for (Enumeration e = filesets.elements(); e.hasMoreElements() && !leave;) {
-//                FileSet fs = (FileSet) e.nextElement();
-//
-//                // And get files from fileset
-//                String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
-//                for (int i = 0; i < dsfiles.length && !leave; i++) {
-//                    // File to be compiled
-//                    File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
-//                    int srcExtPos = dsfiles[i].lastIndexOf('.');
-//                    String extension = dsfiles[i].substring(srcExtPos);
-//                    
-//                    // Output directory for .r file
-//                    String[] outputNames = getMapper().mapFileName(dsfiles[i]);
-//                    if ((outputNames != null) && (outputNames.length >= 1)) {
-//                        File outputDir = null;
-//                        File outputFile = new File(destDir, outputNames[0]);
-//                        if (extension.equalsIgnoreCase(".cls")) {
-//                            // Specific case, as Progress prepends package name automatically
-//                            // So outputDir has to be rootDir
-//                            outputDir = destDir;
-//                        }
-//                        else {
-//                            outputDir = new File(destDir, outputNames[0]).getParentFile();
-//                        }
-//                        
-//                        if (!outputDir.exists())
-//                            outputDir.mkdirs();
-//                        
-//                        // File produced by Progress compiler (always source file name with extension .r)
-//                        int extPos = inputFile.getName().lastIndexOf('.');
-//                        File progressFile = new File(outputDir, inputFile.getName().substring(0, extPos) + ".r");
-////                        File outputFile = new File(destDir, outputNames[0]);
-//                        
-//                        // Output directory for PCT files appended with filename
-//                        int extPos2 = outputNames[0].lastIndexOf('.');
-//                        File PCTRoot = new File(dotPCTDir, outputNames[0].substring(0, extPos2) + dsfiles[i].substring(srcExtPos));
-//                        int rIndex = PCTRoot.getAbsolutePath().lastIndexOf('.');
-//                        // Output directory for PCT files
-//                        File PCTDir = PCTRoot.getParentFile();
-//                        if (!PCTDir.exists())
-//                            PCTDir.mkdirs();
-//                        
-//                        StringBuffer sb = new StringBuffer("pctCompile ");
-//    
-//                        sb.append(inputFile.getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(outputDir);
-//                        sb.append('|');
-//                        if (debugListing)
-//                            sb.append((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex))).append(".dbg");
-//                        sb.append('|');
-//                        if (preprocess)
-//                            sb.append(PCTRoot.getAbsolutePath()).append(".preprocess");
-//                        sb.append('|');
-//                        if (listing)
-//                            sb.append(PCTRoot.getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(new File(destDir, "XREF").getAbsolutePath());
-//                        sb.append('|');
-//                        sb.append(PCTRoot.getAbsolutePath());
-//                        sb.append('|');
-//                        if (progressFile.compareTo(outputFile) != 0)
-//                            sb.append(outputFile.getAbsolutePath());
-//                        sendCommand(sb.toString());
-//                    }
-//                }
-//            }
-            return error;
-        }
-
-        public void handleLaunch(Integer threadNumber, String param) throws IOException {
-            // Nothing
-            sendCommand(threadNumber.intValue(), "setOptions " + getOptions());
-        }
-
-        private String getOptions() {
-            StringBuffer sb = new StringBuffer();
-            sb.append(Boolean.toString(runList)).append(';');
-            sb.append(Boolean.toString(minSize)).append(';');
-            sb.append(Boolean.toString(md5)).append(';');
-            sb.append(Boolean.toString(xcode)).append(';');
-            sb.append(xcodeKey).append(';');
-            sb.append(Boolean.toString(forceCompile)).append(';');
-            sb.append(Boolean.toString(noCompile));
-            
-            return sb.toString();
-        }
-
-        public void handleSetOptions(Integer threadNumber, String param) throws IOException {
-            // Nothing
-            sendCommand(threadNumber.intValue(), "GetCRC");
-        }
-
-        /**
-         * Handles getCRC response
-         */
-        public void handleGetCRC(Integer threadNumber, String param /*String param, String ret, List strings*/) throws IOException {
-            // Nothing
-            handlePctCompile(threadNumber, "");
-        }
-
-        public void handlePctCompile(Integer threadNumber, String param) throws IOException {
-            if (statuses[threadNumber.intValue()].lastCmdStatus == 2) buildException = true;
-            synchronized (units) {
-                int size = units.size();
-                if (size > 0) {
-                    int numCU = 1;
-                    /* if (size > 1000)
-                        numCU = 50;
-                    else */ if (size > 100)
-                        numCU = 10;
-                    StringBuffer sb = new StringBuffer();
-                    for (int zz = 0; zz < numCU; zz++) {
-                        CompilationUnit cu = (CompilationUnit) units.remove(0);
-                        if (sb.length() > 0)
-                            sb.append('#');
-                        sb.append(cu.toString());
-                    }
-                    
-                    sendCommand(threadNumber.intValue(), "PctCompile " + sb.toString());
-                }
-                else {
-                    sendCommand(threadNumber.intValue(), "Quit");
-                }
-            }
-        }
-        
-        /**
-         * Handles pctCompile response
-         */
-        /*public void handlePctCompile(String param, String ret, List strings) {
-            Iterator i = strings.iterator();
-            String errNum = (String) i.next();
-            error |= (Integer.parseInt(errNum) > 0);
-            leave = (Integer.parseInt(errNum) > 0) && failOnError;
-            while (i.hasNext()) {
-                log((String) i.next());
-            }
-        }*/
     }
 
     public static class RCodeMapper implements FileNameMapper {
