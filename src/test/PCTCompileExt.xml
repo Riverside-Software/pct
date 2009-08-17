@@ -635,12 +635,11 @@
 
   <!-- Simple compilation with two threads -->
   <target name="test24">
-    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="4">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="2">
       <fileset dir=".">
         <include name="sandbox/*.p"/>
       </fileset>	
     </PCTCompileExt>	
   </target>
-  
 
 </project>
