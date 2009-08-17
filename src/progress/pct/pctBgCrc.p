@@ -54,6 +54,7 @@
  
 PROCEDURE getCRC.
     DEFINE INPUT PARAM cPrm AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
 
     DEFINE VARIABLE i       AS INTEGER    NO-UNDO.
     DEFINE VARIABLE h_file  AS HANDLE     NO-UNDO.
@@ -84,6 +85,7 @@ PROCEDURE getCRC.
         DELETE OBJECT hQuery.
         DELETE OBJECT h_File.
     END.
-    
-    RETURN ('OK:~n' + cReturn + (IF cReturn EQ '' THEN '' ELSE '~n') + 'END.~n').
+
+	ASSIGN opOK = TRUE.    
+    /* RETURN ('OK:~n' + cReturn + (IF cReturn EQ '' THEN '' ELSE '~n') + 'END.~n'). */
 END PROCEDURE.
