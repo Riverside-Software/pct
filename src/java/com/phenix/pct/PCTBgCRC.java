@@ -87,19 +87,18 @@ public class PCTBgCRC extends PCTBgRun {
     }
 
     public class CRCThreadStatus extends BackgroundWorker {
-        public CRCThreadStatus(PCTBgRun parent) {
-            super(parent);
-            // TODO Auto-generated constructor stub
-        }
-
         private int customStatus = 0;
 
-        protected boolean performCustomAction(int threadNumber) throws IOException {
+        public CRCThreadStatus(PCTBgRun parent) {
+            super(parent);
+        }
+
+        protected boolean performCustomAction() throws IOException {
             if (customStatus == 0) {
                 customStatus = 1;
-                sendCommand(0, "launch", "pct/pctBgCRC.p");
+                sendCommand("launch", "pct/pctBgCRC.p");
             } else if (customStatus == 1) {
-                sendCommand(0, "getCRC", "");
+                sendCommand("getCRC", "");
                 quit();
             }
             return false;
@@ -109,18 +108,29 @@ public class PCTBgCRC extends PCTBgRun {
 
         }
 
-        public void handleGetCRC(String param, String ret, List strings) throws IOException {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(getDestFile()));
-            for (Iterator i = strings.iterator(); i.hasNext();) {
-                bw.write((String) i.next());
-                bw.newLine();
+        public void handleResponse(String command, String parameter, boolean err, List returnValues) {
+            BufferedWriter bw = null;
+
+            try {
+                bw = new BufferedWriter(new FileWriter(getDestFile()));
+                for (Iterator i = returnValues.iterator(); i.hasNext();) {
+                    bw.write((String) i.next());
+                    bw.newLine();
+                }
+            } catch (IOException caught) {
+                setBuildException(caught);
+            } finally {
+                try {
+                    bw.close();
+                } catch (IOException uncaught) {
+
+                }
             }
-            bw.close();
         }
     }
 
     protected BackgroundWorker createOpenEdgeWorker(Socket socket) {
-        CRCThreadStatus worker = new CRCThreadStatus(this); 
+        CRCThreadStatus worker = new CRCThreadStatus(this);
         try {
             worker.initialize(socket);
         } catch (Throwable uncaught) {
