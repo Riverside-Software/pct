@@ -148,7 +148,6 @@ public class PCTProxygenTest extends BuildFileTest {
         assertTrue("Failure expected on 10.1B...", f3.exists());
     }
 
-    // FIXME RCode is not generated :-) PCTCompile doesn't do its job...
     public void test4() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;
@@ -165,7 +164,6 @@ public class PCTProxygenTest extends BuildFileTest {
         assertTrue("Failure expected on 10.1B...", f2.exists());
     }
 
-    // FIXME RCode is not generated :-) PCTCompile doesn't do its job...
     public void test5() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;
@@ -178,14 +176,14 @@ public class PCTProxygenTest extends BuildFileTest {
         File f2 = new File("sandbox/pxg/TestImpl.class");
         assertFalse(f1.exists());
         assertFalse(f2.exists());
+        
         executeTarget("test5");
         assertFalse(f1.exists());
         assertFalse(f2.exists());
 
-        executeTarget("test5-part2");
-        // 10.1B doesn't handle relative paths...
-        assertTrue("Failure expected on 10.1B...", f1.exists());
-        assertTrue("Failure expected on 10.1B...", f2.exists());
+        executeTarget("test5-part3");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
     }
 
 }
