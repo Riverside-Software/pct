@@ -119,7 +119,8 @@
     </copy>
   </target>
   <target name="test8">
-    <PCTXCode destDir="build" dlcHome="${DLC}" overwrite="true" >
+    <sleep seconds="2" />
+    <PCTXCode destDir="build" dlcHome="${DLC}" overwrite="true">
       <fileset dir="sandbox" includes="**/*.p" />
     </PCTXCode>
   </target>
