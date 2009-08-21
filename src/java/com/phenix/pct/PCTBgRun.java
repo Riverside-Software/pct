@@ -90,8 +90,9 @@ public abstract class PCTBgRun extends PCT {
     // Internal use : socket communication
     private int port;
     // Internal use : throw BuildException
-    protected boolean buildException;
-
+    private boolean buildException;
+    private Throwable buildExceptionSource;
+    
     protected File pctLib = null;
     protected int plID = -1; // Unique ID when creating temp files
     private File initProc = null;
@@ -247,6 +248,15 @@ public abstract class PCTBgRun extends PCT {
 
     protected abstract BackgroundWorker createOpenEdgeWorker(Socket socket);
 
+    public void setBuildException() {
+        buildException = true;
+    }
+    
+    public void setBuildException(Throwable exception) {
+        buildException = true;
+        buildExceptionSource = exception;
+    }
+    
     private ExecTask prepareExecTask() {
         ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
         exec.setOwningTarget(getOwningTarget());
@@ -327,8 +337,13 @@ public abstract class PCTBgRun extends PCT {
             throw new BuildException(ie);
         }
 
-        if (buildException)
-            throw new BuildException("Build failed");
+        if (buildException) {
+            if (buildExceptionSource == null)
+                throw new BuildException("Build failed");
+            else
+                throw new BuildException(buildExceptionSource);
+        }
+            
     }
 
     /**
@@ -446,7 +461,7 @@ public abstract class PCTBgRun extends PCT {
                             try {
                                 while (!status.quit) {
                                     status.performAction();
-                                    status.listen(0);
+                                    status.listen();
                                 }
                             } catch (IOException ioe) {
 

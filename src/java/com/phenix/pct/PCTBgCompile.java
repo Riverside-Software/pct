@@ -412,22 +412,22 @@ public class PCTBgCompile extends PCTBgRun {
             initializeCompilationUnits();
         }
         
-        protected boolean performCustomAction(int threadNumber) throws IOException {
+        protected boolean performCustomAction() throws IOException {
             if (customStatus == 0) {
                 customStatus = 1;
-                sendCommand(0, "launch", "pct/pctBgCRC.p");
+                sendCommand("launch", "pct/pctBgCRC.p");
                 return true;
             } else if (customStatus == 1) {
               customStatus = 2;
-              sendCommand(0, "launch", "pct/pctBgCompile.p");
+              sendCommand("launch", "pct/pctBgCompile.p");
               return true;
             } else if (customStatus == 2) {
                 customStatus = 3;
-                sendCommand(0, "setOptions", getOptions());
+                sendCommand("setOptions", getOptions());
                 return true;
             } else if (customStatus == 3) {
                 customStatus = 4;
-                sendCommand(0, "getCRC", "");
+                sendCommand("getCRC", "");
                 return true;
             } else if (customStatus == 4) {
                 synchronized (units) {
@@ -444,7 +444,7 @@ public class PCTBgCompile extends PCTBgRun {
                             sb.append(cu.toString());
                         }
                         
-                        sendCommand(0, "PctCompile " , sb.toString());
+                        sendCommand("PctCompile " , sb.toString());
                         return true;
                     }
                     else {
@@ -470,6 +470,13 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(noCompile));
             
             return sb.toString();
+        }
+
+        public void handleResponse(String command, String parameter, boolean err, List returnValues) {
+            if ("pctCompile".equalsIgnoreCase(command)) {
+                if (err)
+                    setBuildException();
+            }
         }
     }
     
