@@ -82,7 +82,7 @@
   <fileset id="test.v9" dir="${build}">
     <include name="com/phenix/pct/*Test.class" />
     <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
-    <exclude name="com/phenix/pct/*V10Test.class "/>
+    <exclude name="com/phenix/pct/*V10Test.class" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
@@ -94,7 +94,7 @@
   </fileset>
   <fileset id="test.v10" dir="${build}">
     <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/*V9Test.class "/>
+    <exclude name="com/phenix/pct/*V9Test.class" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
