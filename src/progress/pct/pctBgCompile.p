@@ -130,7 +130,7 @@ END PROCEDURE.
 
 PROCEDURE pctCompile:
     DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
-    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL TRUE.
+    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL FALSE.
 
     /* Input parameter is a #-separated list of compilation units */
     /* Each compilation unit is a pipe-separated list of infos : */
@@ -174,7 +174,7 @@ PROCEDURE pctCompile:
                targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
 	       
       RUN pctCompile2 (inputfile, outputdir, dbglist, prepro, listingfile, xreffile, pctdir, targetfile, OUTPUT lok).
-      if (opok eq true) then assign opok = lok.
+      if (lok eq true) then assign opok = lok.
     END.
    
 END PROCEDURE.
@@ -256,7 +256,7 @@ PROCEDURE pctCompile2 PRIVATE:
                 COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
         END.
         ELSE DO:
-            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=FALSE GENERATE-MD5=FALSE XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
+            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         END.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
