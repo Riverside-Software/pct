@@ -284,8 +284,6 @@ public class PCTBgCompile extends PCTBgRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        // File xRefDir = null; // Where to store XREF files
-
         if (this.destDir == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
@@ -444,7 +442,7 @@ public class PCTBgCompile extends PCTBgRun {
                             sb.append(cu.toString());
                         }
                         
-                        sendCommand("PctCompile " , sb.toString());
+                        sendCommand("PctCompile" , sb.toString());
                         return true;
                     }
                     else {
@@ -465,7 +463,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(minSize)).append(';');
             sb.append(Boolean.toString(md5)).append(';');
             sb.append(Boolean.toString(xcode)).append(';');
-            sb.append(xcodeKey).append(';');
+            sb.append(xcodeKey == null ? "" : xcodeKey).append(';');
             sb.append(Boolean.toString(forceCompile)).append(';');
             sb.append(Boolean.toString(noCompile));
             
