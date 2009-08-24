@@ -82,6 +82,8 @@ public class PCTSchemaDocTest extends BuildFileTest {
     }
 
     public void test2() {
+        // Broken on test box (9.1E Linux due to message 8013)
+        // Check solution P99495 (multiple arch on same server)
         executeTarget("test2-init");
         executeTarget("test2");
         File f = new File("sandbox/db.xml");
