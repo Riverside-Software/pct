@@ -179,6 +179,10 @@ public abstract class PCTBgRun extends PCT {
         options.setPropath(propath);
     }
 
+    public Path createPropath() {
+        return options.createPropath();
+    }
+
     public void setCpStream(String cpStream) {
         options.setCpStream(cpStream);
     }
@@ -418,6 +422,13 @@ public abstract class PCTBgRun extends PCT {
     protected void cleanup() {
         pctLib.delete();
         initProc.delete();
+    }
+
+    protected synchronized void logMessages(List logs) {
+        for (Iterator i = logs.iterator(); i.hasNext(); ) {
+            String s = (String) i.next();
+            log(s);
+        }
     }
 
     /**
