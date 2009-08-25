@@ -276,7 +276,7 @@ public class PCTCompile extends PCTRun {
             for (Iterator e = filesets.iterator(); e.hasNext();) {
                 // Parse filesets
                 FileSet fs = (FileSet) e.next();
-                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath().toString()); //$NON-NLS-1$
+                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
                 bw.newLine();
 
                 // And get files from fileset

@@ -343,7 +343,7 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath().toString());
+        exec.createArg().setValue(this.destFile.getAbsolutePath());
         exec.createArg().setValue("-makeshared");
         exec.createArg().setValue(this.sharedFile.getAbsolutePath().toString());
 
