@@ -94,6 +94,7 @@ DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
@@ -115,14 +116,15 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
            lXCode    = ENTRY(4, ipPrm, ';') EQ 'true'
            xcodekey  = ENTRY(5, ipPrm, ';')
            forceComp = ENTRY(6, ipPrm, ';') EQ 'true'
-           noComp    = ENTRY(7, ipPrm, ';') EQ 'true' NO-ERROR.
+           noComp    = ENTRY(7, ipPrm, ';') EQ 'true'
+           keepXref  = ENTRY(8, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -268,12 +270,13 @@ PROCEDURE pctCompile2 PRIVATE:
         END.
         ELSE DO:
             ASSIGN opOK = TRUE.
-            IF (targetFile NE ?) THEN DO:
-                OS-COPY VALUE(outputDir + "/" + RCodeName) VALUE(targetFile).
+            IF (targetFile NE ?) AND (RCodeName NE targetFile) THEN DO:
+                OS-COPY VALUE(outputDir + "/" + RCodeName) VALUE(outputDir + "/" + targetFile).
                 OS-DELETE VALUE(outputDir + "/" + RCodeName).
             END.
             RUN ImportXref (INPUT xreffile, INPUT pctdir) NO-ERROR.
-            OS-DELETE VALUE(xrefFile).
+            IF (NOT keepXref) THEN
+                OS-DELETE VALUE(xrefFile).
         END.
         RETURN.
     END.
@@ -381,8 +384,8 @@ PROCEDURE importXref.
             EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
-    
-    OUTPUT TO VALUE (pcdir +  '.crc':U).
+
+    OUTPUT TO VALUE (pcdir + '.crc':U).
     FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK BREAK BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
