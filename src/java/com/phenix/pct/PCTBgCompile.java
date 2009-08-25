@@ -85,6 +85,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean listing = false;
     private boolean preprocess = false;
     private boolean debugListing = false;
+    private boolean keepXref = false;
     private String xcodeKey = null;
     private File destDir = null;
     private File xRefDir = null;
@@ -164,6 +165,15 @@ public class PCTBgCompile extends PCTBgRun {
     public void setNoXref(boolean noXref) {
         log(Messages.getString("PCTCompile.1")); //$NON-NLS-1$
         this.forceCompile = noXref;
+    }
+
+    /**
+     * Generates a .xref in the .pct directory, result of XREF option in the COMPILE statement
+     * 
+     * @param keepXref "true|false|on|off|yes|no"
+     */
+    public void setKeepXref(boolean keepXref) {
+        this.keepXref = keepXref;
     }
 
     /**
@@ -463,7 +473,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(xcode)).append(';');
             sb.append(xcodeKey == null ? "" : xcodeKey).append(';');
             sb.append(Boolean.toString(forceCompile)).append(';');
-            sb.append(Boolean.toString(noCompile));
+            sb.append(Boolean.toString(noCompile)).append(';');
+            sb.append(Boolean.toString(keepXref));
 
             return sb.toString();
         }
