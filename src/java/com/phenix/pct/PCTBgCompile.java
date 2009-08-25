@@ -90,7 +90,6 @@ public class PCTBgCompile extends PCTBgRun {
     private File xRefDir = null;
     private Mapper mapperElement = null;
 
-    boolean leave = false;
     private List units = new ArrayList();
 
     /**
@@ -242,6 +241,7 @@ public class PCTBgCompile extends PCTBgRun {
 
     /**
      * Add a nested filenamemapper.
+     * 
      * @param fileNameMapper the mapper to add.
      * @since Ant 1.6.3
      */
@@ -251,21 +251,20 @@ public class PCTBgCompile extends PCTBgRun {
 
     /**
      * Define the mapper to map source to destination files.
+     * 
      * @return a mapper to be configured.
      * @exception BuildException if more than one mapper is defined.
      */
     public Mapper createMapper() throws BuildException {
         if (mapperElement != null) {
-            throw new BuildException("Cannot define more than one mapper",
-                                     getLocation());
+            throw new BuildException("Cannot define more than one mapper", getLocation());
         }
         mapperElement = new Mapper(getProject());
         return mapperElement;
     }
 
     /**
-     * returns the mapper to use based on nested elements or the
-     * flatten attribute.
+     * returns the mapper to use based on nested elements or the flatten attribute.
      */
     private FileNameMapper getMapper() {
         FileNameMapper mapper = null;
@@ -276,7 +275,6 @@ public class PCTBgCompile extends PCTBgRun {
         }
         return mapper;
     }
-
 
     /**
      * Do the work
@@ -331,64 +329,68 @@ public class PCTBgCompile extends PCTBgRun {
         super.execute();
     }
 
+    /**
+     * Generates a list of compilation unit (which is a source file name, associated with output
+     * file names (.r, XREF, listing, and so on). This list is then consumed by the background
+     * workers and transmitted to the OpenEdge procedures.
+     */
     private void initializeCompilationUnits() {
-        // Génération des unités de compilation
+        // .pct dir is where PCT output files are generated
         File dotPCTDir = new File(destDir, ".pct");
-        for (Iterator e = filesets.iterator(); e.hasNext() && !leave;) {
+        
+        for (Iterator e = filesets.iterator(); e.hasNext();) {
             FileSet fs = (FileSet) e.next();
-
-            // And get files from fileset
+            
             String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
-            for (int i = 0; i < dsfiles.length && !leave; i++) {
+            
+            for (int i = 0; i < dsfiles.length; i++) {
                 // File to be compiled
                 File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
-                int srcExtPos = dsfiles[i].lastIndexOf('.');
-                String extension = dsfiles[i].substring(srcExtPos);
+                int srcExtPos = inputFile.getName().lastIndexOf('.');
+                String extension = (srcExtPos != -1 ? inputFile.getName().substring(srcExtPos) : "");
+                String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0, srcExtPos) : dsfiles[0]);
                 
                 // Output directory for .r file
                 String[] outputNames = getMapper().mapFileName(dsfiles[i]);
                 if ((outputNames != null) && (outputNames.length >= 1)) {
                     File outputDir = null;
                     File outputFile = new File(destDir, outputNames[0]);
+                    String targetFile = outputFile.getName();
                     if (extension.equalsIgnoreCase(".cls")) {
                         // Specific case, as Progress prepends package name automatically
                         // So outputDir has to be rootDir
                         outputDir = destDir;
+                    } else {
+                        outputDir = outputFile.getParentFile();
                     }
-                    else {
-                        outputDir = new File(destDir, outputNames[0]).getParentFile();
-                    }
-                    
+
                     if (!outputDir.exists())
                         outputDir.mkdirs();
+
+                    /* int extPos2 = outputFile.getName().lastIndexOf('.');
+                    String outputNameNoExt = (extPos2 != -1 ? outputFile.getName().substring(0, extPos2) : outputFile.getName());
+                    File PCTRoot = new File(dotPCTDir, outputNameNoExt); */
                     
-                    // File produced by Progress compiler (always source file name with extension .r)
-                    int extPos = inputFile.getName().lastIndexOf('.');
-                    File progressFile = new File(outputDir, inputFile.getName().substring(0, extPos) + ".r");
-//                    File outputFile = new File(destDir, outputNames[0]);
-                    
-                    // Output directory for PCT files appended with filename
-                    int extPos2 = outputNames[0].lastIndexOf('.');
-                    File PCTRoot = new File(dotPCTDir, outputNames[0].substring(0, extPos2) + dsfiles[i].substring(srcExtPos));
-                    int rIndex = PCTRoot.getAbsolutePath().lastIndexOf('.');
                     // Output directory for PCT files
-                    File PCTDir = PCTRoot.getParentFile();
+//                    File PCTDir = PCTRoot.getParentFile();
+                    File PCTDir = new File(dotPCTDir, outputNames[0]).getParentFile();
                     if (!PCTDir.exists())
                         PCTDir.mkdirs();
-                    
+
                     CompilationUnit unit = new CompilationUnit();
                     units.add(unit);
-                    unit.inputFile=inputFile;
-                    unit.outputDir=outputDir;
-                    unit.debugFile = (debugListing ? new File((rIndex == -1 ? PCTRoot.getAbsolutePath() : PCTRoot.getAbsolutePath().substring(0, rIndex)) + ".dbg") : null);
-                    unit.preprocessFile = (preprocess ? new File(PCTRoot.getAbsolutePath() + ".preprocess") : null);
-                    unit.listingFile = (listing ? new File(PCTRoot.getAbsolutePath()) : null);
-                    unit.xrefFile=new File(PCTRoot.getAbsolutePath() + ".xref");
-                    unit.pctRoot = PCTRoot;
+                    unit.inputFile = inputFile;
+                    unit.outputDir = outputDir;
+                    unit.debugFile = (debugListing ? new File(PCTDir, fileNameNoExt + ".dbg") : null);
+                    unit.preprocessFile = (preprocess ? new File(PCTDir, fileNameNoExt + extension + ".preprocess") : null);
+                    unit.listingFile = (listing ? new File(PCTDir, fileNameNoExt + extension) : null);
+                    unit.xrefFile = new File(PCTDir, fileNameNoExt + extension + ".xref");
+                    unit.pctRoot = new File(PCTDir, fileNameNoExt + extension);
+                    unit.targetFile = targetFile;
                 }
             }
         }
-        
+
     }
 
     protected BackgroundWorker createOpenEdgeWorker(Socket socket) {
@@ -401,33 +403,29 @@ public class PCTBgCompile extends PCTBgRun {
 
         return worker;
     }
-    
+
     public class CompilationBackgroundWorker extends BackgroundWorker {
         private int customStatus = 0;
-        
+
         public CompilationBackgroundWorker(PCTBgCompile parent) {
             super(parent);
             initializeCompilationUnits();
         }
-        
+
         protected boolean performCustomAction() throws IOException {
             if (customStatus == 0) {
-                customStatus = 1;
-                sendCommand("launch", "pct/pctBgCRC.p");
-                return true;
-            } else if (customStatus == 1) {
-              customStatus = 2;
-              sendCommand("launch", "pct/pctBgCompile.p");
-              return true;
-            } else if (customStatus == 2) {
                 customStatus = 3;
+                sendCommand("launch", "pct/pctBgCompile.p");
+                return true;
+            }  else if (customStatus == 3) {
+                customStatus = 4;
                 sendCommand("setOptions", getOptions());
                 return true;
-            } else if (customStatus == 3) {
-                customStatus = 4;
+            } else if (customStatus == 4) {
+                customStatus = 5;
                 sendCommand("getCRC", "");
                 return true;
-            } else if (customStatus == 4) {
+            } else if (customStatus == 5) {
                 synchronized (units) {
                     int size = units.size();
                     if (size > 0) {
@@ -441,22 +439,22 @@ public class PCTBgCompile extends PCTBgRun {
                                 sb.append('#');
                             sb.append(cu.toString());
                         }
-                        
-                        sendCommand("PctCompile" , sb.toString());
+
+                        sendCommand("PctCompile", sb.toString());
                         return true;
-                    }
-                    else {
+                    } else {
                         return false;
                     }
                 }
 
-            } else return false;
+            } else
+                return false;
         }
 
         public void setCustomOptions(Map options) {
-            
+
         }
-        
+
         private String getOptions() {
             StringBuffer sb = new StringBuffer();
             sb.append(Boolean.toString(runList)).append(';');
@@ -466,18 +464,22 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(xcodeKey == null ? "" : xcodeKey).append(';');
             sb.append(Boolean.toString(forceCompile)).append(';');
             sb.append(Boolean.toString(noCompile));
-            
+
             return sb.toString();
         }
 
         public void handleResponse(String command, String parameter, boolean err, List returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
-                if (err)
+                if (err) {
                     setBuildException();
+                    if (failOnError) {
+                        quit();
+                    }
+                }
             }
         }
     }
-    
+
     private static class CompilationUnit {
         private File inputFile;
         private File outputDir;
@@ -486,9 +488,14 @@ public class PCTBgCompile extends PCTBgRun {
         private File listingFile;
         private File xrefFile;
         private File pctRoot;
+        private String targetFile;
 
         public String toString() {
-            return inputFile + "|" + outputDir + "|" + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|" + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|" + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile + "|" + pctRoot + "|";
+            return inputFile + "|" + outputDir + "|"
+                    + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|"
+                    + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|"
+                    + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile
+                    + "|" + pctRoot + "|" + targetFile;
         }
 
     }
@@ -497,6 +504,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         /**
          * Ignored.
+         * 
          * @param from ignored.
          */
         public void setFrom(String from) {
@@ -504,6 +512,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         /**
          * Ignored.
+         * 
          * @param to ignored.
          */
         public void setTo(String to) {
@@ -511,6 +520,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         /**
          * Returns an one-element array containing the source file name.
+         * 
          * @param sourceFileName the name to map.
          * @return the source filename in a one-element array.
          */
@@ -518,8 +528,8 @@ public class PCTBgCompile extends PCTBgRun {
             if (sourceFileName == null)
                 return null;
             int extPos = sourceFileName.lastIndexOf('.');
-            
-            return new String[] {sourceFileName.substring(0, extPos) + ".r"};
+
+            return new String[]{sourceFileName.substring(0, extPos) + ".r"};
         }
     }
 
