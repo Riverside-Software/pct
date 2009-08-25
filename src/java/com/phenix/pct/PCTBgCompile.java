@@ -481,6 +481,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         public void handleResponse(String command, String parameter, boolean err, List returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
+                logMessages(returnValues);
                 if (err) {
                     setBuildException();
                     if (failOnError) {
