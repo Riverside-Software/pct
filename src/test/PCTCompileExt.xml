@@ -594,7 +594,7 @@
     </PCTCompileExt>	
   </target>
 
-  <!-- Test flatten mapper -->
+  <!-- Test regexp mapper -->
   <target name="test22">
     <echo file="sandbox/test.p">
       MESSAGE "Hello world!".
