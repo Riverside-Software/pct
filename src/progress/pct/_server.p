@@ -60,10 +60,13 @@ DEFINE VARIABLE hSocket AS HANDLE  NO-UNDO.
 DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
 
 DEFINE TEMP-TABLE ttMsgs NO-UNDO
- FIELD msgLine AS CHARACTER.
+ FIELD msgNum  AS INTEGER
+ FIELD msgLine AS CHARACTER
+ INDEX ttMsgs-PK IS PRIMARY UNIQUE msgNum.
 
 DEFINE VARIABLE portNumber   AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE threadNumber AS INTEGER    NO-UNDO INITIAL 0.
+DEFINE VARIABLE currentMsg   AS INTEGER    NO-UNDO INITIAL 0.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
 IF (portNumber EQ ?) THEN RETURN '17'.
@@ -104,11 +107,11 @@ END PROCEDURE.
 
 /* Handles writing of response data back to the eclipse session */
 /* First line is in this format : */
-/* threadNumber:[OK|ERR]:CommandExecuted:Parameters */
+/* [OK|ERR]:CommandExecuted:Parameters */
 /* Following lines are in this format */
-/* threadNumber:message_line */
+/* MSG:message_line */
 /* Last line is in this format */
-/* threadNumber:END */
+/* END */
 /* Message lines are read from the ttMsgs temp-table */
 /* This temp-table is emptied when a new command is run */
 PROCEDURE WriteToSocket:
@@ -120,13 +123,13 @@ PROCEDURE WriteToSocket:
 	DEFINE VARIABLE packet       as longchar no-undo.
 	DEFINE VARIABLE lfirst       as logical  no-undo.
 	
-    ASSIGN packet = string(threadNumber) + ":" + (if plok then "OK" else "ERR") + ":" + pcCmd + ":" + pcPrm + "~n".
-	FOR EACH ttmsgs:
-	    packet = packet + string(threadNumber) + ":MSG:" + ttMsgs.msgLine + "~n".
+    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcCmd + ":" + pcPrm + "~n".
+	FOR EACH ttMsgs:
+	    ASSIGN packet = packet + "MSG:" + ttMsgs.msgLine + "~n".
 	END.
-	packet = packet + string(threadNumber) + ":END~n".
+	ASSIGN packet = packet + "END~n".
 
-	copy-lob from packet to packetBuffer. 
+	COPY-LOB FROM packet TO packetBuffer. 
     IF VALID-HANDLE(hSocket) THEN DO:
         IF hSocket:CONNECTED() THEN DO:
 	        hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
@@ -233,15 +236,19 @@ END PROCEDURE.
 PROCEDURE logError:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
+    ASSIGN currentMsg = currentMsg + 1.
     CREATE ttMsgs.
-    ASSIGN ttMsgs.msgLine = ipMsg.
+    ASSIGN ttMsgs.msgNum  = currentMsg
+           ttMsgs.msgLine = ipMsg.
 END.
 
 PROCEDURE logMessage:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
+    ASSIGN currentMsg = currentMsg + 1.
     CREATE ttMsgs.
-    ASSIGN ttMsgs.msgLine = ipMsg.
+    ASSIGN ttMsgs.msgNum  = currentMsg
+           ttMsgs.msgLine = ipMsg.
 END.
 
 /* Commands to be executed from executeCmd */

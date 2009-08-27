@@ -82,7 +82,6 @@ FUNCTION CheckIncludes RETURNS LOGICAL  (INPUT f AS CHARACTER, INPUT TS AS INTEG
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION FileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
-FUNCTION getCompileErrors RETURNS CHARACTER (pcInit AS CHAR, pcFile AS CHAR, piRow AS INT, piColumn AS INT, pcMsg AS CHAR) FORWARD.
 
 /** Named streams */
 DEFINE STREAM sXref.
@@ -175,8 +174,8 @@ PROCEDURE pctCompile:
                xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
                targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
 	       
-      RUN pctCompile2 (inputfile, outputdir, dbglist, prepro, listingfile, xreffile, pctdir, targetfile, OUTPUT lok).
-      if (lok eq true) then assign opok = lok.
+      RUN pctCompile2 (SOURCE-PROCEDURE, inputFile, outputDir, dbgList, prepro, listingFile, xrefFile, pctDir, targetFile, OUTPUT lOK).
+      IF (lok EQ TRUE) THEN ASSIGN opOK = lOK.
     END.
    
 END PROCEDURE.
@@ -187,7 +186,7 @@ END PROCEDURE.
  *  Zero to n lines of compiler output
  */
 PROCEDURE pctCompile2 PRIVATE:
-    
+    DEFINE INPUT PARAM ipSrcProc   AS HANDLE     NO-UNDO.
 	DEFINE INPUT PARAM inputFile   AS CHARACTER  NO-UNDO.
 	DEFINE INPUT PARAM outputDir   AS CHARACTER  NO-UNDO.
 	DEFINE INPUT PARAM dbgList     AS CHARACTER  NO-UNDO.
@@ -264,9 +263,9 @@ PROCEDURE pctCompile2 PRIVATE:
             ASSIGN opOK = FALSE.
 
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
-                RUN logMessage IN SOURCE-PROCEDURE (ERROR-STATUS:GET-MESSAGE(zz)).
+                RUN logMessage IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
-            RUN logMessage IN SOURCE-PROCEDURE(getCompileErrors(inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs)).
+            RUN getCompileErrors(INPUT ipSrcProc, inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).
         END.
         ELSE DO:
             ASSIGN opOK = TRUE.
@@ -337,26 +336,36 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER).
 
 END FUNCTION.
 
-FUNCTION getCompileErrors RETURNS CHARACTER (pcInit AS CHAR, pcFile AS CHAR, piRow AS INT, piColumn AS INT, pcMsg AS CHAR):
-    
+PROCEDURE getCompileErrors PRIVATE:
+    DEFINE INPUT PARAMETER ipSrcProc AS HANDLE NO-UNDO.
+	DEFINE INPUT PARAMETER pcInit AS CHARACTER NO-UNDO.
+	DEFINE INPUT PARAMETER pcFile AS CHARACTER NO-UNDO.
+	DEFINE INPUT PARAMETER piRow  AS INTEGER   NO-UNDO.
+	DEFINE INPUT PARAMETER piColumn AS INTEGER   NO-UNDO.
+	DEFINE INPUT PARAMETER pcMsg   AS CHARACTER NO-UNDO.
+	
     DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
+
     IF (pcInit EQ pcFile) THEN
-        ASSIGN c = SUBSTITUTE("Error compiling file &1 at line &2 column &3~t", pcInit, piRow, piColumn).
+        RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3~t", pcInit, piRow, piColumn)).
     ELSE
-        ASSIGN c = SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3~t", pcInit, piRow, piColumn, pcFile).
+    	RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3~t", pcInit, piRow, piColumn, pcFile)).
+
     INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
         IMPORT STREAM sXref UNFORMATTED tmp.
     END.
     IMPORT STREAM sXref UNFORMATTED tmp.
-    ASSIGN c = c + tmp + FILL('-':U, piColumn - 2) + '-^~t':U + pcMsg + '~t'.
+    RUN logMessage IN ipSrcProc (INPUT tmp).
+    RUN logMessage IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logMessage IN ipSrcProc (INPUT pcMsg).
     
     INPUT STREAM sXref CLOSE.
     RETURN c.
 
-END FUNCTION.
+END PROCEDURE.
 
 PROCEDURE importXref.
     DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.

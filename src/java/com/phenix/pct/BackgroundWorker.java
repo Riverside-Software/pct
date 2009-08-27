@@ -80,18 +80,23 @@ public abstract class BackgroundWorker {
 
         while (!end) {
             try {
-                String[] ss = reader.readLine().split(":");
-
-                if (ss[1].equalsIgnoreCase("OK")) {
+                String str = reader.readLine();
+                int idx = str.indexOf(':');
+                String result = (idx == -1 ? str : str.substring(0, idx));
+                
+                if (result.equalsIgnoreCase("OK")) {
                     if (lastCommand.equalsIgnoreCase("quit")) {
                         status = 5;
                     }
-                } else if (ss[1].equalsIgnoreCase("ERR")) {
+                } else if (result.equalsIgnoreCase("ERR")) {
                     err = true;
-                } else if (ss[1].equalsIgnoreCase("MSG")) {
-                    retVals.add(ss[2]);
-                } else if (ss[1].equalsIgnoreCase("END")) {
+                } else if (result.equalsIgnoreCase("MSG")) {
+                    // Everything after MSG: is logged
+                    if ((idx != -1) && (idx < (str.length() - 1)))
+                        retVals.add(str.substring(idx + 1));
+                } else if (result.equalsIgnoreCase("END")) {
                     end = true;
+                    // Standard commands (i.e. sent by this class) cannnot be handled and overridden
                     if (!isStandardCommand(lastCommand)) {
                         handleResponse(lastCommand, lastCommandParameter, err, retVals);
                     }
