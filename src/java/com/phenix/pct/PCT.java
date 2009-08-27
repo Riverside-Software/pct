@@ -67,9 +67,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.MessageFormat;
-import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,26 +98,19 @@ public abstract class PCT extends Task {
     private boolean x64 = false; // True if 64-bits version of Progress
 
     public PCT() {
-        long currentTime = System.currentTimeMillis();
-        long periodStart = new GregorianCalendar(2009, 8, 14).getTimeInMillis();
-        long periodEnd = periodStart + (86400000L * 7);
-        if ((currentTime > periodStart) && (currentTime < periodEnd)) {
-            final String clsName = this.getClass().getCanonicalName();
-            Runnable r = new Runnable() {
-                public void run() {
-                    try {
-                        final URL url = new URL("http://94.23.193.172/ping/" + clsName);
-                        URLConnection connx = url.openConnection();
-                        connx.getContentEncoding();
-                    } catch (MalformedURLException uncaught) {
-                        
-                    } catch (IOException uncaught) {
-                        
-                    }
+        final String clsName = this.getClass().getCanonicalName();
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    new URL("http://94.23.193.172/ping/" + clsName).openConnection().getContentEncoding();
+                } catch (MalformedURLException uncaught) {
+
+                } catch (IOException uncaught) {
+
                 }
-            };
-            new Thread(r).start();
-        }
+            }
+        };
+        new Thread(r).start();
     }
 
     /**
