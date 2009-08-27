@@ -48,24 +48,22 @@ However, as PCT is a set of <a href="http://ant.apache.org">ANT</a> tasks, your 
 <p>
 PCT was designed and written by Gilles QUERRET (g.querret at gmail.com), freelance developer for Riverside Software in France.
 </p>
-<h2>Collecting statistics</h2>
-<p>The forthcoming 0.15 release of PCT will introduce a two-weeks period in which every PCT task will ping a remote server. But why ??
-Over years, I've put some spare time working on PCT, and got retribution in the form of bug reports, enhancements and thanks (and
-I don't ask for more). However, I don't know how widely PCT is used, and if it's worth spending more time developing tasks. This period
-will let me collect anonymous statistics on PCT usage, and decide if I need to spend more time on it.</p>
-<h3>How does it work ?</h3>
-<p>Download PCT 0.15, and execute your build files ! No change at all ! When running a task, a background thread sends an HTTP connection to a specific host (http://pct.rssw.eu), so that a log is generated server-side.</p>
-<h3>Are data anonymous ?</h3>
-<p>Almost. What's collected is your IP address, task name and date/time</p>
-<h3>What if I'm behind a proxy ?</h3>
-<p>If you're running Ant 1.7 (recommanded !) and JDK 1.5+ (recommended too !), add -autoproxy to your command line.</p>
-<p>Otherwise, you should use the ANT_OPTS system property :</p>
-<ul>
-<li>UNIX : export ANT_OPTS="-Dhttp.proxyHost=<i>proxy_host</i> -Dhttp.proxyPort=<i>proxy_port</i>"</li>
-<li>Windows : set ANT_OPTS=-Dhttp.proxyHost=<i>proxy_host</i> -Dhttp.proxyPort=<i>proxy_port</i></li>
+
+<div id="jobs">
+I'm available for hire as a contractor. If your company is looking for an open-minded developer, skilled in Java, OpenEdge and Web frameworks, <a href="mailto:g.querret@riverside-software.fr">contact me !</a> 
+</div>
+
+<div id="padeo">
+<p><span id="new">!! NEW !!</span><br />Riverside Software is preparing the first release of Padeo, a new way to generate and deploy Webclient applications.</p>
+<p>Featuring :</p>
+<ul><li>A single entry point for multiple applications</li>
+<li>Webservices enabled : you can generate your application directly from your SCM, without any user interface !</li>
+<li>Multiple configurations per application</li>
+<li>Windows Installer packages : deployment can be handled silently, without any need for an administrator account !</li>
 </ul>
-<h3>What if I want to remain hidden ?</h3>
-<p>A specific version is available on the download page</p>
+A fully functional preview site is available <a href="http://padeo.riverside-software.fr/index.jsp">here</a>, <a href="mailto:contact@riverside-software.fr">contact us</a> if you would like to get more information.
+</div>
+
 </div>
 
 <div class="LastUpdate">
