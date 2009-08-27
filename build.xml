@@ -495,7 +495,7 @@
     <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true">
       <fileset dir="website" />
     </scp>-->
-    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCTDrops" verbose="true">
+    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-6.1.17\\PCTDrops" verbose="true">
       <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip,website*.zip" />
     </scp>
   </target>
