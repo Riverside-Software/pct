@@ -1,4 +1,4 @@
-Version 0.15 (??/??/????)
+Version 0.15 (09/01/2009)
 ==============================
  * Added brokerLogFileAppend and serverLogFileAppend attributes to PCTASBroker and PCTWSBroker
  * Added keepXref attribute in PCTCompile
@@ -6,6 +6,7 @@ Version 0.15 (??/??/????)
  * Added jvmarg option to PCTProxygen
  * Added numThreads attribute in PCTCompileExt...
  * ... And rewrote PCTBgRun task
+ * Server ping for statistics
 
 Version 0.14 (12/03/2008)
 ==============================
