@@ -424,6 +424,7 @@ public abstract class PCTBgRun extends PCT {
         initProc.delete();
     }
 
+    // TODO Use a log level for messages
     protected synchronized void logMessages(List logs) {
         for (Iterator i = logs.iterator(); i.hasNext(); ) {
             String s = (String) i.next();
