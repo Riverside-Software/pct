@@ -122,6 +122,12 @@ div.Text h2 {
     font-size: 120%;
 }
 
+div.Text h3 {
+	color: #4477AA;
+	font-size: 100%;
+	padding-left: 20px;
+}
+
 div.Text table.params {
     border: 1px #000000 solid;
 }
@@ -170,4 +176,19 @@ span#new {
   color: red;
   font-size: 90%;
   font-weigth: 700;
+}
+
+div#padeo {
+  margin-top: 10px;
+  background-color: lightblue;
+  border-top: 3px blue solid;
+  padding: 5px;
+}
+
+div#jobs {
+  font-weight: bold;
+  background-color: lightgray;
+  border-top: 3px darkgray solid;
+  border-bottom: 3px darkgray solid;
+  padding: 5px;
 }

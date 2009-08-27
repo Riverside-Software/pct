@@ -39,14 +39,48 @@
 <h2>Stable releases</h2>
 <p>
 Select the version you want to download :</p><ul>
-<li>0.14 - Binary : <a href="download-binary.html">here</a></li>
-<li>0.14 - Source : <a href="download-source.html">here</a></li>
+<li>0.15 - Binary : <a href="download-binary.html">here</a></li>
+<li>0.15 - Binary, no statistics (see below) : <a href="download-binary-nostat.html">here</a></li>
+<li>0.15 - Source : <a href="download-source.html">here</a></li>
 </ul>
 
 <h2>Builds</h2>
 <p>
 Download pre-release builds <a href="http://pct.rssw.eu/drops">here</a>.
 </p>
+
+<h2>Statistics in 0.15</h2>
+<h3>What ?</h3>
+PCT 0.15 introduces a one month period during which every task will send an HTTP ping to a server.
+<h3>Why ?</h3>
+<p>PCT started in 2003 because I needed a way to automate compilation for the flagship product of my company.
+During six years, I received bug reports, enhancements, code, documentation, and thanks (and I'm not expecting anything more)
+from people around the world, and from widely known companies.</p>
+<p>However, apart from download stats, I don't have any usage statistics. Therefore, I don't know if investing some time
+on developing new tasks may be of any use.</p> 
+<h3>When ?</h3>
+<p>PCT 0.15 will be released on September, 1st. On October 1st, PCT 0.15 will be superceded by PCT 0.16, which will be the exact copy of PCT 0.15 without the statistics code.</p>
+<h3>How ?</h3>
+<p>Every PCT task (those extending com.phenix.pct.PCT) will send an HTTP request to http://pct.rssw.eu/ping/task_name.
+This HTTP request is sent in a separate thread, so this won't slow down your tasks. The only informations I will have access to are 
+your IP address, the task name and date/time.</p>
+<h3>FAQ</h3>
+<p><b>I'm behind a proxy, how does it work ?</b></p>
+<p>If you're running Ant 1.7 (recommended !) and JDK 1.5+ (recommended too !), add -autoproxy to your command line.</p>
+<p>Otherwise, you should use the ANT_OPTS environment variables :</p>
+<ul>
+<li>UNIX : export ANT_OPTS="-Dhttp.proxyHost=<i>proxy_host</i> -Dhttp.proxyPort=<i>proxy_port</i>"</li>
+<li>Windows : set ANT_OPTS=-Dhttp.proxyHost=<i>proxy_host</i> -Dhttp.proxyPort=<i>proxy_port</i></li>
+</ul>
+<p><b>Is there any risk ?</b></p>
+<p>Apart from migrating to PCT 0.15, no.</p>
+<p><b>Will you publish the results ?</b></p>
+<p>No, I won't.</p>
+<p><b>Is there something to win ?</b></p>
+<p>No. However, you can guess the number of times the server will be pinged during Monday 14th. The closest answer will earn a virtual beer
+during Exchange Online.</p>
+<p><b>I'm using my own custom version of PCT. What can I do ?</b></p>
+<p>Download the source code from PCT 0.15 on this page, and merge the modifications in the constructor of com.phenix.pct.PCT class.</p>
 
 <h2>Mirrors list</h2>
 <p>
