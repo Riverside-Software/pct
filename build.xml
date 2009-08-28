@@ -83,6 +83,7 @@
     <include name="com/phenix/pct/*Test.class" />
     <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
     <exclude name="com/phenix/pct/*V10Test.class" />
+    <exclude name="com/phenix/pct/PCTSchemaDocTest.class" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
