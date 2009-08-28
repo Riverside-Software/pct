@@ -196,14 +196,6 @@ public class PCTCompileExtTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
-    public void test11() {
-        executeTarget("test11init");
-        expectBuildException("test11", "Second task should not be launched");
-
-        File f = new File("build/sandbox/temp2.r");
-        assertFalse(f.exists());
-    }
-
     public void test12() {
         File f = new File("build/sandbox/temp.r");
         executeTarget("test12init");
