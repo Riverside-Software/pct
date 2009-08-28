@@ -62,6 +62,7 @@ DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
 /* TODO Handle warning/error messages */
 DEFINE TEMP-TABLE ttMsgs NO-UNDO
  FIELD msgNum  AS INTEGER
+ FIELD level   AS INTEGER
  FIELD msgLine AS CHARACTER
  INDEX ttMsgs-PK IS PRIMARY UNIQUE msgNum.
 
@@ -71,7 +72,6 @@ DEFINE VARIABLE currentMsg   AS INTEGER    NO-UNDO INITIAL 0.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
 IF (portNumber EQ ?) THEN RETURN '17'.
-/* Thread number is used during communication with ANT process */
 
 CREATE SOCKET hSocket.
 RUN ConnectToServer NO-ERROR.
@@ -125,7 +125,7 @@ PROCEDURE WriteToSocket:
 	
     ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
 	FOR EACH ttMsgs:
-	    ASSIGN packet = packet + "MSG:" + ttMsgs.msgLine + "~n".
+	    ASSIGN packet = packet + "MSG:" + STRING(ttMsgs.level) + ":" + ttMsgs.msgLine + "~n".
 	END.
 	ASSIGN packet = packet + "END~n".
 
@@ -211,7 +211,7 @@ PROCEDURE executeCmd:
         END.
     END.
     IF (hProc EQ ?) OR (NOT VALID-HANDLE(hProc)) THEN DO:
-        RUN logMessage ("Unable to execute procedure").
+        RUN logError ("Unable to execute procedure").
         RUN writeToSocket(FALSE, "").
         RETURN ''.
     END.
@@ -223,7 +223,7 @@ PROCEDURE executeCmd:
     DO ON ERROR UNDO, RETRY ON STOP UNDO, RETRY ON ENDKEY UNDO, RETRY ON QUIT UNDO, RETRY:
         IF RETRY THEN DO:
             ASSIGN lOK = FALSE.
-            RUN logMessage ("Error during execution").
+            RUN logError ("Error during execution").
             LEAVE DontQuit.
         END.
         RUN VALUE(cCmd) IN hProc (INPUT cPrm, OUTPUT lOK, OUTPUT cMsg).
@@ -233,22 +233,45 @@ PROCEDURE executeCmd:
     
 END PROCEDURE.
 
-PROCEDURE logError:
+PROCEDURE log PRIVATE:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+    DEFINE INPUT  PARAMETER ipLvl AS INTEGER     NO-UNDO.
 
     ASSIGN currentMsg = currentMsg + 1.
     CREATE ttMsgs.
     ASSIGN ttMsgs.msgNum  = currentMsg
+           ttMsgs.level   = ipLvl
            ttMsgs.msgLine = ipMsg.
 END.
 
-PROCEDURE logMessage:
+PROCEDURE logError:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
-    ASSIGN currentMsg = currentMsg + 1.
-    CREATE ttMsgs.
-    ASSIGN ttMsgs.msgNum  = currentMsg
-           ttMsgs.msgLine = ipMsg.
+    RUN log (ipMsg, 0).
+END.
+
+PROCEDURE logWarning:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+
+    RUN log (ipMsg, 1).
+END.
+
+PROCEDURE logInfo:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+
+    RUN log (ipMsg, 2).
+END.
+
+PROCEDURE logVerbose:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+
+    RUN log (ipMsg, 3).
+END.
+
+PROCEDURE logDebug:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+
+    RUN log (ipMsg, 4).
 END.
 
 /* Commands to be executed from executeCmd */
@@ -296,7 +319,7 @@ PROCEDURE Connect :
     CONNECT VALUE(connectStr) NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opok = FALSE.
-        RUN logMessage (ERROR-STATUS:GET-MESSAGE(1)).
+        RUN logError (ERROR-STATUS:GET-MESSAGE(1)).
     END.
     ELSE DO:
         ASSIGN opOk = TRUE.
@@ -304,7 +327,7 @@ PROCEDURE Connect :
         DbAliases:
         DO zz = 3 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
             IF RETRY THEN DO:
-                RUN logMessage('Unable to create alias ' + ENTRY(zz, cPrm, '|')).
+                RUN logError('Unable to create alias ' + ENTRY(zz, cPrm, '|')).
                 ASSIGN opOK = FALSE.
                 DISCONNECT VALUE(ENTRY(2, cPrm, '|')).
                 LEAVE DbAliases.
@@ -335,7 +358,7 @@ PROCEDURE launch:
     RUN VALUE(cPrm) PERSISTENT NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opOK = FALSE.
-        RUN logMessage (ERROR-STATUS:GET-MESSAGE(1)).
+        RUN logError (ERROR-STATUS:GET-MESSAGE(1)).
     END.
     ELSE DO:
         ASSIGN opOk = TRUE.

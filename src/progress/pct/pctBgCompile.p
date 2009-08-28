@@ -278,9 +278,9 @@ PROCEDURE pctCompile2 PRIVATE:
 
             RUN getCompileErrors(INPUT ipSrcProc, inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
-                RUN logMessage IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
+                RUN logError IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
-            RUN logMessage IN ipSrcProc (INPUT ' ').
+            RUN logWarning IN ipSrcProc (INPUT ' ').
         END.
         ELSE DO:
             ASSIGN opOK = TRUE.
@@ -359,22 +359,22 @@ PROCEDURE getCompileErrors PRIVATE:
 	DEFINE INPUT PARAMETER piRow  AS INTEGER   NO-UNDO.
 	DEFINE INPUT PARAMETER piColumn AS INTEGER   NO-UNDO.
 	
-    DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
-    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE i   AS INTEGER    NO-UNDO INITIAL 1.
+    DEFINE VARIABLE c   AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
 
     IF (pcInit EQ pcFile) THEN
-        RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
+        RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
     ELSE
-    	RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+    	RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
     INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
         IMPORT STREAM sXref UNFORMATTED tmp.
     END.
     IMPORT STREAM sXref UNFORMATTED tmp.
-    RUN logMessage IN ipSrcProc (INPUT tmp).
-    RUN logMessage IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logError IN ipSrcProc (INPUT tmp).
+    RUN logError IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
 
     INPUT STREAM sXref CLOSE.
     RETURN c.
