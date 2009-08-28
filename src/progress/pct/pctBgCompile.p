@@ -218,7 +218,6 @@ PROCEDURE pctCompile2 PRIVATE:
     DEFINE VARIABLE RCodeTS   AS INTEGER     NO-UNDO.
     DEFINE VARIABLE ProcTS    AS INTEGER     NO-UNDO.
     DEFINE VARIABLE zz        AS INTEGER     NO-UNDO.
-    DEFINE VARIABLE errMsgs   AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE cBase     AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE cFile     AS CHARACTER   NO-UNDO.
 
@@ -262,10 +261,11 @@ PROCEDURE pctCompile2 PRIVATE:
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
 
+            RUN getCompileErrors(INPUT ipSrcProc, inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
                 RUN logMessage IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
-            RUN getCompileErrors(INPUT ipSrcProc, inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN, errMsgs).
+            RUN logMessage IN ipSrcProc (INPUT ' ').
         END.
         ELSE DO:
             ASSIGN opOK = TRUE.
@@ -342,16 +342,15 @@ PROCEDURE getCompileErrors PRIVATE:
 	DEFINE INPUT PARAMETER pcFile AS CHARACTER NO-UNDO.
 	DEFINE INPUT PARAMETER piRow  AS INTEGER   NO-UNDO.
 	DEFINE INPUT PARAMETER piColumn AS INTEGER   NO-UNDO.
-	DEFINE INPUT PARAMETER pcMsg   AS CHARACTER NO-UNDO.
 	
     DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
 
     IF (pcInit EQ pcFile) THEN
-        RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3~t", pcInit, piRow, piColumn)).
+        RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
     ELSE
-    	RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3~t", pcInit, piRow, piColumn, pcFile)).
+    	RUN logMessage IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
     INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
@@ -360,8 +359,7 @@ PROCEDURE getCompileErrors PRIVATE:
     IMPORT STREAM sXref UNFORMATTED tmp.
     RUN logMessage IN ipSrcProc (INPUT tmp).
     RUN logMessage IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
-    RUN logMessage IN ipSrcProc (INPUT pcMsg).
-    
+
     INPUT STREAM sXref CLOSE.
     RETURN c.
 
