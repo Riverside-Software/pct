@@ -64,9 +64,11 @@ import java.io.IOException;
 import java.net.Socket;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class for compiling Progress procedures
@@ -91,7 +93,7 @@ public class PCTBgCompile extends PCTBgRun {
     private File xRefDir = null;
     private Mapper mapperElement = null;
 
-    private List units = new ArrayList();
+    private Set units = new HashSet();
 
     /**
      * Reduce r-code size ? MIN-SIZE option of the COMPILE statement
@@ -377,18 +379,12 @@ public class PCTBgCompile extends PCTBgRun {
                     if (!outputDir.exists())
                         outputDir.mkdirs();
 
-                    /* int extPos2 = outputFile.getName().lastIndexOf('.');
-                    String outputNameNoExt = (extPos2 != -1 ? outputFile.getName().substring(0, extPos2) : outputFile.getName());
-                    File PCTRoot = new File(dotPCTDir, outputNameNoExt); */
-                    
                     // Output directory for PCT files
-//                    File PCTDir = PCTRoot.getParentFile();
                     File PCTDir = new File(dotPCTDir, outputNames[0]).getParentFile();
                     if (!PCTDir.exists())
                         PCTDir.mkdirs();
 
                     CompilationUnit unit = new CompilationUnit();
-                    units.add(unit);
                     unit.inputFile = inputFile;
                     unit.outputDir = outputDir;
                     unit.debugFile = (debugListing ? new File(PCTDir, fileNameNoExt + ".dbg") : null);
@@ -397,6 +393,7 @@ public class PCTBgCompile extends PCTBgRun {
                     unit.xrefFile = new File(PCTDir, fileNameNoExt + extension + ".xref");
                     unit.pctRoot = new File(PCTDir, fileNameNoExt + extension);
                     unit.targetFile = targetFile;
+                    units.add(unit);
                 }
             }
         }
@@ -436,29 +433,39 @@ public class PCTBgCompile extends PCTBgRun {
                 sendCommand("getCRC", "");
                 return true;
             } else if (customStatus == 5) {
+                List sending = new ArrayList();
+                boolean noMoreFiles = false;
                 synchronized (units) {
                     int size = units.size();
                     if (size > 0) {
-                        int numCU = 1;
-                        if (size > 100)
-                            numCU = 10;
-                        StringBuffer sb = new StringBuffer();
+                        int numCU = (size > 100 ? 10 : 1);
+                        Iterator iter = units.iterator();
                         for (int zz = 0; zz < numCU; zz++) {
-                            CompilationUnit cu = (CompilationUnit) units.remove(0);
-                            if (sb.length() > 0)
-                                sb.append('#');
-                            sb.append(cu.toString());
+                            sending.add((CompilationUnit) iter.next());
                         }
-
-                        sendCommand("PctCompile", sb.toString());
-                        return true;
+                        for (Iterator iter2 = sending.iterator(); iter2.hasNext(); ) {
+                            units.remove((CompilationUnit) iter2.next());
+                        }
                     } else {
-                        return false;
+                        noMoreFiles = true;
                     }
                 }
-
-            } else
+                StringBuffer sb = new StringBuffer();
+                if (noMoreFiles) {
+                    return false;
+                } else {
+                    for (Iterator iter = sending.iterator(); iter.hasNext(); ) {
+                        CompilationUnit cu = (CompilationUnit) iter.next();
+                        if (sb.length() > 0)
+                            sb.append('#');
+                        sb.append(cu.toString());
+                    }
+                    sendCommand("PctCompile", sb.toString());
+                    return true;
+                }
+            } else {
                 return false;
+            }
         }
 
         public void setCustomOptions(Map options) {
@@ -501,6 +508,29 @@ public class PCTBgCompile extends PCTBgRun {
         private File xrefFile;
         private File pctRoot;
         private String targetFile;
+
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((inputFile == null) ? 0 : inputFile.hashCode());
+            return result;
+        }
+
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CompilationUnit other = (CompilationUnit) obj;
+            if (inputFile == null) {
+                if (other.inputFile != null)
+                    return false;
+            } else if (!inputFile.equals(other.inputFile))
+                return false;
+            return true;
+        }
 
         public String toString() {
             return inputFile + "|" + outputDir + "|"
