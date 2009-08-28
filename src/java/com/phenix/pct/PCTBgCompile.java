@@ -345,6 +345,8 @@ public class PCTBgCompile extends PCTBgRun {
             this.preprocess = false; // Useless for now, but just in case...
         }
 
+        initializeCompilationUnits();
+
         try {
             super.execute();
         } finally {
@@ -438,7 +440,6 @@ public class PCTBgCompile extends PCTBgRun {
 
         public CompilationBackgroundWorker(PCTBgCompile parent) {
             super(parent);
-            initializeCompilationUnits();
         }
 
         protected boolean performCustomAction() throws IOException {
