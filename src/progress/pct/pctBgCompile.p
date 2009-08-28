@@ -101,7 +101,8 @@ DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
-	
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
+
     /* Gets CRC list */
 	DEFINE VARIABLE h AS HANDLE     NO-UNDO.
 	h = TEMP-TABLE CRCList:HANDLE.
@@ -113,6 +114,7 @@ END PROCEDURE.
 PROCEDURE setOptions:
     DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
     /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG) */
@@ -132,6 +134,7 @@ END PROCEDURE.
 PROCEDURE pctCompile:
     DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL FALSE.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Input parameter is a #-separated list of compilation units */
     /* Each compilation unit is a pipe-separated list of infos : */
@@ -153,10 +156,15 @@ PROCEDURE pctCompile:
 	DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
 
     DEFINE VARIABLE zz  AS INTEGER     NO-UNDO.
+    DEFINE VARIABLE filesNum AS INTEGER     NO-UNDO.
+    DEFINE VARIABLE compOK AS INTEGER     NO-UNDO.
+    DEFINE VARIABLE compNotOK AS INTEGER     NO-UNDO.
     DEFINE VARIABLE cc  AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
+	DEFINE VARIABLE lSkipped AS LOGICAL     NO-UNDO.
 
-    DO zz = 1 TO NUM-ENTRIES(ipPrm, {&SEPARATOR2}):
+	ASSIGN filesNum = NUM-ENTRIES(ipPrm, {&SEPARATOR2}).
+    DO zz = 1 TO filesNum:
         ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
 
       	ASSIGN inputFile   = ENTRY(1, cc, {&SEPARATOR})
@@ -174,10 +182,16 @@ PROCEDURE pctCompile:
                xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
                targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
 	       
-      RUN pctCompile2 (SOURCE-PROCEDURE, inputFile, outputDir, dbgList, prepro, listingFile, xrefFile, pctDir, targetFile, OUTPUT lOK).
-      IF (lok EQ TRUE) THEN ASSIGN opOK = lOK.
+      RUN pctCompile2 (SOURCE-PROCEDURE, inputFile, outputDir, dbgList, prepro, listingFile, xrefFile, pctDir, targetFile, OUTPUT lOK, OUTPUT lSkipped).
+      IF (lok EQ TRUE) THEN
+        ASSIGN compOK = compOK + (IF lSkipped THEN 0 ELSE 1).
+      ELSE
+        ASSIGN compNotOk = compNotOK + 1.      
     END.
    
+    ASSIGN opOK = (compNotOk EQ 0)
+           opMsg = STRING(compOK) + "/" + STRING(compNotOk).
+
 END PROCEDURE.
 
 /* Return value of this procedure follows this pattern :
@@ -196,7 +210,8 @@ PROCEDURE pctCompile2 PRIVATE:
     DEFINE INPUT PARAM pctDir      AS CHARACTER  NO-UNDO.
 	DEFINE INPUT PARAM targetFile  AS CHARACTER  NO-UNDO.
 	DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
-	
+	DEFINE OUTPUT PARAM opSkipped AS LOGICAL NO-UNDO INITIAL FALSE.
+
     /* Input parameter is a pipe-delimited list consisting of these entries :
      *   -> Input File : Full pathname of file to compile
      *   -> Output directory : Full pathname of directory in which to put compiled file
@@ -280,7 +295,8 @@ PROCEDURE pctCompile2 PRIVATE:
         RETURN.
     END.
     ELSE DO:
-        ASSIGN opOK = TRUE.
+        ASSIGN opOK = TRUE
+               opSkipped = TRUE.
         RETURN. 
     END.
         	
@@ -365,7 +381,7 @@ PROCEDURE getCompileErrors PRIVATE:
 
 END PROCEDURE.
 
-PROCEDURE importXref.
+PROCEDURE importXref PRIVATE:
     DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
 

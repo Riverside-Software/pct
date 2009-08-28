@@ -59,6 +59,7 @@
 DEFINE VARIABLE hSocket AS HANDLE  NO-UNDO.
 DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
 
+/* TODO Handle warning/error messages */
 DEFINE TEMP-TABLE ttMsgs NO-UNDO
  FIELD msgNum  AS INTEGER
  FIELD msgLine AS CHARACTER
@@ -107,7 +108,7 @@ END PROCEDURE.
 
 /* Handles writing of response data back to the eclipse session */
 /* First line is in this format : */
-/* [OK|ERR]:CommandExecuted:Parameters */
+/* [OK|ERR]:Custom_response */
 /* Following lines are in this format */
 /* MSG:message_line */
 /* Last line is in this format */
@@ -115,15 +116,14 @@ END PROCEDURE.
 /* Message lines are read from the ttMsgs temp-table */
 /* This temp-table is emptied when a new command is run */
 PROCEDURE WriteToSocket:
-    DEFINE INPUT  PARAMETER plOK  AS LOGICAL NO-UNDO.
-    DEFINE INPUT  PARAMETER pcCmd AS CHARACTER NO-UNDO.
-    DEFINE INPUT  PARAMETER pcPrm AS CHARACTER   NO-UNDO.
+    DEFINE INPUT  PARAMETER plOK   AS LOGICAL NO-UNDO.
+    DEFINE INPUT  PARAMETER pcResp AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
 	DEFINE VARIABLE packet       as longchar no-undo.
 	DEFINE VARIABLE lfirst       as logical  no-undo.
 	
-    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcCmd + ":" + pcPrm + "~n".
+    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
 	FOR EACH ttMsgs:
 	    ASSIGN packet = packet + "MSG:" + ttMsgs.msgLine + "~n".
 	END.
@@ -212,11 +212,12 @@ PROCEDURE executeCmd:
     END.
     IF (hProc EQ ?) OR (NOT VALID-HANDLE(hProc)) THEN DO:
         RUN logMessage ("Unable to execute procedure").
-        RUN writeToSocket(FALSE, cCmd, "").
+        RUN writeToSocket(FALSE, "").
         RETURN ''.
     END.
         
-    DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
+    DEFINE VARIABLE lOK  AS LOGICAL   NO-UNDO.
+    DEFINE VARIABLE cMsg AS CHARACTER NO-UNDO.
 
     DontQuit:
     DO ON ERROR UNDO, RETRY ON STOP UNDO, RETRY ON ENDKEY UNDO, RETRY ON QUIT UNDO, RETRY:
@@ -225,14 +226,13 @@ PROCEDURE executeCmd:
             RUN logMessage ("Error during execution").
             LEAVE DontQuit.
         END.
-        RUN VALUE(cCmd) IN hProc (INPUT cPrm, OUTPUT lOK).
+        RUN VALUE(cCmd) IN hProc (INPUT cPrm, OUTPUT lOK, OUTPUT cMsg).
     END.
         
-    RUN WriteToSocket(lOK, cCmd, cprm).
+    RUN WriteToSocket(lOK, cMsg).
     
 END PROCEDURE.
 
-/* To be removed */
 PROCEDURE logError:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
@@ -261,6 +261,7 @@ END.
 PROCEDURE QUIT:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     ASSIGN opok = TRUE
            aOk  = FALSE.
@@ -272,6 +273,7 @@ END PROCEDURE.
 PROCEDURE PROPATH:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     ASSIGN opOK = TRUE.
     IF cPrm <> "" THEN PROPATH = cPrm + PROPATH.
@@ -282,6 +284,7 @@ END PROCEDURE.
 PROCEDURE Connect :
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Input parameter is a pipe separated list */
     /* First entry is connection string */
@@ -316,6 +319,7 @@ END PROCEDURE.
 PROCEDURE setThreadNumber:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     ASSIGN threadNumber = INTEGER(cPrm).
     ASSIGN opOK = TRUE.
@@ -326,7 +330,8 @@ END PROCEDURE.
 PROCEDURE launch:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
-    
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER  NO-UNDO.
+
     RUN VALUE(cPrm) PERSISTENT NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opOK = FALSE.

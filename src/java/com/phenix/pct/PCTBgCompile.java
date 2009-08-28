@@ -94,6 +94,7 @@ public class PCTBgCompile extends PCTBgRun {
     private Mapper mapperElement = null;
 
     private Set units = new HashSet();
+    private int compOk = 0, compNotOk = 0;
 
     /**
      * Reduce r-code size ? MIN-SIZE option of the COMPILE statement
@@ -261,6 +262,11 @@ public class PCTBgCompile extends PCTBgRun {
         createMapper().add(fileNameMapper);
     }
 
+    private synchronized void addCompilationCounters(int ok, int notOk) {
+        compOk += ok;
+        compNotOk += notOk;
+    }
+
     /**
      * Define the mapper to map source to destination files.
      * 
@@ -338,7 +344,15 @@ public class PCTBgCompile extends PCTBgRun {
             this.preprocess = false; // Useless for now, but just in case...
         }
 
+        try {
         super.execute();
+        } catch (BuildException caught) {
+            log (compOk + " file(s) compiled");
+            if (compNotOk > 0) {
+                log("Failed to compile " + compNotOk + " file(s)");
+            }
+            throw caught;
+        }
     }
 
     /**
@@ -486,8 +500,17 @@ public class PCTBgCompile extends PCTBgRun {
             return sb.toString();
         }
 
-        public void handleResponse(String command, String parameter, boolean err, List returnValues) {
+        public void handleResponse(String command, String parameter, boolean err, String customResponse, List returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
+                String[] str = customResponse.split("/");
+                int ok = 0, notOk = 0;
+                try {
+                    ok = Integer.parseInt(str[0]);
+                    notOk = Integer.parseInt(str[1]);
+                } catch (NumberFormatException nfe) {
+                    throw new BuildException("Invalid response from pctCompile command (" + customResponse + ")", nfe);
+                }
+                addCompilationCounters(ok, notOk);
                 logMessages(returnValues);
                 if (err) {
                     setBuildException();
