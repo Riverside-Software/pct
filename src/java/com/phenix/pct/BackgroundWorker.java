@@ -84,7 +84,7 @@ public abstract class BackgroundWorker {
                 String str = reader.readLine();
                 int idx = str.indexOf(':');
                 String result = (idx == -1 ? str : str.substring(0, idx));
-                
+
                 if (result.equalsIgnoreCase("OK")) {
                     if (lastCommand.equalsIgnoreCase("quit")) {
                         status = 5;
@@ -98,12 +98,13 @@ public abstract class BackgroundWorker {
                 } else if (result.equalsIgnoreCase("MSG")) {
                     // Everything after MSG: is logged
                     if ((idx != -1) && (idx < (str.length() - 1)))
-                        retVals.add(str.substring(idx + 1));
+                        retVals.add(new Message(str.substring(idx + 1)));
                 } else if (result.equalsIgnoreCase("END")) {
                     end = true;
                     // Standard commands (i.e. sent by this class) cannnot be handled and overridden
                     if (!isStandardCommand(lastCommand)) {
-                        handleResponse(lastCommand, lastCommandParameter, err, customResponse, retVals);
+                        handleResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                retVals);
                     }
                 }
             } catch (IOException ioe) {
@@ -185,8 +186,30 @@ public abstract class BackgroundWorker {
      * @param parameter Command's parameter
      * @param err An error was returned
      * @param customResponse Custom response sent by Progress
-     * @param returnValues List of string
+     * @param returnValues List of Message objects
      */
-    public abstract void handleResponse(String command, String parameter, boolean err, String customResponse,
-            List returnValues);
+    public abstract void handleResponse(String command, String parameter, boolean err,
+            String customResponse, List returnValues);
+
+    public final static class Message {
+        private final String msg;
+        private final int level;
+
+        public Message(String str) {
+            int pos = str.indexOf(':');
+            if (pos == -1)
+                throw new IllegalArgumentException();
+
+            level = Integer.parseInt(str.substring(0, pos));
+            msg = str.substring(pos + 1);
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+    }
 }

@@ -60,6 +60,8 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
+import com.phenix.pct.BackgroundWorker.Message;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -424,11 +426,10 @@ public abstract class PCTBgRun extends PCT {
         initProc.delete();
     }
 
-    // TODO Use a log level for messages
     protected synchronized void logMessages(List logs) {
         for (Iterator i = logs.iterator(); i.hasNext(); ) {
-            String s = (String) i.next();
-            log(s);
+            Message s = (Message) i.next();
+            log(s.getMsg(), s.getLevel());
         }
     }
 
