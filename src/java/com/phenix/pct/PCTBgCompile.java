@@ -63,6 +63,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -345,13 +346,14 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         try {
-        super.execute();
-        } catch (BuildException caught) {
-            log (compOk + " file(s) compiled");
+            super.execute();
+        } finally {
+            log(MessageFormat.format(Messages.getString("PCTCompile.44"), new Object[]{Integer //$NON-NLS-1$
+                    .valueOf(compOk)}));
             if (compNotOk > 0) {
-                log("Failed to compile " + compNotOk + " file(s)");
+                log(MessageFormat.format(Messages.getString("PCTCompile.45"), new Object[]{Integer //$NON-NLS-1$
+                        .valueOf(compNotOk)}));
             }
-            throw caught;
         }
     }
 
@@ -363,19 +365,20 @@ public class PCTBgCompile extends PCTBgRun {
     private void initializeCompilationUnits() {
         // .pct dir is where PCT output files are generated
         File dotPCTDir = new File(destDir, ".pct");
-        
+
         for (Iterator e = filesets.iterator(); e.hasNext();) {
             FileSet fs = (FileSet) e.next();
-            
+
             String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
-            
+
             for (int i = 0; i < dsfiles.length; i++) {
                 // File to be compiled
                 File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
                 int srcExtPos = inputFile.getName().lastIndexOf('.');
                 String extension = (srcExtPos != -1 ? inputFile.getName().substring(srcExtPos) : "");
-                String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0, srcExtPos) : dsfiles[0]);
-                
+                String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0,
+                        srcExtPos) : dsfiles[0]);
+
                 // Output directory for .r file
                 String[] outputNames = getMapper().mapFileName(dsfiles[i]);
                 if ((outputNames != null) && (outputNames.length >= 1)) {
@@ -401,9 +404,14 @@ public class PCTBgCompile extends PCTBgRun {
                     CompilationUnit unit = new CompilationUnit();
                     unit.inputFile = inputFile;
                     unit.outputDir = outputDir;
-                    unit.debugFile = (debugListing ? new File(PCTDir, fileNameNoExt + ".dbg") : null);
-                    unit.preprocessFile = (preprocess ? new File(PCTDir, fileNameNoExt + extension + ".preprocess") : null);
-                    unit.listingFile = (listing ? new File(PCTDir, fileNameNoExt + extension) : null);
+                    unit.debugFile = (debugListing
+                            ? new File(PCTDir, fileNameNoExt + ".dbg")
+                            : null);
+                    unit.preprocessFile = (preprocess ? new File(PCTDir, fileNameNoExt + extension
+                            + ".preprocess") : null);
+                    unit.listingFile = (listing
+                            ? new File(PCTDir, fileNameNoExt + extension)
+                            : null);
                     unit.xrefFile = new File(PCTDir, fileNameNoExt + extension + ".xref");
                     unit.pctRoot = new File(PCTDir, fileNameNoExt + extension);
                     unit.targetFile = targetFile;
@@ -438,7 +446,7 @@ public class PCTBgCompile extends PCTBgRun {
                 customStatus = 3;
                 sendCommand("launch", "pct/pctBgCompile.p");
                 return true;
-            }  else if (customStatus == 3) {
+            } else if (customStatus == 3) {
                 customStatus = 4;
                 sendCommand("setOptions", getOptions());
                 return true;
@@ -457,7 +465,7 @@ public class PCTBgCompile extends PCTBgRun {
                         for (int zz = 0; zz < numCU; zz++) {
                             sending.add((CompilationUnit) iter.next());
                         }
-                        for (Iterator iter2 = sending.iterator(); iter2.hasNext(); ) {
+                        for (Iterator iter2 = sending.iterator(); iter2.hasNext();) {
                             units.remove((CompilationUnit) iter2.next());
                         }
                     } else {
@@ -468,7 +476,7 @@ public class PCTBgCompile extends PCTBgRun {
                 if (noMoreFiles) {
                     return false;
                 } else {
-                    for (Iterator iter = sending.iterator(); iter.hasNext(); ) {
+                    for (Iterator iter = sending.iterator(); iter.hasNext();) {
                         CompilationUnit cu = (CompilationUnit) iter.next();
                         if (sb.length() > 0)
                             sb.append('#');
@@ -500,7 +508,8 @@ public class PCTBgCompile extends PCTBgRun {
             return sb.toString();
         }
 
-        public void handleResponse(String command, String parameter, boolean err, String customResponse, List returnValues) {
+        public void handleResponse(String command, String parameter, boolean err,
+                String customResponse, List returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
                 String[] str = customResponse.split("/");
                 int ok = 0, notOk = 0;
@@ -508,7 +517,8 @@ public class PCTBgCompile extends PCTBgRun {
                     ok = Integer.parseInt(str[0]);
                     notOk = Integer.parseInt(str[1]);
                 } catch (NumberFormatException nfe) {
-                    throw new BuildException("Invalid response from pctCompile command (" + customResponse + ")", nfe);
+                    throw new BuildException("Invalid response from pctCompile command ("
+                            + customResponse + ")", nfe);
                 }
                 addCompilationCounters(ok, notOk);
                 logMessages(returnValues);
