@@ -77,6 +77,7 @@ public abstract class BackgroundWorker {
     public final void listen() {
         boolean end = false, err = false;
         List retVals = new ArrayList();
+        String customResponse = "";
 
         while (!end) {
             try {
@@ -88,8 +89,12 @@ public abstract class BackgroundWorker {
                     if (lastCommand.equalsIgnoreCase("quit")) {
                         status = 5;
                     }
+                    if ((idx != -1) && (idx < (str.length() - 1)))
+                        customResponse = str.substring(idx + 1);
                 } else if (result.equalsIgnoreCase("ERR")) {
                     err = true;
+                    if ((idx != -1) && (idx < (str.length() - 1)))
+                        customResponse = str.substring(idx + 1);
                 } else if (result.equalsIgnoreCase("MSG")) {
                     // Everything after MSG: is logged
                     if ((idx != -1) && (idx < (str.length() - 1)))
@@ -98,7 +103,7 @@ public abstract class BackgroundWorker {
                     end = true;
                     // Standard commands (i.e. sent by this class) cannnot be handled and overridden
                     if (!isStandardCommand(lastCommand)) {
-                        handleResponse(lastCommand, lastCommandParameter, err, retVals);
+                        handleResponse(lastCommand, lastCommandParameter, err, customResponse, retVals);
                     }
                 }
             } catch (IOException ioe) {
@@ -179,8 +184,9 @@ public abstract class BackgroundWorker {
      * @param command Command sent
      * @param parameter Command's parameter
      * @param err An error was returned
+     * @param customResponse Custom response sent by Progress
      * @param returnValues List of string
      */
-    public abstract void handleResponse(String command, String parameter, boolean err,
+    public abstract void handleResponse(String command, String parameter, boolean err, String customResponse,
             List returnValues);
 }

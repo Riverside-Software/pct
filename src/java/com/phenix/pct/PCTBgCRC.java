@@ -108,7 +108,7 @@ public class PCTBgCRC extends PCTBgRun {
 
         }
 
-        public void handleResponse(String command, String parameter, boolean err, List returnValues) {
+        public void handleResponse(String command, String parameter, boolean err, String customResponse, List returnValues) {
             BufferedWriter bw = null;
 
             try {
