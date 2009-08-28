@@ -103,6 +103,13 @@ the Java part controls the compilation. This allows more things : one example co
 <td>False</td>
 </tr>
 <tr>
+<td>KeepXref</td>
+<td>Keeps the generated XREF file for each file. Generated file name replaces extension of source file name with .xref</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
 <td>failOnError</td>
 <td>If task should end just after a failed file compilation</td>
 <td align="center">Boolean</td>
@@ -151,6 +158,13 @@ the Java part controls the compilation. This allows more things : one example co
 <td align="center">Optional</td>
 <td>False</td>
 </tr>
+<tr>
+<td>numThreads <span id="new">!!NEW!!</span></td>
+<td>Starts n parallel compilation threads</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>1</td>
+</tr>
 </table>
 <p>PCTCompile inherits attributes from <a href="PCT.html">PCT</a> and 
 <a href="PCTRun.html">PCTRun</a>.</p>
@@ -197,6 +211,18 @@ i.e. foo/bar.p results in build/bar.r
 Compiles every *.p in src directory (and subdirs), and apply a regexp for resulting file :
 any .p file results in a .r file appended with renamed, and any .t file results in .r file compiled
 in triggers directory.
+</p>
+
+<pre>
+&lt;PCTCompileExt numThreads="3" destDir="build" dlcHome="${env.DLC}"&gt;
+  &lt;fileset dir="src"&gt;
+    &lt;include name="**/*.p"/&gt;
+    &lt;include name="**/*.w"/&gt;
+  &lt;/fileset&gt;
+&lt;/PCTCompileExt&gt;
+</pre>
+<p>
+Compiles every .p and .w in src directory (and subdirs), with 3 compilation threads.
 </p>
 
 </div>

@@ -14,8 +14,8 @@
   <ul>
     <li><a href="PCT.html">PCT</a></li>
     <li><a href="PCTRun.html">PCTRun</a></li>
-    <li><a href="PCTCompile.html">PCTCompile</a></li>
-    <li><a href="PCTCompileExt.html">PCTCompileExt</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a><span id="new">!!UPDATED!!</span></li>
+    <li><a href="PCTCompileExt.html">PCTCompileExt</a><span id="new">!!UPDATED!!</span></li>
     <li><a href="PCTWSComp.html">PCTWSComp</a></li>
     <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
     <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
@@ -34,7 +34,7 @@
     <li><a href="PCTWSBroker.html">PCTWSBroker</a></li>
     <li><a href="ProUnit.html">ProUnit</a></li>
     <li><a href="PLExtract.html">PLExtract</a></li>
-    <li><a href="ProgressVersion.html">ProgressVersion</a><span id="new">!!NEW!!</span></li>
+    <li><a href="ProgressVersion.html">ProgressVersion</a></li>
   </ul>
   <h1>Types</h1>
   <ul>
@@ -42,7 +42,7 @@
     <li><a href="PCTAlias.html">PCTAlias</a></li>
     <li><a href="PCTRunOption.html">Option</a></li>
     <li><a href="Parameter.html">Parameter</a></li>
-    <li><a href="OutputParameter.html">OutputParameter</a><span id="new">!!NEW!!</span></li>
+    <li><a href="OutputParameter.html">OutputParameter</a></li>
     <li><a href="SchemaHolder.html">Holder</a></li>
   </ul>
   <h1>Selectors</h1>
