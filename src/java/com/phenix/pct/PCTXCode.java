@@ -159,11 +159,9 @@ public class PCTXCode extends PCT {
                 if (j != -1) {
                     File f2 = new File(this.destDir, s.substring(0, j));
 
-                    if (!f2.exists()) {
-                        if (!f2.mkdirs()) {
+                    if (!f2.exists() && !f2.mkdirs()) {
                             throw new BuildException(MessageFormat.format(Messages
                                     .getString("PCTXCode.3"), new Object[]{f2.getAbsolutePath()})); //$NON-NLS-1$
-                        }
                     }
                 }
             }
