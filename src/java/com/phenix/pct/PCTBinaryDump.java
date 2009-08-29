@@ -68,7 +68,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Binary dump task
@@ -101,7 +100,7 @@ public class PCTBinaryDump extends PCT {
     public PCTBinaryDump(boolean tmp) {
         super();
 
-        tblListID = new Random().nextInt() & 0xffff;
+        tblListID = PCT.nextRandomInt();
         tblListFile = new File(System.getProperty("java.io.tmpdir"), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 

@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
 
@@ -84,7 +83,7 @@ public class PCTLoadData extends PCTRun {
     public PCTLoadData() {
         super();
 
-        paramsId = new Random().nextInt() & 0xffff;
+        paramsId = PCT.nextRandomInt();
 
         params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }

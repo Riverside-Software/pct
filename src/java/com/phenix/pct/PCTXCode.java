@@ -66,7 +66,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Procedure encryption task using xcode utility from Progress
@@ -92,7 +91,7 @@ public class PCTXCode extends PCT {
     public PCTXCode() {
         super();
 
-        tmpLogId = new Random().nextInt() & 0xffff;
+        tmpLogId = PCT.nextRandomInt();
 
         tmpLog = new File(System.getProperty("java.io.tmpdir"), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
