@@ -61,18 +61,18 @@ package com.phenix.pct;
  * @version $Revision$
  */
 public abstract interface ProgressProcedures {
-    public String getCompileProcedure();
-    public boolean needRedirector();
-    public String getInitString();
-    public String getConnectString();
-    public String getAliasString();
-    public String getPropathString();
-    public String getRunString();
-    public String getReturnProc();
-    public String getParameterString();
-    public String getOutputParameterDeclaration();
-    public String getOutputParameterProc();
-    public String getAfterRun();
-    public String getOutputParameterCall();
-    public String getQuit();
+    String getCompileProcedure();
+    boolean needRedirector();
+    String getInitString();
+    String getConnectString();
+    String getAliasString();
+    String getPropathString();
+    String getRunString();
+    String getReturnProc();
+    String getParameterString();
+    String getOutputParameterDeclaration();
+    String getOutputParameterProc();
+    String getAfterRun();
+    String getOutputParameterCall();
+    String getQuit();
 }
