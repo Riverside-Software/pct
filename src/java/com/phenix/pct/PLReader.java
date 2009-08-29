@@ -389,7 +389,7 @@ public class PLReader {
         public String toString() {
             return MessageFormat
                     .format(
-                            Messages.getString("PLReader.6"), new Object[]{this.fileName, new Integer(size), this.addDate, this.modDate, new Long(offset)}); //$NON-NLS-1$
+                            Messages.getString("PLReader.6"), new Object[]{this.fileName, Integer.valueOf(size), this.addDate, this.modDate, Long.valueOf(offset)}); //$NON-NLS-1$
         }
     }
 }
