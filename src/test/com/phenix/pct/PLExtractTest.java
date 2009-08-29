@@ -84,7 +84,8 @@ public class PLExtractTest extends TestCase {
         mk.execute();
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(project);
         del.setDir(sandbox);

@@ -77,7 +77,8 @@ public class RCodeInfoTest extends TestCase {
 
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(project);
         del.setDir(sandbox);

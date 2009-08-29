@@ -84,7 +84,8 @@ public class PCTCRCTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("sandbox"));

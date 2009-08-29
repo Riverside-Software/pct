@@ -93,7 +93,8 @@ public class PCTProxygenV10Test extends BuildFileTest {
         minorVersion = Integer.parseInt(getProject().getProperty("minorVersion"));
     }
 
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("build"));

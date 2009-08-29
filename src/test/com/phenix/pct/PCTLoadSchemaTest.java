@@ -82,7 +82,8 @@ public class PCTLoadSchemaTest extends BuildFileTest {
     /**
      * Tears down the fixture
      */
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(this.getProject());
         del.setDir(new File("sandbox"));
