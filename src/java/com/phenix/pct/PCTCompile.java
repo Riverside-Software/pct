@@ -66,7 +66,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Class for compiling Progress procedures
@@ -102,8 +101,8 @@ public class PCTCompile extends PCTRun {
     public PCTCompile() {
         super();
 
-        fsListId = new Random().nextInt() & 0xffff;
-        paramsId = new Random().nextInt() & 0xffff;
+        fsListId = PCT.nextRandomInt();
+        paramsId = PCT.nextRandomInt();
 
         fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

@@ -58,7 +58,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.MessageFormat;
-import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -93,7 +92,7 @@ public class PCTNSBroker extends PCTBroker {
     public PCTNSBroker() {
         super();
 
-        tmpFileID = new Random().nextInt() & 0xffff;
+        tmpFileID = PCT.nextRandomInt();
         tmpFile = new File(System.getProperty("java.io.tmpdir"), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 

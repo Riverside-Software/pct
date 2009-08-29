@@ -74,7 +74,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Run a background Progress procedure.
@@ -110,10 +109,10 @@ public abstract class PCTBgRun extends PCT {
         options.setProcedure("pct/_server.p");
 
         // Nom de la PL à créer
-        plID = new Random().nextInt() & 0xffff;
+        plID = PCT.nextRandomInt();
         pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        initProcId = new Random().nextInt() & 0xffff;
+        initProcId = PCT.nextRandomInt();
         initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 

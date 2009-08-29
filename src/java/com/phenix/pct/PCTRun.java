@@ -74,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Run a Progress procedure.
@@ -145,9 +144,9 @@ public class PCTRun extends PCT {
         super();
 
         if (tmp) {
-            statusID = new Random().nextInt() & 0xffff;
-            initID = new Random().nextInt() & 0xffff;
-            plID = new Random().nextInt() & 0xffff;
+            statusID = PCT.nextRandomInt();
+            initID = PCT.nextRandomInt();
+            plID = PCT.nextRandomInt();
 
             status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -793,7 +792,7 @@ public class PCTRun extends PCT {
             // Progress v8 is unable to write to standard output, so output is redirected in a file,
             // which is parsed in a later stage
             if (this.getProgressProcedures().needRedirector()) {
-                outputStreamID = new Random().nextInt() & 0xffff;
+                outputStreamID = PCT.nextRandomInt();
                 outputStream = new File(
                         System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }

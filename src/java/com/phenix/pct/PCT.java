@@ -83,6 +83,7 @@ public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
     private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
+    private final static Random RANDOM = new Random();
 
     private File dlcHome = null;
     private File dlcBin = null;
@@ -364,7 +365,7 @@ public abstract class PCT extends Task {
      * @deprecated PCT 0.11 Use extractPL(File) instead
      */
     protected File extractPL() {
-        int plID = new Random().nextInt() & 0xffff;
+        int plID = nextRandomInt() & 0xffff;
         File f = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         if (extractPL(f))
             return f;
@@ -503,5 +504,9 @@ public abstract class PCT extends Task {
         }
 
         return res.toString();
+    }
+
+    protected final static int nextRandomInt() {
+        return RANDOM.nextInt() & 0xffff;
     }
 }
