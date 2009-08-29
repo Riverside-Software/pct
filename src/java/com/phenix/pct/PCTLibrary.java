@@ -345,7 +345,7 @@ public class PCTLibrary extends PCT {
         exec.setExecutable(getExecPath("prolib").toString());
         exec.createArg().setValue(this.destFile.getAbsolutePath());
         exec.createArg().setValue("-makeshared");
-        exec.createArg().setValue(this.sharedFile.getAbsolutePath().toString());
+        exec.createArg().setValue(this.sharedFile.getAbsolutePath());
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
