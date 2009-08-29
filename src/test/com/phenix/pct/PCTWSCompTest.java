@@ -85,7 +85,8 @@ public class PCTWSCompTest extends BuildFileTest {
     /**
      * Tears down the fixture
      */
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("build"));

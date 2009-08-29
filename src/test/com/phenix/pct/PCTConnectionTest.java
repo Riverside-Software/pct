@@ -78,9 +78,6 @@ public class PCTConnectionTest extends TestCase {
         exec.setProject(project);
     }
 
-    public void tearDown() {
-    }
-
     public void testDbNameRequired() {
         PCTConnection conn = new PCTConnection();
 
