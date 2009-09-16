@@ -64,7 +64,7 @@ DEFINE TEMP-TABLE TimeStamps NO-UNDO
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
-    FIELD xLineNumber AS INTEGER
+    FIELD xLineNumber AS CHARACTER
     FIELD xRefType    AS CHARACTER
     FIELD xObjID      AS CHARACTER FORMAT "X(50)"
     index typ is primary xRefType.
