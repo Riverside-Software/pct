@@ -1,3 +1,8 @@
+Version 0.16 (10/01/2009)
+==============================
+ * Removed ping for statistics
+ * Corrected bug when importing XREF on classes
+
 Version 0.15 (08/29/2009)
 ==============================
  * Added brokerLogFileAppend and serverLogFileAppend attributes to PCTASBroker and PCTWSBroker
