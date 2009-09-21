@@ -589,4 +589,26 @@
     </PCTCompile>	
   </target>
 
+  <target name="test22">
+    <echo file="sandbox/X.cls">
+      using Progress.Lang.*.
+      class X:
+        constructor public X():
+        end constructor.
+      end class.
+      </echo>
+    <echo file="sandbox/Y.cls">
+      using Progress.Lang.*.
+      class Y inherits X:
+        constructor public Y():
+        end constructor.
+      end class.
+    </echo>
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox" includes="*.cls" />
+      <propath>
+        <pathelement location="sandbox" />
+      </propath>
+    </PCTCompile>
+  </target>
 </project>

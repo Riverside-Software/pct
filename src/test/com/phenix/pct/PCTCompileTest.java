@@ -326,4 +326,15 @@ public class PCTCompileTest extends BuildFileTest {
             assertTrue(f2.exists());
         }
     }
+    
+    public void test22() {
+        int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
+        if (majorVersion >= 10) {
+            executeTarget("test22");
+            File f1 = new File("build/X.r");
+            assertTrue(f1.exists());
+            File f2 = new File("build/Y.r");
+            assertTrue(f2.exists());
+        }
+    }
 }
