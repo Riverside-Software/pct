@@ -2,6 +2,7 @@ Version 0.16 (10/01/2009)
 ==============================
  * Removed ping for statistics
  * Corrected bug when importing XREF on classes
+   Bug reported by Wytze Vlasman
 
 Version 0.15 (08/29/2009)
 ==============================
