@@ -65,8 +65,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -97,22 +95,6 @@ public abstract class PCT extends Task {
     private String revision = null;
     private String patchLevel = null;
     private boolean x64 = false; // True if 64-bits version of Progress
-
-    public PCT() {
-        final String clsName = this.getClass().getCanonicalName();
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    new URL("http://94.23.193.172/ping/" + clsName).openConnection().getContentEncoding();
-                } catch (MalformedURLException uncaught) {
-
-                } catch (IOException uncaught) {
-
-                }
-            }
-        };
-        new Thread(r).start();
-    }
 
     /**
      * Progress installation directory
