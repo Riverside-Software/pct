@@ -615,6 +615,12 @@ public class PCTRun extends PCT {
             var.setKey("DLC"); //$NON-NLS-1$
             var.setValue(this.getDlcHome().toString());
             exec.addEnv(var);
+            
+            Environment env = getEnvironment();
+            for (Iterator iter = env.getVariablesVector().iterator(); iter.hasNext(); ) {
+                Environment.Variable var2 = (Environment.Variable) iter.next();
+                exec.addEnv(var2);
+            }
         }
 
         this.prepared = true;
