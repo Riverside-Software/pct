@@ -56,6 +56,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
 import java.io.BufferedReader;
@@ -95,6 +96,7 @@ public abstract class PCT extends Task {
     private String revision = null;
     private String patchLevel = null;
     private boolean x64 = false; // True if 64-bits version of Progress
+    private Environment env = new Environment();
 
     /**
      * Progress installation directory
@@ -185,6 +187,19 @@ public abstract class PCT extends Task {
      */
     public final void setIncludedPL(boolean inc) {
         this.includedPL = inc;
+    }
+
+    /**
+     * Add an environment variable to the launched process.
+     *
+     * @param var new environment variable.
+     */
+    public void addEnv(Environment.Variable var) {
+        env.addVariable(var);
+    }
+
+    protected final Environment getEnvironment() {
+        return env;
     }
 
     /**
