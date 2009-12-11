@@ -268,11 +268,39 @@ Creates a parameter which can be read in the called procedure using
 If parameter is not defined, the function returns ?.
 </p>
 <p><em>WARNING</em> : these parameters are written in a temp-table without unique index. Defining a parameter
-with same name multiple times may lead to weird results (it will return ?).
+with same name multiple times may lead to weird results (it will return ?).</p>
 <h3>OutputParameter (<a href="OutputParameter.html">com.phenix.pct.OutputParameter</a>) <span id="new">!!NEW!!</span></h3>
 <p>
 Adds an character OUTPUT PARAMETER to the called procedure. This value is then written to the specified Ant property.  
 </p>
+<h3>env</h3>
+<p>It is possible to specify environment variables to pass to the system command via nested &lt;env&gt; elements.</p>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+<tr>
+<td>key</td>
+<td>The name of the environment variable.<br /><i>Note: (Since Ant 1.7) For Windows, the name is case-insensitive.</i></td>
+<td align="center">Yes</td>
+</tr>
+<tr>
+<td>value</td>
+<td>The literal value for the environment variable.</td>
+<td rowspan="3" align="center">Exactly one of these.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>The value for a PATH like environment variable. You can use ; or : as path separators and Ant will convert it to the platform's local conventions.</td>
+</tr>
+<tr>
+<td>file</td>
+<td>The value for the environment variable. Will be replaced by the absolute filename of the file by Ant.</td>
+</tr>
+
+</table>
 
 <h2>Examples</h2>
 <pre>
@@ -358,7 +386,7 @@ PROCEDURE writeOutputParam PRIVATE.
   OUTPUT CLOSE.
 END PROCEDURE.
 </pre>
-<p>After PCTRun task execution, properties FirstParam and SecondParam will be set with the content assigned by test/test.p.
+<p>After PCTRun task execution, properties FirstParam and SecondParam will be set with the content assigned by test/test.p.</p>
 </div>
 
 <div class="LastUpdate">
