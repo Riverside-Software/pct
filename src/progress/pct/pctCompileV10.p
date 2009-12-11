@@ -64,7 +64,7 @@ DEFINE TEMP-TABLE TimeStamps NO-UNDO
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
-    FIELD xLineNumber AS INTEGER
+    FIELD xLineNumber AS CHARACTER
     FIELD xRefType    AS CHARACTER
     FIELD xObjID      AS CHARACTER FORMAT "X(50)"
     INDEX typ IS PRIMARY xRefType.
@@ -442,6 +442,8 @@ PROCEDURE importXref.
     DELETE ttXref. /* ttXref is non-undo'able */
     INPUT STREAM sXREF CLOSE.
 
+    output to value(pcDir + '/':U + pcFile + '.zob':U).
+    output close.
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
