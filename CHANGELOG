@@ -1,3 +1,9 @@
+Version 0.17 (??/??/????)
+==============================
+ * Another bug when XREF when importing XREF on classes
+   Bug reported by Sascha Hofmann
+ * Added environment variables to PCT tasks
+
 Version 0.16 (10/01/2009)
 ==============================
  * Removed ping for statistics
