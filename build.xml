@@ -372,6 +372,9 @@
         <include name="conf/**" />
         <include name="doc/**" />
         <include name="CHANGELOG" />
+      	<include name="*.jar" />
+      	<include name="junit-frames.xsl" />
+      	<include name="pct.build.properties" />
       </zipfileset>
     </zip>
   </target>
@@ -482,13 +485,13 @@
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
     <property name="sports2000-doc" location="sports2000/doc" />
-    <exec executable="${DLC10-64}/bin/_dbutil" dir="sports2000">
-      <env key="DLC" value="${DLC10-64}" />
+    <exec executable="${DLC10}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC10}" />
       <arg value="procopy" />
-      <arg path="${DLC10-64}/sports2000" />
+      <arg path="${DLC10}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10-64}">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
