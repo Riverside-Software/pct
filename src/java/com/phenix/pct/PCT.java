@@ -292,8 +292,26 @@ public abstract class PCT extends Task {
     public abstract void execute() throws BuildException;
 
     protected void checkDlcHome() throws BuildException {
-        if (this.getDlcHome() == null)
-            throw new BuildException(Messages.getString("PCT.3"));
+        if (getDlcHome() == null) {
+            // dlcHome attribute is not defined, try to use DLC variable (-DDLC=...)
+            String str = System.getProperty("DLC"); //$NON-NLS-1$
+            if (str != null) {
+                log(MessageFormat.format(Messages.getString("PCT.4"), new Object[]{ str }));
+                setDlcHome(new File(str));
+            }
+        }
+        if (getDlcHome() == null) {
+            // dlcHome still not defined, try to use DLC environment variable
+            String str = System.getenv("DLC"); //$NON-NLS-1$
+            if (str != null) {
+                log(MessageFormat.format(Messages.getString("PCT.5"), new Object[]{ str }));
+                setDlcHome(new File(str));
+            }
+        }
+        if (getDlcHome() == null) {
+            // Fail...
+            throw new BuildException(Messages.getString("PCT.3")); //$NON-NLS-1$
+        }
     }
 
     /**

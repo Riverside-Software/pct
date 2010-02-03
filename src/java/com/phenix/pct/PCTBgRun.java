@@ -296,6 +296,7 @@ public abstract class PCTBgRun extends PCT {
      */
     public void execute() throws BuildException {
         ListenerThread listener = null;
+        checkDlcHome();
 
         // Starting the listener thread
         try {
