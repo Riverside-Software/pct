@@ -4,6 +4,9 @@ Version 0.17 (??/??/????)
    Bug reported by Sascha Hofmann
  * Added environment variables to PCT tasks
  * If dlcHome attribute isn't set, try to use DLC property then DLC environment variable
+ * PCTConnection was not allowing user name with no password
+   Enhancement by Sascha Hofmann
+ * Upgrading to ANT 1.8
 
 Version 0.16 (10/01/2009)
 ==============================
