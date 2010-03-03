@@ -283,23 +283,23 @@ public class PCTConnection {
         }
 
         if (this.paramFile != null) {
-            list.add("-pf");
-            list.add(this.paramFile.getAbsolutePath()); //$NON-NLS-1$
+            list.add("-pf"); //$NON-NLS-1$
+            list.add(this.paramFile.getAbsolutePath());
         }
 
         if (this.protocol != null) {
-            list.add("-N");
-            list.add(this.protocol); //$NON-NLS-1$
+            list.add("-N"); //$NON-NLS-1$
+            list.add(this.protocol);
         }
 
         if (this.dbPort != null) {
-            list.add("-S");
-            list.add(this.dbPort); //$NON-NLS-1$
+            list.add("-S"); //$NON-NLS-1$
+            list.add(this.dbPort);
         }
 
         if (this.logicalName != null) {
-            list.add("-ld");
-            list.add(this.logicalName); //$NON-NLS-1$
+            list.add("-ld"); //$NON-NLS-1$
+            list.add(this.logicalName);
         }
 
         if (this.singleUser) {
@@ -307,34 +307,36 @@ public class PCTConnection {
         }
 
         if (this.cacheFile != null) {
-            list.add("-cache");
-            list.add(this.cacheFile.getAbsolutePath()); //$NON-NLS-1$
+            list.add("-cache"); //$NON-NLS-1$
+            list.add(this.cacheFile.getAbsolutePath());
         }
 
         if (this.dataService != null) {
-            list.add("-DataService");
-            list.add(this.dataService); //$NON-NLS-1$
+            list.add("-DataService"); //$NON-NLS-1$
+            list.add(this.dataService);
         }
 
         if (this.dbType != null) {
-            list.add("-dt");
-            list.add(this.dbType); //$NON-NLS-1$
+            list.add("-dt"); //$NON-NLS-1$
+            list.add(this.dbType);
         }
 
         if (this.hostName != null) {
-            list.add("-H");
-            list.add(this.hostName); //$NON-NLS-1$
+            list.add("-H"); //$NON-NLS-1$
+            list.add(this.hostName);
         }
 
         if (this.readOnly) {
             list.add("-RO"); //$NON-NLS-1$
         }
 
-        if ((this.userName != null) && (this.password != null)) {
-            list.add("-U");
+        if (this.userName != null) {
+            list.add("-U"); //$NON-NLS-1$
             list.add(this.userName);
-            list.add("-P");
-            list.add(this.password); //$NON-NLS-1$ //$NON-NLS-2$
+            if(this.password != null) {
+              list.add("-P"); //$NON-NLS-1$
+              list.add(this.password);
+            }
         }
 
         return list;
@@ -354,7 +356,7 @@ public class PCTConnection {
         StringBuffer sb = new StringBuffer();
         for (Iterator i = list.iterator(); i.hasNext();) {
             String s = PCTRun.escapeString((String) i.next());
-            sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' ');
+            sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' '); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return sb.toString();
     }
