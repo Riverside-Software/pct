@@ -522,11 +522,17 @@ public class PCTRun extends PCT {
             // Startup procedure
             exec.createArg().setValue("-p"); //$NON-NLS-1$
             exec.createArg().setValue(this.initProc.getAbsolutePath());
-            extractPL(pctLib);
+            if (getIncludedPL() && !extractPL(pctLib)) {
+                throw new BuildException("Unable to extract pct.pl.");
+            }
+
             exec.execute();
         } catch (BuildException be) {
             this.cleanup();
             throw be;
+        } catch (IOException caught) {
+            cleanup();
+            throw new BuildException(caught);
         }
 
         if (this.getProgressProcedures().needRedirector()) {
