@@ -93,8 +93,11 @@ public abstract class PCT extends Task {
     private long rcodeVersion = -1;
     private int majorVersion = -1;
     private int minorVersion = -1;
-    private String revision = null;
-    private String patchLevel = null;
+    private String maintenanceVersion = null;
+    private String patchVersion = null;
+    private int servicePack = -1;
+    private int hotfix = -1;
+    private String tag = null;
     private boolean x64 = false; // True if 64-bits version of Progress
     private Environment env = new Environment();
 
@@ -341,17 +344,79 @@ public abstract class PCT extends Task {
             }
         }
 
+        // New pattern to try : "([a-zA-Z]+\\s+)+(\\d+\\u002E\\d+[A-Z]\\d?\\w*)\\s+as of(.*)"
         Pattern p = Pattern
                 .compile("([a-zA-Z]+\\s+)+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
         Matcher m = p.matcher(line);
         if (m.matches()) {
             this.fullVersion = line;
+            /* setVersion(m.group(2)); */
             this.majorVersion = Integer.parseInt(m.group(2));
             this.minorVersion = Integer.parseInt(m.group(3));
-            this.revision = m.group(4);
-            this.patchLevel = m.group(5);
+            this.maintenanceVersion = m.group(4);
+            this.patchVersion = m.group(5);
         }
 
+    }
+
+    private void setVersion(String version)  {
+        final String TAG_MATCH = "^(\\d)(.*)";
+
+        if (version != null) {
+            String versionPart[] = version.split("\\.");
+           
+            if (versionPart.length >= 2) {
+                majorVersion = Integer.parseInt(versionPart[0]);
+                minorVersion = Integer.parseInt(versionPart[1].substring(0, 1));
+                if (majorVersion < 11) {
+                    maintenanceVersion = versionPart[1].substring(1, 2);
+                    patchVersion = versionPart[1].substring(2);
+                    servicePack = 0;
+                    hotfix = 0;
+                    tag = "";
+                } else {
+                    maintenanceVersion = "";
+                    patchVersion = "";
+                    // for case where there is no hotfix present
+                    if (versionPart.length == 3){
+                        String lastPart = versionPart[2];
+                        Pattern patchPattern = Pattern.compile(TAG_MATCH);
+                        Matcher m = patchPattern.matcher(lastPart);
+                        servicePack = 0;
+                        hotfix = 0;
+                        tag = "";
+
+                        if (m.find()) {
+                            try {
+                                servicePack = Integer.parseInt(m.group(1));
+                                tag = m.group(2);                           
+                            } catch (NumberFormatException e) {
+                                // do nothing...leave the defaults
+                            }
+                        }
+                    } else if (versionPart.length == 4) {
+                        // for case where hotfix is present
+                        try {
+                            servicePack = Integer.parseInt(versionPart[2]);
+                        } catch (NumberFormatException e) {
+                            servicePack = 0;
+                        }
+                       
+                        String lastPart = versionPart[3];
+                        Pattern patchPattern = Pattern.compile(TAG_MATCH);
+                        Matcher m = patchPattern.matcher(lastPart);
+                        if (m.find()) {
+                            try {
+                                hotfix = Integer.parseInt(m.group(1));
+                                tag = m.group(2);                           
+                            } catch (NumberFormatException e) {
+                                // do nothing...leave the defaults
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -379,7 +444,7 @@ public abstract class PCT extends Task {
      * @since PCT 0.10
      * @deprecated PCT 0.11 Use extractPL(File) instead
      */
-    protected File extractPL() {
+    protected File extractPL() throws IOException {
         int plID = nextRandomInt() & 0xffff;
         File f = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         if (extractPL(f))
@@ -395,26 +460,21 @@ public abstract class PCT extends Task {
      * @return Handle on pct.pl (File)
      * @since PCT 0.10
      */
-    protected boolean extractPL(File f) {
+    protected boolean extractPL(File f) throws IOException {
         if (this.majorVersion == -1)
             return false;
-        try {
-            InputStream is = this.getClass().getResourceAsStream(
-                    "/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
-            if (is == null)
-                return false;
-            OutputStream os = new FileOutputStream(f);
-            byte[] b = new byte[2048];
-            int k = 0;
-            while ((k = is.read(b)) != -1)
-                os.write(b, 0, k);
-            os.close();
-            is.close();
-            return true;
-        } catch (Exception e) {
+        InputStream is = this.getClass().getResourceAsStream(
+                "/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
+        if (is == null)
             return false;
-        }
-
+        OutputStream os = new FileOutputStream(f);
+        byte[] b = new byte[2048];
+        int k = 0;
+        while ((k = is.read(b)) != -1)
+            os.write(b, 0, k);
+        os.close();
+        is.close();
+        return true;
     }
 
     /**
@@ -436,12 +496,20 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * Returns revision letter
-     * 
-     * @return 10.0B02 returns B
+     * @deprecated Use {@link PCT#getDLCMaintenanceVersion()} instead
      */
     protected String getDLCRevision() {
-        return this.revision;
+        return getDLCMaintenanceVersion();
+    }
+
+    /**
+     * Returns maintenance version
+     * 
+     * @return 10.0B02 returns B
+     * @since PCT 0.17
+     */
+    protected String getDLCMaintenanceVersion() {
+        return this.maintenanceVersion;
     }
 
     /**
@@ -450,7 +518,28 @@ public abstract class PCT extends Task {
      * @return 10.0B02 returns 02
      */
     protected String getDLCPatchLevel() {
-        return this.patchLevel;
+        return this.patchVersion;
+    }
+
+    /**
+     * @since PCT 0.17
+     */
+    public int getServicePack() {
+        return servicePack;
+    }
+
+    /**
+     * @since PCT 0.17
+     */
+    public int getHotfix() {
+        return hotfix;
+    }
+
+    /**
+     * @since PCT 0.17
+     */
+    public String getTag() {
+        return tag;
     }
 
     /**
@@ -468,7 +557,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 for example
      */
     protected String getReducedVersion() {
-        return this.majorVersion + "." + this.minorVersion + this.revision + this.patchLevel;
+        return this.majorVersion + "." + this.minorVersion + this.maintenanceVersion + this.patchVersion;
     }
 
     /**

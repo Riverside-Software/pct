@@ -329,7 +329,14 @@ public abstract class PCTBgRun extends PCT {
             parallel.addTask(task);
         }
 
-        extractPL(pctLib);
+        try {
+            if (getIncludedPL() && !extractPL(pctLib)) {
+                throw new BuildException("Unable to extract pct.pl.");
+            }
+        } catch (IOException caught) {
+            cleanup();
+            throw new BuildException(caught);
+        }
 
         // And executes Exec task
         parallel.execute();
