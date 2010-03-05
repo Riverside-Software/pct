@@ -514,6 +514,7 @@
     </exec>
     <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
+      <env key="LIBPATH" value="${DLC-SPORTS}/lib" />
     </PCTSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
       <param name="outputdir" expression="${sports2000-doc}" />
