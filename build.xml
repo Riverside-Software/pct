@@ -136,6 +136,27 @@
     <available file="${DLC9}/version" property="dlc.v9.present" />
     <available file="${DLC10}/version" property="dlc.v10.present" />
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+
+    <condition property="DLC-SPORTS" value="${DLC9}">
+      <isset property="dlc.v9.present" />
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10.present" />
+      </and>
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10-64}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10-64.present" />
+      </and>
+    </condition>
+    <echo message="Using ${DLC-SPORTS} to build sports database" />
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
@@ -485,13 +506,13 @@
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
     <property name="sports2000-doc" location="sports2000/doc" />
-    <exec executable="${DLC10}/bin/_dbutil" dir="sports2000">
-      <env key="DLC" value="${DLC10}" />
+    <exec executable="${DLC-SPORTS}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC-SPORTS}" />
       <arg value="procopy" />
-      <arg path="${DLC10}/sports2000" />
+      <arg path="${DLC-SPORTS}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC10}">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
     </PCTSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
