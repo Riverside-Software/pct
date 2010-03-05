@@ -197,7 +197,7 @@ public abstract class PCT extends Task {
      *
      * @param var new environment variable.
      */
-    public void addEnv(Environment.Variable var) {
+    public final void addEnv(Environment.Variable var) {
         env.addVariable(var);
     }
 
