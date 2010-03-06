@@ -59,17 +59,15 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
-import java.io.BufferedReader;
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -89,16 +87,7 @@ public abstract class PCT extends Task {
     private File dlcJava = null;
     private boolean includedPL = true;
     private ProgressProcedures pp = null;
-    private String fullVersion = null;
-    private long rcodeVersion = -1;
-    private int majorVersion = -1;
-    private int minorVersion = -1;
-    private String maintenanceVersion = null;
-    private String patchVersion = null;
-    private int servicePack = -1;
-    private int hotfix = -1;
-    private String tag = null;
-    private boolean x64 = false; // True if 64-bits version of Progress
+    private DLCVersion version = null;
     private Environment env = new Environment();
 
     /**
@@ -118,23 +107,27 @@ public abstract class PCT extends Task {
 
         // Tries to guess bin directory
         if (this.dlcBin == null) {
-            try {
-                this.setDlcBin(new File(dlcHome, "bin")); //$NON-NLS-1$
-            } catch (BuildException be) {
-            }
+            this.setDlcBin(new File(dlcHome, "bin")); //$NON-NLS-1$
         }
 
         // Tries to guess java directory
         if (this.dlcJava == null) {
             try {
                 this.setDlcJava(new File(dlcHome, "java")); //$NON-NLS-1$
-            } catch (BuildException be) {
+            } catch (BuildException uncaught) {
+                // $DLC/java is optional
             }
         }
 
-        setProgressVersion();
-        setArch();
-        switch (this.majorVersion) {
+        try {
+            version = DLCVersion.getObject(dlcHome);
+        } catch (IOException caught) {
+            throw new BuildException(caught);
+        } catch (InvalidRCodeException caught) {
+            throw new BuildException(caught);
+        }
+
+        switch (version.getMajorVersion()) {
             case 8 :
                 this.pp = new ProgressV8();
                 break;
@@ -294,7 +287,7 @@ public abstract class PCT extends Task {
      */
     public abstract void execute() throws BuildException;
 
-    protected void checkDlcHome() throws BuildException {
+    protected void checkDlcHome() {
         if (getDlcHome() == null) {
             // dlcHome attribute is not defined, try to use DLC variable (-DDLC=...)
             String str = System.getProperty("DLC"); //$NON-NLS-1$
@@ -314,125 +307,6 @@ public abstract class PCT extends Task {
         if (getDlcHome() == null) {
             // Fail...
             throw new BuildException(Messages.getString("PCT.3")); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Returns Progress major version number. I tried using
-     * com.progress.common.utils.ProgressVersion but failed with ClassLoader and JNI
-     * (ProgressVersion.java makes native calls to ProgressVersion shared library).
-     * 
-     * @since PCT 0.10
-     */
-    private void setProgressVersion() {
-        File version = new File(dlcHome, "version");
-        if (!version.exists()) {
-            return;
-        }
-
-        BufferedReader reader = null;
-        String line = null;
-        try {
-            reader = new BufferedReader(new FileReader(version));
-            line = reader.readLine();
-        } catch (IOException ioe) {
-            return;
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ioe) {
-            }
-        }
-
-        // New pattern to try : "([a-zA-Z]+\\s+)+(\\d+\\u002E\\d+[A-Z]\\d?\\w*)\\s+as of(.*)"
-        Pattern p = Pattern
-                .compile("([a-zA-Z]+\\s+)+(\\d+)\\u002E(\\d+)([A-Z])(\\d?\\w*)\\s+as of(.*)"); //$NON-NLS-1$
-        Matcher m = p.matcher(line);
-        if (m.matches()) {
-            this.fullVersion = line;
-            /* setVersion(m.group(2)); */
-            this.majorVersion = Integer.parseInt(m.group(2));
-            this.minorVersion = Integer.parseInt(m.group(3));
-            this.maintenanceVersion = m.group(4);
-            this.patchVersion = m.group(5);
-        }
-
-    }
-
-    private void setVersion(String version)  {
-        final String TAG_MATCH = "^(\\d)(.*)";
-
-        if (version != null) {
-            String versionPart[] = version.split("\\.");
-           
-            if (versionPart.length >= 2) {
-                majorVersion = Integer.parseInt(versionPart[0]);
-                minorVersion = Integer.parseInt(versionPart[1].substring(0, 1));
-                if (majorVersion < 11) {
-                    maintenanceVersion = versionPart[1].substring(1, 2);
-                    patchVersion = versionPart[1].substring(2);
-                    servicePack = 0;
-                    hotfix = 0;
-                    tag = "";
-                } else {
-                    maintenanceVersion = "";
-                    patchVersion = "";
-                    // for case where there is no hotfix present
-                    if (versionPart.length == 3){
-                        String lastPart = versionPart[2];
-                        Pattern patchPattern = Pattern.compile(TAG_MATCH);
-                        Matcher m = patchPattern.matcher(lastPart);
-                        servicePack = 0;
-                        hotfix = 0;
-                        tag = "";
-
-                        if (m.find()) {
-                            try {
-                                servicePack = Integer.parseInt(m.group(1));
-                                tag = m.group(2);                           
-                            } catch (NumberFormatException e) {
-                                // do nothing...leave the defaults
-                            }
-                        }
-                    } else if (versionPart.length == 4) {
-                        // for case where hotfix is present
-                        try {
-                            servicePack = Integer.parseInt(versionPart[2]);
-                        } catch (NumberFormatException e) {
-                            servicePack = 0;
-                        }
-                       
-                        String lastPart = versionPart[3];
-                        Pattern patchPattern = Pattern.compile(TAG_MATCH);
-                        Matcher m = patchPattern.matcher(lastPart);
-                        if (m.find()) {
-                            try {
-                                hotfix = Integer.parseInt(m.group(1));
-                                tag = m.group(2);                           
-                            } catch (NumberFormatException e) {
-                                // do nothing...leave the defaults
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Detects 32/64 bits version
-     * 
-     * @since PCT 0.13
-     */
-    private void setArch() {
-        try {
-            RCodeInfo rci = new RCodeInfo(new File(this.dlcHome, "tty/prostart.r"));
-            this.rcodeVersion = rci.getVersion();
-            this.x64 = ((this.rcodeVersion & 0x4000) != 0);
-        } catch (IOException ioe) {
-            log("$DLC/tty/prostart.r not found. Assuming 32-bits architecture");
-        } catch (RCodeInfo.InvalidRCodeException irce) {
-            log("$DLC/tty/prostart.r : parser failure. Assuming 32-bits architecture");
         }
     }
 
@@ -461,10 +335,8 @@ public abstract class PCT extends Task {
      * @since PCT 0.10
      */
     protected boolean extractPL(File f) throws IOException {
-        if (this.majorVersion == -1)
-            return false;
         InputStream is = this.getClass().getResourceAsStream(
-                "/pct" + this.majorVersion + (this.x64 ? "-64" : "") + ".pl");
+                "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl");
         if (is == null)
             return false;
         OutputStream os = new FileOutputStream(f);
@@ -483,7 +355,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 returns 10
      */
     protected int getDLCMajorVersion() {
-        return this.majorVersion;
+        return version.getMajorVersion();
     }
 
     /**
@@ -492,7 +364,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 returns 0
      */
     protected int getDLCMinorVersion() {
-        return this.minorVersion;
+        return version.getMinorVersion();
     }
 
     /**
@@ -509,7 +381,7 @@ public abstract class PCT extends Task {
      * @since PCT 0.17
      */
     protected String getDLCMaintenanceVersion() {
-        return this.maintenanceVersion;
+        return version.getMaintenanceVersion();
     }
 
     /**
@@ -518,28 +390,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 returns 02
      */
     protected String getDLCPatchLevel() {
-        return this.patchVersion;
-    }
-
-    /**
-     * @since PCT 0.17
-     */
-    public int getServicePack() {
-        return servicePack;
-    }
-
-    /**
-     * @since PCT 0.17
-     */
-    public int getHotfix() {
-        return hotfix;
-    }
-
-    /**
-     * @since PCT 0.17
-     */
-    public String getTag() {
-        return tag;
+        return version.getPatchVersion();
     }
 
     /**
@@ -548,7 +399,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 as of Dec 12 1998
      */
     protected String getFullVersion() {
-        return this.fullVersion;
+        return version.getFullVersion() + " as of " + version.getDate();
     }
 
     /**
@@ -557,7 +408,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 for example
      */
     protected String getReducedVersion() {
-        return this.majorVersion + "." + this.minorVersion + this.maintenanceVersion + this.patchVersion;
+        return version.getFullVersion();
     }
 
     /**
@@ -566,7 +417,7 @@ public abstract class PCT extends Task {
      * @return Long (1005 for 10.1B 32 bits for example)
      */
     protected long getRCodeVersion() {
-        return this.rcodeVersion;
+        return version.getrCodeVersion();
     }
 
     /**
