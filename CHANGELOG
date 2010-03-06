@@ -7,7 +7,9 @@ Version 0.17 (??/??/????)
  * PCTConnection was not allowing user name with no password
    Enhancement by Sascha Hofmann
  * Upgrading to ANT 1.8
-
+ * Changed the way $DLC/version is parsed
+   Thanks to Matt Baker for reporting bug and additional infos
+ 
 Version 0.16 (10/01/2009)
 ==============================
  * Removed ping for statistics
