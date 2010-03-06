@@ -307,7 +307,7 @@
     <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
     <copy todir="${testdir}">
-      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w" />
+      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r" />
     </copy>
   </target>
 

@@ -57,7 +57,9 @@ import junit.framework.TestCase;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Echo;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
 import java.io.File;
@@ -69,14 +71,12 @@ import java.io.File;
  */
 public class PCTTest extends TestCase {
     private static final String DLC = "dlc/";
+    private static final String DLC_TTY = "dlc/tty/";
     private static final String DLC_BIN = "dlc/bin/";
     private static final String DLC_BIN_FAKE = "bin/";
     private static final String DLC_JAVA = "dlc/java/";
     private static final String DLC_JAVA_FAKE = "java/";
     private static final String DLC_FAKE = "dlc/foo";
-    // private static final String DLC_PROXYGEN_ZIP = "proxygen.zip";
-    // private static final String DLC_PROGRESS_ZIP = "progress.zip";
-    // private static final String DLC_PROGRESS_JAR = "progress.jar";
     private Project project;
     private PCTRun pct;
 
@@ -93,6 +93,8 @@ public class PCTTest extends TestCase {
         mkdir.setProject(project);
         mkdir.setDir(new File(DLC));
         mkdir.execute();
+        mkdir.setDir(new File(DLC_TTY));
+        mkdir.execute();
         mkdir.setDir(new File(DLC_BIN));
         mkdir.execute();
         mkdir.setDir(new File(DLC_JAVA));
@@ -101,6 +103,17 @@ public class PCTTest extends TestCase {
         mkdir.execute();
         mkdir.setDir(new File(DLC_JAVA_FAKE));
         mkdir.execute();
+        // setDlcHome() now verifies version
+        Echo echo = new Echo();
+        echo.setProject(project);
+        echo.setFile(new File(DLC + "version"));
+        echo.setMessage("OpenEdge Release 10.2B as of Fri Nov 13 19:02:09 EST 2009");
+        echo.execute();
+        Copy copy = new Copy();
+        copy.setProject(project);
+        copy.setFile(new File("prostart.r"));
+        copy.setTofile(new File(DLC_TTY + "prostart.r"));
+        copy.execute();
     }
 
     /**
