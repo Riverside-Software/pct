@@ -21,6 +21,20 @@
       <scope>system</scope>
       <systemPath>${basedir}/ant.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>deps</groupId>
+      <artifactId>dep3</artifactId>
+      <version>0.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ant-junit.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>deps</groupId>
+      <artifactId>dep4</artifactId>
+      <version>0.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ant-launcher.jar</systemPath>
+    </dependency>
   </dependencies>
   <build>
         <sourceDirectory>src/java</sourceDirectory>
