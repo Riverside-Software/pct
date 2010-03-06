@@ -14,17 +14,20 @@ public class DLCVersion {
     private static final String V11_PATTERN = "\\d+(?:\\u002E(\\d+)(?:\\u002E(\\d+)(?:\\u002E(\\d+))?)?)?[a-zA-Z]*";
     private static final String OLD_PATTERN = "\\d+\\u002E(\\d+)([A-Z])([A-Z0-9]*)";
 
+    private final long rCodeVersion;
     private final int majorVersion, minorVersion;
-    private final String fullVersion, maintenanceVersion, patchVersion;
+    private final String fullVersion, maintenanceVersion, patchVersion, date;
     private final boolean arch;
 
     private DLCVersion(Builder builder) {
         fullVersion = builder.fullVersion;
+        date = builder.date;
         majorVersion = builder.major;
         minorVersion = builder.minor;
         maintenanceVersion = builder.maintenance;
         patchVersion = builder.patch;
         arch = builder.arch;
+        rCodeVersion = builder.rCodeVersion;
     }
 
     public static DLCVersion getObject(File dir) throws IOException, InvalidRCodeException {
@@ -41,6 +44,7 @@ public class DLCVersion {
         Matcher m = Pattern.compile(MAIN_PATTERN).matcher(str);
         if (m.matches()) {
             builder.fullVersion = m.group(0);
+            builder.date = m.group(3);
             builder.major = Integer.parseInt(m.group(2));
             if (builder.major >= 11)
                 extractNewVersion(builder, m.group(1));
@@ -116,8 +120,16 @@ public class DLCVersion {
         return patchVersion;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     public boolean is64bits() {
         return arch;
+    }
+
+    public long getrCodeVersion() {
+        return rCodeVersion;
     }
 
     public String toString() {
@@ -132,7 +144,7 @@ public class DLCVersion {
     protected static class Builder {
         long rCodeVersion;
         int major, minor;
-        String fullVersion, maintenance, patch;
+        String fullVersion, maintenance, patch, date;
         boolean arch;
     }
 }
