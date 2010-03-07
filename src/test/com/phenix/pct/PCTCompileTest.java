@@ -335,6 +335,10 @@ public class PCTCompileTest extends BuildFileTest {
             assertTrue(f1.exists());
             File f2 = new File("build/Y.r");
             assertTrue(f2.exists());
+            File f3 = new File("build/.pct/X.cls.crc");
+            assertTrue(f3.exists());
+            File f4 = new File("build/.pct/Y.cls.crc");
+            assertTrue(f4.exists());
         }
     }
 }
