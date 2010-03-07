@@ -604,7 +604,7 @@
         end constructor.
       end class.
     </echo>
-    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" keepXref="true">
       <fileset dir="sandbox" includes="*.cls" />
       <propath>
         <pathelement location="sandbox" />
