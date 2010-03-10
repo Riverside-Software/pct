@@ -49,12 +49,13 @@ describing your problem.
 <p>
 Changing PCT's behavior isn't hard, as long as you know Progress and Java. I'm developing PCT using Eclipse,
 on both Windows and Linux platforms. The basic steps to develop with PCT are :</p><ul>
-<li>Install Eclipse (3.2 recommended)</li>
-<li>Install Subversion plugin (download <a href="http://subclipse.tigris.org">here</a>)</li>
-<li>Open the SVN Repository Exploring Perspective, and add a new SVN repository<br /><img src="developers-1.png" /> <img src="developers-2.png" /></li>
-<li>In the SVN repository view, right-click on repository's name, and click Checkout<br /><img src="developers-3.png" /></li>
-<li>Keep with default options, and click Finish. Go back to Java perspective, you should have PCT displayed in package explorer view.<br/>
-<img src="developers-4.png" /><img src="developers-5.png" /></li>
+<li>Install the latest Eclipse environment</li>
+<li>Install Mercurial plugin (see <a href="http://www.vectrace.com/eclipse-update/">here</a>)</li>
+<li>With Eclipse launched, choose File → Import, then « Mercurial » section and « Clone repository using Mercurial »
+<br />Use the values as in screenshot below, then click on Finish.
+<br /><img src="developers-11.png" /></li>
+<li>You should have PCT displayed in package explorer view.<br/>
+<img src="developers-12.png" /></li>
 <li>Edit pct.build.properties according to your needs<br /><img src="developers-6.png" /></li>
 <li>Compile PCT using External Tools menu<br /><img src="developers-7.png" /><img src="developers-8.png" /></li>
 <li>Change classes and/or Progress procedures, then run JUnit tests to check your changes didn't break anything.
