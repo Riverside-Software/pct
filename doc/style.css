@@ -192,3 +192,11 @@ div#jobs {
   border-bottom: 3px darkgray solid;
   padding: 5px;
 }
+
+div.Menu3 {
+    border-left: 2px black solid;
+    border-bottom: 2px black solid;
+    background: #FFE97F;
+    float: right;
+    padding: 3px;
+}
