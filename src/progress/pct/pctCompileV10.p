@@ -119,7 +119,7 @@ DEFINE VARIABLE iCompFail AS INTEGER    NO-UNDO.
 /** Throw build exception ? */
 DEFINE VARIABLE BuildExc  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
-
+compiler:multi-compile = true.
 /* Gets CRC list */
 DEFINE VARIABLE h AS HANDLE     NO-UNDO.
 h = TEMP-TABLE CRCList:HANDLE.
@@ -254,6 +254,13 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
     DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
+
+    /* Small workaround when compiling classes */
+    FILE-INFO:FILE-NAME = d + '/':U + f + '.inc':U.
+    IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
+      ASSIGN lReturn = TRUE.
+      RETURN.
+    END.
 
     INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
     FileList:
