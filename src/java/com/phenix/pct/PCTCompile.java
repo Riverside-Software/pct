@@ -86,6 +86,8 @@ public class PCTCompile extends PCTRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private String xcodeKey = null;
+    private String languages = null;
+    private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
 
@@ -256,6 +258,24 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
+     * Identifies which language segments to include in the compiled r-code. LANGUAGES option of the COMPILE statement
+     * 
+     * @param languages String
+     */
+    public void setLanguages(String languages) {
+        this.languages = languages;
+    }
+
+    /**
+     * Specifies the factor by which ABL increases the length of strings. TEXT-SEG-GROWTH option of the COMPILE statement
+     * 
+     * @param growthFactor int (must be positive)
+     */
+    public void setTextGrowth(int growthFactor) {
+        this.growthFactor = growthFactor;
+    }
+
+    /**
      * Adds a set of files to archive.
      * 
      * @param set FileSet
@@ -329,6 +349,14 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            if (languages != null) {
+                bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
+                bw.newLine();
+                if (growthFactor > 0) {
+                    bw.write("GROWTH=" + growthFactor); //$NON-NLS-1$
+                    bw.newLine();
+                }
+            }
             if (this.xcodeKey != null) {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$
                 bw.newLine();
