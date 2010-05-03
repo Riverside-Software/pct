@@ -452,4 +452,49 @@
       <OutputParameter name="fourthParam" />
     </PCTRun>
   </target>
+
+  <target name="test35">
+    <mkdir dir="sandbox/path1" />
+    <mkdir dir="sandbox/path2" />
+    <mkdir dir="sandbox/path3" />
+
+    <echo file="sandbox/path1/test1.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/path2/test2.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/path3/test3.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="test1.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+        <pathelement location="sandbox/path3" />
+      </propath>
+    </PCTRun>
+    <PCTRun graphicalMode="${graph}" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+        <pathelement location="sandbox/path3" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test35-bis">
+    <PCTRun graphicalMode="${graph}" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+      </propath>
+    </PCTRun>
+  </target>
+
 </project>

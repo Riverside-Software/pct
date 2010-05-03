@@ -335,7 +335,7 @@ public class PCTCreateBase extends PCT {
                     pls.setSrcFile(f);
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
-                    pls.setPropath(this.propath);
+                    pls.addPropath(this.propath);
                     pls.setIncludedPL(this.getIncludedPL());
 
                     PCTConnection pc = new PCTConnection();
@@ -360,7 +360,7 @@ public class PCTCreateBase extends PCT {
                 run.setDescription(this.getDescription());
                 run.setDlcHome(this.getDlcHome());
                 run.setDlcBin(this.getDlcBin());
-                run.setPropath(this.propath);
+                run.addPropath(this.propath);
                 run.setIncludedPL(this.getIncludedPL());
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
@@ -380,7 +380,7 @@ public class PCTCreateBase extends PCT {
                     pls.setSrcFile(holder.getSchemaFile());
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
-                    pls.setPropath(this.propath);
+                    pls.addPropath(this.propath);
                     pls.addPCTConnection(pc);
                     pls.execute();
 

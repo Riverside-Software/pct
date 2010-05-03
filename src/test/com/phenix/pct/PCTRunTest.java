@@ -362,4 +362,9 @@ public class PCTRunTest extends BuildFileTest {
         assertPropertyEquals("thirdParam", "PCT3");
         assertPropertyEquals("fourthParam", "PCT4");
     }
+    
+    public void test35() {
+        executeTarget("test35");
+        expectBuildException("test35-bis", "Not in propath");
+    }
 }
