@@ -330,7 +330,7 @@ public class PCTRun extends PCT {
      * 
      * @param propath an Ant Path object containing the propath
      */
-    public void setPropath(Path propath) {
+    public void addPropath(Path propath) {
         createPropath().append(propath);
     }
 

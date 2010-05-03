@@ -265,7 +265,7 @@ public class PCTBinaryDump extends PCT {
         exec.setDlcHome(this.getDlcHome());
         exec.setProcedure("pct/pctBinaryDump.p"); //$NON-NLS-1$
         exec.setGraphicalMode(false);
-        exec.setPropath(this.propath);
+        exec.addPropath(this.propath);
 
         // Database connections
         for (Iterator e = dbConnList.iterator(); e.hasNext();) {
