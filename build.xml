@@ -270,6 +270,7 @@
         <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
+        <include name="eu/rssw/pct/antlib.xml" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
