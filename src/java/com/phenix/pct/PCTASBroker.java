@@ -392,10 +392,7 @@ public class PCTASBroker extends PCTBroker {
      * Creates an Exec task, calling mergeprop shell script.
      */
     private Task getCmdLineMergeTask(File propFile, File deltaFile) {
-        ExecTask task = (ExecTask) getProject().createTask("exec");
-        task.setOwningTarget(this.getOwningTarget());
-        task.setTaskName(this.getTaskName());
-        task.setDescription(this.getDescription());
+        ExecTask task = new ExecTask(this);
         task.setDir(this.getProject().getBaseDir());
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
         task.setFailonerror(true);

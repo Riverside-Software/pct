@@ -263,10 +263,7 @@ public abstract class PCTBgRun extends PCT {
     }
     
     private ExecTask prepareExecTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-        exec.setOwningTarget(getOwningTarget());
-        exec.setTaskName(getTaskName());
-        exec.setDescription(getDescription());
+        ExecTask exec = new ExecTask(this);
 
         File executable = this.getExecPath((options.isGraphMode() ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
         exec.setExecutable(executable.toString());
@@ -316,10 +313,8 @@ public abstract class PCTBgRun extends PCT {
         createInitProcedure(initProc);
 
         // Using Ant Parallel task to execute processes
-        Parallel parallel = (Parallel) getProject().createTask("parallel");
-        parallel.setOwningTarget(this.getOwningTarget());
-        parallel.setTaskName(this.getTaskName());
-        parallel.setDescription(this.getDescription());
+        Parallel parallel = new Parallel();
+        parallel.bindToOwner(this);
 
         // Creates as many Exec tasks as needed
         for (int zz = 0; zz < numThreads; zz++) {

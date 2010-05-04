@@ -218,17 +218,13 @@ public class PCTBinaryDump extends PCT {
 
     private ExecTask dumpTask(String table) throws BuildException {
         File executable = null;
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
+        ExecTask exec = new ExecTask(this);
         
         if (getDLCMajorVersion() >= 10)
             executable = this.getExecPath("_dbutil"); //$NON-NLS-1$
         else
             executable = this.getExecPath("_proutil"); //$NON-NLS-1$
         
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
-
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
@@ -256,12 +252,8 @@ public class PCTBinaryDump extends PCT {
     }
 
     private PCTRun getTables() {
-        PCTRun exec = (PCTRun) getProject().createTask("PCTRun"); //$NON-NLS-1$
-        // Standard exec options
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
-
+        PCTRun exec = new PCTRun();
+        exec.bindToOwner(this);
         exec.setDlcHome(this.getDlcHome());
         exec.setProcedure("pct/pctBinaryDump.p"); //$NON-NLS-1$
         exec.setGraphicalMode(false);

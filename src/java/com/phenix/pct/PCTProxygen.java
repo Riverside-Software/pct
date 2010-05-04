@@ -107,9 +107,10 @@ public class PCTProxygen extends PCT {
         this.srcFile = srcFile;
     }
 
+    // TODO Supprimer ??? Aucune référence... 
     public Commandline.Argument createJvmarg() {
         if (pxg == null) {
-            pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
+            pxg = new Java(this);
         }
 
         return pxg.getCommandLine().createVmArgument();
@@ -128,12 +129,8 @@ public class PCTProxygen extends PCT {
         checkDlcHome();
         // Creates a new Java task to launch proxygen task
         if (pxg == null) {
-            pxg = (Java) getProject().createTask("java"); //$NON-NLS-1$
+            pxg = new Java(this);
         }
-
-        pxg.setOwningTarget(this.getOwningTarget());
-        pxg.setTaskName(this.getTaskName());
-        pxg.setDescription(this.getDescription());
 
         // The previous behaviour was to fork only when working directory was specified.
         // This caused problems with JUnit testing, as I think there are System.exit statements

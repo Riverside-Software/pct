@@ -287,7 +287,8 @@ public class PCTCreateBase extends PCT {
         if (db.exists()) {
             if (this.overwrite) {
                 // TODO : revoir l'effacement de l'ancienne base
-                Delete del = (Delete) getProject().createTask("delete"); //$NON-NLS-1$
+                Delete del = new Delete();
+                del.bindToOwner(this);
                 del.setOwningTarget(this.getOwningTarget());
                 del.setTaskName(this.getTaskName());
                 del.setDescription(this.getDescription());
@@ -328,10 +329,8 @@ public class PCTCreateBase extends PCT {
                 if (!f.isFile())
                     f = new File(this.getProject().getBaseDir(), sc);
                 if (f.isFile() && f.canRead()) {
-                    PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
-                    pls.setOwningTarget(this.getOwningTarget());
-                    pls.setTaskName(this.getTaskName());
-                    pls.setDescription(this.getDescription());
+                    PCTLoadSchema pls = new PCTLoadSchema();
+                    pls.bindToOwner(this);
                     pls.setSrcFile(f);
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
@@ -354,10 +353,8 @@ public class PCTCreateBase extends PCT {
         if (this.holders != null) {
             for (Iterator i = holders.iterator(); i.hasNext();) {
                 SchemaHolder holder = (SchemaHolder) i.next();
-                PCTRun run = (PCTRun) getProject().createTask("PCTRun"); //$NON-NLS-1$
-                run.setOwningTarget(this.getOwningTarget());
-                run.setTaskName(this.getTaskName());
-                run.setDescription(this.getDescription());
+                PCTRun run = new PCTRun();
+                run.bindToOwner(this);
                 run.setDlcHome(this.getDlcHome());
                 run.setDlcBin(this.getDlcBin());
                 run.addPropath(this.propath);
@@ -373,10 +370,8 @@ public class PCTCreateBase extends PCT {
                 run.execute();
 
                 if (holder.getSchemaFile() != null) {
-                    PCTLoadSchema pls = (PCTLoadSchema) getProject().createTask("PCTLoadSchema"); //$NON-NLS-1$
-                    pls.setOwningTarget(this.getOwningTarget());
-                    pls.setTaskName(this.getTaskName());
-                    pls.setDescription(this.getDescription());
+                    PCTLoadSchema pls = new PCTLoadSchema();
+                    pls.bindToOwner(this);
                     pls.setSrcFile(holder.getSchemaFile());
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
@@ -395,7 +390,7 @@ public class PCTCreateBase extends PCT {
      * @return An ExecTask, ready to be executed
      */
     private ExecTask initCmdLine() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
+        ExecTask exec = new ExecTask(this);
 
         File srcDir = this.getDlcHome();
         if (this.codepage != null) {
@@ -403,10 +398,6 @@ public class PCTCreateBase extends PCT {
             srcDir = new File(srcDir, this.codepage);
         }
         File srcDB = new File(srcDir, "empty" + this.blockSize); //$NON-NLS-1$
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(this.destDir);
@@ -428,11 +419,7 @@ public class PCTCreateBase extends PCT {
      * @return An ExecTask, ready to be executed
      */
     private ExecTask structCmdLine() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(this.destDir);
@@ -452,12 +439,7 @@ public class PCTCreateBase extends PCT {
     }
 
     private ExecTask wordRuleCmdLine() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
-
+        ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_proutil").toString()); //$NON-NLS-1$
         exec.setDir(this.destDir);
         exec.createArg().setValue(this.dbName);
