@@ -221,10 +221,7 @@ public class PCTXCode extends PCT {
     }
 
     private void createExecTask() {
-        exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        exec = new ExecTask(this);
         exec.setOutput(tmpLog);
         exec.setExecutable(this.getExecPath("xcode").toString()); //$NON-NLS-1$
 

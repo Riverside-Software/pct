@@ -612,10 +612,7 @@ public class PCTRun extends PCT {
      */
     protected void prepareExecTask() {
         if (!this.prepared) {
-            exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
-            exec.setOwningTarget(this.getOwningTarget());
-            exec.setTaskName(this.getTaskName());
-            exec.setDescription(this.getDescription());
+            exec = new ExecTask(this);
 
             Environment.Variable var = new Environment.Variable();
             var.setKey("DLC"); //$NON-NLS-1$

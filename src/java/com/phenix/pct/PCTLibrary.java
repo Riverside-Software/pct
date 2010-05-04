@@ -266,11 +266,7 @@ public class PCTLibrary extends PCT {
     }
 
     private ExecTask createArchiveTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
@@ -293,11 +289,7 @@ public class PCTLibrary extends PCT {
     }
 
     private ExecTask addFilesTask(File dir) {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
         exec.setFailonerror(true);
         exec.setDir(dir);
 
@@ -315,11 +307,7 @@ public class PCTLibrary extends PCT {
     }
 
     private ExecTask compressTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
@@ -335,11 +323,7 @@ public class PCTLibrary extends PCT {
     }
 
     private ExecTask makeSharedTask() {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
@@ -391,11 +375,7 @@ public class PCTLibrary extends PCT {
     }
 
     private ExecTask spaceFileReplace(String fileName) {
-        ExecTask exec = (ExecTask) getProject().createTask("exec");
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
+        ExecTask exec = new ExecTask(this);
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());

@@ -154,13 +154,8 @@ public class PCTBinaryLoad extends PCT {
     }
 
     private ExecTask loadTask(File binaryFile) {
-        ExecTask exec = (ExecTask) getProject().createTask("exec"); //$NON-NLS-1$
+        ExecTask exec = new ExecTask(this);
         File a = this.getExecPath("_proutil"); //$NON-NLS-1$
-
-        exec.setOwningTarget(this.getOwningTarget());
-        exec.setTaskName(this.getTaskName());
-        exec.setDescription(this.getDescription());
-
         exec.setExecutable(a.toString());
 
         // Database connections
