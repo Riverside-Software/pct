@@ -9,6 +9,12 @@ Version 0.17 (??/??/????)
  * Upgrading to ANT 1.8
  * Changed the way $DLC/version is parsed
    Thanks to Matt Baker for reporting bug and additional infos
+ * Adding languages and textSegGrowth attributes to PCTCompile and PCTCompileExt tasks
+ * Corrected warning message when compiling classes
+ * antlib.xml for pct namespace was not included in JAR file
+ * Updated documentation for pct namespace
+ * Changed setPropath to addPropath in PCTRun, so that multiple propath definitions can be combined
+ * Cleanup when tasks create a new subtask instance. Fixed a bug when using pct namespace
  
 Version 0.16 (10/01/2009)
 ==============================
