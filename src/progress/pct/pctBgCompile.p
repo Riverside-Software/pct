@@ -97,6 +97,8 @@ DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
+DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
+DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -125,7 +127,9 @@ PROCEDURE setOptions:
            xcodekey  = ENTRY(5, ipPrm, ';')
            forceComp = ENTRY(6, ipPrm, ';') EQ 'true'
            noComp    = ENTRY(7, ipPrm, ';') EQ 'true'
-           keepXref  = ENTRY(8, ipPrm, ';') EQ 'true' NO-ERROR.
+           keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
+           languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
+           gwtFact   = INTEGER(ENTRY(10, ipPrm, ';')) NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -271,7 +275,7 @@ PROCEDURE pctCompile2 PRIVATE:
                 COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
         END.
         ELSE DO:
-            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
+            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         END.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
