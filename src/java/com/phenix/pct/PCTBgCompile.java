@@ -90,6 +90,8 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private String xcodeKey = null;
+    private String languages = null;
+    private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
     private Mapper mapperElement = null;
@@ -242,6 +244,24 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setXCodeKey(String xcodeKey) {
         this.xcodeKey = xcodeKey;
+    }
+
+    /**
+     * Identifies which language segments to include in the compiled r-code. LANGUAGES option of the COMPILE statement
+     * 
+     * @param languages String
+     */
+    public void setLanguages(String languages) {
+        this.languages = languages;
+    }
+
+    /**
+     * Specifies the factor by which ABL increases the length of strings. TEXT-SEG-GROWTH option of the COMPILE statement
+     * 
+     * @param growthFactor int (must be positive)
+     */
+    public void setTextGrowth(int growthFactor) {
+        this.growthFactor = growthFactor;
     }
 
     /**
@@ -504,7 +524,9 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(xcodeKey == null ? "" : xcodeKey).append(';');
             sb.append(Boolean.toString(forceCompile)).append(';');
             sb.append(Boolean.toString(noCompile)).append(';');
-            sb.append(Boolean.toString(keepXref));
+            sb.append(Boolean.toString(keepXref)).append(';');
+            sb.append(languages == null ? "" : languages).append(';');
+            sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100)));
 
             return sb.toString();
         }
