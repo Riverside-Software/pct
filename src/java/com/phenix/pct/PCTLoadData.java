@@ -71,7 +71,8 @@ import org.apache.tools.ant.BuildException;
  */
 public class PCTLoadData extends PCTRun {
     private File srcDir = null;
-    private Collection tables = null;
+    private Collection tableList = null;
+    private String tables = null;
 
     // Internal use
     private int paramsId = -1;
@@ -97,11 +98,39 @@ public class PCTLoadData extends PCTRun {
         this.srcDir = srcDir;
     }
 
+    /**
+     * Tables list to dump
+     * @param tables the tables to dump
+     */
+    public void setTables(String tables) {
+        this.tables = tables;
+    }
+
     public void addConfiguredTable(PCTTable table) {
-        if (this.tables == null) {
-            tables = new ArrayList();
+        if (this.tableList == null) {
+            tableList = new ArrayList();
         }
-        tables.add(table);
+        tableList.add(table);
+    }
+
+    private String getTableList() {
+        StringBuffer sb = new StringBuffer();
+        if (tables != null)
+            sb.append(sb);
+
+        if (tableList != null) {
+            for (Iterator iter = tableList.iterator(); iter.hasNext();) {
+                PCTTable tbl = (PCTTable) iter.next();
+                if (sb.length() > 0)
+                    sb.append(',');
+                sb.append(tbl.getName());
+            }
+        }
+
+        if (sb.length() == 0)
+            return "ALL";
+        else
+            return sb.toString();
     }
 
     /**
@@ -109,17 +138,11 @@ public class PCTLoadData extends PCTRun {
      * @throws BuildException
      */
     private void writeParams() throws BuildException {
-
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
             if (this.tables != null) {
                 bw.write("TABLES=");
-                for (Iterator i = tables.iterator(); i.hasNext();) {
-                    PCTTable table = (PCTTable) i.next();
-                    bw.write(table.getName());
-                    if (i.hasNext())
-                        bw.write(",");
-                }
+                bw.write(getTableList());
                 bw.newLine();
             }
             bw.write("SRCDIR=" + srcDir.getAbsolutePath()); //$NON-NLS-1$
