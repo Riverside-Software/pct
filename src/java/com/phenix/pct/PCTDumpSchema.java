@@ -64,6 +64,7 @@ import java.io.File;
  */
 public class PCTDumpSchema extends PCTRun {
     private File destFile = null;
+    private String tables = null;
 
     /**
      * Output file for dump
@@ -72,6 +73,14 @@ public class PCTDumpSchema extends PCTRun {
      */
     public void setDestFile(File destFile) {
         this.destFile = destFile;
+    }
+
+    /**
+     * Tables list to dump
+     * @param tables the tables to dump
+     */
+    public void setTables(String tables) {
+        this.tables = tables;
     }
 
     /**
@@ -95,8 +104,10 @@ public class PCTDumpSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
+        String param = destFile.toString() + ";" + (tables == null ? "ALL" : tables);
+
         this.setProcedure("pct/dmpSch.p"); //$NON-NLS-1$
-        this.setParameter(destFile.toString());
+        this.setParameter(param);
         super.execute();
     }
 }
