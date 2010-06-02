@@ -455,8 +455,6 @@ PROCEDURE importXref.
     DELETE ttXref. /* ttXref is non-undo'able */
     INPUT STREAM sXREF CLOSE.
 
-    output to value(pcDir + '/':U + pcFile + '.zob':U).
-    output close.
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
     	IF FIRST-OF (ttXref.xObjID) THEN
