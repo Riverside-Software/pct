@@ -96,6 +96,7 @@ DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE NoParse   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -174,6 +175,8 @@ REPEAT:
             ASSIGN languages = ENTRY(2, cLine, '=':U).
         WHEN 'GROWTH':U THEN
             ASSIGN gwtFact = INTEGER(ENTRY(2, cLine, '=':U)).
+        WHEN 'NOPARSE':U THEN
+            ASSIGN noParse = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -197,7 +200,7 @@ REPEAT:
         /* This is a new fileset -- Changing base dir */
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
-        IF (ForceComp OR lXCode) THEN DO:
+        IF (noParse OR ForceComp OR lXCode) THEN DO:
             ASSIGN Recompile = TRUE.
             IF NoComp THEN
                 MESSAGE cLine + ' [':U + (IF ForceComp THEN 'COMPILATION FORCED' ELSE 'XCODE') + ']':U.
@@ -236,6 +239,8 @@ REPEAT:
         IF (NOT NoComp) AND Recompile THEN DO:
             IF lXCode THEN
                 RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
+            ELSE IF noParse THEN
+                RUN PCTCompile(CurrentFS, cLine, OutputDir, OUTPUT lComp).
             ELSE
                 RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             IF (lComp) THEN DO:
@@ -313,24 +318,32 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
 
 END FUNCTION.
 
-/** Compilation without XREF - Not used for the moment */
 PROCEDURE PCTCompile.
     DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcOutDir  AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
 
-    DEFINE VARIABLE i AS INTEGER    NO-UNDO.
-    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
 
-    COMPILE VALUE(pcInDir + pcInFile) SAVE INTO VALUE(pcOutDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
-    ASSIGN plOK = COMPILER:ERROR.
-    IF (NOT plOK) THEN DO:
+    RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
+    RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
+    ASSIGN plOK = createDir(pcOutDir, cBase).
+    IF (NOT plOK) THEN RETURN.
+    cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    ASSIGN plOK = NOT COMPILER:ERROR.
+    IF NOT plOK THEN DO:
         ASSIGN c = '':U.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
-        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+        RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
 END PROCEDURE.
