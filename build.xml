@@ -502,7 +502,7 @@
     <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website}"/>
   </target>
 
-  <target name="sports2000doc" depends="declare-bootstrap">
+  <target name="sports2000doc" depends="declare">
     <mkdir dir="sports2000" />
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
