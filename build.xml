@@ -513,24 +513,13 @@
       <arg path="${DLC-SPORTS}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <bootstrapSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
       <env key="LIBPATH" value="${DLC-SPORTS}/lib" />
-    </bootstrapSchemaDoc>
+    </PCTSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
       <param name="outputdir" expression="${sports2000-doc}" />
     </xslt>
-  </target>
-
-  <target name="upload">
-    <!--
-    Bloque pour une raison inconnue....
-    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true">
-      <fileset dir="website" />
-    </scp>-->
-    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-6.1.17\\PCTDrops" verbose="true">
-      <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip,website*.zip" />
-    </scp>
   </target>
 
 </project>
