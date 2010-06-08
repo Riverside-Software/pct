@@ -502,7 +502,7 @@
     <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website}"/>
   </target>
 
-  <target name="sports2000doc" depends="declare">
+  <target name="sports2000doc" depends="declare-bootstrap">
     <mkdir dir="sports2000" />
     <mkdir dir="sports2000/doc" />
     <mkdir dir="sports2000/doc/files" />
@@ -513,10 +513,10 @@
       <arg path="${DLC-SPORTS}/sports2000" />
       <arg value="sports2000" />
     </exec>
-    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
+    <bootstrapSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
       <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
       <env key="LIBPATH" value="${DLC-SPORTS}/lib" />
-    </PCTSchemaDoc>
+    </bootstrapSchemaDoc>
     <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
       <param name="outputdir" expression="${sports2000-doc}" />
     </xslt>
