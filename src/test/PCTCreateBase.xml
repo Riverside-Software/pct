@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+
+<project name="PCTCreateBase-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="."/>
+
+  <property environment="env"/>
+  
+  <!-- Should throw BuildException : no database name -->
+  <target name="test1">
+    <PCTCreateBase dlcHome="${DLC}" />
+  </target>
+
+  <!-- Should throw BuildException : dbName longer than 11 characters -->
+  <target name="test2">
+    <PCTCreateBase dbName="VeryLongName" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Simple test : creates a database -->
+  <target name="test3">
+    <PCTCreateBase dbName="test3" destDir="sandbox" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Should throw BuildException : noInit and noStruct both defined -->
+  <target name="test4">
+    <PCTCreateBase noInit="true" noStruct="true" dbName="test3" destDir="sandbox" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Database with table creation -->
+  <target name="test5init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"/>
+  </target>
+  <target name="test5">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>	
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  
+  <!-- Checks database is not overwritten when overwrite=false -->
+  <target name="test6">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Checks database is overwritten when overwrite=true -->
+  <target name="test7">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" overwrite="true" />
+  </target>
+  
+  <!-- Checks structure creation -->
+  <target name="test8">
+    <echo file="sandbox/test.st">
+      b test.b1 f 1024
+      b test.b2 v 2048
+      d "Schema Area":6,64 test.d1 f 1024
+      d "Schema Area":6,64 test.d2 v 2048
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" structFile="test.st" />
+  </target>
+  <target name="test8bis">
+    <echo file="sandbox/test.p">
+      RETURN '0'.
+    </echo>
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  
+  <!-- Checks multiple schema files -->
+  <target name="test9init">
+    <echo file="sandbox/schema1.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab2"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab3"
+
+      ADD FIELD "Fld1" OF "tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab2-PK" ON "tab2" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema3.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab3"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab3"
+
+      ADD FIELD "Fld1" OF "tab3" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab3-PK" ON "tab3" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+      CREATE tab2.
+      ASSIGN tab2.fld1 = 2.
+      CREATE tab3.
+      ASSIGN tab3.fld1 = 3.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema1.df,sandbox/schema2.df,sandbox/schema3.df" />
+  </target>
+  <target name="test9">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  
+  <!-- Test bug #1245992 : relative and absolute path -->
+  <target name="test10-init">
+    <echo file="${user.home}/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+  </target>
+  <target name="test10">
+    <property name="sch" location="${user.home}/schema.df" />
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch}"/>
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompile>
+  </target>
+  <target name="test10-2">
+    <property name="sch2" location="${user.home}/non_existing_file.df" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="${sch2}"/>
+  </target>
+
+  <!-- Database with table creation -->
+  <target name="test11init">
+    <mkdir dir="sandbox/dir with spaces"/>
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox/dir with spaces" dlcHome="${DLC}" schemaFile="sandbox/schema.df"/>
+  </target>
+  <target name="test11">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>	
+      <PCTConnection dbName="test" dbDir="sandbox/dir with spaces" singleUser="true"/>
+    </PCTCompile>
+  </target>
+
+  <!-- Add schema holders testcases... -->
+  <target name="test12">
+  
+  </target>
+
+</project>

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - PCTDumpIncremental task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>PCTDumpIncremental task -- &lt;pct:incr_dump /&gt;</h1>
+
+<h2>Description</h2>
+<p>
+Creates a schema diff file between two databases. This is a wrapper around
+prodict/dump_inc.p from POSSENET code.
+</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>destFile</td>
+<td>File containing the schema dump</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>renameFile</td>
+<td>The RenameFile parameter is used to identify tables, database fields and sequences that have changed names</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>debugLevel</td>
+<td>DebugLevel (0, 1 or 2 (verbose))</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>0</td>
+</tr>
+<tr>
+<td>activeIndexes</td>
+<td>If indexes should be created Active (true) or Inactive (false)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>
+</table>
+<p>PCTDumpIncremental inherits attributes from <a href="PCT.html">PCT</a> and
+<a href="PCTRun.html">PCTRun</a>. However, PCTDumpIncremental <strong>must</strong>
+have <strong>two and only two</strong> PCTConnection. One database must have a
+dictdb alias, while the second one must have a dictdb2 alias.
+</p>
+
+<h2>Parameters as nested elements</h2>
+None
+
+<h2>Examples</h2>
+<pre>
+&lt;PCTDumpIncremental destFile="incr.df"&gt;
+  &lt;PCTConnection dbName="db1" singleUser="true"&gt;
+    &lt;PCTAlias name="dictdb"/&gt;
+  &lt;/PCTConnection&gt;
+  &lt;PCTConnection dbName="db2" singleUser="true"&gt;
+    &lt;PCTAlias name="dictdb2"/&gt;
+  &lt;/PCTConnection&gt;
+&lt;/PCTDumpIncremental&gt;
+</pre>
+<p>
+Compares db1 to db2, and generates a diff named incr.df, which could be
+loaded into db2 to bring it to same schema as db1.
+</p>
+
+</div>
+
+<div class="LastUpdate">
+  $Date$
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

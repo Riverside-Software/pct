@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<project name="PCTCompile-test" default="">
+  <!-- $Revision: 574 $ -->
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+
+  <!-- Prepares a few files... -->
+  <target name="prepare">
+    <echo file="sandbox/test1.p">
+      MESSAGE "Hello world!".
+    </echo>
+    <echo file="sandbox/test2.p">
+      { sandbox/test.i }.
+    </echo>
+    <echo file="sandbox/test.i">
+      MESSAGE "Hello2 !".
+    </echo>
+  </target>
+
+  <!-- Compilation -->
+  <target name="compile">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/*.p" />
+      </fileset>
+    </PCTCompile>
+  </target>
+
+  <target name="copy">
+    <copy todir="copy">
+      <fileset dir="build" includes="**/*.r">
+        <custom classname="com.phenix.pct.CRCDifferent">
+          <param name="targetdir" value="copy" />
+        </custom>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="test2" description="Don't do anything to files : copy task shouldn't overwrite">
+    <sleep seconds="2" />
+  </target>
+
+  <target name="test3" description="Change test1.p : only test1.r should be modified">
+    <sleep seconds="2" />
+    <echo file="sandbox/test1.p">
+      MESSAGE "Hello world 2!".
+    </echo>
+  </target>
+
+  <target name="test4" description="Change test.i : only test2.r should be modified">
+    <sleep seconds="2" />
+    <echo file="sandbox/test.i">
+      MESSAGE "Hello bis repetita !!!".
+    </echo>
+  </target>
+
+</project>

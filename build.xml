@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT" default="dist">
+
+  <property environment="env" />
+
+  <!-- If DLC8, DLC9, DLC10 and DLC10-64 are provided as properties, then skip loading properties from file -->
+  <condition property="skip.properties" value="true">
+    <and>
+      <isset property="DLC8" />
+      <isset property="DLC9" />
+      <isset property="DLC10" />
+      <isset property="DLC10-64" />
+    </and>
+  </condition>
+
+  <!-- Different values for UNIX/Win32 -->
+  <condition property="DBUTIL" value="_dbutil.exe">
+    <os family="windows" />
+  </condition>
+  <condition property="DBUTIL" value="_dbutil">
+    <os family="unix" />
+  </condition>
+
+  <condition property="BUILD_NUMBER" value="ANT">
+    <not>
+      <isset property="BUILD_NUMBER" />
+    </not>
+  </condition>
+
+  <!-- Some directories definitions -->
+  <property name="src.java" location="src/java" />
+  <property name="src.progress" location="src/progress" />
+  <property name="src.test" location="src/test" />
+  <property name="build" location="build" />
+  <property name="build-v8" location="build-v8" />
+  <property name="build-v9" location="build-v9" />
+  <property name="build-v10" location="build-v10" />
+  <property name="build-v10-64" location="build-v10-64" />
+  <property name="dist" location="lib" />
+  <property name="dist-lite" location="bootstrap" />
+  <property name="doc" location="javadoc" />
+  <property name="check" location="check" />
+  <property name="website" location="website" />
+  <property name="testdir" location="testbox" />
+  <property name="junit-v9" location="junit-v9" />
+  <property name="junit-v10" location="junit-v10" />
+  <property name="junit-v10-64" location="junit-v10-64" />
+  <property name="junit-report-v9" location="junit-report-v9" />
+  <property name="junit-report-v10" location="junit-report-v10" />
+  <property name="junit-report-v10-64" location="junit-report-v10-64" />
+
+  <!-- Properties that control various build options -->
+  <property name="debug" value="true" />
+  <property name="deprecation" value="true" />
+  <property name="optimize" value="false" />
+  <property name="javac.source" value="1.2" />
+  <property name="javac.target" value="1.2" />
+
+  <!-- PCT Version -->
+  <property name="pct.version" value="0.15" />
+
+  <!-- Different filesets depending on version -->
+  <fileset id="fs.v8" dir="${src.progress}">
+    <include name="pct/pctCompileV8.p" />
+    <include name="pct/pctCRCV8.p" />
+    <include name="pct/pctDumpData.p" />
+    <include name="pct/dumpSch.p" />
+    <include name="pct/pctLoadData.p" />
+    <include name="pct/loadSch.p" />
+  </fileset>
+  <fileset id="fs.v9" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompileV10.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+    <exclude name="pct/_server.p" />
+    <exclude name="pct/pctBgCompile.p" />
+  </fileset>
+  <fileset id="test.v9" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
+    <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
+    <exclude name="com/phenix/pct/*V10Test.class" />
+    <exclude name="com/phenix/pct/PCTSchemaDocTest.class" />
+  </fileset>
+  <fileset id="fs.v10" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="test.v10" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
+    <exclude name="com/phenix/pct/*V9Test.class" />
+  </fileset>
+  <fileset id="test.v10-64" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
+    <exclude name="com/phenix/pct/*V9Test.class" />
+    <!-- FIXME Unknown reason, proxygen doesn't work in unit tests under v10 64bits --> 
+    <exclude name="com/phenix/pct/PCTProxygenV10Test.class" />
+  </fileset>
+
+  <!-- Classpath for PCT compilation -->
+  <path id="pct.compil">
+    <pathelement location="ant.jar" />
+  </path>
+  <path id="pct.test.compil">
+    <path refid="pct.compil" />
+    <pathelement location="junit.jar" />
+  </path>
+
+  <target name="init" description="Initialize PCT builder" depends="init-properties">
+    <tstamp>
+      <format property="year" pattern="yyyy" />
+    </tstamp>
+
+    <mkdir dir="${build}" />
+    <mkdir dir="${build-v8}" />
+    <mkdir dir="${build-v9}" />
+    <mkdir dir="${build-v10}" />
+    <mkdir dir="${build-v10-64}" />
+    <mkdir dir="${dist}" />
+    <mkdir dir="${junit-v9}" />
+    <mkdir dir="${junit-v10}" />
+    <mkdir dir="${junit-v10-64}" />
+    <mkdir dir="${junit-report-v9}" />
+    <mkdir dir="${junit-report-v10}" />
+    <mkdir dir="${junit-report-v10-64}" />
+
+    <!-- Checking V8, v9 and v10 availability -->
+    <available file="${DLC8}/version" property="dlc.v8.present" />
+    <available file="${DLC9}/version" property="dlc.v9.present" />
+    <available file="${DLC10}/version" property="dlc.v10.present" />
+    <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+
+    <condition property="DLC-SPORTS" value="${DLC9}">
+      <isset property="dlc.v9.present" />
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10.present" />
+      </and>
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10-64}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10-64.present" />
+      </and>
+    </condition>
+    <echo message="Using ${DLC-SPORTS} to build sports database" />
+  </target>
+
+  <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
+    <echo message="Loading properties from pct.build.properties" />
+    <property file="${basedir}/pct.build.properties" />
+  </target>
+
+  <target name="build" depends="init" description="Java source files compilation">
+    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8">
+      <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
+      <classpath refid="pct.compil" />
+    </javac>
+    <copy todir="${build}">
+      <fileset dir="${src.java}" includes="**/*.properties" />
+    </copy>
+  </target>
+
+  <target name="jar-lite" depends="build" description="Bootstrap JAR file">
+    <jar jarfile="${dist}/bootstrap.jar">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class" />
+        <include name="com/phenix/pct/*.properties" />
+        <include name="bootstrap.properties" />
+        <exclude name="com/phenix/pct/*Test.class" />
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
+    <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
+  </target>
+
+  <target name="cond.pbuild" if="${build.this.version}">
+    <exec executable="${dlcHome}/bin/_dbutil">
+      <arg value="procopy" />
+      <arg value="${dlcHome}/empty.db" />
+      <arg value="empty" />
+      <env key="DLC" value="${dlcHome}" />
+    </exec>
+
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+      <fileset refid="${fsid}" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTConnection dbName="empty" singleUser="true">
+        <PCTAlias name="dictdb" />
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}">
+      <fileset dir="${buildDir}">
+        <include name="pct/*.r" />
+        <include name="prodict/dump/*.r" />
+      </fileset>
+    </bootstrapLibrary>
+
+    <delete>
+      <fileset dir="${basedir}" includes="empty*.*" />
+    </delete>
+  </target>
+
+  <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
+    <echo message="Checking v8 in ${DLC8}" />
+    <echo message="Checking v9 in ${DLC9}" />
+    <echo message="Checking v10 in ${DLC10}" />
+    <echo message="Checking v10-64 in ${DLC10-64}" />
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v8.present" />
+      <param name="dlcHome" value="${DLC8}" />
+      <param name="buildDir" value="${build-v8}" />
+      <param name="libName" value="pct8.pl" />
+      <param name="fsid" value="fs.v8" />
+    </antcall>
+    <!-- FIXME <bootstrapLibrary destfile="${build}/pct8.pl" dlcHome="${DLC8}">
+      <fileset dir="${src.progress}">
+        <include name="pct/pctCRCExtractV8.p" />
+      </fileset>
+    </bootstrapLibrary> -->
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="buildDir" value="${build-v9}" />
+      <param name="libName" value="pct9.pl" />
+      <param name="fsid" value="fs.v9" />
+    </antcall>
+
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="buildDir" value="${build-v10}" />
+      <param name="libName" value="pct10.pl" />
+      <param name="fsid" value="fs.v10" />
+    </antcall>
+
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="buildDir" value="${build-v10-64}" />
+      <param name="libName" value="pct10-64.pl" />
+      <param name="fsid" value="fs.v10" />
+    </antcall>
+
+  </target>
+
+  <target name="jar" depends="pbuild" description="JAR file generation">
+    <jar jarfile="${dist}/PCT.jar">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class" />
+        <include name="com/phenix/pct/*.properties" />
+        <include name="net/cordova/prounit/*.class" />
+        <include name="PCT.properties" />
+        <include name="eu/rssw/pct/antlib.xml" />
+        <include name="pct8.pl" />
+        <include name="pct9.pl" />
+        <include name="pct10.pl" />
+        <include name="pct10-64.pl" />
+        <exclude name="com/phenix/pct/*Test.class" />
+      </fileset>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+        <section name="common">
+          <attribute name="Specification-Title" value="PCT" />
+          <attribute name="Specification-Version" value="${pct.version}" />
+          <attribute name="Specification-Vendor" value="Riverside Software" />
+          <attribute name="Implementation-Title" value="PCT" />
+          <attribute name="Implementation-Version" value="Build ${BUILD_NUMBER}" />
+          <attribute name="Implementation-Vendor" value="Riverside Software" />
+        </section>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="declare" depends="jar" description="PCT tasks declaration">
+    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
+  </target>
+
+  <target name="test-build" depends="jar" description="Builds junit tests">
+    <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8">
+      <include name="org/apache/tools/ant/*.java" />
+      <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
+      <classpath refid="pct.test.compil" />
+    </javac>
+  </target>
+
+  <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
+    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
+    <mkdir dir="${testdir}" />
+    <copy todir="${testdir}">
+      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r" />
+    </copy>
+  </target>
+
+  <target name="cond.test" if="${test.this.version}">
+    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+      <classpath>
+        <pathelement location="junit.jar" />
+        <pathelement location="ant-junit.jar" />
+        <pathelement location="ant-launcher.jar" />
+        <pathelement location="jakarta-regexp-1.5.jar" />
+        <pathelement location="ant-apache-regexp.jar" />
+        <pathelement location="${dist}/PCT.jar" />
+        <pathelement location="${build}" />
+      </classpath>
+      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
+      <formatter type="xml" />
+      <batchtest fork="yes" todir="${junit-result}">
+        <fileset refid="${testid}" />
+      </batchtest>
+    </junit>
+    <junitreport todir="${junit-report}">
+      <fileset dir="${junit-result}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" styledir="${basedir}" todir="${junit-report}" />
+    </junitreport>
+  </target>
+    
+  <target name="test" depends="prepare-test" description="Starts tests">
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="junit-result" value="${junit-v9}" />
+      <param name="junit-report" value="${junit-report-v9}" />
+      <param name="testid" value="test.v9" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="junit-result" value="${junit-v10}" />
+      <param name="junit-report" value="${junit-report-v10}" />
+      <param name="testid" value="test.v10" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="junit-result" value="${junit-v10-64}" />
+      <param name="junit-report" value="${junit-report-v10-64}" />
+      <param name="testid" value="test.v10-64" />
+    </antcall>
+    <delete>
+      <fileset dir="." includes="TEST*.xml" />
+    </delete>
+  </target>
+
+  <target name="javadoc" depends="build" description="API documentation creation">
+    <mkdir dir="${doc}" />
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
+      <packageset dir="${src.java}" />
+      <group title="PCT Core" packages="com.phenix.pct.*" />
+      <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      <!-- Seems down -->
+      <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
+    </javadoc>
+  </target>
+
+  <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
+    <zip destfile="pct-bin-${BUILD_NUMBER}.zip">
+      <zipfileset prefix="pct" dir="." filemode="644">
+        <include name="lib/PCT.jar" />
+        <include name="CHANGELOG" />
+        <include name="website/**" />
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="srcdist" description="Generates source zip/tarball archive">
+    <zip destfile="pct-src-${BUILD_NUMBER}.zip">
+      <zipfileset prefix="pct" dir="." filemode="644">
+        <include name="src/**" />
+        <include name="build.xml" />
+        <include name="conf/**" />
+        <include name="doc/**" />
+        <include name="CHANGELOG" />
+      	<include name="*.jar" />
+      	<include name="junit-frames.xsl" />
+      	<include name="pct.build.properties" />
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist" depends="srcdist,bindist" />
+
+  <target name="clean" description="Nettoyage">
+    <delete dir="${build}" />
+    <delete dir="${build-v8}" />
+    <delete dir="${build-v9}" />
+    <delete dir="${build-v10}" />
+    <delete dir="${build-v10-64}" />
+    <delete dir="${dist}" />
+    <delete dir="${doc}" />
+    <delete dir="${check}" />
+    <delete dir="${website}" />
+    <delete dir="${testdir}" />
+    <delete dir="sports2000" />
+    <delete dir="${junit-v9}" />
+    <delete dir="${junit-v10}" />
+    <delete dir="${junit-v10-64}" />
+    <delete dir="${junit-report-v9}" />
+    <delete dir="${junit-report-v10}" />
+    <delete dir="${junit-report-v10-64}" />
+    <delete>
+      <fileset dir=".">
+        <include name="pct*.tar.gz" />
+        <include name="pct*.zip" />
+        <include name="TEST*.xml" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="website" depends="javadoc,sports2000doc,test" description="Generates files used for the pct.sf.net website">
+    <delete dir="${website}" />
+    <mkdir dir="${website}" />
+    <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
+    <loadfile property="changelog" srcFile="${basedir}/CHANGELOG" />
+    <loadfile property="analytics" srcFile="${basedir}/doc/analytics.include" />
+    <copy todir="${website}">
+      <fileset dir="doc">
+        <include name="*.html" />
+        <include name="*.css" />
+        <include name="*.xsl" />
+      </fileset>
+      <fileset dir=".">
+        <include name="${doc}/**" />
+      </fileset>
+      <filterset>
+        <filter token="RIGHT_BANNER" value="${right-banner}" />
+        <filter token="CHANGELOG" value="${changelog}" />
+        <filter token="ANALYTICS" value="${analytics}" />
+      </filterset>
+    </copy>
+    <copy todir="${website}">
+      <fileset dir="doc">
+        <include name="back.png" />
+        <include name="ss*.png" />
+        <include name="developers*.png" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/sports2000">
+      <fileset dir="sports2000/doc">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit-v9">
+      <fileset dir="${junit-report-v9}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit-v10">
+      <fileset dir="${junit-report-v10}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/junit-v10-64">
+      <fileset dir="${junit-report-v10-64}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/javadoc">
+      <fileset dir="${doc}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <zip destfile="${website}/sample1.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step1" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample2.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample3.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step3" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample4.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample5.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step5" prefix="MyProject" />
+    </zip>
+    
+    <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website}"/>
+  </target>
+
+  <target name="sports2000doc" depends="declare-bootstrap">
+    <mkdir dir="sports2000" />
+    <mkdir dir="sports2000/doc" />
+    <mkdir dir="sports2000/doc/files" />
+    <property name="sports2000-doc" location="sports2000/doc" />
+    <exec executable="${DLC-SPORTS}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC-SPORTS}" />
+      <arg value="procopy" />
+      <arg path="${DLC-SPORTS}/sports2000" />
+      <arg value="sports2000" />
+    </exec>
+    <bootstrapSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
+      <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
+      <env key="LIBPATH" value="${DLC-SPORTS}/lib" />
+    </bootstrapSchemaDoc>
+    <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
+      <param name="outputdir" expression="${sports2000-doc}" />
+    </xslt>
+  </target>
+
+  <target name="upload">
+    <!--
+    Bloque pour une raison inconnue....
+    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-7.0.0.M2\\PCT" verbose="true">
+      <fileset dir="website" />
+    </scp>-->
+    <scp trust="true" todir="${WEBSITE_USER}:${WEBSITE_PASSWORD}@pct.rssw.eu:C:\\Jetty-6.1.17\\PCTDrops" verbose="true">
+      <fileset dir="." includes="pct-*-${BUILD_NUMBER}.zip,website*.zip" />
+    </scp>
+  </target>
+
+</project>

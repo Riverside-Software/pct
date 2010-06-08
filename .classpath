@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.4"/>
+	<classpathentry kind="lib" path="ant.jar" sourcepath="ant-src.jar"/>
+	<classpathentry kind="lib" path="junit.jar" sourcepath="junit-src.jar"/>
+	<classpathentry kind="lib" path="ant-junit.jar" sourcepath="ant-src.jar"/>
+	<classpathentry kind="lib" path="ant-launcher.jar" sourcepath="ant-src.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

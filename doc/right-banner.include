@@ -1,0 +1,53 @@
+<div class="Menu2">
+  <h1>General</h1>
+  <ul>
+    <li><a href="manual.html">Installation</a></li>
+    <li><a href="PLReader.html">PLReader</a></li>
+    <li><a href="quickstart.html">Quick start</a></li>
+    <li><a href="developers.html">Improving PCT</a>
+    <li><a href="changelog.html">Changelog</a></li>
+    <li><a href="junit-v9/index.html">JUnit report (v9)</a> 
+    <li><a href="junit-v10/index.html">JUnit report (v10)</a> 
+    <li><a href="junit-v10-64/index.html">JUnit report (v10 64 bits)</a></li>
+  </ul>
+  <h1>Tasks</h1>
+  <ul>
+    <li><a href="PCT.html">PCT</a></li>
+    <li><a href="PCTRun.html">PCTRun</a></li>
+    <li><a href="PCTCompile.html">PCTCompile</a><span id="new">!!UPDATED!!</span></li>
+    <li><a href="PCTCompileExt.html">PCTCompileExt</a><span id="new">!!UPDATED!!</span></li>
+    <li><a href="PCTWSComp.html">PCTWSComp</a></li>
+    <li><a href="PCTCreateBase.html">PCTCreateBase</a></li>
+    <li><a href="PCTDumpSchema.html">PCTDumpSchema</a></li>
+    <li><a href="PCTLoadSchema.html">PCTLoadSchema</a></li>
+    <li><a href="PCTDumpData.html">PCTDumpData</a></li>
+    <li><a href="PCTLoadData.html">PCTLoadData</a></li>
+    <li><a href="PCTDumpIncremental.html">PCTDumpIncremental</a></li>
+    <li><a href="PCTBinaryDump.html">PCTBinaryDump</a></li>
+    <li><a href="PCTBinaryLoad.html">PCTBinaryLoad</a></li>
+    <li><a href="PCTSchemaDoc.html">PCTSchemaDoc</a></li>
+    <li><a href="PCTLibrary.html">PCTLibrary</a></li>
+    <li><a href="PCTProxygen.html">PCTProxygen</a></li>
+    <li><a href="PCTCRC.html">PCTCRC</a></li>
+    <li><a href="PCTXCode.html">PCTXCode</a></li>
+    <li><a href="PCTASBroker.html">PCTASBroker</a></li>
+    <li><a href="PCTWSBroker.html">PCTWSBroker</a></li>
+    <li><a href="ProUnit.html">ProUnit</a></li>
+    <li><a href="PLExtract.html">PLExtract</a></li>
+    <li><a href="ProgressVersion.html">ProgressVersion</a></li>
+  </ul>
+  <h1>Types</h1>
+  <ul>
+    <li><a href="PCTConnection.html">PCTConnection</a></li>
+    <li><a href="PCTAlias.html">PCTAlias</a></li>
+    <li><a href="PCTRunOption.html">Option</a></li>
+    <li><a href="Parameter.html">Parameter</a></li>
+    <li><a href="OutputParameter.html">OutputParameter</a></li>
+    <li><a href="SchemaHolder.html">Holder</a></li>
+  </ul>
+  <h1>Selectors</h1>
+  <ul>
+    <li><a href="CRCDifferent.html">CRCDifferent</a>
+  </ul>
+
+</div>
