@@ -91,7 +91,7 @@ public class PCTLibraryTest extends BuildFileTest {
     public void tearDown() throws Exception {
         super.tearDown();
         Delete del = new Delete();
-        del.setFailOnError(false);
+        del.setFollowSymlinks(false);
         del.setProject(this.project);
         del.setDir(new File("sandbox"));
         del.execute();

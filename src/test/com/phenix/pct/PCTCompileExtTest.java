@@ -57,11 +57,9 @@ import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
@@ -94,7 +92,7 @@ public class PCTCompileExtTest extends BuildFileTest {
     public void tearDown() throws Exception {
         super.tearDown();
         Delete del = new Delete();
-        del.setFailOnError(false);
+        del.setFollowSymlinks(false);
         del.setProject(this.project);
         del.setDir(new File("build"));
         del.execute();
