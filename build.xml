@@ -270,13 +270,15 @@
         <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
-        <include name="eu/rssw/pct/antlib.xml" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
+	  <fileset dir="${src.java}">
+        <include name="eu/rssw/pct/antlib.xml" />
+	  </fileset>
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
