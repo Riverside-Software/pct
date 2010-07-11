@@ -96,6 +96,7 @@ public class PCTProxygenV10Test extends BuildFileTest {
     public void tearDown() throws Exception {
         super.tearDown();
         Delete del = new Delete();
+        del.setFailOnError(false);
         del.setProject(this.project);
         del.setDir(new File("build"));
         del.execute();
