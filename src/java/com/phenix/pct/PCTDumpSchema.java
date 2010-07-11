@@ -56,6 +56,9 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Dumps schema from database
@@ -64,6 +67,8 @@ import java.io.File;
  */
 public class PCTDumpSchema extends PCTRun {
     private File destFile = null;
+    private Collection tableList = null;
+    private String tables = null;
 
     /**
      * Output file for dump
@@ -72,6 +77,41 @@ public class PCTDumpSchema extends PCTRun {
      */
     public void setDestFile(File destFile) {
         this.destFile = destFile;
+    }
+
+    /**
+     * Tables list to dump
+     * @param tables the tables to dump
+     */
+    public void setTables(String tables) {
+        this.tables = tables;
+    }
+
+    public void addConfiguredTable(PCTTable table) {
+        if (this.tableList == null) {
+            tableList = new ArrayList();
+        }
+        tableList.add(table);
+    }
+
+    private String getTableList() {
+        StringBuffer sb = new StringBuffer();
+        if (tables != null)
+            sb.append(sb);
+
+        if (tableList != null) {
+            for (Iterator iter = tableList.iterator(); iter.hasNext();) {
+                PCTTable tbl = (PCTTable) iter.next();
+                if (sb.length() > 0)
+                    sb.append(',');
+                sb.append(tbl.getName());
+            }
+        }
+
+        if (sb.length() == 0)
+            return "ALL";
+        else
+            return sb.toString();
     }
 
     /**
@@ -95,8 +135,10 @@ public class PCTDumpSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
+        String param = destFile.toString() + ";" + getTableList();
+
         this.setProcedure("pct/dmpSch.p"); //$NON-NLS-1$
-        this.setParameter(destFile.toString());
+        this.setParameter(param);
         super.execute();
     }
 }

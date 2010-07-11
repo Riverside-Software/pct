@@ -85,6 +85,7 @@ public class PCTCompile extends PCTRun {
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
+    private boolean noParse = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -182,6 +183,17 @@ public class PCTCompile extends PCTRun {
     public void setNoXref(boolean noXref) {
         log(Messages.getString("PCTCompile.1")); //$NON-NLS-1$
         this.forceCompile = noXref;
+    }
+
+    /**
+     * Disables completely XREF generation and parsing. This means there's no generated file in .pct
+     * subdirectory. This attribute is not public right now, still being tested. This is used just
+     * to bypass a bug when compiling classes.
+     * 
+     * @param noParse "true|false|on|off|yes|no"
+     */
+    public void setNoParse(boolean noParse) {
+        this.noParse = noParse;
     }
 
     /**
@@ -348,6 +360,8 @@ public class PCTCompile extends PCTRun {
             bw.write("DEBUGLISTING=" + (this.debugListing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("NOPARSE=" + (this.noParse ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (languages != null) {
                 bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
