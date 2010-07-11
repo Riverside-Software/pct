@@ -121,7 +121,6 @@ DEFINE VARIABLE iCompFail AS INTEGER    NO-UNDO.
 /** Throw build exception ? */
 DEFINE VARIABLE BuildExc  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
-compiler:multi-compile = true.
 /* Gets CRC list */
 DEFINE VARIABLE h AS HANDLE     NO-UNDO.
 h = TEMP-TABLE CRCList:HANDLE.
