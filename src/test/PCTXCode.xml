@@ -97,10 +97,18 @@
     <delete file="sandbox/test2.p" />
   </target>
   <target name="test7">
-    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" propath="build" />
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build" />
+      </propath>
+    </PCTRun>
   </target>
   <target name="test7bis">
-    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}" propath="build" />
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build" />
+      </propath>
+    </PCTRun>
   </target>
 
   <target name="test8init">
