@@ -4,6 +4,9 @@ build-v9
 build-v10
 build-v10-64
 javadoc
+junit-v9
+junit-v10
+junit-v10-64
 junit-report-v9
 junit-report-v10
 junit-report-v10-64
