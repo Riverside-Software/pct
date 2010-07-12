@@ -14,3 +14,6 @@
 ^sports2000$
 ^testbox$
 ^website$
+^pct-bin-.*\.zip$
+^pct-src-.*\.zip$
+^website-.*\.zip$
