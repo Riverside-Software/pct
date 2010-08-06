@@ -58,4 +58,12 @@
     </PCTDumpSchema>
   </target>
 
+  <target name="test5">
+    <!-- Should create sandbox/files.df with _File content -->
+    <PCTDumpSchema destFile="sandbox/files.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <table name="_File" />
+    </PCTDumpSchema>
+  </target>
+
 </project>
