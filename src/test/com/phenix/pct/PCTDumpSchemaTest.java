@@ -57,7 +57,10 @@ import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * PCTDumpSchema testcases
@@ -103,6 +106,24 @@ public class PCTDumpSchemaTest extends BuildFileTest {
 
         executeTarget("test4");
         assertTrue(f1.exists());
+
+        executeTarget("test5");
+        File f2 = new File("sandbox/files.df");
+        assertTrue(f2.exists());
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(f2));
+            assertTrue(reader.readLine().startsWith("ADD TABLE"));
+            reader.close();
+        } catch (IOException caught) {
+            try {
+                reader.close();
+            } catch (IOException uncaught) {
+
+            }
+            fail("Unable to read file for test5");
+        }
     }
 
 }
