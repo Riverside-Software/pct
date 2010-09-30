@@ -60,24 +60,22 @@ import org.apache.tools.ant.taskdefs.Mkdir;
 import java.io.File;
 
 /**
- * Class for testing CRCDifferent selector
+ * Class for testing RCodeSelector
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class CRCDifferentTest extends BuildFileTest {
-    public CRCDifferentTest(String name) {
+public class RCodeSelectorTest extends BuildFileTest {
+    public RCodeSelectorTest(String name) {
         super(name);
     }
 
     public void setUp() {
-        configureProject("CRCDifferent.xml");
+        configureProject("RCodeSelector.xml");
 
         // Creates a sandbox directory to play with
         Mkdir mkdir = new Mkdir();
         mkdir.setProject(this.getProject());
         mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-        mkdir.setDir(new File("copy"));
         mkdir.execute();
     }
 
@@ -85,74 +83,44 @@ public class CRCDifferentTest extends BuildFileTest {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
-        del.setDir(new File("build"));
-        del.execute();
         del.setDir(new File("sandbox"));
-        del.execute();
-        del.setDir(new File("copy"));
         del.execute();
     }
 
     public void test1() {
         executeTarget("prepare");
         executeTarget("compile");
-        File f1 = new File("build/sandbox/test1.r");
-        File f2 = new File("build/sandbox/test2.r");
-        assertTrue(f1.exists());
-        assertTrue(f2.exists());
+        executeTarget("test");
+        
+        File f1 = new File("sandbox/copy1");
+        assertEquals(f1.list().length, 0);
+        
+        File f2 = new File("sandbox/copy2");
+        assertEquals(f2.list().length, 0);
+        
+        File f3 = new File("sandbox/copy3");
+        assertEquals(f3.list().length, 1);
+        assertTrue(f3.list()[0].equals("test2.r"));
 
-        File f3 = new File("copy/sandbox/test1.r");
-        File f4 = new File("copy/sandbox/test2.r");
-        assertFalse(f3.exists());
-        assertFalse(f4.exists());
-        executeTarget("copy");
-        assertTrue(f3.exists());
-        assertTrue(f4.exists());
-    }
+        File f4 = new File("sandbox/copy4");
+        assertEquals(f4.list().length, 1);
+        assertTrue(f4.list()[0].equals("test2.r"));
 
-    public void test2() {
-        executeTarget("prepare");
-        executeTarget("compile");
-        executeTarget("copy");
-        File f1 = new File("copy/sandbox/test1.r");
-        File f2 = new File("copy/sandbox/test2.r");
-        long t1 = f1.lastModified();
-        long t2 = f2.lastModified();
-        executeTarget("test2");
-        executeTarget("compile");
-        executeTarget("copy");
-        assertTrue(t1 == f1.lastModified());
-        assertTrue(t2 == f2.lastModified());
-    }
+        File f5 = new File("sandbox/copy5");
+        assertEquals(f5.list().length, 0);
+        
+        File f6 = new File("sandbox/copy6");
+        assertEquals(f6.list().length, 1);
+        assertTrue(f6.list()[0].equals("test3.r"));
+        
+        File f7 = new File("sandbox/copy7");
+        assertEquals(f7.list().length, 1);
+        assertTrue(f7.list()[0].equals("test2.r"));
 
-    public void test3() {
-        executeTarget("prepare");
-        executeTarget("compile");
-        executeTarget("copy");
-        File f1 = new File("copy/sandbox/test1.r");
-        File f2 = new File("copy/sandbox/test2.r");
-        long t1 = f1.lastModified();
-        long t2 = f2.lastModified();
-        executeTarget("test3");
-        executeTarget("compile");
-        executeTarget("copy");
-        assertFalse(t1 == f1.lastModified());
-        assertTrue(t2 == f2.lastModified());
-    }
-
-    public void test4() {
-        executeTarget("prepare");
-        executeTarget("compile");
-        executeTarget("copy");
-        File f1 = new File("copy/sandbox/test1.r");
-        File f2 = new File("copy/sandbox/test2.r");
-        long t1 = f1.lastModified();
-        long t2 = f2.lastModified();
-        executeTarget("test4");
-        executeTarget("compile");
-        executeTarget("copy");
-        assertTrue(t1 == f1.lastModified());
-        assertFalse(t2 == f2.lastModified());
+        File f8 = new File("sandbox/copy8");
+        assertEquals(f8.list().length, 2);
+        assertTrue(f8.list()[0].equals("test2.r"));
+        assertTrue(f8.list()[1].equals("test3.r"));
     }
 
 }
