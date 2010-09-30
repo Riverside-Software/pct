@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="en" />
-<title>PCT documentation - CRCDifferent selector</title>
+<title>PCT documentation - RCodeSelector</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -36,12 +36,12 @@
 @RIGHT_BANNER@
 
 <div class="Text">
-<h1>CRCDifferent selector</h1>
+<h1>RCodeSelector</h1>
 
 <h2>Description</h2>
 <p>
-CRCDifferent is a selector in which files can be selected based on CRC comparison in source and target directories.
-Files are removed of the fileset if and only if their CRC is identical.
+RCodeSelector is a selector in which files can be selected based on CRC and/or MD5 comparison in source and target directories.
+Files are removed of the fileset if and only if their CRC and/or MD5 are identical.
 </p>
 
 <h2>Parameters</h2>
@@ -54,11 +54,25 @@ Files are removed of the fileset if and only if their CRC is identical.
 <th>Default value</th>
 </tr>
 <tr>
-<td>targetdir</td>
-<td>The base directory to look for the files to compare against. The precise location depends on a combination of this attribute and the <mapper> element, if any.</td>
+<td>dir</td>
+<td>The base directory to look for the files to compare against. The precise location depends on a combination of this attribute and the &lt;mapper&gt; element, if any.</td>
 <td align="center">File</td>
 <td align="center">Required</td>
 <td>No default value</td>
+</tr>
+<tr>
+<td>md5</td>
+<td>Use MD5 to compare r-code</td>
+<td align="center">Boolean</td>
+<td align="center" rowspan="2">At least one of md5 or crc must be set to true</td>
+<td>False</td>
+</tr>
+<tr>
+<td>crc</td>
+<td>Use CRC to compare r-code</td>
+<td align="center">Boolean</td>
+
+<td>False</td>
 </tr>
 </table>
 
@@ -68,18 +82,16 @@ Files are removed of the fileset if and only if their CRC is identical.
 <h2>Examples</h2>
 <pre>
 &lt;!-- Selector has to be declared in build.xml --&gt;
-&lt;typedef name="CRCDifferent" classname="com.phenix.pct.CRCDifferent" /&gt;
+&lt;typedef name="RCodeSelector" classname="com.phenix.pct.RCodeSelector" /&gt;
 &lt;target name="copy"&gt;
-  &lt;copy todir="DestDir"&gt;
-    &lt;fileset dir="build"&gt;
-      &lt;custom classname="com.phenix.pct.CRCDifferent"&gt;
-        &lt;param name="targetdir" value="DestDir" /&gt;
-      &lt;/custom&gt;
+  &lt;copy todir="destDir"&gt;
+    &lt;fileset dir="sourceDir1"&gt;
+      &lt;RCodeSelector dir="sourceDir2" md5="true" /&gt;
     &lt;/fileset&gt;
   &lt;/copy&gt;
 &lt;/target&gt;
 </pre>
-Will only copy files whose CRC has changed.
+Will copy files from sourceDir1 to destDir, excluding any r-code whose MD5 is identical in sourceDir1 and sourceDir2
 </div>
 
 <div class="LastUpdate">
