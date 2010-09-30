@@ -1,5 +1,6 @@
 Version 0.17 (??/??/????)
 ==============================
+ * Replaced CRCDifferent with RCodeSelector. Now able to use MD5 to compare r-code
  * Another bug when XREF when importing XREF on classes
    Bug reported by Sascha Hofmann
  * Added environment variables to PCT tasks
