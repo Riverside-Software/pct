@@ -165,7 +165,7 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8">
+    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.compil" />
@@ -298,7 +298,7 @@
   </target>
 
   <target name="test-build" depends="jar" description="Builds junit tests">
-    <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8">
+    <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
