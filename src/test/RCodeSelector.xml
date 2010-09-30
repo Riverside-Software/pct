@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+
+<project name="PCTCompile-test" default="">
+  <!-- $Revision: 574 $ -->
+
+  <taskdef resource="PCT.properties" classpath="." />
+  <typedef name="RCodeSelector" classname="com.phenix.pct.RCodeSelector" classpath="." />
+  <property environment="env" />
+
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+
+  <!-- Prepares a few files... -->
+  <target name="prepare">
+    <mkdir dir="sandbox/src" />
+    <mkdir dir="sandbox/build1" />
+    <mkdir dir="sandbox/build2" />
+    <mkdir dir="sandbox/build3" />
+    <mkdir dir="sandbox/build4" />
+    <mkdir dir="sandbox/copy1" />
+    <mkdir dir="sandbox/copy2" />
+    <mkdir dir="sandbox/copy3" />
+    <mkdir dir="sandbox/copy4" />
+    <mkdir dir="sandbox/copy5" />
+    <mkdir dir="sandbox/copy6" />
+    <mkdir dir="sandbox/copy7" />
+    <mkdir dir="sandbox/copy8" />
+    <echo file="sandbox/src/test1.p">
+      MESSAGE "Hello world!".
+    </echo>
+    <echo file="sandbox/src/test2.p">
+      { test.i }.
+    </echo>
+    <echo file="sandbox/src/test.i">
+      MESSAGE "Hello2 !".
+    </echo>
+    <echo file="sandbox/src/test3.p">
+      FIND FIRST Tab1.
+    </echo>
+    <echo file="sandbox/schema1.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD FIELD "Fld2" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld2"
+        COLUMN-LABEL "Fld2"
+        ORDER 20
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+  </target>
+
+  <!-- Creates different compilation results -->
+  <target name="compile">
+    <PCTCreateBase dbName="test1" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema1.df"/>
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema2.df"/>
+    <PCTCompile graphicalMode="${graph}" destDir="sandbox/build1" dlcHome="${DLC}" md5="true">
+      <fileset dir="sandbox/src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true"/>
+      <propath>
+        <pathelement path="sandbox/src" /> 
+      </propath>
+    </PCTCompile>
+    <PCTCompile graphicalMode="${graph}" destDir="sandbox/build2" dlcHome="${DLC}" md5="true">
+      <fileset dir="sandbox/src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
+      <propath>
+        <pathelement path="sandbox/src" /> 
+      </propath>
+    </PCTCompile>
+    <sleep seconds="2" />
+    <echo file="sandbox/src/test.i" append="false">
+      MESSAGE "New Hello2 !".
+    </echo>
+    <PCTCompile graphicalMode="${graph}" destDir="sandbox/build3" dlcHome="${DLC}" md5="true">
+      <fileset dir="sandbox/src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true"/>
+      <propath>
+        <pathelement path="sandbox/src" /> 
+      </propath>
+    </PCTCompile>
+    <PCTCompile graphicalMode="${graph}" destDir="sandbox/build4" dlcHome="${DLC}" md5="true">
+      <fileset dir="sandbox/src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true"/>
+      <propath>
+        <pathelement path="sandbox/src" /> 
+      </propath>
+    </PCTCompile>
+  </target>
+
+  <target name="test">
+    <!-- Copy1 doit être vide -->
+    <copy todir="sandbox/copy1">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build1" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy2 doit être vide -->
+    <copy todir="sandbox/copy2">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build2" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy3 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy3">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build3" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy4 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy4">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build4" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy5 doit être vide -->
+    <copy todir="sandbox/copy5">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build1" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy6 ne doit contenir que test3.r -->
+    <copy todir="sandbox/copy6">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build2" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy7 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy7">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build3" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy8 ne doit contenir que test2.r et test3.r -->
+    <copy todir="sandbox/copy8">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build4" mode="md5" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>
