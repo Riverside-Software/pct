@@ -40,8 +40,8 @@
 
 <h2>Description</h2>
 <p>
-RCodeSelector is a selector in which files can be selected based on CRC and/or MD5 comparison in source and target directories.
-Files are removed of the fileset if and only if their CRC and/or MD5 are identical.
+RCodeSelector is a selector in which files can be selected based on CRC or MD5 comparison in source and target directories.
+Files are removed of the fileset if and only if their CRC or MD5 are identical.
 </p>
 
 <h2>Parameters</h2>
@@ -61,18 +61,11 @@ Files are removed of the fileset if and only if their CRC and/or MD5 are identic
 <td>No default value</td>
 </tr>
 <tr>
-<td>md5</td>
-<td>Use MD5 to compare r-code</td>
-<td align="center">Boolean</td>
-<td align="center" rowspan="2">At least one of md5 or crc must be set to true</td>
-<td>False</td>
-</tr>
-<tr>
-<td>crc</td>
-<td>Use CRC to compare r-code</td>
-<td align="center">Boolean</td>
-
-<td>False</td>
+<td>mode</td>
+<td>Use MD5 or CRC to compare r-code</td>
+<td align="center">String</td>
+<td align="center" rowspan="2">Optional</td>
+<td>CRC</td>
 </tr>
 </table>
 
@@ -84,14 +77,14 @@ Files are removed of the fileset if and only if their CRC and/or MD5 are identic
 &lt;!-- Selector has to be declared in build.xml --&gt;
 &lt;typedef name="RCodeSelector" classname="com.phenix.pct.RCodeSelector" /&gt;
 &lt;target name="copy"&gt;
-  &lt;copy todir="destDir"&gt;
-    &lt;fileset dir="sourceDir1"&gt;
-      &lt;RCodeSelector dir="sourceDir2" md5="true" /&gt;
+  &lt;copy todir="destDir" includeEmptyDirs="false"&gt;
+    &lt;fileset dir="sourceDir1" includes="**/*.r"&gt;
+      &lt;RCodeSelector dir="sourceDir2" mode="md5" /&gt;
     &lt;/fileset&gt;
   &lt;/copy&gt;
 &lt;/target&gt;
 </pre>
-Will copy files from sourceDir1 to destDir, excluding any r-code whose MD5 is identical in sourceDir1 and sourceDir2
+Will copy *.r files from sourceDir1 to destDir, excluding any r-code whose MD5 is identical in sourceDir1 and sourceDir2
 </div>
 
 <div class="LastUpdate">

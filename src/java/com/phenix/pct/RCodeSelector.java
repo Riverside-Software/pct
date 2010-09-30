@@ -18,7 +18,6 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Parameter;
 import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
 import java.io.File;
@@ -30,36 +29,30 @@ import java.io.File;
  * @since PCT 0.17
  */
 public class RCodeSelector extends BaseExtendSelector {
+    private final static int MODE_CRC = 1;
+    private final static int MODE_MD5 = 2;
+    
     private File dir = null;
-    private boolean md5 = false, crc = false;
-    
-    public void setMD5(boolean md5) {
-        this.md5 = md5;
-    }
-    
-    public void setCRC(boolean crc) {
-        this.crc = crc;
+    private int mode = MODE_CRC;
+
+    public void setMode(String mode) {
+        if ("crc".equalsIgnoreCase(mode))
+            this.mode = MODE_CRC;
+        else if ("md5".equalsIgnoreCase(mode))
+            this.mode = MODE_MD5;
     }
 
-    public void setDir(File targetDir) {
-        this.dir = targetDir;
-    }
-    
-    public void setParameters(Parameter[] parameters) {
-        for (int zz = 0; zz < parameters.length; zz++) {
-            Parameter param = parameters[zz];
-            if ("dir".equalsIgnoreCase(param.getName()))
-                setDir(new File(param.getValue()));
-        }
+    public void setDir(File dir) {
+        this.dir = dir;
     }
 
     public void verifySettings() {
         super.verifySettings();
-        
+
         if (dir == null)
             setError("No dir attribute defined");
-        if (!md5 && !crc)
-            setError("One of md5 or crc attribute must be set to true");
+        if ((mode != MODE_CRC) && (mode != MODE_MD5))
+            setError("Invalid comparison mode");
     }
 
     /**
@@ -74,7 +67,7 @@ public class RCodeSelector extends BaseExtendSelector {
      */
     public boolean isSelected(File basedir, String filename, File file) throws BuildException {
         validate();
-        
+
         RCodeInfo file1, file2;
         try {
             file1 = new RCodeInfo(file);
@@ -86,13 +79,11 @@ public class RCodeSelector extends BaseExtendSelector {
         } catch (Exception e) {
             return true;
         }
-        
-        boolean md5Equals = file1.getMD5().equals(file2.getMD5());
-        boolean crcEquals = (file1.getCRC() == file2.getCRC());
-        if (md5 && crc)
-            return md5Equals && crcEquals;
-        if (md5)
-            return md5Equals;
-        return crcEquals;
+
+        switch (mode) {
+            case MODE_CRC: return (file1.getCRC() != file2.getCRC());
+            case MODE_MD5: return !file1.getMD5().equals(file2.getMD5());
+            default: return true;
+        }
     }
 }
