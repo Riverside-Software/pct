@@ -57,14 +57,20 @@ Files are removed of the fileset if and only if their CRC or MD5 are identical.
 <td>dir</td>
 <td>The base directory to look for the files to compare against. The precise location depends on a combination of this attribute and the &lt;mapper&gt; element, if any.</td>
 <td align="center">File</td>
-<td align="center">Required</td>
+<td align="center" rowspan="2" >One of dir or lib is required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>lib</td>
+<td>The procedure library to look for the files to compare against.</td>
+<td align="center">File</td>
 <td>No default value</td>
 </tr>
 <tr>
 <td>mode</td>
 <td>Use MD5 or CRC to compare r-code</td>
 <td align="center">String</td>
-<td align="center" rowspan="2">Optional</td>
+<td align="center">Optional</td>
 <td>CRC</td>
 </tr>
 </table>
@@ -75,7 +81,6 @@ Files are removed of the fileset if and only if their CRC or MD5 are identical.
 <h2>Examples</h2>
 <pre>
 &lt;!-- Selector has to be declared in build.xml --&gt;
-&lt;typedef name="RCodeSelector" classname="com.phenix.pct.RCodeSelector" /&gt;
 &lt;target name="copy"&gt;
   &lt;copy todir="destDir" includeEmptyDirs="false"&gt;
     &lt;fileset dir="sourceDir1" includes="**/*.r"&gt;
