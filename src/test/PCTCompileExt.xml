@@ -1,0 +1,645 @@
+<?xml version="1.0"?>
+
+<project name="PCTCompileExt-test" default="">
+  <!-- $Revision: 722 $ -->
+  
+  <taskdef resource="PCT.properties" />
+
+  <property environment="env"/>
+  
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+  
+  <!-- Should throw BuildException : no dest dir -->
+  <target name="test1">
+    <PCTCompileExt graphicalMode="${graph}" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Do nothing : should not hurt -->
+  <target name="test2">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" />
+  </target>
+  
+  <!-- Simple compilation -->
+  <target name="test3">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>	
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  
+  <!-- Simple failed compilation -->
+  <target name="test3bis">
+  	<echo file="sandbox/temp.p">
+      MESSGE "Hello world!".
+  	</echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>
+    </PCTCompileExt>	
+  </target>
+  
+  <!-- Test MIN-SIZE attribute -->
+  <target name="test4">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test4bis">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" minSize="true" >
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+    </PCTCompileExt>	
+  </target>
+  
+  <!-- Test escape string -->
+  <target name="test5">
+    <echo file="sandbox/wizz~~'~.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/wizz~~'~.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test no recompile if file not changed (.r timestamp based) -->
+  <target name="test6init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+  	</echo>
+  </target>
+  <target name="test6">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test6bis">
+    <sleep seconds="3"/>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test simple recompile if file has changed (.r timestamp based) -->
+  <target name="test7init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+  	</echo>
+  </target>
+  <target name="test7">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test7bis">
+    <sleep seconds="3"/>
+    <touch file="sandbox/temp.p"/>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+  
+  <!-- Test forceCompile (file has not changed) -->
+  <target name="test8init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+  	</echo>
+  </target>
+  <target name="test8">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test8bis">
+    <sleep seconds="3" />
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+  
+  <!-- Test recompile if included file has changed -->
+  <target name="test9init">
+  	<echo file="sandbox/temp.p">
+      {sandbox/temp.i}.
+      MESSAGE "World".
+  	</echo>
+  	<echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+  	</echo>
+  </target>
+  <target name="test9">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test9bis">
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  
+  <!-- Same as test9 but with spaces in include statement -->
+  <target name="test10init">
+  	<echo file="sandbox/temp.p">
+      {  sandbox/temp.i   }.
+      MESSAGE "World".
+  	</echo>
+  	<echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+  	</echo>
+  </target>
+  <target name="test10">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>	
+  </target>
+  <target name="test10bis">
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" forceCompile="true" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  
+  <!-- Test failOnError attribute -->
+  <target name="test11init">
+  	<echo file="sandbox/temp.p">
+      MESSGE "Hello World!"
+  	</echo>
+  	<echo file="sandbox/temp2.p">
+      MESSAGE "Hello world!".
+  	</echo>
+  </target>
+  <target name="test11">
+    <PCTCompileExt graphicalMode="${graph}" failOnError="true" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+      <fileset dir=".">
+        <include name="sandbox/temp2.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test compileUnderscore attribute -->
+  <target name="test12init">
+  	<echo file="sandbox/temp.p">
+      DEF VAR _c AS CHAR.
+  	</echo>
+  </target>
+  <target name="test12">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test12bis">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" compileUnderscore="true" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  
+  <!-- Test deep includes -->
+  <target name="test13init">
+    <echo file="sandbox/temp.p">
+      {sandbox/temp.i}.
+      RETURN '0'.
+    </echo>
+    <echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+      {sandbox/temp2.i}.
+    </echo>
+    <echo file="sandbox/temp2.i">
+      MESSAGE "World".
+    </echo>
+  </target>
+  <target name="test13">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test13bis">
+    <sleep seconds="3"/>
+    <touch file="sandbox/temp2.i"/>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  
+  <!-- CRC check -->
+  <target name="test14init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test14">
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <echo file="sandbox/test2.p">
+      DEFINE TEMP-TABLE tt NO-UNDO LIKE Tab1.
+      CREATE tt.
+      ASSIGN tt.fld1 = 1.
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompileExt>
+  </target>
+  <target name="test14bis">
+    <echo file="sandbox/update.df">
+      ADD FIELD "Fld2" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld2"
+        COLUMN-LABEL "Fld2"
+        ORDER 20
+    </echo>
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadSchema>
+    <sleep seconds="2" />
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTCompileExt>
+  </target>
+
+  <!-- CRC check with logical name & aliases -->
+  <target name="test15init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test15">
+    <echo file="sandbox/test.p">
+      CREATE abc.tab1.
+      ASSIGN abc.tab1.fld1 = 1.
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" logicalName="abc"/>
+    </PCTCompileExt>
+  </target>
+  <target name="test15bis">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" logicalName="abc"/>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test encrypted code with default key can be compiled -->
+  <target name="test16init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+      RETURN "1".
+  	</echo>
+    <mkdir dir="xcode"/>
+    <PCTXCode destDir="xcode" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="temp.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test16">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test encrypted code with specified key needs option -->
+  <target name="test17init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+      RETURN "1".
+  	</echo>
+    <mkdir dir="xcode"/>
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="pct">
+      <fileset dir="sandbox">
+        <include name="temp.p"/>
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test17-part1">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}"  xcode="true">
+      <fileset dir=".">
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test17-part2">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" xcode="true" xcodekey="pct">
+      <fileset dir=".">
+        <include name="xcode/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  
+  <!-- Dataservers -->
+  <!-- CRC check -->
+  <target name="test18init">
+    <echo file="sandbox/schema.df">
+      
+      UPDATE DATABASE "holder"
+      
+      ADD TABLE "Tab1"
+        FOREIGN-NAME "TAB1"
+        FOREIGN-TYPE "TABLE"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FOREIGN-NAME "FLD1"
+        FORMAT "9"
+        FOREIGN-TYPE "NUMBER"
+        FIELD-MISC13 22
+        FIELD-MISC14 1
+        FOREIGN-MAXIMUM 22
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      UPDATE FIELD "Fld1" OF "tab1"
+        FOREIGN-POS 1
+      
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        INDEX-NUM 1
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        FOREIGN-NAME "TAB1##TAB1_PK"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" >
+      <OracleHolder dbName="holder" oracleVersion="8" codepage="iso8859-1" collation="BASIC" schemaFile="sandbox/schema.df" />
+    </PCTCreateBase>
+  </target>
+  <target name="test18">
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <echo file="sandbox/test2.p">
+      DEFINE TEMP-TABLE tt NO-UNDO LIKE Tab1.
+      CREATE tt.
+      ASSIGN tt.fld1 = 1.
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTCompileExt>
+  </target>
+  <target name="test18bis">
+    <echo file="sandbox/update.df">
+      UPDATE DATABASE "holder"
+      
+      ADD FIELD "Fld2" OF "tab1" AS integer 
+        FOREIGN-NAME "FLD2"
+        FORMAT "9"
+        FOREIGN-TYPE "NUMBER"
+        FIELD-MISC13 22
+        FIELD-MISC14 1
+        FOREIGN-MAXIMUM 22
+        INITIAL "0"
+        LABEL "Fld2"
+        POSITION 3
+        COLUMN-LABEL "Fld2"
+        ORDER 20
+
+      UPDATE FIELD "Fld2" OF "tab1"
+        FOREIGN-POS 2
+    </echo>
+    <PCTLoadSchema graphicalMode="${graph}" srcFile="sandbox/update.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadSchema>
+    <sleep seconds="2" />
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/test*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="dictdb"/>
+      </PCTConnection>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Same as test9, but using a temp dir with spaces and quotes -->
+  <target name="test19init">
+  	<echo file="sandbox/temp.p">
+      {sandbox/temp.i}.
+      MESSAGE "World".
+  	</echo>
+  	<echo file="sandbox/temp.i">
+      MESSAGE "Hello".
+  	</echo>
+  </target>
+  <target name="test19">
+    <mkdir dir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" />
+    <PCTCompileExt graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test19bis">
+    <touch file="sandbox/temp.i"/>
+    <sleep seconds="3" />
+    <PCTCompileExt graphicalMode="${graph}" tempDir="sandbox/documents and settings/another dir with spaces/dir'with'quotes/" destDir="build" dlcHome="${DLC}" forceCompile="true" >
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test listing, preprocess and debugListing attributes -->
+  <target name="test20-init">
+  	<echo file="sandbox/temp.p">
+      MESSAGE "Hello world".
+  	</echo>
+  </target>
+  <target name="test20-part1">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="false" preprocess="false" debugListing="false">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+  <target name="test20-part2">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" listing="true" preprocess="true" debugListing="true">
+      <fileset dir=".">
+        <include name="sandbox/temp.p"/>	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+
+  <!-- Test flatten mapper -->
+  <target name="test21">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/*.p" />	
+      </fileset>	
+      <mapper type="flatten" />
+    </PCTCompileExt>	
+  </target>
+
+  <!-- Test regexp mapper -->
+  <target name="test22">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/trigger.t">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir=".">
+        <include name="sandbox/*.p" />	
+        <include name="sandbox/*.t" />	
+      </fileset>	
+      <compositemapper>
+        <regexpmapper from="^(.*)\.p$$" to="\1renamed.r"/>
+        <regexpmapper from="^(.*)\.t$$" to="triggers/\1.r"/>
+      </compositemapper>
+    </PCTCompileExt>	
+  </target>
+  
+  <target name="test23">
+    <mkdir dir="sandbox/package"/>
+  	<echo file="sandbox/package/testclass.cls">
+  	   CLASS package.testclass:
+  	   END CLASS.
+  	</echo>
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="package/testclass.cls"/>
+      </fileset>
+    </PCTCompile>	
+  </target>
+
+  <!-- Simple compilation with two threads -->
+  <target name="test24">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="2">
+      <fileset dir=".">
+        <include name="sandbox/*.p"/>
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+
+</project>

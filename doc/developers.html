@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - Improving PCT</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>Improving PCT</h1>
+<h2>Introduction</h2>
+<p>
+One of the best ways to improve PCT is to report bugs and missing features. Doing this is just a matter
+of minutes : drop <a href="mailto:justus_phenix@users.sourceforge.net">me</a> a mail with PCT in the title,
+describing your problem.
+</p>
+
+<h2>Want to do it yourself ?</h2>
+<p>
+Changing PCT's behavior isn't hard, as long as you know Progress and Java. I'm developing PCT using Eclipse,
+on both Windows and Linux platforms. The basic steps to develop with PCT are :</p><ul>
+<li>Install the latest Eclipse environment</li>
+<li>Install Mercurial plugin (see <a href="http://javaforge.com/project/HGE">here</a>)</li>
+<li>With Eclipse launched, choose File → Import, then « Mercurial » section and « Clone repository using Mercurial »
+<br />Use the values as in screenshot below, then click on Finish.
+<br /><img src="developers-11.png" /></li>
+<li>You should have PCT displayed in package explorer view.<br/>
+<img src="developers-12.png" /></li>
+<li>Edit pct.build.properties according to your needs<br /><img src="developers-6.png" /></li>
+<li>Compile PCT using External Tools menu<br /><img src="developers-7.png" /><img src="developers-8.png" /></li>
+<li>Change classes and/or Progress procedures, then run JUnit tests to check your changes didn't break anything.
+Please note that a few tests could fail when using Progress 9.<br /><img src="developers-9.png" /><img src="developers-10.png" /></li>
+</ul>
+
+</div>
+
+<div class="LastUpdate">
+  $Date: 2006-03-27 21:12:46 +0200 (lun., 27 mars 2006) $
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>
