@@ -10,7 +10,7 @@
 <meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
 <meta name="revisit-after" content="30 days" />
 <meta name="DC.Language" content="en" />
-<title>PCT documentation - PLExtract task</title>
+<title>PCT documentation - PLFileSet</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 </head>
 <body>
@@ -36,12 +36,11 @@
 @RIGHT_BANNER@
 
 <div class="Text">
-<h1>PLExtract task -- &lt;pct:unlib /&gt;</h1>
+<h1>PLFileSet</h1>
 
 <h2>Description</h2>
 <p>
-Extracts files from a Progress Library file. Note that prolib executable isn't required, so the dlcHome
-attribute isn't needed as with other tasks.
+A &lt;PLFileSet&gt; is a special form of a &lt;fileset&gt; which can be used to extract files from a procedure library.
 </p>
 
 <h2>Parameters</h2>
@@ -55,49 +54,26 @@ attribute isn't needed as with other tasks.
 </tr>
 <tr>
 <td>src</td>
-<td>PL file to expand</td>
+<td>Specify a PL file whose contents will be extracted.</td>
 <td align="center">File</td>
 <td align="center">Required</td>
 <td>No default value</td>
-</tr>
-<tr>
-<td>dest</td>
-<td>Directory where to store expanded files</td>
-<td align="center">File</td>
-<td align="center">Required</td>
-<td>No default value</td>
-</tr>
-<tr>
-<td>overwrite</td>
-<td>Overwrite files, even if they are newer than the corresponding entries in the archive (true or false, default is true)</td>
-<td align="center">Boolean</td>
-<td align="center">Optional</td>
-<td>True</td>
 </tr>
 </table>
 
 <h2>Parameters as nested elements</h2>
-<h3>PatternSet (org.apache.tools.ant.types.PatternSet)</h3>
-<p>
-PatternSets are used to select files to extract from the archive. If no patternset is used, all files are extracted.
-</p>
+<p>None</p>
 
 <h2>Examples</h2>
 <pre>
-&lt;PLExtract src="${DLC}/src/prodict.pl" dest="prodict" /&gt;
+&lt;!-- Selector has to be declared in build.xml --&gt;
+&lt;target name="copy"&gt;
+  &lt;copy todir="destDir"&gt;
+    &lt;plfileset src="${DLC}/gui/adeuib.pl" includes="**/*.r" /&gt;
+  &lt;/copy&gt;
+&lt;/target&gt;
 </pre>
-<p>Extracts prodict.pl from DLC/src directory to prodict subdirectory (in your base dir).</p>
-
-<pre>
-&lt;PLExtract src="${DLC}/src/prodict.pl" dest="${tools.home}"&gt;
-  &lt;patternset&gt;
-    &lt;include name="**/*.p" /&gt;
-    &lt;exclude name="**/mss/*.p" /&gt;
-  &lt;/patternset&gt;
-&lt;/PLExtract&gt;
-</pre>
-<p>Extracts prodict.pl from DLC/src directory to prodict subdirectory (in your base dir). *.p files from mss subdir are excluded.</p>
-
+Will extract any .r files from $DLC/gui/adeuib.pl to destDir
 </div>
 
 <div class="LastUpdate">
