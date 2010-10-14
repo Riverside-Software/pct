@@ -270,6 +270,7 @@
         <include name="com/phenix/pct/*.properties" />
         <include name="net/cordova/prounit/*.class" />
         <include name="PCT.properties" />
+        <include name="types.properties" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
@@ -295,6 +296,7 @@
 
   <target name="declare" depends="jar" description="PCT tasks declaration">
     <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
+    <typedef resource="types.properties" classpath="${dist}/PCT.jar" />
   </target>
 
   <target name="test-build" depends="jar" description="Builds junit tests">
@@ -310,7 +312,7 @@
     <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
     <copy todir="${testdir}">
-      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r" />
+      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />
     </copy>
   </target>
 

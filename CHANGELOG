@@ -1,5 +1,8 @@
 Version 0.17 (??/??/????)
 ==============================
+ * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl
+ * Removed PLExtract task, in favor of PLFileSet type which can be nested in any FileSet capable task
+   Only in read tasks, PCTLibrary still needs to be used when creating libraries
  * Replaced CRCDifferent with RCodeSelector. Now able to use MD5 to compare r-code
  * Another bug when XREF when importing XREF on classes
    Bug reported by Sascha Hofmann

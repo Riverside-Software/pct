@@ -53,21 +53,18 @@
  */
 package com.phenix.pct;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
-import java.text.MessageFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,318 +75,151 @@ import java.util.List;
  */
 public class PLReader {
     private static final int MAGIC = 0xD707;
+    private static final int MAGIC_SIZE = 2;
     private static final int ENCODING_OFFSET = 0x02;
+    private static final int ENCODING_SIZE = 20;
     private static final int FILE_LIST_OFFSET = 0x1E;
-    private static final int RECORD_MIN_SIZE = 29;
-    private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
+    // private static final int RECORD_MIN_SIZE = 29;
+    // private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
 
-    private File f;
-    private List files = null;
-    private boolean init = false;
-//    private String encoding = null;
-    
-    public PLReader(File f) {
-        this.f = f;
-        init();
-    }
+    private File pl;
+    private List /* FileEntry */files = null;
 
-    /**
-     * Performs initialization actions like checking file integrity and reading file list
-     */
-    public void init() {
-        this.init = false;
-
-        if (this.f == null) {
-            throw new NullPointerException();
+    public PLReader(File file) {
+        String name = file.getPath();
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            sm.checkRead(name);
         }
 
-        this.files = new ArrayList();
-
-        try {
-            readFileList();
-            this.init = true;
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        this.pl = file;
     }
 
     /**
-     * Specifies a file to read. Should be initialized with init
+     * Returns entries contained in this procedure library
      * 
-     * @param f File to read
-     */
-    public void setFile(File f) {
-        this.f = f;
-        this.init = false;
-        this.files = null;
-    }
-
-    /**
-     * Specifies a file to read.
-     * 
-     * @param f File to read
-     * @param init If initialization should be done
-     */
-    public void setFile(File f, boolean init) {
-        this.f = f;
-
-        if (init) {
-            init();
-        } else {
-            this.init = false;
-            this.files = null;
-        }
-    }
-
-    /**
-     * 
-     * @return Vector of FileEntry
+     * @throws RuntimeException If file is not a valid procedure library
      */
     public List getFileList() {
-        if (this.init) {
-            return this.files;
+        if (this.files == null)
+            readFileList();
+        return files;
+    }
+
+    private void readFileList() {
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(pl, "r");
+            FileChannel fc = raf.getChannel();
+            if (!checkMagic(fc))
+                throw new RuntimeException("Not a valid PL file");
+
+            Charset charset = getCharset(fc);
+            int offset = getTOCOffset(fc);
+            files = new ArrayList();
+            FileEntry fe = null;
+            while ((fe = readEntry(fc, offset, charset)) != null) {
+                if (fe.isValid())
+                    files.add(fe);
+                offset += fe.getTocSize();
+            }
+        } catch (IOException caught) {
+            throw new RuntimeException(caught);
+        } finally {
+            if (raf != null) {
+                try {
+                    raf.close();
+                } catch (IOException uncaught) {
+
+                }
+            }
+        }
+    }
+
+    public InputStream getInputStream(FileEntry fe) throws IOException {
+        ByteBuffer bb = null;
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(pl, "r");
+            FileChannel fc = raf.getChannel();
+            bb = ByteBuffer.allocate(fe.getSize());
+            fc.read(bb, fe.getOffset());
+        } finally {
+            try {
+                raf.close();
+            } catch (IOException uncaught) {
+
+            }
+        }
+
+        return new ByteArrayInputStream(bb.array());
+    }
+
+    private boolean checkMagic(FileChannel fc) throws IOException {
+        ByteBuffer bb = ByteBuffer.allocate(MAGIC_SIZE);
+        int count = fc.read(bb, 0);
+        return ((count == MAGIC_SIZE) && ((bb.getShort(0) & 0xffff) == MAGIC));
+    }
+
+    private Charset getCharset(FileChannel fc) throws IOException {
+        ByteBuffer bEncoding = ByteBuffer.allocate(ENCODING_SIZE);
+        if (fc.read(bEncoding, ENCODING_OFFSET) != ENCODING_SIZE)
+            throw new RuntimeException("Invalid PL file");
+        bEncoding.position(0);
+        StringBuffer sbEncoding = new StringBuffer();
+        int zz = 0;
+        while ((zz < 20) && (bEncoding.get(zz) != 0)) {
+            sbEncoding.append((char) bEncoding.get(zz++));
+        }
+        try {
+            return Charset.forName(sbEncoding.toString());
+        } catch (IllegalArgumentException iae) {
+            return Charset.forName("US-ASCII");
+        }
+    }
+
+    private int getTOCOffset(FileChannel fc) throws IOException {
+        ByteBuffer bTOC = ByteBuffer.allocate(4);
+        if (fc.read(bTOC, FILE_LIST_OFFSET) != 4)
+            throw new RuntimeException("Invalid PL file");
+        return bTOC.getInt(0);
+    }
+
+    private FileEntry readEntry(FileChannel fc, int offset, Charset charset) throws IOException {
+        ByteBuffer b1 = ByteBuffer.allocate(1);
+        fc.read(b1, offset);
+
+        if (b1.get(0) == (byte) 0xFE) {
+            boolean stop = false;
+            int zz = 0;
+            while (!stop) {
+                b1.position(0);
+                int kk = fc.read(b1, offset + ++zz);
+                stop = (kk == -1) || (b1.get(0) == (byte) 0xFF);
+            }
+
+            return new FileEntry(zz);
+        } else if (b1.get(0) == (byte) 0xFF) {
+            b1.position(0);
+            fc.read(b1, offset + 1);
+            int fNameSize = b1.get(0);
+            if (fNameSize == 0)
+                return new FileEntry(29);
+            ByteBuffer b2 = ByteBuffer.allocate(fNameSize);
+            fc.read(b2, offset + 2);
+            b2.position(0);
+            String fName = charset.decode(b2).toString();
+            ByteBuffer b3 = ByteBuffer.allocate(27);
+            fc.read(b3, offset + 2 + fNameSize);
+            int fileOffset = b3.getInt(2);
+            int fileSize = b3.getInt(7);
+            long added = b3.getInt(11) * 1000L;
+            long modified = b3.getInt(15) * 1000L;
+
+            return new FileEntry(fName, modified, added, fileOffset, fileSize, 29 + fNameSize);
         } else {
             return null;
         }
-    }
 
-    /**
-     * Read file list
-     * 
-     * @throws Exception File has bad format
-     */
-    private void readFileList() throws Exception {
-        ByteBuffer bb = ByteBuffer.allocate(RECORD_MAX_SIZE);
-        long offset = 0;
-        int br = 0;
-        Charset charset = null;
-        
-        if (!checkMagic()) {
-            return;
-        }
-
-        try {
-            FileInputStream fis = new FileInputStream(f);
-            FileChannel in = fis.getChannel();
-            
-            // Reads encoding from library
-            ByteBuffer bEncoding = ByteBuffer.allocate(20); 
-            in.read(bEncoding, ENCODING_OFFSET);
-            bEncoding.position(0);
-            byte bb3;
-            StringBuffer sbEncoding = new StringBuffer();
-            while((bb3 = bEncoding.get()) != 0) {
-                sbEncoding.append((char) bb3);
-            }
-            try {
-                charset = Charset.forName(sbEncoding.toString());
-            } catch (IllegalArgumentException iae) {
-                System.out.println("Unknown charset : " + sbEncoding.toString() + " - Defaulting to US-ASCII");
-                charset = Charset.forName("US-ASCII");
-            }
-            
-            ByteBuffer b = ByteBuffer.allocate(4);
-            int f_offs = in.read(b, FILE_LIST_OFFSET);
-
-            if (f_offs == 4) {
-                // 4 bytes were read
-                offset = ((long) b.getInt(0) & 0xffffffffL);
-
-                StringBuffer sb = new StringBuffer();
-
-                // Reading first file in list
-                br = in.read(bb, offset);
-
-                while (br > RECORD_MIN_SIZE) {
-                    // First byte should be 0xFE or 0xFF
-                    short magic = ((short) (bb.get(0) & (short) 0xff));
-
-                    if (magic == 0xFE) {
-                        int k = 1;
-
-                        while (((short) (bb.get(k) & (short) 0xff)) != 0xFF) {
-                            k++;
-                        }
-
-                        // Reading next entry
-                        offset += k;
-                        bb.clear();
-                        br = in.read(bb, offset);
-                    } else if (magic == 0xFF) {
-                        short fnsz = ((short) (bb.get(1) & (short) 0xff));
-
-                        if (fnsz > 0) {
-                            sb.setLength(0);
-                            
-                            bb.position(1);
-                            ByteBuffer bb2 = bb.duplicate();
-                            bb2.limit(bb2.get(1) + 2);
-                            bb2.position(2);
-                            CharBuffer fileName = charset.decode(bb2);
-
-                            offset += (RECORD_MIN_SIZE + fnsz);
-
-                            long fileOffset = ((long) bb.getInt(fnsz + 4) & 0xffffffffL);
-                            long fileSize = ((long) bb.getInt(fnsz + 9) & 0xffffffffL);
-                            long addDate = ((long) bb.getInt(fnsz + 13) & 0xffffffffL);
-                            long modDate = ((long) bb.getInt(fnsz + 17) & 0xffffffffL);
-
-                            // Creates new file entry and adds it to vector
-                            FileEntry fe = new FileEntry(fileName.toString(), modDate, addDate,
-                                    fileOffset, (int) fileSize);
-                            files.add(fe);
-
-                            // Reading next entry
-                            bb.clear();
-                            br = in.read(bb, offset);
-                        } else {
-                            br = 0;
-                        }
-                    } else {
-                        try {
-                            in.close();
-                            fis.close();
-                        } catch (IOException ioe) {
-                        }
-                        throw new Exception(MessageFormat.format(Messages.getString("PLReader.0"),
-                                new Object[]{new Long(offset), new Long(magic)}));
-                    }
-                }
-            } else { // i == 4
-
-                try {
-                    in.close();
-                    fis.close();
-                } catch (IOException ioe) {
-                }
-
-                throw new Exception(Messages.getString("PLReader.12")); //$NON-NLS-1$
-            }
-
-            in.close();
-            fis.close();
-        } catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
-        }
-    }
-
-    public String toString() {
-        if (!this.init) {
-            return Messages.getString("PLReader.13"); //$NON-NLS-1$
-        }
-
-        if (this.files == null) {
-            return Messages.getString("PLReader.14"); //$NON-NLS-1$
-        }
-
-        StringBuffer sb = new StringBuffer();
-        for (Iterator e = files.iterator(); e.hasNext();) {
-            FileEntry fe = (FileEntry) e.next();
-            sb.append(fe.toString());
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
-
-    public boolean checkMagic() {
-        boolean retVal = false;
-
-        try {
-            FileInputStream fis = new FileInputStream(f);
-            FileChannel in = fis.getChannel();
-
-            ByteBuffer bb = ByteBuffer.allocate(2);
-            int i = in.read(bb, 0);
-
-            if (i == 2) {
-                int magic = (bb.getShort(0) & 0xffff);
-                retVal = (magic == MAGIC);
-            } else {
-                retVal = false;
-            }
-
-            in.close();
-            fis.close();
-
-            return retVal;
-        } catch (FileNotFoundException fnfe) {
-            System.out.println(fnfe.getMessage());
-        } catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
-        }
-
-        return false;
-    }
-
-    public boolean extractFile(FileEntry fe, File dest) {
-        try {
-            if (!dest.getParentFile().exists())
-                if (!dest.getParentFile().mkdirs())
-                    return false;
-
-            RandomAccessFile raf = new RandomAccessFile(this.f, "r");
-            raf.seek(fe.getOffset());
-            RandomAccessFile out = new RandomAccessFile(dest, "rw");
-            for (long l = 0; l < fe.getSize(); l++) {
-                out.writeByte(raf.readUnsignedByte()); // TODO Use packets of byte
-            }
-            out.close();
-            raf.close();
-        } catch (FileNotFoundException fnfe) {
-            System.out.println("Unable to find file " + fnfe.getMessage());
-        } catch (IOException ioe) {
-            System.out.println("oel"); // TODO Message
-        }
-        return true;
-    }
-
-    public static void main(String[] args) {
-        PLReader t = new PLReader(new File(args[0]));
-        System.out.println(t);
-    }
-
-    /**
-     * Class representing a static file entry in a PL file
-     */
-    public static class FileEntry {
-        private String fileName;
-        private Date modDate;
-        private Date addDate;
-        private long offset;
-        private int size;
-
-        public FileEntry(String fileName, long modDate, long addDate, long offSet, int size) {
-            this.fileName = fileName;
-            this.modDate = new Date(modDate * 1000);
-            this.addDate = new Date(addDate * 1000);
-            this.offset = offSet;
-            this.size = size;
-        }
-
-        public String getFileName() {
-            return this.fileName;
-        }
-
-        public int getSize() {
-            return this.size;
-        }
-
-        public Date getModDate() {
-            return this.modDate;
-        }
-
-        public Date getAddDate() {
-            return this.addDate;
-        }
-
-        public long getOffset() {
-            return this.offset;
-        }
-
-        public String toString() {
-            return MessageFormat
-                    .format(
-                            Messages.getString("PLReader.6"), new Object[]{this.fileName, Integer.valueOf(size), this.addDate, this.modDate, Long.valueOf(offset)}); //$NON-NLS-1$
-        }
     }
 }
