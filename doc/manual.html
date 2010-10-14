@@ -58,7 +58,8 @@ Before you can use the PCT Ant tasks in your build scripts, you have to add them
 PCT is to copy <em>&lt;INST_DIR&gt;</em>lib/PCT.jar in the <em>&lt;ANT_HOME&gt;</em>/lib directory. In this case, you just have
 to declare the tasks in your build script as follows :
 </p>
-<pre>&lt;taskdef resource="PCT.properties" /&gt;</pre>
+<pre>&lt;taskdef resource="PCT.properties" /&gt;
+&lt;typedef resource="types.properties" /&gt;</pre>
 <p>
 It's also possible to keep PCT.jar in a separate directory. In this case, declare the tasks as follows :
 </p>
