@@ -106,6 +106,16 @@ public class PLReader {
         return files;
     }
 
+    public FileEntry getEntry(String name) {
+        for (Iterator iter = getFileList().iterator(); iter.hasNext(); ) {
+            FileEntry entry = (FileEntry) iter.next();
+            if (entry.getFileName().equals(name))
+                return entry;
+        }
+        
+        return null;
+    }
+    
     private void readFileList() {
         RandomAccessFile raf = null;
         try {

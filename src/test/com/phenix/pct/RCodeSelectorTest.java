@@ -93,34 +93,65 @@ public class RCodeSelectorTest extends BuildFileTest {
         executeTarget("test");
         
         File f1 = new File("sandbox/copy1");
-        assertEquals(f1.list().length, 0);
+        assertEquals(0, f1.list().length);
         
         File f2 = new File("sandbox/copy2");
-        assertEquals(f2.list().length, 0);
+        assertEquals(0, f2.list().length);
         
         File f3 = new File("sandbox/copy3");
-        assertEquals(f3.list().length, 1);
+        assertEquals(1, f3.list().length);
         assertTrue(f3.list()[0].equals("test2.r"));
 
         File f4 = new File("sandbox/copy4");
-        assertEquals(f4.list().length, 1);
+        assertEquals(1, f4.list().length);
         assertTrue(f4.list()[0].equals("test2.r"));
 
         File f5 = new File("sandbox/copy5");
-        assertEquals(f5.list().length, 0);
+        assertEquals(0, f5.list().length);
         
         File f6 = new File("sandbox/copy6");
-        assertEquals(f6.list().length, 1);
+        assertEquals(1, f6.list().length);
         assertTrue(f6.list()[0].equals("test3.r"));
         
         File f7 = new File("sandbox/copy7");
-        assertEquals(f7.list().length, 1);
+        assertEquals(1, f7.list().length);
         assertTrue(f7.list()[0].equals("test2.r"));
 
         File f8 = new File("sandbox/copy8");
-        assertEquals(f8.list().length, 2);
+        assertEquals(2, f8.list().length);
         assertTrue(f8.list()[0].equals("test2.r"));
         assertTrue(f8.list()[1].equals("test3.r"));
-    }
+        
+        executeTarget("test2");
+        f1 = new File("sandbox/copylib1");
+        assertEquals(0, f1.list().length);
+        
+        f2 = new File("sandbox/copylib2");
+        assertEquals(0, f2.list().length);
+
+        f3 = new File("sandbox/copylib3");
+        assertEquals(1, f3.list().length);
+        assertTrue(f3.list()[0].equals("test2.r"));
+
+        f4 = new File("sandbox/copylib4");
+        assertEquals(1, f4.list().length);
+        assertTrue(f4.list()[0].equals("test2.r"));
+
+        f5 = new File("sandbox/copylib5");
+        assertEquals(0, f5.list().length);
+        
+        f6 = new File("sandbox/copylib6");
+        assertEquals(1, f6.list().length);
+        assertTrue(f6.list()[0].equals("test3.r"));
+        
+        f7 = new File("sandbox/copylib7");
+        assertEquals(1, f7.list().length);
+        assertTrue(f7.list()[0].equals("test2.r"));
+
+        f8 = new File("sandbox/copylib8");
+        assertEquals(2, f8.list().length);
+        assertTrue(f8.list()[0].equals("test2.r"));
+        assertTrue(f8.list()[1].equals("test3.r"));
+}
 
 }
