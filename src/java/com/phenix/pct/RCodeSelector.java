@@ -21,6 +21,10 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Selector for rcode
@@ -33,6 +37,9 @@ public class RCodeSelector extends BaseExtendSelector {
     private final static int MODE_MD5 = 2;
     
     private File dir = null;
+    private File lib = null;
+    private PLReader reader = null;
+    
     private int mode = MODE_CRC;
 
     public void setMode(String mode) {
@@ -46,18 +53,28 @@ public class RCodeSelector extends BaseExtendSelector {
         this.dir = dir;
     }
 
+    public void setLib(File lib) {
+        this.lib = lib;
+    }
+
     public void verifySettings() {
         super.verifySettings();
 
-        if (dir == null)
-            setError("No dir attribute defined");
+        if ((dir == null) && (lib == null))
+            setError("Either dir or lib must be defined");
+        if ((dir != null) && (lib != null))
+            setError("Either dir or lib must be defined");
         if ((mode != MODE_CRC) && (mode != MODE_MD5))
             setError("Invalid comparison mode");
+        
+        if (lib != null) {
+            reader = new PLReader(lib);
+        }
     }
 
     /**
-     * Compares two rcodes for CRC, and returns true if CRC are either different or one file is
-     * missing (or not rcode). Returns false if both files are rcode with an equal CRC
+     * Compares two rcodes for CRC or MD5, and returns true if CRC or MD5 are either different or one file is
+     * missing (or not rcode). Returns false if both files are rcode with an equal CRC or MD5
      * 
      * @param basedir A java.io.File object for the base directory
      * @param filename The name of the file to check
@@ -74,10 +91,27 @@ public class RCodeSelector extends BaseExtendSelector {
         } catch (Exception e) {
             return true;
         }
-        try {
-            file2 = new RCodeInfo(new File(this.dir, filename));
-        } catch (Exception e) {
-            return true;
+        
+        if (reader == null) {
+            try {
+                file2 = new RCodeInfo(new File(dir, filename));
+            } catch (Exception e) {
+                return true;
+            }
+        } else {
+            FileEntry e = reader.getEntry(filename);
+            if (e == null)
+                return true;
+            try {
+                File f = File.createTempFile("pct", ".r");
+                f.deleteOnExit();
+                FileOutputStream fos = new FileOutputStream(f);
+                copyFile(reader.getInputStream(e), fos);
+                fos.close();
+                file2 = new RCodeInfo(f);
+            } catch (Exception e2) {
+                return true;
+            }
         }
 
         switch (mode) {
@@ -85,5 +119,15 @@ public class RCodeSelector extends BaseExtendSelector {
             case MODE_MD5: return !file1.getMD5().equals(file2.getMD5());
             default: return true;
         }
+    }
+    
+    public static void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[4096];
+        int bytesRead = in.read(buf);
+        while (bytesRead != -1) {
+            out.write(buf, 0, bytesRead);
+            bytesRead = in.read(buf);
+        }
+        out.flush();
     }
 }

@@ -4,7 +4,8 @@
   <!-- $Revision: 574 $ -->
 
   <taskdef resource="PCT.properties" classpath="." />
-  <typedef name="RCodeSelector" classname="com.phenix.pct.RCodeSelector" classpath="." />
+  <typedef resource="types.properties" classpath="." />
+  
   <property environment="env" />
 
   <!-- Test prowin32 on Windows, _progres on everything else -->
@@ -20,6 +21,7 @@
     <mkdir dir="sandbox/build2" />
     <mkdir dir="sandbox/build3" />
     <mkdir dir="sandbox/build4" />
+    <mkdir dir="sandbox/libs" />
     <mkdir dir="sandbox/copy1" />
     <mkdir dir="sandbox/copy2" />
     <mkdir dir="sandbox/copy3" />
@@ -28,6 +30,14 @@
     <mkdir dir="sandbox/copy6" />
     <mkdir dir="sandbox/copy7" />
     <mkdir dir="sandbox/copy8" />
+    <mkdir dir="sandbox/copylib1" />
+    <mkdir dir="sandbox/copylib2" />
+    <mkdir dir="sandbox/copylib3" />
+    <mkdir dir="sandbox/copylib4" />
+    <mkdir dir="sandbox/copylib5" />
+    <mkdir dir="sandbox/copylib6" />
+    <mkdir dir="sandbox/copylib7" />
+    <mkdir dir="sandbox/copylib8" />
     <echo file="sandbox/src/test1.p">
       MESSAGE "Hello world!".
     </echo>
@@ -135,6 +145,18 @@
         <pathelement path="sandbox/src" /> 
       </propath>
     </PCTCompile>
+    <PCTLibrary destFile="sandbox/libs/lib1.pl">
+      <fileset dir="sandbox/build1" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="sandbox/libs/lib2.pl">
+      <fileset dir="sandbox/build2" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="sandbox/libs/lib3.pl">
+      <fileset dir="sandbox/build3" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="sandbox/libs/lib4.pl">
+      <fileset dir="sandbox/build4" includes="**/*.r" />
+    </PCTLibrary>
   </target>
 
   <target name="test">
@@ -188,4 +210,55 @@
     </copy>
   </target>
 
+  <target name="test2">
+    <!-- CopyLib1 doit être vide -->
+    <copy todir="sandbox/copylib1">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib1.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib2 doit être vide -->
+    <copy todir="sandbox/copylib2">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib2.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib3 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib3">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib3.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib4 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib4">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib4.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib5 doit être vide -->
+    <copy todir="sandbox/copylib5">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib1.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy6 ne doit contenir que test3.r -->
+    <copy todir="sandbox/copylib6">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib2.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy7 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib7">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib3.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy8 ne doit contenir que test2.r et test3.r -->
+    <copy todir="sandbox/copylib8">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib4.pl" mode="md5" />
+      </fileset>
+    </copy>
+  </target>
+  
 </project>
