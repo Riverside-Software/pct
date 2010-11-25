@@ -57,6 +57,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
@@ -336,6 +337,9 @@ public class PCTCreateBase extends PCT {
                     pls.setDlcBin(this.getDlcBin());
                     pls.addPropath(this.propath);
                     pls.setIncludedPL(this.getIncludedPL());
+                    for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
+                        pls.addEnv((Environment.Variable) iter.next());
+                    }
 
                     PCTConnection pc = new PCTConnection();
                     pc.setDbName(this.dbName);
@@ -410,6 +414,10 @@ public class PCTCreateBase extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
+        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
+            exec.addEnv((Environment.Variable) iter.next());
+        }
+
         return exec;
     }
 
@@ -435,6 +443,10 @@ public class PCTCreateBase extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
+        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
+            exec.addEnv((Environment.Variable) iter.next());
+        }
+
         return exec;
     }
 
@@ -451,6 +463,10 @@ public class PCTCreateBase extends PCT {
         var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
+
+        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
+            exec.addEnv((Environment.Variable) iter.next());
+        }
 
         return exec;
     }
