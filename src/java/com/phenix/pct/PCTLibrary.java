@@ -222,6 +222,9 @@ public class PCTLibrary extends PCT {
         }
 
         try {
+            log(MessageFormat.format(Messages.getString("PCTLibrary.6"), new Object[]{this.destFile
+                .getAbsolutePath()}));
+
             // Creates new library
             exec = createArchiveTask();
             exec.execute();
@@ -256,6 +259,9 @@ public class PCTLibrary extends PCT {
 
             // Compress library if noCompress set to false
             if (!this.noCompress) {
+                log(MessageFormat.format(Messages.getString("PCTLibrary.7"), new Object[]{this.destFile
+                    .getAbsolutePath()}));
+
                 exec = compressTask();
                 exec.execute();
             }
