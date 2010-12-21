@@ -1,0 +1,399 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - PCTRun task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>PCTRun task -- &lt;pct:run /&gt;</h1>
+
+<h2>Description</h2>
+<p>Executes a Progress procedure.</p>
+<p>This task generates a temporary Progress 
+procedure on the fly  which sets the propath and declares database aliases according to specified
+parameters, and then runs the specified procedure.</p>
+<p>This temporary procedure is launched by an Exec task, with prowin32 or _progres executable,
+and with the specified arguments.</p>
+<p>The generated procedure follows this template :</p>
+<pre>
+// Call this function in your procedures to retrieve parameters
+FUNCTION getParameter RETURNS CHARACTER (k AS CHARACTER).
+CONNECT VALUE('…') NO-ERROR. // 1 line for each database to connect
+CREATE ALIAS '…' FOR DATABASE … [NO-ERROR]. // 1 line for each alias
+ASSIGN PROPATH = '…' + PROPATH. // 1 line for each propath entry
+RUN VALUE('…') NO-ERROR.
+// Check error status, return-value and outputs result to a file
+// Quit
+</pre>
+<h2>Return values</h2>
+<p>PCT assumes a RETURN-VALUE of 0 is a success. Database connection failure will always returns 14.
+Error during procedure execution returns 1.</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>procedure</td>
+<td>Procedure to execute</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>graphicalMode</td>
+<td>True if you want to execute procedure using prowin32, _progres otherwise</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False (_progres)</td>
+</tr>
+<tr>
+<td>baseDir</td>
+<td>The directory in which the Progress runtime should be executed.</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>Current Ant's directory</td>
+</tr>
+<tr>
+<td>failOnError <span id="new">!!NEW!!</span></td>
+<td>Stop the buildprocess if the Progress procedure exits with a return value other than 0.</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>
+<tr>
+<td>debugPCT</td>
+<td>True to keep internal temporary files on disk</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>centuryYearOffset</td>
+<td>Century Year Offset (-yy parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>cpInternal</td>
+<td>Internal code page (-cpinternal parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>cpStream</td>
+<td>Stream code page (-cpstream parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>dirSize</td>
+<td>The number of compiled procedure directory entries (-D parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>inputChars</td>
+<td>The number of characters allowed in a single statement (-inp parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>maximumMemory</td>
+<td>The amount of memory allocated for r-code segments (-mmax parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>parameter</td>
+<td>Parameter (-param parameter)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>stackSize</td>
+<td>Stack size in 1KB units (-s parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>token</td>
+<td>The number of tokens allowed in a 4GL statement (-tok parameter)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>compileUnderscore</td>
+<td>COMPILE statement allows underscores (-zn parameter)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<!--<tr>
+<td>batchMode</td>
+<td>Batch mode (-b parameter)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>-->
+<tr>
+<td>paramFile</td>
+<td>Parameter file (-pf parameter). -pf is always the first argument on the command line.</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>iniFile</td>
+<td>Use a .ini file (adds -basekey INI -ininame ...)</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>TTBufferSize</td>
+<td>Buffer Size for Temporary Tables (-Bt attribute)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>MsgBufferSize</td>
+<td>Message buffer size (-Mm attribute)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>NumSep</td>
+<td>Thousands separator. Can be either a numeric value or a character, e.g. numsep="44" or numsep=","</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>NumDec</td>
+<td>Fractional separator. Can be either a numeric value or a character, e.g. numdec="46" or numdec="."</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>Progress default</td>
+</tr>
+<tr>
+<td>DebugReady</td>
+<td>Port on which debugger should connect (disabled by default)</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>tempDir</td>
+<td>Temporary directory for Progress runtime (-T parameter)</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>Progress config file default</td>
+</tr>
+<tr>
+<td>resultProperty <span id="new">!!NEW!!</span></td>
+<td>The name of a property in which the return code of the Progress procedure should be stored. Only of interest if failonerror=false.</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<h3>PCTConnection (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+Adds a database connection on startup
+</p>
+<h3>propath (org.apache.tools.types.Path)</h3>
+<p>
+Creates a nested propath, and adds it to the implicit propath.
+</p>
+<h3>PCTRunOption (<a href="PCTRunOption.html">com.phenix.pct.PCTRun.PCTRunOption</a>)</h3>
+<p>
+Adds an additional command line option to prowin32 or _progres executable. These options are always appended
+at the end of the standard command line (before -p parameter).</p>
+<p><em>WARNING</em> : an option containing a space will be surrounded by quotes. If a value is needed by a
+parameter, add it in the value attribute. This is needed if the value contains spaces for example.</p>
+<h3>Parameter (<a href="Parameter.html">com.phenix.pct.RunParameter</a>)</h3>
+<p>
+Creates a parameter which can be read in the called procedure using
+<code>DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'ParameterName')</code>. Returned value type is CHARACTER.
+If parameter is not defined, the function returns ?.
+</p>
+<p><em>WARNING</em> : these parameters are written in a temp-table without unique index. Defining a parameter
+with same name multiple times may lead to weird results (it will return ?).</p>
+<h3>OutputParameter (<a href="OutputParameter.html">com.phenix.pct.OutputParameter</a>) <span id="new">!!NEW!!</span></h3>
+<p>
+Adds an character OUTPUT PARAMETER to the called procedure. This value is then written to the specified Ant property.  
+</p>
+<h3>env</h3>
+<p>It is possible to specify environment variables to pass to the system command via nested &lt;env&gt; elements.</p>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+<tr>
+<td>key</td>
+<td>The name of the environment variable.<br /><i>Note: (Since Ant 1.7) For Windows, the name is case-insensitive.</i></td>
+<td align="center">Yes</td>
+</tr>
+<tr>
+<td>value</td>
+<td>The literal value for the environment variable.</td>
+<td rowspan="3" align="center">Exactly one of these.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>The value for a PATH like environment variable. You can use ; or : as path separators and Ant will convert it to the platform's local conventions.</td>
+</tr>
+<tr>
+<td>file</td>
+<td>The value for the environment variable. Will be replaced by the absolute filename of the file by Ant.</td>
+</tr>
+
+</table>
+
+<h2>Examples</h2>
+<pre>
+&lt;PCTRun procedure="test.p" dlcHome="${env.DLC}"/&gt;
+</pre>
+<p>
+Commandline : <code>${env.DLC}/bin/_progres -b -p test.p</code>
+</p>
+<hr />
+
+<pre>
+&lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"/&gt;
+</pre>
+<p>
+Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -p test/test.p</code>
+</p>
+<hr />
+
+<pre>
+&lt;PCTRun procedure="test/test.p" dlcHome="${env.DLC}" graphicalMode="true" parameter="foobar"&gt;
+  &lt;PCTConnection dbName="foo" dbDir="base" singleUser="true"&gt;
+    &lt;PCTAlias name="foo2" /&gt;
+    &lt;PCTAlias name="foo3" /&gt;
+  &lt;/PCTConnection&gt;
+  &lt;propath&gt;
+    &lt;pathelement path="src/include" /&gt;
+    &lt;pathelement path="src/include2" /&gt;
+  &lt;/propath&gt;
+  &lt;PCTRunOption name="-cprcodeout" value="utf-8" /&gt;
+  &lt;Parameter name="Param1" value="Value1" /&gt;
+  &lt;Parameter name="Param2" value="Value2" /&gt;
+  &lt;OutputParameter name="FirstParam" /&gt;
+  &lt;OutputParameter name="SecondParam" /&gt;
+&lt;/PCTRun&gt;
+</pre>
+<p>Commandline : <code>${env.DLC}/bin/prowin32 -b -param foobar -cprcodeout utf-8 -p pctinitxxxx.p</code></p>
+<p>Procedure pctinitxxxx.p will approximately look like that :</p><pre class="source">
+DEFINE TEMP-TABLE ttParams NO-UNDO
+  FIELD key AS CHARACTER
+  FIELD val AS CHARACTER.
+FUNCTION getParameter RETURNS CHARACTER (k AS CHARACTER).
+  FIND ttParams WHERE ttParams.key EQ k NO-LOCK NO-ERROR.
+  RETURN (IF AVAILABLE ttParams THEN ttParams.val ELSE ?).
+END FUNCTION.
+CONNECT VALUE("-db base/foo -1").
+IF ERROR-STATUS:ERROR THEN DO:
+  MESSAGE 'Unable to connect to -db base/foo -1'.
+  RUN returnValue(14).
+  QUIT.
+END.
+CREATE ALIAS 'foo2' FOR foo.
+CREATE ALIAS 'foo3' FOR foo.
+ASSIGN PROPATH='src/include2,' + PROPATH.
+ASSIGN PROPATH='src/include,' + PROPATH.
+DO ON ERROR UNDO, LEAVE:
+  CREATE ttParams.
+  ASSIGN ttParams.key = "Param1"
+         ttParams.val = "Value1".
+END.
+DO ON ERROR UNDO, LEAVE:
+  CREATE ttParams.
+  ASSIGN ttParams.key = "Param2"
+         ttParams.val = "Value2".
+END.
+DEFINE VARIABLE outPrm0 AS CHARACTER NO-UNDO.
+DEFINE VARIABLE outPrm1 AS CHARACTER NO-UNDO.
+RUN VALUE('test/test.p') (OUTPUT outPrm0, OUTPUT outPrm1) NO-ERROR.
+RUN writeOutputParam (INPUT outPrm0, INPUT "someTempFile").
+RUN writeOutputParam (INPUT outPrm1, INPUT "anotherTempFile").
+// Check errors and call returnValue
+PROCEDURE returnValue PRIVATE.
+  DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO.
+  OUTPUT TO VALUE('pctresultxxxxx.out').
+  PUT UNFORMATTED retVal SKIP.
+  OUTPUT CLOSE.
+  QUIT.
+END PROCEDURE.
+PROCEDURE writeOutputParam PRIVATE.
+  DEFINE INPUT PARAMETER prm AS CHARACTER NO-UNDO.
+  DEFINE INPUT PARAMETER outFile AS CHARACTER NO-UNDO.
+  OUTPUT TO VALUE(outFile).
+  PUT UNFORMATTED prm SKIP.
+  OUTPUT CLOSE.
+END PROCEDURE.
+</pre>
+<p>After PCTRun task execution, properties FirstParam and SecondParam will be set with the content assigned by test/test.p.</p>
+</div>
+
+<div class="LastUpdate">
+  $Date$
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="MyProject" default="build" basedir=".">
+  <property environment="env"/>
+  <taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar"/>  
+  <target name="build" description="Builds source files">
+    <mkdir dir="build"/>
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="src">
+        <include name="*.p"/>
+      </fileset>
+    </PCTCompile>
+  </target>
+  <target name="pxg" description="Creates Java classes">
+    <mkdir dir="build-pxg" />
+    <PCTProxygen workingDirectory="src" srcFile="src/MyApp.xpxg" dlcHome="${env.DLC}" />
+  </target>
+</project>
