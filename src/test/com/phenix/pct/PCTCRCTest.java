@@ -72,9 +72,6 @@ import java.io.IOException;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTCRCTest extends BuildFileTestNg {
-    public PCTCRCTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

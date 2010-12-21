@@ -69,9 +69,6 @@ import java.io.File;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PLFileSetTest extends BuildFileTestNg {
-    public PLFileSetTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

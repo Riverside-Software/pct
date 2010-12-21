@@ -70,9 +70,6 @@ import java.io.File;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTBinaryDumpTest extends BuildFileTestNg {
-    public PCTBinaryDumpTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {
