@@ -75,9 +75,6 @@ import java.util.StringTokenizer;
  * @version $Revision: 453 $
  */
 public class PCTASBrokerTest extends BuildFileTestNg {
-    public PCTASBrokerTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

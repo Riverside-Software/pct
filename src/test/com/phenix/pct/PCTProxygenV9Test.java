@@ -72,10 +72,6 @@ import java.io.File;
  */
 public class PCTProxygenV9Test extends BuildFileTestNg {
     
-    public PCTProxygenV9Test(String name) {
-        super(name);
-    }
-
     @BeforeMethod
     public void setUp() {
         configureProject("PCTProxygen.xml");

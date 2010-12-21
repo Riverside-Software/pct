@@ -12,7 +12,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 
 public class BuildFileTestNg {
-    private String fName;
     protected Project project;
 
     private StringBuffer logBuffer;
@@ -23,10 +22,6 @@ public class BuildFileTestNg {
 
     public BuildFileTestNg() {
 
-    }
-
-    public BuildFileTestNg(String name) {
-        fName = name;
     }
 
     @AfterTest

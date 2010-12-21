@@ -71,9 +71,6 @@ import java.util.Locale;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
 public class PCTRunTest extends BuildFileTestNg {
-    public PCTRunTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

@@ -73,10 +73,6 @@ import org.testng.annotations.Test;
 public class PCTProxygenV10Test extends BuildFileTestNg {
     private int majorVersion, minorVersion;
     
-    public PCTProxygenV10Test(String name) {
-        super(name);
-    }
-
     @BeforeMethod
     public void setUp() {
         configureProject("PCTProxygen.xml");

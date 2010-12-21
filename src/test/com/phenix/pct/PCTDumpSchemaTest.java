@@ -74,9 +74,6 @@ import java.io.IOException;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTDumpSchemaTest extends BuildFileTestNg {
-    public PCTDumpSchemaTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

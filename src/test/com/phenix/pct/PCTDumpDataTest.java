@@ -69,9 +69,6 @@ import java.io.File;
  * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET </a>
  */
 public class PCTDumpDataTest extends BuildFileTestNg {
-    public PCTDumpDataTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

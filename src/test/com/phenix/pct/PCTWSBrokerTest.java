@@ -73,9 +73,6 @@ import java.util.Map;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTWSBrokerTest extends BuildFileTestNg {
-    public PCTWSBrokerTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {

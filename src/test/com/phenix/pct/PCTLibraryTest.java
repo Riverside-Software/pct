@@ -71,9 +71,6 @@ import java.util.List;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PCTLibraryTest extends BuildFileTestNg {
-    public PCTLibraryTest(String name) {
-        super(name);
-    }
 
     @BeforeMethod
     public void setUp() {
