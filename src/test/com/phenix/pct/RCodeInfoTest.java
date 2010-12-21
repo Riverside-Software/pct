@@ -55,8 +55,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 
@@ -71,7 +71,7 @@ public class RCodeInfoTest {
     File rcode = new File("rcode");
     protected Project project;
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         project = new Project();
         project.init();
@@ -83,7 +83,7 @@ public class RCodeInfoTest {
 
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(project);

@@ -59,8 +59,8 @@ import static org.testng.Assert.fail;
  
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
@@ -78,7 +78,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
         super(name);
     }
 
-    @BeforeSuite
+    @BeforeMethod
     public void setUp() {
         configureProject("PCTDumpSchema.xml");
 
@@ -89,7 +89,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
         mkdir.execute();
     }
 
-    @AfterSuite
+    @AfterMethod
     public void tearDown() {
         super.tearDown();
         Delete del = new Delete();

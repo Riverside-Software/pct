@@ -58,8 +58,8 @@ import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -75,7 +75,7 @@ public class PCTRunTest extends BuildFileTestNg {
         super(name);
     }
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         configureProject("PCTRun.xml");
 
@@ -86,7 +86,7 @@ public class PCTRunTest extends BuildFileTestNg {
         mkdir.execute();
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.getProject());

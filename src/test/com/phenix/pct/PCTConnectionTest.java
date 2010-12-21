@@ -60,7 +60,7 @@ import static org.testng.Assert.fail;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Iterator;
@@ -74,7 +74,7 @@ public class PCTConnectionTest {
     private ExecTask exec = null;
     private Project project = null;
 
-    @BeforeSuite
+    @BeforeMethod
     public void setUp() {
         // Defines a new Project and a new ExecTask
         project = new Project();

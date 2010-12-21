@@ -57,8 +57,8 @@ import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
@@ -66,7 +66,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 
 /**
  * Class for testing PCTCRC task
@@ -77,7 +76,7 @@ public class PCTCRCTest extends BuildFileTestNg {
         super(name);
     }
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         configureProject("PCTCRC.xml");
 
@@ -88,7 +87,7 @@ public class PCTCRCTest extends BuildFileTestNg {
         mkdir.execute();
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
