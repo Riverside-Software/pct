@@ -44,12 +44,9 @@
   <property name="check" location="check" />
   <property name="website" location="website" />
   <property name="testdir" location="testbox" />
-  <property name="junit-v9" location="junit-v9" />
-  <property name="junit-v10" location="junit-v10" />
-  <property name="junit-v10-64" location="junit-v10-64" />
-  <property name="junit-report-v9" location="junit-report-v9" />
-  <property name="junit-report-v10" location="junit-report-v10" />
-  <property name="junit-report-v10-64" location="junit-report-v10-64" />
+  <property name="testng-v9" location="test-output-v9" />
+  <property name="testng-v10" location="test-output-v10" />
+  <property name="testng-v10-64" location="test-output-v10-64" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -119,6 +116,8 @@
     <pathelement location="lib/PCT.jar" />
     <pathelement location="ant.jar" />
     <pathelement location="ant-launcher.jar" />
+    <pathelement location="ant-apache-regexp.jar" />
+    <pathelement location="jakarta-regexp-1.5.jar" />
     <pathelement location="testng-5.14.4.jar" />
     <pathelement location="velocity-dep-1.4.jar" />
     <pathelement location="reportng-1.1.2.jar" />
@@ -140,12 +139,9 @@
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${dist}" />
-    <mkdir dir="${junit-v9}" />
-    <mkdir dir="${junit-v10}" />
-    <mkdir dir="${junit-v10-64}" />
-    <mkdir dir="${junit-report-v9}" />
-    <mkdir dir="${junit-report-v10}" />
-    <mkdir dir="${junit-report-v10-64}" />
+    <mkdir dir="${testng-v9}" />
+    <mkdir dir="${testng-v10}" />
+    <mkdir dir="${testng-v10-64}" />
 
     <!-- Checking V8, v9 and v10 availability -->
     <available file="${DLC8}/version" property="dlc.v8.present" />
@@ -315,7 +311,7 @@
     <typedef resource="types.properties" classpath="${dist}/PCT.jar" />
   </target>
 
-  <target name="test-build" depends="jar" description="Builds junit tests">
+  <target name="test-build" depends="jar" description="Builds TestNG tests">
     <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
@@ -335,65 +331,35 @@
   <target name="cond.test" if="${test.this.version}">
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingdir="${testdir}" classpathref="test.run.cp" outputDir="test-output" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
-      <!--<jvmarg value="-Djava.naming.factory.initial=org.mortbay.naming.InitialContextFactory" />-->
+    <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
       <classfileset dir="${build-test}">
-        <include name="**/PCTCompileTest.class" />
+        <include name="com/phenix/pct/*Test.class" />
       </classfileset>
       <classpath refid="test.run.cp" />
-      <sysproperty key="org.uncommons.reportng.title" value="Padeo tests report"/>
+      <sysproperty key="org.uncommons.reportng.title" value="PCT tests report"/>
       <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
     </testng>
-    
-    <!--<junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
-      <classpath>
-        <pathelement location="junit.jar" />
-        <pathelement location="ant-junit.jar" />
-        <pathelement location="ant-launcher.jar" />
-        <pathelement location="jakarta-regexp-1.5.jar" />
-        <pathelement location="ant-apache-regexp.jar" />
-        <pathelement location="${dist}/PCT.jar" />
-        <pathelement location="${build}" />
-      </classpath>
-      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
-      <formatter type="xml" />
-      <batchtest fork="yes" todir="${junit-result}">
-        <fileset refid="${testid}" />
-      </batchtest>
-    </junit>
-    <junitreport todir="${junit-report}">
-      <fileset dir="${junit-result}">
-        <include name="TEST-*.xml" />
-      </fileset>
-      <report format="frames" styledir="${basedir}" todir="${junit-report}" />
-    </junitreport>-->
   </target>
     
   <target name="test" depends="prepare-test" description="Starts tests">
     <antcall target="cond.test">
       <param name="test.this.version" value="dlc.v9.present" />
       <param name="dlcHome" value="${DLC9}" />
-      <param name="junit-result" value="${junit-v9}" />
-      <param name="junit-report" value="${junit-report-v9}" />
+      <param name="testng-result" value="${testng-v9}" />
       <param name="testid" value="test.v9" />
     </antcall>
     <antcall target="cond.test">
       <param name="test.this.version" value="dlc.v10.present" />
       <param name="dlcHome" value="${DLC10}" />
-      <param name="junit-result" value="${junit-v10}" />
-      <param name="junit-report" value="${junit-report-v10}" />
+      <param name="testng-result" value="${testng-v10}" />
       <param name="testid" value="test.v10" />
     </antcall>
     <antcall target="cond.test">
       <param name="test.this.version" value="dlc.v10-64.present" />
       <param name="dlcHome" value="${DLC10-64}" />
-      <param name="junit-result" value="${junit-v10-64}" />
-      <param name="junit-report" value="${junit-report-v10-64}" />
+      <param name="testng-result" value="${testng-v10-64}" />
       <param name="testid" value="test.v10-64" />
     </antcall>
-    <delete>
-      <fileset dir="." includes="TEST*.xml" />
-    </delete>
   </target>
 
   <target name="javadoc" depends="build" description="API documentation creation">
@@ -427,7 +393,6 @@
         <include name="doc/**" />
         <include name="CHANGELOG" />
       	<include name="*.jar" />
-      	<include name="junit-frames.xsl" />
       	<include name="pct.build.properties" />
       </zipfileset>
     </zip>
@@ -448,12 +413,9 @@
     <delete dir="${website}" />
     <delete dir="${testdir}" />
     <delete dir="sports2000" />
-    <delete dir="${junit-v9}" />
-    <delete dir="${junit-v10}" />
-    <delete dir="${junit-v10-64}" />
-    <delete dir="${junit-report-v9}" />
-    <delete dir="${junit-report-v10}" />
-    <delete dir="${junit-report-v10-64}" />
+    <delete dir="${testng-v9}" />
+    <delete dir="${testng-v10}" />
+    <delete dir="${testng-v10-64}" />
     <delete>
       <fileset dir=".">
         <include name="pct*.tar.gz" />
@@ -496,18 +458,18 @@
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/junit-v9">
-      <fileset dir="${junit-report-v9}">
+    <copy todir="${website}/testng-v9">
+      <fileset dir="${testng-v9}/html">
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/junit-v10">
-      <fileset dir="${junit-report-v10}">
+    <copy todir="${website}/testng-v10">
+      <fileset dir="${testng-v10}">
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/junit-v10-64">
-      <fileset dir="${junit-report-v10-64}">
+    <copy todir="${website}/testng-v10-64">
+      <fileset dir="${testng-v10-64}">
         <include name="**" />
       </fileset>
     </copy>
