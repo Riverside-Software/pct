@@ -41,6 +41,9 @@
 
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -52,8 +55,10 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-import junit.framework.TestCase;
 
 /**
  * Class for testing RCodeInfo class
@@ -61,11 +66,12 @@ import junit.framework.TestCase;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 
-public class RCodeInfoTest extends TestCase {
+public class RCodeInfoTest {
     File sandbox = new File("sandbox");
     File rcode = new File("rcode");
     protected Project project;
 
+    @BeforeTest
     public void setUp() {
         project = new Project();
         project.init();
@@ -77,8 +83,8 @@ public class RCodeInfoTest extends TestCase {
 
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterTest
+    public void tearDown() {
         Delete del = new Delete();
         del.setProject(project);
         del.setDir(sandbox);
@@ -88,6 +94,7 @@ public class RCodeInfoTest extends TestCase {
     /**
      * Compares CRC using RCodeInfo and RCODE-INFO:CRC-VALUE
      */
+    @Test
     public void test1() {
         BufferedWriter bw = null;
         String md5_1, md5_2, crc1, crc2;

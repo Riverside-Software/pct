@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,11 +69,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTCompileTest extends BuildFileTest {
+public class PCTCompileTest extends BuildFileTestNg {
     public PCTCompileTest(String name) {
         super(name);
     }
 
+    @BeforeTest
     public void setUp() {
         configureProject("PCTCompile.xml");
 
@@ -85,8 +91,8 @@ public class PCTCompileTest extends BuildFileTest {
         version.execute();
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterTest
+    public void tearDown() {
         Delete del = new Delete();
         del.setFollowSymlinks(false);
         del.setProject(this.project);
@@ -98,14 +104,17 @@ public class PCTCompileTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No destDir defined");
     }
 
+    @Test
     public void test2() {
         executeTarget("test2");
     }
 
+    @Test
     public void test3() {
         executeTarget("test3");
 
@@ -113,6 +122,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test3bis() {
         expectBuildException("test3bis", "Compilation should fail");
 
@@ -120,6 +130,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertFalse(f.exists());
     }
 
+    @Test
     public void test4() {
         long size1 = 0;
         long size2 = 0;
@@ -135,6 +146,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(size2 < size1);
     }
 
+    @Test
     public void test5() {
         executeTarget("test5");
 
@@ -142,6 +154,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test6() {
         executeTarget("test6init");
         executeTarget("test6");
@@ -152,6 +165,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod == f.lastModified());
     }
 
+    @Test
     public void test7() {
         executeTarget("test7init");
         executeTarget("test7");
@@ -162,6 +176,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
+    @Test
     public void test8() {
         executeTarget("test8init");
         executeTarget("test8");
@@ -172,6 +187,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
+    @Test
     public void test9() {
         executeTarget("test9init");
         executeTarget("test9");
@@ -182,6 +198,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
+    @Test
     public void test10() {
         executeTarget("test10init");
         executeTarget("test10");
@@ -192,6 +209,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
+    @Test
     public void test11() {
         executeTarget("test11init");
         expectBuildException("test11", "Second task should not be launched");
@@ -200,6 +218,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertFalse(f.exists());
     }
 
+    @Test
     public void test12() {
         File f = new File("build/sandbox/temp.r");
         executeTarget("test12init");
@@ -209,6 +228,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test13() {
         executeTarget("test13init");
         executeTarget("test13");
@@ -219,6 +239,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod < f.lastModified());
     }
 
+    @Test
     public void test14() {
         executeTarget("test14init");
         executeTarget("test14");
@@ -235,6 +256,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod2 < f2.lastModified());
     }
 
+    @Test
     public void test15() {
         executeTarget("test15init");
         executeTarget("test15");
@@ -247,6 +269,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod == f.lastModified());
     }
 
+    @Test
     public void test16() {
         executeTarget("test16init");
         executeTarget("test16");
@@ -256,6 +279,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(f2.exists());
     }
 
+    @Test
     public void test17() {
         executeTarget("test17init");
         expectBuildException("test17-part1", "Should fail - No key specified");
@@ -264,6 +288,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test18() {
         executeTarget("test18init");
         executeTarget("test18");
@@ -280,6 +305,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod2 < f2.lastModified());
     }
 
+    @Test
     public void test19() {
         executeTarget("test19init");
         executeTarget("test19");
@@ -295,6 +321,7 @@ public class PCTCompileTest extends BuildFileTest {
         assertTrue(mod2 < f2.lastModified());
     }
 
+    @Test
     public void test20() {
         executeTarget("test20-init");
         executeTarget("test20-part1");
@@ -310,13 +337,14 @@ public class PCTCompileTest extends BuildFileTest {
         assertFalse(f4.exists());
         dotR.delete();
         executeTarget("test20-part2");
-        assertTrue("Unable to find listing file", f1.exists());
-        assertTrue("Unable to find preprocess file", f2.exists());
-        assertTrue("Unable to find debug-listing file", f3.exists());
-        assertTrue("Unable to find xref file", f4.exists());
-        assertTrue("Empty xref file", (f4.length() > 0));
+        assertTrue(f1.exists(), "Unable to find listing file");
+        assertTrue(f2.exists(), "Unable to find preprocess file");
+        assertTrue(f3.exists(), "Unable to find debug-listing file");
+        assertTrue(f4.exists(), "Unable to find xref file");
+        assertTrue((f4.length() > 0), "Empty xref file");
     }
 
+    @Test
     public void test21() {
         int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
         if (majorVersion >= 10) {
@@ -328,6 +356,7 @@ public class PCTCompileTest extends BuildFileTest {
         }
     }
     
+    @Test
     public void test22() {
         int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
         if (majorVersion >= 10) {

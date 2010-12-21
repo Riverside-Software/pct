@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -63,13 +68,13 @@ import java.io.File;
  * Class for testing PCTBinaryDump task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
  */
-public class PCTBinaryDumpTest extends BuildFileTest {
+public class PCTBinaryDumpTest extends BuildFileTestNg {
     public PCTBinaryDumpTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTBinaryDump.xml");
 
@@ -80,7 +85,8 @@ public class PCTBinaryDumpTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -88,18 +94,22 @@ public class PCTBinaryDumpTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "Task should fail");
     }
 
+    @Test
     public void test2() {
         expectBuildException("test2", "Task should fail");
     }
 
+    @Test
     public void test3() {
         expectBuildException("test3", "Task should fail");
     }
 
+    @Test
     public void test4() {
         executeTarget("test4pre");
         executeTarget("test4");
@@ -110,6 +120,7 @@ public class PCTBinaryDumpTest extends BuildFileTest {
         assertTrue(f2.exists());
     }
 
+    @Test
     public void test5() {
         executeTarget("test5pre");
         executeTarget("test5");
@@ -120,6 +131,7 @@ public class PCTBinaryDumpTest extends BuildFileTest {
         assertTrue(f2.exists());
     }
 
+    @Test
     public void test6() {
         executeTarget("test6pre");
         executeTarget("test6");
@@ -130,6 +142,7 @@ public class PCTBinaryDumpTest extends BuildFileTest {
         assertFalse(f2.exists());
     }
 
+    @Test
     public void test7() {
         executeTarget("test7pre");
         executeTarget("test7");

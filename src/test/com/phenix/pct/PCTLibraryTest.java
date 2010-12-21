@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -66,14 +71,12 @@ import java.util.List;
  * Class for testing PCTLibrary task
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTLibraryTest extends BuildFileTest {
+public class PCTLibraryTest extends BuildFileTestNg {
     public PCTLibraryTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTLibrary.xml");
 
@@ -88,7 +91,8 @@ public class PCTLibraryTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -102,6 +106,7 @@ public class PCTLibraryTest extends BuildFileTest {
     /**
      * Attribute destFile should always be defined
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "Library name not defined");
     }
@@ -109,6 +114,7 @@ public class PCTLibraryTest extends BuildFileTest {
     /**
      * Checks that a new library is created
      */
+    @Test
     public void test2() {
         expectBuildException("test2", "No filesets defined");
     }
@@ -116,6 +122,7 @@ public class PCTLibraryTest extends BuildFileTest {
     /**
      * Checks that a file is added in the library
      */
+    @Test
     public void test3() {
         executeTarget("test3");
 
@@ -131,6 +138,7 @@ public class PCTLibraryTest extends BuildFileTest {
     /**
      * Checks that a file is added in the library
      */
+    @Test
     public void test4() {
         executeTarget("test4pre");
 
@@ -143,6 +151,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(v.size() == 1);
     }
     
+    @Test
     public void test5() {
         executeTarget("test5");
         
@@ -157,6 +166,7 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue((pl.length() < size));
     }
     
+    @Test
     public void test6() {
         executeTarget("test6");
         
@@ -169,10 +179,12 @@ public class PCTLibraryTest extends BuildFileTest {
         assertTrue(v.size() == 3);
     }
     
+    @Test
     public void test7() {
         expectBuildException("test7", "PL file cannot include itself");
     }
     
+    @Test
     public void test8() {
         executeTarget("test8");
         
@@ -210,6 +222,7 @@ public class PCTLibraryTest extends BuildFileTest {
      * Do not run this test for now, as it will always fail.
      * Prolib doesn't seem to be able to handle spaces in file names
      */
+    @Test
     public void test9() {
         executeTarget("test9");
         

@@ -53,9 +53,11 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,11 +66,9 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
-public class PCTLoadSchemaTest extends BuildFileTest {
+public class PCTLoadSchemaTest extends BuildFileTestNg {
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTLoadSchema.xml");
 
@@ -79,11 +79,8 @@ public class PCTLoadSchemaTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterSuite
+    public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.getProject());
         del.setDir(new File("sandbox"));
@@ -93,6 +90,7 @@ public class PCTLoadSchemaTest extends BuildFileTest {
     /**
      * Should throw BuildException : no srcFile and no connection
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "Should throw BuildException : no srcFile and no connection");
     }
@@ -100,6 +98,7 @@ public class PCTLoadSchemaTest extends BuildFileTest {
     /**
      * Should throw BuildException : no srcFile defined
      */
+    @Test
     public void test2() {
         expectBuildException("test2", "Should throw BuildException : no srcFile defined ");
     }
@@ -107,18 +106,21 @@ public class PCTLoadSchemaTest extends BuildFileTest {
     /**
      * Should throw BuildException : no connection defined
      */
+    @Test
     public void test3() {
         expectBuildException("test3", "Should throw BuildException : no connection defined");
     }
 
     /**
      */
+    @Test
     public void test4() {
         executeTarget("test4-init");
         executeTarget("test4-part1");
         expectBuildException("test4-part2", "Tab2 shouldn't be found");
     }
 
+    @Test
     public void test5() {
         executeTarget("test5-init");
         executeTarget("test5-part1");

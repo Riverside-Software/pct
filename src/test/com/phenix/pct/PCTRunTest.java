@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Locale;
@@ -65,14 +70,12 @@ import java.util.Locale;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
-public class PCTRunTest extends BuildFileTest {
+public class PCTRunTest extends BuildFileTestNg {
     public PCTRunTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeTest
     public void setUp() {
         configureProject("PCTRun.xml");
 
@@ -83,11 +86,8 @@ public class PCTRunTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterTest
+    public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.getProject());
         del.setDir(new File("sandbox"));
@@ -97,6 +97,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Attribute procedure should always be defined
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "No procedure name defined");
     }
@@ -104,6 +105,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Very simple run, and exits properly
      */
+    @Test
     public void test2() {
         expectLog("test2", "Hello world!");
     }
@@ -111,6 +113,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Very simple run, and exits with error code
      */
+    @Test
     public void test3() {
         expectBuildException("test3", "Return value : 1");
     }
@@ -118,6 +121,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Procedure file not found : should throw BuildException
      */
+    @Test
     public void test4() {
         File f = new File("sandbox/not_existing.p");
         assertFalse(f.exists());
@@ -127,6 +131,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Non-numeric return value : should throw BuildException
      */
+    @Test
     public void test5() {
         expectBuildException("test5", "Return value not numeric");
     }
@@ -134,6 +139,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Procedure don't compile : should throw BuildException
      */
+    @Test
     public void test6() {
         expectBuildException("test6", "Impossible to compile file");
     }
@@ -141,6 +147,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Checks if PROPATH is correctly defined
      */
+    @Test
     public void test7() {
         executeTarget("test7");
     }
@@ -148,6 +155,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Checks if strings containing ~ and ' are escaped
      */
+    @Test
     public void test8() {
         executeTarget("test8");
     }
@@ -155,6 +163,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests -param attribute
      */
+    @Test
     public void test9() {
         executeTarget("test9init");
         expectLog("test9", "Hello PCT");
@@ -164,6 +173,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests -yy attribute
      */
+    @Test
     public void test10() {
         executeTarget("test10init");
         expectLog("test10", "01/01/2060");
@@ -173,6 +183,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests RETURN statement with no return value
      */
+    @Test
     public void test11() {
         executeTarget("test11");
     }
@@ -180,6 +191,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests numsep and numdec parameters
      */
+    @Test
     public void test12() {
         executeTarget("test12-init");
         expectLog("test12-part1", "123.456");
@@ -191,6 +203,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests propath order
      */
+    @Test
     public void test13() {
         executeTarget("test13-init");
         expectLog("test13-part1", "This is dir1");
@@ -200,6 +213,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Tests parameter containing quotes and so on... Doesn't work on UNIX
      */
+    @Test
     public void test14() {
         if (System.getProperty("os.name").toLowerCase(Locale.US).indexOf("windows") > -1) {
             executeTarget("test14-init");
@@ -209,16 +223,19 @@ public class PCTRunTest extends BuildFileTest {
         }
     }
 
+    @Test
     public void test15() {
         expectBuildException("test15", "Cannot connect to database");
     }
 
+    @Test
     public void test16() {
         executeTarget("test16");
         File f = new File("sandbox/subdir/Output.txt");
         assertTrue(f.exists());
     }
 
+    @Test
     public void test17() {
         executeTarget("test17");
         File f = new File("sandbox/subdir2/Output.txt");
@@ -228,6 +245,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Run option test
      */
+    @Test
     public void test18() {
         expectLog("test18", "utf-8");
     }
@@ -235,6 +253,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Spaces in parameter, this should fail
      */
+    @Test
     public void test19() {
         expectBuildException("test19", "Should fail because of spaces");
     }
@@ -242,6 +261,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Name parameter is mandatory in PCTRunOption
      */
+    @Test
     public void test20() {
         expectBuildException("test20", "Name parameter is mandatory in PCTRunOption");
     }
@@ -249,6 +269,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Profiler should be started, and sandbox/profiler.out created
      */
+    @Test
     public void test21() {
         File f = new File("sandbox/profiler.out");
         executeTarget("test21");
@@ -258,6 +279,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameter should be in quotes
      */
+    @Test
     public void test22() {
         expectLog("test22", "Message with spaces");
     }
@@ -265,6 +287,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Temp dir with space
      */
+    @Test
     public void test23() {
         File f = new File("sandbox/temp dir/test.txt");
         assertFalse(f.exists());
@@ -275,6 +298,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameter should be in quotes
      */
+    @Test
     public void test24() {
         executeTarget("test24-pre");
         expectLog("test24", "TEST");
@@ -283,6 +307,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameters collection : simple test
      */
+    @Test
     public void test25() {
         executeTarget("test25");
     }
@@ -290,6 +315,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameters collection : quotes
      */
+    @Test
     public void test26() {
         executeTarget("test26");
     }
@@ -297,6 +323,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameters collection : tilde
      */
+    @Test
     public void test27() {
         executeTarget("test27");
     }
@@ -304,6 +331,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameters collection : not defined
      */
+    @Test
     public void test28() {
         executeTarget("test28");
     }
@@ -311,6 +339,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Parameters collection : duplicate values
      */
+    @Test
     public void test29() {
         executeTarget("test29");
     }
@@ -318,6 +347,7 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * Using propath refid
      */
+    @Test
     public void test30() {
         executeTarget("test30-init");
         expectBuildException("test30-part1", "Shouldn't work");
@@ -328,11 +358,13 @@ public class PCTRunTest extends BuildFileTest {
     /**
      * test failOnError attribute
      */
+    @Test
     public void test31() {
         expectBuildException("test31-a", "Shouldn't work");
         executeTarget("test31-b");
     }
     
+    @Test
     public void test32() {
         assertPropertyUnset("myResult");
         executeTarget("test32-a");
@@ -343,6 +375,7 @@ public class PCTRunTest extends BuildFileTest {
         assertPropertyEquals("myNewResult", "17");
     }
     
+    @Test
     public void test33() {
         expectBuildException("test33-a", "No output parameter defined");
 
@@ -351,6 +384,7 @@ public class PCTRunTest extends BuildFileTest {
         assertPropertyEquals("firstParam", "PCT");
     }
 
+    @Test
     public void test34() {
         assertPropertyUnset("firstParam");
         assertPropertyUnset("secondParam");
@@ -363,6 +397,7 @@ public class PCTRunTest extends BuildFileTest {
         assertPropertyEquals("fourthParam", "PCT4");
     }
     
+    @Test
     public void test35() {
         executeTarget("test35");
         expectBuildException("test35-bis", "Not in propath");

@@ -53,9 +53,11 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,14 +66,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
-public class PCTLoadDataTest extends BuildFileTest {
+public class PCTLoadDataTest extends BuildFileTestNg {
     public PCTLoadDataTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTLoadData.xml");
 
@@ -82,10 +82,8 @@ public class PCTLoadDataTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.getProject());
@@ -96,6 +94,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no filesets and no connection
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "Should throw BuildException : no filesets and no connection");
     }
@@ -103,6 +102,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no filesets (or srcDir) defined 
      */
+    @Test
     public void test2() {
         expectBuildException("test2", "Should throw BuildException : no filesets (or srcDir) defined ");
     }
@@ -110,6 +110,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no connection defined
      */
+    @Test
     public void test3() {
         expectBuildException("test3", "Should throw BuildException : no connection defined");
     }
@@ -117,6 +118,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     /**
      * Should load data into database, and expect first result in FOR EACH be 14 
      */
+    @Test
     public void test4() {
         executeTarget("test4init");
         executeTarget("test4init2");
@@ -126,6 +128,7 @@ public class PCTLoadDataTest extends BuildFileTest {
     /**
      * Should first load data into table Tab1, then in Tab2, using PCTTable attribute 
      */
+    @Test
     public void test5() {
         executeTarget("test5-init");
         expectLog("test5-part2", "---"); // No data

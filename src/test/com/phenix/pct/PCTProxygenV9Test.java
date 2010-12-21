@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -65,12 +70,13 @@ import java.io.File;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision: 887 $
  */
-public class PCTProxygenV9Test extends BuildFileTest {
+public class PCTProxygenV9Test extends BuildFileTestNg {
     
     public PCTProxygenV9Test(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTProxygen.xml");
 
@@ -81,7 +87,8 @@ public class PCTProxygenV9Test extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -94,10 +101,12 @@ public class PCTProxygenV9Test extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No srcFile defined");
     }
 
+    @Test
     public void test2() {
         executeTarget("test2-init");
         executeTarget("test2");

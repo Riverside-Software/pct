@@ -53,9 +53,15 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.fail;
+ 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,11 +73,12 @@ import java.io.IOException;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTDumpSchemaTest extends BuildFileTest {
+public class PCTDumpSchemaTest extends BuildFileTestNg {
     public PCTDumpSchemaTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTDumpSchema.xml");
 
@@ -82,7 +89,8 @@ public class PCTDumpSchemaTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -90,6 +98,7 @@ public class PCTDumpSchemaTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test() {
         File f1 = new File("sandbox/sch.df");
 

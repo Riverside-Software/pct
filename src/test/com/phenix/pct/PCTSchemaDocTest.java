@@ -40,9 +40,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -51,11 +55,12 @@ import java.io.File;
  * Class for testing PCTSchemaDoc task
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTSchemaDocTest extends BuildFileTest {
+public class PCTSchemaDocTest extends BuildFileTestNg {
     public PCTSchemaDocTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTSchemaDoc.xml");
 
@@ -68,7 +73,8 @@ public class PCTSchemaDocTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -78,10 +84,12 @@ public class PCTSchemaDocTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No file attribute defined");
     }
 
+    @Test
     public void test2() {
         // Broken on test box (9.1E Linux due to message 8013)
         // Check solution P99495 (multiple arch on same server)

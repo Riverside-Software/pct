@@ -53,9 +53,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertEquals;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,11 +68,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PLFileSetTest extends BuildFileTest {
+public class PLFileSetTest extends BuildFileTestNg {
     public PLFileSetTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PLFileSet.xml");
 
@@ -79,14 +84,15 @@ public class PLFileSetTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterSuite
+    public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("sandbox"));
         del.execute();
     }
 
+    @Test
     public void test1() {
         executeTarget("test1");
 
@@ -94,6 +100,7 @@ public class PLFileSetTest extends BuildFileTest {
         assertEquals(f1.list().length, 8);
     }
 
+    @Test
     public void test2() {
         executeTarget("test2");
 
@@ -101,6 +108,7 @@ public class PLFileSetTest extends BuildFileTest {
         assertEquals(f1.list().length, 6);
     }
 
+    @Test
     public void test3() {
         executeTarget("test3");
 

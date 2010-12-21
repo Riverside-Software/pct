@@ -53,7 +53,10 @@
  */
 package com.phenix.pct;
 
-import junit.framework.TestCase;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
+
+import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -61,15 +64,16 @@ import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Echo;
 import org.apache.tools.ant.taskdefs.Mkdir;
-
-import java.io.File;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 /**
  * Class for testing PCT abstract task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTTest extends TestCase {
+public class PCTTest {
     private static final String DLC = "dlc/";
     private static final String DLC_TTY = "dlc/tty/";
     private static final String DLC_BIN = "dlc/bin/";
@@ -80,9 +84,7 @@ public class PCTTest extends TestCase {
     private Project project;
     private PCTRun pct;
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeTest
     public void setUp() {
         project = new Project();
         project.init();
@@ -103,12 +105,14 @@ public class PCTTest extends TestCase {
         mkdir.execute();
         mkdir.setDir(new File(DLC_JAVA_FAKE));
         mkdir.execute();
+        
         // setDlcHome() now verifies version
         Echo echo = new Echo();
         echo.setProject(project);
         echo.setFile(new File(DLC + "version"));
         echo.setMessage("OpenEdge Release 10.2B as of Fri Nov 13 19:02:09 EST 2009");
         echo.execute();
+        
         Copy copy = new Copy();
         copy.setProject(project);
         copy.setFile(new File("prostart.r"));
@@ -116,11 +120,8 @@ public class PCTTest extends TestCase {
         copy.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
+    @AfterTest
     public void tearDown() throws Exception {
-        super.tearDown();
         pct.cleanup();
         Delete del = new Delete();
         del.setProject(project);
@@ -135,6 +136,7 @@ public class PCTTest extends TestCase {
     /**
      * Check if bin subdirectory is detected when dlcHome is set
      */
+    @Test
     public void testDlcBinCheck() {
         File bin = new File(DLC_BIN);
 
@@ -146,6 +148,7 @@ public class PCTTest extends TestCase {
      * Check if setting dlcBin attribute overrides bin subdirectory found when setting dlcHome
      * attribute
      */
+    @Test
     public void testDlcBinOverride() {
         File bin = new File(DLC_BIN_FAKE);
 
@@ -157,6 +160,7 @@ public class PCTTest extends TestCase {
     /**
      * Check if not valid DLC directory throws BuildException
      */
+    @Test
     public void testDlcFailure() {
         File dlc = new File(DLC_FAKE);
         try {
@@ -170,6 +174,7 @@ public class PCTTest extends TestCase {
     /**
      * Check if not valid DLC bin directory throws BuildException
      */
+    @Test
     public void testDlcBinFailure() {
         pct.setDlcHome(new File(DLC));
         try {
@@ -183,6 +188,7 @@ public class PCTTest extends TestCase {
     /**
      * Check if not valid DLC java directory throws BuildException
      */
+    @Test
     public void testDlcJavaFailure() {
         pct.setDlcHome(new File(DLC));
         try {

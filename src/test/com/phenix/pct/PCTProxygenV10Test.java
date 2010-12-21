@@ -53,11 +53,16 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 /**
  * Class for testing PCTProxygen task
@@ -65,13 +70,14 @@ import java.io.File;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision: 887 $
  */
-public class PCTProxygenV10Test extends BuildFileTest {
+public class PCTProxygenV10Test extends BuildFileTestNg {
     private int majorVersion, minorVersion;
     
     public PCTProxygenV10Test(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTProxygen.xml");
 
@@ -93,7 +99,8 @@ public class PCTProxygenV10Test extends BuildFileTest {
         minorVersion = Integer.parseInt(getProject().getProperty("minorVersion"));
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -106,10 +113,12 @@ public class PCTProxygenV10Test extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No srcFile defined");
     }
 
+    @Test
     public void test2() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;
@@ -121,14 +130,15 @@ public class PCTProxygenV10Test extends BuildFileTest {
         File f2 = new File("pxg/TestImpl.class");
         File f3 = new File("pxg/TestImpl.java");
         // 10.1B doesn't handle relative paths...
-        assertTrue("Failure expected on 10.1B...", f1.exists());
-        assertTrue("Failure expected on 10.1B...", f2.exists());
-        assertFalse("Failure expected on 10.1B...", f3.exists());
+        assertTrue(f1.exists(), "Failure expected on 10.1B...");
+        assertTrue(f2.exists(), "Failure expected on 10.1B...");
+        assertFalse(f3.exists(), "Failure expected on 10.1B...");
 
         executeTarget("test2-bis");
-        assertTrue("Failure expected on 10.1B...", f3.exists());
+        assertTrue(f3.exists(), "Failure expected on 10.1B...");
     }
 
+    @Test
     public void test3() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;
@@ -142,14 +152,15 @@ public class PCTProxygenV10Test extends BuildFileTest {
         File f2 = new File("pxg/TestImpl.class");
         File f3 = new File("pxg/TestImpl.java");
         // 10.1B doesn't handle relative paths...
-        assertTrue("Failure expected on 10.1B...", f1.exists());
-        assertTrue("Failure expected on 10.1B...", f2.exists());
-        assertFalse("Failure expected on 10.1B...", f3.exists());
+        assertTrue(f1.exists(), "Failure expected on 10.1B...");
+        assertTrue(f2.exists(), "Failure expected on 10.1B...");
+        assertFalse(f3.exists(), "Failure expected on 10.1B...");
 
         executeTarget("test3-bis");
-        assertTrue("Failure expected on 10.1B...", f3.exists());
+        assertTrue(f3.exists(), "Failure expected on 10.1B...");
     }
 
+    @Test
     public void test4() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;
@@ -162,10 +173,11 @@ public class PCTProxygenV10Test extends BuildFileTest {
         File f1 = new File("sandbox/pxg/Test.class");
         File f2 = new File("sandbox/pxg/TestImpl.class");
         // 10.1B doesn't handle relative paths...
-        assertTrue("Failure expected on 10.1B...", f1.exists());
-        assertTrue("Failure expected on 10.1B...", f2.exists());
+        assertTrue(f1.exists(), "Failure expected on 10.1B...");
+        assertTrue(f2.exists(), "Failure expected on 10.1B...");
     }
 
+    @Test
     public void test5() {
         // Stupid 10.1...
         if ((majorVersion == 10) && (minorVersion == 1)) return;

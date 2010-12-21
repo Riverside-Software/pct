@@ -53,9 +53,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,11 +68,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTCreateBaseTest extends BuildFileTest {
+public class PCTCreateBaseTest extends BuildFileTestNg {
     public PCTCreateBaseTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTCreateBase.xml");
 
@@ -79,7 +84,8 @@ public class PCTCreateBaseTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -95,14 +101,17 @@ public class PCTCreateBaseTest extends BuildFileTest {
         del2.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No dbName defined");
     }
 
+    @Test
     public void test2() {
         expectBuildException("test2", "dbName longer than 11 characters");
     }
 
+    @Test
     public void test3() {
         executeTarget("test3");
 
@@ -110,10 +119,12 @@ public class PCTCreateBaseTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test4() {
         expectBuildException("test4", "noInit and noStruct both defined");
     }
 
+    @Test
     public void test5() {
         executeTarget("test5init");
 
@@ -124,6 +135,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test6() {
         File f = new File("sandbox/test.db");
         executeTarget("test6");
@@ -133,6 +145,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         assertTrue(f.lastModified() == time);
     }
 
+    @Test
     public void test7() {
         executeTarget("test7");
 
@@ -143,6 +156,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         // assert True(f.lastModified() != time);
     }
 
+    @Test
     public void test8() {
         executeTarget("test8");
 
@@ -158,6 +172,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         executeTarget("test8bis");
     }
 
+    @Test
     public void test9() {
         executeTarget("test9init");
 
@@ -168,6 +183,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test10() {
         executeTarget("test10-init");
         executeTarget("test10");
@@ -178,6 +194,7 @@ public class PCTCreateBaseTest extends BuildFileTest {
         expectBuildException("test10-2", "Should throw BuildException as schema doesn't exist");
     }
 
+    @Test
     public void test11() {
         executeTarget("test11init");
 
@@ -187,6 +204,4 @@ public class PCTCreateBaseTest extends BuildFileTest {
         f = new File("build/sandbox/test.r");
         assertTrue(f.exists());
     }
-
-
 }

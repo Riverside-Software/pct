@@ -53,7 +53,9 @@
  */
 package com.phenix.pct;
 
-import junit.framework.TestCase;
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.Test;
 
 import com.phenix.pct.DLCVersion.Builder;
 
@@ -62,8 +64,9 @@ import com.phenix.pct.DLCVersion.Builder;
  * 
  * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET</a>
  */
-public class DLCVersionTest extends TestCase {
+public class DLCVersionTest {
 
+    @Test
     public void test1() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -74,6 +77,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("", builder.patch);
     }
 
+    @Test
     public void test2() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -84,6 +88,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("01", builder.patch);
     }
 
+    @Test
     public void test3() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -94,6 +99,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0102", builder.patch);
     }
 
+    @Test
     public void test4() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -104,6 +110,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("1P", builder.patch);
     }
 
+    @Test
     public void test5() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -114,6 +121,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test6() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -124,6 +132,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test7() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -134,6 +143,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test8() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -144,6 +154,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test9() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -154,6 +165,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test10() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -164,6 +176,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test11() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -174,6 +187,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test12() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -184,6 +198,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test13() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,
@@ -194,6 +209,7 @@ public class DLCVersionTest extends TestCase {
         assertEquals("0", builder.patch);
     }
 
+    @Test
     public void test14() {
         Builder builder = new Builder();
         DLCVersion.readVersionFile(builder,

@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,14 +69,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
  */
-public class PCTWSCompTest extends BuildFileTest {
+public class PCTWSCompTest extends BuildFileTestNg {
     public PCTWSCompTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTWSComp.xml");
 
@@ -82,10 +85,8 @@ public class PCTWSCompTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -99,6 +100,7 @@ public class PCTWSCompTest extends BuildFileTest {
     /**
      * destDir attribute should always be defined : expect BuildException
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "No destDir defined");
     }
@@ -106,6 +108,7 @@ public class PCTWSCompTest extends BuildFileTest {
     /**
      * Do nothing : should not hurt
      */
+    @Test
     public void test2() {
         executeTarget("test2");
     }
@@ -113,7 +116,8 @@ public class PCTWSCompTest extends BuildFileTest {
     /**
      * Very simple compilation
      */
-    public void test3() {
+   @Test
+   public void test3() {
         File f = new File("build/sandbox/simple.w");
         File f2 = new File("build/sandbox/simple.i");
 

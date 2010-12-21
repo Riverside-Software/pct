@@ -40,9 +40,16 @@
  */
 package net.cordova.prounit;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+
+import com.phenix.pct.BuildFileTestNg;
 
 import java.io.File;
 
@@ -51,11 +58,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class ProUnitTest extends BuildFileTest {
+public class ProUnitTest extends BuildFileTestNg {
     public ProUnitTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("ProUnit.xml");
 
@@ -66,7 +74,8 @@ public class ProUnitTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -74,20 +83,24 @@ public class ProUnitTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No project defined");
     }
 
+    @Test
     public void test2() {
         // assertTrue(true) : should always work
         executeTarget("test2");
     }
 
+    @Test
     public void test3() {
         // assertTrue(false) : should never work
         expectBuildException("test3", "Should be a failed test");
     }
 
+    @Test
     public void test4() {
         // Testing result attribute
         File f = new File("sandbox/result.xml");
@@ -96,6 +109,7 @@ public class ProUnitTest extends BuildFileTest {
         assertTrue(f.exists());
     }
     
+    @Test
     public void test5() {
         // Testing result attribute
         File f1 = new File("sandbox/result.xml");

@@ -53,10 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import com.freeware.inifiles.INIFile;
 
@@ -67,13 +71,13 @@ import java.util.Map;
  * Class for testing PCTWSBroker task
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision: 453 $
  */
-public class PCTWSBrokerTest extends BuildFileTest {
+public class PCTWSBrokerTest extends BuildFileTestNg {
     public PCTWSBrokerTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTWSBroker.xml");
 
@@ -94,27 +98,30 @@ public class PCTWSBrokerTest extends BuildFileTest {
         copy.execute();
     }
 
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @AfterSuite
+    public void tearDown() {
         Delete del = new Delete();
         del.setProject(this.project);
         del.setDir(new File("sandbox"));
         del.execute();
     }
 
+    @Test
     public void testFailure1() {
         expectBuildException("failure1", "Missing parameter, should throw BuildException");
     }
 
+    @Test
     public void testFailure2() {
         expectBuildException("failure2", "Missing parameter, should throw BuildException");
     }
 
+    @Test
     public void testSimplestTest() {
         executeTarget("SimplestTest");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         String[] sections = ini.getAllSectionNames();
@@ -122,26 +129,27 @@ public class PCTWSBrokerTest extends BuildFileTest {
         while ((i < sections.length) && (!sections[i].equals("UBroker.WS.Test"))) {
             i = i + 1;
         }
-        assertTrue("Section UBroker.WS.Test not found", (i < sections.length));
+        assertTrue((i < sections.length), "Section UBroker.WS.Test not found");
     }
 
+    @Test
     public void testLogging() {
         executeTarget("TestLogging");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         Map map = ini.getProperties("UBroker.WS.Test");
-        assertTrue("No properties (null) in UBroker.WS.Test", (map != null));
+        assertTrue((map != null), "No properties (null) in UBroker.WS.Test");
         String prop = ini.getStringProperty("UBroker.WS.Test", "brokerLogFile");
-        assertTrue("brokerLogFile -- Property not found", (prop != null));
+        assertTrue((prop != null), "brokerLogFile -- Property not found");
         prop = ini.getStringProperty("UBroker.WS.Test", "brkrLoggingLevel");
-        assertTrue("brkrLoggingLevel -- Property not found", (prop != null));
+        assertTrue((prop != null), "brkrLoggingLevel -- Property not found");
         prop = ini.getStringProperty("UBroker.WS.Test", "srvrLoggingLevel");
-        assertTrue("srvrLoggingLevel -- Property not found", (prop != null));
+        assertTrue((prop != null), "srvrLoggingLevel -- Property not found");
         prop = ini.getStringProperty("UBroker.WS.Test", "srvrLogFile");
-        assertTrue("srvrLogFile -- Property not found", (prop != null));
+        assertTrue((prop != null), "srvrLogFile -- Property not found");
     }
 
     // TODO This test should throw BuildException -- See how error should be trapped...
@@ -152,31 +160,32 @@ public class PCTWSBrokerTest extends BuildFileTest {
     // "Already created, should throw BuilException");
     // }
 
+    @Test
     public void testAttributes1() {
         executeTarget("TestAttributes-1");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
-        assertTrue("Wrong autoStart", (ini.getStringProperty("UBroker.WS.Test", "autoStart")
-                .equals("1")));
-        assertTrue("Wrong initialPool", (ini.getStringProperty("UBroker.WS.Test",
-                "initialSrvrInstance").equals("4")));
-        assertTrue("Wrong minPool", (ini.getStringProperty("UBroker.WS.Test", "minSrvrInstance")
-                .equals("3")));
-        assertTrue("Wrong maxPool", (ini.getStringProperty("UBroker.WS.Test", "maxSrvrInstance")
-                .equals("5")));
-        assertTrue("Wrong registerNameServer", (ini.getStringProperty("UBroker.WS.Test",
-                "registerNameServer").equals("1")));
-        assertTrue("Wrong appserviceNameList", (ini.getStringProperty("UBroker.WS.Test",
-                "appserviceNameList").equalsIgnoreCase("Test")));
-        assertTrue("Wrong registrationMode", (ini.getStringProperty("UBroker.WS.Test",
-                "registrationMode").equalsIgnoreCase("Register-IP")));
-        assertTrue("Wrong controllingNameServer", (ini.getStringProperty("UBroker.WS.Test",
-                "controllingNameServer").equalsIgnoreCase("NS1")));
-        assertTrue("Wrong brkrLogAppend", (ini.getStringProperty("UBroker.WS.Test", "brkrLogAppend").equalsIgnoreCase("1")));
-        assertTrue("Wrong srvrLogAppend", (ini.getStringProperty("UBroker.WS.Test", "srvrLogAppend").equalsIgnoreCase("0")));
+        assertTrue((ini.getStringProperty("UBroker.WS.Test", "autoStart")
+                .equals("1")), "Wrong autoStart");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test",
+                "initialSrvrInstance").equals("4")), "Wrong initialPool");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test", "minSrvrInstance")
+                .equals("3")), "Wrong minPool");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test", "maxSrvrInstance")
+                .equals("5")), "Wrong maxPool");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test",
+                "registerNameServer").equals("1")), "Wrong registerNameServer");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test",
+                "appserviceNameList").equalsIgnoreCase("Test")), "Wrong appserviceNameList");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test",
+                "registrationMode").equalsIgnoreCase("Register-IP")), "Wrong registrationMode");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test",
+                "controllingNameServer").equalsIgnoreCase("NS1")), "Wrong controllingNameServer");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test", "brkrLogAppend").equalsIgnoreCase("1")), "Wrong brkrLogAppend");
+        assertTrue((ini.getStringProperty("UBroker.WS.Test", "srvrLogAppend").equalsIgnoreCase("0")), "Wrong srvrLogAppend");
     }
 
 }

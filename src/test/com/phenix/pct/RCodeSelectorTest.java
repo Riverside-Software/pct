@@ -53,9 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,11 +69,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class RCodeSelectorTest extends BuildFileTest {
+public class RCodeSelectorTest extends BuildFileTestNg {
     public RCodeSelectorTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("RCodeSelector.xml");
 
@@ -79,7 +85,8 @@ public class RCodeSelectorTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -87,6 +94,7 @@ public class RCodeSelectorTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         executeTarget("prepare");
         executeTarget("compile");

@@ -1,4 +1,5 @@
 ^build$
+^build-test$
 ^build-v8$
 ^build-v9$
 ^build-v10$
@@ -13,6 +14,7 @@
 ^lib$
 ^sports2000$
 ^testbox$
+^test-output$
 ^website$
 ^pct-bin-.*\.zip$
 ^pct-src-.*\.zip$

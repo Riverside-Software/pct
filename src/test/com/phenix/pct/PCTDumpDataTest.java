@@ -53,9 +53,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -64,14 +68,12 @@ import java.io.File;
  * 
  * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET </a>
  */
-public class PCTDumpDataTest extends BuildFileTest {
+public class PCTDumpDataTest extends BuildFileTestNg {
     public PCTDumpDataTest(String name) {
         super(name);
     }
 
-    /**
-     * Sets up the fixture
-     */
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTDumpData.xml");
 
@@ -82,10 +84,8 @@ public class PCTDumpDataTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    /**
-     * Tears down the fixture
-     */
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.getProject());
@@ -96,6 +96,7 @@ public class PCTDumpDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no filesets and no connection
      */
+    @Test
     public void test1() {
         expectBuildException("test1", "Should throw BuildException : no filesets and no connection");
     }
@@ -103,6 +104,7 @@ public class PCTDumpDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no filesets (or srcDir) defined 
      */
+    @Test
     public void test2() {
         expectBuildException("test2", "Should throw BuildException : no filesets (or srcDir) defined ");
     }
@@ -110,6 +112,7 @@ public class PCTDumpDataTest extends BuildFileTest {
     /**
      * Should throw BuildException : no connection defined
      */
+    @Test
     public void test3() {
         expectBuildException("test3", "Should throw BuildException : no connection defined");
     }
@@ -117,6 +120,7 @@ public class PCTDumpDataTest extends BuildFileTest {
     /**
      * Should dump Tab1 in target directory
      */
+    @Test
     public void test4() {
         executeTarget("test4init");
         executeTarget("test4");
@@ -128,6 +132,7 @@ public class PCTDumpDataTest extends BuildFileTest {
     /**
      * Should dump _File in target directory
      */
+    @Test
     public void test5() {
         executeTarget("test5init");
         executeTarget("test5");

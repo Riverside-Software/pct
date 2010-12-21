@@ -53,9 +53,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,13 +71,13 @@ import java.io.IOException;
 /**
  * Class for testing PCTCRC task
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
  */
-public class PCTCRCTest extends BuildFileTest {
+public class PCTCRCTest extends BuildFileTestNg {
     public PCTCRCTest(String name) {
         super(name);
     }
 
+    @BeforeTest
     public void setUp() {
         configureProject("PCTCRC.xml");
 
@@ -84,7 +88,8 @@ public class PCTCRCTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterTest
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -92,14 +97,17 @@ public class PCTCRCTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "Task should fail");
     }
 
+    @Test
     public void test2() {
         expectBuildException("test2", "Task should fail");
     }
 
+    @Test
     public void test3() {
         executeTarget("test3pre");
         executeTarget("test3");
@@ -124,6 +132,7 @@ public class PCTCRCTest extends BuildFileTest {
         }
     }
 
+    @Test
     public void test4() {
         executeTarget("test4pre");
         executeTarget("test4");

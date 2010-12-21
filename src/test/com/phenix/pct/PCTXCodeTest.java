@@ -40,9 +40,13 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.io.File;
 
@@ -51,11 +55,12 @@ import java.io.File;
  * Class for testing PCTXCode task
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTXCodeTest extends BuildFileTest {
+public class PCTXCodeTest extends BuildFileTestNg {
     public PCTXCodeTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTXCode.xml");
 
@@ -68,7 +73,8 @@ public class PCTXCodeTest extends BuildFileTest {
         mkdir.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setFollowSymlinks(false);
@@ -79,14 +85,17 @@ public class PCTXCodeTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void test1() {
         expectBuildException("test1", "No destDir defined");
     }
 
+    @Test
     public void test2() {
         executeTarget("test2");
     }
 
+    @Test
     public void test3() {
         executeTarget("test3");
 
@@ -94,6 +103,7 @@ public class PCTXCodeTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test4() {
         executeTarget("test4");
 
@@ -101,6 +111,7 @@ public class PCTXCodeTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test5() {
         executeTarget("test5");
 
@@ -112,6 +123,7 @@ public class PCTXCodeTest extends BuildFileTest {
         assertTrue(f.exists());
     }
 
+    @Test
     public void test6() {
     	executeTarget("test6");
 
@@ -124,12 +136,14 @@ public class PCTXCodeTest extends BuildFileTest {
     	assertTrue(f.length() != f2.length());
     }
     
+    @Test
     public void test7() {
     	executeTarget("test7init");
     	executeTarget("test7");
     	expectBuildException("test7bis", "RETURN 1");
     }
     
+    @Test
     public void test8() {
         executeTarget("test8init");
         executeTarget("test8");

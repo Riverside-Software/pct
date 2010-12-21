@@ -53,11 +53,15 @@
  */
 package com.phenix.pct;
 
-import junit.framework.TestCase;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.fail;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import java.util.Iterator;
 
@@ -66,10 +70,11 @@ import java.util.Iterator;
  * Class for testing PCTConnection class
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTConnectionTest extends TestCase {
+public class PCTConnectionTest {
     private ExecTask exec = null;
     private Project project = null;
 
+    @BeforeSuite
     public void setUp() {
         // Defines a new Project and a new ExecTask
         project = new Project();
@@ -78,6 +83,7 @@ public class PCTConnectionTest extends TestCase {
         exec.setProject(project);
     }
 
+    @Test
     public void testDbNameRequired() {
         PCTConnection conn = new PCTConnection();
 
@@ -90,6 +96,7 @@ public class PCTConnectionTest extends TestCase {
         fail("Should throw BuildException");
     }
 
+    @Test
     public void testAliases() {
         PCTConnection conn = new PCTConnection();
 
@@ -124,6 +131,7 @@ public class PCTConnectionTest extends TestCase {
         }
     }
 
+    @Test
     public void testNamedAlias() {
         PCTConnection conn = new PCTConnection();
         PCTAlias alias1 = new PCTAlias();

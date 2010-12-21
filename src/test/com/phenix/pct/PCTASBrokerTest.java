@@ -53,10 +53,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildFileTest;
+import static org.testng.Assert.assertTrue;
+
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 import com.freeware.inifiles.INIFile;
 
@@ -70,11 +74,12 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  * @version $Revision: 453 $
  */
-public class PCTASBrokerTest extends BuildFileTest {
+public class PCTASBrokerTest extends BuildFileTestNg {
     public PCTASBrokerTest(String name) {
         super(name);
     }
 
+    @BeforeSuite
     public void setUp() {
         configureProject("PCTASBroker.xml");
 
@@ -95,7 +100,8 @@ public class PCTASBrokerTest extends BuildFileTest {
         copy.execute();
     }
 
-    public void tearDown() throws Exception {
+    @AfterSuite
+    public void tearDown() {
         super.tearDown();
         Delete del = new Delete();
         del.setProject(this.project);
@@ -103,19 +109,22 @@ public class PCTASBrokerTest extends BuildFileTest {
         del.execute();
     }
 
+    @Test
     public void testFailure1() {
         expectBuildException("failure1", "Missing parameter, should throw BuildException");
     }
 
+    @Test
     public void testFailure2() {
         expectBuildException("failure2", "Missing parameter, should throw BuildException");
     }
 
+    @Test
     public void testSimplestTest() {
         executeTarget("SimplestTest");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         String[] sections = ini.getAllSectionNames();
@@ -123,75 +132,80 @@ public class PCTASBrokerTest extends BuildFileTest {
         while ((i < sections.length) && (!sections[i].equals("UBroker.AS.Test"))) {
             i = i + 1;
         }
-        assertTrue("Section UBroker.AS.Test not found", (i < sections.length));
+        assertTrue((i < sections.length), "Section UBroker.AS.Test not found");
     }
 
+    @Test
     public void testUidNone() {
         executeTarget("TestUidNone");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         Map map = ini.getProperties("UBroker.AS.Test");
-        assertTrue("No properties (null) in UBroker.AS.Test", (map != null));
-        assertTrue("Found uuid section !", !map.containsKey("uuid"));
+        assertTrue((map != null), "No properties (null) in UBroker.AS.Test");
+        assertTrue(!map.containsKey("uuid"), "Found uuid section !");
     }
 
+    @Test
     public void testUidAuto() {
         executeTarget("TestUidAuto");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         Map map = ini.getProperties("UBroker.AS.Test");
-        assertTrue("No properties (null) in UBroker.AS.Test", (map != null));
-        assertTrue("uuid section not found !", map.containsKey("uuid"));
+        assertTrue((map != null), "No properties (null) in UBroker.AS.Test");
+        assertTrue(map.containsKey("uuid"), "uuid section not found !");
         String uuid = ini.getStringProperty("UBroker.AS.Test", "uuid");
-        assertTrue("Null uuid", (uuid != null));
-        assertTrue("Weird UUID pattern...", (uuid.length() < 30));
+        assertTrue((uuid != null), "Null uuid");
+        assertTrue((uuid.length() < 30), "Weird UUID pattern...");
     }
 
+    @Test
     public void testUid() {
         executeTarget("TestUid");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         Map map = ini.getProperties("UBroker.AS.Test");
-        assertTrue("No properties (null) in UBroker.AS.Test", (map != null));
-        assertTrue("uuid section not found !", map.containsKey("uuid"));
+        assertTrue((map != null), "No properties (null) in UBroker.AS.Test");
+        assertTrue(map.containsKey("uuid"), "uuid section not found !");
         String uuid = ini.getStringProperty("UBroker.AS.Test", "uuid");
-        assertTrue("Null uuid", (uuid != null));
-        assertTrue("Wrong UUID", (uuid.equals("3fb5744ad58ca1b0:239137:10a178402e4:-8000")));
+        assertTrue((uuid != null), "Null uuid");
+        assertTrue((uuid.equals("3fb5744ad58ca1b0:239137:10a178402e4:-8000")), "Wrong UUID");
     }
 
+    @Test
     public void testLogging() {
         executeTarget("TestLogging");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         Map map = ini.getProperties("UBroker.AS.Test");
-        assertTrue("No properties (null) in UBroker.AS.Test", (map != null));
+        assertTrue((map != null), "No properties (null) in UBroker.AS.Test");
         String prop = ini.getStringProperty("UBroker.AS.Test", "brokerLogFile");
-        assertTrue("brokerLogFile -- Property not found", (prop != null));
+        assertTrue((prop != null), "brokerLogFile -- Property not found");
         prop = ini.getStringProperty("UBroker.AS.Test", "brkrLoggingLevel");
-        assertTrue("brkrLoggingLevel -- Property not found", (prop != null));
+        assertTrue((prop != null), "brkrLoggingLevel -- Property not found");
         prop = ini.getStringProperty("UBroker.AS.Test", "srvrLoggingLevel");
-        assertTrue("srvrLoggingLevel -- Property not found", (prop != null));
+        assertTrue((prop != null), "srvrLoggingLevel -- Property not found");
         prop = ini.getStringProperty("UBroker.AS.Test", "srvrLogFile");
-        assertTrue("srvrLogFile -- Property not found", (prop != null));
+        assertTrue((prop != null), "srvrLogFile -- Property not found");
     }
 
+    @Test
     public void testApsvDelete() {
         executeTarget("TestApsvDelete");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         String[] sections = ini.getAllSectionNames();
@@ -199,26 +213,27 @@ public class PCTASBrokerTest extends BuildFileTest {
         while ((i < sections.length) && (!sections[i].equals("UBroker.AS.Test"))) {
             i = i + 1;
         }
-        assertTrue("Section UBroker.AS.Test not found", (i == sections.length));
+        assertTrue((i == sections.length), "Section UBroker.AS.Test not found");
     }
 
+    @Test
     public void testApsvUpdate() {
         executeTarget("TestApsvUpdate-Part1");
 
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
         String portNumber = ini.getStringProperty("UBroker.AS.Test", "portNumber");
-        assertTrue("Null portNumber (before update)", (portNumber != null));
-        assertTrue("Wrong portNumber (before update)", (portNumber.equals("12345")));
+        assertTrue((portNumber != null), "Null portNumber (before update)");
+        assertTrue((portNumber.equals("12345")), "Wrong portNumber (before update)");
         ini = null;
         
         executeTarget("TestApsvUpdate-Part2");
         ini = new INIFile(f1.getAbsolutePath());
         portNumber = ini.getStringProperty("UBroker.AS.Test", "portNumber");
-        assertTrue("Null portNumber (after update)", (portNumber != null));
-        assertTrue("Wrong portNumber (after update)", (portNumber.equals("12346")));
+        assertTrue((portNumber != null), "Null portNumber (after update)");
+        assertTrue((portNumber.equals("12346")), "Wrong portNumber (after update)");
     }
 
     // TODO This test should throw BuildException -- See how error should be trapped...
@@ -233,57 +248,64 @@ public class PCTASBrokerTest extends BuildFileTest {
         executeTarget("TestAttributes-1");
         
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
-        assertTrue("Wrong operatingMode", (ini.getStringProperty("UBroker.AS.Test", "operatingMode").equals("State-reset")));
-        assertTrue("Wrong autoStart", (ini.getStringProperty("UBroker.AS.Test", "autoStart").equals("1")));
-        assertTrue("Wrong initialPool", (ini.getStringProperty("UBroker.AS.Test", "initialSrvrInstance").equals("4")));
-        assertTrue("Wrong minPool", (ini.getStringProperty("UBroker.AS.Test", "minSrvrInstance").equals("3")));
-        assertTrue("Wrong maxPool", (ini.getStringProperty("UBroker.AS.Test", "maxSrvrInstance").equals("5")));
-        assertTrue("Wrong registerNameServer", (ini.getStringProperty("UBroker.AS.Test", "registerNameServer").equals("1")));
-        assertTrue("Wrong appserviceNameList", (ini.getStringProperty("UBroker.AS.Test", "appserviceNameList").equalsIgnoreCase("Test")));
-        assertTrue("Wrong registrationMode", (ini.getStringProperty("UBroker.AS.Test", "registrationMode").equalsIgnoreCase("Register-IP")));
-        assertTrue("Wrong controllingNameServer", (ini.getStringProperty("UBroker.AS.Test", "controllingNameServer").equalsIgnoreCase("NS1")));
-        assertTrue("Wrong brkrLogAppend", (ini.getStringProperty("UBroker.AS.Test", "brkrLogAppend").equalsIgnoreCase("1")));
-        assertTrue("Wrong srvrLogAppend", (ini.getStringProperty("UBroker.AS.Test", "srvrLogAppend").equalsIgnoreCase("0")));
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "operatingMode").equals("State-reset")), "Wrong operatingMode");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "autoStart").equals("1")), "Wrong autoStart");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "initialSrvrInstance").equals("4")), "Wrong initialPool");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "minSrvrInstance").equals("3")), "Wrong minPool");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "maxSrvrInstance").equals("5")), "Wrong maxPool");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "registerNameServer").equals("1")), "Wrong registerNameServer");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "appserviceNameList").equalsIgnoreCase("Test")), "Wrong appserviceNameList");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "registrationMode").equalsIgnoreCase("Register-IP")), "Wrong registrationMode");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "controllingNameServer").equalsIgnoreCase("NS1")), "Wrong controllingNameServer");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "brkrLogAppend").equalsIgnoreCase("1")), "Wrong brkrLogAppend");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrLogAppend").equalsIgnoreCase("0")), "Wrong srvrLogAppend");
     }
 
     public void testAttributes2() {
         executeTarget("TestAttributes-2");
         
         File f1 = new File("sandbox/ubroker.properties");
-        assertTrue("ubroker.properties not found", f1.exists());
+        assertTrue(f1.exists(), "ubroker.properties not found");
 
         INIFile ini = new INIFile(f1.getAbsolutePath());
-        assertTrue("Wrong activateProc", (ini.getStringProperty("UBroker.AS.Test", "srvrActivateProc").equals("activate.p")));
-        assertTrue("Wrong deactivateProc", (ini.getStringProperty("UBroker.AS.Test", "srvrDeactivateProc").equals("deactivate.p")));
-        assertTrue("Wrong connectProc", (ini.getStringProperty("UBroker.AS.Test", "srvrConnectProc").equals("connect.p")));
-        assertTrue("Wrong disconnectProc", (ini.getStringProperty("UBroker.AS.Test", "srvrDisconnProc").equals("disconnect.p")));
-        assertTrue("Wrong startupProc", (ini.getStringProperty("UBroker.AS.Test", "srvrStartupProc").equals("startup.p")));
-        assertTrue("Wrong shutdownProc", (ini.getStringProperty("UBroker.AS.Test", "srvrShutdownProc").equals("shutdown.p")));
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrActivateProc").equals("activate.p")), "Wrong activateProc");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrDeactivateProc").equals("deactivate.p")), "Wrong deactivateProc");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrConnectProc").equals("connect.p")), "Wrong connectProc");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrDisconnProc").equals("disconnect.p")), "Wrong disconnectProc");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrStartupProc").equals("startup.p")), "Wrong startupProc");
+        assertTrue((ini.getStringProperty("UBroker.AS.Test", "srvrShutdownProc").equals("shutdown.p")), "Wrong shutdownProc");
 
         // Checking PROPATH
         String propath = ini.getStringProperty("UBroker.AS.Test", "PROPATH");
         StringTokenizer tokenizer = new StringTokenizer(propath, Character.toString(File.pathSeparatorChar));
-        assertTrue("Wrong number of entries in PROPATH", (tokenizer.countTokens() == 2));
-        assertTrue("First entry should be build", (tokenizer.nextToken().endsWith("build")));
-        assertTrue("Second entry should be build2", (tokenizer.nextToken().endsWith("build2")));
+        assertTrue((tokenizer.countTokens() == 2), "Wrong number of entries in PROPATH");
+        assertTrue((tokenizer.nextToken().endsWith("build")), "First entry should be build");
+        assertTrue((tokenizer.nextToken().endsWith("build2")), "Second entry should be build2");
 
         String startup = ini.getStringProperty("UBroker.AS.Test", "srvrStartupParam");
-        assertTrue("Unable to find myDB connection", (startup.indexOf("-db myDB") != -1));
-        assertTrue("Unable to find myDB2 connection", (startup.indexOf("-db myDB2") != -1));
+        assertTrue((startup.indexOf("-db myDB") != -1), "Unable to find myDB connection");
+        assertTrue((startup.indexOf("-db myDB2") != -1), "Unable to find myDB2 connection");
     }
 
+    @Test
     public void testForbiddenAttributes1() {
         expectBuildException("TestForbiddenAttributes-1", "Forbidden attribute : procedure");
     }
+
+    @Test
     public void testForbiddenAttributes2() {
         expectBuildException("TestForbiddenAttributes-2", "Forbidden attribute : graphicalMode");
     }
+
+    @Test
     public void testForbiddenAttributes3() {
         expectBuildException("TestForbiddenAttributes-3", "Forbidden attribute : debugPCT");
     }
+
+    @Test
     public void testForbiddenAttributes4() {
         expectBuildException("TestForbiddenAttributes-4", "Forbidden attribute : baseDir");
     }

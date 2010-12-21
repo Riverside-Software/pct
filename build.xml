@@ -33,6 +33,7 @@
   <property name="src.progress" location="src/progress" />
   <property name="src.test" location="src/test" />
   <property name="build" location="build" />
+  <property name="build-test" location="build-test" />
   <property name="build-v8" location="build-v8" />
   <property name="build-v9" location="build-v9" />
   <property name="build-v10" location="build-v10" />
@@ -110,7 +111,21 @@
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
-    <pathelement location="junit.jar" />
+    <pathelement location="${build}" />
+    <pathelement location="testng-5.14.4.jar" />
+  </path>
+  <path id="test.run.cp">
+    <pathelement location="${build-test}" />
+    <pathelement location="lib/PCT.jar" />
+    <pathelement location="ant.jar" />
+    <pathelement location="ant-launcher.jar" />
+    <pathelement location="testng-5.14.4.jar" />
+    <pathelement location="velocity-dep-1.4.jar" />
+    <pathelement location="reportng-1.1.2.jar" />
+  </path>
+
+  <path id="testng.cp">
+    <fileset dir="." includes="testng-5.14.4.jar,velocity-dep-1.4.jar,reportng-1.1.2.jar" />  
   </path>
 
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -119,6 +134,7 @@
     </tstamp>
 
     <mkdir dir="${build}" />
+    <mkdir dir="${build-test}" />
     <mkdir dir="${build-v8}" />
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
@@ -300,7 +316,7 @@
   </target>
 
   <target name="test-build" depends="jar" description="Builds junit tests">
-    <javac srcdir="${src.test}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/apache/tools/ant/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
@@ -317,7 +333,19 @@
   </target>
 
   <target name="cond.test" if="${test.this.version}">
-    <junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
+    <mkdir dir="test-output" />
+    <taskdef resource="testngtasks" classpathref="testng.cp" />
+    <testng workingdir="${testdir}" classpathref="test.run.cp" outputDir="test-output" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
+      <!--<jvmarg value="-Djava.naming.factory.initial=org.mortbay.naming.InitialContextFactory" />-->
+      <classfileset dir="${build-test}">
+        <include name="**/PCTCompileTest.class" />
+      </classfileset>
+      <classpath refid="test.run.cp" />
+      <sysproperty key="org.uncommons.reportng.title" value="Padeo tests report"/>
+      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
+    </testng>
+    
+    <!--<junit printsummary="yes" haltonfailure="no" dir="${testdir}" showoutput="true">
       <classpath>
         <pathelement location="junit.jar" />
         <pathelement location="ant-junit.jar" />
@@ -338,7 +366,7 @@
         <include name="TEST-*.xml" />
       </fileset>
       <report format="frames" styledir="${basedir}" todir="${junit-report}" />
-    </junitreport>
+    </junitreport>-->
   </target>
     
   <target name="test" depends="prepare-test" description="Starts tests">
@@ -409,6 +437,7 @@
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}" />
+    <delete dir="${build-test}" />
     <delete dir="${build-v8}" />
     <delete dir="${build-v9}" />
     <delete dir="${build-v10}" />
