@@ -329,7 +329,6 @@
   </target>
 
   <target name="cond.test" if="${test.this.version}">
-    <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
       <classfileset dir="${build-test}">
