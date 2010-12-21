@@ -64,8 +64,8 @@ import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Echo;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -84,7 +84,7 @@ public class PCTTest {
     private Project project;
     private PCTRun pct;
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         project = new Project();
         project.init();
@@ -120,7 +120,7 @@ public class PCTTest {
         copy.execute();
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() throws Exception {
         pct.cleanup();
         Delete del = new Delete();

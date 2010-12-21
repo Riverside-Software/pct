@@ -60,8 +60,8 @@ import java.io.File;
 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -77,7 +77,7 @@ public class PCTProxygenV10Test extends BuildFileTestNg {
         super(name);
     }
 
-    @BeforeSuite
+    @BeforeMethod
     public void setUp() {
         configureProject("PCTProxygen.xml");
 
@@ -99,7 +99,7 @@ public class PCTProxygenV10Test extends BuildFileTestNg {
         minorVersion = Integer.parseInt(getProject().getProperty("minorVersion"));
     }
 
-    @AfterSuite
+    @AfterMethod
     public void tearDown() {
         super.tearDown();
         Delete del = new Delete();

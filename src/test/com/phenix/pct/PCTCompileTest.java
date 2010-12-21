@@ -58,8 +58,8 @@ import static org.testng.Assert.assertFalse;
 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         super(name);
     }
 
-    @BeforeTest
+    @BeforeMethod
     public void setUp() {
         configureProject("PCTCompile.xml");
 
@@ -91,7 +91,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         version.execute();
     }
 
-    @AfterTest
+    @AfterMethod
     public void tearDown() {
         Delete del = new Delete();
         del.setFollowSymlinks(false);
