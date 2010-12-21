@@ -330,7 +330,7 @@
 
   <target name="cond.test" if="${test.this.version}">
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
+    <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.testng.reporters.XMLReporter">
       <classfileset dir="${build-test}">
         <include name="com/phenix/pct/*Test.class" />
       </classfileset>
@@ -457,17 +457,17 @@
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/testng-v9">
+    <copy todir="${website}/testng-v9" failonerror="false">
       <fileset dir="${testng-v9}/html">
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/testng-v10">
+    <copy todir="${website}/testng-v10" failonerror="false">
       <fileset dir="${testng-v10}">
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/testng-v10-64">
+    <copy todir="${website}/testng-v10-64" failonerror="false">
       <fileset dir="${testng-v10-64}">
         <include name="**" />
       </fileset>
