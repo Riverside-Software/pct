@@ -555,4 +555,9 @@
     </xslt>
   </target>
 
+  <target name="upload">
+    <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="pct-bin-${BUILD_NUMBER}.zip" targetfilename="pct-bin-${BUILD_NUMBER}.zip" summary="Hudson build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+  </target>
+
 </project>
