@@ -12,6 +12,7 @@ Version 0.17 (??/??/????)
    Enhancement by Sascha Hofmann
  * Upgrading to ANT 1.8
    Edit : To 1.8.1
+   Edit : To 1.8.2
  * Changed the way $DLC/version is parsed
    Thanks to Matt Baker for reporting bug and additional infos
  * Adding languages and textSegGrowth attributes to PCTCompile and PCTCompileExt tasks
