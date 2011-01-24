@@ -56,7 +56,7 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.fail;
- 
+
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.testng.annotations.AfterMethod;
@@ -120,7 +120,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(f2));
-            assertTrue(reader.readLine().startsWith("ADD TABLE"));
+            assertTrue(reader.readLine().trim().startsWith("ADD TABLE"));
             reader.close();
         } catch (IOException caught) {
             try {
@@ -132,4 +132,45 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
         }
     }
 
+    @Test
+    public void testTables() {
+        File f1 = new File("sandbox/files1.df");
+        File f2 = new File("sandbox/files2.df");
+        File f3 = new File("sandbox/files3.df");
+
+        executeTarget("test6init");
+        executeTarget("test6");
+
+        if (!checkFile(f1, "Tab1", "Tab3"))
+            fail("Incorrect files1.df");
+        if (!checkFile(f2, "Tab2", "Tab1"))
+            fail("Incorrect files2.df");
+        if (!checkFile(f3, "Tab3", "Tab2"))
+            fail("Incorrect files3.df");
+    }
+
+    private boolean checkFile(File f, String inc, String exc) {
+        BufferedReader reader = null;
+        boolean bInc = false, bExc = true;
+        try {
+            reader = new BufferedReader(new FileReader(f));
+            String str = null;
+            while ((str = reader.readLine()) != null) {
+                if (str.trim().startsWith("ADD TABLE \"" + inc + "\""))
+                    bInc = true;
+                if (str.trim().startsWith("ADD TABLE \"" + exc + "\""))
+                    bExc = false;
+            }
+            reader.close();
+            return (bInc && bExc);
+        } catch (IOException caught) {
+            return false;
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException uncaught) {
+
+            }
+        }
+    }
 }
