@@ -99,6 +99,14 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         del.execute();
     }
 
+    /**
+     * Simple incremental test :
+     *  1/ Create test DB with Tab1 table
+     *  2/ Create test2 DB with no table
+     *  3/ Generate incremental
+     *  4/ Load incremental in test2 DB
+     *  5/ Verifies compilation output of test.p with access to Tab1
+     */
     @Test
     public void test1() {
         File f = new File("sandbox/incr.df");
@@ -111,6 +119,9 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
+    /**
+     * Test activeIndexes attribute
+     */
     @Test
     public void test2() {
         File f1 = new File("sandbox/incr1.df");
@@ -162,6 +173,9 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         }
     }
 
+    /**
+     * Verifies codepage attribute
+     */
     @Test
     public void test3() {
         File f1 = new File("sandbox/incr1.df");
@@ -214,6 +228,14 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         }
     }
 
+    /**
+     * Test renameFile attribute :
+     *  1/ Creates Tab1 table in test DB with Fld1 and Fld2
+     *  2/ Creates Tab1 table in test2 DB with Fld1 and Fld3
+     *  3/ Generate rename file
+     *  4/ Generates incremental dump file between test and test2 DBs with and without rename file
+     *  5/ Compares differences between both output files
+     */
     @Test
     public void test4() {
         File f1 = new File("sandbox/incr1.df");
