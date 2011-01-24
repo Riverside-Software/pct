@@ -53,19 +53,22 @@
  */
 package com.phenix.pct;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
+import org.ini4j.Profile.Section;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.freeware.inifiles.INIFile;
-
 import java.io.File;
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * Class for testing PCTWSBroker task
@@ -103,50 +106,34 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         del.execute();
     }
 
-    @Test
+    @Test(expectedExceptions=BuildException.class)
     public void testFailure1() {
-        expectBuildException("failure1", "Missing parameter, should throw BuildException");
+        executeTarget("failure1");
     }
 
-    @Test
+    @Test(expectedExceptions=BuildException.class)
     public void testFailure2() {
-        expectBuildException("failure2", "Missing parameter, should throw BuildException");
+        executeTarget("failure2");
     }
 
     @Test
-    public void testSimplestTest() {
+    public void testSimplestTest() throws InvalidFileFormatException, IOException {
         executeTarget("SimplestTest");
 
-        File f1 = new File("sandbox/ubroker.properties");
-        assertTrue(f1.exists(), "ubroker.properties not found");
-
-        INIFile ini = new INIFile(f1.getAbsolutePath());
-        String[] sections = ini.getAllSectionNames();
-        int i = 0;
-        while ((i < sections.length) && (!sections[i].equals("UBroker.WS.Test"))) {
-            i = i + 1;
-        }
-        assertTrue((i < sections.length), "Section UBroker.WS.Test not found");
+        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        assertNotNull(ini.get("UBroker.WS.Test"));
     }
 
     @Test
-    public void testLogging() {
+    public void testLogging() throws InvalidFileFormatException, IOException {
         executeTarget("TestLogging");
 
-        File f1 = new File("sandbox/ubroker.properties");
-        assertTrue(f1.exists(), "ubroker.properties not found");
-
-        INIFile ini = new INIFile(f1.getAbsolutePath());
-        Map map = ini.getProperties("UBroker.WS.Test");
-        assertTrue((map != null), "No properties (null) in UBroker.WS.Test");
-        String prop = ini.getStringProperty("UBroker.WS.Test", "brokerLogFile");
-        assertTrue((prop != null), "brokerLogFile -- Property not found");
-        prop = ini.getStringProperty("UBroker.WS.Test", "brkrLoggingLevel");
-        assertTrue((prop != null), "brkrLoggingLevel -- Property not found");
-        prop = ini.getStringProperty("UBroker.WS.Test", "srvrLoggingLevel");
-        assertTrue((prop != null), "srvrLoggingLevel -- Property not found");
-        prop = ini.getStringProperty("UBroker.WS.Test", "srvrLogFile");
-        assertTrue((prop != null), "srvrLogFile -- Property not found");
+        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Section section = ini.get("UBroker.WS.Test");
+        assertNotNull(section.get("brokerLogFile"));
+        assertNotNull(section.get("brkrLoggingLevel"));
+        assertNotNull(section.get("srvrLoggingLevel"));
+        assertNotNull(section.get("srvrLogFile"));
     }
 
     // TODO This test should throw BuildException -- See how error should be trapped...
@@ -158,31 +145,21 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
     // }
 
     @Test
-    public void testAttributes1() {
+    public void testAttributes1() throws InvalidFileFormatException, IOException {
         executeTarget("TestAttributes-1");
 
-        File f1 = new File("sandbox/ubroker.properties");
-        assertTrue(f1.exists(), "ubroker.properties not found");
-
-        INIFile ini = new INIFile(f1.getAbsolutePath());
-        assertTrue((ini.getStringProperty("UBroker.WS.Test", "autoStart")
-                .equals("1")), "Wrong autoStart");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test",
-                "initialSrvrInstance").equals("4")), "Wrong initialPool");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test", "minSrvrInstance")
-                .equals("3")), "Wrong minPool");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test", "maxSrvrInstance")
-                .equals("5")), "Wrong maxPool");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test",
-                "registerNameServer").equals("1")), "Wrong registerNameServer");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test",
-                "appserviceNameList").equalsIgnoreCase("Test")), "Wrong appserviceNameList");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test",
-                "registrationMode").equalsIgnoreCase("Register-IP")), "Wrong registrationMode");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test",
-                "controllingNameServer").equalsIgnoreCase("NS1")), "Wrong controllingNameServer");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test", "brkrLogAppend").equalsIgnoreCase("1")), "Wrong brkrLogAppend");
-        assertTrue((ini.getStringProperty("UBroker.WS.Test", "srvrLogAppend").equalsIgnoreCase("0")), "Wrong srvrLogAppend");
+        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Section section = ini.get("UBroker.WS.Test");
+        assertEquals(section.get("autoStart", String.class), "1");
+        assertEquals(section.get("initialSrvrInstance", String.class), "4");
+        assertEquals(section.get("minSrvrInstance", String.class), "3");
+        assertEquals(section.get("maxSrvrInstance", String.class), "5");
+        assertEquals(section.get("registerNameServer", String.class), "1");
+        assertEquals(section.get("appserviceNameList", String.class), "Test");
+        assertEquals(section.get("registrationMode", String.class), "Register-IP");
+        assertEquals(section.get("controllingNameServer", String.class), "NS1");
+        assertEquals(section.get("brkrLogAppend", String.class), "1");
+        assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
 }
