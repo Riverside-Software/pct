@@ -110,6 +110,7 @@
     <path refid="pct.compil" />
     <pathelement location="${build}" />
     <pathelement location="testng-5.14.4.jar" />
+    <pathelement location="ini4j-0.5.1.jar" />
   </path>
   <path id="test.run.cp">
     <pathelement location="${build-test}" />
@@ -313,7 +314,7 @@
 
   <target name="test-build" depends="jar" description="Builds TestNG tests">
     <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
-      <include name="org/apache/tools/ant/*.java" />
+      <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.test.compil" />
