@@ -116,7 +116,7 @@ public class PCTLoadData extends PCTRun {
     private String getTableList() {
         StringBuffer sb = new StringBuffer();
         if (tables != null)
-            sb.append(sb);
+            sb.append(tables);
 
         if (tableList != null) {
             for (Iterator iter = tableList.iterator(); iter.hasNext();) {
