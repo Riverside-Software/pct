@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
+* Copyright (C) 2007 by Progress Software Corporation. All rights    *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -16,6 +16,7 @@
             10/12/01 DLM Added crtdefault for user to select to dump default values 
             06/25/02 DLM Added shadowcol to know if UPPER function should be used.    
             02/28/03 DLM Removed shadowcol as option
+            06/11/07 fernando Unicode and clob support
 */                         
 
 DEFINE {1} SHARED VARIABLE pro_dbname   AS CHARACTER.
@@ -42,5 +43,9 @@ DEFINE {1} SHARED VARIABLE crtdefault   AS LOGICAL.
 DEFINE {1} SHARED VARIABLE iFmtOption   AS INTEGER INITIAL 2 NO-UNDO.
 DEFINE {1} SHARED VARIABLE lFormat      AS LOGICAL INITIAL TRUE NO-UNDO.
 DEFINE {1} SHARED VARIABLE shadowcol    AS LOGICAL   NO-UNDO.
+DEFINE {1} SHARED VARIABLE unicodeTypes AS LOGICAL   NO-UNDO.
+DEFINE {1} SHARED VARIABLE lExpandClob   AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE {1} SHARED VARIABLE lCharSemantics AS LOGICAL  NO-UNDO INITIAL FALSE.
+DEFINE {1} SHARED VARIABLE ora_varlen   AS INTEGER INITIAL 4000.
 
 DEFINE {1} SHARED STREAM dbg_stream.

@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
+* Copyright (C) 2005,2007 by Progress Software Corporation. All rights *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -17,18 +17,17 @@ History:  kmcintos 04/29/2005  Added new dump streams for auditing
           kmcintos 04/30/2005  Added second parameter which, when equal to
                                "STREAMS" defines stream information only.
           fernando 11/10/2005  Added streams for _client-session and _db-detail 20051110-020
+          fernando 02/27/2007  Handle critical field change - OE00147106
 -----------------------------------------------------------------------------*/
 
 DEFINE {1} STREAM ddl.
-DEFINE {1} STREAM err-log.
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') - 1)) GE 10 &THEN
+DEFINE {1} STREAM err-log.  
 DEFINE {1} STREAM dumpPol.
 DEFINE {1} STREAM dumpEvtPol.
 DEFINE {1} STREAM dumpFldPol.
 DEFINE {1} STREAM dumpFilPol.
 DEFINE {1} STREAM dumpAudD.
 DEFINE {1} STREAM dumpAudDVal.
-&ENDIF
 DEFINE {1} STREAM dumpCliSess.
 DEFINE {1} STREAM dumpDbDet.
 
@@ -36,7 +35,8 @@ DEFINE {1} STREAM dumpDbDet.
   &GLOBAL-DEFINE errFileName "incrdump.e"
   
   DEFINE {1} WORKFILE missing NO-UNDO
-    FIELD name AS CHARACTER INITIAL "".
+    FIELD name AS CHARACTER INITIAL ""
+    FIELD crit AS LOGICAL   INITIAL NO. /* for OE00147106 */
 
   DEFINE {1} WORKFILE table-list NO-UNDO
     FIELD t1-name AS CHARACTER INITIAL ""

@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
+* Copyright (C) 2006,2009-2010 by Progress Software Corporation. All rights    *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -10,7 +10,9 @@
  * kmcintos     04/04/05    Added variables for Auditing Support    *
  * kmcintos     07/27/05    Removed unused longchar variable        *
  * kmcintos     08/18/05    Added logical for audit policy commit   *
- *                          20050629-018                            */
+ *                          20050629-018                            *
+ * fernando     03/14/06    Handle case with too many tables selected*
+ *                          20050930-006                            */
    
 /* uservar.i - dictionary user interface variable definitions */
 
@@ -36,13 +38,13 @@ DEFINE BUTTON btn_Cancel LABEL "Cancel" {&STDPH_OKBTN} AUTO-ENDKEY.
 DEFINE {1} SHARED STREAM logfile.
 DEFINE {1} SHARED VARIABLE logfile_open AS LOGICAL NO-UNDO INITIAL false.
 
-/*Fernando  20020129-017*/
-DEFINE {1} SHARED VARIABLE user_msg_count AS INTEGER NO-UNDO INITIAL 0.
-
 /* kmcintos "Auditing support" */
 DEFINE {1} SHARED VARIABLE user_overwrite AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_commit    AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_excepts   AS CHARACTER NO-UNDO.
+
+/* for bug fix 20050930-006 */
+DEFINE {1} SHARED VARIABLE user_longchar  AS LONGCHAR NO-UNDO.
 
 &GLOBAL-DEFINE ERROR_ROLLBACK 151
 
@@ -70,3 +72,10 @@ DEFINE {1} SHARED VARIABLE user_excepts   AS CHARACTER NO-UNDO.
    {prodict/admnhlp.i}
    &global-define ADM_HELP_FILE "adehelp/admin.hlp"  
 &ENDIF
+
+/* used to define the display name of the product. It used to be PROGRESS,
+and now we are changigng it to OpenEdge. Creating define so that the next time
+we change it, we don't have to go through changing all necessary source
+files again 
+*/
+&GLOBAL-DEFINE PRO_DISPLAY_NAME OpenEdge
