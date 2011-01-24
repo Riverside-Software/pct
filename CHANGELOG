@@ -1,4 +1,4 @@
-Version 0.17 (??/??/????)
+Version 0.17 (01/24/2011)
 ==============================
  * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl
  * Removed PLExtract task, in favor of PLFileSet type which can be nested in any FileSet capable task
