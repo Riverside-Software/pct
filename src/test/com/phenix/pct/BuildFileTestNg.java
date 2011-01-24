@@ -157,7 +157,7 @@ public class BuildFileTestNg {
     public void expectLog(String target, String log) {
         executeTarget(target);
         String realLog = getLog();
-        Assert.assertEquals(log, realLog);
+        Assert.assertEquals(realLog, log);
     }
 
     public String getOutput() {
