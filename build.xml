@@ -122,6 +122,7 @@
     <pathelement location="testng-5.14.4.jar" />
     <pathelement location="velocity-dep-1.4.jar" />
     <pathelement location="reportng-1.1.2.jar" />
+    <pathelement location="ini4j-0.5.1.jar" />
   </path>
 
   <path id="testng.cp">
