@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
+* Copyright (C) 2006,2009 by Progress Software Corporation. All rights    *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -22,8 +22,13 @@
    
    History:
      kmcintos June 7, 2005  Added context help ids for auditing options.
+     fernando     09/12/06  Added context help id for Adjust Schema
+     fernando     06/30/09  Added context help id for Encryption/AltBufPool options
      
 */
+
+/* Admin Help Contents screen */
+&Global-define Adjust_Schema_dialog_box 37
 
 /* Admin Help Contents screen */
 &Global-define Main_Contents 49153
@@ -292,7 +297,7 @@
 &Global-define Code_Page_Dlg_Box 49226
 
 /* Deselect Tables by Pattern Match Dialog Box */
-&Global-define Deselect_by_Pattern_Dlg_Box 49227
+&Global-define Deselect_by_Pattern_Dlg_Box 49
 
 /* Select Tables by Pattern Match Dialog Box (DataServer context) */
 &Global-define Select_by_Pattern_DataServer_Dlg_Box 49228
@@ -359,3 +364,28 @@
 
 /* ROWID-Index Detail Dialog Box */
 &Global-define RowID_Idx_Dtl_Dlg_Box 49241
+
+/* Alternate Buffer Pool Maintenance dialog box */
+&Global-define Alternate_Buffer_Pool_Maintenance_Dialog_Box 40
+
+/* Alternate Buffer Pool Object Selector dialog box */
+&Global-define Alternate_Buffer_Pool_Object_Selector_Dialog_Box 41
+
+/* Encryption Policies Object Selector dialog box */
+&Global-define Encryption_Policies_Object_Selector_Dialog_Box1 44
+
+/* Edit Encryption Policies dialog box */
+&Global-define Edit_Encryption_Policy_Dialog_Box1 45
+
+/* Encryption Policy History dialog box */
+&Global-define Encryption_Policy_History_Dialog_Box 46
+
+/* Encryption Policy Generate Encryption Keys dialog box */
+&Global-define Generate_Encryption_Keys_Dialog_Box 47
+
+/* Copy Current Setting To dialog box */
+&Global-define Copy_Current_Setting_To            48
+
+&Global-define Deselect_Objects_by_Pattern_Match   51
+
+&Global-define Select_Objects_by_Pattern_Match       52
