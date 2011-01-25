@@ -236,7 +236,7 @@ DEF VAR myEPolicy  AS prodict.sec._sec-pol-util    EXTENT 2 NO-UNDO.
 DEF VAR myObjAttrs AS prodict.pro._obj-attrib-util EXTENT 2 NO-UNDO.
 
 /* Persistent procedure library */
-RUN prodict/dump/_dmputil.p PERSISTENT SET h_dmputil.
+RUN pct/_dmputil.p PERSISTENT SET h_dmputil.
 
 /* Forward Declare functions contained in library */
 FUNCTION fileAreaMatch RETURNS LOGICAL (INPUT db1FileNo AS INT,

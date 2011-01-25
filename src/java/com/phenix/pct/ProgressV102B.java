@@ -65,7 +65,7 @@ public class ProgressV102B implements ProgressProcedures {
     }
 
     public String getIncrementalProcedure() {
-        return "pct/_dmpincr102b.p";
+        return "pct/dump_inc102b.p";
     }
 
     public boolean needRedirector() {
