@@ -140,9 +140,10 @@ public class PCTLoadData extends PCTRun {
     private void writeParams() throws BuildException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
-            if (this.tables != null) {
+            String tbl = getTableList();
+            if (tbl != null) {
                 bw.write("TABLES=");
-                bw.write(getTableList());
+                bw.write(tbl);
                 bw.newLine();
             }
             bw.write("SRCDIR=" + srcDir.getAbsolutePath()); //$NON-NLS-1$
