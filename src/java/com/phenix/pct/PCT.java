@@ -127,20 +127,16 @@ public abstract class PCT extends Task {
             throw new BuildException(caught);
         }
 
-        switch (version.getMajorVersion()) {
-            case 8 :
-                this.pp = new ProgressV8();
-                break;
-            case 9 :
-                this.pp = new ProgressV9();
-                break;
-            case 10 :
-                this.pp = new ProgressV10();
-                break;
-            default :
-                this.pp = new ProgressV10();
-                break;
-        }
+        if (version.compareTo(new DLCVersion(10, 2, "B")) >= 0)
+            this.pp = new ProgressV102B();
+        else if (version.compareTo(new DLCVersion(10, 0, "A")) >= 0)
+            this.pp = new ProgressV10();
+        else if (version.compareTo(new DLCVersion(9, 0, "A")) >= 0)
+            this.pp = new ProgressV9();
+        else if (version.compareTo(new DLCVersion(8, 0, "A")) >= 0)
+            this.pp = new ProgressV8();
+        else
+            throw new BuildException("Invalid Progress version : " + version.toString());
     }
 
     /**

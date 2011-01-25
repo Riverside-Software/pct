@@ -53,27 +53,78 @@
  */
 package com.phenix.pct;
 
-/**
- * Interface which has to be implement to reflect programs used by PCT depending on Progress
- * version.
- * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
- */
-public abstract interface ProgressProcedures {
-    String getCompileProcedure();
-    String getIncrementalProcedure();
-    boolean needRedirector();
-    String getInitString();
-    String getConnectString();
-    String getAliasString();
-    String getPropathString();
-    String getRunString();
-    String getReturnProc();
-    String getParameterString();
-    String getOutputParameterDeclaration();
-    String getOutputParameterProc();
-    String getAfterRun();
-    String getOutputParameterCall();
-    String getQuit();
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+public class ProgressV102B implements ProgressProcedures {
+    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV102B"; //$NON-NLS-1$
+    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+
+    public String getCompileProcedure() {
+        return "pct/pctCompileV10.p";
+    }
+
+    public String getIncrementalProcedure() {
+        return "pct/_dmpincr102b.p";
+    }
+
+    public boolean needRedirector() {
+        return false;
+    }
+
+    public String getInitString() {
+        return getString("ProgressV10.0"); //$NON-NLS-1$
+    }
+
+    public String getConnectString() {
+        return getString("ProgressV10.1"); //$NON-NLS-1$
+    }
+
+    public String getAliasString() {
+        return getString("ProgressV10.2"); //$NON-NLS-1$
+    }
+
+    public String getPropathString() {
+        return getString("ProgressV10.3"); //$NON-NLS-1$
+    }
+
+    public String getRunString() {
+        return getString("ProgressV10.4"); //$NON-NLS-1$
+    }
+
+    public String getReturnProc() {
+        return getString("ProgressV10.5"); //$NON-NLS-1$
+    }
+
+    public String getParameterString() {
+        return getString("ProgressV10.6"); //$NON-NLS-1$
+    }
+
+    public String getString(String key) {
+        try {
+            return RESOURCE_BUNDLE.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public String getOutputParameterDeclaration() {
+        return getString("ProgressV10.8"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterProc() {
+        return getString("ProgressV10.9"); //$NON-NLS-1$
+    }
+
+    public String getAfterRun() {
+        return getString("ProgressV10.10"); //$NON-NLS-1$
+    }
+
+    public String getOutputParameterCall() {
+        return getString("ProgressV10.11"); //$NON-NLS-1$
+    }
+
+    public String getQuit() {
+        return getString("ProgressV10.12"); //$NON-NLS-1$
+    }
 }
