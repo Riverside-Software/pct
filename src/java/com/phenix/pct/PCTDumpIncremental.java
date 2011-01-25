@@ -172,7 +172,7 @@ public class PCTDumpIncremental extends PCTRun {
 
         this.prepareExecTask();
 
-        this.setProcedure("pct/dump_inc.p"); //$NON-NLS-1$
+        this.setProcedure(this.getProgressProcedures().getIncrementalProcedure());
         this.addParameter(new RunParameter("DFFileName", this.destFile.getAbsolutePath()));
         this.addParameter(new RunParameter("CodePage", this.codePage));
         this.addParameter(new RunParameter("RenameFile", (this.renameFile == null ? "" : this.renameFile.getAbsolutePath())));

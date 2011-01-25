@@ -64,6 +64,10 @@ public class ProgressV8 implements ProgressProcedures {
         return "pct/pctCompileV8.p"; //$NON-NLS-1$
     }
 
+    public String getIncrementalProcedure() {
+        return "pct/_dmpincr.p";
+    }
+
     public boolean needRedirector() {
         return true;
     }

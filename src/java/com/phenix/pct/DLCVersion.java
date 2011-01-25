@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
-public class DLCVersion {
+public class DLCVersion implements Comparable<DLCVersion> {
     private static final String MAIN_PATTERN = "(?:[a-zA-Z]+\\s+)+((\\d+)(?:[A-Z0-9\\u002E])*)\\s+as of(.*)";
     private static final String V11_PATTERN = "\\d+(?:\\u002E(\\d+)(?:\\u002E(\\d+)(?:\\u002E(\\d+))?)?)?[a-zA-Z]*";
     private static final String OLD_PATTERN = "\\d+\\u002E(\\d+)([A-Z])([A-Z0-9]*)";
@@ -18,6 +18,17 @@ public class DLCVersion {
     private final int majorVersion, minorVersion;
     private final String fullVersion, maintenanceVersion, patchVersion, date;
     private final boolean arch;
+
+    public DLCVersion(int major, int minor, String maintenance) {
+        this.majorVersion = major;
+        this.minorVersion = minor;
+        this.maintenanceVersion = maintenance;
+        this.patchVersion = "00";
+        this.date = "00/00/00";
+        this.rCodeVersion = -1;
+        this.arch = false;
+        this.fullVersion = major + "." + minor + maintenance;
+    }
 
     private DLCVersion(Builder builder) {
         fullVersion = builder.fullVersion;
@@ -146,5 +157,25 @@ public class DLCVersion {
         int major, minor;
         String fullVersion, maintenance, patch, date;
         boolean arch;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DLCVersion) {
+            DLCVersion other = (DLCVersion) obj;
+            return (majorVersion == other.majorVersion) && (minorVersion == other.minorVersion) && (maintenanceVersion.equals(other.maintenanceVersion));
+        }
+        return false;
+    }
+
+    /**
+     * Compares only major, minor and maintenance
+     */
+    public int compareTo(DLCVersion obj) {
+        if ((majorVersion - obj.majorVersion) != 0)
+            return (majorVersion - obj.majorVersion);
+        if ((minorVersion - obj.minorVersion) != 0)
+            return (minorVersion - obj.minorVersion);
+        return maintenanceVersion.compareTo(obj.maintenanceVersion);
     }
 }

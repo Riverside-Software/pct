@@ -64,6 +64,10 @@ public class ProgressV9 implements ProgressProcedures {
         return "pct/pctCompile.p";
     }
 
+    public String getIncrementalProcedure() {
+        return "pct/_dmpincr.p";
+    }
+
     public boolean needRedirector() {
         return false;
     }
