@@ -211,7 +211,7 @@ DEFINE WORKFILE drop-temp-idx NO-UNDO
     FIELD fil-name  LIKE _File._File-name.
    
 /* Persistent procedure library */
-RUN prodict/dump/_dmputil.p PERSISTENT SET h_dmputil.
+RUN pct/_dmputil.p PERSISTENT SET h_dmputil.
 
 /* Forward Declare functions contained in library */
 FUNCTION fileAreaMatch RETURNS LOGICAL (INPUT db1FileNo AS INT,
