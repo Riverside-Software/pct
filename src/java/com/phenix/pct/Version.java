@@ -11,7 +11,6 @@ public class Version extends Task {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-    @Override
     public void execute() throws BuildException {
         String str = "PCT Version " + RESOURCE_BUNDLE.getString("PCTVersion") + " - Build "
                 + RESOURCE_BUNDLE.getString("PCTBuild");
