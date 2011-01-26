@@ -16,3 +16,4 @@
 ^pct-bin-.*\.zip$
 ^pct-src-.*\.zip$
 ^website-.*\.zip$
+^src/java/com/phenix/pct/PCT\.properties$
