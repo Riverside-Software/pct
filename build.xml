@@ -171,6 +171,9 @@
       </and>
     </condition>
     <echo message="Using ${DLC-SPORTS} to build sports database" />
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version}
+PCTBuild=${BUILD_NUMBER}
+    </echo>
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">

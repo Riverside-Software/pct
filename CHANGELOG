@@ -22,6 +22,7 @@ Version 0.17 (01/24/2011)
  * Changed setPropath to addPropath in PCTRun, so that multiple propath definitions can be combined
  * Cleanup when tasks create a new subtask instance. Fixed a bug when using pct namespace
  * GC Bug #1 : upgraded pct/_dmpincr.p to 10.2B
+ * Added PCTVersion task
 
 Version 0.16 (10/01/2009)
 ==============================
