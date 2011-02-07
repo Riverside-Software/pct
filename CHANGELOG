@@ -1,4 +1,4 @@
-Version 0.17 (01/24/2011)
+Version 0.17 (02/07/2011)
 ==============================
  * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl
  * Removed PLExtract task, in favor of PLFileSet type which can be nested in any FileSet capable task
@@ -26,6 +26,7 @@ Version 0.17 (01/24/2011)
  * If pctX.pl is not available for your version of Progress, fall back to source code
    Compilation licence required in this case.
  * Reads PCT-SRC property from the command line, to force source code instead of compiled version
+ * GC Bug #2 : more detailed error messages during connection (patch by Dan Dragut)
 
 Version 0.16 (10/01/2009)
 ==============================
