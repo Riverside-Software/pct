@@ -225,7 +225,7 @@ PCTBuild=${BUILD_NUMBER}
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </bootstrapCompile>
-    <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}">
+    <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
       <fileset dir="${buildDir}">
         <include name="pct/*.r" />
         <include name="prodict/dump/*.r" />
