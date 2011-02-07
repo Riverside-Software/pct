@@ -62,12 +62,15 @@ import org.apache.tools.ant.types.FileSet;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -323,18 +326,32 @@ public abstract class PCT extends Task {
             return null;
     }
 
+    protected boolean isSourceCodeUsed() {
+        String src = getProject().getProperty("PCT-SRC");
+        if ((src != null) && Boolean.parseBoolean(src)) {
+            return true;
+        }
+
+        InputStream is = this.getClass().getResourceAsStream(
+                "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl");
+        return (is == null);
+    }
+
     /**
      * Extracts pct.pl from PCT.jar into a file, and returns true if the operation was OK
      * Automatically extract v9 or v10 PL
      * 
-     * @return Handle on pct.pl (File)
+     * @param f File or directory (must not be present)
+     * @return Boolean
+     * @throws IOException
      * @since PCT 0.10
      */
     protected boolean extractPL(File f) throws IOException {
+        if (isSourceCodeUsed())
+            return extractZip(f);
+
         InputStream is = this.getClass().getResourceAsStream(
                 "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl");
-        if (is == null)
-            return false;
         OutputStream os = new FileOutputStream(f);
         byte[] b = new byte[2048];
         int k = 0;
@@ -342,6 +359,40 @@ public abstract class PCT extends Task {
             os.write(b, 0, k);
         os.close();
         is.close();
+        return true;
+    }
+
+    /**
+     * Extracts pct-src.zip from PCT.jar into a directory, and returns true if the operation was OK.
+     * 
+     * @param dir Target directory
+     * @return Boolean
+     * @throws IOException
+     * @since PCT 0.17
+     */
+    private boolean extractZip(File dir) throws IOException {
+        log("Working with PCT source code, either because you asked for it or because the compiled version is missing in JAR file");
+        InputStream is = this.getClass().getResourceAsStream("/pct-src.zip");
+        if (is == null)
+            return false;
+
+        dir.mkdir();
+        ZipInputStream zip = new ZipInputStream(is);
+        ZipEntry ze = null;
+        while ((ze = zip.getNextEntry()) != null) {
+            if (!ze.isDirectory()) {
+                File tmp = new File(dir, ze.getName());
+                tmp.getParentFile().mkdirs();
+                FileOutputStream fout = new FileOutputStream(tmp);
+                for (int c = zip.read(); c != -1; c = zip.read()) {
+                    fout.write(c);
+                }
+                zip.closeEntry();
+                fout.close();
+            }
+        }
+        zip.close();
+
         return true;
     }
 
@@ -459,5 +510,95 @@ public abstract class PCT extends Task {
 
     protected final static int nextRandomInt() {
         return RANDOM.nextInt() & 0xffff;
+    }
+
+    // ----------------------------------
+    // Extracted from commons-io
+
+    /**
+     * Deletes a directory recursively. 
+     *
+     * @param directory  directory to delete
+     * @throws IOException in case deletion is unsuccessful
+     */
+    protected static void deleteDirectory(File directory) throws IOException {
+        if (!directory.exists()) {
+            return;
+        }
+
+        cleanDirectory(directory);
+
+        if (!directory.delete()) {
+            String message =
+                "Unable to delete directory " + directory + ".";
+            throw new IOException(message);
+        }
+    }
+
+    /**
+     * Cleans a directory without deleting it.
+     *
+     * @param directory directory to clean
+     * @throws IOException in case cleaning is unsuccessful
+     */
+    private static void cleanDirectory(File directory) throws IOException {
+        if (!directory.exists()) {
+            String message = directory + " does not exist";
+            throw new IllegalArgumentException(message);
+        }
+
+        if (!directory.isDirectory()) {
+            String message = directory + " is not a directory";
+            throw new IllegalArgumentException(message);
+        }
+
+        File[] files = directory.listFiles();
+        if (files == null) {  // null if security restricted
+            throw new IOException("Failed to list contents of " + directory);
+        }
+
+        IOException exception = null;
+        for (File file : files) {
+            try {
+                forceDelete(file);
+            } catch (IOException ioe) {
+                exception = ioe;
+            }
+        }
+
+        if (null != exception) {
+            throw exception;
+        }
+    }
+
+    /**
+     * Deletes a file. If file is a directory, delete it and all sub-directories.
+     * <p>
+     * The difference between File.delete() and this method are:
+     * <ul>
+     * <li>A directory to be deleted does not have to be empty.</li>
+     * <li>You get exceptions when a file or directory cannot be deleted.
+     *      (java.io.File methods returns a boolean)</li>
+     * </ul>
+     *
+     * @param file  file or directory to delete, must not be <code>null</code>
+     * @throws NullPointerException if the directory is <code>null</code>
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException in case deletion is unsuccessful
+     */
+    private static void forceDelete(File file) throws IOException {
+        if (file.isDirectory()) {
+            deleteDirectory(file);
+        } else {
+            boolean filePresent = file.exists();
+            if (!file.delete()) {
+                if (!filePresent){
+                    throw new FileNotFoundException("File does not exist: " + file);
+                }
+                String message =
+                    "Unable to delete file: " + file;
+                throw new IOException(message);
+            }
+        }
     }
 }

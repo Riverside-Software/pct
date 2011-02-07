@@ -150,7 +150,6 @@ public class PCTRun extends PCT {
 
             status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -515,6 +514,11 @@ public class PCTRun extends PCT {
         }
 
         try {
+            // File name generation is deffered at this stage, because when defined in constructor, we still don't know if
+            // we have to use source code or compiled version. And it's impossible to extract source code to a directory named
+            // something.pl as Progress tries to open a procedure library, and miserably fails with error 13.
+            pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
             this.preparePropath();
             this.createInitProcedure();
             this.setExecTaskParams();
@@ -755,6 +759,7 @@ public class PCTRun extends PCT {
         // Temp directory
         if (this.tempDir != null) {
             // TODO Isn't exists method redundant with isDirectory ? Check JRE sources...
+            // XXX Yes, it's redundant !
             if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
                         new Object[]{this.tempDir}));
@@ -999,24 +1004,18 @@ public class PCTRun extends PCT {
     protected void cleanup() {
         if (!this.debugPCT) {
             if ((this.initProc != null) && (this.initProc.exists() && !this.initProc.delete())) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTRun.5"), new Object[]{this.initProc.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(MessageFormat
+                        .format(Messages.getString("PCTRun.5"), new Object[]{this.initProc.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
             if ((this.status != null) && (this.status.exists() && !this.status.delete())) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(MessageFormat
+                        .format(Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
             if ((this.outputStream != null)
                     && (this.outputStream.exists() && !this.outputStream.delete())) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(MessageFormat
+                        .format(Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
             if (this.outputParameters != null) {
                 for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
@@ -1024,20 +1023,26 @@ public class PCTRun extends PCT {
                     if ((param.getTempFileName() != null)
                             && (param.getTempFileName().exists() && !param.getTempFileName()
                                     .delete())) {
-                        log(
-                                MessageFormat
-                                        .format(
-                                                Messages.getString("PCTRun.5"), new Object[]{param.getTempFileName().getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                        log(MessageFormat
+                                .format(Messages.getString("PCTRun.5"), new Object[]{param.getTempFileName().getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
                     }
                 }
             }
         }
         // pct.pl is always deleted
-        if ((this.pctLib != null) && this.pctLib.exists() && !this.pctLib.delete()) {
-            log(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCTRun.5"), new Object[]{this.pctLib.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        if ((pctLib != null) && pctLib.exists()) {
+            if (pctLib.isDirectory()) {
+                try {
+                    deleteDirectory(pctLib);
+                } catch (IOException uncaught) {
+
+                }
+            } else {
+                if (!pctLib.delete()) {
+                    log(MessageFormat
+                            .format(Messages.getString("PCTRun.5"), new Object[]{this.pctLib.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                }
+            }
         }
     }
 }
