@@ -278,6 +278,9 @@ PCTBuild=${BUILD_NUMBER}
       <param name="fsid" value="fs.v10" />
     </antcall>
 
+    <zip destfile="${build}/pct-src.zip">
+      <fileset dir="${src.progress}" includes="**/*" />
+    </zip>
   </target>
 
   <target name="jar" depends="pbuild" description="JAR file generation">
@@ -292,6 +295,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
+        <include name="pct-src.zip" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
 	  <fileset dir="${src.java}">

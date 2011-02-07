@@ -23,6 +23,9 @@ Version 0.17 (01/24/2011)
  * Cleanup when tasks create a new subtask instance. Fixed a bug when using pct namespace
  * GC Bug #1 : upgraded pct/_dmpincr.p to 10.2B
  * Added PCTVersion task
+ * If pctX.pl is not available for your version of Progress, fall back to source code
+   Compilation licence required in this case.
+ * Reads PCT-SRC property from the command line, to force source code instead of compiled version
 
 Version 0.16 (10/01/2009)
 ==============================

@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.taskdefs.Parallel;
 import org.apache.tools.ant.types.Environment;
@@ -110,7 +111,6 @@ public abstract class PCTBgRun extends PCT {
 
         // Nom de la PL à créer
         plID = PCT.nextRandomInt();
-        pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         initProcId = PCT.nextRandomInt();
         initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -295,6 +295,9 @@ public abstract class PCTBgRun extends PCT {
         ListenerThread listener = null;
         checkDlcHome();
 
+        // See comment in PCTRun#execute() on why file name is generated now
+        pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
         // Starting the listener thread
         try {
             listener = new ListenerThread();
@@ -424,7 +427,15 @@ public abstract class PCTBgRun extends PCT {
     }
 
     protected void cleanup() {
-        pctLib.delete();
+        if (!pctLib.isDirectory()) {
+            pctLib.delete();
+        } else {
+            try {
+                deleteDirectory(pctLib);
+            } catch (IOException uncaught) {
+                log(Messages.getString("PCTBgRun.4"), uncaught, Project.MSG_INFO);
+            }
+        }
         initProc.delete();
     }
 
