@@ -57,7 +57,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
