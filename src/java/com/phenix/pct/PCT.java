@@ -558,9 +558,9 @@ public abstract class PCT extends Task {
         }
 
         IOException exception = null;
-        for (File file : files) {
+        for (int zz = 0; zz < files.length; zz++) {
             try {
-                forceDelete(file);
+                forceDelete(files[zz]);
             } catch (IOException ioe) {
                 exception = ioe;
             }
