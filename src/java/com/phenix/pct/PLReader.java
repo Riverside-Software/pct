@@ -219,17 +219,27 @@ public class PLReader {
             fc.read(b2, offset + 2);
             b2.position(0);
             String fName = charset.decode(b2).toString();
-            ByteBuffer b3 = ByteBuffer.allocate(27);
+            ByteBuffer b3 = ByteBuffer.allocate(28);
             fc.read(b3, offset + 2 + fNameSize);
             int fileOffset = b3.getInt(2);
             int fileSize = b3.getInt(7);
             long added = b3.getInt(11) * 1000L;
             long modified = b3.getInt(15) * 1000L;
 
-            return new FileEntry(fName, modified, added, fileOffset, fileSize, 29 + fNameSize);
+            int tocSize = (b3.get(27) == 0 ? 30 + fNameSize : 29 + fNameSize);
+            return new FileEntry(fName, modified, added, fileOffset, fileSize, tocSize);
         } else {
             return null;
         }
 
     }
+    
+    public static void main(String[] args) {
+        PLReader t = new PLReader(new File("C:\\Progress\\dlc-10.2b\\gui\\adeuib.pl"));
+        System.out.println("Nb fichiers : " + t.getFileList().size());
+        for (FileEntry entry :  (List<FileEntry>) t.getFileList()) {
+            System.out.println(entry);
+        }
+    } 
+
 }
