@@ -399,4 +399,13 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test35");
         expectBuildException("test35-bis", "Not in propath");
     }
+
+    @Test
+    public void test36() {
+        executeTarget("test36-init");
+        expectBuildException("test36", "Incorrect alias");
+        executeTarget("test36-b");
+        executeTarget("test36-c");
+        executeTarget("test36-d");
+    }
 }

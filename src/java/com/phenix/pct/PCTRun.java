@@ -816,6 +816,7 @@ public class PCTRun extends PCT {
 
             // Defines aliases
             if (dbConnList != null) {
+                int dbNum = 1;
                 for (Iterator i = dbConnList.iterator(); i.hasNext();) {
                     PCTConnection dbc = (PCTConnection) i.next();
                     String connect = dbc.createConnectString();
@@ -828,10 +829,11 @@ public class PCTRun extends PCT {
                             PCTAlias alias = (PCTAlias) i2.next();
                             bw.write(MessageFormat.format(this.getProgressProcedures()
                                     .getAliasString(), new Object[]{alias.getName(),
-                                    dbc.getDbName()}));
+                                    Integer.valueOf(dbNum), alias.getNoError() ? "NO-ERROR" : ""}));
                             bw.newLine();
                         }
                     }
+                    dbNum++;
                 }
             }
 

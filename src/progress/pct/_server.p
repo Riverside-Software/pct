@@ -69,9 +69,18 @@ DEFINE TEMP-TABLE ttMsgs NO-UNDO
 DEFINE VARIABLE portNumber   AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE threadNumber AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE currentMsg   AS INTEGER    NO-UNDO INITIAL 0.
+DEFINE VARIABLE dbNum        AS INTEGER    NO-UNDO INITIAL 1.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
 IF (portNumber EQ ?) THEN RETURN '17'.
+
+/* PROCEDURE GetCurrentProcessId EXTERNAL "KERNEL32.DLL":
+    DEFINE RETURN PARAMETER intProcessHandle AS LONG.
+END PROCEDURE.
+
+DEFINE VARIABLE pid AS INTEGER NO-UNDO.
+LOG-MANAGER:LOGFILE-NAME = SESSION:TEMP-DIRECTORY + "/_server-" + STRING(portNumber) + ".txt".
+RUN GetCurrentProcessId (OUTPUT pid). */
 
 CREATE SOCKET hSocket.
 RUN ConnectToServer NO-ERROR.
@@ -182,6 +191,8 @@ END PROCEDURE.
 PROCEDURE executeCmd:
     DEFINE INPUT PARAMETER cCmd AS CHARACTER NO-UNDO.
     
+    /* LOG-MANAGER:WRITE-MESSAGE(STRING(pid) + " -- Executing " + cCmd). */
+
     EMPTY TEMP-TABLE ttMsgs.
 
     DEFINE VARIABLE cRet  AS CHARACTER  NO-UNDO.
@@ -310,8 +321,8 @@ PROCEDURE Connect :
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Input parameter is a pipe separated list */
-    /* First entry is connection string */
-    /* If there are aliases, second entry is logical DB name, followed by aliases */
+    /* First entry is connection string, followed by aliases */
+    /* Each alias is comma separated list, alias name and 1 if no-error, 0 w/o no-error */
     DEFINE VARIABLE connectStr AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE zz         AS INTEGER     NO-UNDO.
 
@@ -325,16 +336,20 @@ PROCEDURE Connect :
         ASSIGN opOk = TRUE.
 
         DbAliases:
-        DO zz = 3 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
+        DO zz = 2 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
             IF RETRY THEN DO:
-                RUN logError('Unable to create alias ' + ENTRY(zz, cPrm, '|')).
+                RUN logError('Unable to create alias ' + ENTRY(1, ENTRY(zz, cPrm, '|'))).
                 ASSIGN opOK = FALSE.
                 DISCONNECT VALUE(ENTRY(2, cPrm, '|')).
                 LEAVE DbAliases.
             END.
 
-            CREATE ALIAS VALUE(ENTRY(zz, cPrm, '|')) FOR DATABASE VALUE(ENTRY(2, cPrm, '|')).
+            IF ENTRY(2, ENTRY(zz, cPrm, '|')) EQ '1' THEN
+                CREATE ALIAS VALUE(ENTRY(1, ENTRY(zz, cPrm, '|'))) FOR DATABASE VALUE(LDBNAME(dbNum)) NO-ERROR.
+            ELSE
+                CREATE ALIAS VALUE(ENTRY(1, ENTRY(zz, cPrm, '|'))) FOR DATABASE VALUE(LDBNAME(dbNum)).
         END.
+        ASSIGN dbNum = dbNum + 1.
     END.
       
 END PROCEDURE.

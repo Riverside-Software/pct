@@ -546,7 +546,7 @@ public class PCTBgCompile extends PCTBgRun {
                 addCompilationCounters(ok, notOk);
                 logMessages(returnValues);
                 if (err) {
-                    setBuildException();
+                    setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
                     if (failOnError) {
                         quit();
                     }
