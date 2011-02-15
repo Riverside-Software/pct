@@ -4,6 +4,7 @@ Version 0.18 (??/??/????)
    Allows full DB connection strings in paramFile
  * noError attribute in PCTAlias is handled correctly
  * Fixed incremental dump in 10.1C - Bug report by Jens Haubold
+ * Fixed PLReader
 
 Version 0.17 (02/07/2011)
 ==============================
