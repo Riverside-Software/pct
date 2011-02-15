@@ -233,13 +233,4 @@ public class PLReader {
         }
 
     }
-    
-    public static void main(String[] args) {
-        PLReader t = new PLReader(new File("C:\\Progress\\dlc-10.2b\\gui\\adeuib.pl"));
-        System.out.println("Nb fichiers : " + t.getFileList().size());
-        for (FileEntry entry :  (List<FileEntry>) t.getFileList()) {
-            System.out.println(entry);
-        }
-    } 
-
 }
