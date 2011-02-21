@@ -6,9 +6,9 @@
     <li><a href="quickstart.html">Quick start</a></li>
     <li><a href="developers.html">Improving PCT</a>
     <li><a href="changelog.html">Changelog</a></li>
-    <li><a href="junit-v9/index.html">JUnit report (v9)</a> 
-    <li><a href="junit-v10/index.html">JUnit report (v10)</a> 
-    <li><a href="junit-v10-64/index.html">JUnit report (v10 64 bits)</a></li>
+    <li><a href="testng-v9/index.html">TestNG report (v9)</a> 
+    <li><a href="testng-v10/index.html">TestNG report (v10)</a> 
+    <li><a href="testng-v10-64/index.html">TestNG report (v10 64 bits)</a></li>
   </ul>
   <h1>Tasks</h1>
   <ul>
