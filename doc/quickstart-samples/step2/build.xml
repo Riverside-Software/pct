@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="MyProject" default="build" basedir=".">
+  <property environment="env"/>
+  <taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar"/>  
+  <target name="build" description="Builds source files">
+    <mkdir dir="build"/>
+      <PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/>
+      <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <fileset dir="src">
+        <include name="*.p"/>
+      </fileset>
+      <PCTConnection dbName="db" dbDir="db" singleUser="true"/>
+    </PCTCompile>
+  </target>
+</project>
