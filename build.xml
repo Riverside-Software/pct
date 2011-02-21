@@ -56,7 +56,12 @@
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.17" />
+  <property name="pct.version" value="0.18" />
+  <condition property="BUILD_NUMBER" value="${pct.version}">
+    <not>
+      <isset property="RELEASE" />
+    </not>
+  </condition>
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
