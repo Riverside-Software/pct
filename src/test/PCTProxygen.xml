@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<project name="PCTProxygen-test" default="">
+  <!-- $Revision$ -->
+
+  <taskdef resource="PCT.properties" classpath="." />
+  
+  <property environment="env" />
+
+  <!-- Missing source file attribute, should throw BuildException -->
+  <target name="test1">
+    <PCTProxygen dlcHome="${DLC}" />
+  </target>
+
+  <!-- Simple v9 PXG file, we should get a class -->
+  <target name="test2-init">
+    <echo file="sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" >
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="pxg" />
+  </target>
+  <target name="test2">
+    <PCTProxygen srcFile="Test1.pxg" dlcHome="${DLC}" keepFiles="false" />
+  </target>
+  <target name="test2-bis">
+    <PCTProxygen srcFile="Test1.pxg" dlcHome="${DLC}" keepFiles="true" />
+  </target>
+
+  <!-- Simple v10 XPXG file, we should get a class -->
+  <target name="test3-init">
+    <echo file="sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" >
+      <fileset dir="." includes="sandbox/test.p" />
+    </PCTCompile>
+    <mkdir dir="pxg" />
+  </target>
+  <target name="test3">
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" keepFiles="false" />
+  </target>
+  <target name="test3-bis">
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" keepFiles="true" />
+  </target>
+
+  <!-- Simple v10 XPXG file with working directory, we should get a class -->
+  <target name="test4-init">
+    <mkdir dir="sandbox/sandbox" />
+    <mkdir dir="sandbox/build" />
+    <mkdir dir="sandbox/pxg" />
+    <echo file="sandbox/sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="sandbox/build" dlcHome="${DLC}" basedir="sandbox">
+      <fileset dir="sandbox" includes="sandbox/test.p" />
+    </PCTCompile>
+  </target>
+  <target name="test4">
+    <echo message="v10 only test" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox" />
+  </target>
+
+  <!-- Simple v10 XPXG file with JVM args -->
+  <target name="test5-init">
+    <mkdir dir="sandbox/sandbox" />
+    <mkdir dir="sandbox/build" />
+    <mkdir dir="sandbox/pxg" />
+    <echo file="sandbox/sandbox/test.p">MESSAGE "This is a test".</echo>
+    <PCTCompile graphicalMode="false" destDir="sandbox/build" dlcHome="${DLC}" basedir="sandbox">
+      <fileset dir="sandbox" includes="sandbox/test.p" />
+    </PCTCompile>
+  </target>
+  <target name="test5">
+    <!-- This one should fail, because of bad Java argument -->
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-foobar" />
+    </PCTProxygen>
+  </target>
+  <target name="test5-part2">
+    <!-- This one should fail, because of insufficent memory -->
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-Xmx1k" />
+    </PCTProxygen>
+  </target>
+  <target name="test5-part3">
+    <!-- This one should succeed -->
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="sandbox">
+      <jvmarg line="-Xmx128m" />
+    </PCTProxygen>
+  </target>
+  
+</project>

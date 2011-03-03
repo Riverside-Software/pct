@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+
+<project name="PCTBinaryDump-test" default="">
+  <!-- $Revision$ -->
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <!-- Should throw BuildException : no database connection -->
+  <target name="test1">
+    <PCTBinaryDump dlcHome="${DLC}"  dest="sandbox" />
+  </target>
+
+  <!-- Should throw BuildException : more than one database connection -->
+  <target name="test2">
+    <PCTBinaryDump dlcHome="${DLC}"  dest="sandbox">
+      <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
+  	</PCTBinaryDump>
+  </target>
+
+  <!-- Should throw BuildException : no destdir -->
+  <target name="test3">
+    <PCTBinaryDump dlcHome="${DLC}" >
+      <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
+  	</PCTBinaryDump>
+  </target>
+
+  <!-- Simple test : we should get Tab1.bd and Tab2.bd (assuming no includes node means *) -->
+  <target name="test4pre">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "Tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD TABLE "Tab2"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab2"
+
+      ADD FIELD "Fld1" OF "Tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test4">
+    <PCTBinaryDump dest="sandbox" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+
+  <!-- Simple test : we should get Tab1.bd and Tab2.bd (specified * in includes) -->
+  <target name="test5pre">
+    <echo file="sandbox/schema.df">
+        UPDATE DATABASE "?"
+        
+        ADD TABLE "Tab1"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab1"
+
+        ADD FIELD "Fld1" OF "Tab1" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+
+        ADD TABLE "Tab2"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab2"
+
+        ADD FIELD "Fld1" OF "Tab2" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test5">
+    <PCTBinaryDump dest="sandbox" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+
+  <!-- Simple test : we should get Tab1.bd only (Tab2 is in exclude list) -->
+  <target name="test6pre">
+    <echo file="sandbox/schema.df">
+        UPDATE DATABASE "?"
+        
+        ADD TABLE "Tab1"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab1"
+
+        ADD FIELD "Fld1" OF "Tab1" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+
+        ADD TABLE "Tab2"
+          AREA "Schema Area"
+          LABEL ""
+          DESCRIPTION ""
+          DUMP-NAME "Tab2"
+
+        ADD FIELD "Fld1" OF "Tab2" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test6">
+    <PCTBinaryDump dest="sandbox" dlcHome="${DLC}">
+      <include name="*" />
+      <exclude name="Tab2" />
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+
+  <!-- Simple test : we should get aa.bd and aabc.bd -->
+  <target name="test7pre">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "aa"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "aa"
+
+      ADD FIELD "Fld1" OF "aa" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD TABLE "aab"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "aab"
+  
+      ADD FIELD "Fld1" OF "aab" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+    	
+      ADD TABLE "aabc"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "aabc"
+      
+      ADD FIELD "Fld1" OF "aabc" AS integer 
+          FORMAT "9"
+          INITIAL "0"
+          LABEL "Fld1"
+          POSITION 2
+          COLUMN-LABEL "Fld1"
+          ORDER 10
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test7">
+    <PCTBinaryDump dest="sandbox" dlcHome="${DLC}">
+      <include name="aa*" />
+      <exclude name="aab*" />
+      <include name="aabc*" />
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+</project>
