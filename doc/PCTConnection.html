@@ -56,14 +56,16 @@ Adds a database connection
 <td>dbName</td>
 <td>Database physical name</td>
 <td align="center">String</td>
-<td align="center">Required</td>
+<td align="center" rowspan="2">At least one of these is required.</td>
 <td>No default value</td>
 </tr>
 <tr>
 <td>paramFile</td>
-<td>Parameter file (-pf parameter). -pf is always in second position in the connection parameters (just after the -db parameter)</td>
+<td>Parameter file (-pf parameter). If paramFile is set and dbName is unset, paramFile is always in first position.
+If both paramFile and dbName are set, dbName is in first position and paramFile in second position.
+Don't define multiple database connections in a single paramFile, this can lead to unexpected behavior.</td>
 <td align="center">File</td>
-<td align="center">Optional</td>
+
 <td>No default value</td>
 </tr>
 <tr>

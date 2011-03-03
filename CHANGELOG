@@ -1,3 +1,11 @@
+Version 0.18 (??/??/????)
+=============================
+ * dbName is no longer required in PCTConnection. You have to use either dbName or paramFile
+   Allows full DB connection strings in paramFile
+ * noError attribute in PCTAlias is handled correctly
+ * Fixed incremental dump in 10.1C - Bug report by Jens Haubold
+ * Fixed PLReader
+
 Version 0.17 (02/07/2011)
 ==============================
  * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl

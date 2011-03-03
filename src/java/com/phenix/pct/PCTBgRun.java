@@ -253,10 +253,6 @@ public abstract class PCTBgRun extends PCT {
 
     protected abstract BackgroundWorker createOpenEdgeWorker(Socket socket);
 
-    public void setBuildException() {
-        buildException = true;
-    }
-    
     public void setBuildException(Throwable exception) {
         buildException = true;
         buildExceptionSource = exception;

@@ -385,6 +385,22 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
+    @Test
+    public void test25() throws IOException {
+        executeTarget("test25-init");
+
+        File f1 = new File("build/sandbox/proc.r");
+        File f2 = new File("build/sandbox/proc2.r");
+        File f3 = new File("build/sandbox/proc3.r");
+        expectBuildException("test25", "Invalid alias");
+        executeTarget("test25-b");
+        assertTrue(f1.exists());
+        executeTarget("test25-c");
+        assertTrue(f2.exists());
+        executeTarget("test25-d");
+        assertTrue(f3.exists());
+    }
+
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
         FileChannel srcChannel = new FileInputStream(src).getChannel();
