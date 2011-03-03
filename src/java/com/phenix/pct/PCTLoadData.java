@@ -62,6 +62,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Loads data into database
@@ -71,7 +73,7 @@ import org.apache.tools.ant.BuildException;
  */
 public class PCTLoadData extends PCTRun {
     private File srcDir = null;
-    private Collection tableList = null;
+    private Collection tableList = null, tableFilesets = null;
     private String tables = null;
 
     // Internal use
@@ -100,6 +102,7 @@ public class PCTLoadData extends PCTRun {
 
     /**
      * Tables list to dump
+     * 
      * @param tables the tables to dump
      */
     public void setTables(String tables) {
@@ -111,6 +114,18 @@ public class PCTLoadData extends PCTRun {
             tableList = new ArrayList();
         }
         tableList.add(table);
+    }
+
+    /**
+     * Adds a set of files to load
+     * 
+     * @param set FileSet
+     */
+    public void addConfiguredFileset(FileSet set) {
+        if (this.tableFilesets == null) {
+            tableFilesets = new ArrayList();
+        }
+        tableFilesets.add(set);
     }
 
     private String getTableList() {
@@ -126,11 +141,31 @@ public class PCTLoadData extends PCTRun {
                 sb.append(tbl.getName());
             }
         }
+        if (tableFilesets != null) {
+            for (Iterator e = tableFilesets.iterator(); e.hasNext();) {
+                // Parse filesets
+                FileSet fs = (FileSet) e.next();
 
-        if (sb.length() == 0)
+                // And get files from fileset
+                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+
+                for (int i = 0; i < dsfiles.length; i++) {
+                    String file = dsfiles[i];
+                    if (file.endsWith(".d")) {
+                        if (sb.length() > 0) {
+                            sb.append(',');
+                        }
+                        sb.append(file.substring(0, file.lastIndexOf(".d")));
+                    }
+                }
+            }
+        }
+
+        if (sb.length() == 0) {
             return "ALL";
-        else
+        } else {
             return sb.toString();
+        }
     }
 
     /**
@@ -141,6 +176,7 @@ public class PCTLoadData extends PCTRun {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
             String tbl = getTableList();
+            log("Loading with TABLES=" + tbl, Project.MSG_VERBOSE);
             if (tbl != null) {
                 bw.write("TABLES=");
                 bw.write(tbl);
