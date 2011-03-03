@@ -86,6 +86,7 @@ public class PCTCompile extends PCTRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private boolean noParse = false;
+    private boolean stringXref = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -118,6 +119,18 @@ public class PCTCompile extends PCTRun {
      */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
+    }
+
+    /**
+     * Generate String Xref Files (STRING-XREF).
+     * Option is ignored when working with Progress v9 and below
+     *
+     * @param stringXref "true|false|on|off|yes|no"
+     *
+     * @since 0.19
+     */
+    public void setStringXref(boolean stringXref) {
+        this.stringXref = stringXref;
     }
 
     /**
@@ -362,6 +375,8 @@ public class PCTCompile extends PCTRun {
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("NOPARSE=" + (this.noParse ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("STRINGXREF=" + (this.stringXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (languages != null) {
                 bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
