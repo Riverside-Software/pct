@@ -182,6 +182,8 @@ public abstract class BackgroundWorker {
     /**
      * This is where you can handle responses from the Progress process
      * 
+     * TODO Handle dbConnection failures to stop process...
+     * 
      * @param command Command sent
      * @param parameter Command's parameter
      * @param err An error was returned
