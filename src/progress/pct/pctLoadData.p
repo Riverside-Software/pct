@@ -57,24 +57,24 @@ define variable cLine as character no-undo.
 define variable i     as integer   no-undo.
 
 /*
- * Parameters from ANT call 
+ * Parameters from ANT call
  */
 define variable cSrcDir    as character no-undo.
 define variable cTableList as character no-undo.
 
 define stream sParams.
 
-/* 
- * Checks for valid parameters 
+/*
+ * Checks for valid parameters
  */
 if (session:parameter = ?) then
    return '1'.
-   
+
 if not FileExists(session:parameter) then
    return '2'.
-   
-/* 
- * Reads config 
+
+/*
+ * Reads config
  */
 input stream sParams from value(file-info:full-pathname).
 repeat:
@@ -98,10 +98,9 @@ end.
 
 if cTableList = '':U then
    run prodict/load_d.p ("ALL":U, cSrcDir + '/').
-else do i = 1 to num-entries(cTableList):
-   run prodict/load_d.p (entry(i, cTableList), cSrcDir).   
-end.
-   
+else
+   run prodict/load_d.p (cTableList, cSrcDir). 
+
 return "0":U.
 
 function FileExists returns logical (input cFile as character):
