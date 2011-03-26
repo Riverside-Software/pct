@@ -611,4 +611,27 @@
       </propath>
     </PCTCompile>
   </target>
+
+  <!-- SaveR attribute -->
+  <target name="test23-init">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+  </target>
+  <target name="test23-part1">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" saveR="false">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>	
+      </fileset>	
+    </PCTCompile>	
+  </target>
+  <target name="test23-part2">
+    <PCTCompile graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" saveR="true">
+      <fileset dir=".">
+        <include name="sandbox/test.p"/>	
+      </fileset>	
+    </PCTCompile>	
+  </target>
+
 </project>
