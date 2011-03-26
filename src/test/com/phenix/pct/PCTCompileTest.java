@@ -368,4 +368,16 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertTrue(f4.exists());
         }
     }
+
+    @Test
+    public void test23() {
+        File f = new File("build/sandbox/test.r");
+        executeTarget("test23-init");
+        assertFalse(f.exists());
+        executeTarget("test23-part1");
+        assertFalse(f.exists());
+        executeTarget("test23-part2");
+        assertTrue(f.exists());
+    }
+
 }

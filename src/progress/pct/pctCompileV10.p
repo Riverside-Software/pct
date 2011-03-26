@@ -98,6 +98,7 @@ DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoParse   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE StrXref   AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE SaveR     AS LOGICAL    NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -171,6 +172,8 @@ REPEAT:
             ASSIGN DebugLst = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'STRINGXREF':U THEN
             ASSIGN StrXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'SAVER':U THEN
+            ASSIGN SaveR = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'KEEPXREF':U THEN
             ASSIGN keepXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'LANGUAGES':U THEN
@@ -272,7 +275,8 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
     FILE-INFO:FILE-NAME = d + '/':U + f + '.inc':U.
     IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
       ASSIGN lReturn = TRUE.
-      RETURN.
+      /* TODO Verify modification */
+      /* RETURN lReturn. */
     END.
 
     INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
@@ -338,7 +342,7 @@ PROCEDURE PCTCompile.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
-    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
         ASSIGN c = '':U.
@@ -373,12 +377,12 @@ PROCEDURE PCTCompileXref.
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
     IF (languages EQ ?) THEN 
-      COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
       IF (gwtFact GE 0) THEN
-        COMPILE VALUE(pcInFile) SAVE INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
       ELSE
-        COMPILE VALUE(pcInFile) SAVE INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
+        COMPILE VALUE(pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
     END.      
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
