@@ -274,9 +274,7 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
     /* Small workaround when compiling classes */
     FILE-INFO:FILE-NAME = d + '/':U + f + '.inc':U.
     IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
-      ASSIGN lReturn = TRUE.
-      /* TODO Verify modification */
-      /* RETURN lReturn. */
+      RETURN lReturn.
     END.
 
     INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
