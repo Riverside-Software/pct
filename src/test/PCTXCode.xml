@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+
+<project name="PCTXCode-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <!-- Should throw BuildException : no dest dir -->
+  <target name="test1">
+    <PCTXCode dlcHome="${DLC}" />
+  </target>
+
+  <!-- Do nothing : should not hurt -->
+  <target name="test2">
+    <PCTXCode destDir="build" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Simple test -->
+  <target name="test3">
+    <echo file="sandbox/test.p">
+      DISPLAY "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+
+  <!-- More complex test with directories -->
+  <target name="test4">
+    <mkdir dir="sandbox/foo" />
+    <echo file="sandbox/foo/test.p">
+      DISPLAY "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/foo/test.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+
+  <!-- Test key -->
+  <target name="test5">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+  <target name="test5bis">
+    <PCTXCode key="foobar" destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="test.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+
+  <!-- Multiple files -->
+  <target name="test6">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      MESSAGE "Hello world n°2 !".
+      RETURN "0".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox">
+        <include name="*.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+
+  <!-- Real test -->
+  <target name="test7init">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      RETURN "1".
+    </echo>
+    <PCTXCode destDir="build" dlcHome="${DLC}">
+      <fileset dir=".">
+        <include name="sandbox/*.p" />
+      </fileset>
+    </PCTXCode>
+    <delete file="sandbox/test.p" />
+    <delete file="sandbox/test2.p" />
+  </target>
+  <target name="test7">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test7bis">
+    <PCTRun procedure="sandbox/test2.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test8init">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test2.p">
+      RETURN "1".
+    </echo>
+    <mkdir dir="sandbox/subdir" />
+    <echo file="sandbox/subdir/test3.p">
+      RETURN "3".
+    </echo>
+    <copy todir="build">
+      <fileset dir="sandbox" includes="**/*.p" />
+    </copy>
+  </target>
+  <target name="test8">
+    <sleep seconds="2" />
+    <PCTXCode destDir="build" dlcHome="${DLC}" overwrite="true">
+      <fileset dir="sandbox" includes="**/*.p" />
+    </PCTXCode>
+  </target>
+
+</project>

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - Installation</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>Installation</h1>
+<h2>System requirements</h2>
+<p>
+The PCT plug-in requires Ant 1.6 or higher. However, it has only been tested with 1.8.2 version of Ant.
+Please feel free to notify of other success stories.
+To obtain more information about this wonderful build tool, visit the official Ant home page at the Apache Jakarta site :
+<a href="http://ant.apache.org">http://ant.apache.org</a> 
+</p>
+<p>PCT binaries can be used with either version 9 or version 10 of Progress ;
+using version 8 requires manual compilation.</p>
+<h2>Installation (binary package)</h2>
+<p>
+The PCT plug-in comes as a single .zip file. Unzipping this file into a directory of your choice
+(referred to as <em>&lt;INST_DIR&gt;</em>)
+will produce two subdirectories&nbsp;: /lib and /website. 
+</p>
+<p>
+Before you can use the PCT Ant tasks in your build scripts, you have to add them to your system. The simplest way to install
+PCT is to copy <em>&lt;INST_DIR&gt;</em>lib/PCT.jar in the <em>&lt;ANT_HOME&gt;</em>/lib directory. In this case, you just have
+to declare the tasks in your build script as follows :
+</p>
+<pre>&lt;taskdef resource="PCT.properties" /&gt;
+&lt;typedef resource="types.properties" /&gt;</pre>
+<p>
+It's also possible to keep PCT.jar in a separate directory. In this case, declare the tasks as follows :
+</p>
+<pre>&lt;taskdef resource="PCT.properties" classpath="<em>&lt;INST_DIR&gt;</em>/lib/PCT.jar" /&gt;</pre>
+<p><b>Note for previous versions users</b> : PCT uses .r files for its internal use : these files had previously
+to be copied to your $DLC directory. This is no longer the case as of 0.10 : r-code is wrapped in
+PL, extracted on the fly from PCT.jar when running a PCT tasks. PCT.jar contains both the v9 and v10
+r-code versions.</p>
+<p><span id="new">!!!NEW!!!</span>PCT tasks can be used with XML namespaces. Check <a href="http://ant.apache.org/manual/types/antlib.html#antlibnamespace">Antlib namespaces</a>
+before using that. One way to use PCT this way is to declare the pct namespace in your project :</p>
+<pre>
+&lt;project xmlns:pct="antlib:eu/rssw/pct" &gt;
+  &lt;!-- Only if PCT.jar doesn't live in $ANT_HOME/lib --&gt;
+  &lt;taskdef uri="antlib:eu/rssw/pct"
+              resource="eu/rssw/pct/antlib.xml"
+              classpath="path/to/PCT.jar" /&gt;
+...
+&lt;/project&gt;
+</pre>
+<p>After having declared PCT, you'll be able to use PCT tasks in this manner :</p>
+<pre>
+  &lt;pct:run procedure="..." /&gt;
+  &lt;pct:compile ... /&gt; 
+</pre>
+<p>Documentation shows "old" names first, followed by the name in the pct namespace.</p>
+<p>Please note that the behavior of PCT remains unchanged whichever style you're choosing. Old names are not deprecated, and will live a long life...</p>
+
+<h1>Tasks overview</h1>
+<p>
+11 tasks are available in PCT :</p>
+<ul>
+<li>Create a new database with or without a specific structure description</li>
+<li>Load a database schema into an existing database</li>
+<li>Dump a database schema into a text file</li>
+<li>Run a progress procedure</li>
+<li>Compile Progress code</li>
+<li>Create and/or update Progress r-code libraries</li>
+<li>Generate database documentation</li>
+<li>Use PXG files to generate Java proxy classes</li>
+<li>Convert WebSpeed HTML files to Progress .w files</li>
+<li>Load binary datas into dabase</li>
+<li>Create a file listing CRC for each database's table</li>
+</ul>
+
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

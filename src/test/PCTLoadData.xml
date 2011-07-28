@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+
+<project name="PCTLoadData-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="."/>
+
+  <property environment="env"/>
+
+  <!-- Should throw BuildException : no filesets and no connection -->
+  <target name="test1">
+    <PCTLoadData dlcHome="${DLC}" />
+  </target>
+
+  <!-- Should throw BuildException : no filesets (or srcDir) defined -->
+  <target name="test2">
+    <PCTLoadData dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadData>
+  </target>
+  
+  <!-- Should throw BuildException : no connection defined -->
+  <target name="test3">
+    <!-- When using PCTLoadData -->
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" />
+    <!-- When using PCTBgLoadData -->
+    <!--
+    <PCTLoadData dlcHome="${DLC}">
+      <fileset dir="sandbox" includes="*.d" />
+    </PCTLoadData>
+    -->
+  </target>
+
+  <target name="test4init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/Tab1.d">14
+16
+18
+.
+PSC
+filename=Tab1
+records=0000000000003
+ldbname=ged
+timestamp=2005/08/08-15:15:15
+numformat=44,46
+dateformat=dmy-1920
+map=NO-MAP
+cpstream=utf-8
+.
+0000000015
+    </echo>
+    <echo file="sandbox/test.p">
+      FIND FIRST Tab1 NO-LOCK NO-ERROR.
+      MESSAGE Tab1.Fld1.
+      RETURN "0".
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test4init2">
+    <!-- When using PCTLoadData : -->
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTLoadData>
+    <!-- When using PCTBgLoadData : -->
+    <!--
+    <PCTLoadData dlcHome="${DLC}" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+      <fileset dir="sandbox" includes="*.d" />
+    </PCTLoadData>
+    -->
+  </target>
+  <target name="test4">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  
+  <target name="test5-init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+
+      ADD TABLE "Tab2"
+        AREA "Schema Area"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab2"
+
+      ADD FIELD "Fld1" OF "tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        POSITION 2
+        SQL-WIDTH 4
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab2-PK" ON "tab2" 
+        AREA "Schema Area"
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/Tab1.d">14
+16
+18
+.
+PSC
+filename=Tab1
+records=0000000000003
+ldbname=ged
+timestamp=2005/08/08-15:15:15
+numformat=44,46
+dateformat=dmy-1920
+map=NO-MAP
+cpstream=utf-8
+.
+0000000015
+    </echo>
+    <echo file="sandbox/Tab2.d">15
+17
+19
+.
+PSC
+filename=Tab2
+records=0000000000003
+ldbname=ged
+timestamp=2005/08/08-15:15:15
+numformat=44,46
+dateformat=dmy-1920
+map=NO-MAP
+cpstream=utf-8
+.
+0000000015
+    </echo>
+    <echo file="sandbox/testTab1.p">
+      FIND FIRST Tab1 NO-LOCK NO-ERROR.
+      MESSAGE (IF AVAILABLE Tab1 THEN STRING(Tab1.Fld1) ELSE "---").
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/testTab2.p">
+      FIND FIRST Tab2 NO-LOCK NO-ERROR.
+      MESSAGE (IF AVAILABLE Tab2 THEN STRING(Tab2.Fld1) ELSE "---").
+      RETURN "0".
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test5-part1">
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <Table name="Tab1" />
+    </PCTLoadData>
+  </target>
+  <target name="test5-part2">
+    <PCTRun procedure="sandbox/testTab1.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test5-part3">
+    <PCTRun procedure="sandbox/testTab2.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test5-part4">
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <Table name="Tab2" />
+    </PCTLoadData>
+  </target>
+</project>
