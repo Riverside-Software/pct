@@ -99,6 +99,7 @@ DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
+DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -119,7 +120,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
@@ -129,7 +130,8 @@ PROCEDURE setOptions:
            noComp    = ENTRY(7, ipPrm, ';') EQ 'true'
            keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
-           gwtFact   = INTEGER(ENTRY(10, ipPrm, ';')) NO-ERROR.
+           gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
+           multiComp = ENTRY(10, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -166,6 +168,8 @@ PROCEDURE pctCompile:
     DEFINE VARIABLE cc  AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
 	DEFINE VARIABLE lSkipped AS LOGICAL     NO-UNDO.
+
+    COMPILER:MULTI-COMPILE = multiComp.
 
 	ASSIGN filesNum = NUM-ENTRIES(ipPrm, {&SEPARATOR2}).
     DO zz = 1 TO filesNum:
