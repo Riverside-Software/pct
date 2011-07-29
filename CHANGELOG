@@ -1,8 +1,13 @@
-Version 0.18
-==============================
+Version 0.18 (??/??/????)
+=============================
  * Added multiCompile attribute on PCTCompile and PCTCompileExt
+ * dbName is no longer required in PCTConnection. You have to use either dbName or paramFile
+   Allows full DB connection strings in paramFile
+ * noError attribute in PCTAlias is handled correctly
+ * Fixed incremental dump in 10.1C - Bug report by Jens Haubold
+ * Fixed PLReader
 
-Version 0.17 (01/24/2011)
+Version 0.17 (02/07/2011)
 ==============================
  * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl
  * Removed PLExtract task, in favor of PLFileSet type which can be nested in any FileSet capable task
@@ -27,6 +32,10 @@ Version 0.17 (01/24/2011)
  * Cleanup when tasks create a new subtask instance. Fixed a bug when using pct namespace
  * GC Bug #1 : upgraded pct/_dmpincr.p to 10.2B
  * Added PCTVersion task
+ * If pctX.pl is not available for your version of Progress, fall back to source code
+   Compilation licence required in this case.
+ * Reads PCT-SRC property from the command line, to force source code instead of compiled version
+ * GC Bug #2 : more detailed error messages during connection (patch by Dan Dragut)
 
 Version 0.16 (10/01/2009)
 ==============================

@@ -266,25 +266,27 @@ public class PCTConnection {
      * Returns an ordered list of connection parameters
      * 
      * @return List of String
-     * @throws BuildException Something went wrong (dbName not defined)
+     * @throws BuildException Something went wrong (dbName or paramFile not defined)
      */
-    public List getConnectParametersList() throws BuildException {
-        if (this.dbName == null) {
+    public List getConnectParametersList() {
+        if ((dbName == null) && (paramFile == null)) {
             throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
 
         List list = new ArrayList();
-        list.add("-db"); //$NON-NLS-1$
+        if (dbName != null) {
+            list.add("-db"); //$NON-NLS-1$
 
-        if ((this.dbDir == null) || (this.hostName != null)) {
-            list.add(this.dbName);
-        } else {
-            list.add(this.dbDir.toString() + File.separatorChar + this.dbName);
+            if ((dbDir == null) || (hostName != null)) {
+                list.add(dbName);
+            } else {
+                list.add(dbDir.toString() + File.separatorChar + dbName);
+            }
         }
 
-        if (this.paramFile != null) {
+        if (paramFile != null) {
             list.add("-pf"); //$NON-NLS-1$
-            list.add(this.paramFile.getAbsolutePath());
+            list.add(paramFile.getAbsolutePath());
         }
 
         if (this.protocol != null) {
@@ -347,11 +349,9 @@ public class PCTConnection {
      * prowin32 command line
      * 
      * @return Connection string
-     * @throws BuildException If DB name not defined
-     *
-     * FIXME Exception not thrown
+     * @throws BuildException If DB name or parameter file not defined
      */
-    public String createConnectString() throws BuildException {
+    public String createConnectString() {
         List list = getConnectParametersList();
         StringBuffer sb = new StringBuffer();
         for (Iterator i = list.iterator(); i.hasNext();) {
@@ -363,25 +363,24 @@ public class PCTConnection {
 
     /**
      * Returns a string which could be used to connect a database from a background worker
+     * Pipe separated list, first entry is connection string, followed by aliases.
+     * Aliases are comma separated list, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
      * 
      * @return Connection string
      * @throws BuildException
-     *
-     * FIXME Not thrown in createConnectString
      */
-    public String createBackgroundConnectString() throws BuildException {
+    public String createBackgroundConnectString() {
         StringBuffer sb = new StringBuffer(createConnectString());
         if (hasAliases()) {
-            sb.append('|').append(getDbName());
             for (Iterator iter = getAliases().iterator(); iter.hasNext(); ) {
                 PCTAlias alias = (PCTAlias) iter.next();
-                sb.append('|').append(alias.getName());
+                sb.append('|').append(alias.getName()).append(',').append(alias.getNoError() ? '1' : '0');
             }
         }
 
         return sb.toString();
     }
-    
+
     /**
      * Populates a command line with the needed arguments to connect to the specified database
      * 
