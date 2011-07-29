@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2006,2008-2009 by Progress Software Corporation. All rights    *
+* Copyright (C) 2006 by Progress Software Corporation. All rights    *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -14,9 +14,6 @@ Modified:
    10/14/99 Mario B Removed shared variable s_Set_Anyway.  No longer needed.
    03/13/06 fernando Store table names in temp-table - bug 20050930-006.
    06/12/06 fernando Support for int64
-   06/26/08 fernando Adding pre-processors for encryption stuff
-   07/21/08 fernando Adding shared var for epolicy
-   04/13/09 fernando Change for alternate buffer pool
 */
 
 DEFINE {1} SHARED VARIABLE dict_rog        AS LOGICAL               NO-UNDO.
@@ -46,10 +43,6 @@ DEFINE {1} SHARED VARIABLE s_In_Schema_Area AS LOGICAL  INIT NO      NO-UNDO.
 /* set when a pre-101b db, so we don't allow 10.1B stuff */
 DEFINE {1} SHARED VARIABLE is-pre-101b-db   AS LOGICAL               NO-UNDO.
 
-DEFINE {1} SHARED VARIABLE dictObjAttrCache AS LOGICAL                      NO-UNDO.
-DEFINE {1} SHARED VARIABLE dictEPolicy      AS prodict.sec._sec-pol-util    NO-UNDO.
-DEFINE {1} SHARED VARIABLE dictObjAttrs     AS prodict.pro._obj-attrib-util NO-UNDO.
-
 /* for bug fix 20050930-006 */
 &IF DEFINED(NOTTCACHE) = 0 &THEN
 
@@ -74,8 +67,3 @@ DEFINE {1} SHARED TEMP-TABLE tt_cache_file NO-UNDO
  &ENDIF
  
 
-/* List of areas that should not be available to the user */
-&GLOBAL-DEFINE INVALID_AREAS "Encryption Policy Area":U
-
-/* List of schema tables to be filtered out */
-&GLOBAL-DEFINE INVALID_SCHEMA_TABLES "_sec-db-policy,_sec-obj-policy,_sec-pwd-policy":U

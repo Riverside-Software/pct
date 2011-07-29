@@ -642,4 +642,104 @@
     </PCTCompileExt>	
   </target>
 
+  <target name="test25-init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab2"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab2"
+
+      ADD FIELD "Fld1" OF "tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab2-PK" ON "tab2" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/proc.p">
+      FIND FIRST MyAlias.Tab1 NO-LOCK NO-ERROR.
+    </echo>
+    <echo file="sandbox/proc2.p">
+      FIND FIRST MyAlias2.Tab1 NO-LOCK NO-ERROR.
+    </echo>
+    <echo file="sandbox/proc3.p">
+      FIND FIRST MyAlias2.Tab2 NO-LOCK NO-ERROR.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema2.df" />
+  </target>
+  <target name="test25">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <fileset dir=".">
+        <include name="sandbox/proc.p"/>
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test25-b">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <fileset dir=".">
+        <include name="sandbox/proc.p"/>
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test25-c">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <fileset dir=".">
+        <include name="sandbox/proc2.p"/>
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+  <target name="test25-d">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" numThreads="1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <fileset dir=".">
+        <include name="sandbox/proc3.p"/>
+      </fileset>	
+    </PCTCompileExt>	
+  </target>
+
 </project>
