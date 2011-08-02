@@ -56,7 +56,7 @@
   <property name="javac.target" value="1.2" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.18" />
+  <property name="pct.version" value="0.19-pre" />
   <condition property="BUILD_NUMBER" value="${pct.version}">
     <not>
       <isset property="RELEASE" />
