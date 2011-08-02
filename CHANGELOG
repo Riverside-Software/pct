@@ -1,5 +1,6 @@
 Version 0.18 (02/21/2011)
 =============================
+ * Added multiCompile attribute on PCTCompile and PCTCompileExt
  * dbName is no longer required in PCTConnection. You have to use either dbName or paramFile
    Allows full DB connection strings in paramFile
  * noError attribute in PCTAlias is handled correctly

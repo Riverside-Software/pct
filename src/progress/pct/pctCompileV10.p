@@ -102,6 +102,7 @@ DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
@@ -176,6 +177,8 @@ REPEAT:
             ASSIGN gwtFact = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'NOPARSE':U THEN
             ASSIGN noParse = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'MULTICOMPILE':U THEN
+            ASSIGN multiComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -189,6 +192,7 @@ IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
 IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
+COMPILER:MULTI-COMPILE = multiComp.
 
 /* Parsing file list to compile */
 INPUT STREAM sFileset FROM VALUE(Filesets).
