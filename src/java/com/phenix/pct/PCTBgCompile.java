@@ -89,6 +89,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
+    private boolean multiCompile = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -180,6 +181,15 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setKeepXref(boolean keepXref) {
         this.keepXref = keepXref;
+    }
+
+    /**
+     * Enables/Disables compiler:multi-compile option
+     * 
+     * @param multiCompile "true|false|on|off|yes|no"
+     */
+    public void setMultiCompile(boolean multiCompile) {
+        this.multiCompile = multiCompile;
     }
 
     /**
@@ -526,7 +536,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(noCompile)).append(';');
             sb.append(Boolean.toString(keepXref)).append(';');
             sb.append(languages == null ? "" : languages).append(';');
-            sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100)));
+            sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
+            sb.append(Boolean.toString(multiCompile));
 
             return sb.toString();
         }

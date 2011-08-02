@@ -86,6 +86,7 @@ public class PCTCompile extends PCTRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private boolean noParse = false;
+    private boolean multiCompile = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -194,6 +195,15 @@ public class PCTCompile extends PCTRun {
      */
     public void setNoParse(boolean noParse) {
         this.noParse = noParse;
+    }
+
+    /**
+     * Enables/Disables compiler:multi-compile option
+     * 
+     * @param multiCompile "true|false|on|off|yes|no"
+     */
+    public void setMultiCompile(boolean multiCompile) {
+        this.multiCompile = multiCompile;
     }
 
     /**
@@ -362,6 +372,8 @@ public class PCTCompile extends PCTRun {
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("NOPARSE=" + (this.noParse ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("MULTICOMPILE=" + (this.multiCompile ? 1 : 0));
             bw.newLine();
             if (languages != null) {
                 bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
