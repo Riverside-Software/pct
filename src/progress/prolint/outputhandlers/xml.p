@@ -31,7 +31,7 @@ PROCEDURE Prolint_Status_FileStart :
   /* purpose: Prolint notifies you it starts on a new sourcefile. You may use this as an 
               opportunity to open a new table in htm */
   DEFINE INPUT PARAMETER pSourceFile AS CHAR NO-UNDO.
-  
+
   ASSIGN logFile = DYNAMIC-FUNCTION("ProlintProperty", "outputhandlers.outputdirectory") + pSourceFile + ".xml".
   
   CREATE X-DOCUMENT xDoc.
@@ -55,7 +55,9 @@ PROCEDURE Prolint_AddResult :
    DEFINE INPUT PARAMETER pDescription      AS CHAR    NO-UNDO.  /* human-readable hint                   */
    DEFINE INPUT PARAMETER pRuleID           AS CHAR    NO-UNDO.  /* defines rule-program and maps to help */
    DEFINE INPUT PARAMETER pSeverity         AS INTEGER NO-UNDO.  /* importance of this rule, scale 0-9    */
-   
+
+   IF NOT VALID-HANDLE(xDoc) THEN RETURN.
+
    xDoc:CREATE-NODE(xNode, 'rule':U, 'ELEMENT':U).
    xNode:SET-ATTRIBUTE('line', STRING(pLineNumber)).
    xNode:SET-ATTRIBUTE('description', pDescription).
