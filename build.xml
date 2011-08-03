@@ -86,6 +86,7 @@
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
