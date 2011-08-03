@@ -78,7 +78,7 @@ import java.util.List;
 /**
  * Run a Progress procedure.
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  * @version $Revision$
  */
 public class PCTRun extends PCT {
@@ -114,6 +114,7 @@ public class PCTRun extends PCT {
     private boolean batchMode = true;
     private boolean failOnError = true;
     private String resultProperty = null;
+    private File assemblies = null;
 
     // Internal use
     protected ExecTask exec = null;
@@ -322,6 +323,10 @@ public class PCTRun extends PCT {
      */
     public void setProcedure(String procedure) {
         this.procedure = procedure;
+    }
+
+    public void setAssemblies(File assemblies) {
+        this.assemblies = assemblies;
     }
 
     /**
@@ -766,6 +771,11 @@ public class PCTRun extends PCT {
             }
             list.add("-T");
             list.add(this.tempDir.getAbsolutePath());
+        }
+
+        if (assemblies != null) {
+            list.add("-assemblies");
+            list.add(assemblies.getAbsolutePath());
         }
 
         // Additional command line options
