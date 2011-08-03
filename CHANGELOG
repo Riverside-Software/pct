@@ -1,0 +1,255 @@
+Version 0.18 (??/??/????)
+=============================
+ * Added multiCompile attribute on PCTCompile and PCTCompileExt
+ * dbName is no longer required in PCTConnection. You have to use either dbName or paramFile
+   Allows full DB connection strings in paramFile
+ * noError attribute in PCTAlias is handled correctly
+ * Fixed incremental dump in 10.1C - Bug report by Jens Haubold
+ * Fixed PLReader
+
+Version 0.17 (02/07/2011)
+==============================
+ * Several improvements on PLReader. Still one bug remaining when extracting adecomm.pl
+ * Removed PLExtract task, in favor of PLFileSet type which can be nested in any FileSet capable task
+   Only in read tasks, PCTLibrary still needs to be used when creating libraries
+ * Replaced CRCDifferent with RCodeSelector. Now able to use MD5 to compare r-code
+ * Another bug when XREF when importing XREF on classes
+   Bug reported by Sascha Hofmann
+ * Added environment variables to PCT tasks
+ * If dlcHome attribute isn't set, try to use DLC property then DLC environment variable
+ * PCTConnection was not allowing user name with no password
+   Enhancement by Sascha Hofmann
+ * Upgrading to ANT 1.8
+   Edit : To 1.8.1
+   Edit : To 1.8.2
+ * Changed the way $DLC/version is parsed
+   Thanks to Matt Baker for reporting bug and additional infos
+ * Adding languages and textSegGrowth attributes to PCTCompile and PCTCompileExt tasks
+ * Corrected warning message when compiling classes
+ * antlib.xml for pct namespace was not included in JAR file
+ * Updated documentation for pct namespace
+ * Changed setPropath to addPropath in PCTRun, so that multiple propath definitions can be combined
+ * Cleanup when tasks create a new subtask instance. Fixed a bug when using pct namespace
+ * GC Bug #1 : upgraded pct/_dmpincr.p to 10.2B
+ * Added PCTVersion task
+ * If pctX.pl is not available for your version of Progress, fall back to source code
+   Compilation licence required in this case.
+ * Reads PCT-SRC property from the command line, to force source code instead of compiled version
+ * GC Bug #2 : more detailed error messages during connection (patch by Dan Dragut)
+
+Version 0.16 (10/01/2009)
+==============================
+ * Removed ping for statistics
+ * Corrected bug when importing XREF on classes
+   Bug reported by Wytze Vlasman
+
+Version 0.15 (08/29/2009)
+==============================
+ * Added brokerLogFileAppend and serverLogFileAppend attributes to PCTASBroker and PCTWSBroker
+ * Added keepXref attribute in PCTCompile
+ * Corrected documentation for msgBufferSize attribute in PCTRun
+ * Added jvmarg option to PCTProxygen
+ * Added numThreads attribute in PCTCompileExt...
+ * ... And rewrote PCTBgRun task
+ * Server ping for statistics
+
+Version 0.14 (12/03/2008)
+==============================
+ * Added sharedFile attribute in PCTLibrary
+   Patch provided by Cameron David Wright
+ * Fixed duplicate hierarchy when compiling .cls files
+   Bugfix provided by Peter KULLMANN
+ * Added failOnError attribute in PCTRun
+   Patch provided by Peter KULLMANN
+ * Upgrading to ANT 1.7.1
+ * Added ProgressVersion task
+ * Patch for PCTLibrary when filenames contains space
+   Patch provided by Nathanael SHERGOLD
+ * Compilation and tests with OpenEdge 10.2 (replacing 10.1B)
+ * Added resultProperty in PCTRun
+ * Added OutputParameter in PCTRun
+
+Version 0.13 (11/18/2007)
+==============================
+ * Fixed keepFiles attribute in PCTProxygen
+   Bugfix provided by Michael Heist
+ * Bug #1711731 : fixed propath references
+ * Added error message when dlcHome attribute is not defined.
+   Prevents hard-to-understand further error messages
+ * Added PROPATH and DB Connection support in PCTASBroker task
+   Enhancement provided by Evan Todd
+ * Added unfreeze option in PCTLoadSchema task
+   Enhancement provided by Evan Todd
+ * Added Table attribute in PCTLoadData task
+   Enhancement provided by Evan Todd
+ * Added debugListing attribute in PCTCompile task
+ * Added support for 64 bits Progress
+ * Fixed problem with PCTBinaryDump under UNIX systems
+ * Added PCTCompileExt task
+
+Version 0.12a (01/30/2007)
+==============================
+ * Fixed PCTDumpSchema task (invalid procedure call)
+
+Version 0.12 (01/27/2007)
+==============================
+ * Added testcase for RCodeInfo
+ * Upgrading to JUnit 4.1
+ * Bug #1507272 : added PCTWSBroker task
+ * Bug #1566571 : corrected failed compilation warning when fileset not in PROPATH
+ * Updated developer's documentation
+ * Limited support for Progress 8
+ * Upgrading to ANT 1.7
+ * Added Parameter nested attribute to PCTRun
+ * Changed schema holders support in PCTCreateBase
+ * Updated PCTDumpIncremental support with v9
+ * Added CRCDifferent custom selector
+
+Version 0.11 (09/12/2006)
+==============================
+ * Corrected bug when temp directory contains '~' character (e.g. on Windows when using C:\DOCUME~1\login\LOCALS~1\Temp)
+   Added testcase for this bug
+   Bugfix provided by Peter KULLMANN
+ * Bugfix : temp files deletion in PCTRun task (and subtasks) when an unknown procedure was defined
+ * Fixed compatibility with upcoming 1.7 ANT release
+
+Version 0.10 (06/10/2006)
+==============================
+ * Added PCTBinaryDump task
+ * Added listing and preprocess attributes in PCTCompile task
+ * Added schema holder support in PCTCreateBase
+ * Added wordRules option in PCTCreateBase
+ * Added PCTASBroker task to create/remove/update appservers definition
+ * Bug #1455512 : corrected bug on include/exclude patterns in PCTBinaryDump
+ * No need to copy tty/ and gui/ subdirs in $DLC. Everything is included in PCT.jar (both v9 and v10)
+   The Progress version used is auto-detected.
+ * Corrected crash when using a DB connection where directory name contains spaces
+
+Version 0.9 (07/10/2005)
+==============================
+ * Upgrading to ANT 1.6.5
+ * Manifest in PCT.jar
+ * Added debugReady parameter in PCTRun task
+ * Useless i18n :-)
+ * Bug #1245992 : PCTCreateBase, schema files and absolute paths
+ * Added tempDir and baseDir attributes to PCTRun task
+ * Feature request #1229640 : PCTLoadData task (really really simple version at the moment)
+ * Bug #1276486 : patch from Flavio Cordova (bug not closed for now, waiting for further testing)
+ * Feature request #1276506 : now possible to add custom parameters in PCTRun
+ * Added a ProUnit task
+ * JUnit reports in documentation
+ * Bug #1311746 : mixed case extension are not handled correctly.
+ * Always forking Java task : the previous behaviour was to fork only when working directory was specified.
+ 
+Version 0.8 (05/13/2005)
+==============================
+ * PCT can be compiled with JDK 1.5 (just added source attribute in javac task)
+ * Bug #1114731 : new way of handling JAR dependencies
+   Warning : API changed, see PCT.java and PCTProxygen.java for details
+   Corrected twice (for OE 10.0B02)
+ * Bug #1117740 : DLC environment not defined
+   Added DLC environment variable in every Exec or Java task.
+ * Added Eclipse stuff in CVS...
+ * Added quickstart HTML page
+ * Multiple files can be loaded in a single PCTCreateBase statement
+
+Version 0.7 (01/17/2005)
+==============================
+ * Added screenshots to website
+ * Bug #1081206 : added messages.jar to classpath in proxygen task (for 9.1d and upper)
+ * Bug #1081209 : in proxygen task, java process is forked
+ * Bug #1102998 : corrected bug in PCTSchemaDoc with codepage and collation
+ * Added runList attribute in PCTCompile task, which checks for RUN statements
+ * Bug #1103002 : added case-sensitive attribute in ttTimeStamps which records included files
+
+Version 0.6 (11/04/2004)
+==============================
+ * Bug #995235 : compress command line is only run once
+ * Added codepage attribute to PCTCreateBase to create database with a specific codepage
+ * Bug #1020999 : cheks the .pl created is not in the file list
+ * Bug #995235 : added basedir, includes, excludes, includesfile, excludesfile, defaultexcludes
+   attribute to the PCTLibrary task
+ * Behavior change in the PCTLibrary task : task fails when no filesets defined (either with
+   basedir or nested fileset). Previous behavior was to create an empty library.
+ * Added numsep and numdec attributes to PCTRun task
+ * Bug #1058733 : multiple assignments for propath in PCTRun
+
+Version 0.5 (08/25/2004)
+==============================
+ * Bug #972486 : changed the way temp files are deleted
+ * Bug #992280 : added paramFile attribute to PCTConnection
+
+Version 0.5 pre2 (06/10/2004)
+==============================
+ * Added PCTXCode task (Dick Knol)
+ * Added noCompile and xcode attributes in PCTCompile
+ * Separate versions for Progress v9 and v10
+ * Removed Jalopy for Eclipse formatting
+ * Added Propath to PCTCreateBase
+ * Added PCTDumpData task (Dick Knol)
+ * Corrected PCTIncrementalDump bug (Dick Knol)
+ * Added parameterFile attribute in PCTRun
+ * PCTSchemaDoc now creates XML file. It has to be tied with a style task
+
+Version 0.5 pre1 (05/13/2004)
+==============================
+ * PCTCRC task (Dick Knol)
+ * Documentation update
+ * New compilation procedure : now checks CRC, so database updates force recompilation
+ * Added iniFile and ttBufferSize attributes in PCTRun
+ * Changed the way temp files are deleted. Should work better, but still not perfect
+
+Version 0.4 (01/18/2004)
+==============================
+ * Added hasNamedAlias method in PCTConnection (P. BAIRD)
+ * Added PCTWSComp task - Not tested, so don't expect it to run correctly 
+   Help needed for this task, as I don't know how WebSpeed works
+ * Added PCTBinaryLoad task
+ * Updated PCTCreateBase :
+   * Removed noSchema attribute (use directly structFile)
+   * Added schemaFile attribute (loads a .df into database after its creation)
+   * Corrected bug when destDir == null
+   * Added unit tests
+ * Added debugPCT attribute in PCTRun (protected, so it can accessed from children)
+ * Changed the way files are added in PCTCompile and PCTWSComp (should no more block
+   on large filesets)
+ * Added PCTDumpIncremental task. Not really tested. (P. BAIRD)
+ * Documentation cleanup
+ * Added more JUnit tests
+
+Version 0.3b (11/15/2003)
+==============================
+ * Added unit tests (still in development)
+ * Added website task
+ * Updated download webpage
+ * Updated jar task (files were added twice)
+ * Added forceCompile attribute to PCTCompile
+ * Added com.phenix.pct.PLReader task and documentation
+
+Version 0.3a
+==============================
+ * Changed the way files are handled in the PCTCompile
+
+Version 0.3 (09/29/2003)
+==============================
+ * Documentation updated
+ * Added checkstyle task in build.xml (internal)
+ * Major rewrite (conforming to ANT standards)
+ * Added pctProxygen task
+ * Added pctRun task
+ * Resource properties file added in JAR
+ * Progress source files moved to pct subdir
+
+Version 0.2 (07/15/2003)
+==============================
+* Documentation included in tarball & minor changes
+* PCTCreateBase : added destDir attribute
+* PCTCompile : logs how many files were compiled or not
+* PCTCompile : automatically creates subdirectories during the build process
+* PCTCompile : uses XREF to compile only modified files
+* PCTDumpSchema, PCTLoadSchema, PCTSchemaDoc : changed the way it handles PCTConnection
+* PCTLibrary : added the noCompress attribute (false by default)
+
+Version 0.1 (06/05/2003)
+========================
+* First alpha release
