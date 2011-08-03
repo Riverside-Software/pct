@@ -85,6 +85,7 @@
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
+    <include name="prolint/**/xml.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/pctCompileV8.p" />
@@ -229,6 +230,7 @@ PCTBuild=${BUILD_NUMBER}
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
       <fileset dir="${buildDir}">
         <include name="pct/*.r" />
+        <include name="prolint/**/*.r" />
         <include name="prodict/dump/*.r" />
       </fileset>
     </bootstrapLibrary>
