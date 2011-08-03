@@ -1471,7 +1471,7 @@ DO ON STOP UNDO, LEAVE:
   END.
 
 
-  {prodict/dump/dmptrail.i
+  {prodict/dump/dmptrail9.i
     &entries      = " "
     &seek-stream  = "ddl"
     &stream       = "STREAM ddl "
