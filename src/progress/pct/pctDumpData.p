@@ -54,9 +54,11 @@
 
 DEFINE VARIABLE cDir AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cTables AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cEncoding AS CHARACTER NO-UNDO.
 
-ASSIGN cDir    = ENTRY(1, SESSION:PARAMETER)
-       cTables = SUBSTRING(SESSION:PARAMETER, INDEX(SESSION:PARAMETER, ',') + 1)
-       .
-RUN prodict/dump_d.p (IF cTables EQ "" THEN "ALL" ELSE cTables, cDir, INPUT ?).
+ASSIGN cDir    = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'destDir')
+       cTables = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tables')
+       cEncoding = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'encoding').
+
+RUN prodict/dump_d.p (cTables, cDir, cEncoding).
 RETURN RETURN-VALUE.
