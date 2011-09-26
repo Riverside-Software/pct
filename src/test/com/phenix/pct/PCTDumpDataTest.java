@@ -164,9 +164,9 @@ public class PCTDumpDataTest extends BuildFileTestNg {
         } catch (IOException caught) {
             Assert.fail("IOException", caught);
         }
-        File f3 = new File("sandbox/win1252/_File.d");
+        File f3 = new File("sandbox/utf8/_File.d");
         try {
-            assertEquals(readEncoding(f3), "1252");
+            assertEquals(readEncoding(f3), "utf-8");
         } catch (IOException caught) {
             Assert.fail("IOException", caught);
         }
