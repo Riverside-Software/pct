@@ -86,8 +86,8 @@
     <PCTDumpData dlcHome="${DLC}" destDir="sandbox/8859-15" tables="_File" encoding="" cpinternal="iso8859-15" cpstream="iso8859-15">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTDumpData>
-  	<mkdir dir="sandbox/win1252" />
-    <PCTDumpData dlcHome="${DLC}" destDir="sandbox/win1252" tables="_File" encoding="1252" cpinternal="iso8859-15" cpstream="iso8859-15">
+  	<mkdir dir="sandbox/utf8" />
+    <PCTDumpData dlcHome="${DLC}" destDir="sandbox/utf8" tables="_File" encoding="utf-8" cpinternal="iso8859-15" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTDumpData>
   </target>
