@@ -99,6 +99,7 @@ DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
+DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -119,7 +120,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
@@ -129,7 +130,8 @@ PROCEDURE setOptions:
            noComp    = ENTRY(7, ipPrm, ';') EQ 'true'
            keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
-           gwtFact   = INTEGER(ENTRY(10, ipPrm, ';')) NO-ERROR.
+           gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
+           multiComp = ENTRY(10, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -167,6 +169,8 @@ PROCEDURE pctCompile:
     DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
 	DEFINE VARIABLE lSkipped AS LOGICAL     NO-UNDO.
 
+    COMPILER:MULTI-COMPILE = multiComp.
+
 	ASSIGN filesNum = NUM-ENTRIES(ipPrm, {&SEPARATOR2}).
     DO zz = 1 TO filesNum:
         ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
@@ -197,6 +201,17 @@ PROCEDURE pctCompile:
            opMsg = STRING(compOK) + "/" + STRING(compNotOk).
 
 END PROCEDURE.
+
+FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
+  CASE ipVal:
+    WHEN 1 THEN RETURN 'Compilation forced or using XCODE'.
+    WHEN 2 THEN RETURN 'No r-code in build directory'.
+    WHEN 3 THEN RETURN 'R-code is older than source code'.
+    WHEN 4 THEN RETURN 'An include file changed'.
+    WHEN 5 THEN RETURN 'Table CRC changed'.
+    OTHERWISE RETURN 'Unknown'.
+  END.
+END FUNCTION.
 
 /* Return value of this procedure follows this pattern :
  *  OK:
@@ -230,7 +245,7 @@ PROCEDURE pctCompile2 PRIVATE:
      *      If empty, keep generated file as is
      */
 
-	DEFINE VARIABLE Recompile AS LOGICAL NO-UNDO.
+	DEFINE VARIABLE Recompile AS INTEGER NO-UNDO INITIAL 0.
 	
     DEFINE VARIABLE FileExt   AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE RCodeName AS CHARACTER   NO-UNDO.
@@ -241,7 +256,7 @@ PROCEDURE pctCompile2 PRIVATE:
     DEFINE VARIABLE cFile     AS CHARACTER   NO-UNDO.
 
     IF (ForceComp OR lXCode) THEN DO:
-        ASSIGN Recompile = TRUE.
+        ASSIGN Recompile = 1.
     END.
     ELSE DO:
         /* Checking .r file exists */
@@ -249,17 +264,23 @@ PROCEDURE pctCompile2 PRIVATE:
         RUN adecomm/_osfext.p(cFile, OUTPUT FileExt).
         ASSIGN RCodeName = SUBSTRING(cFile, 1, R-INDEX(cFile, FileExt) - 1) + '.r':U.
         ASSIGN RCodeTS = getTimeStampDF(outputDir, RCodeName).
-        Recompile = (RCodeTS EQ ?).
-        IF (NOT Recompile) THEN DO:
+        IF (RCodeTS EQ ?) THEN DO:
+          ASSIGN Recompile = 2.
+        END.
+        ELSE DO:
             /* Checking .r timestamp is prior procedure timestamp */
             ASSIGN ProcTS = getTimeStampF(inputFile).
-            Recompile = (ProcTS GT RCodeTS).
-            IF (NOT Recompile) THEN DO:
+            IF (ProcTS GT RCodeTS) THEN DO:
+              ASSIGN Recompile = 3.
+            END.
+            ELSE DO:
                 /* Checking included files */
-                Recompile = CheckIncludes(PCTDir + '.inc', RCodeTS).
-                IF (NOT Recompile) THEN DO:
+                IF (CheckIncludes(PCTDir + '.inc', RCodeTS)) THEN DO:
+                    ASSIGN Recompile = 4.
+                END.
+                ELSE DO:
                     /* Checking CRC */
-                    Recompile = CheckCRC(PCTDir + '.crc').
+                    IF CheckCRC(PCTDir + '.crc') THEN ASSIGN Recompile = 5.
                 END.
             END.
         END.
@@ -267,7 +288,8 @@ PROCEDURE pctCompile2 PRIVATE:
     
     /* FIXME Gestion de l'attribut noCompile */
 
-    IF Recompile THEN DO:
+    IF (Recompile GT 0) THEN DO:
+        RUN logVerbose IN ipSrcProc (SUBSTITUTE("Thread &1 - Compiling &2 [&3]", DYNAMIC-FUNCTION('getThreadNumber' IN ipSrcProc), inputFile, getRecompileLabel(Recompile))).
         IF lXCode THEN DO:
             IF (XCodeKey NE ?) THEN
                 COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
