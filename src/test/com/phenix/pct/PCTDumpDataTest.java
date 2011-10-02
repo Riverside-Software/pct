@@ -54,14 +54,19 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Class for testing PCTDumpData task
@@ -99,11 +104,12 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     }
 
     /**
-     * Should throw BuildException : no filesets (or srcDir) defined 
+     * Should throw BuildException : no filesets (or srcDir) defined
      */
     @Test
     public void test2() {
-        expectBuildException("test2", "Should throw BuildException : no filesets (or srcDir) defined ");
+        expectBuildException("test2",
+                "Should throw BuildException : no filesets (or srcDir) defined ");
     }
 
     /**
@@ -121,11 +127,11 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     public void test4() {
         executeTarget("test4init");
         executeTarget("test4");
-        
+
         File f1 = new File("sandbox/Tab1.d");
         assertTrue(f1.exists());
     }
-    
+
     /**
      * Should dump _File in target directory
      */
@@ -133,9 +139,59 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     public void test5() {
         executeTarget("test5init");
         executeTarget("test5");
-        
+
         File f1 = new File("sandbox/_File.d");
         assertTrue(f1.exists());
     }
 
+    /**
+     * Tests various encodings
+     */
+    @Test
+    public void test6() {
+        executeTarget("test6init");
+        executeTarget("test6");
+
+        File f1 = new File("sandbox/8859-1/_File.d");
+        try {
+            assertEquals(readEncoding(f1), "iso8859-1");
+        } catch (IOException caught) {
+            Assert.fail("IOException", caught);
+        }
+        File f2 = new File("sandbox/8859-15/_File.d");
+        try {
+            assertEquals(readEncoding(f2), "iso8859-15");
+        } catch (IOException caught) {
+            Assert.fail("IOException", caught);
+        }
+        File f3 = new File("sandbox/utf8/_File.d");
+        try {
+            assertEquals(readEncoding(f3), "utf-8");
+        } catch (IOException caught) {
+            Assert.fail("IOException", caught);
+        }
+    }
+
+    // Quick'n'dirty method to read encoding in dump file
+    private String readEncoding(File f) throws IOException {
+        BufferedReader reader = null;
+        String encoding = null;
+
+        try {
+            reader = new BufferedReader(new FileReader(f));
+            String str = null;
+
+            while ((str = reader.readLine()) != null) {
+                if (str.startsWith("cpstream="))
+                    encoding = str.substring(9);
+            }
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException uncaught) {
+
+            }
+        }
+        return encoding;
+    }
 }

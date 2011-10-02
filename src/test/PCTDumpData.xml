@@ -74,4 +74,22 @@
     </PCTDumpData>
   </target>
 
+  <target name="test6init">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
+  </target>
+  <target name="test6">
+  	<mkdir dir="sandbox/8859-1" />
+    <PCTDumpData dlcHome="${DLC}" destDir="sandbox/8859-1" tables="_File" encoding="" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpData>
+  	<mkdir dir="sandbox/8859-15" />
+    <PCTDumpData dlcHome="${DLC}" destDir="sandbox/8859-15" tables="_File" encoding="" cpinternal="iso8859-15" cpstream="iso8859-15">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpData>
+  	<mkdir dir="sandbox/utf8" />
+    <PCTDumpData dlcHome="${DLC}" destDir="sandbox/utf8" tables="_File" encoding="utf-8" cpinternal="iso8859-15" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpData>
+  </target>
+
 </project>

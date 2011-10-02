@@ -364,6 +364,10 @@ PROCEDURE setThreadNumber:
 
 END PROCEDURE.
 
+FUNCTION getThreadNumber RETURNS INTEGER:
+    RETURN threadNumber.
+END PROCEDURE.
+
 /* Run a particular procedure persistently */
 PROCEDURE launch:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.

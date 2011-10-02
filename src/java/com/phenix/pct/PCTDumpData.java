@@ -67,6 +67,7 @@ import java.io.File;
 public class PCTDumpData extends PCTRun {
     private File destDir = null;
     private String tables = null;
+    private String encoding = null;
 
     /**
      * Output directory for dump
@@ -85,31 +86,40 @@ public class PCTDumpData extends PCTRun {
     }
 
     /**
+     * Set encoding to be used to dump data. If not set or empty,
+     * dump will be done using -cpstream default value.
+     * 
+     * @param encoding
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    /**
      * Do the work
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        String param = null;
-
-        if (this.dbConnList == null) {
-            this.cleanup();
+        if (dbConnList == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList.size() > 1) {
-            this.cleanup();
+        if (dbConnList.size() > 1) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.1")); //$NON-NLS-1$
         }
 
-        if (this.destDir == null) {
-            this.cleanup();
+        if (destDir == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.2")); //$NON-NLS-1$
         }
 
-        param = destDir.toString() + "," + (this.tables == null ? "ALL" : this.tables);
+        addParameter(new RunParameter("destDir", destDir.toString())); //$NON-NLS-1$
+        addParameter(new RunParameter("tables", (tables == null ? "ALL" : tables))); //$NON-NLS-1$ $NON-NLS-2$
+        addParameter(new RunParameter("encoding", (encoding == null ? "" : encoding))); //$NON-NLS-1$ $NON-NLS-2$
+        setProcedure("pct/pctDumpData.p"); //$NON-NLS-1$
 
-        this.setProcedure("pct/pctDumpData.p"); //$NON-NLS-1$
-        this.setParameter(param);
         super.execute();
     }
 }
