@@ -22,6 +22,7 @@
   <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
   <taskdef name="progress_version" classname="com.phenix.pct.ProgressVersion" />
   <taskdef name="version" classname="com.phenix.pct.Version" />
+  <taskdef name="prolint" classname="com.phenix.pct.Prolint" />
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
 </antlib>
