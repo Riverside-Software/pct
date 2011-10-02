@@ -100,7 +100,7 @@
     <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
   </target>
   <target name="test2">
-    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}"  activeIndexes="true">
+    <PCTDumpIncremental destFile="sandbox/incr1.df" dlcHome="${DLC}"  activeIndexes="0">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -108,7 +108,15 @@
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </PCTDumpIncremental>
-    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}"  activeIndexes="false">
+    <PCTDumpIncremental destFile="sandbox/incr2.df" dlcHome="${DLC}"  activeIndexes="1">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="dictdb" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </PCTDumpIncremental>
+    <PCTDumpIncremental destFile="sandbox/incr3.df" dlcHome="${DLC}"  activeIndexes="2">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>

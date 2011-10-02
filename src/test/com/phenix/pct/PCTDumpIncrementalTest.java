@@ -126,6 +126,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     public void test2() {
         File f1 = new File("sandbox/incr1.df");
         File f2 = new File("sandbox/incr2.df");
+        File f3 = new File("sandbox/incr3.df");
 
         executeTarget("test2init");
         executeTarget("test2");
@@ -147,7 +148,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
 
             Matcher m = regexp.matcher(cb);
             if (m.find())
-                fail("Index was declared inactive but activeIndexes is set to TRUE");
+                fail("Index was declared inactive but activeIndexes is set to 0");
         } catch (Exception e) {
             fail("Unable to parse file incr1.df");
         }
@@ -167,7 +168,27 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
             // Run some matches
             Matcher m = regexp.matcher(cb);
             if (!m.find())
-                fail("Index wasn't declared inactive but activeIndexes is set to FALSE");
+                fail("Index wasn't declared inactive but activeIndexes is set to 1");
+        } catch (Exception e) {
+            fail("Unable to parse file incr2.df");
+        }
+
+        regexp = java.util.regex.Pattern.compile("INACTIVE", java.util.regex.Pattern.MULTILINE);
+        // Get a Channel for the source file
+        try {
+            FileInputStream fis = new FileInputStream(f3);
+            FileChannel fc = fis.getChannel();
+
+            // Get a CharBuffer from the source file
+            ByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, (int) fc.size());
+            Charset cs = Charset.forName("8859_1");
+            CharsetDecoder cd = cs.newDecoder();
+            CharBuffer cb = cd.decode(bb);
+
+            // Run some matches
+            Matcher m = regexp.matcher(cb);
+            if (!m.find())
+                fail("Index wasn't declared inactive but activeIndexes is set to 2");
         } catch (Exception e) {
             fail("Unable to parse file incr2.df");
         }

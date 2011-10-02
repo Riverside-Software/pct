@@ -38,7 +38,7 @@ Usage:
        #!/bin/sh
        DUMP_INC_DFFILE=/tmp/delta.df
        DUMP_INC_CODEPAGE=iso8859-2
-       DUMP_INC_INDEXMODE=active
+       DUMP_INC_INDEXMODE=0
        DUMP_INC_RENAMEFILE=/tmp/master.rf
        DUMP_INC_DEBUG=2
        export DUMP_INC_DFFILE DUMP_INC_CODEPAGE DUMP_INC_INDEXMODE \
@@ -51,8 +51,10 @@ Usage:
 Environment Variables:
     DUMP_INC_DFFILE          : name of file to dump to
     DUMP_INC_CODEPAGE        : output codepage
-    DUMP_INC_INDEXMODE       : index-mode for newly created indexes
-                               allowed values are: "active", "inactive"
+    DUMP_INC_INDEXMODE       : index-mode for newly created indexes in exsting
+                               tables: 0 = all indexes active
+                                       1 = all unique indexes inactive
+                                       2 = all indexes inactive
     DUMP_INC_RENAMEFILE      : name of the file with rename definitions
     DUMP_INC_DEBUG           : debug-level: 0 = debug off (only errors
                                                 and important warnings)
@@ -90,12 +92,12 @@ rename field support
 
 &SCOPED-DEFINE VAR_PREFIX       DUMP_INC
 &SCOPED-DEFINE DEFAULT_DF       delta.df
-&SCOPED-DEFINE DEFAULT_INDEX    inactive
+&SCOPED-DEFINE DEFAULT_INDEX    1
 
 DEFINE VARIABLE rename-file  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE df-file-name AS CHARACTER NO-UNDO.
 DEFINE VARIABLE code-page    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE index-mode   AS CHARACTER NO-UNDO.
+DEFINE VARIABLE index-mode   AS INTEGER   NO-UNDO INITIAL ?.
 DEFINE VARIABLE debug-mode   AS INTEGER   NO-UNDO.
 
 DEFINE VARIABLE foo          AS CHARACTER NO-UNDO.
@@ -127,7 +129,7 @@ ASSIGN debug-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDUR
        rename-file  = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'RenameFile')
        df-file-name = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DFFileName')
        code-page    = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'CodePage')
-       index-mode   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'IndexMode').
+       index-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'IndexMode')).
 
 IF NUM-DBS LT 2 THEN DO:
   MESSAGE new_lang[02].
@@ -170,21 +172,21 @@ ELSE DO:
 END.  /* code-page EQ "":U */
 
 /* index-mode checking */
-IF index-mode NE "":U THEN DO:
-  IF NOT CAN-DO("active,inactive":U, index-mode) THEN DO:
+IF index-mode NE ? THEN DO:
+  IF NOT CAN-DO("0,1,2":U, STRING(index-mode)) THEN DO:
     IF debug-mode GT 0 THEN
-      MESSAGE SUBSTITUTE(new_lang[06], index-mode, "{&DEFAULT_INDEX}":U) SKIP.
-    ASSIGN index-mode = "{&DEFAULT_INDEX}":U.
+      MESSAGE SUBSTITUTE(new_lang[06], STRING(index-mode), "{&DEFAULT_INDEX}":U) SKIP.
+    ASSIGN index-mode = INTEGER("{&DEFAULT_INDEX}":U).
   END.
 END.
 ELSE DO:
-  ASSIGN index-mode = "{&DEFAULT_INDEX}":U.
+  ASSIGN index-mode = INTEGER("{&DEFAULT_INDEX}":U).
   IF debug-mode GT 0 THEN
-    MESSAGE SUBSTITUTE(new_lang[04], index-mode, "index mode":U) SKIP.
+    MESSAGE SUBSTITUTE(new_lang[04], STRING(index-mode), "index mode":U) SKIP.
 END.  /* index-mode EQ "":U */
 
 /* user_env[19] will be changed BY _dmpincr.p */
-ASSIGN user_env[19] = rename-file + ",":U + index-mode + ",":U + 
+ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U +
                       STRING(debug-mode)
        user_env[02] = df-file-name
        user_env[05] = code-page.

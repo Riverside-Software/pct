@@ -70,7 +70,7 @@ import java.util.Iterator;
 public class PCTDumpIncremental extends PCTRun {
     private File destFile = null;
     private File renameFile = null;
-    private boolean activeIndexes = true;
+    private int activeIndexes = 0;
     private String codePage = null;
     private int debugLevel = 0;
 
@@ -79,7 +79,7 @@ public class PCTDumpIncremental extends PCTRun {
      * 
      * @param activeIndexes boolean
      */
-    public void setActiveIndexes(boolean activeIndexes) {
+    public void setActiveIndexes(int activeIndexes) {
         this.activeIndexes = activeIndexes;
     }
 
@@ -176,7 +176,7 @@ public class PCTDumpIncremental extends PCTRun {
         this.addParameter(new RunParameter("DFFileName", this.destFile.getAbsolutePath()));
         this.addParameter(new RunParameter("CodePage", this.codePage));
         this.addParameter(new RunParameter("RenameFile", (this.renameFile == null ? "" : this.renameFile.getAbsolutePath())));
-        this.addParameter(new RunParameter("IndexMode", (this.activeIndexes ? "active" : "inactive")));
+        this.addParameter(new RunParameter("IndexMode", Integer.toString(this.activeIndexes)));
         this.addParameter(new RunParameter("DebugMode", Integer.toString(this.debugLevel)));
         
         super.execute();
