@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002 The Apache Software Foundation.  All rights
+ * Copyright (c) The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,81 +51,78 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package com.phenix.pct;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+DEFINE TEMP-TABLE ttLintFiles NO-UNDO
+  FIELD SourceFile AS CHARACTER.
 
-public class ProgressV9 implements ProgressProcedures {
-    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV9"; //$NON-NLS-1$
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+FUNCTION FileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 
-    public String getCompileProcedure() {
-        return "pct/pctCompile.p";
-    }
+/** Named streams */
+DEFINE STREAM sXref.
+DEFINE STREAM sParams.
+DEFINE STREAM sFileset.
+DEFINE STREAM sIncludes.
+DEFINE STREAM sCRC.
+/*DEFINE STREAM sPreProcess.*/
 
-    public String getIncrementalProcedure() {
-        return "pct/_dmpincr9.p";
-    }
+/** Parameters from ANT call */
+DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
 
-    public boolean needRedirector() {
-        return false;
-    }
+/** Internal use */
+DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cFileExt  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE BaseName  AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE RCodeName AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE RCodeTS   AS INTEGER    NO-UNDO.
+DEFINE VARIABLE ProcTS    AS INTEGER    NO-UNDO.
+/** Throw build exception ? */
+DEFINE VARIABLE BuildExc  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
-    public String getInitString() {
-        return getString("ProgressV9.0"); //$NON-NLS-1$
-    }
+/* Checks for valid parameters */
+IF (SESSION:PARAMETER EQ ?) THEN
+    RETURN '1'.
+IF NOT FileExists(SESSION:PARAMETER) THEN
+    RETURN '2'.
+/* Reads config */
+INPUT STREAM sParams FROM VALUE(FILE-INFO:FULL-PATHNAME).
+REPEAT:
+    IMPORT STREAM sParams UNFORMATTED cLine.
+    IF (NUM-ENTRIES(cLine, '=':U) EQ 2) THEN
+    CASE ENTRY(1, cLine, '=':U):
+        WHEN 'FILESETS':U THEN
+            ASSIGN Filesets = ENTRY(2, cLine, '=':U).
+        OTHERWISE
+            MESSAGE "Unknown parameter : " + cLine.
+    END CASE.
+END.
+INPUT STREAM sParams CLOSE.
 
-    public String getConnectString() {
-        return getString("ProgressV9.1"); //$NON-NLS-1$
-    }
+/* Checks if valid config */
+IF NOT FileExists(Filesets) THEN
+    RETURN '3'.
 
-    public String getAliasString() {
-        return getString("ProgressV9.2"); //$NON-NLS-1$
-    }
+/* Parsing file list to compile */
+INPUT STREAM sFileset FROM VALUE(Filesets).
+CompLoop:
+REPEAT:
+    IMPORT STREAM sFileset UNFORMATTED cLine.
+    IF (cLine BEGINS 'FILESET=':U) THEN
+        /* This is a new fileset -- Changing base dir */
+        ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
+    ELSE DO:
+        CREATE ttLintFiles.
+        ASSIGN ttLintFiles.SourceFile = CurrentFS + '~\' + cLine.
+    END.
+END.
 
-    public String getPropathString() {
-        return getString("ProgressV9.3"); //$NON-NLS-1$
-    }
+RUN prolint/core/prolint.p (INPUT ?, TEMP-TABLE ttLintFiles:HANDLE, 'pct', true).
 
-    public String getRunString() {
-        return getString("ProgressV9.4"); //$NON-NLS-1$
-    }
+RETURN (IF BuildExc THEN '10' ELSE '0').
 
-    public String getReturnProc() {
-        return getString("ProgressV9.5"); //$NON-NLS-1$
-    }
-
-    public String getParameterString() {
-        return getString("ProgressV9.6"); //$NON-NLS-1$
-    }
-
-    public String getString(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
-
-    public String getAfterRun() {
-        return getString("ProgressV9.10"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterCall() {
-        return getString("ProgressV9.11"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterDeclaration() {
-        return getString("ProgressV9.8"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterProc() {
-        return getString("ProgressV9.9"); //$NON-NLS-1$
-    }
-
-    public String getQuit() {
-        return getString("ProgressV9.12"); //$NON-NLS-1$
-    }
-
-}
+FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER):
+    ASSIGN FILE-INFO:FILE-NAME = f.
+    RETURN (FILE-INFO:FULL-PATHNAME NE ?).
+END FUNCTION.

@@ -1,4 +1,13 @@
-Version 0.18 (??/??/????)
+Version 0.19 (??/??/????)
+=============================
+ * Added multiCompile attribute on PCTCompile and PCTCompileExt
+ * Added prolint task
+ * Fixed PCTDumpIncremental task in v9
+ * Added assemblies parameter in PCTRun
+ * Added log when using PCTCompileExt (and -v flag)
+ * Added encoding attribute to PCTDumpData
+
+Version 0.18 (02/21/2011)
 =============================
  * dbName is no longer required in PCTConnection. You have to use either dbName or paramFile
    Allows full DB connection strings in paramFile
