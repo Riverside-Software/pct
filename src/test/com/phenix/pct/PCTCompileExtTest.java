@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
@@ -399,6 +400,48 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         executeTarget("test25-d");
         assertTrue(f3.exists());
+    }
+
+    @Test
+    public void test26() throws InterruptedException {
+        File noPackageSource = new File("sandbox/folder/ClassNoPackage.cls");
+        File packageSource = new File("sandbox/folder/package/ClassNoPackage.cls");
+        File classNoPackageFile = new File("build/ClassNoPackage.r");
+        File classWithPackageFile = new File("build/package/ClassWithPackage.r");
+        assertFalse(classNoPackageFile.exists());
+        assertFalse(classWithPackageFile.exists());
+        
+        int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
+        if (majorVersion >= 10) {
+            //Setup:
+            executeTarget("test26");
+            executeTarget("test26-step2");
+            assertTrue(classNoPackageFile.exists());
+            assertTrue(classWithPackageFile.exists());
+            
+            // Class files are lazily [re]built:
+            long srcLastModified1 = noPackageSource.lastModified();
+            long srcLastModified2 = packageSource.lastModified();
+            long lastModified1 = classNoPackageFile.lastModified();
+            long lastModified2 = classWithPackageFile.lastModified();
+            Thread.sleep(3);
+            executeTarget("test26-step2");
+            assertEquals(srcLastModified1, noPackageSource.lastModified());
+            assertEquals(srcLastModified2, packageSource.lastModified());
+            assertEquals(lastModified1, classNoPackageFile.lastModified());
+            assertEquals(lastModified2, classWithPackageFile.lastModified());
+        }
+    }
+
+    @Test
+    public void test27() {
+        executeTarget("test27-init");
+        File f = new File("build/foo.r");
+        assertFalse(f.exists());
+        expectBuildException("test27-a", "Should fail - No stream-io");
+        assertFalse(f.exists());
+        executeTarget("test27-b");
+        assertTrue(f.exists());
     }
 
     private static void copy(File src, File dst) throws IOException {
