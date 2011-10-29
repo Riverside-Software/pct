@@ -132,7 +132,8 @@ PROCEDURE setOptions:
            keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
            gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
-           multiComp = ENTRY(10, ipPrm, ';') EQ 'true' NO-ERROR.
+           multiComp = ENTRY(11, ipPrm, ';') EQ 'true'
+           streamIO  = ENTRY(12, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 

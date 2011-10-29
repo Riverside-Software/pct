@@ -368,4 +368,15 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertTrue(f4.exists());
         }
     }
+
+    @Test
+    public void test23() {
+        executeTarget("test23-init");
+        File f = new File("build/foo.r");
+        assertFalse(f.exists());
+        expectBuildException("test23-a", "Should fail - No stream-io");
+        assertFalse(f.exists());
+        executeTarget("test23-b");
+        assertTrue(f.exists());
+    }
 }

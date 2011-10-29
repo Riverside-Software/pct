@@ -433,6 +433,17 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         }
     }
 
+    @Test
+    public void test27() {
+        executeTarget("test27-init");
+        File f = new File("build/foo.r");
+        assertFalse(f.exists());
+        expectBuildException("test27-a", "Should fail - No stream-io");
+        assertFalse(f.exists());
+        executeTarget("test27-b");
+        assertTrue(f.exists());
+    }
+
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
         FileChannel srcChannel = new FileInputStream(src).getChannel();
