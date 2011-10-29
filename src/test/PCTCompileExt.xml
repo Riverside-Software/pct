@@ -742,4 +742,26 @@
     </PCTCompileExt>	
   </target>
 
+  <target name="test26">
+    <mkdir dir="sandbox/folder"/>
+    <mkdir dir="sandbox/folder/package"/>
+    <echo file="sandbox/folder/ClassNoPackage.cls">
+      CLASS ClassNoPackage:
+      END CLASS.
+    </echo>
+    <echo file="sandbox/folder/package/ClassWithPackage.cls">
+      CLASS package.ClassWithPackage:
+      END CLASS.
+    </echo>
+  </target>
+  <target name="test26-step2">
+    <PCTCompileExt graphicalMode="${graph}" destDir="build" dlcHome="${DLC}" >
+      <fileset dir="sandbox/folder">
+        <include name="**/*.cls"/>
+      </fileset>
+      <propath>
+        <pathelement path="sandbox/folder/"/>
+      </propath>
+    </PCTCompileExt>
+  </target>
 </project>
