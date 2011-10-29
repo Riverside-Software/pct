@@ -104,6 +104,7 @@ DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
@@ -181,6 +182,8 @@ REPEAT:
             ASSIGN noParse = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'MULTICOMPILE':U THEN
             ASSIGN multiComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'STREAM-IO':U THEN
+            ASSIGN streamIO = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -333,7 +336,7 @@ PROCEDURE PCTCompile.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
-    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
         ASSIGN c = '':U.
@@ -365,7 +368,7 @@ PROCEDURE PCTCompileXref.
     IF (NOT plOK) THEN RETURN.
     ASSIGN plOK = createDir(pcPCTDir, cBase).
     IF (NOT plOK) THEN RETURN.
-    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+    COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE((IF PrePro THEN pcPCTDir + '/':U + pcInFile + '.preprocess':U ELSE ?)) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
         RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
@@ -428,9 +431,9 @@ PROCEDURE PCTCompileXCode.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     IF (pcXCodeKey NE ?) THEN
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize STREAM-IO=streamIO GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
     ELSE
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize STREAM-IO=streamIO GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF (NOT plOK) THEN DO:
         ASSIGN c = '':U.

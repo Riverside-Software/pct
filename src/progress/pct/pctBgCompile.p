@@ -100,6 +100,7 @@ DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -120,7 +121,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
@@ -131,7 +132,8 @@ PROCEDURE setOptions:
            keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
            gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
-           multiComp = ENTRY(10, ipPrm, ';') EQ 'true' NO-ERROR.
+           multiComp = ENTRY(11, ipPrm, ';') EQ 'true'
+           streamIO  = ENTRY(12, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -262,6 +264,9 @@ PROCEDURE pctCompile2 PRIVATE:
         /* Checking .r file exists */
         RUN adecomm/_osprefx.p(inputFile, OUTPUT cBase, OUTPUT cFile).
         RUN adecomm/_osfext.p(cFile, OUTPUT FileExt).
+        /* GC bug #7 : pour les classes, il faudrait retrouver le nom du package et l'ajouter au output dir */
+        
+        
         ASSIGN RCodeName = SUBSTRING(cFile, 1, R-INDEX(cFile, FileExt) - 1) + '.r':U.
         ASSIGN RCodeTS = getTimeStampDF(outputDir, RCodeName).
         IF (RCodeTS EQ ?) THEN DO:
@@ -292,12 +297,12 @@ PROCEDURE pctCompile2 PRIVATE:
         RUN logVerbose IN ipSrcProc (SUBSTITUTE("Thread &1 - Compiling &2 [&3]", DYNAMIC-FUNCTION('getThreadNumber' IN ipSrcProc), inputFile, getRecompileLabel(Recompile))).
         IF lXCode THEN DO:
             IF (XCodeKey NE ?) THEN
-                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
+                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
             ELSE
-                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
         END.
         ELSE DO:
-            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
+            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         END.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
