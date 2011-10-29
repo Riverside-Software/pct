@@ -87,6 +87,7 @@ public class PCTCompile extends PCTRun {
     private boolean keepXref = false;
     private boolean noParse = false;
     private boolean multiCompile = false;
+    private boolean streamIO = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -204,6 +205,15 @@ public class PCTCompile extends PCTRun {
      */
     public void setMultiCompile(boolean multiCompile) {
         this.multiCompile = multiCompile;
+    }
+
+    /**
+     * Enables STREAM-IO attribute in COMPILE statement
+     * 
+     * @param streamIO "true|false|on|off|yes|no"
+     */
+    public void setStreamIO(boolean streamIO) {
+        this.streamIO = streamIO;
     }
 
     /**
@@ -374,6 +384,8 @@ public class PCTCompile extends PCTRun {
             bw.write("NOPARSE=" + (this.noParse ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("MULTICOMPILE=" + (this.multiCompile ? 1 : 0));
+            bw.newLine();
+            bw.write("STREAM-IO=" + (this.streamIO ? 1 : 0));
             bw.newLine();
             if (languages != null) {
                 bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
