@@ -611,4 +611,28 @@
       </propath>
     </PCTCompile>
   </target>
+
+  <target name="test23-init">
+    <echo file="sandbox/foo.p">
+      def var v-line as char format "x(80)" no-undo init "Hello".
+      form v-line with frame f-out no-labels no-box down.
+      display v-line with frame f-out.
+    </echo>
+  </target>
+  <target name="test23-a">
+    <PCTCompile graphicalMode="true" destDir="build" dlcHome="${DLC}">
+      <fileset dir="sandbox" includes="*.p" />
+      <propath>
+        <pathelement location="sandbox" />
+      </propath>
+    </PCTCompile>
+  </target>
+  <target name="test23-b">
+    <PCTCompile graphicalMode="true" destDir="build" dlcHome="${DLC}" streamIO="true">
+      <fileset dir="sandbox" includes="*.p" />
+      <propath>
+        <pathelement location="sandbox" />
+      </propath>
+    </PCTCompile>
+  </target>
 </project>
