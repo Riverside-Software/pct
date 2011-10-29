@@ -90,6 +90,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private boolean multiCompile = false;
+    private boolean streamIO = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -107,6 +108,15 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
+    }
+
+    /**
+     * Enables STREAM-IO attribute in COMPILE statement
+     * 
+     * @param streamIO "true|false|on|off|yes|no"
+     */
+    public void setStreamIO(boolean streamIO) {
+        this.streamIO = streamIO;
     }
 
     /**
@@ -537,7 +547,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(keepXref)).append(';');
             sb.append(languages == null ? "" : languages).append(';');
             sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
-            sb.append(Boolean.toString(multiCompile));
+            sb.append(Boolean.toString(multiCompile)).append(';');
+            sb.append(Boolean.toString(streamIO));
 
             return sb.toString();
         }
