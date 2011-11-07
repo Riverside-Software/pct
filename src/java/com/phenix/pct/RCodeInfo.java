@@ -167,7 +167,8 @@ public class RCodeInfo {
 
             // Extract informations from header
             this.timeStamp = readUnsignedInt(this.segHeader, TS_OFFSET, this.swapped) * 1000L;
-            this.version = readUnsignedInt(this.segHeader, VERSION_OFFSET, this.swapped);
+            this.version = readUnsignedShort(this.segHeader, VERSION_OFFSET, this.swapped);
+            if ((this.version >= 1100) && (this.version < 1300)) return true;
             int offsetProcsList = readUnsignedShort(this.segHeader, PROCEDURES_LIST_OFFSET, this.swapped);
             long szSegLocations = readUnsignedInt(this.segHeader, SEGMENTS_LIST_SIZE, this.swapped);
 
@@ -347,7 +348,7 @@ public class RCodeInfo {
     }
 
     public static void main(String[] args) throws Exception {
-        RCodeInfo rci = new RCodeInfo("C:\\Projects\\PCT\\prostart.r");
+        RCodeInfo rci = new RCodeInfo("D:\\Projets\\PCT2\\prostart.r");
         System.out.println("CRC : " + rci.getCRC());
         System.out.println("MD5 : " + rci.getMD5());
         System.out.println("Val : " + rci.getVersion());
