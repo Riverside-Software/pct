@@ -7,6 +7,7 @@ Version 0.19 (??/??/????)
  * Added log when using PCTCompileExt (and -v flag)
  * Added encoding attribute to PCTDumpData
  * Added streamIO attribute to PCTCompile and PCTCompileExt
+ * Added PCTDumpSequences task
 
 Version 0.18 (02/21/2011)
 =============================
