@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - Quick start</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>Quick start</h1>
+<h2>Step 1 : first build.xml file (aka Hello, world!) [Download <a href="sample1.zip">sample</a>]</h2>
+<p>
+Let's assume ANT and PCT are correctly installed (see <a href="manual.html">manual</a>).
+We'll create a new Progress
+project in a directory called, say, MyProject. As a good practice, we'll separate
+sources from build files : let's say we'll have a subdirectory called <em>src</em>
+for sources, and a subdirectory called <em>build</em> for build files.
+</p>
+<p>
+We'll now create one or more procedures in the <em>src</em> subdir. For example,
+in <em>MyProject/src/test.p</em> :</p><pre class="source">
+MESSAGE "This is a test file".
+</pre>
+
+<p>And now, in <em>MyProject/build.xml</em> :</p>
+<pre class="source">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;project name="MyProject" default="build" basedir="."&gt;
+
+&lt;property environment="env" /&gt;
+
+&lt;taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar" /&gt;
+
+&lt;target name="build" description="Builds source files"&gt;
+  &lt;mkdir dir="build"/&gt;
+  &lt;PCTCompile destDir="build" dlcHome="${env.DLC}"&gt;
+    &lt;fileset dir="src"&gt;
+      &lt;include name="*.p" /&gt;
+    &lt;/fileset&gt;
+  &lt;/PCTCompile&gt;
+&lt;/target&gt;
+&lt;/project&gt;
+</pre>
+
+<p>
+Open a shell, define two environment variables, DLC and PCT_HOME, pointing to
+Progress base directory and PCT base directory. Ant also assumes that ANT_HOME,
+JAVA_HOME are defined, but that's part of Ant installation.
+Then cd to the MyProject directory, and then type <code>ant build</code>.
+You should get the following :</p>
+<pre class="output">
+Buildfile: build.xml
+
+build:
+    [mkdir] Created dir: /home/justus/MyProject/build
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 1 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 1 seconds
+</pre>
+<p>And you should have a subdir called build, containing a test.r file.</p>
+
+<p>A few words on this :</p><ul>
+<li>Line 4 tells Ant to load environment variables so that
+they could be accessed with ${env.VARIABLE_NAME} : useful for DLC and PCT_HOME...</li>
+<li>Line 6 tells Ant to load the mapping between tasks name (e.g. PCTCompile) and Java
+class files (e.g. com.phenix.pct.PCTCompile) : this is mandatory to have a working
+PCT.</li>
+<li>Lines 10 to 14 tells PCT to compile every .p file in the src directory, and then
+put them in the destDir directory.</li>
+</ul>
+
+<p>
+Download the <a href="sample1.zip">sample</a>
+</p>
+
+
+
+<h2>Step 2 : adding a database [Download <a href="sample2.zip">sample</a>]</h2>
+<p>
+We'll create a subdir called db, containing the database dump file (called db.df).
+Just create this file :</p>
+<pre class="source"">
+ADD TABLE "MyTable"
+  AREA "Schema Area"
+  DUMP-NAME "MyTable"
+
+ADD FIELD "Fld1" OF "MyTable" AS character 
+
+ADD FIELD "Fld2" OF "MyTable" AS character 
+
+ADD INDEX "MyTable-PK" ON "MyTable" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Fld1" ASCENDING 
+</pre>
+<p>This should create a really simple table, with two fields, and a primary unique index.</p>
+
+<p>Now, we'll create a new procedure, called src/test2.p :</p>
+<pre class="source">
+CREATE MyTable.
+ASSIGN MyTable.Fld1 = "ABC"
+       MyTable.Fld2 = "DEF".
+</pre>
+<p>Now, add the following line after line 8 of the previous build.xml :</p>
+<pre class="source">
+&lt;PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}"/&gt;
+</pre>
+<p>and this one after line 10 :</p>
+<pre class="source"">
+&lt;PCTConnection dbName="db" dbDir="db" singleUser="true"/&gt;
+</pre>
+<p>Now run ant build from the shell prompt. You should get the following :</p>
+<pre class="output">
+Buildfile: build.xml
+
+build:
+[PCTCreateBase] procopy source session begin for justus on batch. (451)
+
+[PCTCreateBase] Formatting extents:
+[PCTCreateBase]    size                area name   path name
+[PCTCreateBase]       4    Primary Recovery Area /home/justus/MyProject/db/db.b1 00:00:00
+[PCTCreateBase]       4              Schema Area /home/justus/MyProject/db/db.d1 00:00:00
+
+[PCTCreateBase] Copying /opt/dlc10/empty8 to db... (6715)
+
+[PCTCreateBase] Start writing data blocks. (6718)
+[PCTCreateBase] 14:23:21 10 Percent complete.
+[PCTCreateBase] 14:23:21 20 Percent complete.
+[PCTCreateBase] 14:23:21 30 Percent complete.
+[PCTCreateBase] 14:23:21 40 Percent complete.
+[PCTCreateBase] 14:23:21 50 Percent complete.
+[PCTCreateBase] 14:23:21 60 Percent complete.
+[PCTCreateBase] 14:23:21 70 Percent complete.
+[PCTCreateBase] 14:23:21 80 Percent complete.
+[PCTCreateBase] 14:23:21 90 Percent complete.
+[PCTCreateBase] 14:23:21 100 Percent complete.
+[PCTCreateBase] 239 blocks copied. (6720)
+
+[PCTCreateBase] ...Copy complete. (6722)
+[PCTCreateBase] procopy source session end. (334)
+[PCTCreateBase] Database copied from /opt/dlc10/empty8. (1365)
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 2 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 7 seconds
+</pre>
+Running ant build a second time will give you this :<pre class="output">
+Buildfile: build.xml
+
+build:
+[PCTCompile] PCTCompile - Progress Code Compiler
+[PCTCompile] 0 file(s) compiled
+
+BUILD SUCCESSFUL
+Total time: 1 seconds
+</pre>
+
+<h2>Step 3 : dealing with propath [Download <a href="sample3.zip">sample</a>]</h2>
+<p>Imagine you'd like to work with PDFInclude : it would be a good idea to separate
+your own source code from PDFInclude source code, so that upgrading to a newer version
+would just be a drop of the new source files. So in project tree, you add a pdfinc-src
+directory, and include {pdfinc.i} in your programs. How to add this dir to your propath ?
+Quite simple, just add a <code>propath</code> directive in you PCTCompile task (line 9) :</p>
+<pre class="source">
+&lt;propath&gt;
+  &lt;pathelement location="pdfinc-src"/&gt;
+&lt;/propath&gt;
+</pre>
+<p>Compile as usual, using <code>ant build</code>, then execute build/test3.r : you should
+get</p>
+<pre class="output">
+Message from pdfinc.i
+Message from test3.p
+</pre>
+
+
+<h2>Step 4 : dealing with ADM2 and customs [Download <a href="sample4.zip">sample</a>]</h2>
+<p>
+When working with ADM2, it's really a good idea to have your own copy in your project, so that
+you can upgrade your Progress version without upgrading your ADM2 version. Here is how I proceed :
+in my project tree, I create two subdirectories, called <code>ade</code> and <code>ade-custom</code>.
+The first one contains everything I import directly from Progress directory, and is only modified when I
+upgrade ADM2 version, the second one contains my own customizations.
+</p>
+<p>Here is the target to compile the standard ADM2 :</p>
+<pre class="source">
+  &lt;target name="build-ade" description="Standard ADM2"&gt;
+    &lt;mkdir dir="build-ade" /&gt;
+    &lt;PCTCreateBase dbName="db" destDir="db" schemaFile="ade/temp-db.df" dlcHome="${env.DLC}" /&gt;
+    &lt;PCTCompile destDir="build-ade" dlcHome="${env.DLC}"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/**/*.p" /&gt;
+        &lt;include name="adm2/**/*.w" /&gt;
+        &lt;exclude name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+      &lt;PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" /&gt;
+      &lt;propath&gt;
+        &lt;pathelement location="ade" /&gt;
+        &lt;pathelement location="ade/src" /&gt;
+      &lt;/propath&gt;
+    &lt;/PCTCompile&gt;
+    &lt;copy toDir="ade"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/image/**" /&gt;
+        &lt;include name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+    &lt;/copy&gt;
+  &lt;/target&gt;
+</pre>
+<p>And the target to compile your customized version of ADM2 :</p>
+<pre class="source">
+  &lt;target name="build-ade-custom" depends="build-ade" description="Customized ADM2"&gt;
+    &lt;mkdir dir="build-ade-custom" /&gt;
+    &lt;PCTCompile destDir="build-ade-custom" dlcHome="${env.DLC}"&gt;
+      &lt;fileset dir="ade/src"&gt;
+        &lt;include name="adm2/*.p" /&gt;
+        &lt;include name="adm2/*.w" /&gt;
+      &lt;/fileset&gt;
+      &lt;fileset dir="ade-custom/src"&gt;
+        &lt;include name="adm2/**/*.p" /&gt;
+        &lt;include name="adm2/**/*.w" /&gt;
+        &lt;exclude name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+      &lt;PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" /&gt;
+      &lt;propath&gt;
+        &lt;pathelement location="ade-custom" /&gt;
+        &lt;pathelement location="ade" /&gt;
+        &lt;pathelement location="ade/src" /&gt;
+      &lt;/propath&gt;
+    &lt;/PCTCompile&gt;
+    &lt;copy toDir="build-ade-custom"&gt;
+      &lt;fileset dir="ade-custom/src"&gt;
+        &lt;include name="adm2/image/**" /&gt;
+        &lt;include name="adm2/template/**" /&gt;
+      &lt;/fileset&gt;
+    &lt;/copy&gt;
+  &lt;/target&gt;
+</pre>
+
+
+<h2>Step 5 : let's proxygen... [Download <a href="sample5.zip">sample</a>]</h2>
+<p>We'll here explain how to use the <em>Java</em> proxygen. Using .Net and DLL proxygen should work identically.</p>
+<p>In the provided example, we're using a Progress 10.0A XPXG file, but 9.1 PXG files are OK too.</p>
+<p><em>Warning</em> : 10.1 XPXG files don't work for now ; 10.1 doesn't accept relative paths anymore, which is
+really annoying...</p>
+<p>Declaring a proxygen task is simple :</p>
+<pre class="source">
+  &lt;PCTProxygen workingDirectory="src" srcFile="src/MyApp.xpxg" dlcHome="${env.DLC}" /&gt;
+</pre>
+<p>Which gives the following result :</p>
+<pre class="output">
+pxg:
+[PCTProxygen] Batch ProxyGen, Version Progress 10.0A
+[PCTProxygen] Generating Proxies...
+[PCTProxygen] Proxy Generation Succeeded.
+[PCTProxygen] For details see the log file  ..\build-pxg\MyProduct.log
+</pre>
+
+
+<h2>Step 6 : using schema holders [Download <a href="sample6.zip">sample</a>]</h2>
+<p>We'll explain here how to compile your application against both a Progress database and an Oracle schema holder.</p>
+<p>In our example, we have an application made of a few programs, and a dump file. What we expect is to get a set
+of .r files compiled against the generated Progress database, as well as a set of .r files compiled against the
+corresponding Oracle schema holder, without any human intervention and without any real Oracle database.</p>
+<p>First step is to generate a .df file, to be loaded in a database. This is done through the use of prodict/ora/_gendsql.p.
+A program is available in PCT, called pct/protoora.p
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

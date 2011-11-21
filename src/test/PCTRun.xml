@@ -1,0 +1,591 @@
+<?xml version="1.0"?>
+
+<project name="PCTRun-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <!-- Test prowin32 on Windows, _progres on everything else -->
+  <property name="graph" value="false" />
+  <condition property="graph" value="true">
+    <os family="windows" />
+  </condition>
+
+  <!-- Should throw BuildException : no procedure defined -->
+  <target name="test1">
+    <PCTRun graphicalMode="${graph}" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Simple case : displays 'Hello world' and exits properly -->
+  <target name="test2">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello world!".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Simple case 2 : return value is 1 : Expect build exception -->
+  <target name="test3">
+    <echo file="sandbox/test.p">
+      RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Procedure doesn't exists : Expect build exception -->
+  <target name="test4">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/not_existing.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Return value is non numeric : Expect build exception -->
+  <target name="test5">
+    <echo file="sandbox/test.p">
+      RETURN "ABC".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Impossible to compile procedure : Expect build exception -->
+  <target name="test6">
+    <echo file="sandbox/test.p">
+      En voila du code qui ne compile pas.
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Test propath -->
+  <target name="test7">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <!-- Test name containing ' and ~ -->
+  <!-- See bug 837205 -->
+  <target name="test8">
+    <echo file="sandbox/wizz~~'~.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/wizz~~'~.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Test -param attribute -->
+  <target name="test9init">
+    <echo file="sandbox/test.p">
+      MESSAGE "Hello" + SESSION:PARAMETER.
+      RETURN "0".
+    </echo>
+  </target>
+  <target name="test9">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter=" PCT" />
+  </target>
+  <target name="test9bis">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Test -yy attribute - Default is 1950 -->
+  <target name="test10init">
+    <echo file="sandbox/test.p">
+      MESSAGE STRING(DATE("0101" + SESSION:PARAMETER), "99/99/9999").
+      RETURN "0".
+    </echo>
+  </target>
+  <target name="test10">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter="60" centuryYearOffset="1970" />
+  </target>
+  <target name="test10bis">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter="60" />
+  </target>
+
+  <!-- RETURN statement but no return value : considered OK -->
+  <target name="test11">
+    <echo file="sandbox/test.p">
+      RETURN.
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <!-- Numsep and numdec tests -->
+  <target name="test12-init">
+    <echo file="sandbox/test.p">
+  		MESSAGE 123.456.
+  		RETURN "0".
+    </echo>
+  </target>
+  <target name="test12-part1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" numsep="44" numdec="46" />
+  </target>
+  <target name="test12-part2">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" numsep="46" numdec="44" />
+  </target>
+  <target name="test12-part3">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" numsep="." numdec="," />
+  </target>
+  <target name="test12-part4">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" numsep="," numdec="." />
+  </target>
+
+  <!-- Propath order -->
+  <target name="test13-init">
+    <mkdir dir="sandbox/dir1" />
+    <mkdir dir="sandbox/dir2" />
+    <echo file="sandbox/dir1/test.i">
+		MESSAGE "This is dir1".
+  	</echo>
+    <echo file="sandbox/dir2/test.i">
+  		MESSAGE "This is dir2".
+  	</echo>
+    <echo file="sandbox/test.p">
+  		{test.i}.
+  		RETURN "0".
+  	</echo>
+  </target>
+  <target name="test13-part1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/dir1" />
+        <pathelement location="sandbox/dir2" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test13-part2">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/dir2" />
+        <pathelement location="sandbox/dir1" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test14-init">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:PARAMETER.
+      RETURN "0".
+  	</echo>
+  </target>
+  <target name="test14-1">
+    <property name="prop1" value="prop1" />
+    <property name="prop2" value="prop2" />
+    <property name="prop3" value="'prop3'" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter="-prop1=${prop1} -prop2=${prop2} -prop3=${prop3}" />
+  </target>
+  <target name="test14-2">
+    <property name="prop4" value="prop1" />
+    <property name="prop5" value="prop2" />
+    <property name="prop6" value='"prop3"' />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter="-prop1=${prop4} -prop2=${prop5} -prop3=${prop6}" />
+  </target>
+  <target name="test14-3">
+    <property name="prop7" value="prop1" />
+    <property name="prop8" value="prop2" />
+    <property name="prop9" value="prop 3" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" parameter="-prop1=${prop7} -prop2=${prop8} -prop3=${prop9}" />
+  </target>
+
+  <target name="test15">
+    <echo file="sandbox/test.p">
+      MESSAGE "This is a test".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="testdb" dbDir="sandbox" singleUser="true" />
+    </PCTRun>
+  </target>
+
+  <target name="test16">
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE(SESSION:TEMP-DIRECTORY + "/Output.txt").
+      OUTPUT CLOSE.
+      RETURN "0".
+    </echo>
+    <mkdir dir="sandbox/subdir" />
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" tempDir="sandbox/subdir" />
+  </target>
+
+  <target name="test17">
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE("subdir2/Output.txt").
+      OUTPUT CLOSE.
+      RETURN "0".
+    </echo>
+    <mkdir dir="sandbox/subdir2" />
+    <PCTRun graphicalMode="${graph}" procedure="test.p" dlcHome="${DLC}" baseDir="sandbox" />
+  </target>
+
+  <target name="test18">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:CPRCODEOUT.
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" cpInternal="iso8859-1">
+      <PCTRunOption name="-cprcodeout" />
+      <PCTRunOption name="utf-8" />
+    </PCTRun>
+  </target>
+
+  <target name="test19">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:CPRCODEOUT.
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" cpInternal="iso8859-1">
+      <PCTRunOption name="-cprcodeout utf-8" />
+    </PCTRun>
+  </target>
+
+  <target name="test20">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTRunOption value="-zprofile sandbox/profiler.pf" />
+    </PCTRun>
+  </target>
+
+  <target name="test21">
+    <echo file="sandbox/test.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/profiler.pf">
+      -FILENAME sandbox/profiler.out
+      -LISTINGS sandbox
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTRunOption name="-zprofile" value="sandbox/profiler.pf" />
+    </PCTRun>
+  </target>
+
+  <target name="test22">
+    <echo file="sandbox/test.p">
+      MESSAGE SESSION:PARAMETER.
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <PCTRunOption name="-param" value="Message with spaces" />
+    </PCTRun>
+  </target>
+
+  <target name="test23">
+    <mkdir dir="sandbox/temp dir" />
+    <echo file="sandbox/test.p">
+      OUTPUT TO VALUE(SESSION:TEMP-DIRECTORY + "/test.txt").
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" tempDir="sandbox/temp dir" />
+  </target>
+
+  <target name="test24-pre">
+    <mkdir dir="sandbox/dir~name" />
+    <echo file="sandbox/dir~name/test.i">
+      MESSAGE "TEST".
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/test.p">
+      { test.i }
+	</echo>
+  </target>
+  <target name="test24">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/dir~name" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test25">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ 'PCT') THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" >
+      <parameter name="TEST" value="PCT" />
+    </PCTRun>
+  </target>
+
+  <target name="test26">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ "AA''BB") THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" >
+      <parameter name="TEST" value="AA''BB" />
+    </PCTRun>
+  </target>
+
+  <target name="test27">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ 'AA~~BB') THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" >
+      <parameter name="TEST" value="AA~BB" />
+    </PCTRun>
+  </target>
+
+  <target name="test28">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ ?) THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test29">
+    <echo file="sandbox/test.p">
+      DEFINE VARIABLE c AS CHARACTER NO-UNDO.
+      ASSIGN c = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'TEST').
+      IF (c EQ ?) THEN
+          RETURN "0".
+      ELSE
+          RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" >
+      <parameter name="TEST" value="AA" />
+      <parameter name="TEST" value="BB" />
+    </PCTRun>
+  </target>
+
+  <target name="test30-init">
+    <path id="my.propath">
+      <pathelement location="sandbox" />
+    </path>
+    <echo file="sandbox/test.p">
+      { test.i }
+    </echo>
+    <echo file="sandbox/test.i">
+      RETURN "0".
+    </echo>
+  </target>
+  <target name="test30-part1">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+  <target name="test30-part2">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+  <target name="test30-part3">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" includedPL="false">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+
+  <target name="test31-a">
+    <echo file="sandbox/test.p">
+      RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" />
+  </target>
+  <target name="test31-b">
+    <echo file="sandbox/test.p">
+       RETURN "1".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test.p" dlcHome="${DLC}" failOnError="false"/>
+  </target>
+
+  <target name="test32-a">
+    <echo file="sandbox/test1.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" resultProperty="myResult" />
+  </target>
+  <target name="test32-b">
+    <echo file="sandbox/test2.p">
+      RETURN "17".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test2.p" dlcHome="${DLC}" failOnError="false" resultProperty="myNewResult" />
+  </target>
+
+  <target name="test33-a">
+    <echo file="sandbox/test1.p">
+      DEFINE OUTPUT PARAMETER prm1 AS CHAR NO-UNDO.
+      ASSIGN prm1 = "PCT".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" resultProperty="myResult" />
+  </target>
+  <target name="test33-b">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" failOnError="false">
+      <OutputParameter name="firstParam" />
+    </PCTRun>
+  </target>
+  
+  <target name="test34">
+    <echo file="sandbox/test1.p">
+      DEFINE OUTPUT PARAMETER prm1 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm2 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm3 AS CHAR NO-UNDO.
+      DEFINE OUTPUT PARAMETER prm4 AS CHAR NO-UNDO.
+      ASSIGN prm1 = "PCT1"
+             prm2 = "PCT2"
+             prm3 = "PCT3"
+             prm4 = "PCT4".
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/test1.p" dlcHome="${DLC}" failOnError="false">
+      <OutputParameter name="firstParam" />
+      <OutputParameter name="secondParam" />
+      <OutputParameter name="thirdParam" />
+      <OutputParameter name="fourthParam" />
+    </PCTRun>
+  </target>
+
+  <target name="test35">
+    <mkdir dir="sandbox/path1" />
+    <mkdir dir="sandbox/path2" />
+    <mkdir dir="sandbox/path3" />
+
+    <echo file="sandbox/path1/test1.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/path2/test2.p">
+      RETURN "0".
+    </echo>
+    <echo file="sandbox/path3/test3.p">
+      RETURN "0".
+    </echo>
+    <PCTRun graphicalMode="${graph}" procedure="test1.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+        <pathelement location="sandbox/path3" />
+      </propath>
+    </PCTRun>
+    <PCTRun graphicalMode="${graph}" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+        <pathelement location="sandbox/path3" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test35-bis">
+    <PCTRun graphicalMode="${graph}" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="sandbox/path1" />
+      </propath>
+      <propath>
+        <pathelement location="sandbox/path2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test36-init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab2"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab2"
+
+      ADD FIELD "Fld1" OF "tab2" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab2-PK" ON "tab2" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/proc.p">
+      FIND FIRST MyAlias.Tab1 NO-LOCK NO-ERROR.
+      RETURN '0'.
+    </echo>
+    <echo file="sandbox/proc2.p">
+      FIND FIRST MyAlias2.Tab1 NO-LOCK NO-ERROR.
+      RETURN '0'.
+    </echo>
+    <echo file="sandbox/proc3.p">
+      FIND FIRST MyAlias2.Tab2 NO-LOCK NO-ERROR.
+      RETURN '0'.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+    <PCTCreateBase dbName="test2" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema2.df" />
+  </target>
+  <target name="test36">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/proc.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTRun>
+  </target>
+  <target name="test36-b">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/proc.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+  <target name="test36-c">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/proc2.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+  <target name="test36-d">
+    <PCTRun graphicalMode="${graph}" procedure="sandbox/proc3.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+
+</project>
