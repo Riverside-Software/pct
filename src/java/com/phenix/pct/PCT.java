@@ -601,4 +601,15 @@ public abstract class PCT extends Task {
             }
         }
     }
+
+    protected static void copyStreamFromJar(String streamName, File outFile) throws IOException {
+        InputStream in = PCT.class.getResourceAsStream(streamName);
+        OutputStream out = new FileOutputStream(outFile);
+        byte[] b = new byte[4096];
+        int k = 0;
+        while ((k = in.read(b)) != -1)
+            out.write(b, 0, k);
+        out.close();
+        in.close();
+    }
 }
