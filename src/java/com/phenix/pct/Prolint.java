@@ -85,6 +85,8 @@ public class Prolint extends PCTRun {
     private File params = null;
     private int lintTmpDirId = -1;
     private File lintTmpDir = null;
+    private int parseTmpDirId = -1;
+    private File parseTmpDir = null;
 
     public Prolint(){
         super();
@@ -92,14 +94,28 @@ public class Prolint extends PCTRun {
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
         lintTmpDirId = PCT.nextRandomInt();
-
+        parseTmpDirId = PCT.nextRandomInt();
+        
         fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         lintTmpDir = new File(System.getProperty("java.io.tmpdir"), "prolint" + lintTmpDirId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         lintTmpDir.mkdir();
+        parseTmpDir = new File(System.getProperty("java.io.tmpdir"), "proparse" + parseTmpDirId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        parseTmpDir.mkdir();
+        
         addPropath(new Path(getProject(), lintTmpDir.getAbsolutePath()));
+        super.setGraphicalMode(true);
+        super.setAssemblies(parseTmpDir);
     }
 
+    public void setGraphicalMode(boolean graphMode) {
+        throw new BuildException("graphicalMode attribute can't be set in Prolint task");
+    }
+
+    public void setAssemblies(File assemblies) {
+        throw new BuildException("assemblies attribute can't be set in Prolint task");
+    }
+    
     /**
      * Location to store the .r files
      * 
@@ -172,9 +188,15 @@ public class Prolint extends PCTRun {
     
     private void writeCustomLint() throws BuildException {
         File prolint = new File(lintTmpDir, "prolint");
+        File filters = new File(prolint, "filters");
+        File rules = new File(prolint, "rules");
+        File oHandler = new File(prolint, "outputhandlers");
         File custom = new File(prolint, "custom");
         File settings = new File(prolint, "settings");
         File profile = new File(settings, "pct");
+        filters.mkdirs();
+        rules.mkdirs();
+        oHandler.mkdirs();
         custom.mkdirs();
         profile.mkdirs();
         try {
@@ -193,7 +215,7 @@ public class Prolint extends PCTRun {
             }
             bw2.close();
 
-            BufferedWriter bw3 = new BufferedWriter(new FileWriter(new File(profile, "severity.d")));
+            BufferedWriter bw3 = new BufferedWriter(new FileWriter(new File(oHandler, "severity.d")));
             for (Iterator iter = excludeRules.iterator(); iter.hasNext(); ) {
                 ExcludeRule h = (ExcludeRule) iter.next();
                 bw3.write("\"no\" \"" + h.getName() + "\"");
@@ -201,6 +223,17 @@ public class Prolint extends PCTRun {
             }
             bw3.close();
 
+          BufferedWriter bw4 = new BufferedWriter(new FileWriter(new File(profile, "choices.d")));
+          bw4.write("\"xml.p\" 10 \"*\" \"XML export\"");
+          bw4.newLine();
+          bw4.close();
+
+          copyStreamFromJar("/eu/rssw/pct/prolint/rules.d", new File(rules, "rules.d"));
+          copyStreamFromJar("/eu/rssw/pct/prolint/IKVM.OpenJDK.Core.dll", new File(parseTmpDir, "IKVM.OpenJDK.Core.dll"));
+          copyStreamFromJar("/eu/rssw/pct/prolint/IKVM.Runtime.dll", new File(parseTmpDir, "IKVM.Runtime.dll"));
+          copyStreamFromJar("/eu/rssw/pct/prolint/proparse.net.dll", new File(parseTmpDir, "proparse.net.dll"));
+          copyStreamFromJar("/eu/rssw/pct/prolint/assemblies.xml", new File(parseTmpDir, "assemblies.xml"));
+          
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("Prolint.1"), caught); //$NON-NLS-1$
         }
@@ -240,11 +273,25 @@ public class Prolint extends PCTRun {
                                 .format(
                                         Messages.getString("PCTCompile.42"), new Object[]{params.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
-            if (lintTmpDir.exists() && !lintTmpDir.delete()) {
+            if (lintTmpDir.exists()) {
+                try {
+                    PCT.deleteDirectory(lintTmpDir);
+                } catch (IOException caught) {
                 log(
                         MessageFormat
                                 .format(
                                         Messages.getString("PCTCompile.42"), new Object[]{lintTmpDir.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                }
+            }
+            if (parseTmpDir.exists()) {
+                try {
+                    PCT.deleteDirectory(parseTmpDir);
+                } catch (IOException caught) {
+                log(
+                        MessageFormat
+                                .format(
+                                        Messages.getString("PCTCompile.42"), new Object[]{parseTmpDir.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                }
             }
         }
     }
