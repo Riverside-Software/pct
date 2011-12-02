@@ -49,12 +49,33 @@
         DESCRIPTION "Primary key"
         INDEX-FIELD "Fld1" ASCENDING 
     </echo>
-    <echo file="sandbox/test.p">
+    <echo file="sandbox/schema2.df">
+      UPDATE DATABASE "?"
+    	
+		ADD TABLE "Tab2"
+		  AREA "Schema Area"
+		  LABEL ""
+		  DESCRIPTION ""
+		  DUMP-NAME "Tab2"
+		
+		ADD FIELD "Fld1" OF "tab2" AS integer 
+		  FORMAT "9"
+		  INITIAL "0"
+		  LABEL "Fld1"
+		  POSITION 2
+		  SQL-WIDTH 4
+		  COLUMN-LABEL "Fld1"
+		  ORDER 10
+    </echo>
+	<echo file="sandbox/test.p">
       FIND FIRST _File WHERE _File._File-Name EQ SESSION:PARAMETER NO-LOCK NO-ERROR.
       RETURN (IF AVAILABLE _File THEN "0" ELSE "1").
     </echo>
     <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
     <PCTLoadSchema srcFile="sandbox/schema.df" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="sandbox/schema2.df" dlcHome="${DLC}" online="true">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
     </PCTLoadSchema>
   </target>
@@ -64,6 +85,11 @@
     </PCTRun>
   </target>
   <target name="test4-part2">
+    <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" parameter="Tab3">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTRun>
+  </target>
+  <target name="test4-part3">
     <PCTRun procedure="sandbox/test.p" dlcHome="${DLC}" parameter="Tab2">
       <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
     </PCTRun>
