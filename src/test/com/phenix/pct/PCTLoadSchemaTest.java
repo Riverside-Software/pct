@@ -117,7 +117,8 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     public void test4() {
         executeTarget("test4-init");
         executeTarget("test4-part1");
-        expectBuildException("test4-part2", "Tab2 shouldn't be found");
+        expectBuildException("test4-part2", "Tab3 shouldn't be found");
+        executeTarget("test4-part3");
     }
 
     @Test
@@ -129,5 +130,4 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test5-part4");
         expectBuildException("test5-part5", "");
     }
-
 }
