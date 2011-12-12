@@ -165,12 +165,14 @@ public class PCTASBrokerTest extends BuildFileTestNg {
 
         Ini ini = new Ini(new File("PCTASBroker/test9/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertTrue("12345".equals(section.get("portNumber")));
         ini = null;
 
         executeTarget("test2");
         ini = new Ini(new File("PCTASBroker/test9/ubroker.properties"));
         section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertTrue("12346".equals(section.get("portNumber")));
     }
 
@@ -181,6 +183,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
 
         Ini ini = new Ini(new File("PCTASBroker/test10/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertEquals(section.get("operatingMode", String.class), "State-reset");
         assertEquals(section.get("autoStart", String.class), "1");
         assertEquals(section.get("initialSrvrInstance", String.class), "4");
@@ -201,6 +204,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
 
         Ini ini = new Ini(new File("PCTASBroker/test11/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertEquals(section.get("srvrActivateProc", String.class), "activate.p");
         assertEquals(section.get("srvrDeactivateProc", String.class), "deactivate.p");
         assertEquals(section.get("srvrConnectProc", String.class), "connect.p");
