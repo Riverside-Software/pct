@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="PCTBinaryDump-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+  	<PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTBinaryDump dest="." dlcHome="${DLC}">
+      <include name="*" />
+      <exclude name="Tab2" />
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+
+</project>
