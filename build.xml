@@ -341,15 +341,17 @@ PCTBuild=${BUILD_NUMBER}
     <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
     <copy todir="${testdir}">
-      <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />
+      <!--<fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />-->
+    	<fileset dir="tests" includes="**/*" />
     </copy>
   </target>
 
   <target name="cond.test" if="${test.this.version}">
     <taskdef resource="testngtasks" classpathref="testng.cp" />
+  	<echo message="${dlcHome}" />
     <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.testng.reporters.XMLReporter">
       <classfileset dir="${build-test}">
-        <include name="com/phenix/pct/*Test.class" />
+        <include name="com/phenix/pct/PCTASBrokerTest.class" />
       </classfileset>
       <classpath refid="test.run.cp" />
       <sysproperty key="org.uncommons.reportng.title" value="PCT tests report"/>
