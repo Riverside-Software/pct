@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test15">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="testdb" dbDir="." singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>
