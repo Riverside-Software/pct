@@ -4,13 +4,14 @@
 
   <property environment="env" />
 
-  <!-- If DLC8, DLC9, DLC10 and DLC10-64 are provided as properties, then skip loading properties from file -->
+  <!-- If DLC8, DLC9, DLC10, DLC10-64 and DLC11 are provided as properties, then skip loading properties from file -->
   <condition property="skip.properties" value="true">
     <and>
       <isset property="DLC8" />
       <isset property="DLC9" />
       <isset property="DLC10" />
       <isset property="DLC10-64" />
+      <isset property="DLC11" />
     </and>
   </condition>
 
@@ -38,6 +39,7 @@
   <property name="build-v9" location="build-v9" />
   <property name="build-v10" location="build-v10" />
   <property name="build-v10-64" location="build-v10-64" />
+  <property name="build-v11" location="build-v11" />
   <property name="dist" location="lib" />
   <property name="dist-lite" location="bootstrap" />
   <property name="doc" location="javadoc" />
@@ -47,6 +49,7 @@
   <property name="testng-v9" location="test-output-v9" />
   <property name="testng-v10" location="test-output-v10" />
   <property name="testng-v10-64" location="test-output-v10-64" />
+  <property name="testng-v11" location="test-output-v11" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -90,7 +93,7 @@
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
-    <include name="prolint/**/xml.p" />
+    <include name="prolint/**/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/pctCompileV8.p" />
@@ -107,6 +110,21 @@
     <exclude name="com/phenix/pct/*V9Test.class" />
     <!-- FIXME Unknown reason, proxygen doesn't work in unit tests under v10 64bits --> 
     <exclude name="com/phenix/pct/PCTProxygenV10Test.class" />
+  </fileset>
+  <fileset id="fs.v11" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prolint/**/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="test.v11" dir="${build}">
+    <include name="com/phenix/pct/*Test.class" />
+    <exclude name="com/phenix/pct/*V9Test.class" />
+    <exclude name="com/phenix/pct/*V10Test.class" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -147,16 +165,19 @@
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
+    <mkdir dir="${build-v11}" />
     <mkdir dir="${dist}" />
     <mkdir dir="${testng-v9}" />
     <mkdir dir="${testng-v10}" />
     <mkdir dir="${testng-v10-64}" />
+    <mkdir dir="${testng-v11}" />
 
     <!-- Checking V8, v9 and v10 availability -->
     <available file="${DLC8}/version" property="dlc.v8.present" />
     <available file="${DLC9}/version" property="dlc.v9.present" />
     <available file="${DLC10}/version" property="dlc.v10.present" />
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+    <available file="${DLC11}/version" property="dlc.v11.present" />
 
     <condition property="DLC-SPORTS" value="${DLC9}">
       <isset property="dlc.v9.present" />
@@ -175,6 +196,14 @@
           <isset property="DLC-SPORTS" />
         </not>
         <isset property="dlc.v10-64.present" />
+      </and>
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC11}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v11.present" />
       </and>
     </condition>
     <echo message="Using ${DLC-SPORTS} to build sports database" />
@@ -222,11 +251,12 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
+      <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" />
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
         <PCTAlias name="dictdb2" />
@@ -250,6 +280,7 @@ PCTBuild=${BUILD_NUMBER}
     <echo message="Checking v9 in ${DLC9}" />
     <echo message="Checking v10 in ${DLC10}" />
     <echo message="Checking v10-64 in ${DLC10-64}" />
+    <echo message="Checking v11 in ${DLC11}" />
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v8.present" />
       <param name="dlcHome" value="${DLC8}" />
@@ -286,6 +317,14 @@ PCTBuild=${BUILD_NUMBER}
       <param name="fsid" value="fs.v10" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v11.present" />
+      <param name="dlcHome" value="${DLC11}" />
+      <param name="buildDir" value="${build-v11}" />
+      <param name="libName" value="pct11.pl" />
+      <param name="fsid" value="fs.v11" />
+    </antcall>
+
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" />
     </zip>
@@ -303,11 +342,13 @@ PCTBuild=${BUILD_NUMBER}
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
+        <include name="pct11.pl" />
         <include name="pct-src.zip" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
 	  <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
+        <include name="eu/rssw/pct/prolint/**/*" />
 	  </fileset>
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
@@ -338,8 +379,9 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
-    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <mkdir dir="${testdir}" />
+  	<delete dir="${testdir}" includes="**/*" />
+    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
     <copy todir="${testdir}">
       <fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />
     </copy>
@@ -375,6 +417,12 @@ PCTBuild=${BUILD_NUMBER}
       <param name="dlcHome" value="${DLC10-64}" />
       <param name="testng-result" value="${testng-v10-64}" />
       <param name="testid" value="test.v10-64" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v11.present" />
+      <param name="dlcHome" value="${DLC11}" />
+      <param name="testng-result" value="${testng-v11}" />
+      <param name="testid" value="test.v11" />
     </antcall>
   </target>
 
@@ -486,6 +534,11 @@ PCTBuild=${BUILD_NUMBER}
     </copy>
     <copy todir="${website}/testng-v10-64" failonerror="false">
       <fileset dir="${testng-v10-64}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/testng-v11" failonerror="false">
+      <fileset dir="${testng-v11}">
         <include name="**" />
       </fileset>
     </copy>
