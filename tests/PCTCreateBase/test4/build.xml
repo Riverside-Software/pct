@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <PCTCreateBase noInit="true" noStruct="true" dbName="test4" destDir="db" dlcHome="${DLC}" />
+  </target>
+
+</project>
