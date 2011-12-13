@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+
+<project name="PCTDumpSchema-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="." />
+
+  <property environment="env" />
+
+  <target name="test1init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD FIELD "Fld1" OF "tab1" AS integer 
+        FORMAT "9"
+        INITIAL "0"
+        LABEL "Fld1"
+        COLUMN-LABEL "Fld1"
+        ORDER 10
+
+      ADD INDEX "Tab1-PK" ON "tab1" 
+        UNIQUE
+        PRIMARY
+        DESCRIPTION "Primary key"
+        INDEX-FIELD "Fld1" ASCENDING 
+    </echo>
+    <echo file="sandbox/test.p">
+      CREATE tab1.
+      ASSIGN tab1.fld1 = 1.
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
+  </target>
+  <target name="test1">
+    <!-- Should throw BuildException - no destFile defined -->
+    <PCTDumpSchema dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSchema>
+  </target>
+  <target name="test2">
+    <!-- Should throw BuildException - no db connection -->
+    <PCTDumpSchema dlcHome="${DLC}"  />
+  </target>
+  <target name="test3">
+    <!-- Should throw BuildException - more than one db connection -->
+    <PCTDumpSchema dlcHome="${DLC}" >
+      <PCTConnection dbName="test1" dbDir="sandbox" singleUser="true" />
+      <PCTConnection dbName="test2" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSchema>      
+  </target>
+  <target name="test4">
+    <!-- Should create sandbox/sch.df -->
+    <PCTDumpSchema destFile="sandbox/sch.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSchema>
+  </target>
+
+  <target name="test5">
+    <!-- Should create sandbox/files.df with _File content -->
+    <PCTDumpSchema destFile="sandbox/files.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <table name="_File" />
+    </PCTDumpSchema>
+  </target>
+
+  <target name="test6init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD TABLE "Tab1"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab1"
+
+      ADD TABLE "Tab2"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab2"
+
+      ADD TABLE "Tab3"
+        LABEL ""
+        DESCRIPTION ""
+        DUMP-NAME "Tab3"
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df"  />
+  </target>
+  <target name="test6">
+    <PCTDumpSchema destFile="sandbox/files1.df" dlcHome="${DLC}" tables="Tab1,Tab2">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSchema>
+    <PCTDumpSchema destFile="sandbox/files2.df" dlcHome="${DLC}" tables="Tab3,Tab2">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSchema>
+    <PCTDumpSchema destFile="sandbox/files3.df" dlcHome="${DLC}" tables="Tab3">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+      <table name="Tab1" />
+    </PCTDumpSchema>
+  </target>
+
+</project>
