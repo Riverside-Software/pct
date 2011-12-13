@@ -423,6 +423,19 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
+    @Test
+    public void test105() throws IOException {
+        configureProject("PCTCompileExt/test105/build.xml");
+        executeTarget("base");
+        executeTarget("test1");
+        expectBuildException("test2", "No DB connection, should throw BuildException");
+
+        File f1 = new File("PCTCompileExt/test105/build/test.r");
+        File f2 = new File("PCTCompileExt/test105/build2/test.r");
+        assertTrue(f1.exists());
+        assertFalse(f2.exists());
+    }
+
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
         FileChannel srcChannel = new FileInputStream(src).getChannel();
