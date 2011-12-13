@@ -320,14 +320,8 @@ public class PCTCreateBase extends PCT {
             String[] v = this.schema.split(",");
             for (int i = 0; i < v.length; i++) {
                 String sc = v[i];
-                // Bug #1245992 : first try as an absolute path
-                File f = new File(sc);
-                if (f.isFile() && !f.canRead())
-                    throw new BuildException(MessageFormat.format(Messages
-                            .getString("PCTCreateBase.5"), new Object[]{sc}));
-                // Bug #1245992 : if this is not a file, then try relative path from ${basedir}
-                if (!f.isFile())
-                    f = new File(this.getProject().getBaseDir(), sc);
+                // Bug #1245992 : use Project#resolveFile(String)
+                File f = getProject().resolveFile(sc);
                 if (f.isFile() && f.canRead()) {
                     PCTLoadSchema pls = new PCTLoadSchema();
                     pls.bindToOwner(this);
