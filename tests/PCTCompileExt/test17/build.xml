@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="PCTCompile-test17">
+<project name="PCTCompileExt-test17">
   <taskdef resource="PCT.properties" />
 
   <target name="xcode">
