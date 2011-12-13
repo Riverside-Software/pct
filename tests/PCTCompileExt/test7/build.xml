@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="PCTCompile-test7">
+<project name="PCTCompileExt-test7">
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
