@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test101">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="**/*.p" />
+      </fileset>
+      <mapper type="flatten" />
+    </PCTCompileExt>
+  </target>
+
+</project>
