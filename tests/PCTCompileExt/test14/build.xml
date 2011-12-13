@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test14">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+  
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+    </PCTCompileExt>
+  </target>
+
+  <target name="update">
+    <PCTLoadSchema graphicalMode="false" srcFile="update.df" dlcHome="${DLC}" >
+      <PCTConnection dbName="test" dbDir="." singleUser="true"/>
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test2">
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" >
+      <fileset dir="src">
+        <include name="*.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+    </PCTCompileExt>
+  </target>
+
+</project>
