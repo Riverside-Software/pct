@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="lib" />
+    <PCTLibrary destFile="lib/test.pl" dlcHome="${DLC}" nocompress="true">
+      <fileset dir="src" includes="test" />
+      <fileset dir="src" includes="test2" />
+    </PCTLibrary>
+    <PCTLibrary destFile="lib/test2.pl" dlcHome="${DLC}" nocompress="false">
+      <fileset dir="src" includes="test" />
+      <fileset dir="src" includes="test2" />
+    </PCTLibrary>
+  </target>
+
+</project>
