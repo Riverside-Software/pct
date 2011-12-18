@@ -43,10 +43,6 @@
   <property name="doc" location="javadoc" />
   <property name="check" location="check" />
   <property name="website" location="website" />
-  <property name="testdir" location="testbox" />
-  <property name="testng-v9" location="test-output-v9" />
-  <property name="testng-v10" location="test-output-v10" />
-  <property name="testng-v10-64" location="test-output-v10-64" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -82,12 +78,6 @@
     <exclude name="pct/_server.p" />
     <exclude name="pct/pctBgCompile.p" />
   </fileset>
-  <fileset id="test.v9" dir="${build}">
-    <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/PCTCompileExtTest.class" />
-    <exclude name="com/phenix/pct/*V10Test.class" />
-    <exclude name="com/phenix/pct/PCTSchemaDocTest.class" />
-  </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="prolint/**/xml.p" />
@@ -97,16 +87,6 @@
     <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
-  </fileset>
-  <fileset id="test.v10" dir="${build}">
-    <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/*V9Test.class" />
-  </fileset>
-  <fileset id="test.v10-64" dir="${build}">
-    <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/*V9Test.class" />
-    <!-- FIXME Unknown reason, proxygen doesn't work in unit tests under v10 64bits --> 
-    <exclude name="com/phenix/pct/PCTProxygenV10Test.class" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -119,22 +99,8 @@
     <pathelement location="testng-5.14.4.jar" />
     <pathelement location="ini4j-0.5.1.jar" />
   </path>
-  <path id="test.run.cp">
-    <pathelement location="${build-test}" />
-    <pathelement location="lib/PCT.jar" />
-    <pathelement location="ant.jar" />
-    <pathelement location="ant-launcher.jar" />
-    <pathelement location="ant-apache-regexp.jar" />
-    <pathelement location="jakarta-regexp-1.5.jar" />
-    <pathelement location="testng-5.14.4.jar" />
-    <pathelement location="velocity-dep-1.4.jar" />
-    <pathelement location="reportng-1.1.2.jar" />
-    <pathelement location="ini4j-0.5.1.jar" />
-  </path>
-
-  <path id="testng.cp">
-    <fileset dir="." includes="testng-5.14.4.jar,velocity-dep-1.4.jar,reportng-1.1.2.jar" />  
-  </path>
+  
+ 
 
   <target name="init" description="Initialize PCT builder" depends="init-properties">
     <tstamp>
@@ -148,9 +114,6 @@
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${dist}" />
-    <mkdir dir="${testng-v9}" />
-    <mkdir dir="${testng-v10}" />
-    <mkdir dir="${testng-v10-64}" />
 
     <!-- Checking V8, v9 and v10 availability -->
     <available file="${DLC8}/version" property="dlc.v8.present" />
@@ -291,7 +254,7 @@ PCTBuild=${BUILD_NUMBER}
     </zip>
   </target>
 
-  <target name="jar" depends="pbuild" description="JAR file generation">
+  <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="com/phenix/pct/*.class" />
@@ -321,6 +284,11 @@ PCTBuild=${BUILD_NUMBER}
         </section>
       </manifest>
     </jar>
+    <jar jarfile="${dist}/PCT-Tests.jar">
+      <fileset dir="${build-test}" includes="**/*" />
+      <zipfileset src="testng-5.14.4.jar" />
+      <zipfileset src="ini4j-0.5.1.jar" />
+    </jar>
   </target>
 
   <target name="declare" depends="jar" description="PCT tasks declaration">
@@ -328,7 +296,7 @@ PCTBuild=${BUILD_NUMBER}
     <typedef resource="types.properties" classpath="${dist}/PCT.jar" />
   </target>
 
-  <target name="test-build" depends="jar" description="Builds TestNG tests">
+  <target name="test-build" depends="build" description="Builds TestNG tests">
     <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
@@ -337,49 +305,7 @@ PCTBuild=${BUILD_NUMBER}
     </javac>
   </target>
 
-  <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
-    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
-    <mkdir dir="${testdir}" />
-    <copy todir="${testdir}">
-      <!--<fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />-->
-    	<fileset dir="tests" includes="**/*" />
-    </copy>
-  </target>
-
-  <target name="cond.test" if="${test.this.version}">
-    <taskdef resource="testngtasks" classpathref="testng.cp" />
-  	<echo message="${dlcHome}" />
-    <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.testng.reporters.XMLReporter">
-      <classfileset dir="${build-test}">
-        <include name="com/phenix/pct/PCTASBrokerTest.class" />
-      </classfileset>
-      <classpath refid="test.run.cp" />
-      <sysproperty key="org.uncommons.reportng.title" value="PCT tests report"/>
-      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
-    </testng>
-  </target>
-    
-  <target name="test" depends="prepare-test" description="Starts tests">
-    <antcall target="cond.test">
-      <param name="test.this.version" value="dlc.v9.present" />
-      <param name="dlcHome" value="${DLC9}" />
-      <param name="testng-result" value="${testng-v9}" />
-      <param name="testid" value="test.v9" />
-    </antcall>
-    <antcall target="cond.test">
-      <param name="test.this.version" value="dlc.v10.present" />
-      <param name="dlcHome" value="${DLC10}" />
-      <param name="testng-result" value="${testng-v10}" />
-      <param name="testid" value="test.v10" />
-    </antcall>
-    <antcall target="cond.test">
-      <param name="test.this.version" value="dlc.v10-64.present" />
-      <param name="dlcHome" value="${DLC10-64}" />
-      <param name="testng-result" value="${testng-v10-64}" />
-      <param name="testid" value="test.v10-64" />
-    </antcall>
-  </target>
-
+  
   <target name="javadoc" depends="build" description="API documentation creation">
     <mkdir dir="${doc}" />
     <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
@@ -399,6 +325,9 @@ PCTBuild=${BUILD_NUMBER}
         <include name="CHANGELOG" />
         <include name="website/**" />
       </zipfileset>
+    </zip>
+    <zip destfile="pct-tests.zip">
+      <fileset dir="tests" includes="**/*" />
     </zip>
   </target>
 
@@ -429,11 +358,7 @@ PCTBuild=${BUILD_NUMBER}
     <delete dir="${doc}" />
     <delete dir="${check}" />
     <delete dir="${website}" />
-    <delete dir="${testdir}" />
     <delete dir="sports2000" />
-    <delete dir="${testng-v9}" />
-    <delete dir="${testng-v10}" />
-    <delete dir="${testng-v10-64}" />
     <delete>
       <fileset dir=".">
         <include name="pct*.tar.gz" />
@@ -443,7 +368,7 @@ PCTBuild=${BUILD_NUMBER}
     </delete>
   </target>
 
-  <target name="website" depends="javadoc,sports2000doc,test" description="Generates files used for the pct.sf.net website">
+  <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
     <delete dir="${website}" />
     <mkdir dir="${website}" />
     <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
@@ -476,7 +401,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="**" />
       </fileset>
     </copy>
-    <copy todir="${website}/testng-v9" failonerror="false">
+    <!-- <copy todir="${website}/testng-v9" failonerror="false">
       <fileset dir="${testng-v9}/html">
         <include name="**" />
       </fileset>
@@ -490,7 +415,7 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${testng-v10-64}">
         <include name="**" />
       </fileset>
-    </copy>
+    </copy> -->
     <copy todir="${website}/javadoc">
       <fileset dir="${doc}">
         <include name="**" />
