@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT-Tests">
+
+  <property name="testdir" location="testbox" />
+  <property name="testng-v9" location="test-output-v9" />
+  <property name="testng-v10" location="test-output-v10" />
+  <property name="testng-v10-64" location="test-output-v10-64" />
+
+<path id="test.run.cp">
+    <pathelement location="${build-test}" />
+    <pathelement location="lib/PCT.jar" />
+    <pathelement location="ant.jar" />
+    <pathelement location="ant-launcher.jar" />
+    <pathelement location="ant-apache-regexp.jar" />
+    <pathelement location="jakarta-regexp-1.5.jar" />
+    <pathelement location="testng-5.14.4.jar" />
+    <pathelement location="velocity-dep-1.4.jar" />
+    <pathelement location="reportng-1.1.2.jar" />
+    <pathelement location="ini4j-0.5.1.jar" />
+  </path>
+ <path id="testng.cp">
+    <fileset dir="." includes="testng-5.14.4.jar,velocity-dep-1.4.jar,reportng-1.1.2.jar" />  
+  </path>
+  
+  <target name="prepare-test" depends="test-build" description="Prepares tests (copy files and taskdef)">
+    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
+    <delete dir="${testdir}" />
+    <mkdir dir="${testdir}" />
+    <copy todir="${testdir}">
+      <!--<fileset dir="${src.test}" includes="*.xml,*.pxg,*.xpxg,ubroker.template,conmgr.template,query-tester.w,prostart.r,adexml.pl" />-->
+      <fileset dir="tests" includes="**/*" />
+    </copy>
+  </target>
+
+  <target name="cond.test" if="${test.this.version}">
+    <taskdef resource="testngtasks" classpathref="testng.cp" />
+    <echo message="${dlcHome}" />
+    <testng workingDir="${testdir}" outputDir="${testng-result}" useDefaultListeners="false" listeners="org.uncommons.reportng.HTMLReporter,org.testng.reporters.XMLReporter">
+      <classfileset dir="${build-test}">
+        <include name="com/phenix/pct/PCTProxygenV10Test.class" />
+      </classfileset>
+      <classpath refid="test.run.cp" />
+      <sysproperty key="org.uncommons.reportng.title" value="PCT tests report"/>
+      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
+    </testng>
+  </target>
+    
+  <target name="test" depends="prepare-test" description="Starts tests">
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="testng-result" value="${testng-v9}" />
+      <param name="testid" value="test.v9" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="testng-result" value="${testng-v10}" />
+      <param name="testid" value="test.v10" />
+    </antcall>
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="testng-result" value="${testng-v10-64}" />
+      <param name="testid" value="test.v10-64" />
+    </antcall>
+  </target>
+  
+</project>
