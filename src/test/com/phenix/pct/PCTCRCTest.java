@@ -55,10 +55,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
@@ -69,46 +66,30 @@ import java.io.IOException;
 
 /**
  * Class for testing PCTCRC task
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCRCTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTCRC.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Task should fail");
+        configureProject("PCTCRC/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "Task should fail");
+        configureProject("PCTCRC/test2/build.xml");
+        executeTarget("test");
     }
 
     @Test
     public void test3() {
-        executeTarget("test3pre");
-        executeTarget("test3");
+        configureProject("PCTCRC/test3/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        File f = new File("sandbox/crc");
+        File f = new File("PCTCRC/test3/foo/crc.txt");
         assertTrue(f.exists());
 
         BufferedReader br = null;
@@ -130,10 +111,11 @@ public class PCTCRCTest extends BuildFileTestNg {
 
     @Test
     public void test4() {
-        executeTarget("test4pre");
-        executeTarget("test4");
+        configureProject("PCTCRC/test4/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        File f = new File("sandbox/crc");
+        File f = new File("PCTCRC/test4/foo/crc.txt");
         assertTrue(f.exists());
 
         BufferedReader br = null;
