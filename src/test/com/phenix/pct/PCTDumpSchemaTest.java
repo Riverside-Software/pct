@@ -54,13 +54,9 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.fail;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
@@ -71,75 +67,62 @@ import java.io.IOException;
 /**
  * PCTDumpSchema testcases
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTDumpSchemaTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTDumpSchema.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
+    @Test(expectedExceptions = BuildException.class)
+    public void test1() {
+        configureProject("PCTDumpSchema/test1/build.xml");
+        executeTarget("test");
     }
 
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
+    @Test(expectedExceptions = BuildException.class)
+    public void test2() {
+        configureProject("PCTDumpSchema/test2/build.xml");
+        executeTarget("test");
+    }
+
+    @Test(expectedExceptions = BuildException.class)
+    public void test3() {
+        configureProject("PCTDumpSchema/test3/build.xml");
+        executeTarget("test");
     }
 
     @Test
-    public void test() {
-        File f1 = new File("sandbox/sch.df");
+    public void test4() {
+        configureProject("PCTDumpSchema/test4/build.xml");
 
-        executeTarget("test1init");
-
-        expectBuildException("test1", "No destFile defined");
-        assertFalse(f1.exists());
-
-        expectBuildException("test2", "No db connection defined");
-        assertFalse(f1.exists());
-
-        expectBuildException("test3", "More than one db connection defined");
-        assertFalse(f1.exists());
-
-        executeTarget("test4");
+        executeTarget("base");
+        executeTarget("test");
+        File f1 = new File("PCTDumpSchema/test4/foo/sch.df");
         assertTrue(f1.exists());
-
-        executeTarget("test5");
-        File f2 = new File("sandbox/files.df");
-        assertTrue(f2.exists());
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(f2));
-            assertTrue(reader.readLine().trim().startsWith("ADD TABLE"));
-            reader.close();
-        } catch (IOException caught) {
-            try {
-                reader.close();
-            } catch (IOException uncaught) {
-
-            }
-            fail("Unable to read file for test5");
-        }
+        if (!checkFile(f1, "Tab1", ""))
+            fail("Incorrect file");
     }
 
     @Test
-    public void testTables() {
-        File f1 = new File("sandbox/files1.df");
-        File f2 = new File("sandbox/files2.df");
-        File f3 = new File("sandbox/files3.df");
+    public void test5() {
+        configureProject("PCTDumpSchema/test5/build.xml");
 
-        executeTarget("test6init");
-        executeTarget("test6");
+        executeTarget("base");
+        executeTarget("test");
+        File f1 = new File("PCTDumpSchema/test5/foo/sch.df");
+        assertTrue(f1.exists());
+        if (!checkFile(f1, "_File", ""))
+            fail("Incorrect file");
+    }
+
+    @Test
+    public void test6() {
+        configureProject("PCTDumpSchema/test6/build.xml");
+
+        executeTarget("base");
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpSchema/test6/foo/files1.df");
+        File f2 = new File("PCTDumpSchema/test6/foo/files2.df");
+        File f3 = new File("PCTDumpSchema/test6/foo/files3.df");
 
         if (!checkFile(f1, "Tab1", "Tab3"))
             fail("Incorrect files1.df");
