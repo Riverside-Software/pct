@@ -53,88 +53,70 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * Class for testing PCTLoadData task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTLoadDataTest extends BuildFileTestNg {
-
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTLoadData.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
 
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Should throw BuildException : no filesets and no connection");
+        configureProject("PCTLoadData/test1/build.xml");
+        executeTarget("test");
     }
 
     /**
-     * Should throw BuildException : no filesets (or srcDir) defined 
+     * Should throw BuildException : no filesets (or srcDir) defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "Should throw BuildException : no filesets (or srcDir) defined ");
+        configureProject("PCTLoadData/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Should throw BuildException : no connection defined");
+        configureProject("PCTLoadData/test3/build.xml");
+        executeTarget("test");
     }
 
     /**
-     * Should load data into database, and expect first result in FOR EACH be 14 
+     * Should load data into database, and expect first result in FOR EACH be 14
      */
     @Test
     public void test4() {
-        executeTarget("test4init");
-        executeTarget("test4init2");
-        expectLog("test4", "14");
+        configureProject("PCTLoadData/test4/build.xml");
+        executeTarget("base");
+        executeTarget("load");
+        expectLog("test", "14");
     }
 
     /**
-     * Should first load data into table Tab1, then in Tab2, using PCTTable attribute 
+     * Should first load data into table Tab1, then in Tab2, using PCTTable attribute
      */
     @Test
     public void test5() {
-        executeTarget("test5-init");
-        expectLog("test5-part2", "---"); // No data
-        expectLog("test5-part3", "---"); // No data
-        executeTarget("test5-part1");
-        expectLog("test5-part2", "14"); // No data
-        expectLog("test5-part3", "---"); // No data
-        executeTarget("test5-part4");
-        expectLog("test5-part2", "14"); // No data
-        expectLog("test5-part3", "15"); // No data
+        configureProject("PCTLoadData/test5/build.xml");
+        executeTarget("base");
+        expectLog("test1", "---");
+        expectLog("test2", "---");
+
+        executeTarget("load1");
+        expectLog("test1", "14");
+        expectLog("test2", "---");
+
+        executeTarget("load2");
+        expectLog("test1", "14");
+        expectLog("test2", "15");
     }
 }
