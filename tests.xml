@@ -14,6 +14,7 @@
     <pathelement location="ant-apache-regexp.jar" />
     <pathelement location="jakarta-regexp-1.5.jar" />
     <pathelement location="testng-5.14.4.jar" />
+    <pathelement location="PCT-Tests.jar" />
     <pathelement location="ini4j-0.5.1.jar" />
   </path>
 
@@ -21,20 +22,18 @@
     <fileset dir="." includes="testng-5.14.4.jar" />
   </path>
 
-  <target name="prepare-test" depends="test-build">
+  <target name="prepare-test" >
     <delete dir="${testdir}" />
     <mkdir dir="${testdir}" />
     <unzip src="pct-tests.zip" dest="${testdir}" />
   </target>
 
-  <target name="test">
+  <target name="test" depends="prepare-test">
+  <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" >
-      <classfileset>
-        <include name="**/*.class" />
-      </classfileset>
+    <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true">
       <classpath refid="test.run.cp" />
-      <jvmarg line="-DDLC=&quot;${dlcHome}&quot;" />
+      <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
   </target>
 
