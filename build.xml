@@ -286,8 +286,6 @@ PCTBuild=${BUILD_NUMBER}
     </jar>
     <jar jarfile="${dist}/PCT-Tests.jar">
       <fileset dir="${build-test}" includes="**/*" />
-      <zipfileset src="testng-5.14.4.jar" />
-      <zipfileset src="ini4j-0.5.1.jar" />
     </jar>
   </target>
 
