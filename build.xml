@@ -324,7 +324,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="website/**" />
       </zipfileset>
     </zip>
-    <zip destfile="pct-tests.zip">
+    <zip destfile="pct-tests.zip" encoding="utf-8">
       <fileset dir="tests" includes="**/*" />
     </zip>
   </target>
