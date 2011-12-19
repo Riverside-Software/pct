@@ -62,7 +62,7 @@ import com.phenix.pct.DLCVersion.Builder;
 /**
  * Class for testing version extraction
  * 
- * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class DLCVersionTest {
 
