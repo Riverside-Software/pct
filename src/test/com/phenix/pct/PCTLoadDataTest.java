@@ -98,7 +98,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         configureProject("PCTLoadData/test4/build.xml");
         executeTarget("base");
         executeTarget("load");
-        expectLog("test", "14");
+        expectLog("test", "16");
     }
 
     /**
@@ -112,11 +112,11 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         expectLog("test2", "---");
 
         executeTarget("load1");
-        expectLog("test1", "14");
+        expectLog("test1", "16");
         expectLog("test2", "---");
 
         executeTarget("load2");
-        expectLog("test1", "14");
+        expectLog("test1", "16");
         expectLog("test2", "15");
     }
 }
