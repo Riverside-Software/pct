@@ -5,8 +5,5 @@
   <target name="test1">
     <PCTASBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}" />
   </target>
-  <target name="test1">
-    <PCTASBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}" />
-  </target>
 
 </project>
