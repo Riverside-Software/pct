@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PLFileSet-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="lib" />
+    <copy todir="lib">
+      <PLFileSet src="${DLC}/adexml.pl" includes="adexml/_w*.r,adexml/_x*.r" excludes="**/_xmlmap.r" />
+    </copy>
+  </target>
+
+</project>
