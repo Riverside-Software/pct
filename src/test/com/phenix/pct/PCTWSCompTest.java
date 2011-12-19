@@ -88,11 +88,12 @@ public class PCTWSCompTest extends BuildFileTestNg {
     @Test
     public void test3() {
         configureProject("PCTWSComp/test3/build.xml");
-        executeTarget("test");
+        executeTarget("test1");
 
         File f = new File("PCTWSComp/test3/build/simple.w");
         assertTrue(f.exists());
 
+        executeTarget("test2");
         File f2 = new File("PCTWSComp/test3/build/simple.i");
         assertTrue(f.exists());
         assertTrue(f2.length() < f.length());
