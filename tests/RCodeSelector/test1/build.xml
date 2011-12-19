@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <project name="RCodeSelector-test1">
   <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
 
   <path id="std" />
 
   <target name="prepare">
     <mkdir dir="db" />
-    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema1.df" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
     <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="schema2.df" />
 
     <mkdir dir="build1" />

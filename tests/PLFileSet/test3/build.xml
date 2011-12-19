@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project name="PLFileSet-test3">
   <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
 
   <target name="test">
     <mkdir dir="lib" />
