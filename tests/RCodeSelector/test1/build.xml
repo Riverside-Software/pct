@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<project name="RCodeSelector-test1">
+  <taskdef resource="PCT.properties" />
+
+  <path id="std" />
+
+  <target name="prepare">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema1.df" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="schema2.df" />
+
+    <mkdir dir="build1" />
+    <PCTCompile destDir="build1" dlcHome="${DLC}" md5="true">
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
+      <propath refid="std" />
+    </PCTCompile>
+
+    <mkdir dir="build2" />
+    <PCTCompile destDir="build2" dlcHome="${DLC}" md5="true">
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+      <propath refid="std" />
+    </PCTCompile>
+
+    <sleep seconds="2" />
+    <echo file="src/test.i" append="false" message="MESSAGE 'New Hello2'." />
+    <mkdir dir="build3" />
+    <PCTCompile destDir="build3" dlcHome="${DLC}" md5="true">
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <propath refid="std" />
+    </PCTCompile>
+
+    <mkdir dir="build4" />
+    <PCTCompile destDir="build4" dlcHome="${DLC}" md5="true">
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+      <propath refid="std" />
+    </PCTCompile>
+
+    <mkdir dir="libs" />
+    <PCTLibrary destFile="libs/lib1.pl">
+      <fileset dir="build1" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="libs/lib2.pl">
+      <fileset dir="build2" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="libs/lib3.pl">
+      <fileset dir="build3" includes="**/*.r" />
+    </PCTLibrary>
+    <PCTLibrary destFile="libs/lib4.pl">
+      <fileset dir="build4" includes="**/*.r" />
+    </PCTLibrary>
+  </target>
+
+  <target name="test1">
+    <!-- Copy1 doit être vide -->
+    <copy todir="sandbox/copy1">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build1" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy2 doit être vide -->
+    <copy todir="sandbox/copy2">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build2" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy3 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy3">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build3" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy4 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy4">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build4" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- Copy5 doit être vide -->
+    <copy todir="sandbox/copy5">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build1" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy6 ne doit contenir que test3.r -->
+    <copy todir="sandbox/copy6">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build2" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy7 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copy7">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build3" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy8 ne doit contenir que test2.r et test3.r -->
+    <copy todir="sandbox/copy8">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector dir="sandbox/build4" mode="md5" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="test2">
+    <!-- CopyLib1 doit être vide -->
+    <copy todir="sandbox/copylib1">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib1.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib2 doit être vide -->
+    <copy todir="sandbox/copylib2">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib2.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib3 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib3">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib3.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib4 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib4">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib4.pl" mode="crc" />
+      </fileset>
+    </copy>
+    <!-- CopyLib5 doit être vide -->
+    <copy todir="sandbox/copylib5">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib1.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy6 ne doit contenir que test3.r -->
+    <copy todir="sandbox/copylib6">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib2.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy7 ne doit contenir que test2.r -->
+    <copy todir="sandbox/copylib7">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib3.pl" mode="md5" />
+      </fileset>
+    </copy>
+    <!-- Copy8 ne doit contenir que test2.r et test3.r -->
+    <copy todir="sandbox/copylib8">
+      <fileset dir="sandbox/build1" includes="**/*.r">
+        <RCodeSelector lib="sandbox/libs/lib4.pl" mode="md5" />
+      </fileset>
+    </copy>
+  </target>
+
+</project>
