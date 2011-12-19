@@ -57,8 +57,6 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import com.phenix.pct.DLCVersion.Builder;
-
 /**
  * Class for testing version extraction
  * 
@@ -68,156 +66,142 @@ public class DLCVersionTest {
 
     @Test
     public void test1() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 10.2B as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(10, builder.major);
-        assertEquals(2, builder.minor);
-        assertEquals("B", builder.maintenance);
-        assertEquals("", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 10.2B as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(10, version.getMajorVersion());
+        assertEquals(2, version.getMinorVersion());
+        assertEquals("B", version.getMaintenanceVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test
     public void test2() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 10.2B01 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(10, builder.major);
-        assertEquals(2, builder.minor);
-        assertEquals("B", builder.maintenance);
-        assertEquals("01", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 10.2B01 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(10, version.getMajorVersion());
+        assertEquals(2, version.getMinorVersion());
+        assertEquals("B", version.getMaintenanceVersion());
+        assertEquals("01", version.getPatchVersion());
     }
 
     @Test
     public void test3() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 10.2B0102 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(10, builder.major);
-        assertEquals(2, builder.minor);
-        assertEquals("B", builder.maintenance);
-        assertEquals("0102", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 10.2B0102 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(10, version.getMajorVersion());
+        assertEquals(2, version.getMinorVersion());
+        assertEquals("B", version.getMaintenanceVersion());
+        assertEquals("0102", version.getPatchVersion());
     }
 
     @Test
     public void test4() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 10.2B1P as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(10, builder.major);
-        assertEquals(2, builder.minor);
-        assertEquals("B", builder.maintenance);
-        assertEquals("1P", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 10.2B1P as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(10, version.getMajorVersion());
+        assertEquals(2, version.getMinorVersion());
+        assertEquals("B", version.getMaintenanceVersion());
+        assertEquals("1P", version.getPatchVersion());
     }
 
     @Test
     public void test5() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.0.0 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.0.0 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test6() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.0 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.0 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test7() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test8() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.1.0 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(1, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.1.0 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(1, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test9() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.1 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(1, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.1 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(1, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test10() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.1.1 as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(1, builder.minor);
-        assertEquals("1", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.1.1 as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(1, version.getMinorVersion());
+        assertEquals("1", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test11() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.0.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.0.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test12() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test13() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11.0BETA as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11.0BETA as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
     @Test
     public void test14() {
-        Builder builder = new Builder();
-        DLCVersion.readVersionFile(builder,
-                "OpenEdge Release 11BETA as of Fri Nov 13 19:02:09 EST 2009");
-        assertEquals(11, builder.major);
-        assertEquals(0, builder.minor);
-        assertEquals("0", builder.maintenance);
-        assertEquals("0", builder.patch);
+        DLCVersion version = DLCVersion
+                .getObject("OpenEdge Release 11BETA as of Fri Nov 13 19:02:09 EST 2009");
+        assertEquals(11, version.getMajorVersion());
+        assertEquals(0, version.getMinorVersion());
+        assertEquals("0", version.getMaintenanceVersion());
+        assertEquals("0", version.getPatchVersion());
     }
 
 }
