@@ -420,8 +420,8 @@ public class PCTASBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
-                && (!action.equalsIgnoreCase(DELETE))) {
+        if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
+                && (!DELETE.equalsIgnoreCase(action))) {
             throw new BuildException("Unknown action : " + action);
         }
         if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {
