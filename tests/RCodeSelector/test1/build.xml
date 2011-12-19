@@ -3,7 +3,9 @@
   <taskdef resource="PCT.properties" />
   <typedef resource="types.properties" />
 
-  <path id="std" />
+  <path id="std">
+    <pathelement location="src" />
+  </path>
 
   <target name="prepare">
     <mkdir dir="db" />
