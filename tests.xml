@@ -29,12 +29,13 @@
   </target>
 
   <target name="test" depends="prepare-test">
-  <mkdir dir="test-output" />
+    <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true">
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
+    <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
   </target>
 
 
