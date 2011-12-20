@@ -3,9 +3,8 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-  	<mkdir dir="sandbox" />
-    <mkdir dir="sandbox/subdir2" />
-    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" baseDir="sandbox" />
+    <mkdir dir="src/subdir2" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" baseDir="src" />
   </target>
 
 </project>
