@@ -1,3 +1,0 @@
-OUTPUT TO VALUE("subdir2/Output.txt").
-OUTPUT CLOSE.
-RETURN "0".
