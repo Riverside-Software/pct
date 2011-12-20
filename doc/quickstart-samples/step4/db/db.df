@@ -1,0 +1,13 @@
+ADD TABLE "MyTable"
+  AREA "Schema Area"
+  DUMP-NAME "MyTable"
+
+ADD FIELD "Fld1" OF "MyTable" AS character 
+
+ADD FIELD "Fld2" OF "MyTable" AS character 
+
+ADD INDEX "MyTable-PK" ON "MyTable" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Fld1" ASCENDING 
