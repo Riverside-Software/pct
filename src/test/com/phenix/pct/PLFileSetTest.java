@@ -55,10 +55,6 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -66,50 +62,34 @@ import java.io.File;
 /**
  * Class for testing PLFileSet
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PLFileSetTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PLFileSet.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
     @Test
     public void test1() {
-        executeTarget("test1");
+        configureProject("PLFileSet/test1/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/adexml");
+        File f1 = new File("PLFileSet/test1/lib/adexml");
         assertEquals(f1.list().length, 8);
     }
 
     @Test
     public void test2() {
-        executeTarget("test2");
+        configureProject("PLFileSet/test2/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/adexml");
+        File f1 = new File("PLFileSet/test2/lib/adexml");
         assertEquals(f1.list().length, 6);
     }
 
     @Test
     public void test3() {
-        executeTarget("test3");
+        configureProject("PLFileSet/test3/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/adexml");
+        File f1 = new File("PLFileSet/test3/lib/adexml");
         assertEquals(f1.list().length, 6);
     }
 

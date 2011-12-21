@@ -53,81 +53,62 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * Class for testing PCTLoadSchema task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTLoadSchemaTest extends BuildFileTestNg {
-
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTLoadSchema.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
 
     /**
      * Should throw BuildException : no srcFile and no connection
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Should throw BuildException : no srcFile and no connection");
+        configureProject("PCTLoadSchema/test1/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no srcFile defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "Should throw BuildException : no srcFile defined ");
+        configureProject("PCTLoadSchema/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Should throw BuildException : no connection defined");
+        configureProject("PCTLoadSchema/test3/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     */
     @Test
     public void test4() {
-        executeTarget("test4-init");
-        executeTarget("test4-part1");
-        expectBuildException("test4-part2", "Tab3 shouldn't be found");
-        executeTarget("test4-part3");
+        configureProject("PCTLoadSchema/test4/build.xml");
+        executeTarget("base");
+
+        executeTarget("test1");
+        expectBuildException("test2", "Tab2 shouldn't be found");
     }
 
     @Test
     public void test5() {
-        executeTarget("test5-init");
-        executeTarget("test5-part1");
-        expectBuildException("test5-part2", "");
-        executeTarget("test5-part3");
-        executeTarget("test5-part4");
-        expectBuildException("test5-part5", "");
+        configureProject("PCTLoadSchema/test5/build.xml");
+        executeTarget("base");
+        executeTarget("update");
+
+        expectBuildException("test1", "");
+        executeTarget("update-unfreeze");
+
+        executeTarget("test1");
+        expectBuildException("test2", "");
     }
 }

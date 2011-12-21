@@ -56,10 +56,6 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -72,50 +68,27 @@ import java.nio.charset.CharsetDecoder;
 import java.util.regex.Matcher;
 
 /**
- * Class for testing PCTDumpIncremental task
- * Assertion - following classes should work properly : PCTCreateBase PCTCompile PCTLoadSchema
+ * Class for testing PCTDumpIncremental task Assertion - following classes should work properly :
+ * PCTCreateBase PCTCompile PCTLoadSchema
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTDumpIncrementalTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTDumpIncremental.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
     /**
-     * Simple incremental test :
-     *  1/ Create test DB with Tab1 table
-     *  2/ Create test2 DB with no table
-     *  3/ Generate incremental
-     *  4/ Load incremental in test2 DB
-     *  5/ Verifies compilation output of test.p with access to Tab1
+     * Simple incremental test
      */
     @Test
     public void test1() {
-        File f = new File("sandbox/incr.df");
-        File f2 = new File("sandbox/test1.r");
+        configureProject("PCTDumpIncremental/test1/build.xml");
+        executeTarget("base");
 
-        executeTarget("test1init");
         executeTarget("test1");
-        assertTrue(f.exists());
-        executeTarget("test1bis");
+        File f1 = new File("PCTDumpIncremental/test1/incr/incremental.df");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File("PCTDumpIncremental/test1/build/test.r");
         assertTrue(f2.exists());
     }
 
@@ -124,11 +97,12 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
      */
     @Test
     public void test2() {
-        File f1 = new File("sandbox/incr1.df");
-        File f2 = new File("sandbox/incr2.df");
+        configureProject("PCTDumpIncremental/test2/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        executeTarget("test2init");
-        executeTarget("test2");
+        File f1 = new File("PCTDumpIncremental/test2/incr/incremental1.df");
+        File f2 = new File("PCTDumpIncremental/test2/incr/incremental2.df");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
 
@@ -178,11 +152,12 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
      */
     @Test
     public void test3() {
-        File f1 = new File("sandbox/incr1.df");
-        File f2 = new File("sandbox/incr2.df");
+        configureProject("PCTDumpIncremental/test3/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        executeTarget("test3init");
-        executeTarget("test3");
+        File f1 = new File("PCTDumpIncremental/test3/incr/incremental1.df");
+        File f2 = new File("PCTDumpIncremental/test3/incr/incremental2.df");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
 
@@ -229,20 +204,19 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     }
 
     /**
-     * Test renameFile attribute :
-     *  1/ Creates Tab1 table in test DB with Fld1 and Fld2
-     *  2/ Creates Tab1 table in test2 DB with Fld1 and Fld3
-     *  3/ Generate rename file
-     *  4/ Generates incremental dump file between test and test2 DBs with and without rename file
-     *  5/ Compares differences between both output files
+     * Test renameFile attribute : 1/ Creates Tab1 table in test DB with Fld1 and Fld2 2/ Creates
+     * Tab1 table in test2 DB with Fld1 and Fld3 3/ Generate rename file 4/ Generates incremental
+     * dump file between test and test2 DBs with and without rename file 5/ Compares differences
+     * between both output files
      */
     @Test
     public void test4() {
-        File f1 = new File("sandbox/incr1.df");
-        File f2 = new File("sandbox/incr2.df");
+        configureProject("PCTDumpIncremental/test4/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        executeTarget("test4init");
-        executeTarget("test4");
+        File f1 = new File("PCTDumpIncremental/test4/incr/incremental1.df");
+        File f2 = new File("PCTDumpIncremental/test4/incr/incremental2.df");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
         assertTrue(f1.length() != f2.length());

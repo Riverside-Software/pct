@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test10">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <property name="sch" location="${basedir}/foo/schema1.df" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="${sch}"/>
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test.p"/>
+      </fileset>
+      <PCTConnection dbName="test" dbDir="db" singleUser="true"/>
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <property name="sch2" location="${basedir}/foo/non_existing_file.df" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="${sch2}"/>
+  </target>
+</project>

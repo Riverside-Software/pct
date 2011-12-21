@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PLFileSet-test1">
+  <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
+
+  <target name="test">
+    <mkdir dir="lib" />
+    <copy todir="lib">
+      <PLFileSet src="${DLC}/gui/adexml.pl" includes="**/*.r" />
+    </copy>
+  </target>
+
+</project>

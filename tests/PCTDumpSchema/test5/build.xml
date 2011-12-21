@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTDumpSchema-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTDumpSchema destFile="foo/sch.df" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <table name="_File" />
+    </PCTDumpSchema>
+  </target>
+
+</project>
