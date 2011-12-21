@@ -63,13 +63,12 @@ import java.io.File;
 /**
  * Proxygen task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTProxygen extends PCT {
     // Class used by Proxygen
     private static final String PROXYGEN_CLASS = "com.progress.open4gl.proxygen.Batch";
-    
+
     private File srcFile = null;
     private boolean keepFiles = false;
     private File workingDirectory = null;
@@ -107,7 +106,9 @@ public class PCTProxygen extends PCT {
         this.srcFile = srcFile;
     }
 
-    // TODO Supprimer ??? Aucune référence... 
+    /**
+     * For jvmarg nested elements
+     */
     public Commandline.Argument createJvmarg() {
         if (pxg == null) {
             pxg = new Java(this);
@@ -127,6 +128,7 @@ public class PCTProxygen extends PCT {
         }
 
         checkDlcHome();
+
         // Creates a new Java task to launch proxygen task
         if (pxg == null) {
             pxg = new Java(this);
@@ -138,13 +140,11 @@ public class PCTProxygen extends PCT {
         pxg.setFork(true);
         if (this.workingDirectory != null) {
             pxg.setDir(this.workingDirectory);
-        }
-        else {
+        } else {
             pxg.setDir(this.getProject().getBaseDir());
         }
 
-        pxg.setClassname(PROXYGEN_CLASS); //$NON-NLS-1$
-
+        pxg.setClassname(PROXYGEN_CLASS);
         // Bug #1114731 : new way of handling JAR dependencies
         pxg.createClasspath().addFileset(this.getJavaFileset(this.getProject()));
 
@@ -178,14 +178,16 @@ public class PCTProxygen extends PCT {
         var4.setValue(this.getDlcHome().toString());
         pxg.addEnv(var4);
 
-        // TODO : check if this sysproperty is mandatory. It's used in $DLC/bin/bproxygen.bat
-        // but running without it works fine
-        // Environment.Variable var5 = new Environment.Variable();
-        // var5.setKey("Proxygen.FromGUI");
-        // var5.setValue("no");
-        // pxg.addSysproperty(var5);
+        Environment.Variable var6 = new Environment.Variable();
+        var6.setKey("Proxygen.StartDir"); //$NON-NLS-1$
+        var6.setValue(workingDirectory.getAbsolutePath());
+        pxg.addSysproperty(var6);
 
         // Don't use executeJava and get return code as Progress doesn't know what a return value is
-        pxg.execute();
+        pxg.setFailonerror(true);
+        int retVal = pxg.executeJava();
+        if (retVal != 0) {
+            throw new BuildException("PCTProxygen failed - Return code " + retVal + " - Command line : " + pxg.getCommandLine().toString());
+        }
     }
 }

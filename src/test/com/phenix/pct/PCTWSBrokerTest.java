@@ -57,14 +57,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
 import org.ini4j.Profile.Section;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -73,62 +68,37 @@ import java.io.IOException;
 /**
  * Class for testing PCTWSBroker task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTWSBrokerTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTWSBroker.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-
-        // And copy sample properties files to play with
-        Copy copy = new Copy();
-        copy.setProject(this.getProject());
-        copy.setFile(new File("ubroker.template"));
-        copy.setTofile(new File("sandbox/ubroker.properties"));
-        copy.execute();
-        copy.setFile(new File("conmgr.template"));
-        copy.setTofile(new File("sandbox/conmgr.properties"));
-        copy.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testFailure1() {
-        executeTarget("failure1");
+        configureProject("PCTWSBroker/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testFailure2() {
-        executeTarget("failure2");
+        configureProject("PCTWSBroker/test2/build.xml");
+        executeTarget("test");
     }
 
     @Test
     public void testSimplestTest() throws InvalidFileFormatException, IOException {
-        executeTarget("SimplestTest");
+        configureProject("PCTWSBroker/test3/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTWSBroker/test3/ubroker.properties"));
         assertNotNull(ini.get("UBroker.WS.Test"));
     }
 
     @Test
     public void testLogging() throws InvalidFileFormatException, IOException {
-        executeTarget("TestLogging");
+        configureProject("PCTWSBroker/test4/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTWSBroker/test4/ubroker.properties"));
         Section section = ini.get("UBroker.WS.Test");
         assertNotNull(section.get("brokerLogFile"));
         assertNotNull(section.get("brkrLoggingLevel"));
@@ -136,19 +106,12 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertNotNull(section.get("srvrLogFile"));
     }
 
-    // TODO This test should throw BuildException -- See how error should be trapped...
-    // AFAIR, it threw an error on v9, but not on v10
-    // public void testDoubleCreate() {
-    // executeTarget("TestDoubleCreate-Part1");
-    // expectBuildException("TestDoubleCreate-Part2",
-    // "Already created, should throw BuilException");
-    // }
-
     @Test
     public void testAttributes1() throws InvalidFileFormatException, IOException {
-        executeTarget("TestAttributes-1");
+        configureProject("PCTWSBroker/test5/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTWSBroker/test5/ubroker.properties"));
         Section section = ini.get("UBroker.WS.Test");
         assertEquals(section.get("autoStart", String.class), "1");
         assertEquals(section.get("initialSrvrInstance", String.class), "4");

@@ -56,11 +56,7 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
@@ -71,53 +67,35 @@ import java.io.IOException;
 /**
  * Class for testing PCTDumpData task
  * 
- * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTDumpDataTest extends BuildFileTestNg {
-
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTDumpData.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
 
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Should throw BuildException : no filesets and no connection");
+        configureProject("PCTDumpData/test1/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no filesets (or srcDir) defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2",
-                "Should throw BuildException : no filesets (or srcDir) defined ");
+        configureProject("PCTDumpData/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Should throw BuildException : no connection defined");
+        configureProject("PCTDumpData/test3/build.xml");
+        executeTarget("test");
     }
 
     /**
@@ -125,10 +103,12 @@ public class PCTDumpDataTest extends BuildFileTestNg {
      */
     @Test
     public void test4() {
-        executeTarget("test4init");
-        executeTarget("test4");
+        configureProject("PCTDumpData/test4/build.xml");
+        executeTarget("prepare");
 
-        File f1 = new File("sandbox/Tab1.d");
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpData/test4/dump/Tab1.d");
         assertTrue(f1.exists());
     }
 
@@ -137,10 +117,12 @@ public class PCTDumpDataTest extends BuildFileTestNg {
      */
     @Test
     public void test5() {
-        executeTarget("test5init");
-        executeTarget("test5");
+        configureProject("PCTDumpData/test5/build.xml");
+        executeTarget("prepare");
 
-        File f1 = new File("sandbox/_File.d");
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpData/test5/dump/_File.d");
         assertTrue(f1.exists());
     }
 
@@ -149,31 +131,24 @@ public class PCTDumpDataTest extends BuildFileTestNg {
      */
     @Test
     public void test6() {
-        executeTarget("test6init");
-        executeTarget("test6");
+        configureProject("PCTDumpData/test6/build.xml");
+        executeTarget("prepare");
 
-        File f1 = new File("sandbox/8859-1/_File.d");
-        try {
-            assertEquals(readEncoding(f1), "iso8859-1");
-        } catch (IOException caught) {
-            Assert.fail("IOException", caught);
-        }
-        File f2 = new File("sandbox/8859-15/_File.d");
-        try {
-            assertEquals(readEncoding(f2), "iso8859-15");
-        } catch (IOException caught) {
-            Assert.fail("IOException", caught);
-        }
-        File f3 = new File("sandbox/utf8/_File.d");
-        try {
-            assertEquals(readEncoding(f3), "utf-8");
-        } catch (IOException caught) {
-            Assert.fail("IOException", caught);
-        }
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpData/test6/dump/8859-1/_File.d");
+        assertTrue(f1.exists());
+        assertEquals(readEncoding(f1), "iso8859-1");
+        File f2 = new File("PCTDumpData/test6/dump/8859-15/_File.d");
+        assertTrue(f2.exists());
+        assertEquals(readEncoding(f2), "iso8859-15");
+        File f3 = new File("PCTDumpData/test6/dump/utf8/_File.d");
+        assertTrue(f3.exists());
+        assertEquals(readEncoding(f3), "utf-8");
     }
 
     // Quick'n'dirty method to read encoding in dump file
-    private String readEncoding(File f) throws IOException {
+    private String readEncoding(File f) {
         BufferedReader reader = null;
         String encoding = null;
 
@@ -185,6 +160,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
                 if (str.startsWith("cpstream="))
                     encoding = str.substring(9);
             }
+        } catch (IOException uncaught) {
         } finally {
             try {
                 reader.close();
