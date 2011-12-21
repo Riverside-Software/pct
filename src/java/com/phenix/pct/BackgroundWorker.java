@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.tools.ant.BuildException;
+
 public abstract class BackgroundWorker {
     private static final AtomicInteger threadCounter = new AtomicInteger(0);
 
@@ -105,6 +107,9 @@ public abstract class BackgroundWorker {
                     if (!isStandardCommand(lastCommand)) {
                         handleResponse(lastCommand, lastCommandParameter, err, customResponse,
                                 retVals);
+                    } else {
+                        handleStandardEventResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                retVals);
                     }
                 }
             } catch (IOException ioe) {
@@ -182,8 +187,6 @@ public abstract class BackgroundWorker {
     /**
      * This is where you can handle responses from the Progress process
      * 
-     * TODO Handle dbConnection failures to stop process...
-     * 
      * @param command Command sent
      * @param parameter Command's parameter
      * @param err An error was returned
@@ -192,6 +195,17 @@ public abstract class BackgroundWorker {
      */
     public abstract void handleResponse(String command, String parameter, boolean err,
             String customResponse, List returnValues);
+
+    public final void handleStandardEventResponse(String command, String parameter, boolean err,
+            String customResponse, List returnValues) {
+        if ("connect".equalsIgnoreCase(command)) {
+            if (err) {
+                parent.logMessages(returnValues);
+                parent.setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
+                quit();
+            }
+        }        
+    }
 
     public final static class Message {
         private final String msg;

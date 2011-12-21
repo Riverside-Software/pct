@@ -53,13 +53,9 @@
  */
 package com.phenix.pct;
 
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -67,39 +63,14 @@ import java.io.File;
 /**
  * Class for testing PCTWSComp task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTWSCompTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTWSComp.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setFollowSymlinks(false);
-        del.setProject(this.project);
-        del.setDir(new File("build"));
-        del.execute();
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    /**
-     * destDir attribute should always be defined : expect BuildException
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "No destDir defined");
+        configureProject("PCTWSComp/test1/build.xml");
+        executeTarget("test");
     }
 
     /**
@@ -107,21 +78,23 @@ public class PCTWSCompTest extends BuildFileTestNg {
      */
     @Test
     public void test2() {
-        executeTarget("test2");
+        configureProject("PCTWSComp/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Very simple compilation
      */
-   @Test
-   public void test3() {
-        File f = new File("build/sandbox/simple.w");
-        File f2 = new File("build/sandbox/simple.i");
+    @Test
+    public void test3() {
+        configureProject("PCTWSComp/test3/build.xml");
+        executeTarget("test1");
 
-        assertFalse(f.exists());
-        executeTarget("test3");
+        File f = new File("PCTWSComp/test3/build/index.w");
         assertTrue(f.exists());
-        executeTarget("test3-part2");
+
+        executeTarget("test2");
+        File f2 = new File("PCTWSComp/test3/build/index.i");
         assertTrue(f.exists());
         assertTrue(f2.length() < f.length());
     }

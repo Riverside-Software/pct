@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTRun graphicalMode="false" procedure="nofile.p" dlcHome="${DLC}" />
+  </target>
+
+</project>

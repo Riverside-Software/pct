@@ -256,7 +256,7 @@ public class PCTWSBroker extends PCTBroker {
             if (this.file == null) {
                 propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
             } else {
-                propFile = new File(this.file);
+                propFile = getProject().resolveFile(this.file);
             }
             if (!propFile.exists())
                 throw new BuildException("Unable to find properties file "

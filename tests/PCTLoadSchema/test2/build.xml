@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTLoadSchema dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+
+</project>

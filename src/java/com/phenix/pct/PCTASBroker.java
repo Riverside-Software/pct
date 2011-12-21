@@ -262,7 +262,7 @@ public class PCTASBroker extends PCTBroker {
             if (this.file == null) {
                 propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
             } else {
-                propFile = new File(this.file);
+                propFile = getProject().resolveFile(this.file);
             }
             if (!propFile.exists())
                 throw new BuildException("Unable to find properties file "
@@ -420,8 +420,8 @@ public class PCTASBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
-                && (!action.equalsIgnoreCase(DELETE))) {
+        if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
+                && (!DELETE.equalsIgnoreCase(action))) {
             throw new BuildException("Unknown action : " + action);
         }
         if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {
