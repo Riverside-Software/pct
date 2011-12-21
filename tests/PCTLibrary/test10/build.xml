@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test10">
+  <taskdef resource="PCT.properties" />
+
+  <target name="prepare">
+    <mkdir dir="build" />
+    <mkdir dir="lib" />
+    <PCTCompile dlcHome="${DLC}" destDir="build" cpstream="iso8859-1">
+      <fileset dir="src" includes="*.p" />
+    </PCTCompile>
+    <PCTLibrary destfile="lib/test.pl" dlcHome="${DLC}" basedir="build" encoding="iso8859-1" />
+    <PCTLibrary destfile="lib/test2.pl" dlcHome="${DLC}" basedir="src" encoding="iso8859-1" />
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="lib/test.pl" />
+      </propath>
+    </PCTRun>
+  </target>
+
+</project>

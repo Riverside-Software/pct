@@ -56,10 +56,7 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -67,86 +64,58 @@ import java.io.File;
 /**
  * Class for testing PCTBinaryDump task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTBinaryDumpTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTBinaryDump.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Task should fail");
+        configureProject("PCTBinaryDump/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "Task should fail");
+        configureProject("PCTBinaryDump/test2/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Task should fail");
+        configureProject("PCTBinaryDump/test3/build.xml");
+        executeTarget("test");
     }
 
     @Test
     public void test4() {
-        executeTarget("test4pre");
-        executeTarget("test4");
+        configureProject("PCTBinaryDump/test4/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/Tab1.bd");
-        File f2 = new File("sandbox/Tab2.bd");
+        File f1 = new File("PCTBinaryDump/test4/Tab1.bd");
+        File f2 = new File("PCTBinaryDump/test4/Tab2.bd");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
     }
 
     @Test
     public void test5() {
-        executeTarget("test5pre");
-        executeTarget("test5");
+        configureProject("PCTBinaryDump/test5/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/Tab1.bd");
-        File f2 = new File("sandbox/Tab2.bd");
-        assertTrue(f1.exists());
-        assertTrue(f2.exists());
-    }
-
-    @Test
-    public void test6() {
-        executeTarget("test6pre");
-        executeTarget("test6");
-
-        File f1 = new File("sandbox/Tab1.bd");
-        File f2 = new File("sandbox/Tab2.bd");
+        File f1 = new File("PCTBinaryDump/test5/Tab1.bd");
+        File f2 = new File("PCTBinaryDump/test5/Tab2.bd");
         assertTrue(f1.exists());
         assertFalse(f2.exists());
     }
 
     @Test
-    public void test7() {
-        executeTarget("test7pre");
-        executeTarget("test7");
+    public void test6() {
+        configureProject("PCTBinaryDump/test6/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/aa.bd");
-        File f2 = new File("sandbox/aab.bd");
-        File f3 = new File("sandbox/aabc.bd");
+        File f1 = new File("PCTBinaryDump/test6/aa.bd");
+        File f2 = new File("PCTBinaryDump/test6/aab.bd");
+        File f3 = new File("PCTBinaryDump/test6/aabc.bd");
         assertTrue(f1.exists());
         assertFalse(f2.exists());
         assertTrue(f3.exists());

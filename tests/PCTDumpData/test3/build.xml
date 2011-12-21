@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTDumpData-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDumpData dlcHome="${DLC}" destDir="dump" />
+  </target>
+
+</project>

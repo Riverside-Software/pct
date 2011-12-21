@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTDumpData-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="prepare">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test">
+    <mkdir dir="dump" />
+    <PCTDumpData dlcHome="${DLC}" destDir="dump" tables="_File">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTDumpData>
+  </target>
+
+</project>

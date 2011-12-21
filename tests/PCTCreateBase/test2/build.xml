@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTCreateBase dbName="VeryLongName" dlcHome="${DLC}" />
+  </target>
+
+</project>

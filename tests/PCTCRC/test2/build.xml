@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTCRC-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTCRC destFile="crc.txt" dlcHome="${DLC}" />
+  </target>
+
+</project>

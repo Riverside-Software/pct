@@ -56,14 +56,10 @@ package com.phenix.pct;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Locale;
 
 /**
  * Class for testing PCTRun task
@@ -72,322 +68,246 @@ import java.util.Locale;
  */
 public class PCTRunTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTRun.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    /**
-     * Attribute procedure should always be defined
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "No procedure name defined");
+        configureProject("PCTRun/test1/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Very simple run, and exits properly
-     */
     @Test
     public void test2() {
-        expectLog("test2", "Hello world!");
+        configureProject("PCTRun/test2/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Very simple run, and exits with error code
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Return value : 1");
+        configureProject("PCTRun/test3/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Procedure file not found : should throw BuildException
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test4() {
-        File f = new File("sandbox/not_existing.p");
+        File f = new File("nofile.p");
         assertFalse(f.exists());
-        expectBuildException("test4", "Procedure not existing");
+
+        configureProject("PCTRun/test4/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Non-numeric return value : should throw BuildException
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test5() {
-        expectBuildException("test5", "Return value not numeric");
+        configureProject("PCTRun/test5/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Procedure don't compile : should throw BuildException
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test6() {
-        expectBuildException("test6", "Impossible to compile file");
+        configureProject("PCTRun/test6/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Checks if PROPATH is correctly defined
-     */
     @Test
     public void test7() {
-        executeTarget("test7");
+        configureProject("PCTRun/test7/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Checks if strings containing ~ and ' are escaped
-     */
     @Test
     public void test8() {
-        executeTarget("test8");
+        configureProject("PCTRun/test8/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Tests -param attribute
-     */
     @Test
     public void test9() {
-        executeTarget("test9init");
-        expectLog("test9", "Hello PCT");
-        expectLog("test9bis", "Hello");
+        configureProject("PCTRun/test9/build.xml");
+        expectLog("test1", "Hello PCT");
+        expectLog("test2", "Hello");
     }
 
-    /**
-     * Tests -yy attribute
-     */
     @Test
     public void test10() {
-        executeTarget("test10init");
-        expectLog("test10", "01/01/2060");
-        expectLog("test10bis", "01/01/1960");
+        configureProject("PCTRun/test10/build.xml");
+        expectLog("test1", "01/01/2060");
+        expectLog("test2", "01/01/1960");
     }
 
-    /**
-     * Tests RETURN statement with no return value
-     */
     @Test
     public void test11() {
-        executeTarget("test11");
+        configureProject("PCTRun/test11/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Tests numsep and numdec parameters
-     */
     @Test
     public void test12() {
-        executeTarget("test12-init");
-        expectLog("test12-part1", "123.456");
-        expectLog("test12-part2", "123,456");
-        expectLog("test12-part3", "123,456");
-        expectLog("test12-part4", "123.456");
+        configureProject("PCTRun/test12/build.xml");
+        expectLog("test1", "123.456");
+        expectLog("test2", "123,456");
+        expectLog("test3", "123,456");
+        expectLog("test4", "123.456");
     }
 
-    /**
-     * Tests propath order
-     */
     @Test
     public void test13() {
-        executeTarget("test13-init");
-        expectLog("test13-part1", "This is dir1");
-        expectLog("test13-part2", "This is dir2");
+        configureProject("PCTRun/test13/build.xml");
+        expectLog("test1", "This is dir1");
+        expectLog("test2", "This is dir2");
     }
 
-    /**
-     * Tests parameter containing quotes and so on... Doesn't work on UNIX
-     */
     @Test
     public void test14() {
-        if (System.getProperty("os.name").toLowerCase(Locale.US).indexOf("windows") > -1) {
-            executeTarget("test14-init");
-            expectLog("test14-1", "-prop1=prop1 -prop2=prop2 -prop3='prop3'");
-            expectLog("test14-2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
-            expectLog("test14-3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
-        }
+        // Sous Windows uniquement
+        configureProject("PCTRun/test14/build.xml");
+        expectLog("test1", "-prop1=prop1 -prop2=prop2 -prop3='prop3'");
+        expectLog("test2", "-prop1=prop1 -prop2=prop2 -prop3=prop3");
+        expectLog("test3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
     }
 
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test15() {
-        expectBuildException("test15", "Cannot connect to database");
+        configureProject("PCTRun/test15/build.xml");
+        executeTarget("test15");
     }
 
     @Test
     public void test16() {
-        executeTarget("test16");
-        File f = new File("sandbox/subdir/Output.txt");
+        configureProject("PCTRun/test16/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test16/subdir/Output.txt");
         assertTrue(f.exists());
     }
 
     @Test
     public void test17() {
-        executeTarget("test17");
-        File f = new File("sandbox/subdir2/Output.txt");
+        configureProject("PCTRun/test17/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test17/sandbox/subdir2/Output.txt");
         assertTrue(f.exists());
     }
 
-    /**
-     * Run option test
-     */
     @Test
     public void test18() {
-        expectLog("test18", "utf-8");
+        configureProject("PCTRun/test18/build.xml");
+        expectLog("test", "utf-8");
     }
 
-    /**
-     * Spaces in parameter, this should fail
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test19() {
-        expectBuildException("test19", "Should fail because of spaces");
+        configureProject("PCTRun/test19/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Name parameter is mandatory in PCTRunOption
-     */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test20() {
-        expectBuildException("test20", "Name parameter is mandatory in PCTRunOption");
+        configureProject("PCTRun/test20/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Profiler should be started, and sandbox/profiler.out created
-     */
     @Test
     public void test21() {
-        File f = new File("sandbox/profiler.out");
-        executeTarget("test21");
+        configureProject("PCTRun/test21/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test21/sandbox/profiler.out");
         assertTrue(f.exists());
     }
 
-    /**
-     * Parameter should be in quotes
-     */
     @Test
     public void test22() {
-        expectLog("test22", "Message with spaces");
+        configureProject("PCTRun/test22/build.xml");
+        expectLog("test", "Message with spaces");
     }
 
-    /**
-     * Temp dir with space
-     */
     @Test
     public void test23() {
-        File f = new File("sandbox/temp dir/test.txt");
-        assertFalse(f.exists());
-        executeTarget("test23");
+        configureProject("PCTRun/test23/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test23/temp dir/test.txt");
         assertTrue(f.exists());
     }
 
-    /**
-     * Parameter should be in quotes
-     */
     @Test
     public void test24() {
-        executeTarget("test24-pre");
-        expectLog("test24", "TEST");
+        configureProject("PCTRun/test24/build.xml");
+        expectLog("test", "TEST");
     }
 
-    /**
-     * Parameters collection : simple test
-     */
     @Test
     public void test25() {
-        executeTarget("test25");
+        configureProject("PCTRun/test25/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Parameters collection : quotes
-     */
     @Test
     public void test26() {
-        executeTarget("test26");
+        configureProject("PCTRun/test26/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Parameters collection : tilde
-     */
     @Test
     public void test27() {
-        executeTarget("test27");
+        configureProject("PCTRun/test27/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Parameters collection : not defined
-     */
     @Test
     public void test28() {
-        executeTarget("test28");
+        configureProject("PCTRun/test28/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Parameters collection : duplicate values
-     */
     @Test
     public void test29() {
-        executeTarget("test29");
+        configureProject("PCTRun/test29/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Using propath refid
-     */
     @Test
     public void test30() {
-        executeTarget("test30-init");
-        expectBuildException("test30-part1", "Shouldn't work");
-        executeTarget("test30-part2");
-        executeTarget("test30-part3");
+        configureProject("PCTRun/test30/build.xml");
+        expectBuildException("test1", "Shouldn't work");
+        executeTarget("test2");
+        executeTarget("test3");
     }
 
-    /**
-     * test failOnError attribute
-     */
     @Test
     public void test31() {
-        expectBuildException("test31-a", "Shouldn't work");
-        executeTarget("test31-b");
+        configureProject("PCTRun/test31/build.xml");
+        expectBuildException("test1", "Shouldn't work");
+        executeTarget("test2");
     }
     
     @Test
     public void test32() {
+        configureProject("PCTRun/test32/build.xml");
         assertPropertyUnset("myResult");
-        executeTarget("test32-a");
+        executeTarget("test1");
         assertPropertyEquals("myResult", "0");
         
         assertPropertyUnset("myNewResult");
-        executeTarget("test32-b");
+        executeTarget("test2");
         assertPropertyEquals("myNewResult", "17");
     }
     
     @Test
     public void test33() {
-        expectBuildException("test33-a", "No output parameter defined");
+        configureProject("PCTRun/test33/build.xml");
+        expectBuildException("test1", "No output parameter defined");
 
         assertPropertyUnset("firstParam");
-        executeTarget("test33-b");
+        executeTarget("test2");
         assertPropertyEquals("firstParam", "PCT");
     }
 
     @Test
     public void test34() {
+        configureProject("PCTRun/test34/build.xml");
         assertPropertyUnset("firstParam");
         assertPropertyUnset("secondParam");
         assertPropertyUnset("thirdParam");
         assertPropertyUnset("fourthParam");
-        executeTarget("test34");
+        
+        executeTarget("test");
         assertPropertyEquals("firstParam", "PCT1");
         assertPropertyEquals("secondParam", "PCT2");
         assertPropertyEquals("thirdParam", "PCT3");
@@ -396,16 +316,18 @@ public class PCTRunTest extends BuildFileTestNg {
     
     @Test
     public void test35() {
-        executeTarget("test35");
-        expectBuildException("test35-bis", "Not in propath");
+        configureProject("PCTRun/test35/build.xml");
+        executeTarget("test1");
+        expectBuildException("test2", "Not in propath");
     }
 
     @Test
     public void test36() {
-        executeTarget("test36-init");
-        expectBuildException("test36", "Incorrect alias");
-        executeTarget("test36-b");
-        executeTarget("test36-c");
-        executeTarget("test36-d");
+        configureProject("PCTRun/test36/build.xml");
+        executeTarget("base");
+        expectBuildException("test1", "Incorrect alias");
+        executeTarget("test2");
+        executeTarget("test3");
+        executeTarget("test4");
     }
 }
