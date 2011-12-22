@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - PCTNSBroker task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>PCTNSBroker task</h1>
+
+<h2>Description</h2>
+<p>Adds, updates and deletes Name Server broker declarations</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>Name</td>
+<td>NameServer's name</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>NS1</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Must be one of create, update, delete</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>WorkDir</td>
+<td>Working directory</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>PortNumber</td>
+<td></td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>AutoStart</td>
+<td></td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+<tr>
+<td>ServerLogFile</td>
+<td>Server's log file</td>
+<td align="center">File</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>ServerLogLevel</td>
+<td>Should be between 1 and 5</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>LogAppend</td>
+<td>Append to log file</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>True</td>
+</tr>
+<tr>
+<td>brokerKeepAliveTimeout</td>
+<td>Keep Alive Timeout</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>Environment Name, usually set to NS1</td>
+<td align="center">String</td>
+<td align="center">Required</td>
+<td>No default</td>
+</tr>
+</table>
+
+<p>
+Definition of servers processes ; Inherits from attributes of PCTRun task</p>
+<ul>
+</ul>
+
+<h2>Examples</h2>
+<pre>
+&lt;PCTNSBroker action="create" name="NS1" dlcHome="${env.DLC}" /&gt;
+</pre>
+<p>
+Simplest declaration : this will create a [NameServer.NS1] section in the $DLC/properties/ubroker.properties file.
+In this case, every attribute is inherited from parent sections.
+</p>
+
+<pre>
+&lt;PCTNSBroker action="update" name="NS1" dlcHome="${env.DLC}" portNumber="1234" /&gt;
+</pre>
+<p>
+Updates the previously created Name Server, by adding portNumber property.
+</p>
+
+<pre>
+&lt;PCTNSBroker action="delete" name="NS1" dlcHome="${env.DLC}" /&gt;
+</pre>
+<p>
+Deletes the previously created Name Server.
+</p>
+
+<pre>
+&lt;PCTNSBroker action="update" nameServer="NS1" name="NS1" dlcHome="${env.DLC}" file="myubroker.properties"&gt;
+  &lt;portNumber="2000" autoStart="true" serverLogFile="NS1.ns.log" &gt;
+  &lt;brokerKeepAliveTimeout="30" &gt;
+&lt;/PCTNSBroker&gt;
+</pre>
+<p>
+
+Nameserver's definition will look like this :</p>
+<pre class="source">
+[NameServer.NS1]
+    autoStart=1
+    brokerKeepAliveTimeout=30
+    environment=NS1
+    logAppend=1
+    portNumber=2000
+    srvrLogFile=NS1.ns.log
+</pre>
+<p>This definition will be integrated in <code>myubroker.properties</code> instead of standard
+<code>$DLC/properties/ubroker.properties</code>
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

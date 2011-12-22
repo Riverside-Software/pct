@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTDumpData-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDumpData dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+    </PCTDumpData>
+  </target>
+
+</project>

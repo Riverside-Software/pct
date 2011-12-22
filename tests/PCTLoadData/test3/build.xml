@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="sandbox" />
+    <PCTLoadData dlcHome="${DLC}" srcDir="sandbox" />
+  </target>
+
+</project>

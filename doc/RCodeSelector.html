@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - RCodeSelector</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>RCodeSelector</h1>
+
+<h2>Description</h2>
+<p>
+RCodeSelector is a selector in which files can be selected based on CRC or MD5 comparison in source and target directories.
+Files are removed of the fileset if and only if their CRC or MD5 are identical.
+</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>dir</td>
+<td>The base directory to look for the files to compare against. The precise location depends on a combination of this attribute and the &lt;mapper&gt; element, if any.</td>
+<td align="center">File</td>
+<td align="center" rowspan="2" >One of dir or lib is required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>lib</td>
+<td>The procedure library to look for the files to compare against.</td>
+<td align="center">File</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>Use MD5 or CRC to compare r-code</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>CRC</td>
+</tr>
+</table>
+
+<h2>Parameters as nested elements</h2>
+<p>None</p>
+
+<h2>Examples</h2>
+<pre>
+&lt;!-- Selector has to be declared in build.xml --&gt;
+&lt;target name="copy"&gt;
+  &lt;copy todir="destDir" includeEmptyDirs="false"&gt;
+    &lt;fileset dir="sourceDir1" includes="**/*.r"&gt;
+      &lt;RCodeSelector dir="sourceDir2" mode="md5" /&gt;
+    &lt;/fileset&gt;
+  &lt;/copy&gt;
+&lt;/target&gt;
+</pre>
+Will copy *.r files from sourceDir1 to destDir, excluding any r-code whose MD5 is identical in sourceDir1 and sourceDir2
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

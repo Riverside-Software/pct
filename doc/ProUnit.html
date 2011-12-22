@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - ProUnit</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>ProUnit task -- &lt;pct:prounit /&gt;</h1>
+
+<h2>Description</h2>
+<p>
+The ProUnit task allows to run <a href="http://www.mycgiserver.com/~flaviocordova/prounit/">ProUnit</a> test cases.
+</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>project</td>
+<td>Path to the XML file saved using ProUnit GUI version</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>result</td>
+<td>Path to the resulting execution file (XML)</td>
+<td align="center">File</td>
+<td align="center">Required</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>template</td>
+<td>Template used to format the result file</td>
+<td align="center">String</td>
+<td align="center">Optional</td>
+<td>No default value</td>
+</tr>
+<tr>
+<td>verbose</td>
+<td>Configures execution to be silent or to show execution progress and results</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
+</table>
+<p>ProUnit inherits attributes from <a href="PCT.html">PCT</a> and
+<a href="PCTRun.html">PCTRun</a>.
+
+<h2>Parameters as nested elements</h2>
+<p>None</p>
+
+<h2>Examples</h2>
+<pre>
+&lt;ProUnit project="sandbox/test.xml" result="sandbox/result.xml" dlcHome="${env.DLC}" template="default"&gt;
+  &lt;propath&gt;
+    &lt;path location="${env.PROUNIT_HOME}" /&gt;
+  &lt;/propath&gt;
+&lt;/ProUnit&gt;
+</pre>
+<p>Run the sandbox/test.xml testsuite, results are saved in sandbox/result.xml, with an header specifying
+the XSL template to apply.</p>
+
+</div>
+
+</div>
+@ANALYTICS@</body>
+
+</html>
