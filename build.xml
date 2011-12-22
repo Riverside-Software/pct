@@ -11,6 +11,7 @@
       <isset property="DLC9" />
       <isset property="DLC10" />
       <isset property="DLC10-64" />
+      <isset property="DLC11" />
     </and>
   </condition>
 
@@ -38,6 +39,7 @@
   <property name="build-v9" location="build-v9" />
   <property name="build-v10" location="build-v10" />
   <property name="build-v10-64" location="build-v10-64" />
+  <property name="build-v11" location="build-v11" />
   <property name="dist" location="lib" />
   <property name="dist-lite" location="bootstrap" />
   <property name="doc" location="javadoc" />
@@ -88,6 +90,16 @@
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
+  <fileset id="fs.v11" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prolint/**/xml.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
 
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
@@ -113,6 +125,7 @@
     <mkdir dir="${build-v9}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
+    <mkdir dir="${build-v11}" />
     <mkdir dir="${dist}" />
 
     <!-- Checking V8, v9 and v10 availability -->
@@ -120,6 +133,7 @@
     <available file="${DLC9}/version" property="dlc.v9.present" />
     <available file="${DLC10}/version" property="dlc.v10.present" />
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+    <available file="${DLC11}/version" property="dlc.v11.present" />
 
     <condition property="DLC-SPORTS" value="${DLC9}">
       <isset property="dlc.v9.present" />
@@ -213,6 +227,7 @@ PCTBuild=${BUILD_NUMBER}
     <echo message="Checking v9 in ${DLC9}" />
     <echo message="Checking v10 in ${DLC10}" />
     <echo message="Checking v10-64 in ${DLC10-64}" />
+    <echo message="Checking v11 in ${DLC11}" />
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v8.present" />
       <param name="dlcHome" value="${DLC8}" />
@@ -249,6 +264,14 @@ PCTBuild=${BUILD_NUMBER}
       <param name="fsid" value="fs.v10" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v11.present" />
+      <param name="dlcHome" value="${DLC11}" />
+      <param name="buildDir" value="${build-v11}" />
+      <param name="libName" value="pct11.pl" />
+      <param name="fsid" value="fs.v11" />
+    </antcall>
+
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" />
     </zip>
@@ -266,6 +289,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
+        <include name="pct11.pl" />
         <include name="pct-src.zip" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
@@ -352,6 +376,7 @@ PCTBuild=${BUILD_NUMBER}
     <delete dir="${build-v9}" />
     <delete dir="${build-v10}" />
     <delete dir="${build-v10-64}" />
+    <delete dir="${build-v11}" />
     <delete dir="${dist}" />
     <delete dir="${doc}" />
     <delete dir="${check}" />
