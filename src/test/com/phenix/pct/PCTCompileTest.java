@@ -347,7 +347,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f4.exists());
     }
 
-    @Test
+    @Test(groups = { "no-unix" })
     public void test23() {
         configureProject("PCTCompile/test23/build.xml");
         expectBuildException("test1", "Should fail - No stream-io");
