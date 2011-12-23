@@ -155,7 +155,7 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test2", "This is dir2");
     }
 
-    @Test
+    @Test(groups = { "no-unix" } )
     public void test14() {
         // Sous Windows uniquement
         configureProject("PCTRun/test14/build.xml");
