@@ -3,6 +3,7 @@
   <taskdef resource="PCT.properties" />
 
   <target name="prepare">
+    <echo file="src/éèà.txt" message="Some text" />
     <mkdir dir="build" />
     <mkdir dir="lib" />
     <PCTCompile dlcHome="${DLC}" destDir="build" cpstream="iso8859-1">
