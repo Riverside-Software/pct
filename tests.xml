@@ -31,7 +31,7 @@
   <target name="test" depends="prepare-test">
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true">
+    <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true" excludedgroups="${EXCLUDES}">
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
