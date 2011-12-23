@@ -71,8 +71,8 @@ public class PLFileSetTest extends BuildFileTestNg {
         configureProject("PLFileSet/test1/build.xml");
         executeTarget("test");
 
-        File f1 = new File("PLFileSet/test1/lib/adexml");
-        assertEquals(f1.list().length, 8);
+        File f1 = new File("PLFileSet/test1/lib/prodict");
+        assertEquals(f1.list().length, 36);
     }
 
     @Test
@@ -80,8 +80,8 @@ public class PLFileSetTest extends BuildFileTestNg {
         configureProject("PLFileSet/test2/build.xml");
         executeTarget("test");
 
-        File f1 = new File("PLFileSet/test2/lib/adexml");
-        assertEquals(f1.list().length, 6);
+        File f1 = new File("PLFileSet/test2/lib/prodict");
+        assertEquals(f1.list().length, 14);
     }
 
     @Test
@@ -89,8 +89,8 @@ public class PLFileSetTest extends BuildFileTestNg {
         configureProject("PLFileSet/test3/build.xml");
         executeTarget("test");
 
-        File f1 = new File("PLFileSet/test3/lib/adexml");
-        assertEquals(f1.list().length, 6);
+        File f1 = new File("PLFileSet/test3/lib/prodict");
+        assertEquals(f1.list().length, 3);
     }
 
 }
