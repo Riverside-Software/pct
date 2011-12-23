@@ -4,11 +4,11 @@
 
   <target name="test">
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
     </PCTCompile>
-    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build\test1.r:build\test1.crc" />
-    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build\test2.r:build\test2.crc" />
+    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build/test1.r:build/test1.crc" />
+    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build/test2.r:build/test2.crc" />
   </target>
 
 </project>
