@@ -6,7 +6,7 @@
   <target name="test">
     <mkdir dir="lib" />
     <copy todir="lib">
-      <PLFileSet src="${DLC}/gui/adexml.pl" includes="adexml/_x*.r" />
+      <PLFileSet src="${DLC}/tty/prodict.pl" includes="prodict/_dct*.r" />
     </copy>
   </target>
 
