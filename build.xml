@@ -45,7 +45,6 @@
   <property name="doc" location="javadoc" />
   <property name="check" location="check" />
   <property name="website" location="website" />
-  <property name="testng-v11" location="test-output-v11" />
 
   <!-- Properties that control various build options -->
   <property name="debug" value="true" />
@@ -101,11 +100,6 @@
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
   </fileset>
-  <fileset id="test.v11" dir="${build}">
-    <include name="com/phenix/pct/*Test.class" />
-    <exclude name="com/phenix/pct/*V9Test.class" />
-    <exclude name="com/phenix/pct/*V10Test.class" />
-  </fileset>
 
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
@@ -133,7 +127,6 @@
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${build-v11}" />
     <mkdir dir="${dist}" />
-    <mkdir dir="${testng-v11}" />
 
     <!-- Checking V8, v9 and v10 availability -->
     <available file="${DLC8}/version" property="dlc.v8.present" />
