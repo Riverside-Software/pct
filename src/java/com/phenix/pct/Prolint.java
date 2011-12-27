@@ -242,6 +242,10 @@ public class Prolint extends PCTRun {
     public void execute() throws BuildException {
         checkDlcHome();
 
+        if (destDir == null) {
+            throw new BuildException("destDir not set");
+        }
+        
         try {
             writeFileList();
             writeParams();
