@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test36">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" resultProperty="ABC" failOnError="false" />
+    <echo message="Result : ${ABC}" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" resultProperty="ABC" failOnError="false" />
+    <echo message="Result : ${ABC}" />
+  </target>
+
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}" resultProperty="ABC" failOnError="false" />
+    <echo message="Result : ${ABC}" />
+  </target>
+
+</project>

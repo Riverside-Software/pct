@@ -330,4 +330,19 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test3");
         executeTarget("test4");
     }
+
+    @Test
+    public void test37() {
+        configureProject("PCTRun/test37/build.xml");
+        expectLog("test1", "Result : 789");
+        expectLog("test2", "Result : 1");
+        expectLog("test3", "Result : 1");
+    }
+
+    @Test
+    public void test38() {
+        configureProject("PCTRun/test38/build.xml");
+        expectLog("test1", "Result : A1B2C3");
+        expectLog("test2", "Result : 123 -- 456 -- ABC");
+    }
 }
