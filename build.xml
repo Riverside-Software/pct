@@ -347,14 +347,13 @@ PCTBuild=${BUILD_NUMBER}
     </javac>
   </target>
 
-  	<delete dir="${testdir}" includes="**/*" />
-    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
-    <antcall target="cond.test">
-      <param name="test.this.version" value="dlc.v11.present" />
-      <param name="dlcHome" value="${DLC11}" />
-      <param name="testng-result" value="${testng-v11}" />
-      <param name="testid" value="test.v11" />
-    </antcall>
+  <target name="prepare-test" >
+    <delete dir="testbox" />
+    <mkdir dir="testbox" />
+    <copy todir="testbox">
+      <fileset dir="tests" />
+    </copy>
+  </target>
   
   <target name="javadoc" depends="build" description="API documentation creation">
     <mkdir dir="${doc}" />
