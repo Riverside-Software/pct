@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.testng.annotations.AfterMethod;
