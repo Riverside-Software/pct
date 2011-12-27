@@ -111,5 +111,4 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test1");
         expectBuildException("test2", "");
     }
-
 }

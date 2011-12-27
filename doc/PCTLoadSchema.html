@@ -66,8 +66,15 @@ Loads database schema
 <td align="center">Optional</td>
 <td>False</td>
 </tr>
-
+<tr>
+<td>online</td>
+<td>Relaxes requirements to apply online changes (use SESSION:SCHEMA-CHANGE = 'NEW OBJECTS')</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td>False</td>
+</tr>
 </table>
+
 <p>PCTLoadSchema inherits attributes from <a href="PCT.html">PCT</a> and
 <a href="PCTRun.html">PCTRun</a>. However, PCTLoadSchema <strong>must</strong>
 have <strong>one and only one</strong> PCTConnection.</p>

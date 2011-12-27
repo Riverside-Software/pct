@@ -163,8 +163,13 @@ public class PCTRun extends PCT {
      * Adds a database connection
      * 
      * @param dbConn Instance of PCTConnection class
+     * @deprecated
      */
     public void addPCTConnection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
+    public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList();
         }

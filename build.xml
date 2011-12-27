@@ -4,7 +4,7 @@
 
   <property environment="env" />
 
-  <!-- If DLC8, DLC9, DLC10 and DLC10-64 are provided as properties, then skip loading properties from file -->
+  <!-- If DLC8, DLC9, DLC10, DLC10-64 and DLC11 are provided as properties, then skip loading properties from file -->
   <condition property="skip.properties" value="true">
     <and>
       <isset property="DLC8" />
@@ -82,7 +82,17 @@
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
-    <include name="prolint/**/xml.p" />
+    <include name="prolint/**/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="fs.v11" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prolint/**/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/pctCompileV8.p" />
@@ -154,6 +164,14 @@
         <isset property="dlc.v10-64.present" />
       </and>
     </condition>
+    <condition property="DLC-SPORTS" value="${DLC11}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v11.present" />
+      </and>
+    </condition>
     <echo message="Using ${DLC-SPORTS} to build sports database" />
     <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version}
 PCTBuild=${BUILD_NUMBER}
@@ -199,11 +217,12 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
+      <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" />
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
         <PCTAlias name="dictdb2" />
@@ -295,6 +314,7 @@ PCTBuild=${BUILD_NUMBER}
       </fileset>
 	  <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
+        <include name="eu/rssw/pct/prolint/**/*" />
 	  </fileset>
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
@@ -327,6 +347,14 @@ PCTBuild=${BUILD_NUMBER}
     </javac>
   </target>
 
+  	<delete dir="${testdir}" includes="**/*" />
+    <!-- Copy Progress files so that there isn't a conflict if PCT is already installed -->
+    <antcall target="cond.test">
+      <param name="test.this.version" value="dlc.v11.present" />
+      <param name="dlcHome" value="${DLC11}" />
+      <param name="testng-result" value="${testng-v11}" />
+      <param name="testid" value="test.v11" />
+    </antcall>
   
   <target name="javadoc" depends="build" description="API documentation creation">
     <mkdir dir="${doc}" />
@@ -436,6 +464,11 @@ PCTBuild=${BUILD_NUMBER}
     </copy>
     <copy todir="${website}/testng-v10-64" failonerror="false">
       <fileset dir="${testng-v10-64}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/testng-v11" failonerror="false">
+      <fileset dir="${testng-v11}">
         <include name="**" />
       </fileset>
     </copy> -->
