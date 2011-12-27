@@ -141,12 +141,10 @@ public class PCTDumpIncremental extends PCTRun {
         renameFile = file;
     }
 
-    @Override
     public void addDBConnection(PCTConnection dbConn) {
         throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDatabase and targetDatabase instead");
     }
     
-    @Override
     public void addPCTConnection(PCTConnection dbConn) {
         log("PCTConnection is deprecrated. USe sourceDatabase and tagetDatabase instead", Project.MSG_INFO);
         super.addDBConnection(dbConn);
