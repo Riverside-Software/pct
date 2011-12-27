@@ -8,6 +8,9 @@
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema2.df" dlcHome="${DLC}" online="true">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
   </target>
 
   <target name="test1">
