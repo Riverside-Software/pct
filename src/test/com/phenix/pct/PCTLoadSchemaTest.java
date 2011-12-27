@@ -96,7 +96,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("base");
 
         executeTarget("test1");
-        expectBuildException("test2", "Tab2 shouldn't be found");
+        executeTarget("test2");
     }
 
     @Test
