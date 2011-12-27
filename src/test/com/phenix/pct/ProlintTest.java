@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -66,7 +67,7 @@ import java.io.File;
  */
 public class ProlintTest extends BuildFileTestNg {
 
-    @Test
+    @Test(expectedExceptions = BuildException.class )
     public void test1() {
         configureProject("Prolint/test1/build.xml");
         executeTarget("test");
