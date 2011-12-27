@@ -66,53 +66,35 @@ import java.io.File;
 /**
  * Class for testing PCTDumpSequences task
  * 
- * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTDumpSequencesTest extends BuildFileTestNg {
-
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTDumpSequences.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
 
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Should throw BuildException : no filesets and no connection");
+        configureProject("PCTDumpSequences/test1/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no destDir defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2",
-                "Should throw BuildException : no filesets (or srcDir) defined ");
+        configureProject("PCTDumpSequences/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test
+    @Test(expectedExceptions = BuildException.class)
     public void test3() {
-        expectBuildException("test3", "Should throw BuildException : no connection defined");
+        configureProject("PCTDumpSequences/test3/build.xml");
+        executeTarget("test");
     }
 
     /**
@@ -120,10 +102,11 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
      */
     @Test
     public void test4() {
-        executeTarget("test4init");
-        executeTarget("test4");
+        configureProject("PCTDumpSequences/test4/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/_seqvals.d");
+        File f1 = new File("PCTDumpSequences/test4/sandbox/_seqvals.d");
         assertTrue(f1.exists());
     }
 
@@ -132,10 +115,11 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
      */
     @Test
     public void test5() {
-        executeTarget("test5init");
-        executeTarget("test5");
+        configureProject("PCTDumpSequences/test5/build.xml");
+        executeTarget("base");
+        executeTarget("test");
 
-        File f1 = new File("sandbox/_seqvals.d");
+        File f1 = new File("PCTDumpSequences/test5/sandbox/_seqvals.d");
         assertTrue(f1.exists());
     }
 
