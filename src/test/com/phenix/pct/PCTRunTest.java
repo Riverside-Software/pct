@@ -182,7 +182,7 @@ public class PCTRunTest extends BuildFileTestNg {
     public void test17() {
         configureProject("PCTRun/test17/build.xml");
         executeTarget("test");
-        File f = new File("PCTRun/test17/sandbox/subdir2/Output.txt");
+        File f = new File("PCTRun/test17/src/subdir2/Output.txt");
         assertTrue(f.exists());
     }
 
