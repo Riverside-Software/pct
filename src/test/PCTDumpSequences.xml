@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<project name="PCTDumpSequence-test" default="">
+
+  <taskdef resource="PCT.properties" classpath="."/>
+
+  <property environment="env"/>
+
+  <!-- Should throw BuildException : no filesets and no connection -->
+  <target name="test1">
+    <PCTDumpSequences dlcHome="${DLC}" />
+  </target>
+
+  <!-- Should throw BuildException : no destdir defined -->
+  <target name="test2">
+    <PCTDumpSequences dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true"/>
+    </PCTDumpSequences>
+  </target>
+  
+  <!-- Should throw BuildException : no connection defined -->
+  <target name="test3">
+    <PCTDumpSequences dlcHome="${DLC}" destDir="sandbox" />
+  </target>
+
+  <target name="test4init">
+    <echo file="sandbox/schema.df">
+      UPDATE DATABASE "?"
+      
+      ADD SEQUENCE "MySeq"
+        INITIAL 1
+        INCREMENT 1
+        CYCLE-ON-LIMIT no
+
+      ADD SEQUENCE "MySeq2"
+        INITIAL 10
+        INCREMENT 1
+        CYCLE-ON-LIMIT no
+    </echo>
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" schemaFile="sandbox/schema.df" />
+  </target>
+  <target name="test4">
+    <PCTDumpSequences dlcHome="${DLC}" destDir="sandbox">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSequences>
+  </target>
+
+  <target name="test5init">
+    <PCTCreateBase dbName="test" destDir="sandbox" dlcHome="${DLC}" />
+  </target>
+  <target name="test5">
+    <PCTDumpSequences dlcHome="${DLC}" destDir="sandbox">
+      <PCTConnection dbName="test" dbDir="sandbox" singleUser="true" />
+    </PCTDumpSequences>
+  </target>
+
+</project>

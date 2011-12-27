@@ -7,6 +7,10 @@ Version 0.19 (??/??/????)
  * Added log when using PCTCompileExt (and -v flag)
  * Added encoding attribute to PCTDumpData
  * Added streamIO attribute to PCTCompile and PCTCompileExt
+ * Added PCTDumpSequences task
+ * Added online attribute to PCTLoadSchema
+ * Renamed PCTConnection in PCTRun to DBConnection
+ * Replaced PCTConnection in PCTDumpIncremental to SourceDb and TargetDb
 
 Version 0.18 (02/21/2011)
 =============================
