@@ -55,10 +55,6 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -66,34 +62,22 @@ import java.io.File;
 /**
  * Class for testing Prolint task
  * 
- * @author <a href="mailto:g.querret@gmail.com">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class ProlintTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("Prolint.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.getProject());
-        del.setDir(new File("sandbox"));
-        del.execute();
+    @Test
+    public void test1() {
+        configureProject("Prolint/test1/build.xml");
+        executeTarget("test");
     }
 
     @Test
     public void test2() {
-        executeTarget("test2");
-        File f1 = new File("lint/sandbox/msg.p.xml");
+        configureProject("Prolint/test2/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("Prolint/test2/msg.p.xml");
         assertTrue(f1.exists());
     }
 

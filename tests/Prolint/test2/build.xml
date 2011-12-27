@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="Prolint-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="lint" />
+    <Prolint dlcHome="${DLC}" destDir="lint">
+      <fileset dir="src" includes="*.p" />
+      <lintHandler name="xml.p" />
+    </Prolint>
+  </target>
+
+</project>
