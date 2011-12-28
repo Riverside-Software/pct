@@ -66,31 +66,38 @@ import java.io.File;
  */
 public class PLFileSetTest extends BuildFileTestNg {
 
-    @Test
+    @Test(groups = "no-v11")
     public void test1() {
         configureProject("PLFileSet/test1/build.xml");
-        executeTarget("test");
 
-        File f1 = new File("PLFileSet/test1/lib/prodict");
+        executeTarget("test1");
+        File f1 = new File("PLFileSet/test1/lib1/prodict");
         assertEquals(f1.list().length, 36);
+
+        executeTarget("test2");
+        File f2 = new File("PLFileSet/test1/lib2/prodict");
+        assertEquals(f2.list().length, 14);
+
+        executeTarget("test3");
+        File f3 = new File("PLFileSet/test1/lib3/prodict");
+        assertEquals(f3.list().length, 3);
     }
 
-    @Test
+    @Test(groups = { "no-v10", "no-v9"})
     public void test2() {
         configureProject("PLFileSet/test2/build.xml");
-        executeTarget("test");
 
-        File f1 = new File("PLFileSet/test2/lib/prodict");
-        assertEquals(f1.list().length, 14);
-    }
+        executeTarget("test1");
+        File f1 = new File("PLFileSet/test2/lib1/prodict");
+        assertEquals(f1.list().length, 38);
 
-    @Test
-    public void test3() {
-        configureProject("PLFileSet/test3/build.xml");
-        executeTarget("test");
+        executeTarget("test2");
+        File f2 = new File("PLFileSet/test2/lib2/prodict");
+        assertEquals(f2.list().length, 14);
 
-        File f1 = new File("PLFileSet/test3/lib/prodict");
-        assertEquals(f1.list().length, 3);
+        executeTarget("test3");
+        File f3 = new File("PLFileSet/test2/lib3/prodict");
+        assertEquals(f3.list().length, 3);
     }
 
 }
