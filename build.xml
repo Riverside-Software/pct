@@ -85,6 +85,9 @@
     <include name="prolint/**/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/_dmpincr11.p" />
+    <exclude name="pct/_dmputil11.p" />
+    <exclude name="pct/dump_inc11.p" />
     <exclude name="pct/pctCompileV8.p" />
     <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
