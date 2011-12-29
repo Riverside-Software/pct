@@ -66,7 +66,7 @@ import java.io.File;
  */
 public class PLFileSetTest extends BuildFileTestNg {
 
-    @Test(groups = "no-v11")
+    @Test(groups = {"no-v11", "no-v9"})
     public void test1() {
         configureProject("PLFileSet/test1/build.xml");
 
@@ -83,7 +83,7 @@ public class PLFileSetTest extends BuildFileTestNg {
         assertEquals(f3.list().length, 3);
     }
 
-    @Test(groups = { "no-v10", "no-v9"})
+    @Test(groups = {"no-v10", "no-v9"})
     public void test2() {
         configureProject("PLFileSet/test2/build.xml");
 
