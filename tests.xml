@@ -21,6 +21,9 @@
 
   <target name="prepare-test" >
     <delete dir="${testdir}" />
+    <delete dir="test-output" />
+    <delete file="emailable-report-${TESTENV}.html" />
+    <delete file="testng-results-${TESTENV}.html" />
     <mkdir dir="${testdir}" />
     <unzip src="pct-tests.zip" dest="${testdir}" />
   </target>
