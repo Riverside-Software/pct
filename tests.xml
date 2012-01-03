@@ -33,6 +33,7 @@
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
+    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.html" />
   </target>
 
 
