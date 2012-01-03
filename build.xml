@@ -121,7 +121,7 @@
   <path id="pct.test.compil">
     <path refid="pct.compil" />
     <pathelement location="${build}" />
-    <pathelement location="testng-5.14.4.jar" />
+    <pathelement location="testng-6.3.1.jar" />
     <pathelement location="ini4j-0.5.1.jar" />
   </path>
   
