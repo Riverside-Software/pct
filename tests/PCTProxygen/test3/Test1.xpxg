@@ -17,7 +17,7 @@
       <JavaClient>true</JavaClient>
       <WebServicesClient>false</WebServicesClient>
       <UserDefinedAppService>true</UserDefinedAppService>
-      <JavaCompilerType>3</JavaCompilerType>
+      <JavaCompilerType>1</JavaCompilerType>
       <JavaCompiler>&lt;Install Dir&gt;\jdk\bin\javac</JavaCompiler>
       <JavaSwitches />
       <JavaClasspathSwitch>-classpath</JavaClasspathSwitch>
