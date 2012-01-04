@@ -66,15 +66,15 @@ import org.testng.annotations.Test;
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTProxygenV10Test extends BuildFileTestNg {
+public class PCTProxygenTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(expectedExceptions = BuildException.class, groups="no-v9" )
     public void test1() {
         configureProject("PCTProxygen/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = "no-v9")
     public void test2() {
         configureProject("PCTProxygen/test2/build.xml");
         executeTarget("prepare");
@@ -91,7 +91,7 @@ public class PCTProxygenV10Test extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test
+    @Test(groups = "no-v9")
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
@@ -103,5 +103,22 @@ public class PCTProxygenV10Test extends BuildFileTestNg {
         executeTarget("test3");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
+    }
+    
+    @Test(groups = { "no-v10", "no-v11"} )
+    public void test4() {
+        executeTarget("test2-init");
+        executeTarget("test2");
+
+        File f1 = new File("pxg/Test.class");
+        File f2 = new File("pxg/TestImpl.class");
+        File f3 = new File("pxg/TestImpl.java");
+
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertFalse(f3.exists());
+
+        executeTarget("test2-bis");
+        assertTrue(f3.exists());
     }
 }
