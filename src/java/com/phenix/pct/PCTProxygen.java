@@ -138,6 +138,7 @@ public class PCTProxygen extends PCT {
         // This caused problems with JUnit testing, as I think there are System.exit statements
         // in proxygen code
         pxg.setFork(true);
+        pxg.setJvm(getJVM().getAbsolutePath());
         if (this.workingDirectory != null) {
             pxg.setDir(this.workingDirectory);
         } else {
