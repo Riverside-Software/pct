@@ -218,6 +218,24 @@ public abstract class PCT extends Task {
         return this.dlcHome;
     }
 
+    private final File getJDK() {
+        return new File(dlcHome, "jdk");
+    }
+
+    private final File getJDKBin() {
+        return new File(getJDK(), "bin");
+    }
+
+    /**
+     * Returns path to java executable from JDK
+     */
+    protected final File getJVM() {
+        File f1 = new File(getJDKBin(), "java");
+        File f2 = new File(getJDKBin(), "java.exe");
+        
+        return (f1.exists() ? f1 : f2);
+    }
+
     /**
      * Returns Progress executables directory
      * 
