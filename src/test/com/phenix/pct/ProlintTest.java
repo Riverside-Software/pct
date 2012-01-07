@@ -73,7 +73,7 @@ public class ProlintTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
-    @Test
+    // Not a test for now @Test
     public void test2() {
         configureProject("Prolint/test2/build.xml");
         executeTarget("test");
