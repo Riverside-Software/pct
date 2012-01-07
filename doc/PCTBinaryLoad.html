@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html>
+
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="Keywords" content="progress,ant,compilation,automated,task,querret,apache,build tools,roundtable" />
+<meta name="Description" content="PCT is set of ANT tasks designed to compile Progress procedures among others things" />
+<meta name="revisit-after" content="30 days" />
+<meta name="DC.Language" content="en" />
+<title>PCT documentation - PCTBinaryLoad task</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
+</head>
+<body>
+
+<div class="Main">
+
+<div class="Bandeau">
+  <span id="sflogo">
+    <a href="http://sourceforge.net"><img id="sflogoimg" alt="SourceForge.net Logo" height="31" width="88" src="http://sourceforge.net/sflogo.php?group_id=%3Cb%3E85743%3C/b%3E&amp;amp;type=1"/></a>
+  </span>
+  Progress&reg; OpenEdge&reg; Compilation Tools
+</div>
+
+<div class="Menu">
+  <a href="index.html">Overview</a>
+  :: <a href="download.html">Download</a>
+  :: <a href="screenshots.html">Screenshots</a>
+  :: <span class="selected">Documentation</span>
+  :: <a href="javadoc/index.html">JavaDoc</a>
+  :: <a href="links.html">Links</a>
+</div>
+
+@RIGHT_BANNER@
+
+<div class="Text">
+<h1>PCTBinaryLoad task -- &lt;pct:binary_load /&gt;</h1>
+
+<h2>Description</h2>
+<p>
+Load binary datas into database.
+</p>
+
+<h2>Parameters</h2>
+<table class="params">
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+<th>Type</th>
+<th>Requirement</th>
+<th>Default value</th>
+</tr>
+<tr>
+<td>rebuildIndexes</td>
+<td>Yes if indexes should be rebuild (build indexes option)</td>
+<td align="center">Boolean</td>
+<td align="center">Optional</td>
+<td align="center">Yes</td>
+</tr>
+<tr>
+<td>IndexRebuildTimeout</td>
+<td>Timeout before rebuilding indexes (-G option)</td>
+<td align="center">Integer</td>
+<td align="center">Optional</td>
+<td align="center">0</td>
+</tr>
+</table>
+<p>PCTBinaryLoad inherits attributes from <a href="PCT.html">PCT</a>.
+</p>
+
+<h2>Parameters as nested elements</h2>
+<h3>PCTConnection (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+One and only one connection should be used with this task.
+</p>
+<h3>fileset (org.apache.tools.ant.types.Fileset)</h3>
+<p>
+Adds a file set to the file list to load
+</p>
+
+<h2>Examples</h2>
+None
+</div>
+
+</div>
+
+@ANALYTICS@</body>
+</html>

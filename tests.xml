@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT-Tests">
+
+  <property name="testdir" location="testbox" />
+
+  <path id="test.run.cp">
+    <pathelement location="PCT.jar" />
+    <pathelement location="ant.jar" />
+    <pathelement location="ant-launcher.jar" />
+    <pathelement location="ant-apache-regexp.jar" />
+    <pathelement location="jakarta-regexp-1.5.jar" />
+    <pathelement location="testng-6.3.1.jar" />
+    <pathelement location="PCT-Tests.jar" />
+    <pathelement location="ini4j-0.5.1.jar" />
+  </path>
+
+  <path id="testng.cp">
+    <fileset dir="." includes="testng-6.3.1.jar" />
+  </path>
+
+  <target name="prepare-test" >
+    <delete dir="${testdir}" />
+    <delete dir="test-output" />
+    <delete file="emailable-report-${TESTENV}.html" />
+    <delete file="testng-results-${TESTENV}.html" />
+    <mkdir dir="${testdir}" />
+    <unzip src="pct-tests.zip" dest="${testdir}" />
+  </target>
+
+  <target name="test" depends="prepare-test">
+    <mkdir dir="test-output" />
+    <taskdef resource="testngtasks" classpathref="testng.cp" />
+    <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true" excludedgroups="${EXCLUDES}">
+      <classpath refid="test.run.cp" />
+      <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
+    </testng>
+    <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
+    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.html" />
+  </target>
+
+
+</project>

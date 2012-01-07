@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="RCodeInfo-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+    </PCTCompile>
+    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build/test1.r:build/test1.crc" />
+    <PCTRun procedure="src/crc.p" dlcHome="${DLC}" parameter="build/test2.r:build/test2.crc" />
+  </target>
+
+</project>
