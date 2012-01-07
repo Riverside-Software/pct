@@ -184,7 +184,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 1);
     }
 
-    @Test
+    @Test(groups = { "no-v9", "no-v10", "no-v11" })
     public void test10() {
         configureProject("PCTLibrary/test10/build.xml");
         executeTarget("prepare");
