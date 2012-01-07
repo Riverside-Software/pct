@@ -366,10 +366,18 @@ public class PCTWSBroker extends PCTBroker {
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
         task.setFailonerror(true);
 
-        Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DLC"); //$NON-NLS-1$
-        var4.setValue(this.getDlcHome().toString());
-        task.addEnv(var4);
+        Environment.Variable var1 = new Environment.Variable();
+        var1.setKey("DLC"); //$NON-NLS-1$
+        var1.setValue(this.getDlcHome().toString());
+        task.addEnv(var1);
+        Environment.Variable var2 = new Environment.Variable();
+        var2.setKey("JAVA_HOME"); //$NON-NLS-1$
+        var2.setValue(getJDK().getAbsolutePath());
+        task.addEnv(var2);
+        Environment.Variable var3 = new Environment.Variable();
+        var3.setKey("JREHOME"); //$NON-NLS-1$
+        var3.setValue(getJRE().getAbsolutePath());
+        task.addEnv(var3);
 
         task.createArg().setValue("-type");
         task.createArg().setValue("ubroker");

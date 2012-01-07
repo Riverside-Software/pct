@@ -218,11 +218,15 @@ public abstract class PCT extends Task {
         return this.dlcHome;
     }
 
-    private final File getJDK() {
+    protected final File getJRE() {
+        return new File(dlcHome, "jre");
+    }
+
+    protected final File getJDK() {
         return new File(dlcHome, "jdk");
     }
 
-    private final File getJDKBin() {
+    protected final File getJDKBin() {
         return new File(getJDK(), "bin");
     }
 
