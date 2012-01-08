@@ -251,7 +251,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test17() {
         configureProject("PCTCompile/test17/build.xml");
         executeTarget("xcode");
@@ -323,7 +323,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue((f4.length() > 0), "Empty xref file");
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test21() {
         configureProject("PCTCompile/test21/build.xml");
         executeTarget("test");
@@ -332,7 +332,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test22() {
         configureProject("PCTCompile/test22/build.xml");
         executeTarget("test");
