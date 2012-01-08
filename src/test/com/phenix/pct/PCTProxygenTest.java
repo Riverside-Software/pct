@@ -74,7 +74,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
-    @Test(groups = { "v10", "v11" })
+    @Test(groups = { "v10", "v11", "win" })
     public void test2() {
         configureProject("PCTProxygen/test2/build.xml");
         executeTarget("prepare");
@@ -91,7 +91,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = { "v10", "v11" })
+    @Test(groups = { "v10", "v11", "win" })
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
@@ -105,7 +105,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
     
-    @Test(groups = { "v9" })
+    @Test(groups = { "v9", "win" })
     public void test4() {
         configureProject("PCTProxygen/test4/build.xml");
         executeTarget("prepare");

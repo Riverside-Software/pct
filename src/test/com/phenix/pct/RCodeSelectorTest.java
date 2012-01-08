@@ -67,7 +67,7 @@ import java.io.File;
  */
 public class RCodeSelectorTest extends BuildFileTestNg {
 
-    @Test(groups = { "all" })
+    @Test(groups = { "v10", "v11" })
     public void test1() {
         configureProject("RCodeSelector/test1/build.xml");
         executeTarget("prepare");

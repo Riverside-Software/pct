@@ -237,7 +237,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod == f.lastModified());
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test16() {
         configureProject("PCTCompile/test16/build.xml");
         executeTarget("xcode");
