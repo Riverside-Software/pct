@@ -78,7 +78,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     /**
      * Simple incremental test
      */
-    @Test
+    @Test(groups= {"all"})
     public void test1() {
         configureProject("PCTDumpIncremental/test1/build.xml");
         executeTarget("base");
@@ -95,7 +95,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     /**
      * Test activeIndexes attribute
      */
-    @Test
+    @Test(groups= {"all"})
     public void test2() {
         configureProject("PCTDumpIncremental/test2/build.xml");
         executeTarget("base");
@@ -150,7 +150,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     /**
      * Verifies codepage attribute
      */
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("PCTDumpIncremental/test3/build.xml");
         executeTarget("base");
@@ -209,7 +209,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
      * dump file between test and test2 DBs with and without rename file 5/ Compares differences
      * between both output files
      */
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTDumpIncremental/test4/build.xml");
         executeTarget("base");

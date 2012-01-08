@@ -68,13 +68,13 @@ import org.testng.annotations.Test;
  */
 public class PCTProxygenTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class, groups="no-v9" )
+    @Test(groups = { "v10", "v11" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTProxygen/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = "no-v9")
+    @Test(groups = { "v10", "v11" })
     public void test2() {
         configureProject("PCTProxygen/test2/build.xml");
         executeTarget("prepare");
@@ -91,7 +91,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = "no-v9")
+    @Test(groups = { "v10", "v11" })
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
@@ -105,7 +105,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
     
-    @Test(groups = { "no-v10", "no-v11"} )
+    @Test(groups = { "v9" })
     public void test4() {
         executeTarget("test2-init");
         executeTarget("test2");

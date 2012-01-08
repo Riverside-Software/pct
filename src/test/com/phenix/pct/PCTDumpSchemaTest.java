@@ -71,25 +71,25 @@ import java.io.IOException;
  */
 public class PCTDumpSchemaTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTDumpSchema/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTDumpSchema/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTDumpSchema/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTDumpSchema/test4/build.xml");
 
@@ -101,7 +101,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
             fail("Incorrect file");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
         configureProject("PCTDumpSchema/test5/build.xml");
 
@@ -113,7 +113,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
             fail("Incorrect file");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test6() {
         configureProject("PCTDumpSchema/test6/build.xml");
 

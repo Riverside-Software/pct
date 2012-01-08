@@ -66,7 +66,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTLoadData/test1/build.xml");
         executeTarget("test");
@@ -75,7 +75,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no filesets (or srcDir) defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTLoadData/test2/build.xml");
         executeTarget("test");
@@ -84,7 +84,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTLoadData/test3/build.xml");
         executeTarget("test");
@@ -93,7 +93,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should load data into database, and expect first result in FOR EACH be 14
      */
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTLoadData/test4/build.xml");
         executeTarget("base");
@@ -104,7 +104,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should first load data into table Tab1, then in Tab2, using PCTTable attribute
      */
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
         configureProject("PCTLoadData/test5/build.xml");
         executeTarget("base");

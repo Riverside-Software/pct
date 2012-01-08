@@ -70,7 +70,7 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"v10", "v11"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTDumpSequences/test1/build.xml");
         executeTarget("test");
@@ -79,7 +79,7 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no destDir defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"v10", "v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTDumpSequences/test2/build.xml");
         executeTarget("test");
@@ -88,7 +88,7 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"v10", "v11"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTDumpSequences/test3/build.xml");
         executeTarget("test");
@@ -97,7 +97,7 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
     /**
      * Should dump two sequences in target directory
      */
-    @Test
+    @Test(groups= {"v10", "v11"})
     public void test4() {
         configureProject("PCTDumpSequences/test4/build.xml");
         executeTarget("base");
@@ -110,7 +110,7 @@ public class PCTDumpSequencesTest extends BuildFileTestNg {
     /**
      * Should dump no sequences in target directory
      */
-    @Test
+    @Test(groups= {"v10", "v11"})
     public void test5() {
         configureProject("PCTDumpSequences/test5/build.xml");
         executeTarget("base");

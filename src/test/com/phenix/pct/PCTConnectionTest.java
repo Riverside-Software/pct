@@ -83,7 +83,7 @@ public class PCTConnectionTest {
         exec.setProject(project);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void testDbNameRequired() {
         PCTConnection conn = new PCTConnection();
 
@@ -96,7 +96,7 @@ public class PCTConnectionTest {
         fail("Should throw BuildException");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void testAliases() {
         PCTConnection conn = new PCTConnection();
 
@@ -131,7 +131,7 @@ public class PCTConnectionTest {
         }
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void testNamedAlias() {
         PCTConnection conn = new PCTConnection();
         PCTAlias alias1 = new PCTAlias();

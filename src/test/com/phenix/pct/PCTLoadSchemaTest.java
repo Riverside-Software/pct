@@ -66,7 +66,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no srcFile and no connection
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTLoadSchema/test1/build.xml");
         executeTarget("test");
@@ -75,7 +75,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no srcFile defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTLoadSchema/test2/build.xml");
         executeTarget("test");
@@ -84,13 +84,13 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTLoadSchema/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test4() {
         configureProject("PCTLoadSchema/test4/build.xml");
         executeTarget("base");
@@ -99,7 +99,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test5() {
         configureProject("PCTLoadSchema/test5/build.xml");
         executeTarget("base");

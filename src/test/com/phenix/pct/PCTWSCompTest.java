@@ -67,7 +67,7 @@ import java.io.File;
  */
 public class PCTWSCompTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTWSComp/test1/build.xml");
         executeTarget("test");
@@ -76,7 +76,7 @@ public class PCTWSCompTest extends BuildFileTestNg {
     /**
      * Do nothing : should not hurt
      */
-    @Test
+    @Test(groups = { "all" })
     public void test2() {
         configureProject("PCTWSComp/test2/build.xml");
         executeTarget("test");
@@ -85,7 +85,7 @@ public class PCTWSCompTest extends BuildFileTestNg {
     /**
      * Very simple compilation
      */
-    @Test
+    @Test(groups = { "all" })
     public void test3() {
         configureProject("PCTWSComp/test3/build.xml");
         executeTarget("test1");

@@ -68,25 +68,25 @@ import java.io.File;
  */
 public class PCTBinaryDumpTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTBinaryDump/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTBinaryDump/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTBinaryDump/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void test4() {
         configureProject("PCTBinaryDump/test4/build.xml");
         executeTarget("test");
@@ -97,7 +97,7 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void test5() {
         configureProject("PCTBinaryDump/test5/build.xml");
         executeTarget("test");
@@ -108,7 +108,7 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertFalse(f2.exists());
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void test6() {
         configureProject("PCTBinaryDump/test6/build.xml");
         executeTarget("test");

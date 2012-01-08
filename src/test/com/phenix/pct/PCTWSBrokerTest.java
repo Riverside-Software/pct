@@ -72,19 +72,19 @@ import java.io.IOException;
  */
 public class PCTWSBrokerTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void testFailure1() {
         configureProject("PCTWSBroker/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void testFailure2() {
         configureProject("PCTWSBroker/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void testSimplestTest() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test3/build.xml");
         executeTarget("test");
@@ -93,7 +93,7 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertNotNull(ini.get("UBroker.WS.Test"));
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void testLogging() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test4/build.xml");
         executeTarget("test");
@@ -106,7 +106,7 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertNotNull(section.get("srvrLogFile"));
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void testAttributes1() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test5/build.xml");
         executeTarget("test");
