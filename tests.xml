@@ -11,7 +11,6 @@
     <pathelement location="ant-apache-regexp.jar" />
     <pathelement location="jakarta-regexp-1.5.jar" />
     <pathelement location="testng-6.3.1.jar" />
-    <pathelement location="PCT-Tests.jar" />
     <pathelement location="ini4j-0.5.1.jar" />
   </path>
 
@@ -26,13 +25,15 @@
     <delete file="testng-results-${TESTENV}.html" />
     <mkdir dir="${testdir}" />
     <unzip src="pct-tests.zip" dest="${testdir}" />
+    <mkdir dir="classes" />
+    <unjar src="PCT-Tests.jar" dest="classes" />
   </target>
 
   <target name="test" depends="prepare-test">
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}">
-      <classfileset includes="com/phenix/pct/**Test.class" />
+    <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}">
+      <classfileset dir="classes" includes="**Test.class" />
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
