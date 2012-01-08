@@ -11,8 +11,8 @@
     <pathelement location="ant-apache-regexp.jar" />
     <pathelement location="jakarta-regexp-1.5.jar" />
     <pathelement location="testng-6.3.1.jar" />
-    <pathelement location="ini4j-0.5.1.jar" />
     <pathelement location="classes" />
+    <pathelement location="ini4j-0.5.1.jar" />
   </path>
 
   <path id="testng.cp">
