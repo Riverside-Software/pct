@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 
@@ -138,7 +139,9 @@ public class PCTProxygen extends PCT {
         // This caused problems with JUnit testing, as I think there are System.exit statements
         // in proxygen code
         pxg.setFork(true);
-        pxg.setJvm(getJVM().getAbsolutePath());
+        // No included JDK on UNIX
+        if (Os.isFamily(Os.FAMILY_WINDOWS))
+            pxg.setJvm(getJVM().getAbsolutePath());
         if (this.workingDirectory != null) {
             pxg.setDir(this.workingDirectory);
         } else {
