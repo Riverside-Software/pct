@@ -68,19 +68,19 @@ import java.io.File;
  */
 public class PCTCompileTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTCompile/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test2() {
         configureProject("PCTCompile/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("PCTCompile/test3/build.xml");
         executeTarget("test");
@@ -89,7 +89,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3bis() {
         configureProject("PCTCompile/test3bis/build.xml");
         expectBuildException("test", "Compilation should fail");
@@ -98,7 +98,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTCompile/test4/build.xml");
         executeTarget("test");
@@ -110,7 +110,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.length() < f1.length());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
         configureProject("PCTCompile/test5/build.xml");
         executeTarget("test");
@@ -119,7 +119,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test6() {
         configureProject("PCTCompile/test6/build.xml");
         executeTarget("test1");
@@ -130,7 +130,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod == f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test7() {
         configureProject("PCTCompile/test7/build.xml");
         executeTarget("test1");
@@ -141,7 +141,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test8() {
         configureProject("PCTCompile/test8/build.xml");
         executeTarget("test1");
@@ -152,7 +152,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test9() {
         configureProject("PCTCompile/test9/build.xml");
         executeTarget("test1");
@@ -163,7 +163,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test10() {
         configureProject("PCTCompile/test10/build.xml");
         executeTarget("test1");
@@ -174,7 +174,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test11() {
         configureProject("PCTCompile/test11/build.xml");
         expectBuildException("test", "Second task should not be launched");
@@ -183,7 +183,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test12() {
         configureProject("PCTCompile/test12/build.xml");
         expectBuildException("test1", "File with underscore");
@@ -193,7 +193,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test13() {
         configureProject("PCTCompile/test13/build.xml");
         executeTarget("test1");
@@ -204,7 +204,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test14() {
         configureProject("PCTCompile/test14/build.xml");
         executeTarget("base");
@@ -223,7 +223,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod2 < f2.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test15() {
         configureProject("PCTCompile/test15/build.xml");
         executeTarget("base");
@@ -237,7 +237,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod == f.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test16() {
         configureProject("PCTCompile/test16/build.xml");
         executeTarget("xcode");
@@ -251,7 +251,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test17() {
         configureProject("PCTCompile/test17/build.xml");
         executeTarget("xcode");
@@ -283,7 +283,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     // assertTrue(mod2 < f2.lastModified());
     // }
 
-    @Test
+    @Test(groups= {"all"})
     public void test19() {
         configureProject("PCTCompile/test19/build.xml");
         executeTarget("test1");
@@ -299,7 +299,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod2 < f2.lastModified());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test20() {
         configureProject("PCTCompile/test20/build.xml");
         executeTarget("test1");
@@ -323,7 +323,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue((f4.length() > 0), "Empty xref file");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test21() {
         configureProject("PCTCompile/test21/build.xml");
         executeTarget("test");
@@ -332,7 +332,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test22() {
         configureProject("PCTCompile/test22/build.xml");
         executeTarget("test");
@@ -347,7 +347,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f4.exists());
     }
 
-    @Test(groups = { "no-unix" })
+    @Test(groups= {"win"})
     public void test23() {
         configureProject("PCTCompile/test23/build.xml");
         expectBuildException("test1", "Should fail - No stream-io");

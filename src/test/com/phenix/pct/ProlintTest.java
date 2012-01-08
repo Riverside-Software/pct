@@ -67,7 +67,7 @@ import java.io.File;
  */
 public class ProlintTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class )
+//    @Test(expectedExceptions = BuildException.class )
     public void test1() {
         configureProject("Prolint/test1/build.xml");
         executeTarget("test");

@@ -71,19 +71,19 @@ import java.io.IOException;
  */
 public class PCTCRCTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTCRC/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTCRC/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("PCTCRC/test3/build.xml");
         executeTarget("base");
@@ -109,7 +109,7 @@ public class PCTCRCTest extends BuildFileTestNg {
         }
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTCRC/test4/build.xml");
         executeTarget("base");

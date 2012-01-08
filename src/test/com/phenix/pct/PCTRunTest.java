@@ -68,25 +68,25 @@ import java.io.File;
  */
 public class PCTRunTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTRun/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test2() {
         configureProject("PCTRun/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTRun/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test4() {
         File f = new File("nofile.p");
         assertFalse(f.exists());
@@ -95,51 +95,51 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test5() {
         configureProject("PCTRun/test5/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test6() {
         configureProject("PCTRun/test6/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test7() {
         configureProject("PCTRun/test7/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test8() {
         configureProject("PCTRun/test8/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test9() {
         configureProject("PCTRun/test9/build.xml");
         expectLog("test1", "Hello PCT");
         expectLog("test2", "Hello");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test10() {
         configureProject("PCTRun/test10/build.xml");
         expectLog("test1", "01/01/2060");
         expectLog("test2", "01/01/1960");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test11() {
         configureProject("PCTRun/test11/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test12() {
         configureProject("PCTRun/test12/build.xml");
         expectLog("test1", "123.456");
@@ -148,14 +148,14 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test4", "123.456");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test13() {
         configureProject("PCTRun/test13/build.xml");
         expectLog("test1", "This is dir1");
         expectLog("test2", "This is dir2");
     }
 
-    @Test(groups = { "no-unix" } )
+    @Test(groups = { "win" } )
     public void test14() {
         // Sous Windows uniquement
         configureProject("PCTRun/test14/build.xml");
@@ -164,13 +164,13 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test3", "-prop1=prop1 -prop2=prop2 -prop3=prop 3");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test15() {
         configureProject("PCTRun/test15/build.xml");
         executeTarget("test15");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test16() {
         configureProject("PCTRun/test16/build.xml");
         executeTarget("test");
@@ -178,7 +178,7 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test17() {
         configureProject("PCTRun/test17/build.xml");
         executeTarget("test");
@@ -186,25 +186,25 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test18() {
         configureProject("PCTRun/test18/build.xml");
         expectLog("test", "utf-8");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test19() {
         configureProject("PCTRun/test19/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test20() {
         configureProject("PCTRun/test20/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test21() {
         configureProject("PCTRun/test21/build.xml");
         executeTarget("test");
@@ -212,13 +212,13 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test22() {
         configureProject("PCTRun/test22/build.xml");
         expectLog("test", "Message with spaces");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test23() {
         configureProject("PCTRun/test23/build.xml");
         executeTarget("test");
@@ -226,43 +226,43 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test24() {
         configureProject("PCTRun/test24/build.xml");
         expectLog("test", "TEST");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test25() {
         configureProject("PCTRun/test25/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test26() {
         configureProject("PCTRun/test26/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test27() {
         configureProject("PCTRun/test27/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test28() {
         configureProject("PCTRun/test28/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test29() {
         configureProject("PCTRun/test29/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test30() {
         configureProject("PCTRun/test30/build.xml");
         expectBuildException("test1", "Shouldn't work");
@@ -270,14 +270,14 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test3");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test31() {
         configureProject("PCTRun/test31/build.xml");
         expectBuildException("test1", "Shouldn't work");
         executeTarget("test2");
     }
     
-    @Test
+    @Test(groups = { "all" })
     public void test32() {
         configureProject("PCTRun/test32/build.xml");
         assertPropertyUnset("myResult");
@@ -289,7 +289,7 @@ public class PCTRunTest extends BuildFileTestNg {
         assertPropertyEquals("myNewResult", "17");
     }
     
-    @Test
+    @Test(groups = { "all" })
     public void test33() {
         configureProject("PCTRun/test33/build.xml");
         expectBuildException("test1", "No output parameter defined");
@@ -299,7 +299,7 @@ public class PCTRunTest extends BuildFileTestNg {
         assertPropertyEquals("firstParam", "PCT");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test34() {
         configureProject("PCTRun/test34/build.xml");
         assertPropertyUnset("firstParam");
@@ -314,14 +314,14 @@ public class PCTRunTest extends BuildFileTestNg {
         assertPropertyEquals("fourthParam", "PCT4");
     }
     
-    @Test
+    @Test(groups = { "all" })
     public void test35() {
         configureProject("PCTRun/test35/build.xml");
         executeTarget("test1");
         expectBuildException("test2", "Not in propath");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test36() {
         configureProject("PCTRun/test36/build.xml");
         executeTarget("base");
@@ -331,7 +331,7 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test4");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test37() {
         configureProject("PCTRun/test37/build.xml");
         expectLog("test1", "Result : 789");
@@ -339,7 +339,7 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test3", "Result : 1");
     }
 
-    @Test
+    @Test(groups = { "all" })
     public void test38() {
         configureProject("PCTRun/test38/build.xml");
         expectLog("test1", "Result : A1B2C3");

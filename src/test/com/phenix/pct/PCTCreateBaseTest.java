@@ -67,19 +67,19 @@ import java.io.File;
  */
 public class PCTCreateBaseTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTCreateBase/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTCreateBase/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("PCTCreateBase/test3/build.xml");
         executeTarget("test");
@@ -88,13 +88,13 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test4() {
         configureProject("PCTCreateBase/test4/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
         configureProject("PCTCreateBase/test5/build.xml");
         executeTarget("base");
@@ -106,7 +106,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test6() {
         configureProject("PCTCreateBase/test6/build.xml");
         executeTarget("test");
@@ -117,7 +117,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.lastModified() == time);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test7() {
         // TODO : fix the overwrite attribute and uncomment this
         // configureProject("PCTCreateBase/test7/build.xml");
@@ -129,7 +129,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         // assert True(f.lastModified() != time);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test8() {
         configureProject("PCTCreateBase/test8/build.xml");
         executeTarget("test");
@@ -146,7 +146,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test9() {
         configureProject("PCTCreateBase/test9/build.xml");
         executeTarget("test");
@@ -158,7 +158,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test10() {
         configureProject("PCTCreateBase/test10/build.xml");
         executeTarget("test");
@@ -171,7 +171,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         expectBuildException("test2", "Should throw BuildException as schema doesn't exist");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test11() {
         configureProject("PCTCreateBase/test11/build.xml");
         executeTarget("test1");

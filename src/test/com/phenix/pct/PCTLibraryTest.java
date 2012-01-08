@@ -72,13 +72,13 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Attribute destFile should always be defined
      */
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTLibrary/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTLibrary/test2/build.xml");
         executeTarget("test");
@@ -87,7 +87,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("PCTLibrary/test3/build.xml");
         executeTarget("test");
@@ -104,7 +104,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
         configureProject("PCTLibrary/test4/build.xml");
         executeTarget("test1");
@@ -124,7 +124,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v2.size() == 1);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
         configureProject("PCTLibrary/test5/build.xml");
         executeTarget("test");
@@ -136,7 +136,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue((f2.length() < f1.length()));
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test6() {
         configureProject("PCTLibrary/test6/build.xml");
         executeTarget("test");
@@ -150,13 +150,13 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 3);
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test7() {
         configureProject("PCTLibrary/test7/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test8() {
         configureProject("PCTLibrary/test8/build.xml");
         executeTarget("test");
@@ -170,7 +170,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 2);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test9() {
         configureProject("PCTLibrary/test9/build.xml");
         executeTarget("test");
@@ -184,7 +184,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 1);
     }
 
-    @Test(groups = { "no-v9", "no-v10", "no-v11" })
+//    @Test Not tested for now
     public void test10() {
         configureProject("PCTLibrary/test10/build.xml");
         executeTarget("prepare");
