@@ -32,6 +32,7 @@
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <testng workingDir="${testdir}" testJar="PCT-Tests.jar" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}">
+      <classfileset includes="com/phenix/pct/**Test.class" />
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
