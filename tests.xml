@@ -33,7 +33,7 @@
   <target name="test" depends="prepare-test">
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}">
+    <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
       <classfileset dir="classes" includes="**/*Test.class" />
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
