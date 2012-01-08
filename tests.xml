@@ -12,6 +12,7 @@
     <pathelement location="jakarta-regexp-1.5.jar" />
     <pathelement location="testng-6.3.1.jar" />
     <pathelement location="ini4j-0.5.1.jar" />
+    <pathelement location="classes" />
   </path>
 
   <path id="testng.cp">
@@ -33,7 +34,7 @@
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}">
-      <classfileset dir="classes" includes="**Test.class" />
+      <classfileset dir="classes" includes="**/*Test.class" />
       <classpath refid="test.run.cp" />
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
