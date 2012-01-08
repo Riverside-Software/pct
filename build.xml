@@ -79,10 +79,19 @@
     <exclude name="pct/crcV8.p" />
     <exclude name="pct/_server.p" />
     <exclude name="pct/pctBgCompile.p" />
+    <exclude name="pct/_dmpincr102b.p" />
+    <exclude name="pct/_dmpincr11.p" />
+    <exclude name="pct/_dmpincr.p" />
+    <exclude name="pct/_dmputil11.p" />
+    <exclude name="pct/dump_inc102b.p" />
+    <exclude name="pct/dump_inc11.p" />
+    <exclude name="pct/dump_seq.p" />
+    <exclude name="pct/dump_inc.p" />
+    <exclude name="pct/_dmputil.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
-    <include name="prolint/**/*.p" />
+    <!--<include name="prolint/**/*.p" />-->
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/_dmpincr11.p" />
@@ -220,12 +229,12 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="true" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
-      <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" />
+    <!--  <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" /> -->
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
         <PCTAlias name="dictdb2" />
