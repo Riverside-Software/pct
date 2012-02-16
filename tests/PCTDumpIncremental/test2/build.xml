@@ -9,7 +9,7 @@
 
   <target name="test">
     <mkdir dir="incr" />
-    <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}" activeIndexes="true">
+    <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}" activeIndexes="0">
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -17,7 +17,15 @@
         <PCTAlias name="dictdb2" />
       </PCTConnection>
     </PCTDumpIncremental>
-    <PCTDumpIncremental destFile="incr/incremental2.df" dlcHome="${DLC}" activeIndexes="false">
+    <PCTDumpIncremental destFile="incr/incremental2.df" dlcHome="${DLC}" activeIndexes="1">
+      <PCTConnection dbName="test1" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </PCTDumpIncremental>
+    <PCTDumpIncremental destFile="incr/incremental3.df" dlcHome="${DLC}" activeIndexes="2">
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>

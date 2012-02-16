@@ -359,13 +359,15 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test
-    public void test23() {
-        File f = new File("build/sandbox/test.r");
-        executeTarget("test23-init");
+    public void test24() {
+        configureProject("PCTCompile/test24/build.xml");
+
+        File f = new File("PCTCompile/test24/build/test.r");
         assertFalse(f.exists());
-        executeTarget("test23-part1");
+
+        executeTarget("test1");
         assertFalse(f.exists());
-        executeTarget("test23-part2");
+        executeTarget("test2");
         assertTrue(f.exists());
     }
 
