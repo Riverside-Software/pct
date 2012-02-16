@@ -19,6 +19,9 @@ public class DLCVersion implements Comparable {
     private final String fullVersion, maintenanceVersion, patchVersion, date;
     private final boolean arch;
 
+    /**
+     * Only use for testing purposes
+     */
     public DLCVersion(int major, int minor, String maintenance) {
         this.majorVersion = major;
         this.minorVersion = minor;
@@ -39,6 +42,16 @@ public class DLCVersion implements Comparable {
         patchVersion = builder.patch;
         arch = builder.arch;
         rCodeVersion = builder.rCodeVersion;
+    }
+
+    /**
+     * Only use for testing purposes
+     */
+    public static DLCVersion getObject(String versionStr) {
+        Builder builder = new Builder();
+        readVersionFile(builder, versionStr);
+
+        return new DLCVersion(builder);
     }
 
     public static DLCVersion getObject(File dir) throws IOException, InvalidRCodeException {
@@ -66,8 +79,7 @@ public class DLCVersion implements Comparable {
         }
     }
 
-    protected static void readArch(Builder builder, File prostart) throws IOException,
-            InvalidRCodeException {
+    private static void readArch(Builder builder, File prostart) throws IOException, InvalidRCodeException {
         RCodeInfo rci = new RCodeInfo(prostart);
         builder.rCodeVersion = rci.getVersion();
         builder.arch = ((builder.rCodeVersion & 0x4000) != 0);
@@ -152,7 +164,8 @@ public class DLCVersion implements Comparable {
                     + (arch ? " 64 bits" : "");
         }
     }
-    protected static class Builder {
+
+    public static class Builder {
         long rCodeVersion;
         int major, minor;
         String fullVersion, maintenance, patch, date;

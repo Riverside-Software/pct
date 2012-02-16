@@ -83,23 +83,26 @@ prodict/dump_inc.p from POSSENET code.
 </tr>
 </table>
 <p>PCTDumpIncremental inherits attributes from <a href="PCT.html">PCT</a> and
-<a href="PCTRun.html">PCTRun</a>. However, PCTDumpIncremental <strong>must</strong>
-have <strong>two and only two</strong> PCTConnection. One database must have a
-dictdb alias, while the second one must have a dictdb2 alias.
+<a href="PCTRun.html">PCTRun</a>.
 </p>
+<p>PCTDumpIncremental previously accepted PCTConnection nodes, but they are now deprecated. Use sourceDatabase and targetDatabase
+nodes instead.</p>
 
 <h2>Parameters as nested elements</h2>
-None
+<h3>SourceDb (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+Database to migrate from.
+</p>
+<h3>TargetDb (<a href="PCTConnection.html">com.phenix.pct.PCTConnection</a>)</h3>
+<p>
+Database to migrate to.
+</p>
 
 <h2>Examples</h2>
 <pre>
 &lt;PCTDumpIncremental destFile="incr.df"&gt;
-  &lt;PCTConnection dbName="db1" singleUser="true"&gt;
-    &lt;PCTAlias name="dictdb"/&gt;
-  &lt;/PCTConnection&gt;
-  &lt;PCTConnection dbName="db2" singleUser="true"&gt;
-    &lt;PCTAlias name="dictdb2"/&gt;
-  &lt;/PCTConnection&gt;
+  &lt;SourceDb dbName="db1" singleUser="true" /&gt;
+  &lt;TargetDb dbName="db2" singleUser="true" :&gt;
 &lt;/PCTDumpIncremental&gt;
 </pre>
 <p>

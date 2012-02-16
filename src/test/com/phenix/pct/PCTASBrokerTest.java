@@ -60,91 +60,59 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 import org.ini4j.InvalidFileFormatException;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 /**
  * Class for testing PCTASBroker task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision: 453 $
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTASBrokerTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTASBroker.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-
-        // And copy sample properties files to play with
-        Copy copy = new Copy();
-        copy.setProject(this.getProject());
-        copy.setFile(new File("ubroker.template"));
-        copy.setTofile(new File("sandbox/ubroker.properties"));
-        copy.execute();
-        copy.setFile(new File("conmgr.template"));
-        copy.setTofile(new File("sandbox/conmgr.properties"));
-        copy.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    @Test(expectedExceptions=BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testFailure1() {
-        executeTarget("failure1");
+        configureProject("PCTASBroker/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testFailure2() {
-        executeTarget("failure2");
+        configureProject("PCTASBroker/test2/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testSimplestTest() throws InvalidFileFormatException, IOException {
-        executeTarget("SimplestTest");
+        configureProject("PCTASBroker/test3/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test3/ubroker.properties"));
         assertNotNull(ini.get("UBroker.AS.Test"));
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testUidNone() throws InvalidFileFormatException, IOException {
-        executeTarget("TestUidNone");
+        configureProject("PCTASBroker/test4/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test4/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
         assertNotNull(section);
         assertFalse(section.containsKey("uuid"));
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testUidAuto() throws InvalidFileFormatException, IOException {
-        executeTarget("TestUidAuto");
+        configureProject("PCTASBroker/test5/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test5/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
         assertNotNull(section);
         assertTrue(section.containsKey("uuid"));
@@ -152,23 +120,27 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertTrue((section.get("uuid", String.class).length() < 30), "Weird UUID pattern...");
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testUid() throws InvalidFileFormatException, IOException {
-        executeTarget("TestUid");
+        configureProject("PCTASBroker/test6/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test6/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
         assertNotNull(section);
         assertTrue(section.containsKey("uuid"));
         assertNotNull(section.get("uuid"), "Null uuid");
-        assertTrue(section.get("uuid", String.class).equals("3fb5744ad58ca1b0:239137:10a178402e4:-8000"), "Wrong UUID");
+        assertTrue(
+                section.get("uuid", String.class).equals(
+                        "3fb5744ad58ca1b0:239137:10a178402e4:-8000"), "Wrong UUID");
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testLogging() throws InvalidFileFormatException, IOException {
-        executeTarget("TestLogging");
+        configureProject("PCTASBroker/test7/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test7/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
         assertNotNull(section.get("brokerLogFile"));
         assertNotNull(section.get("brkrLoggingLevel"));
@@ -176,42 +148,41 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertNotNull(section.get("srvrLogFile"));
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testApsvDelete() throws InvalidFileFormatException, IOException {
-        executeTarget("TestApsvDelete");
+        configureProject("PCTASBroker/test8/build.xml");
+        executeTarget("test");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test8/ubroker.properties"));
         assertNull(ini.get("UBroker.AS.Test"));
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testApsvUpdate() throws InvalidFileFormatException, IOException {
-        executeTarget("TestApsvUpdate-Part1");
+        configureProject("PCTASBroker/test9/build.xml");
+        executeTarget("test1");
 
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        Ini ini = new Ini(new File("PCTASBroker/test9/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertTrue("12345".equals(section.get("portNumber")));
         ini = null;
-        
-        executeTarget("TestApsvUpdate-Part2");
-        ini = new Ini(new File("sandbox/ubroker.properties"));
+
+        executeTarget("test2");
+        ini = new Ini(new File("PCTASBroker/test9/ubroker.properties"));
         section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertTrue("12346".equals(section.get("portNumber")));
     }
 
-    // TODO This test should throw BuildException -- See how error should be trapped...
-    // AFAIR, it threw an error on v9, but not on v10
-//    public void testDoubleCreate() {
-//        executeTarget("TestDoubleCreate-Part1");
-//        expectBuildException("TestDoubleCreate-Part2",
-//                "Already created, should throw BuilException");
-//    }
-
+    @Test(groups = {"all"})
     public void testAttributes1() throws InvalidFileFormatException, IOException {
-        executeTarget("TestAttributes-1");
-        
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        configureProject("PCTASBroker/test10/build.xml");
+        executeTarget("test");
+
+        Ini ini = new Ini(new File("PCTASBroker/test10/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertEquals(section.get("operatingMode", String.class), "State-reset");
         assertEquals(section.get("autoStart", String.class), "1");
         assertEquals(section.get("initialSrvrInstance", String.class), "4");
@@ -225,11 +196,14 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
+    @Test
     public void testAttributes2() throws InvalidFileFormatException, IOException {
-        executeTarget("TestAttributes-2");
-        
-        Ini ini = new Ini(new File("sandbox/ubroker.properties"));
+        configureProject("PCTASBroker/test11/build.xml");
+        executeTarget("test");
+
+        Ini ini = new Ini(new File("PCTASBroker/test11/ubroker.properties"));
         Section section = ini.get("UBroker.AS.Test");
+        assertNotNull(section);
         assertEquals(section.get("srvrActivateProc", String.class), "activate.p");
         assertEquals(section.get("srvrDeactivateProc", String.class), "deactivate.p");
         assertEquals(section.get("srvrConnectProc", String.class), "connect.p");
@@ -238,34 +212,47 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrShutdownProc", String.class), "shutdown.p");
 
         // Checking PROPATH
-        String propath = section.get("PROPATH", String.class);
-        StringTokenizer tokenizer = new StringTokenizer(propath, Character.toString(File.pathSeparatorChar));
-        assertEquals(tokenizer.countTokens(), 2, "Wrong number of entries in PROPATH");
-        assertTrue((tokenizer.nextToken().endsWith("build")), "First entry should be build");
-        assertTrue((tokenizer.nextToken().endsWith("build2")), "Second entry should be build2");
+        // XXX Ini4J escapes strings with \ so this doesn't work on Win
+//        String propath = section.get("PROPATH", String.class);
+//        StringTokenizer tokenizer = new StringTokenizer(propath,
+//                Character.toString(File.pathSeparatorChar));
+//        assertEquals(tokenizer.countTokens(), 2, "Wrong number of entries in PROPATH");
+//        assertTrue((tokenizer.nextToken().endsWith("build")), "First entry should be build");
+//        assertTrue((tokenizer.nextToken().endsWith("build2")), "Second entry should be build2");
 
         String startup = section.get("srvrStartupParam", String.class);
         assertTrue((startup.indexOf("-db myDB") != -1), "Unable to find myDB connection");
         assertTrue((startup.indexOf("-db myDB2") != -1), "Unable to find myDB2 connection");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testForbiddenAttributes1() {
-        executeTarget("TestForbiddenAttributes-1");
+        configureProject("PCTASBroker/test12/build.xml");
+        executeTarget("test");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testForbiddenAttributes2() {
-        executeTarget("TestForbiddenAttributes-2");
+        configureProject("PCTASBroker/test13/build.xml");
+        executeTarget("test");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testForbiddenAttributes3() {
-        executeTarget("TestForbiddenAttributes-3");
+        configureProject("PCTASBroker/test14/build.xml");
+        executeTarget("test");
     }
 
-    @Test(expectedExceptions=BuildException.class)
+    @Test(expectedExceptions = BuildException.class)
     public void testForbiddenAttributes4() {
-        executeTarget("TestForbiddenAttributes-4");
+        configureProject("PCTASBroker/test15/build.xml");
+        executeTarget("test");
+    }
+
+    @Test(expectedExceptions = BuildException.class)
+    public void testDoubleCreate() {
+        configureProject("PCTASBroker/test16/build.xml");
+        executeTarget("test1");
+        executeTarget("test2");
     }
 }

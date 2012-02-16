@@ -56,10 +56,7 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -75,330 +72,368 @@ import java.nio.channels.FileChannel;
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTCompileExt.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-
-        ProgressVersion version = new ProgressVersion();
-        version.setProject(getProject());
-        version.setDlcHome(new File(getProject().getProperty("DLC")));
-        version.setMajorVersion("majorVersion");
-        version.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setFollowSymlinks(false);
-        del.setProject(this.project);
-        del.setDir(new File("build"));
-        del.execute();
-        del.setDir(new File("sandbox"));
-        del.execute();
-        del.setDir(new File("xcode"));
-        del.execute();
-    }
-
-    @Test
+    @Test(groups={"v10", "v11"}, expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "No destDir defined");
+        configureProject("PCTCompileExt/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups={"v10", "v11"})
     public void test2() {
-        executeTarget("test2");
+        configureProject("PCTCompileExt/test2/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups={"v10", "v11"})
     public void test3() {
-        executeTarget("test3");
+        configureProject("PCTCompileExt/test3/build.xml");
+        executeTarget("test");
 
-        File f = new File("build/sandbox/test.r");
+        File f = new File("PCTCompileExt/test3/build/test.r");
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups={"v10", "v11"})
     public void test3bis() {
-        expectBuildException("test3bis", "Compilation should fail");
+        configureProject("PCTCompileExt/test3bis/build.xml");
+        expectBuildException("test", "Compilation should fail");
 
-        File f = new File("build/sandbox/temp.r");
+        File f = new File("PCTCompileExt/test3bis/build/test.r");
         assertFalse(f.exists());
     }
 
-    @Test
+    @Test(groups={"v10", "v11"})
     public void test4() {
-        long size1 = 0;
-        long size2 = 0;
-        executeTarget("test4");
+        configureProject("PCTCompileExt/test4/build.xml");
+        executeTarget("test");
 
-        File f = new File("build/sandbox/test.r");
-        assertTrue(f.exists());
-        size1 = f.length();
-        assertTrue(f.delete());
-        executeTarget("test4bis");
-        assertTrue(f.exists());
-        size2 = f.length();
-        assertTrue(size2 < size1);
-    }
-
-    @Test
-    public void test5() {
-        executeTarget("test5");
-
-        File f = new File("build/sandbox/wizz~~'~.r");
-        assertTrue(f.exists());
-    }
-
-    @Test
-    public void test6() {
-        executeTarget("test6init");
-        executeTarget("test6");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test6bis");
-        assertTrue(mod == f.lastModified());
-    }
-
-    @Test
-    public void test7() {
-        executeTarget("test7init");
-        executeTarget("test7");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test7bis");
-        assertTrue(mod < f.lastModified());
-    }
-
-    @Test
-    public void test8() {
-        executeTarget("test8init");
-        executeTarget("test8");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test8bis");
-        assertTrue(mod < f.lastModified());
-    }
-
-    @Test
-    public void test9() {
-        executeTarget("test9init");
-        executeTarget("test9");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test9bis");
-        assertTrue(mod < f.lastModified());
-    }
-
-   @Test
-   public void test10() {
-        executeTarget("test10init");
-        executeTarget("test10");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test10bis");
-        assertTrue(mod < f.lastModified());
-    }
-
-    @Test
-    public void test12() {
-        File f = new File("build/sandbox/temp.r");
-        executeTarget("test12init");
-        expectBuildException("test12", "File with underscore");
-        assertFalse(f.exists());
-        executeTarget("test12bis");
-        assertTrue(f.exists());
-    }
-
-    @Test
-    public void test13() {
-        executeTarget("test13init");
-        executeTarget("test13");
-
-        File f = new File("build/sandbox/temp.r");
-        long mod = f.lastModified();
-        executeTarget("test13bis");
-        assertTrue(mod < f.lastModified());
-    }
-
-    @Test
-    public void test14() {
-        executeTarget("test14init");
-        executeTarget("test14");
-
-        File f = new File("build/sandbox/test.r");
-        File f2 = new File("build/sandbox/test2.r");
-        assertTrue(f.exists());
-        assertTrue(f2.exists());
-
-        long mod = f.lastModified();
-        long mod2 = f2.lastModified();
-        executeTarget("test14bis");
-        assertTrue(mod < f.lastModified());
-        assertTrue(mod2 < f2.lastModified());
-    }
-
-    @Test
-    public void test15() {
-        executeTarget("test15init");
-        executeTarget("test15");
-
-        File f = new File("build/sandbox/test.r");
-        assertTrue(f.exists());
-
-        long mod = f.lastModified();
-        executeTarget("test15bis");
-        assertTrue(mod == f.lastModified());
-    }
-
-    @Test
-    public void test16() {
-        executeTarget("test16init");
-        executeTarget("test16");
-        File f = new File("build/sandbox/temp.r");
-        assertTrue(f.exists());
-        File f2 = new File("build/xcode/temp.r");
-        assertTrue(f2.exists());
-    }
-
-    @Test
-    public void test17() {
-        executeTarget("test17init");
-        expectBuildException("test17-part1", "Should fail - No key specified");
-        executeTarget("test17-part2");
-        File f = new File("build/xcode/temp.r");
-        assertTrue(f.exists());
-    }
-
-    @Test
-    public void test18() {
-        executeTarget("test18init");
-        executeTarget("test18");
-
-        File f = new File("build/sandbox/test.r");
-        File f2 = new File("build/sandbox/test2.r");
-        assertTrue(f.exists());
-        assertTrue(f2.exists());
-
-        long mod = f.lastModified();
-        long mod2 = f2.lastModified();
-        executeTarget("test18bis");
-        assertTrue(mod < f.lastModified());
-        assertTrue(mod2 < f2.lastModified());
-    }
-
-    @Test
-    public void test19() {
-        executeTarget("test19init");
-        executeTarget("test19");
-
-        File f1 = new File("build/sandbox/temp.r");
-        File f2 = new File("build/.pct/sandbox/temp.p.crc");
+        File f1 = new File("PCTCompileExt/test4/build/test.r");
+        File f2 = new File("PCTCompileExt/test4/build2/test.r");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
+        assertTrue(f2.length() < f1.length());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test5() {
+        configureProject("PCTCompileExt/test5/build.xml");
+        executeTarget("test");
+
+        File f = new File("PCTCompileExt/test5/build/wizz~~'~.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test6() {
+        configureProject("PCTCompileExt/test6/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test6/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod == f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test7() {
+        configureProject("PCTCompileExt/test7/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test7/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod < f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test8() {
+        configureProject("PCTCompileExt/test8/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test8/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod < f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test9() {
+        configureProject("PCTCompileExt/test9/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test9/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod < f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test10() {
+        configureProject("PCTCompileExt/test10/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test10/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod < f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test11() {
+        configureProject("PCTCompileExt/test11/build.xml");
+        expectBuildException("test", "Second task should not be launched");
+
+        File f = new File("PCTCompileExt/test11/build/test2.r");
+        assertFalse(f.exists());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test12() {
+        configureProject("PCTCompileExt/test12/build.xml");
+        expectBuildException("test1", "File with underscore");
+        File f = new File("PCTCompileExt/test12/build/test.r");
+        assertFalse(f.exists());
+        executeTarget("test2");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test13() {
+        configureProject("PCTCompileExt/test13/build.xml");
+        executeTarget("test1");
+
+        File f = new File("PCTCompileExt/test13/build/test.r");
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod < f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test14() {
+        configureProject("PCTCompileExt/test14/build.xml");
+        executeTarget("base");
+        executeTarget("test1");
+
+        File f1 = new File("PCTCompileExt/test14/build/test.r");
+        File f2 = new File("PCTCompileExt/test14/build/test2.r");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+
         long mod1 = f1.lastModified();
         long mod2 = f2.lastModified();
-        executeTarget("test19bis");
+        executeTarget("update");
+        executeTarget("test2");
         assertTrue(mod1 < f1.lastModified());
         assertTrue(mod2 < f2.lastModified());
     }
 
-    @Test
-    public void test20() {
-        executeTarget("test20-init");
-        executeTarget("test20-part1");
+    @Test(groups={"v10", "v11"})
+    public void test15() {
+        configureProject("PCTCompileExt/test15/build.xml");
+        executeTarget("base");
+        executeTarget("test1");
 
-        File dotR = new File("build/sandbox/temp.r");
-        File f1 = new File("build/.pct/sandbox/temp.p");
-        File f2 = new File("build/.pct/sandbox/temp.p.preprocess");
-        File f3 = new File("build/.pct/sandbox/temp.dbg");
+        File f = new File("PCTCompileExt/test15/build/test.r");
+        assertTrue(f.exists());
+
+        long mod = f.lastModified();
+        executeTarget("test2");
+        assertTrue(mod == f.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test16() {
+        configureProject("PCTCompileExt/test16/build.xml");
+        executeTarget("xcode");
+        File f1 = new File("PCTCompileExt/test16/src/xcode/test.p");
+        assertTrue(f1.exists());
+        executeTarget("test");
+
+        File f2 = new File("PCTCompileExt/test16/build/std/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File("PCTCompileExt/test16/build/xcode/test.r");
+        assertTrue(f3.exists());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test17() {
+        configureProject("PCTCompileExt/test17/build.xml");
+        executeTarget("xcode");
+        File f1 = new File("PCTCompileExt/test17/src/xcode/test.p");
+        assertTrue(f1.exists());
+        expectBuildException("test1", "No XCodeKey");
+
+        executeTarget("test2");
+        File f2 = new File("PCTCompileExt/test17/build/xcode/test.r");
+        assertFalse(f2.exists());
+        File f3 = new File("PCTCompileExt/test17/build2/xcode/test.r");
+        assertTrue(f3.exists());
+    }
+
+    // @Test
+    // public void test18() {
+    // executeTarget("test18init");
+    // executeTarget("test18");
+    //
+    // File f = new File("build/sandbox/test.r");
+    // File f2 = new File("build/sandbox/test2.r");
+    // assertTrue(f.exists());
+    // assertTrue(f2.exists());
+    //
+    // long mod = f.lastModified();
+    // long mod2 = f2.lastModified();
+    // executeTarget("test18bis");
+    // assertTrue(mod < f.lastModified());
+    // assertTrue(mod2 < f2.lastModified());
+    // }
+
+    @Test(groups={"v10", "v11"})
+    public void test19() {
+        configureProject("PCTCompileExt/test19/build.xml");
+        executeTarget("test1");
+
+        File f1 = new File("PCTCompileExt/test19/build/test.r");
+        File f2 = new File("PCTCompileExt/test19/build/.pct/test.p.crc");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        long mod1 = f1.lastModified();
+        long mod2 = f2.lastModified();
+        executeTarget("test2");
+        assertTrue(mod1 < f1.lastModified());
+        assertTrue(mod2 < f2.lastModified());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test20() {
+        configureProject("PCTCompileExt/test20/build.xml");
+        executeTarget("test1");
+
+        File dotR = new File("PCTCompileExt/test20/build//test.r");
+        File f1 = new File("PCTCompileExt/test20/build/.pct/test.p");
+        File f2 = new File("PCTCompileExt/test20/build/.pct/test.p.preprocess");
+        File f3 = new File("PCTCompileExt/test20/build/.pct/test.dbg");
+        File f4 = new File("PCTCompileExt/test20/build/.pct/test.p.xref");
+        assertTrue(dotR.exists());
         assertFalse(f1.exists());
         assertFalse(f2.exists());
         assertFalse(f3.exists());
-        dotR.delete();
-        executeTarget("test20-part2");
+        assertFalse(f4.exists());
+
+        executeTarget("test2");
         assertTrue(f1.exists(), "Unable to find listing file");
         assertTrue(f2.exists(), "Unable to find preprocess file");
         assertTrue(f3.exists(), "Unable to find debug-listing file");
+        assertTrue(f4.exists(), "Unable to find xref file");
+        assertTrue((f4.length() > 0), "Empty xref file");
     }
 
-    @Test
+    @Test(groups={"v10", "v11"})
     public void test21() {
-        executeTarget("test21");
+        configureProject("PCTCompileExt/test21/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("build/test.p");
-        File f2 = new File("build/test2.p");
+        File f1 = new File("PCTCompileExt/test21/build/package/testclass.r");
         assertTrue(f1.exists());
+    }
+
+    @Test(groups={"v10", "v11"})
+    public void test22() {
+        configureProject("PCTCompileExt/test22/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompileExt/test22/build/X.r");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTCompileExt/test22/build/Y.r");
+        assertTrue(f2.exists());
+        File f3 = new File("PCTCompileExt/test22/build/.pct/X.cls.crc");
+        assertTrue(f3.exists());
+        File f4 = new File("PCTCompileExt/test22/build/.pct/Y.cls.crc");
+        assertTrue(f4.exists());
+    }
+
+    @Test(groups = { "v10", "v11", "win" } )
+    public void test23() {
+        configureProject("PCTCompileExt/test23/build.xml");
+        expectBuildException("test1", "Should fail - No stream-io");
+
+        File f = new File("PCTCompileExt/test23/build/test.r");
+        assertFalse(f.exists());
+        executeTarget("test2");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = { "v10", "v11" } )
+    public void test101() {
+        configureProject("PCTCompileExt/test101/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompileExt/test101/build/test1.p");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTCompileExt/test101/build/test2.p");
         assertTrue(f2.exists());
     }
 
-    @Test
-    public void test22() {
-        executeTarget("test22");
+    @Test(groups = { "v10", "v11" } )
+    public void test102() {
+        configureProject("PCTCompileExt/test102/build.xml");
+        executeTarget("test");
 
-        File f1 = new File("build/sandbox/testrenamed.r");
-        File f2 = new File("build/sandbox/test2renamed.r");
-        File f3 = new File("build/triggers/sandbox/trigger.r");
+        File f1 = new File("PCTCompileExt/test102/build/testrenamed.r");
+        File f2 = new File("PCTCompileExt/test102/build/test2renamed.r");
+        File f3 = new File("PCTCompileExt/test102/build/triggers/trigger.r");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
         assertTrue(f3.exists());
     }
 
-    @Test
-    public void test23() {
-        int majorVersion = Integer.parseInt(getProject().getProperty("majorVersion"));
-        if (majorVersion >= 10) {
-            executeTarget("test23");
-            File f1 = new File("build/package/package/testclass.r");
-            assertFalse(f1.exists());
-            File f2 = new File("build/package/testclass.r");
-            assertTrue(f2.exists());
-        }
-    }
-
-    @Test
-    public void test24() throws IOException {
-        File inputDir = new File("sandbox");
+    @Test(groups = { "v10", "v11" } )
+    public void test103() throws IOException {
+        File inputDir = new File("PCTCompileExt/test103/src");
+        File srcFile = new File("PCTCompileExt/test103/query-tester.w");
         for (int ii = 0; ii < 10; ii++) {
             for (int jj = 0; jj < 10; jj++) {
                 for (int kk = 0; kk < 10; kk++) {
-                    copy (new File("query-tester.w"), new File(inputDir, "test" + ii + jj + kk + ".p"));
+                    copy(srcFile, new File(inputDir, "test" + ii + jj + kk + ".p"));
                 }
             }
         }
-        executeTarget("test24");
+        configureProject("PCTCompileExt/test103/build.xml");
+        executeTarget("test");
 
-        File f = new File("build/sandbox/test000.r");
+        File f = new File("PCTCompileExt/test103/build/test000.r");
         assertTrue(f.exists());
-        f = new File("build/sandbox/test999.r");
+        f = new File("PCTCompileExt/test103/build/test999.r");
         assertTrue(f.exists());
     }
 
-    @Test
-    public void test25() throws IOException {
-        executeTarget("test25-init");
+    @Test(groups = { "v10", "v11" } )
+    public void test104() throws IOException {
+        configureProject("PCTCompileExt/test104/build.xml");
+        executeTarget("base");
 
-        File f1 = new File("build/sandbox/proc.r");
-        File f2 = new File("build/sandbox/proc2.r");
-        File f3 = new File("build/sandbox/proc3.r");
-        expectBuildException("test25", "Invalid alias");
-        executeTarget("test25-b");
+        expectBuildException("test1", "Invalid alias");
+        executeTarget("test2");
+        executeTarget("test3");
+        executeTarget("test4");
+        File f1 = new File("PCTCompileExt/test104/build/proc.r");
+        File f2 = new File("PCTCompileExt/test104/build/proc2.r");
+        File f3 = new File("PCTCompileExt/test104/build/proc3.r");
         assertTrue(f1.exists());
-        executeTarget("test25-c");
         assertTrue(f2.exists());
-        executeTarget("test25-d");
         assertTrue(f3.exists());
+    }
+
+    @Test(groups = { "v10", "v11" } )
+    public void test105() throws IOException {
+        configureProject("PCTCompileExt/test105/build.xml");
+        executeTarget("base");
+        executeTarget("test1");
+        expectBuildException("test2", "No DB connection, should throw BuildException");
+
+        File f1 = new File("PCTCompileExt/test105/build/test.r");
+        File f2 = new File("PCTCompileExt/test105/build2/test.r");
+        assertTrue(f1.exists());
+        assertFalse(f2.exists());
     }
 
     private static void copy(File src, File dst) throws IOException {
@@ -415,6 +450,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         srcChannel.close();
         dstChannel.close();
 
-      }
+    }
 
 }

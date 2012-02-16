@@ -68,6 +68,7 @@ public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
     private boolean unfreeze = false;
     private boolean commitWhenErrors = false;
+    private boolean onlineChanges = false;
 
     /**
      * Dump file
@@ -94,6 +95,10 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void setCommitWhenErrors(boolean commit) {
         this.commitWhenErrors = commit;
+    }
+
+    public void setOnlineChanges(boolean online) {
+        this.onlineChanges = online;
     }
 
     /**
@@ -124,6 +129,7 @@ public class PCTLoadSchema extends PCTRun {
         }
 
         this.setProcedure("pct/loadSch.p"); //$NON-NLS-1$
+        this.addParameter(new RunParameter("online", Boolean.toString(onlineChanges))); //$NON-NLS-1$
         this.addParameter(new RunParameter("unfreeze", Boolean.toString(this.unfreeze))); //$NON-NLS-1$
         this.addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath())); //$NON-NLS-1$
         this.addParameter(new RunParameter(

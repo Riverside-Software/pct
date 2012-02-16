@@ -1,12 +1,10 @@
 package com.phenix.pct;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * Gathers informations from r-code, as the RCODE-INFO system handle could provide. This class is
@@ -23,71 +21,27 @@ public class RCodeInfo {
 
     private final static short HEADER_SIZE = 68;
 
-    // Offsets in header
-    private final static short MAGIC_OFFSET = 0;
-    private final static short TS_OFFSET = 4;
-    private final static short PROCEDURES_LIST_OFFSET = 8;
-    private final static short VERSION_OFFSET = 14;
-    private final static short SEGMENTS_LIST_SIZE = 30;
-
-    // Offsets in segments location segment
-    private static final short ISEGMENT_OFFSET = 0;
-    private static final short ISEGMENT_SIZE = 4;
-    private static final short ACTION_SEGMENT_OFFSET = 40;
-    private static final short ACTION_SEGMENT_SIZE_V9 = 30;
-    private static final short ACTION_SEGMENT_SIZE_V10 = 44;
-    private static final short DEBUG_SEGMENT_OFFSET = 36;
-    private static final short DEBUG_SEGMENT_SIZE_V9 = 40;
-    private static final short DEBUG_SEGMENT_SIZE_V10 = 76;
-    private static final short ECODE1_SEGMENT_OFFSET = 20;
-    private static final short ECODE1_SEGMENT_SIZE_V9 = 32;
-    private static final short ECODE1_SEGMENT_SIZE_V10 = 60;
-    private static final short TEXT_SEGMENT_OFFSET = 90;
-    private static final short TEXT_SEGMENT_SIZE = 94;
-
-    // Offsets in initial value segment
-    private final static short CRC_OFFSET_V9 = 70;
-    private final static short CRC_OFFSET_V10 = 110;
-    private final static short MD5_OFFSET_V10 = 240;
-
-    private byte[] segHeader = new byte[HEADER_SIZE];
-    private byte[] segProcsList;
-    private byte[] segSegLocations;
-    private byte[] segInitialValues;
-    private byte[] segActionMain;
-    // TODO Prévoir de l'espace pour les actions segments de chaque procédure
-    private byte[] segECode1; //, segECode2, segECode3, segECode4;
-    private byte[] segDebug;
-    private byte[] segText;
-
-    private File file;
-//    private boolean error;
     private boolean swapped;
-    private long magic;
-    private long version;
+    private int version;
+    private boolean sixty_four_bits;
     private long crc;
     private String md5;
     private long timeStamp;
-    private List procedures;
-    private List strings;
 
-    /**
-     * 
-     * @param file
-     * @throws Exception
-     */
-    public RCodeInfo(String file) throws InvalidRCodeException, IOException {
-        this(new File(file));
-    }
+    private File file;
+    private FileInputStream input;
+    private int segmentTableSize;
+    private long signatureSize;
 
-    /**
-     * 
-     * @param file
-     * @throws Exception
-     */
     public RCodeInfo(File file) throws InvalidRCodeException, IOException {
         this.file = file;
+        this.input = new FileInputStream(file);
+
         processFile();
+    }
+
+    public File getFile() {
+        return file;
     }
 
     /**
@@ -96,7 +50,7 @@ public class RCodeInfo {
      * @return CRC
      */
     public long getCRC() {
-        return this.crc;
+        return crc;
     }
 
     /**
@@ -105,7 +59,7 @@ public class RCodeInfo {
      * @return Version
      */
     public long getVersion() {
-        return this.version;
+        return version;
     }
 
     /**
@@ -114,158 +68,112 @@ public class RCodeInfo {
      * @return Timestamp
      */
     public long getTimeStamp() {
-        return this.timeStamp;
+        return timeStamp;
     }
 
     public String getMD5() {
-        return this.md5;
+        return md5;
     }
 
-    /**
-     * Returns procedures list
-     * 
-     * @return List<ActionCodeEntry>
-     */
-    public List getProcedures() {
-        return this.procedures;
+    public boolean is64bits() {
+        return sixty_four_bits;
     }
 
-    /**
-     * Returns strings list
-     * 
-     * @return List<String>
-     */
-    public List getStrings() {
-        return this.strings;
-    }
+    private void processFile() throws InvalidRCodeException, IOException {
+        FileChannel fc = input.getChannel();
 
-    private boolean processFile() throws InvalidRCodeException, IOException {
-        RandomAccessFile raf = null;
-        try {
-            raf = new RandomAccessFile(this.file, "r");
-
-            // Checks file is long enough to hold header
-            if (raf.length() < HEADER_SIZE) {
-                raf.close();
-                throw new InvalidRCodeException("File size is less than header size");
-            }
-
-            // Reads header
-            raf.seek(0);
-            raf.read(this.segHeader, 0, HEADER_SIZE);
-
-            // Checks magic number
-            this.magic = readUnsignedInt(this.segHeader, MAGIC_OFFSET, false);
-            if (this.magic == MAGIC1) {
-                this.swapped = false;
-            } else if (this.magic == MAGIC2) {
-                this.swapped = true;
-            } else {
-                raf.close();
-                throw new InvalidRCodeException("Can't find magic number");
-            }
-
-            // Extract informations from header
-            this.timeStamp = readUnsignedInt(this.segHeader, TS_OFFSET, this.swapped) * 1000L;
-            this.version = readUnsignedInt(this.segHeader, VERSION_OFFSET, this.swapped);
-            int offsetProcsList = readUnsignedShort(this.segHeader, PROCEDURES_LIST_OFFSET, this.swapped);
-            long szSegLocations = readUnsignedInt(this.segHeader, SEGMENTS_LIST_SIZE, this.swapped);
-
-            // Reads action code segment from file, and extracts informations
-            this.segProcsList = new byte[offsetProcsList];
-            raf.seek(HEADER_SIZE);
-            raf.read(this.segProcsList, 0, offsetProcsList);
-            this.procedures = processProcsList(this.segProcsList);
-
-            // Reads segments list from file, and extracts informations
-            this.segSegLocations = new byte[(int) szSegLocations];
-            raf.seek(HEADER_SIZE + offsetProcsList);
-            raf.read(this.segSegLocations, 0, (int) szSegLocations);
-
-            long initialValueSegmentOffset = readUnsignedInt(this.segSegLocations, ISEGMENT_OFFSET,
-                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long initialValueSegmentSize = readUnsignedInt(this.segSegLocations, ISEGMENT_SIZE,
-                    this.swapped);
-            this.segInitialValues = new byte[(int) initialValueSegmentSize];
-
-            long actionSegmentOffset = readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_OFFSET,
-                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long actionSegmentSize =  (this.version < 1000 ? readUnsignedShort(this.segSegLocations, ACTION_SEGMENT_SIZE_V9, this.swapped) : readUnsignedInt(this.segSegLocations, ACTION_SEGMENT_SIZE_V10,
-                    this.swapped));
-            this.segActionMain = new byte[(int) actionSegmentSize];
-
-            long debugSegmentOffset = readUnsignedInt(this.segSegLocations, DEBUG_SEGMENT_OFFSET,
-                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long debugSegmentSize = readUnsignedInt(this.segSegLocations, (this.version < 1000 ? DEBUG_SEGMENT_SIZE_V9 : DEBUG_SEGMENT_SIZE_V10),
-                    this.swapped);
-            this.segDebug = new byte[(int) debugSegmentSize];
-
-            long offsetECode1 = readUnsignedInt(this.segSegLocations, ECODE1_SEGMENT_OFFSET,
-                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-            long szECode1 = readUnsignedInt(this.segSegLocations, (this.version < 1000 ? ECODE1_SEGMENT_SIZE_V9 : ECODE1_SEGMENT_SIZE_V10), this.swapped);
-            this.segECode1 = new byte[(int) szECode1];
-
-//            long offsetText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_OFFSET,
-//                    this.swapped) + HEADER_SIZE + offsetProcsList + szSegLocations;
-//            long szText = readUnsignedInt(this.segSegLocations, TEXT_SEGMENT_SIZE, this.swapped);
-//            this.segText = new byte[(int) szText];
-
-            // Reads initial values segment
-            raf.seek(initialValueSegmentOffset);
-            raf.read(this.segInitialValues, 0, (int) initialValueSegmentSize);
-            this.crc = readUnsignedShort(this.segInitialValues, (this.version < 1000
-                    ? CRC_OFFSET_V9
-                    : CRC_OFFSET_V10), swapped);
-            // If r-code not compiled with MD5, segment size is lesser than 256 bytes
-            if (initialValueSegmentSize >= MD5_OFFSET_V10 + 16) {
-                for (int i = MD5_OFFSET_V10; i < MD5_OFFSET_V10 + 16; i++) {
-                    this.md5 = bufferToHex(this.segInitialValues, MD5_OFFSET_V10, 16);
-                }
-            } else {
-                this.md5 = "0000000000000000"; // Default value
-            }
-        
-            // Reads debug segment
-            raf.seek(debugSegmentOffset);
-            raf.read(this.segDebug, 0, (int) debugSegmentSize);
-
-            // Reads main action code segment
-            raf.seek(actionSegmentOffset);
-            raf.read(this.segActionMain, 0, (int) actionSegmentSize);
-
-            // Reads ecode segment 1
-            raf.seek(offsetECode1);
-            raf.read(this.segECode1, 0, (int) szECode1);
-
-            // Reads text segment
-//            raf.seek(offsetText);
-//            raf.read(this.segText, 0, (int) szText);
-//            this.strings = processTextSegment(this.segText);
-
-            // error = false;
-            raf.close();
-
-            return true;
-        } catch (FileNotFoundException fnfe) {
-            // error = true;
-            throw fnfe;
-        } catch (IOException ioe) {
-            // error = true;
-            if (raf != null)
-                try {
-                    raf.close();
-                } catch (IOException ioe2) {
-                }
-            throw ioe;
+        long magic = readUnsignedInt(fc, 0, false);
+        if (magic == MAGIC1) {
+            swapped = false;
+        } else if (magic == MAGIC2) {
+            swapped = true;
+        } else {
+            input.close();
+            throw new InvalidRCodeException("Can't find magic number");
         }
+
+        int version = readUnsignedShort(fc, 14, swapped);
+        this.version = (version & 0x3FFF);
+        this.sixty_four_bits = ((version & 0x4000) != 0);
+
+        if (version >= 1100) {
+            processV11(fc, swapped);
+        } else if (version > 1000) {
+            processV10(fc, swapped);
+        } else
+            processV9(fc, swapped);
     }
 
-    public static String bufferToHex(byte buffer[], int startOffset, int length) {
-        StringBuffer hexString = new StringBuffer(2 * length);
-        int endOffset = startOffset + length;
+    void processV11(FileChannel fc, boolean swapped) throws IOException {
+        timeStamp = readUnsignedInt(fc, 4, swapped);
+        int md5Offset = readUnsignedShort(fc, 10, swapped);
+        // maxFileNumber = readUnsignedShort(fc, 10, swapped);
+        // compilerVersion = readUnsignedShort(fc, 12, swapped);
+        // demoVersion = readByte(fc, 25);
+        segmentTableSize = readUnsignedShort(fc, 0x1E, swapped);
+        // serialRestriction = readUnsignedInt(fc, 28, swapped);
+        // expirationDate = readUnsignedInt(fc, 32, swapped);
+        signatureSize = readUnsignedInt(fc, 56, swapped);
+        // typeBlockSize = readUnsignedInt(fc, 60, swapped);
+        // rcodeSize = readUnsignedInt(fc, 64, swapped);
+        crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + signatureSize + 0xA4, swapped);
+        md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
+    }
 
-        for (int i = startOffset; i < endOffset; i++)
-            appendHexPair(buffer[i], hexString);
+    void processV10(FileChannel fc, boolean swapped) throws IOException {
+        timeStamp = readUnsignedInt(fc, 4, swapped);
+        signatureSize = readUnsignedShort(fc, 8, swapped);
+        int md5Offset = readUnsignedShort(fc, 10, swapped);
+        segmentTableSize = readUnsignedShort(fc, 30, swapped);
+        crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + 0x6E,
+                swapped);
+        md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
+    }
+
+    void processV9(FileChannel fc, boolean swapped) throws IOException {
+        timeStamp = readUnsignedInt(fc, 4, swapped);
+        signatureSize = readUnsignedShort(fc, 8, swapped);
+        int md5Offset = readUnsignedShort(fc, 10, swapped);
+        segmentTableSize = readUnsignedShort(fc, 30, swapped);
+        crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + 0x46,
+                swapped);
+        md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
+    }
+
+    private static int readUnsignedShort(FileChannel fc, long pos, boolean swapped)
+            throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(2);
+        if (fc.position(pos).read(buf) != 2)
+            throw new IOException("Unable to read short at position " + pos);
+
+        if (swapped)
+            return (((int) buf.get(1) & 0xFF) << 8) + ((int) buf.get(0) & 0xFF);
+        else
+            return (((int) buf.get(0) & 0xFF) << 8) + ((int) buf.get(1) & 0xFF);
+    }
+
+    private static long readUnsignedInt(FileChannel fc, long pos, boolean swapped)
+            throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(4);
+        if (fc.position(pos).read(buf) != 4)
+            throw new IOException("Unable to read int at position " + pos);
+
+        if (swapped)
+            return (((int) buf.get(3) & 0xFF) << 24) + (((int) buf.get(2) & 0xFF) << 16)
+                    + (((int) buf.get(1) & 0xFF) << 8) + ((int) buf.get(0) & 0xFF);
+        else
+            return (((int) buf.get(0) & 0xFF) << 24) + (((int) buf.get(1) & 0xFF) << 16)
+                    + (((int) buf.get(2) & 0xFF) << 8) + ((int) buf.get(3) & 0xFF);
+    }
+
+    private static String bufferToHex(FileChannel fc, int startOffset, int length)
+            throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(length);
+        fc.position(startOffset).read(buf);
+
+        StringBuffer hexString = new StringBuffer(2 * length);
+        for (int i = 0; i < length; i++)
+            appendHexPair(buf.get(i), hexString);
 
         return hexString.toString();
     }
@@ -283,121 +191,6 @@ public class RCodeInfo {
      */
     private static final char kHexChars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
             'B', 'C', 'D', 'E', 'F'};
-
-    /**
-     * Returns a list of procedures/functions entries in r-code
-     * 
-     * @param b Action code segment as an array of bytes
-     * @return List<ActionCodeEntry>
-     */
-    private List processProcsList(byte[] b) {
-        List procs = new ArrayList();
-        int i = 8;
-        StringBuffer codepage = new StringBuffer();
-        StringBuffer procName;
-        if (i >= b.length)
-            return null;
-        while (b[i] != 0) {
-            codepage.append((char) b[i++]);
-        }
-        i++;
-
-        while ((i < b.length) && (b[i] != 0)) {
-            procName = new StringBuffer();
-            while (b[i] != 0) {
-                procName.append((char) b[i++]);
-            }
-            procs.add(new ActionCodeEntry(procName.toString()));
-            i++;
-        }
-
-        return procs;
-    }
-
-    private List processTextSegment(byte[] b) {
-        List strings = new ArrayList();
-        int i = 4;
-        StringBuffer str;
-        while ((i < b.length) && (b[i] != 0)) {
-            str = new StringBuffer();
-            while (b[i] != 0) {
-                str.append((char) b[i++]);
-            }
-            strings.add(str.toString());
-            i++;
-        }
-
-        return strings;
-    }
-
-    private static int readUnsignedShort(byte[] b, int pos, boolean swapped) {
-        if (swapped)
-            return (((int) b[pos + 1] & 0xFF) << 8) + ((int) b[pos] & 0xFF);
-        else
-            return (((int) b[pos] & 0xFF) << 8) + ((int) b[pos + 1] & 0xFF);
-    }
-
-    private static long readUnsignedInt(byte[] b, int pos, boolean swapped) {
-        if (swapped)
-            return (((long) b[pos + 3] & 0xFF) << 24) + (((long) b[pos + 2] & 0xFF) << 16)
-                    + (((long) b[pos + 1] & 0xFF) << 8) + ((long) b[pos] & 0xFF);
-        else
-            return (((long) b[pos] & 0xFF) << 24) + (((long) b[pos + 1] & 0xFF) << 16)
-                    + (((long) b[pos + 2] & 0xFF) << 8) + ((long) b[pos + 3] & 0xFF);
-    }
-
-    public static void main(String[] args) throws Exception {
-        RCodeInfo rci = new RCodeInfo("C:\\Projects\\PCT\\prostart.r");
-        System.out.println("CRC : " + rci.getCRC());
-        System.out.println("MD5 : " + rci.getMD5());
-        System.out.println("Val : " + rci.getVersion());
-        System.out.println("64 bits : " + ((rci.getVersion() & 0x4000) != 0));
-    }
-
-    private static class ActionCodeEntry {
-        public static final int INPUT = 1;
-        public static final int OUTPUT = 2;
-        public static final int INPUT_OUTPUT = 3;
-
-        private String type;
-        private String name;
-        private String returnType;
-        private String parameters;
-
-        public ActionCodeEntry(String s) {
-            if (s.equals(""))
-                return;
-            StringTokenizer parser = new StringTokenizer(s, ",");
-
-            StringBuffer tmp = new StringBuffer();
-            String part1 = parser.nextToken();
-            if (parser.hasMoreTokens()) {
-                this.returnType = parser.nextToken();
-                if (parser.hasMoreTokens()) {
-                    this.parameters = parser.nextToken();
-                } else {
-                    this.parameters = "";
-                }
-            } else {
-                this.returnType = "";
-                this.parameters = "";
-            }
-
-            int i = 0;
-            while (part1.charAt(i) != ' ') {
-                tmp.append(part1.charAt(i++));
-            }
-            this.type = tmp.toString();
-            i++;
-            tmp = new StringBuffer();
-            this.name = part1.substring(i);
-        }
-
-        public String toString() {
-            return "Procedure " + this.type + " " + this.name + "(" + this.parameters
-                    + ") RETURNS " + this.returnType;
-        }
-    }
 
     public static class InvalidRCodeException extends Exception {
         private static final long serialVersionUID = 1L;

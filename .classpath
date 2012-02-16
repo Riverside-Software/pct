@@ -5,7 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="lib" path="ant.jar" sourcepath="ant-src.jar"/>
 	<classpathentry kind="lib" path="ant-launcher.jar" sourcepath="ant-src.jar"/>
-	<classpathentry kind="lib" path="testng-5.14.4.jar" sourcepath="testng-src.jar"/>
+	<classpathentry kind="lib" path="testng-6.3.1.jar" sourcepath="testng-src.jar"/>
 	<classpathentry kind="lib" path="ini4j-0.5.1.jar" sourcepath="ini4j-0.5.1-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

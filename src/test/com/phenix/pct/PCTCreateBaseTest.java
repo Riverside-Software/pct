@@ -55,10 +55,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -66,139 +63,123 @@ import java.io.File;
 /**
  * Class for testing PCTCreateBase task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCreateBaseTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTCreateBase.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setFollowSymlinks(false);
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-        del.setDir(new File("build"));
-        del.execute();
-
-        Delete del2 = new Delete();
-        del2.setProject(this.project);
-        del2.setFile(new File("${user.home}/schema.df"));
-        del2.execute();
-    }
-
-    @Test
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "No dbName defined");
+        configureProject("PCTCreateBase/test1/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "dbName longer than 11 characters");
+        configureProject("PCTCreateBase/test2/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
-        executeTarget("test3");
+        configureProject("PCTCreateBase/test3/build.xml");
+        executeTarget("test");
 
-        File f = new File("sandbox/test3.db");
+        File f = new File("PCTCreateBase/test3/db/test3.db");
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test4() {
-        expectBuildException("test4", "noInit and noStruct both defined");
+        configureProject("PCTCreateBase/test4/build.xml");
+        executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test5() {
-        executeTarget("test5init");
-
-        File f = new File("sandbox/test.db");
+        configureProject("PCTCreateBase/test5/build.xml");
+        executeTarget("base");
+        File f = new File("PCTCreateBase/test5/db/test.db");
         assertTrue(f.exists());
-        executeTarget("test5");
-        f = new File("build/sandbox/test.r");
+
+        executeTarget("test");
+        f = new File("PCTCreateBase/test5/build/test.r");
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test6() {
-        File f = new File("sandbox/test.db");
-        executeTarget("test6");
+        configureProject("PCTCreateBase/test6/build.xml");
+        executeTarget("test");
 
+        File f = new File("PCTCreateBase/test6/db/test.db");
         long time = f.lastModified();
-        executeTarget("test6");
+        executeTarget("test2");
         assertTrue(f.lastModified() == time);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test7() {
-        executeTarget("test7");
-
         // TODO : fix the overwrite attribute and uncomment this
+        // configureProject("PCTCreateBase/test7/build.xml");
+        // executeTarget("test");
+
         // File f = new File("sandbox/test.db");
         // long time = f.lastModified();
-        // executeTarget("test7");
+        // executeTarget("test");
         // assert True(f.lastModified() != time);
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test8() {
-        executeTarget("test8");
+        configureProject("PCTCreateBase/test8/build.xml");
+        executeTarget("test");
 
-        File f = new File("sandbox/test.b1");
+        File f = new File("PCTCreateBase/test8/db/test.b1");
         assertTrue(f.exists());
-        f = new File("sandbox/test.b2");
+        f = new File("PCTCreateBase/test8/db/test.b2");
         assertTrue(f.exists());
-        f = new File("sandbox/test.d1");
+        f = new File("PCTCreateBase/test8/db/test.d1");
         assertTrue(f.exists());
-        f = new File("sandbox/test.d2");
+        f = new File("PCTCreateBase/test8/db/test.d2");
         assertTrue(f.exists());
 
-        executeTarget("test8bis");
+        executeTarget("test2");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test9() {
-        executeTarget("test9init");
+        configureProject("PCTCreateBase/test9/build.xml");
+        executeTarget("test");
 
-        File f = new File("sandbox/test.db");
+        File f = new File("PCTCreateBase/test9/db/test.db");
         assertTrue(f.exists());
-        executeTarget("test9");
-        f = new File("build/sandbox/test.r");
+        executeTarget("test2");
+        f = new File("PCTCreateBase/test9/build/test.r");
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test10() {
-        executeTarget("test10-init");
-        executeTarget("test10");
-        File f = new File("sandbox/test.db");
-        assertTrue(f.exists());
-        f = new File("build/sandbox/test.r");
-        assertTrue(f.exists());
-        expectBuildException("test10-2", "Should throw BuildException as schema doesn't exist");
+        configureProject("PCTCreateBase/test10/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCreateBase/test10/db/test.db");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTCreateBase/test10/build/test.r");
+        assertTrue(f2.exists());
+
+        expectBuildException("test2", "Should throw BuildException as schema doesn't exist");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test11() {
-        executeTarget("test11init");
-
-        File f = new File("sandbox/dir with spaces/test.db");
+        configureProject("PCTCreateBase/test11/build.xml");
+        executeTarget("test1");
+        File f = new File("PCTCreateBase/test11/dir with spaces/test.db");
         assertTrue(f.exists());
-        executeTarget("test11");
-        f = new File("build/sandbox/test.r");
+
+        executeTarget("test2");
+        f = new File("PCTCreateBase/test11/build/test.r");
         assertTrue(f.exists());
     }
 }

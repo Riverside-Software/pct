@@ -55,10 +55,6 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -66,51 +62,42 @@ import java.io.File;
 /**
  * Class for testing PLFileSet
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PLFileSetTest extends BuildFileTestNg {
 
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PLFileSet.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        Delete del = new Delete();
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-    }
-
-    @Test
+    @Test(groups = { "v10" })
     public void test1() {
+        configureProject("PLFileSet/test1/build.xml");
+
         executeTarget("test1");
+        File f1 = new File("PLFileSet/test1/lib1/prodict");
+        assertEquals(f1.list().length, 36);
 
-        File f1 = new File("sandbox/adexml");
-        assertEquals(f1.list().length, 8);
-    }
-
-    @Test
-    public void test2() {
         executeTarget("test2");
+        File f2 = new File("PLFileSet/test1/lib2/prodict");
+        assertEquals(f2.list().length, 14);
 
-        File f1 = new File("sandbox/adexml");
-        assertEquals(f1.list().length, 6);
+        executeTarget("test3");
+        File f3 = new File("PLFileSet/test1/lib3/prodict");
+        assertEquals(f3.list().length, 3);
     }
 
-    @Test
-    public void test3() {
-        executeTarget("test3");
+    @Test(groups = {"v11"})
+    public void test2() {
+        configureProject("PLFileSet/test2/build.xml");
 
-        File f1 = new File("sandbox/adexml");
-        assertEquals(f1.list().length, 6);
+        executeTarget("test1");
+        File f1 = new File("PLFileSet/test2/lib1/prodict");
+        assertEquals(f1.list().length, 38);
+
+        executeTarget("test2");
+        File f2 = new File("PLFileSet/test2/lib2/prodict");
+        assertEquals(f2.list().length, 14);
+
+        executeTarget("test3");
+        File f3 = new File("PLFileSet/test2/lib3/prodict");
+        assertEquals(f3.list().length, 3);
     }
 
 }
