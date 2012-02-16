@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test19">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpInternal="iso8859-1">
+      <PCTRunOption name="-cprcodeout utf-8" />
+    </PCTRun>
+  </target>
+
+</project>

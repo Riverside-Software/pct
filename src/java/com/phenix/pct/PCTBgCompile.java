@@ -90,6 +90,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean debugListing = false;
     private boolean keepXref = false;
     private boolean multiCompile = false;
+    private boolean streamIO = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -107,6 +108,15 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
+    }
+
+    /**
+     * Enables STREAM-IO attribute in COMPILE statement
+     * 
+     * @param streamIO "true|false|on|off|yes|no"
+     */
+    public void setStreamIO(boolean streamIO) {
+        this.streamIO = streamIO;
     }
 
     /**
@@ -405,7 +415,17 @@ public class PCTBgCompile extends PCTBgRun {
 
             for (int i = 0; i < dsfiles.length; i++) {
                 // File to be compiled
+                File inputDir = fs.getDir(getProject());
                 File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
+                String inputFileName = inputFile.getName();
+
+                File f = inputFile.getParentFile();
+                String inputFileDir = "";
+                while (!f.equals(inputDir)) {
+                    inputFileDir = f.getName() + (inputFileDir.length() > 0 ? '/' + inputFileDir : "");
+                    f = f.getParentFile();
+                }
+                
                 int srcExtPos = inputFile.getName().lastIndexOf('.');
                 String extension = (srcExtPos != -1 ? inputFile.getName().substring(srcExtPos) : "");
                 String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0,
@@ -419,7 +439,7 @@ public class PCTBgCompile extends PCTBgRun {
                     String targetFile = outputFile.getName();
                     if (extension.equalsIgnoreCase(".cls")) {
                         // Specific case, as Progress prepends package name automatically
-                        // So outputDir has to be rootDir
+                        // So outputDir has to be destDir
                         outputDir = destDir;
                     } else {
                         outputDir = outputFile.getParentFile();
@@ -434,8 +454,11 @@ public class PCTBgCompile extends PCTBgRun {
                         PCTDir.mkdirs();
 
                     CompilationUnit unit = new CompilationUnit();
-                    unit.inputFile = inputFile;
-                    unit.outputDir = outputDir;
+                    unit.fsRootDir = inputDir;
+                    unit.fsDir = inputFileDir;
+                    unit.fsFile = inputFileName;
+                    unit.destDir = destDir;
+                    unit.compilDestDir = outputDir;
                     unit.debugFile = (debugListing
                             ? new File(PCTDir, fileNameNoExt + ".dbg")
                             : null);
@@ -537,7 +560,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(keepXref)).append(';');
             sb.append(languages == null ? "" : languages).append(';');
             sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
-            sb.append(Boolean.toString(multiCompile));
+            sb.append(Boolean.toString(multiCompile)).append(';');
+            sb.append(Boolean.toString(streamIO));
 
             return sb.toString();
         }
@@ -567,8 +591,9 @@ public class PCTBgCompile extends PCTBgRun {
     }
 
     private static class CompilationUnit {
-        private File inputFile;
-        private File outputDir;
+        private File fsRootDir; // Fileset root directory
+        private String fsDir, fsFile; // Fileset relative directory and file name
+        private File destDir, compilDestDir; // DestDir attribute and directory where to COMPILE SAVE()
         private File debugFile;
         private File preprocessFile;
         private File listingFile;
@@ -577,31 +602,25 @@ public class PCTBgCompile extends PCTBgRun {
         private String targetFile;
 
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((inputFile == null) ? 0 : inputFile.hashCode());
-            return result;
+            return new File(new File(fsRootDir, fsDir), fsFile).hashCode();
         }
 
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
             if (obj == null)
                 return false;
-            if (getClass() != obj.getClass())
+
+            if (obj instanceof CompilationUnit) {
+                CompilationUnit other = (CompilationUnit) obj;
+                return new File(new File(fsRootDir, fsDir), fsFile).equals(new File(new File(
+                        other.fsRootDir, other.fsDir), other.fsFile));
+            } else {
                 return false;
-            CompilationUnit other = (CompilationUnit) obj;
-            if (inputFile == null) {
-                if (other.inputFile != null)
-                    return false;
-            } else if (!inputFile.equals(other.inputFile))
-                return false;
-            return true;
+            }
         }
 
         public String toString() {
-            return inputFile + "|" + outputDir + "|"
-                    + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|"
+            return fsRootDir + "|" + fsDir + "|" + fsFile + "|" + destDir + "|" + compilDestDir
+                    + "|" + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|"
                     + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|"
                     + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile
                     + "|" + pctRoot + "|" + targetFile;

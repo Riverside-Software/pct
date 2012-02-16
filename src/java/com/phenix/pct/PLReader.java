@@ -63,7 +63,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -74,11 +73,13 @@ import java.util.List;
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
 public class PLReader {
-    private static final int MAGIC = 0xD707;
+    private static final int MAGIC = 0xd707;
+    private static final int MAGIC_V11 = 0xd70b;
     private static final int MAGIC_SIZE = 2;
     private static final int ENCODING_OFFSET = 0x02;
     private static final int ENCODING_SIZE = 20;
-    private static final int FILE_LIST_OFFSET = 0x1E;
+    private static final int FILE_LIST_OFFSET = 0x1e;
+    private static final int FILE_LIST_OFFSET_V11 = 0x22;
     // private static final int RECORD_MIN_SIZE = 29;
     // private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
 
@@ -107,28 +108,36 @@ public class PLReader {
     }
 
     public FileEntry getEntry(String name) {
-        for (Iterator iter = getFileList().iterator(); iter.hasNext(); ) {
+        for (Iterator iter = getFileList().iterator(); iter.hasNext();) {
             FileEntry entry = (FileEntry) iter.next();
             if (entry.getFileName().equals(name))
                 return entry;
         }
-        
+
         return null;
     }
-    
+
     private void readFileList() {
         RandomAccessFile raf = null;
         try {
             raf = new RandomAccessFile(pl, "r");
             FileChannel fc = raf.getChannel();
-            if (!checkMagic(fc))
+            int version = 0;
+            ByteBuffer magic = ByteBuffer.allocate(2);
+            fc.read(magic);
+            if ((magic.getShort(0) & 0xffff) == MAGIC)
+                version = 1;
+            else if ((magic.getShort(0) & 0xffff) == MAGIC_V11)
+                version = 2;
+            else
+                // if (!checkMagic(fc))
                 throw new RuntimeException("Not a valid PL file");
 
             Charset charset = getCharset(fc);
-            int offset = getTOCOffset(fc);
+            int offset = getTOCOffset(fc, version);
             files = new ArrayList();
             FileEntry fe = null;
-            while ((fe = readEntry(fc, offset, charset)) != null) {
+            while ((fe = readEntry(fc, offset, charset, version)) != null) {
                 if (fe.isValid())
                     files.add(fe);
                 offset += fe.getTocSize();
@@ -165,12 +174,6 @@ public class PLReader {
         return new ByteArrayInputStream(bb.array());
     }
 
-    private boolean checkMagic(FileChannel fc) throws IOException {
-        ByteBuffer bb = ByteBuffer.allocate(MAGIC_SIZE);
-        int count = fc.read(bb, 0);
-        return ((count == MAGIC_SIZE) && ((bb.getShort(0) & 0xffff) == MAGIC));
-    }
-
     private Charset getCharset(FileChannel fc) throws IOException {
         ByteBuffer bEncoding = ByteBuffer.allocate(ENCODING_SIZE);
         if (fc.read(bEncoding, ENCODING_OFFSET) != ENCODING_SIZE)
@@ -188,14 +191,15 @@ public class PLReader {
         }
     }
 
-    private int getTOCOffset(FileChannel fc) throws IOException {
+    private int getTOCOffset(FileChannel fc, int version) throws IOException {
         ByteBuffer bTOC = ByteBuffer.allocate(4);
-        if (fc.read(bTOC, FILE_LIST_OFFSET) != 4)
+        if (fc.read(bTOC, (version == 1 ? FILE_LIST_OFFSET : FILE_LIST_OFFSET_V11)) != 4)
             throw new RuntimeException("Invalid PL file");
         return bTOC.getInt(0);
     }
 
-    private FileEntry readEntry(FileChannel fc, int offset, Charset charset) throws IOException {
+    private FileEntry readEntry(FileChannel fc, int offset, Charset charset, int version)
+            throws IOException {
         ByteBuffer b1 = ByteBuffer.allocate(1);
         fc.read(b1, offset);
 
@@ -219,14 +223,15 @@ public class PLReader {
             fc.read(b2, offset + 2);
             b2.position(0);
             String fName = charset.decode(b2).toString();
-            ByteBuffer b3 = ByteBuffer.allocate(28);
+            ByteBuffer b3 = ByteBuffer.allocate((version == 1 ? 28 : 48)); // Ou 47
             fc.read(b3, offset + 2 + fNameSize);
-            int fileOffset = b3.getInt(2);
-            int fileSize = b3.getInt(7);
-            long added = b3.getInt(11) * 1000L;
-            long modified = b3.getInt(15) * 1000L;
+            int fileOffset = b3.getInt((version == 1 ? 2 : 6)); // 7
+            int fileSize = b3.getInt((version == 1 ? 7 : 11)); // 12
+            long added = b3.getInt((version == 1 ? 11 : 15)) * 1000L; // 16
+            long modified = b3.getInt((version == 1 ? 15 : 19)) * 1000L; // 20
 
-            int tocSize = (b3.get(27) == 0 ? 30 + fNameSize : 29 + fNameSize);
+            int tocSize = (b3.get((version == 1 ? 27 : 47)) == 0 ? (version == 1 ? 30 : 50)
+                    + fNameSize : (version == 1 ? 29 : 49) + fNameSize);
             return new FileEntry(fName, modified, added, fileOffset, fileSize, tocSize);
         } else {
             return null;

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test16">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="subdir" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" tempDir="subdir" />
+  </target>
+
+</project>

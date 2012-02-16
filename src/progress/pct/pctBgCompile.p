@@ -100,6 +100,7 @@ DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -120,7 +121,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG) */
     ASSIGN runList   = ENTRY(1, ipPrm, ';') EQ 'true'
            minSize   = ENTRY(2, ipPrm, ';') EQ 'true'
            md5       = ENTRY(3, ipPrm, ';') EQ 'true'
@@ -131,7 +132,8 @@ PROCEDURE setOptions:
            keepXref  = ENTRY(8, ipPrm, ';') EQ 'true'
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
            gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
-           multiComp = ENTRY(10, ipPrm, ';') EQ 'true' NO-ERROR.
+           multiComp = ENTRY(11, ipPrm, ';') EQ 'true'
+           streamIO  = ENTRY(12, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -144,7 +146,10 @@ PROCEDURE pctCompile:
 
     /* Input parameter is a #-separated list of compilation units */
     /* Each compilation unit is a pipe-separated list of infos : */
-    /*  -> Input file to compile - Complete path (CHAR) */
+    /*  -> Fileset directory - Full pathname (CHAR) */
+    /*  -> Input file directory - relative path */
+    /*  -> Input file to compile - just the file name (CHAR) */
+    /*  -> Base output dir - Full path name (CHAR) */
     /*  -> Output dir for compiled file (CHAR) */
     /*  -> Debug listing file (CHAR) - Empty to disable generation */
     /*  -> Preprocessor file (CHAR) - Empty to disable generation */
@@ -152,14 +157,17 @@ PROCEDURE pctCompile:
     /*  -> xref file (CHAR) */
     /*  -> PCT dir (CHAR) - */
     /*  -> Target file name (CHAR) */
-	DEFINE VARIABLE inputFile   AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE prepro      AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE listingFile AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE xrefFile    AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE fsRootDir   AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE fsDir       AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE fsFile      AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE destDir     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE outputDir   AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE dbgList     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE prepro      AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE listingFile AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE xrefFile    AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE pctDir      AS CHARACTER  NO-UNDO.
-	DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE targetFile  AS CHARACTER  NO-UNDO.
 
     DEFINE VARIABLE zz  AS INTEGER     NO-UNDO.
     DEFINE VARIABLE filesNum AS INTEGER     NO-UNDO.
@@ -167,30 +175,33 @@ PROCEDURE pctCompile:
     DEFINE VARIABLE compNotOK AS INTEGER     NO-UNDO.
     DEFINE VARIABLE cc  AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE lOK AS LOGICAL     NO-UNDO.
-	DEFINE VARIABLE lSkipped AS LOGICAL     NO-UNDO.
+    DEFINE VARIABLE lSkipped AS LOGICAL     NO-UNDO.
 
     COMPILER:MULTI-COMPILE = multiComp.
 
-	ASSIGN filesNum = NUM-ENTRIES(ipPrm, {&SEPARATOR2}).
+    ASSIGN filesNum = NUM-ENTRIES(ipPrm, {&SEPARATOR2}).
     DO zz = 1 TO filesNum:
         ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
 
-      	ASSIGN inputFile   = ENTRY(1, cc, {&SEPARATOR})
-	           outputDir   = ENTRY(2, cc, {&SEPARATOR})
-	           dbgList     = ENTRY(3, cc, {&SEPARATOR})
-	           prepro      = ENTRY(4, cc, {&SEPARATOR})
-	           listingFile = ENTRY(5, cc, {&SEPARATOR})
-	           xrefFile    = ENTRY(6, cc, {&SEPARATOR})
-	           pctDir      = ENTRY(7, cc, {&SEPARATOR})
-	           targetFile  = ENTRY(8, cc, {&SEPARATOR}).
+        ASSIGN fsRootDir   = ENTRY(1, cc, {&SEPARATOR})
+               fsDir       = ENTRY(2, cc, {&SEPARATOR})
+               fsFile      = ENTRY(3, cc, {&SEPARATOR})
+               destDir     = ENTRY(4, cc, {&SEPARATOR})
+               outputDir   = ENTRY(5, cc, {&SEPARATOR})
+               dbgList     = ENTRY(6, cc, {&SEPARATOR})
+               prepro      = ENTRY(7, cc, {&SEPARATOR})
+               listingFile = ENTRY(8, cc, {&SEPARATOR})
+               xrefFile    = ENTRY(9, cc, {&SEPARATOR})
+               pctDir      = ENTRY(10, cc, {&SEPARATOR})
+               targetFile  = ENTRY(11, cc, {&SEPARATOR}).
         /* Setting to null if needed */
-	    ASSIGN dbgList     = (IF dbgList EQ '' THEN ? ELSE dbgList)
+        ASSIGN dbgList     = (IF dbgList EQ '' THEN ? ELSE dbgList)
                prepro      = (IF prepro EQ '' THEN ? ELSE prepro)
                listingFile = (IF listingFile EQ '' THEN ? ELSE listingFile)
                xrefFile    = (IF xrefFile EQ '' THEN ? ELSE xrefFile)
                targetFile  = (IF targetFile EQ '' THEN ? ELSE targetFile).
-	       
-      RUN pctCompile2 (SOURCE-PROCEDURE, inputFile, outputDir, dbgList, prepro, listingFile, xrefFile, pctDir, targetFile, OUTPUT lOK, OUTPUT lSkipped).
+
+      RUN pctCompile2 (SOURCE-PROCEDURE, fsRootDir, fsDir, fsFile, destDir, outputDir, dbgList, prepro, listingFile, xrefFile, pctDir, targetFile, OUTPUT lOK, OUTPUT lSkipped).
       IF (lok EQ TRUE) THEN
         ASSIGN compOK = compOK + (IF lSkipped THEN 0 ELSE 1).
       ELSE
@@ -220,33 +231,22 @@ END FUNCTION.
  */
 PROCEDURE pctCompile2 PRIVATE:
     DEFINE INPUT PARAM ipSrcProc   AS HANDLE     NO-UNDO.
-	DEFINE INPUT PARAM inputFile   AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM outputDir   AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM dbgList     AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM prepro      AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM listingFile AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM xrefFile    AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM fsRootDir   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM fsDir       AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM fsFile      AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM baseDir     AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM outputDir   AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM dbgList     AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM prepro      AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM listingFile AS CHARACTER  NO-UNDO.
+    DEFINE INPUT PARAM xrefFile    AS CHARACTER  NO-UNDO.
     DEFINE INPUT PARAM pctDir      AS CHARACTER  NO-UNDO.
-	DEFINE INPUT PARAM targetFile  AS CHARACTER  NO-UNDO.
-	DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
-	DEFINE OUTPUT PARAM opSkipped AS LOGICAL NO-UNDO INITIAL FALSE.
+    DEFINE INPUT PARAM targetFile  AS CHARACTER  NO-UNDO.
+    DEFINE OUTPUT PARAM opOK AS LOGICAL NO-UNDO.
+    DEFINE OUTPUT PARAM opSkipped AS LOGICAL NO-UNDO INITIAL FALSE.
 
-    /* Input parameter is a pipe-delimited list consisting of these entries :
-     *   -> Input File : Full pathname of file to compile
-     *   -> Output directory : Full pathname of directory in which to put compiled file
-     *   -> Debug listing file : Full pathname of debug listing result file
-     *      If empty, don't create a debug listing
-     *   -> Preprocessor file : Full pathname of preprocessor result file
-     *      If empty, don't create a preprocessor file
-     *   -> Listing file : Full pathname of listing file
-     *      If empty, don't create a listing file
-     *   -> PCT base : Root dir for PCT temp files, i.e. .crc and .inc files
-     *   -> Target file : if file name is different from what Progress generates
-     *      If empty, keep generated file as is
-     */
+    DEFINE VARIABLE Recompile AS INTEGER NO-UNDO INITIAL 0.
 
-	DEFINE VARIABLE Recompile AS INTEGER NO-UNDO INITIAL 0.
-	
     DEFINE VARIABLE FileExt   AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE RCodeName AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE RCodeTS   AS INTEGER     NO-UNDO.
@@ -260,16 +260,15 @@ PROCEDURE pctCompile2 PRIVATE:
     END.
     ELSE DO:
         /* Checking .r file exists */
-        RUN adecomm/_osprefx.p(inputFile, OUTPUT cBase, OUTPUT cFile).
-        RUN adecomm/_osfext.p(cFile, OUTPUT FileExt).
-        ASSIGN RCodeName = SUBSTRING(cFile, 1, R-INDEX(cFile, FileExt) - 1) + '.r':U.
-        ASSIGN RCodeTS = getTimeStampDF(outputDir, RCodeName).
+        RUN adecomm/_osfext.p(fsFile, OUTPUT FileExt).
+        ASSIGN RCodeName = SUBSTRING(fsFile, 1, R-INDEX(fsFile, FileExt) - 1) + '.r':U.
+        ASSIGN RCodeTS = getTimeStampDF(baseDir + '/' + fsDir, RCodeName).
         IF (RCodeTS EQ ?) THEN DO:
           ASSIGN Recompile = 2.
         END.
         ELSE DO:
             /* Checking .r timestamp is prior procedure timestamp */
-            ASSIGN ProcTS = getTimeStampF(inputFile).
+            ASSIGN ProcTS = getTimeStampDF(fsRootDir + '/' + fsDir, fsFile).
             IF (ProcTS GT RCodeTS) THEN DO:
               ASSIGN Recompile = 3.
             END.
@@ -284,25 +283,25 @@ PROCEDURE pctCompile2 PRIVATE:
                 END.
             END.
         END.
-	END.
+    END.
     
     /* FIXME Gestion de l'attribut noCompile */
 
     IF (Recompile GT 0) THEN DO:
-        RUN logVerbose IN ipSrcProc (SUBSTITUTE("Thread &1 - Compiling &2 [&3]", DYNAMIC-FUNCTION('getThreadNumber' IN ipSrcProc), inputFile, getRecompileLabel(Recompile))).
+        RUN logVerbose IN ipSrcProc (SUBSTITUTE("Thread &1 - Compiling &2/&3/&4 [&5]", DYNAMIC-FUNCTION('getThreadNumber' IN ipSrcProc), fsRootDir, fsDir, fsFile, getRecompileLabel(Recompile))).
         IF lXCode THEN DO:
             IF (XCodeKey NE ?) THEN
-                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
+                COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
             ELSE
-                COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+                COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
         END.
         ELSE DO:
-            COMPILE VALUE(inputFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
+            COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         END.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
 
-            RUN getCompileErrors(INPUT ipSrcProc, inputFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
+            RUN getCompileErrors(INPUT ipSrcProc, fsRootDir + '/' + fsDir + '/' + fsFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
                 RUN logError IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
@@ -333,6 +332,8 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGE
     DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
 
+    IF NOT fileExists(f) THEN
+        RETURN TRUE.
     INPUT STREAM sIncludes FROM VALUE (f).
     FileList:
     REPEAT:
@@ -359,6 +360,8 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER).
     DEFINE VARIABLE cCRC AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO INITIAL FALSE.
 
+    IF NOT fileExists(f) THEN
+        RETURN TRUE.
     INPUT STREAM sCRC FROM VALUE(f).
     CRCList:
     REPEAT:
@@ -380,21 +383,21 @@ END FUNCTION.
 
 PROCEDURE getCompileErrors PRIVATE:
     DEFINE INPUT PARAMETER ipSrcProc AS HANDLE NO-UNDO.
-	DEFINE INPUT PARAMETER pcInit AS CHARACTER NO-UNDO.
-	DEFINE INPUT PARAMETER pcFile AS CHARACTER NO-UNDO.
-	DEFINE INPUT PARAMETER piRow  AS INTEGER   NO-UNDO.
-	DEFINE INPUT PARAMETER piColumn AS INTEGER   NO-UNDO.
-	
+    DEFINE INPUT PARAMETER pcInit AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER pcFile AS CHARACTER NO-UNDO.
+    DEFINE INPUT PARAMETER piRow  AS INTEGER   NO-UNDO.
+    DEFINE INPUT PARAMETER piColumn AS INTEGER   NO-UNDO.
+
     DEFINE VARIABLE i   AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c   AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
 
-    IF (pcInit EQ pcFile) THEN
+    IF (REPLACE(pcInit, '~\', '/') EQ REPLACE(pcFile, '~\', '/')) THEN
         RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
     ELSE
-    	RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+        RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
-    INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
+    INPUT STREAM sXref FROM VALUE((IF REPLACE(pcInit, '~\', '/') EQ REPLACE(pcFile, '~\', '/') THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
         IMPORT STREAM sXref UNFORMATTED tmp.
     END.

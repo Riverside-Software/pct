@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTDumpSchema-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTDumpSchema dlcHome="${DLC}" destFile="foo/dump.df" />
+  </target>
+
+</project>

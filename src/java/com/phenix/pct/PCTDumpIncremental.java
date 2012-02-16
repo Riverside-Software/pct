@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
 
@@ -73,6 +74,7 @@ public class PCTDumpIncremental extends PCTRun {
     private int activeIndexes = 0;
     private String codePage = null;
     private int debugLevel = 0;
+    private PCTConnection sourceDB, targetDB;
 
     /**
      * Specifies if new indexes are created Active (true) or Inactive (false). Defaults to Active.
@@ -139,30 +141,65 @@ public class PCTDumpIncremental extends PCTRun {
         renameFile = file;
     }
 
+    public void addDBConnection(PCTConnection dbConn) {
+        throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDatabase and targetDatabase instead");
+    }
+    
+    public void addPCTConnection(PCTConnection dbConn) {
+        log("PCTConnection is deprecrated. Use sourceDatabase and targetDatabase instead", Project.MSG_INFO);
+        super.addDBConnection(dbConn);
+    }
+
+    /**
+     * 
+     * @param dbConn
+     */
+    public void addSourceDb(PCTConnection dbConn) {
+        PCTAlias alias = new PCTAlias();
+        alias.setName("dictdb");
+        dbConn.addConfiguredPCTAlias(alias);
+        this.sourceDB = dbConn;
+    }
+
+    public void addTargetDb(PCTConnection dbConn) {
+        PCTAlias alias = new PCTAlias();
+        alias.setName("dictdb2");
+        dbConn.addConfiguredPCTAlias(alias);
+        this.targetDB = dbConn;
+    }
+
     /**
      * Do the work
      * 
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (this.dbConnList == null) {
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
-        }
-
-        if (this.dbConnList.size() != 2) {
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
-        }
-
-        if (!aliasDefined("dictdb")) { //$NON-NLS-1$
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTDumpIncremental.3")); //$NON-NLS-1$
-        }
-
-        if (!aliasDefined("dictdb2")) { //$NON-NLS-1$
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTDumpIncremental.5")); //$NON-NLS-1$
+        if ((sourceDB != null) && (targetDB != null)) {
+            addDBConnection(sourceDB);
+            addDBConnection(targetDB);
+        } else if ((sourceDB != null) || (targetDB != null)) {
+            cleanup();
+            throw new BuildException("SourceDatabase and TargetDatabase nodes should be defined");
+        } else {
+            if (dbConnList == null) {
+                this.cleanup();
+                throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
+            }
+    
+            if (dbConnList.size() != 2) {
+                this.cleanup();
+                throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
+            }
+    
+            if (!aliasDefined("dictdb")) { //$NON-NLS-1$
+                this.cleanup();
+                throw new BuildException(Messages.getString("PCTDumpIncremental.3")); //$NON-NLS-1$
+            }
+    
+            if (!aliasDefined("dictdb2")) { //$NON-NLS-1$
+                this.cleanup();
+                throw new BuildException(Messages.getString("PCTDumpIncremental.5")); //$NON-NLS-1$
+            }
         }
 
         if (this.destFile == null) {

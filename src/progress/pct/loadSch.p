@@ -63,10 +63,12 @@ DEFINE TEMP-TABLE ttUnfrozen NO-UNDO
 DEFINE VARIABLE cSrcFile  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lUnfreeze AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lCommit   AS LOGICAL   NO-UNDO.
+DEFINE VARIABLE lOnline   AS LOGICAL   NO-UNDO.
 
 ASSIGN cSrcFile = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
        lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U
-       lCommit   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'commitWhenErrors') EQ "true":U.
+       lCommit   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'commitWhenErrors') EQ "true":U
+       lOnline   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'online') EQ "true":U.
 
 /** Added by Evan Todd */
 IF lUnfreeze THEN DO:
@@ -87,6 +89,11 @@ IF lUnfreeze THEN DO:
    END.
    hQuery:QUERY-CLOSE.   
 end.
+
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+IF lOnline THEN
+  SESSION:SCHEMA-CHANGE = 'NEW OBJECTS'.
+&ENDIF
 
 RUN prodict/load_df.p (INPUT cSrcFile + ',' + STRING(lCommit, 'yes/no')) NO-ERROR.
 

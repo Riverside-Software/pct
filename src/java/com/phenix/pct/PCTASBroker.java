@@ -262,7 +262,7 @@ public class PCTASBroker extends PCTBroker {
             if (this.file == null) {
                 propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
             } else {
-                propFile = new File(this.file);
+                propFile = getProject().resolveFile(this.file);
             }
             if (!propFile.exists())
                 throw new BuildException("Unable to find properties file "
@@ -397,10 +397,18 @@ public class PCTASBroker extends PCTBroker {
         task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
         task.setFailonerror(true);
 
-        Environment.Variable var4 = new Environment.Variable();
-        var4.setKey("DLC"); //$NON-NLS-1$
-        var4.setValue(this.getDlcHome().toString());
-        task.addEnv(var4);
+        Environment.Variable var1 = new Environment.Variable();
+        var1.setKey("DLC"); //$NON-NLS-1$
+        var1.setValue(this.getDlcHome().toString());
+        task.addEnv(var1);
+        Environment.Variable var2 = new Environment.Variable();
+        var2.setKey("JAVA_HOME"); //$NON-NLS-1$
+        var2.setValue(getJDK().getAbsolutePath());
+        task.addEnv(var2);
+        Environment.Variable var3 = new Environment.Variable();
+        var3.setKey("JREHOME"); //$NON-NLS-1$
+        var3.setValue(getJRE().getAbsolutePath());
+        task.addEnv(var3);
 
         task.createArg().setValue("-type");
         task.createArg().setValue("ubroker");
@@ -420,8 +428,8 @@ public class PCTASBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
-                && (!action.equalsIgnoreCase(DELETE))) {
+        if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
+                && (!DELETE.equalsIgnoreCase(action))) {
             throw new BuildException("Unknown action : " + action);
         }
         if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {

@@ -1,0 +1,19 @@
+  UPDATE DATABASE "?"
+  
+  ADD TABLE "Tab2"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab2"
+
+  ADD FIELD "Fld1" OF "tab2" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    COLUMN-LABEL "Fld1"
+    ORDER 10
+
+  ADD INDEX "Tab2-PK" ON "tab2" 
+    UNIQUE
+    PRIMARY
+    DESCRIPTION "Primary key"
+    INDEX-FIELD "Fld1" ASCENDING 

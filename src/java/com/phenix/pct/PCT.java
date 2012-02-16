@@ -130,7 +130,9 @@ public abstract class PCT extends Task {
             throw new BuildException(caught);
         }
 
-        if (version.compareTo(new DLCVersion(10, 2, "B")) >= 0)
+        if (version.compareTo(new DLCVersion(11, 0, "0")) >= 0)
+            this.pp = new ProgressV11();
+        else if (version.compareTo(new DLCVersion(10, 2, "B")) >= 0)
             this.pp = new ProgressV102B();
         else if (version.compareTo(new DLCVersion(10, 0, "A")) >= 0)
             this.pp = new ProgressV10();
@@ -214,6 +216,28 @@ public abstract class PCT extends Task {
      */
     protected final File getDlcHome() {
         return this.dlcHome;
+    }
+
+    protected final File getJRE() {
+        return new File(dlcHome, "jre");
+    }
+
+    protected final File getJDK() {
+        return new File(dlcHome, "jdk");
+    }
+
+    protected final File getJDKBin() {
+        return new File(getJDK(), "bin");
+    }
+
+    /**
+     * Returns path to java executable from JDK
+     */
+    protected final File getJVM() {
+        File f1 = new File(getJDKBin(), "java");
+        File f2 = new File(getJDKBin(), "java.exe");
+        
+        return (f1.exists() ? f1 : f2);
     }
 
     /**
@@ -600,5 +624,16 @@ public abstract class PCT extends Task {
                 throw new IOException(message);
             }
         }
+    }
+
+    protected static void copyStreamFromJar(String streamName, File outFile) throws IOException {
+        InputStream in = PCT.class.getResourceAsStream(streamName);
+        OutputStream out = new FileOutputStream(outFile);
+        byte[] b = new byte[4096];
+        int k = 0;
+        while ((k = in.read(b)) != -1)
+            out.write(b, 0, k);
+        out.close();
+        in.close();
     }
 }

@@ -55,74 +55,44 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import java.io.File;
 
 import java.util.List;
 
-
 /**
  * Class for testing PCTLibrary task
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * 
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTLibraryTest extends BuildFileTestNg {
-
-    @BeforeMethod
-    public void setUp() {
-        configureProject("PCTLibrary.xml");
-
-        // Creates a sandbox directory to play with
-        Mkdir mkdir = new Mkdir();
-        mkdir.setProject(this.getProject());
-        mkdir.setDir(new File("sandbox"));
-        mkdir.execute();
-        mkdir.setDir(new File("sandbox/files"));
-        mkdir.execute();
-        mkdir.setDir(new File("sandbox/lib"));
-        mkdir.execute();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        super.tearDown();
-        Delete del = new Delete();
-        del.setFollowSymlinks(false);
-        del.setProject(this.project);
-        del.setDir(new File("sandbox"));
-        del.execute();
-        del.setDir(new File("build"));
-        del.execute();
-    }
 
     /**
      * Attribute destFile should always be defined
      */
-    @Test
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
-        expectBuildException("test1", "Library name not defined");
+        configureProject("PCTLibrary/test1/build.xml");
+        executeTarget("test");
     }
 
-    /**
-     * Checks that a new library is created
-     */
-    @Test
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
-        expectBuildException("test2", "No filesets defined");
+        configureProject("PCTLibrary/test2/build.xml");
+        executeTarget("test");
     }
 
     /**
      * Checks that a file is added in the library
      */
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
-        executeTarget("test3");
+        configureProject("PCTLibrary/test3/build.xml");
+        executeTarget("test");
 
-        File pl = new File("sandbox/lib/test.pl");
+        File pl = new File("PCTLibrary/test3/lib/test.pl");
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
@@ -134,100 +104,102 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test
+    @Test(groups= {"all"})
     public void test4() {
-        executeTarget("test4pre");
+        configureProject("PCTLibrary/test4/build.xml");
+        executeTarget("test1");
 
-        File pl = new File("sandbox/lib/test.pl");
+        File pl = new File("PCTLibrary/test4/lib/test.pl");
         assertTrue(pl.exists());
 
         PLReader r = new PLReader(pl);
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
-    }
-    
-    @Test
-    public void test5() {
-        executeTarget("test5");
-        
-        File pl = new File("sandbox/lib/test.pl");
-        assertTrue(pl.exists());
-        long size = pl.length();
-        
-        assertTrue(pl.delete());
-        
-        executeTarget("test5bis");
-        assertTrue(pl.exists());
-        assertTrue((pl.length() < size));
-    }
-    
-    @Test
-    public void test6() {
-        executeTarget("test6");
-        
-        File pl = new File("sandbox/lib/test.pl");
-        assertTrue(pl.exists());
 
-        PLReader r = new PLReader(pl);
+        executeTarget("test2");
+        PLReader r2 = new PLReader(pl);
+        List v2 = r2.getFileList();
+        assertTrue(v2 != null);
+        assertTrue(v2.size() == 1);
+    }
+
+    @Test(groups= {"all"})
+    public void test5() {
+        configureProject("PCTLibrary/test5/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTLibrary/test5/lib/test.pl");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTLibrary/test5/lib/test2.pl");
+        assertTrue(f2.exists());
+        assertTrue((f2.length() < f1.length()));
+    }
+
+    @Test(groups= {"all"})
+    public void test6() {
+        configureProject("PCTLibrary/test6/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTLibrary/test6/lib/test.pl");
+        assertTrue(f1.exists());
+
+        PLReader r = new PLReader(f1);
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 3);
     }
-    
-    @Test
-    public void test7() {
-        expectBuildException("test7", "PL file cannot include itself");
-    }
-    
-    @Test
-    public void test8() {
-        executeTarget("test8");
-        
-        File pl = new File("sandbox/lib/test.pl");
-        assertTrue(pl.exists());
 
-        PLReader r = new PLReader(pl);
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
+    public void test7() {
+        configureProject("PCTLibrary/test7/build.xml");
+        executeTarget("test");
+    }
+
+    @Test(groups= {"all"})
+    public void test8() {
+        configureProject("PCTLibrary/test8/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTLibrary/test8/lib/test.pl");
+        assertTrue(f1.exists());
+
+        PLReader r = new PLReader(f1);
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 2);
     }
 
-    /**
-     * Waiting for next release...
-     */
-//    public void test10() {
-//        File pl = new File("build/lib.pl");
-//        executeTarget("test10-part1");
-//        executeTarget("test10-lib");
-//        expectLog("test10-exec", "éèà");
-////        pl.delete();
-//        
-//        executeTarget("test10-part2");
-//        executeTarget("test10-lib");
-//        assertTrue(pl.exists());
-//        
-//        PLReader r = new PLReader(pl);
-//        Vector v = r.getFileList();
-//        assertTrue(v != null);
-////        assertTrue(v.size() == 2);
-//        assertTrue(v.contains(new String("éèà.txt")));
-//    }
-
-    /**
-     * Do not run this test for now, as it will always fail.
-     * Prolib doesn't seem to be able to handle spaces in file names
-     */
-    @Test
+    @Test(groups= {"all"})
     public void test9() {
-        executeTarget("test9");
-        
-        File pl = new File("sandbox/lib/test.pl");
-        assertTrue(pl.exists());
+        configureProject("PCTLibrary/test9/build.xml");
+        executeTarget("test");
 
-        PLReader r = new PLReader(pl);
+        File f1 = new File("PCTLibrary/test9/lib/test.pl");
+        assertTrue(f1.exists());
+
+        PLReader r = new PLReader(f1);
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
+    }
+
+//    @Test Not tested for now
+    public void test10() {
+        configureProject("PCTLibrary/test10/build.xml");
+        executeTarget("prepare");
+
+        File f1 = new File("PCTLibrary/test10/lib/test.pl");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTLibrary/test10/lib/test2.pl");
+        assertTrue(f2.exists());
+
+        expectLog("test", "éèà");
+
+        PLReader r = new PLReader(f2);
+        List v = r.getFileList();
+        assertTrue(v != null);
+        assertTrue(v.size() == 2);
+        assertTrue(v.contains(new String("éèà.txt")));
     }
 }

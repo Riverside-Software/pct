@@ -5,6 +5,12 @@
    ======================================================================================= */
 {prolint/core/dlc-version.i}
 
+FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
+
+DEFINE TEMP-TABLE ttDirs NO-UNDO
+    FIELD baseDir AS CHARACTER
+    FIELD dirName AS CHARACTER.
+
 DEFINE VARIABLE logfile AS CHAR NO-UNDO.
 
 DEFINE VARIABLE xDoc  AS HANDLE NO-UNDO.
@@ -20,6 +26,7 @@ SUBSCRIBE TO "Prolint_FinalizeResults" ANYWHERE.
    
 RETURN.
 
+
 PROCEDURE Prolint_InitializeResults :  
    /* purpose : start with an empty logfile. If one exists make it empty */
    DEFINE INPUT PARAMETER pClearOutput AS LOGICAL NO-UNDO.
@@ -32,7 +39,13 @@ PROCEDURE Prolint_Status_FileStart :
               opportunity to open a new table in htm */
   DEFINE INPUT PARAMETER pSourceFile AS CHAR NO-UNDO.
 
+  DEFINE VARIABLE cBase AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE cFile AS CHARACTER NO-UNDO.
+
+  /* One XML file per source file, with same directory structure (sub directories created if needed) */
   ASSIGN logFile = DYNAMIC-FUNCTION("ProlintProperty", "outputhandlers.outputdirectory") + pSourceFile + ".xml".
+  RUN adecomm/_osprefx.p(INPUT psourcefile, OUTPUT cBase, OUTPUT cFile).
+  createDir(DYNAMIC-FUNCTION("ProlintProperty", "outputhandlers.outputdirectory"), cBase).
   
   CREATE X-DOCUMENT xDoc.
   xDoc:ENCODING = "utf-8".
@@ -85,8 +98,41 @@ PROCEDURE Prolint_FinalizeResults :
   DELETE OBJECT xNode.
   DELETE OBJECT xRoot.
   DELETE OBJECT xDoc.
-  
+
   /* This procedure will not be invoked again, so it can exit */
   DELETE PROCEDURE THIS-PROCEDURE.                          
-   
+
 END PROCEDURE.
+
+FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER):
+    DEFINE VARIABLE i AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+
+    /* Asserts base is a writable directory */
+    FIND ttDirs WHERE ttDirs.baseDir EQ base
+                  AND ttDirs.dirName EQ d
+                NO-LOCK NO-ERROR.
+    IF (AVAILABLE ttDirs) THEN
+        RETURN TRUE.
+
+    ASSIGN d = REPLACE(d, '~\':U, '/':U).
+    DO i = 1 TO NUM-ENTRIES(d, '/':U):
+        ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
+        FIND ttDirs WHERE ttDirs.baseDir EQ base
+                      AND ttDirs.dirName EQ c
+                    NO-LOCK NO-ERROR.
+        IF (NOT AVAILABLE ttDirs) THEN DO:
+            OS-CREATE-DIR VALUE(base + c).
+            IF (OS-ERROR EQ 0) THEN DO:
+                CREATE ttDirs.
+                ASSIGN ttDirs.baseDir = base
+                       ttDirs.dirName = c.
+            END.
+            ELSE DO:
+                RETURN FALSE.
+            END.
+        END.
+    END.
+    RETURN TRUE.
+
+END FUNCTION.
