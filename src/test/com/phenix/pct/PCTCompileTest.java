@@ -358,7 +358,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test24() {
         configureProject("PCTCompile/test24/build.xml");
 
