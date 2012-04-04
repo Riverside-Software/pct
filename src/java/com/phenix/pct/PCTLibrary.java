@@ -66,8 +66,10 @@ import java.io.IOException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -88,7 +90,7 @@ public class PCTLibrary extends PCT {
 
     // Files containing at least one space in file name : these files are handled separately (prolib
     // bug)
-    private List spaceFiles = new ArrayList();
+    private Map /*<File baseDir, List<String> fileName>*/ spaceFiles = new HashMap();
 
     /**
      * Default constructor
@@ -153,6 +155,7 @@ public class PCTLibrary extends PCT {
      */
     public void setBasedir(File baseDir) {
         this.baseDir = baseDir;
+        this.fileset.setProject(getProject());
         this.fileset.setDir(baseDir);
     }
 
@@ -243,9 +246,12 @@ public class PCTLibrary extends PCT {
             }
             // Now adding files containing spaces
             if (this.spaceFiles.size() > 0) {
-                for (Iterator iter = this.spaceFiles.iterator(); iter.hasNext();) {
-                    ExecTask task = spaceFileReplace((String) iter.next());
-                    task.execute();
+                for (Iterator iter = this.spaceFiles.keySet().iterator(); iter.hasNext();) {
+                    File f = (File) iter.next();
+                    for (Iterator iter2 = ((List) spaceFiles.get(f)).iterator(); iter2.hasNext(); ) {
+                        ExecTask task = spaceFileReplace(f, (String) iter2.next());
+                        task.execute();
+                    }
                 }
             }
 
@@ -350,10 +356,13 @@ public class PCTLibrary extends PCT {
      * @param fs FileSet to be written
      * @throws BuildException
      */
+    @SuppressWarnings("unchecked")
     private void writeFileList(FileSet fs) throws BuildException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
             bw.write("-replace ");
+
+            List list = new ArrayList();
 
             // And get files from fileset
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
@@ -367,21 +376,27 @@ public class PCTLibrary extends PCT {
                 }
 
                 // If there are spaces, don't put in the pf file
-                if (dsfiles[i].indexOf(' ') == -1) {
+                if ((dsfiles[i].indexOf(' ') == -1) && (dsfiles[i].length() < 128)) {
                     bw.write(dsfiles[i] + " ");
                 } else {
-                    spaceFiles.add(resourceAsFile.getAbsolutePath());
+                    list.add(dsfiles[i]);
                 }
             }
             bw.write("-nowarn ");
             bw.close();
+
+            // If there is at least one file with spaces, add the list to spaceFile map
+            if (list.size() > 0) {
+                spaceFiles.put(fs.getDir(getProject()), list);
+            }
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTLibrary.4"));
         }
     }
 
-    private ExecTask spaceFileReplace(String fileName) {
+    private ExecTask spaceFileReplace(File dir, String fileName) {
         ExecTask exec = new ExecTask(this);
+        exec.setDir(dir);
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
