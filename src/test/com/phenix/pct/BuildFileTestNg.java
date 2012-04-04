@@ -118,7 +118,7 @@ public class BuildFileTestNg {
      */
     public void assertPropertyEquals(String property, String value) {
         String result = project.getProperty(property);
-        Assert.assertEquals(value, result, "property " + property);
+        Assert.assertEquals(result, value, "property " + property);
     }
 
     /**
