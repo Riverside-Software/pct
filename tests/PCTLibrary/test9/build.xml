@@ -4,7 +4,11 @@
 
   <target name="test">
     <mkdir dir="lib" />
-    <PCTLibrary destfile="lib/test.pl" dlcHome="${DLC}" basedir="src" />
+    <PCTLibrary destfile="lib/test1.pl" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*" />
+      <fileset dir="src2" includes="**/*" />
+    </PCTLibrary>
+    <PCTLibrary destfile="lib/test2.pl" dlcHome="${DLC}" basedir="src" />
   </target>
 
 </project>

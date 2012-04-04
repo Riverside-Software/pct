@@ -99,6 +99,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 1);
+        assertTrue(((FileEntry) v.get(0)).getFileName().startsWith("test"));
     }
 
     /**
@@ -148,6 +149,9 @@ public class PCTLibraryTest extends BuildFileTestNg {
         List v = r.getFileList();
         assertTrue(v != null);
         assertTrue(v.size() == 3);
+        assertTrue(((FileEntry) v.get(0)).getFileName().startsWith("test"));
+        assertTrue(((FileEntry) v.get(1)).getFileName().startsWith("test"));
+        assertTrue(((FileEntry) v.get(2)).getFileName().startsWith("test"));
     }
 
     @Test(groups= {"all"}, expectedExceptions = BuildException.class)
@@ -175,13 +179,23 @@ public class PCTLibraryTest extends BuildFileTestNg {
         configureProject("PCTLibrary/test9/build.xml");
         executeTarget("test");
 
-        File f1 = new File("PCTLibrary/test9/lib/test.pl");
+        File f1 = new File("PCTLibrary/test9/lib/test1.pl");
+        File f2 = new File("PCTLibrary/test9/lib/test2.pl");
         assertTrue(f1.exists());
+        assertTrue(f2.exists());
 
-        PLReader r = new PLReader(f1);
-        List v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 1);
+        PLReader r1 = new PLReader(f1);
+        PLReader r2 = new PLReader(f2);
+        List v1 = r1.getFileList();
+        List v2 = r2.getFileList();
+        assertTrue(v1 != null);
+        assertTrue(v1.size() == 2);
+        assertTrue(((FileEntry) v1.get(0)).getFileName().startsWith("test"));
+        assertTrue(((FileEntry) v1.get(1)).getFileName().startsWith("test"));
+
+        assertTrue(v2 != null);
+        assertTrue(v2.size() == 1);
+        assertTrue(((FileEntry) v2.get(0)).getFileName().startsWith("test"));
     }
 
 //    @Test Not tested for now
@@ -202,4 +216,30 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 2);
         assertTrue(v.contains(new String("éèà.txt")));
     }
+
+    @Test(groups= {"all"})
+    public void test11() {
+        configureProject("PCTLibrary/test11/build.xml");
+
+        executeTarget("test1");
+        File f1 = new File("PCTLibrary/test11/lib/test1.pl");
+        assertTrue(f1.exists());
+
+        PLReader r = new PLReader(f1);
+        List v = r.getFileList();
+        assertTrue(v != null);
+        assertTrue(v.size() == 1);
+        assertTrue(((FileEntry) v.get(0)).getFileName().startsWith("Twenty"));
+
+        executeTarget("test2");
+        File f2 = new File("PCTLibrary/test11/lib/test2.pl");
+        assertTrue(f2.exists());
+
+        PLReader r2 = new PLReader(f2);
+        List v2 = r2.getFileList();
+        assertTrue(v2 != null);
+        assertTrue(v2.size() == 1);
+        assertTrue(((FileEntry) v2.get(0)).getFileName().startsWith("Twenty"));
+    }
+
 }
