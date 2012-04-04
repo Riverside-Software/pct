@@ -356,7 +356,6 @@ public class PCTLibrary extends PCT {
      * @param fs FileSet to be written
      * @throws BuildException
      */
-    @SuppressWarnings("unchecked")
     private void writeFileList(FileSet fs) throws BuildException {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
