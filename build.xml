@@ -234,6 +234,7 @@ PCTBuild=${BUILD_NUMBER}
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
     <!--  <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" /> -->
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
