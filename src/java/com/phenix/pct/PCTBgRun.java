@@ -279,6 +279,11 @@ public abstract class PCTBgRun extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
+        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
+            Environment.Variable var2 = (Environment.Variable) iter.next();
+            exec.addEnv(var2);
+        }
+
         return exec;
     }
 
