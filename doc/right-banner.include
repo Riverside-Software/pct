@@ -6,9 +6,12 @@
     <li><a href="quickstart.html">Quick start</a></li>
     <li><a href="developers.html">Improving PCT</a>
     <li><a href="changelog.html">Changelog</a></li>
-    <li><a href="testng-v9/html/index.html">TestNG report (v9)</a> 
-    <li><a href="testng-v10/html/index.html">TestNG report (v10)</a> 
-    <li><a href="testng-v10-64/html/index.html">TestNG report (v10 64 bits)</a></li>
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 9.1E Linux</a> 
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 10.2A Win32</a> 
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 10.2B Linux</a> 
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 10.2B Win32</a> 
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 11.0 Win32</a> 
+    <li><a href="emailable-report-v102a-win32.html">TestNG report 11.0 Linux 64 bits</a> 
   </ul>
   <h1>Tasks</h1>
   <ul>
