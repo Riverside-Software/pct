@@ -11,6 +11,8 @@ Version 0.19 (??/??/????)
  * Added online attribute to PCTLoadSchema
  * Renamed PCTConnection in PCTRun to DBConnection
  * Replaced PCTConnection in PCTDumpIncremental to SourceDb and TargetDb
+ * Using undefined encoding for rcode
+ * Upgrading to ANT 1.8.3
 
 Version 0.18 (02/21/2011)
 =============================
