@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT" default="dist">
+
+  <property environment="env" />
+
+  <!-- If DLC8, DLC9, DLC10, DLC10-64 and DLC11 are provided as properties, then skip loading properties from file -->
+  <condition property="skip.properties" value="true">
+    <and>
+      <isset property="DLC8" />
+      <isset property="DLC9" />
+      <isset property="DLC10" />
+      <isset property="DLC10-64" />
+      <isset property="DLC11" />
+    </and>
+  </condition>
+
+  <!-- Different values for UNIX/Win32 -->
+  <condition property="DBUTIL" value="_dbutil.exe">
+    <os family="windows" />
+  </condition>
+  <condition property="DBUTIL" value="_dbutil">
+    <os family="unix" />
+  </condition>
+
+  <condition property="BUILD_NUMBER" value="ANT">
+    <not>
+      <isset property="BUILD_NUMBER" />
+    </not>
+  </condition>
+
+  <!-- Some directories definitions -->
+  <property name="src.java" location="src/java" />
+  <property name="src.progress" location="src/progress" />
+  <property name="src.test" location="src/test" />
+  <property name="build" location="build" />
+  <property name="build-test" location="build-test" />
+  <property name="build-v8" location="build-v8" />
+  <property name="build-v9" location="build-v9" />
+  <property name="build-v10" location="build-v10" />
+  <property name="build-v10-64" location="build-v10-64" />
+  <property name="build-v11" location="build-v11" />
+  <property name="dist" location="lib" />
+  <property name="dist-lite" location="bootstrap" />
+  <property name="doc" location="javadoc" />
+  <property name="check" location="check" />
+  <property name="website" location="website" />
+
+  <!-- Properties that control various build options -->
+  <property name="debug" value="true" />
+  <property name="deprecation" value="true" />
+  <property name="optimize" value="false" />
+  <property name="javac.source" value="1.2" />
+  <property name="javac.target" value="1.2" />
+
+  <!-- PCT Version -->
+  <property name="pct.version" value="0.19-pre" />
+  <condition property="BUILD_NUMBER" value="${pct.version}">
+    <not>
+      <isset property="RELEASE" />
+    </not>
+  </condition>
+
+  <!-- Different filesets depending on version -->
+  <fileset id="fs.v8" dir="${src.progress}">
+    <include name="pct/pctCompileV8.p" />
+    <include name="pct/pctCRCV8.p" />
+    <include name="pct/pctDumpData.p" />
+    <include name="pct/dumpSch.p" />
+    <include name="pct/pctLoadData.p" />
+    <include name="pct/loadSch.p" />
+  </fileset>
+  <fileset id="fs.v9" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompileV10.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+    <exclude name="pct/_server.p" />
+    <exclude name="pct/pctBgCompile.p" />
+    <exclude name="pct/_dmpincr102b.p" />
+    <exclude name="pct/_dmpincr11.p" />
+    <exclude name="pct/_dmpincr.p" />
+    <exclude name="pct/_dmputil11.p" />
+    <exclude name="pct/dump_inc102b.p" />
+    <exclude name="pct/dump_inc11.p" />
+    <exclude name="pct/dump_seq.p" />
+    <exclude name="pct/dump_inc.p" />
+    <exclude name="pct/_dmputil.p" />
+  </fileset>
+  <fileset id="fs.v10" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <!--<include name="prolint/**/*.p" />-->
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/_dmpincr11.p" />
+    <exclude name="pct/_dmputil11.p" />
+    <exclude name="pct/dump_inc11.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="fs.v11" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prolint/**/*.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+  <fileset id="fs.v11" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <include name="prolint/**/xml.p" />
+    <include name="prodict/**/*.p" />
+    <exclude name="pct/_dmpincr9.p" />
+    <exclude name="pct/pctCompileV8.p" />
+    <exclude name="pct/pctCompile.p" />
+    <exclude name="pct/pctCRCV8.p" />
+    <exclude name="pct/crcV8.p" />
+  </fileset>
+
+  <!-- Classpath for PCT compilation -->
+  <path id="pct.compil">
+    <pathelement location="ant.jar" />
+  </path>
+  <path id="pct.test.compil">
+    <path refid="pct.compil" />
+    <pathelement location="${build}" />
+    <pathelement location="testng-6.3.1.jar" />
+    <pathelement location="ini4j-0.5.1.jar" />
+  </path>
+  
+ 
+
+  <target name="init" description="Initialize PCT builder" depends="init-properties">
+    <tstamp>
+      <format property="year" pattern="yyyy" />
+    </tstamp>
+
+    <mkdir dir="${build}" />
+    <mkdir dir="${build-test}" />
+    <mkdir dir="${build-v8}" />
+    <mkdir dir="${build-v9}" />
+    <mkdir dir="${build-v10}" />
+    <mkdir dir="${build-v10-64}" />
+    <mkdir dir="${build-v11}" />
+    <mkdir dir="${dist}" />
+
+    <!-- Checking V8, v9 and v10 availability -->
+    <available file="${DLC8}/version" property="dlc.v8.present" />
+    <available file="${DLC9}/version" property="dlc.v9.present" />
+    <available file="${DLC10}/version" property="dlc.v10.present" />
+    <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
+    <available file="${DLC11}/version" property="dlc.v11.present" />
+
+    <condition property="DLC-SPORTS" value="${DLC9}">
+      <isset property="dlc.v9.present" />
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10.present" />
+      </and>
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC10-64}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v10-64.present" />
+      </and>
+    </condition>
+    <condition property="DLC-SPORTS" value="${DLC11}">
+      <and>
+        <not>
+          <isset property="DLC-SPORTS" />
+        </not>
+        <isset property="dlc.v11.present" />
+      </and>
+    </condition>
+    <echo message="Using ${DLC-SPORTS} to build sports database" />
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version}
+PCTBuild=${BUILD_NUMBER}
+    </echo>
+  </target>
+
+  <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
+    <echo message="Loading properties from pct.build.properties" />
+    <property file="${basedir}/pct.build.properties" />
+  </target>
+
+  <target name="build" depends="init" description="Java source files compilation">
+    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+      <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
+      <classpath refid="pct.compil" />
+    </javac>
+    <copy todir="${build}">
+      <fileset dir="${src.java}" includes="**/*.properties" />
+    </copy>
+  </target>
+
+  <target name="jar-lite" depends="build" description="Bootstrap JAR file">
+    <jar jarfile="${dist}/bootstrap.jar">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class" />
+        <include name="com/phenix/pct/*.properties" />
+        <include name="bootstrap.properties" />
+        <exclude name="com/phenix/pct/*Test.class" />
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
+    <taskdef resource="bootstrap.properties" classpath="${dist}/bootstrap.jar" />
+  </target>
+
+  <target name="cond.pbuild" if="${build.this.version}">
+    <exec executable="${dlcHome}/bin/_dbutil">
+      <arg value="procopy" />
+      <arg value="${dlcHome}/empty.db" />
+      <arg value="empty" />
+      <env key="DLC" value="${dlcHome}" />
+    </exec>
+
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true">
+      <fileset refid="${fsid}" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    <!--  <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" /> -->
+      <PCTConnection dbName="empty" singleUser="true">
+        <PCTAlias name="dictdb" />
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </bootstrapCompile>
+    <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
+      <fileset dir="${buildDir}">
+        <include name="pct/*.r" />
+        <include name="prolint/**/*.r" />
+        <include name="prodict/dump/*.r" />
+      </fileset>
+    </bootstrapLibrary>
+
+    <delete>
+      <fileset dir="${basedir}" includes="empty*.*" />
+    </delete>
+  </target>
+
+  <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
+    <echo message="Checking v8 in ${DLC8}" />
+    <echo message="Checking v9 in ${DLC9}" />
+    <echo message="Checking v10 in ${DLC10}" />
+    <echo message="Checking v10-64 in ${DLC10-64}" />
+    <echo message="Checking v11 in ${DLC11}" />
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v8.present" />
+      <param name="dlcHome" value="${DLC8}" />
+      <param name="buildDir" value="${build-v8}" />
+      <param name="libName" value="pct8.pl" />
+      <param name="fsid" value="fs.v8" />
+    </antcall>
+    <!-- FIXME <bootstrapLibrary destfile="${build}/pct8.pl" dlcHome="${DLC8}">
+      <fileset dir="${src.progress}">
+        <include name="pct/pctCRCExtractV8.p" />
+      </fileset>
+    </bootstrapLibrary> -->
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v9.present" />
+      <param name="dlcHome" value="${DLC9}" />
+      <param name="buildDir" value="${build-v9}" />
+      <param name="libName" value="pct9.pl" />
+      <param name="fsid" value="fs.v9" />
+    </antcall>
+
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10.present" />
+      <param name="dlcHome" value="${DLC10}" />
+      <param name="buildDir" value="${build-v10}" />
+      <param name="libName" value="pct10.pl" />
+      <param name="fsid" value="fs.v10" />
+    </antcall>
+
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v10-64.present" />
+      <param name="dlcHome" value="${DLC10-64}" />
+      <param name="buildDir" value="${build-v10-64}" />
+      <param name="libName" value="pct10-64.pl" />
+      <param name="fsid" value="fs.v10" />
+    </antcall>
+
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v11.present" />
+      <param name="dlcHome" value="${DLC11}" />
+      <param name="buildDir" value="${build-v11}" />
+      <param name="libName" value="pct11.pl" />
+      <param name="fsid" value="fs.v11" />
+    </antcall>
+
+    <zip destfile="${build}/pct-src.zip">
+      <fileset dir="${src.progress}" includes="**/*" />
+    </zip>
+  </target>
+
+  <target name="jar" depends="pbuild,test-build" description="JAR file generation">
+    <jar jarfile="${dist}/PCT.jar">
+      <fileset dir="${build}">
+        <include name="com/phenix/pct/*.class" />
+        <include name="com/phenix/pct/*.properties" />
+        <include name="net/cordova/prounit/*.class" />
+        <include name="PCT.properties" />
+        <include name="types.properties" />
+        <include name="pct8.pl" />
+        <include name="pct9.pl" />
+        <include name="pct10.pl" />
+        <include name="pct10-64.pl" />
+        <include name="pct11.pl" />
+        <include name="pct-src.zip" />
+        <exclude name="com/phenix/pct/*Test.class" />
+      </fileset>
+	  <fileset dir="${src.java}">
+        <include name="eu/rssw/pct/antlib.xml" />
+        <include name="eu/rssw/pct/prolint/**/*" />
+	  </fileset>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+        <section name="common">
+          <attribute name="Specification-Title" value="PCT" />
+          <attribute name="Specification-Version" value="${pct.version}" />
+          <attribute name="Specification-Vendor" value="Riverside Software" />
+          <attribute name="Implementation-Title" value="PCT" />
+          <attribute name="Implementation-Version" value="Build ${BUILD_NUMBER}" />
+          <attribute name="Implementation-Vendor" value="Riverside Software" />
+        </section>
+      </manifest>
+    </jar>
+    <jar jarfile="${dist}/PCT-Tests.jar">
+      <fileset dir="${build-test}" includes="**/*" />
+    </jar>
+  </target>
+
+  <target name="declare" depends="jar" description="PCT tasks declaration">
+    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
+    <typedef resource="types.properties" classpath="${dist}/PCT.jar" />
+  </target>
+
+  <target name="test-build" depends="build" description="Builds TestNG tests">
+    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+      <include name="org/ini4j/**/*.java" />
+      <include name="com/phenix/pct/*.java" />
+      <include name="net/cordova/prounit/*.java" />
+      <classpath refid="pct.test.compil" />
+    </javac>
+  </target>
+
+  <target name="prepare-test" >
+    <delete dir="testbox" />
+    <mkdir dir="testbox" />
+    <copy todir="testbox">
+      <fileset dir="tests" />
+    </copy>
+  </target>
+  
+  <target name="javadoc" depends="build" description="API documentation creation">
+    <mkdir dir="${doc}" />
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
+      <packageset dir="${src.java}" />
+      <group title="PCT Core" packages="com.phenix.pct.*" />
+      <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+      <!-- Seems down -->
+      <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
+    </javadoc>
+  </target>
+
+  <target name="bindist" depends="jar,pbuild,website" description="Generates binary zip/tarball archive">
+    <zip destfile="pct-bin-${BUILD_NUMBER}.zip">
+      <zipfileset prefix="pct" dir="." filemode="644">
+        <include name="lib/PCT.jar" />
+        <include name="CHANGELOG" />
+        <include name="website/**" />
+      </zipfileset>
+    </zip>
+    <zip destfile="pct-tests.zip" encoding="utf-8">
+      <fileset dir="tests" includes="**/*" />
+    </zip>
+  </target>
+
+  <target name="srcdist" description="Generates source zip/tarball archive">
+    <zip destfile="pct-src-${BUILD_NUMBER}.zip">
+      <zipfileset prefix="pct" dir="." filemode="644">
+        <include name="src/**" />
+        <include name="build.xml" />
+        <include name="conf/**" />
+        <include name="doc/**" />
+        <include name="CHANGELOG" />
+      	<include name="*.jar" />
+      	<include name="pct.build.properties" />
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="dist" depends="srcdist,bindist" />
+
+  <target name="clean" description="Nettoyage">
+    <delete dir="${build}" />
+    <delete dir="${build-test}" />
+    <delete dir="${build-v8}" />
+    <delete dir="${build-v9}" />
+    <delete dir="${build-v10}" />
+    <delete dir="${build-v10-64}" />
+    <delete dir="${build-v11}" />
+    <delete dir="${dist}" />
+    <delete dir="${doc}" />
+    <delete dir="${check}" />
+    <delete dir="${website}" />
+    <delete dir="sports2000" />
+    <delete>
+      <fileset dir=".">
+        <include name="pct*.tar.gz" />
+        <include name="pct*.zip" />
+        <include name="TEST*.xml" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="website" depends="javadoc,sports2000doc" description="Generates files used for the pct.sf.net website">
+    <delete dir="${website}" />
+    <mkdir dir="${website}" />
+    <loadfile property="right-banner" srcFile="${basedir}/doc/right-banner.include" />
+    <loadfile property="changelog" srcFile="${basedir}/CHANGELOG" />
+    <loadfile property="analytics" srcFile="${basedir}/doc/analytics.include" />
+    <copy todir="${website}">
+      <fileset dir="doc">
+        <include name="*.html" />
+        <include name="*.css" />
+        <include name="*.xsl" />
+      </fileset>
+      <fileset dir=".">
+        <include name="${doc}/**" />
+      </fileset>
+      <filterset>
+        <filter token="RIGHT_BANNER" value="${right-banner}" />
+        <filter token="CHANGELOG" value="${changelog}" />
+        <filter token="ANALYTICS" value="${analytics}" />
+      </filterset>
+    </copy>
+    <copy todir="${website}">
+      <fileset dir="doc">
+        <include name="back.png" />
+        <include name="ss*.png" />
+        <include name="developers*.png" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/sports2000">
+      <fileset dir="sports2000/doc">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <!-- <copy todir="${website}/testng-v9" failonerror="false">
+      <fileset dir="${testng-v9}/html">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/testng-v10" failonerror="false">
+      <fileset dir="${testng-v10}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/testng-v10-64" failonerror="false">
+      <fileset dir="${testng-v10-64}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${website}/testng-v11" failonerror="false">
+      <fileset dir="${testng-v11}">
+        <include name="**" />
+      </fileset>
+    </copy> -->
+    <copy todir="${website}/javadoc">
+      <fileset dir="${doc}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <zip destfile="${website}/sample1.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step1" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample2.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step2" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample3.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step3" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample4.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step4" prefix="MyProject" />
+    </zip>
+    <zip destfile="${website}/sample5.zip" whenempty="create">
+      <zipfileset dir="doc/quickstart-samples/step5" prefix="MyProject" />
+    </zip>
+    
+    <zip destfile="website-${BUILD_NUMBER}.zip" basedir="${website}"/>
+  </target>
+
+  <target name="sports2000doc" depends="declare">
+    <mkdir dir="sports2000" />
+    <mkdir dir="sports2000/doc" />
+    <mkdir dir="sports2000/doc/files" />
+    <property name="sports2000-doc" location="sports2000/doc" />
+    <exec executable="${DLC-SPORTS}/bin/_dbutil" dir="sports2000">
+      <env key="DLC" value="${DLC-SPORTS}" />
+      <arg value="procopy" />
+      <arg path="${DLC-SPORTS}/sports2000" />
+      <arg value="sports2000" />
+    </exec>
+    <PCTSchemaDoc file="sports2000/sports2000.xml" dlcHome="${DLC-SPORTS}">
+      <PCTConnection dbDir="sports2000" dbName="sports2000" singleUser="true" />
+      <env key="LIBPATH" value="${DLC-SPORTS}/lib" />
+    </PCTSchemaDoc>
+    <xslt in="sports2000/sports2000.xml" style="doc/SchemaDoc.xsl" out="sports2000/output.txt">
+      <param name="outputdir" expression="${sports2000-doc}" />
+    </xslt>
+  </target>
+
+  <target name="upload">
+    <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="pct-bin-${BUILD_NUMBER}.zip" targetfilename="pct-bin-${BUILD_NUMBER}.zip" summary="Hudson build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+  </target>
+
+</project>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test38">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}">
+      <OutputParameter name="ABC" />
+    </PCTRun>
+    <echo message="Result : ${ABC}" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}">
+      <OutputParameter name="ABC1" />
+      <OutputParameter name="ABC2" />
+      <OutputParameter name="ABC3" />
+    </PCTRun>
+    <echo message="Result : ${ABC1} -- ${ABC2} -- ${ABC3}" />
+  </target>
+
+</project>
