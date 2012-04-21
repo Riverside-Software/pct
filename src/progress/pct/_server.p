@@ -366,7 +366,7 @@ END PROCEDURE.
 
 FUNCTION getThreadNumber RETURNS INTEGER:
     RETURN threadNumber.
-END PROCEDURE.
+END FUNCTION.
 
 /* Run a particular procedure persistently */
 PROCEDURE launch:
