@@ -82,4 +82,13 @@ public class ProlintTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
+    @Test
+    public void test3() {
+        configureProject("Prolint/test3/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+        File f1 = new File("Prolint/test3/lint/lint.xml");
+        assertTrue(f1.exists());
+    }
+
 }

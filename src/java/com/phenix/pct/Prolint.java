@@ -189,6 +189,7 @@ public class Prolint extends PCT {
             for (Iterator iter = dbConnList.iterator(); iter.hasNext();) {
                 run.addDBConnection((PCTConnection) iter.next());
             }
+            run.execute();
         }
 
         try {

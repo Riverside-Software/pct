@@ -46,3 +46,5 @@ FOR EACH DICTDB._file WHERE _file._tbl-type <> "T":U NO-LOCK BY _file._file-name
 END.
 
 OUTPUT CLOSE.
+
+RETURN "0".
