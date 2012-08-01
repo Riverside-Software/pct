@@ -64,10 +64,14 @@ import org.apache.tools.ant.types.Path;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -127,6 +131,7 @@ public class PCTRun extends PCT {
     protected File pctLib = null;
     protected File outputStream = null;
     private boolean prepared = false;
+    private Charset charset = null;
 
     /**
      * Default constructor
@@ -568,7 +573,7 @@ public class PCTRun extends PCT {
                 OutputParameter param = (OutputParameter) iter.next();
                 File f = param.getTempFileName();
                 try {
-                    br = new BufferedReader(new FileReader(f));
+                    br = new BufferedReader(new InputStreamReader(new FileInputStream(f), Charset.forName("utf-8")));
                     String s = br.readLine();
                     br.close();
                     getProject().setNewProperty(param.getName(), s);
@@ -814,9 +819,67 @@ public class PCTRun extends PCT {
         }
     }
 
+    /**
+     * Returns charset to be used when writing files in Java to be read by Progress session (thus
+     * according to cpstream, parameter files, ...) and dealing with OE encodings (such as undefined
+     * or 1252)
+     */
+    protected Charset getCharset() {
+        if (charset != null) {
+            return charset;
+        }
+
+        String zz = readCharset();
+        try {
+            if (zz != null) {
+                if ("1252".equals(zz))
+                    zz = "windows-1252";
+                if ("big-5".equalsIgnoreCase(zz))
+                    zz = "Big5";
+                charset = Charset.forName(zz);
+            }
+        } catch (IllegalArgumentException caught) {
+            log(MessageFormat.format(
+                    Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
+            charset = Charset.defaultCharset();
+        }
+        if (charset == null) {
+            log(Messages.getString("PCTCompile.47"), Project.MSG_INFO); //$NON-NLS-1$
+            charset = Charset.defaultCharset();
+        }
+
+        return charset;
+    }
+
+    private String readCharset() {
+        String pfCpInt = null, pfCpStream = null;
+        
+        // If paramFile is defined, then read it and check for cpStream or cpInternal
+        if (paramFile != null) {
+            try {
+                PFReader reader = new PFReader(new FileInputStream(paramFile));
+                pfCpInt = reader.getCpInternal();
+                pfCpStream = reader.getCpStream();
+            } catch (IOException caught) {
+                
+            }
+        }
+     
+        if (cpStream != null) 
+            return cpStream;
+        else if (pfCpStream != null)
+            return pfCpStream;
+        else if (cpInternal != null)
+            return cpInternal;
+        else if (pfCpInt != null)
+            return pfCpInt;
+        else
+            return null;
+    }
+
     private void createInitProcedure() throws BuildException {
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(this.initProc));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(initProc), getCharset()));
 
             // Progress v8 is unable to write to standard output, so output is redirected in a file,
             // which is parsed in a later stage

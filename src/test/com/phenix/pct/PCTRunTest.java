@@ -345,4 +345,14 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test1", "Result : A1B2C3");
         expectLog("test2", "Result : 123 -- 456 -- ABC");
     }
+
+    @Test(groups = { "all" })
+    public void test39() {
+        configureProject("PCTRun/test39/build.xml");
+        expectLog("test1", "Result : UTF 8 ±÷");
+        expectLog("test2", "Result : 8859-1 ±÷");
+        expectLog("test3", "Result : Big5 ±÷");
+        expectLog("test4", "Result : 1252 ±÷");
+        expectLog("test5", "Result : UTF 8 ±÷");
+    }
 }
