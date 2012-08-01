@@ -3,17 +3,17 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
-    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" resultProperty="prop1" failOnError="false" />
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" resultProperty="prop1" failOnError="false" cpinternal="iso8859-1" cpstream="iso8859-1" />
     <echo message="Result : ${prop1}" />
   </target>
 
   <target name="test2">
-    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" resultProperty="prop2" failOnError="false" />
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" resultProperty="prop2" failOnError="false" cpinternal="iso8859-1" cpstream="iso8859-1" />
     <echo message="Result : ${prop2}" />
   </target>
 
   <target name="test3">
-    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}" resultProperty="prop3" failOnError="false" />
+    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}" resultProperty="prop3" failOnError="false" cpinternal="iso8859-1" cpstream="iso8859-1" />
     <echo message="Result : ${prop3}" />
   </target>
 

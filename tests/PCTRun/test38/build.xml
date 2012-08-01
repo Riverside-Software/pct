@@ -3,14 +3,14 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
-    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <OutputParameter name="ABC" />
     </PCTRun>
     <echo message="Result : ${ABC}" />
   </target>
 
   <target name="test2">
-    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}">
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <OutputParameter name="ABC1" />
       <OutputParameter name="ABC2" />
       <OutputParameter name="ABC3" />
