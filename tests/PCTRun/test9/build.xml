@@ -3,10 +3,10 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
-    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" parameter=" PCT" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" parameter=" PCT" cpinternal="iso8859-1" cpstream="iso8859-1" />
   </target>
   <target name="test2">
-    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" />
   </target>
 
 </project>
