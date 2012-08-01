@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 public class XMLLintCallback implements ILintCallback {
     private File output;
-    private List /*<LintWarning>*/ warnings = new ArrayList<LintWarning>();
+    private List /*<LintWarning>*/ warnings = new ArrayList /*<LintWarning>*/ ();
 
     public XMLLintCallback(File file) {
         this.output = file;
