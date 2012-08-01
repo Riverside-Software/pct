@@ -91,7 +91,6 @@
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
-    <!--<include name="prolint/**/*.p" />-->
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/_dmpincr11.p" />
@@ -103,18 +102,7 @@
     <exclude name="pct/crcV8.p" />
   </fileset>
   <fileset id="fs.v11" dir="${src.progress}">
-    <include name="pct/*.p" />
-    <include name="prolint/**/*.p" />
-    <include name="prodict/**/*.p" />
-    <exclude name="pct/_dmpincr9.p" />
-    <exclude name="pct/pctCompileV8.p" />
-    <exclude name="pct/pctCompile.p" />
-    <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/crcV8.p" />
-  </fileset>
-  <fileset id="fs.v11" dir="${src.progress}">
-    <include name="pct/*.p" />
-    <include name="prolint/**/xml.p" />
+    <include name="pct/**/*.p" />
     <include name="prodict/**/*.p" />
     <exclude name="pct/_dmpincr9.p" />
     <exclude name="pct/pctCompileV8.p" />
@@ -134,8 +122,6 @@
     <pathelement location="ini4j-0.5.1.jar" />
   </path>
   
- 
-
   <target name="init" description="Initialize PCT builder" depends="init-properties">
     <tstamp>
       <format property="year" pattern="yyyy" />
@@ -209,11 +195,12 @@ PCTBuild=${BUILD_NUMBER}
   <target name="jar-lite" depends="build" description="Bootstrap JAR file">
     <jar jarfile="${dist}/bootstrap.jar">
       <fileset dir="${build}">
-        <include name="com/phenix/pct/*.class" />
-        <include name="com/phenix/pct/*.properties" />
-        <include name="bootstrap.properties" />
+        <include name="**/*.class" />
+        <include name="**/*.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
+      <zipfileset src="proparse.jar" />
+      <zipfileset src="antlr-2.7.7.jar" />
     </jar>
   </target>
 
@@ -235,7 +222,6 @@ PCTBuild=${BUILD_NUMBER}
         <pathelement location="${src.progress}" />
       </propath>
       <PCTRunOption name="-cprcodeout" value="undefined" />
-    <!--  <PCTRunOption name="-assemblies" value="src/java/eu/rssw/pct/prolint" /> -->
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
         <PCTAlias name="dictdb2" />
@@ -243,8 +229,7 @@ PCTBuild=${BUILD_NUMBER}
     </bootstrapCompile>
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
       <fileset dir="${buildDir}">
-        <include name="pct/*.r" />
-        <include name="prolint/**/*.r" />
+        <include name="pct/**/*.r" />
         <include name="prodict/dump/*.r" />
       </fileset>
     </bootstrapLibrary>
@@ -312,11 +297,8 @@ PCTBuild=${BUILD_NUMBER}
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
-        <include name="com/phenix/pct/*.class" />
-        <include name="com/phenix/pct/*.properties" />
-        <include name="net/cordova/prounit/*.class" />
-        <include name="PCT.properties" />
-        <include name="types.properties" />
+        <include name="**/*.class" />
+        <include name="**/*.properties" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
@@ -327,8 +309,9 @@ PCTBuild=${BUILD_NUMBER}
       </fileset>
 	  <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
-        <include name="eu/rssw/pct/prolint/**/*" />
 	  </fileset>
+	  <zipfileset src="proparse.jar" includes="**/*.class" />
+	  <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">

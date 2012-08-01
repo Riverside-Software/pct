@@ -7,5 +7,7 @@
 	<classpathentry kind="lib" path="ant-launcher.jar" sourcepath="ant-src.jar"/>
 	<classpathentry kind="lib" path="testng-6.3.1.jar" sourcepath="testng-src.jar"/>
 	<classpathentry kind="lib" path="ini4j-0.5.1.jar" sourcepath="ini4j-0.5.1-src.jar"/>
+	<classpathentry kind="lib" path="proparse.jar" sourcepath="proparse-src.jar" />
+	<classpathentry kind="lib" path="antlr-2.7.7.jar" />
 	<classpathentry kind="output" path="bin"/>
 </classpath>
