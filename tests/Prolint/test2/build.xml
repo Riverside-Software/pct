@@ -6,7 +6,6 @@
     <mkdir dir="lint" />
     <Prolint dlcHome="${DLC}" lintFile="lint/lint.xml">
       <fileset dir="src" includes="*.p" />
-      
     </Prolint>
   </target>
 
