@@ -59,8 +59,10 @@ import org.apache.tools.ant.types.FileSet;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -349,7 +351,7 @@ public class PCTCompile extends PCTRun {
      */
     private void writeFileList() throws BuildException {
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fsList));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fsList), getCharset()));
 
             for (Iterator e = filesets.iterator(); e.hasNext();) {
                 // Parse filesets
