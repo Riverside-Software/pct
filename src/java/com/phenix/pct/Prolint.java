@@ -53,76 +53,64 @@
  */
 package com.phenix.pct;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.prorefactor.core.schema.Schema;
+import org.prorefactor.refactor.RefactorException;
+import org.prorefactor.refactor.RefactorSession;
+import org.prorefactor.treeparser.ParseUnit;
+
+import com.joanju.proparse.Environment;
+
+import eu.rssw.pct.prolint.ILintCallback;
+import eu.rssw.pct.prolint.ILintRule;
+import eu.rssw.pct.prolint.XMLLintCallback;
 
 /**
  * Lint source files
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class Prolint extends PCTRun {
+public class Prolint extends PCT {
     private List filesets = new ArrayList();
-    private File destDir = null;
-    private List handlers = new ArrayList();
-    private List excludeRules = new ArrayList();
-    
+    protected Collection dbConnList = null;
+    protected Path propath = null;
+
+    private File lintFile;
+    private File rulesFile;
+
     // Internal use
-    private int fsListId = -1;
-    private File fsList = null;
-    private int paramsId = -1;
-    private File params = null;
-    private int lintTmpDirId = -1;
-    private File lintTmpDir = null;
-    private int parseTmpDirId = -1;
-    private File parseTmpDir = null;
+    private int lintSchemaId = -1;
+    private File lintSchema = null;
 
-    public Prolint(){
+    public Prolint() {
         super();
-        
-        fsListId = PCT.nextRandomInt();
-        paramsId = PCT.nextRandomInt();
-        lintTmpDirId = PCT.nextRandomInt();
-        parseTmpDirId = PCT.nextRandomInt();
-        
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        lintTmpDir = new File(System.getProperty("java.io.tmpdir"), "prolint" + lintTmpDirId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        lintTmpDir.mkdir();
-        parseTmpDir = new File(System.getProperty("java.io.tmpdir"), "proparse" + parseTmpDirId); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        parseTmpDir.mkdir();
-        
-        addPropath(new Path(getProject(), lintTmpDir.getAbsolutePath()));
-        super.setGraphicalMode(true);
-        super.setAssemblies(parseTmpDir);
+
+        lintSchemaId = PCT.nextRandomInt();
+        lintSchema = new File(
+                System.getProperty("java.io.tmpdir"), "lint_schema" + lintSchemaId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    public void setGraphicalMode(boolean graphMode) {
-        throw new BuildException("graphicalMode attribute can't be set in Prolint task");
+    public void setLintFile(File lintFile) {
+        this.lintFile = lintFile;
     }
 
-    public void setAssemblies(File assemblies) {
-        throw new BuildException("assemblies attribute can't be set in Prolint task");
-    }
-    
-    /**
-     * Location to store the .r files
-     * 
-     * @param destDir Destination directory
-     */
-    public void setDestDir(File destDir) {
-        this.destDir = destDir;
+    public void setRulesFile(File rulesFile) {
+        this.rulesFile = rulesFile;
     }
 
     /**
@@ -133,170 +121,165 @@ public class Prolint extends PCTRun {
     public void addFileset(FileSet set) {
         filesets.add(set);
     }
-    
-    public void addLintHandler(Handler handler) {
-        handlers.add(handler);
-    }
-    
-    public void addExcludeRule(ExcludeRule rule) {
-        excludeRules.add(rule);
-    }
-    
+
     /**
+     * Creates a new Path instance
      * 
-     * @throws BuildException
+     * @return Path
      */
-    private void writeFileList() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fsList));
-
-            for (Iterator e = filesets.iterator(); e.hasNext();) {
-                // Parse filesets
-                FileSet fs = (FileSet) e.next();
-                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
-                bw.newLine();
-
-                // And get files from fileset
-                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-                for (int i = 0; i < dsfiles.length; i++) {
-                    bw.write(dsfiles[i]);
-                    bw.newLine();
-                }
-            }
-
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.2"), ioe); //$NON-NLS-1$
+    public Path createPropath() {
+        if (this.propath == null) {
+            this.propath = new Path(this.getProject());
         }
+
+        return this.propath;
     }
-    
+
     /**
+     * Set the propath to be used when running the procedure
      * 
-     * @throws BuildException
+     * @param propath an Ant Path object containing the propath
      */
-    private void writeParams() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
-            bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
-            bw.newLine();
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
-        }
+    public void addPropath(Path propath) {
+        createPropath().append(propath);
     }
-    
-    private void writeCustomLint() throws BuildException {
-        File prolint = new File(lintTmpDir, "prolint");
-        File filters = new File(prolint, "filters");
-        File rules = new File(prolint, "rules");
-        File oHandler = new File(prolint, "outputhandlers");
-        File custom = new File(prolint, "custom");
-        File settings = new File(prolint, "settings");
-        File profile = new File(settings, "pct");
-        filters.mkdirs();
-        rules.mkdirs();
-        oHandler.mkdirs();
-        custom.mkdirs();
-        profile.mkdirs();
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(custom, "prolint.properties.p")));
-            bw.write("RUN SetProlintProperty ('outputhandlers.resultwindow', '').");
-            bw.newLine();
-            bw.write("RUN SetProlintProperty ('outputhandlers.outputdirectory', '" + destDir.getAbsolutePath() + "').");
-            bw.newLine();
-            bw.close();
-            
-            BufferedWriter bw2 = new BufferedWriter(new FileWriter(new File(profile, "handlers.d")));
-            for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
-                Handler h = (Handler) iter.next();
-                bw2.write("\"" + h.getName() + "\"");
-                bw2.newLine();
-            }
-            bw2.close();
 
-            BufferedWriter bw3 = new BufferedWriter(new FileWriter(new File(oHandler, "severity.d")));
-            for (Iterator iter = excludeRules.iterator(); iter.hasNext(); ) {
-                ExcludeRule h = (ExcludeRule) iter.next();
-                bw3.write("\"no\" \"" + h.getName() + "\"");
-                bw3.newLine();
-            }
-            bw3.close();
-
-          BufferedWriter bw4 = new BufferedWriter(new FileWriter(new File(profile, "choices.d")));
-          bw4.write("\"xml.p\" 10 \"*\" \"XML export\"");
-          bw4.newLine();
-          bw4.close();
-
-          copyStreamFromJar("/eu/rssw/pct/prolint/rules.d", new File(rules, "rules.d"));
-          copyStreamFromJar("/eu/rssw/pct/prolint/IKVM.OpenJDK.Core.dll", new File(parseTmpDir, "IKVM.OpenJDK.Core.dll"));
-          copyStreamFromJar("/eu/rssw/pct/prolint/IKVM.Runtime.dll", new File(parseTmpDir, "IKVM.Runtime.dll"));
-          copyStreamFromJar("/eu/rssw/pct/prolint/proparse.net.dll", new File(parseTmpDir, "proparse.net.dll"));
-          copyStreamFromJar("/eu/rssw/pct/prolint/assemblies.xml", new File(parseTmpDir, "assemblies.xml"));
-          
-        } catch (IOException caught) {
-            throw new BuildException(Messages.getString("Prolint.1"), caught); //$NON-NLS-1$
+    public void addDBConnection(PCTConnection dbConn) {
+        if (this.dbConnList == null) {
+            this.dbConnList = new ArrayList();
         }
+
+        this.dbConnList.add(dbConn);
+    }
+
+    /**
+     * Returns a separated list of propath entries, adding standard DLC entries at the end. Standard
+     * entries are $DLC/[gui/tty];$DLC;$DLC/bin
+     * 
+     * @return
+     */
+    private String getPropath() {
+        String[] lst = (propath == null ? new String[]{} : propath.list());
+        String str = "";
+        for (int k = 0; k < lst.length; k++) {
+            str = str + (str.length() == 0 ? "" : ",") + lst[k];
+        }
+        str = str + (str.length() == 0 ? "" : ",")
+                + new File(getDlcHome(), "tty").getAbsolutePath();
+        str = str + "," + getDlcHome().getAbsolutePath();
+        str = str + "," + getDlcBin().getAbsolutePath();
+
+        return str;
     }
 
     public void execute() throws BuildException {
         checkDlcHome();
 
-        if (destDir == null) {
-            throw new BuildException("destDir not set");
+        if (lintFile == null) {
+            throw new BuildException("lintFile not set");
         }
-        
+
+        // Generate schema
+        if ((dbConnList != null) && (dbConnList.size() > 0)) {
+            PCTRun run = new PCTRun();
+            run.bindToOwner(this);
+            run.setDlcHome(getDlcHome());
+            run.setProcedure("pct/schemadump1.p");
+            run.setParameter(lintSchema.getAbsolutePath());
+            for (Iterator iter = dbConnList.iterator(); iter.hasNext();) {
+                run.addDBConnection((PCTConnection) iter.next());
+            }
+        }
+
         try {
-            writeFileList();
-            writeParams();
-            writeCustomLint();
-            setProcedure("pct/prolint.p");
-            setParameter(params.getAbsolutePath());
-            super.execute();
+            lintFiles();
             cleanup();
-        } catch (BuildException be) {
+        } catch (Throwable be) {
             cleanup();
-            throw be;
+            throw new BuildException(be);
         }
     }
 
-    protected void cleanup() {
-        super.cleanup();
+    private Collection readRules(InputStream input) throws IOException {
+        Properties props = new Properties();
+        props.load(input);
 
-        if (!getDebugPCT()) {
-            if (fsList.exists() && !fsList.delete()) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{fsList.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
-            }
+        Collection rules = new ArrayList();
+        for (Iterator iter = props.keySet().iterator(); iter.hasNext();) {
+            String entry = (String) iter.next();
+            String value = props.getProperty(entry);
 
-            if (params.exists() && !params.delete()) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{params.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
-            }
-            if (lintTmpDir.exists()) {
-                try {
-                    PCT.deleteDirectory(lintTmpDir);
-                } catch (IOException caught) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{lintTmpDir.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            try {
+                Class clz = Class.forName(value);
+                if (ILintRule.class.isAssignableFrom(clz)) {
+                    Constructor constructor = clz.getConstructor();
+                    Object o = constructor.newInstance();
+                    rules.add(o);
                 }
+            } catch (Throwable caught) {
+                log("Unable to load class " + value, Project.MSG_ERR);
+                throw new BuildException(caught);
             }
-            if (parseTmpDir.exists()) {
-                try {
-                    PCT.deleteDirectory(parseTmpDir);
-                } catch (IOException caught) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{parseTmpDir.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        }
+
+        return rules;
+    }
+
+    private void lintFiles() throws IOException, RefactorException {
+        Environment env = Environment.instance();
+        RefactorSession session = RefactorSession.getInstance();
+        Schema schema = Schema.getInstance();
+        Collection rules = readRules((rulesFile == null ? this.getClass().getResourceAsStream(
+                "/lint.properties") : new FileInputStream(rulesFile)));
+
+        env.configSet("batch-mode", "true");
+        env.configSet("opsys", "WIN32");
+        env.configSet("propath", getPropath());
+        env.configSet("proversion", "11.0");
+        env.configSet("window-system", "TTY");
+
+        if ((dbConnList != null) && (dbConnList.size() > 0)) {
+            schema.loadSchema(lintSchema.getAbsolutePath());
+            for (Iterator iter = dbConnList.iterator(); iter.hasNext();) {
+                PCTConnection conn = (PCTConnection) iter.next();
+                if (conn.hasAliases()) {
+                    for (Iterator iter2 = conn.getAliases().iterator(); iter2.hasNext();) {
+                        PCTAlias alias = (PCTAlias) iter2.next();
+                        schema.aliasCreate(alias.getName(), conn.getDbName());
+                    }
                 }
             }
         }
+
+        ILintCallback callback = new XMLLintCallback(lintFile);
+
+        for (Iterator e = filesets.iterator(); e.hasNext();) {
+            FileSet fs = (FileSet) e.next();
+            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+            for (int i = 0; i < dsfiles.length; i++) {
+                File foo = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                File xref = null; // new File(xRefDir, dsfiles[i] + ".xref");
+                ParseUnit unit = new ParseUnit(foo);
+                try {
+                    unit.treeParser01();
+                    for (Iterator iter = rules.iterator(); iter.hasNext();) {
+                        ILintRule rule = (ILintRule) iter.next();
+                        rule.execute(unit, xref, callback);
+                    }
+                } catch (RefactorException uncaught) {
+                    System.out.println(uncaught);
+                }
+            }
+        }
+
+        callback.terminate();
+    }
+
+    protected void cleanup() {
+        if (lintSchema.exists() && !lintSchema.delete()) {
+            log(MessageFormat
+                    .format(Messages.getString("PCTCompile.42"), new Object[]{lintSchema.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        }
+
     }
 }

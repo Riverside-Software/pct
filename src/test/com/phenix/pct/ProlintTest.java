@@ -67,18 +67,18 @@ import java.io.File;
  */
 public class ProlintTest extends BuildFileTestNg {
 
-//    @Test(expectedExceptions = BuildException.class )
+    @Test(expectedExceptions = BuildException.class )
     public void test1() {
         configureProject("Prolint/test1/build.xml");
         executeTarget("test");
     }
 
-    // Not a test for now @Test
+    @Test
     public void test2() {
         configureProject("Prolint/test2/build.xml");
         executeTarget("test");
 
-        File f1 = new File("Prolint/test2/msg.p.xml");
+        File f1 = new File("Prolint/test2/lint/lint.xml");
         assertTrue(f1.exists());
     }
 
