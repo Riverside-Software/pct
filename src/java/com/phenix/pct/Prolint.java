@@ -213,8 +213,8 @@ public class Prolint extends PCT {
             try {
                 Class clz = Class.forName(value);
                 if (ILintRule.class.isAssignableFrom(clz)) {
-                    Constructor constructor = clz.getConstructor();
-                    Object o = constructor.newInstance();
+                    Constructor constructor = clz.getConstructor(new Class[] {});
+                    Object o = constructor.newInstance(new Object[] {});
                     rules.add(o);
                 }
             } catch (Throwable caught) {
