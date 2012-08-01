@@ -114,6 +114,7 @@
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="ant.jar" />
+    <pathelement location="proparse.jar" />
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
