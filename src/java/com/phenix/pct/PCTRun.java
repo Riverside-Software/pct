@@ -580,7 +580,9 @@ public class PCTRun extends PCT {
                 } catch (FileNotFoundException fnfe) {
                     log(
                             MessageFormat.format(
-                                    Messages.getString("PCTRun.10"), new Object[]{param.getName()}), Project.MSG_ERR); //$NON-NLS-1$
+                                    Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    cleanup();
+                    throw new BuildException(fnfe);
                 } catch (IOException ioe) {
                     try {
                         br.close();
@@ -588,7 +590,9 @@ public class PCTRun extends PCT {
                     }
                     log(
                             MessageFormat.format(
-                                    Messages.getString("PCTRun.10"), new Object[]{param.getName()}), Project.MSG_ERR); //$NON-NLS-1$
+                                    Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    cleanup();
+                    throw new BuildException(ioe);
                 }
             }
         }
@@ -992,7 +996,7 @@ public class PCTRun extends PCT {
                 for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
                     OutputParameter param = (OutputParameter) iter.next();
                     File tmpFile = new File(
-                            System.getProperty("java.io.tmpdir"), param.getProgressVar() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
                             .getOutputParameterCall(), new Object[]{param.getProgressVar(),
