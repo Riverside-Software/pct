@@ -4,18 +4,18 @@
 
   <target name="test1">
     <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <OutputParameter name="ABC" />
+      <OutputParameter name="test38p1" />
     </PCTRun>
-    <echo message="Result : ${ABC}" />
+    <echo message="Result : ${test38p1}" />
   </target>
 
   <target name="test2">
     <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <OutputParameter name="ABC1" />
-      <OutputParameter name="ABC2" />
-      <OutputParameter name="ABC3" />
+      <OutputParameter name="test38p2" />
+      <OutputParameter name="test38p3" />
+      <OutputParameter name="test38p4" />
     </PCTRun>
-    <echo message="Result : ${ABC1} -- ${ABC2} -- ${ABC3}" />
+    <echo message="Result : ${test38p2} -- ${test38p3} -- ${test38p4}" />
   </target>
 
 </project>
