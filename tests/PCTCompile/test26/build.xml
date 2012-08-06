@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test26">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="true" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
+      <fileset dir="src" />
+    </PCTCompile>
+  </target>
+
+</project>
