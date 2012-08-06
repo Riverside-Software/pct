@@ -5,12 +5,12 @@
   <property name="testdir" location="testbox" />
 
   <path id="test.run.cp">
-    <pathelement location="PCT-Test-Deps.jar" />
+    <pathelement location="PCT-Tests-Deps.jar" />
     <pathelement location="classes" />
   </path>
 
   <path id="testng.cp">
-    <fileset dir="." includes="PCT-Test-Deps.jar" />
+    <fileset dir="." includes="PCT-Tests-Deps.jar" />
   </path>
 
   <target name="prepare-test" >
