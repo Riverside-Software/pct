@@ -6,7 +6,7 @@
     <mkdir dir="src" />
     <echo file="src/Ö_example.p">MESSAGE 'foo'.</echo>
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="true" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
       <fileset dir="src" />
     </PCTCompile>
   </target>

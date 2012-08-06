@@ -4,9 +4,9 @@
 
   <target name="test">
     <mkdir dir="src" />
-    <echo file="src/Ö_example.p">MESSAGE 'foo'.</echo>
+    <echo file="src/Ã–_example.p">MESSAGE 'foo'.</echo>
     <mkdir dir="build" />
-    <PCTCompileExt graphicalMode="true" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
       <fileset dir="src" />
     </PCTCompileExt>
   </target>
