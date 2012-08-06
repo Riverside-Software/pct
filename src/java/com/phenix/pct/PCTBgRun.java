@@ -65,11 +65,13 @@ import com.phenix.pct.BackgroundWorker.Message;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -99,6 +101,7 @@ public abstract class PCTBgRun extends PCT {
     protected int plID = -1; // Unique ID when creating temp files
     private File initProc = null;
     private int initProcId = -1; // Unique ID when creating temp files
+    private Charset charset = null;
 
     /**
      * Default constructor
@@ -356,6 +359,64 @@ public abstract class PCTBgRun extends PCT {
                 throw new BuildException(buildExceptionSource);
         }
             
+    }
+
+    /**
+     * Returns charset to be used when writing files in Java to be read by Progress session (thus
+     * according to cpstream, parameter files, ...) and dealing with OE encodings (such as undefined
+     * or 1252)
+     */
+    protected Charset getCharset() {
+        if (charset != null) {
+            return charset;
+        }
+
+        String zz = readCharset();
+        try {
+            if (zz != null) {
+                if ("1252".equals(zz))
+                    zz = "windows-1252";
+                if ("big-5".equalsIgnoreCase(zz))
+                    zz = "Big5";
+                charset = Charset.forName(zz);
+            }
+        } catch (IllegalArgumentException caught) {
+            log(MessageFormat.format(
+                    Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
+            charset = Charset.defaultCharset();
+        }
+        if (charset == null) {
+            log(Messages.getString("PCTCompile.47"), Project.MSG_INFO); //$NON-NLS-1$
+            charset = Charset.defaultCharset();
+        }
+
+        return charset;
+    }
+
+    private String readCharset() {
+        String pfCpInt = null, pfCpStream = null;
+        
+        // If paramFile is defined, then read it and check for cpStream or cpInternal
+        if (options.getParamFile() != null) {
+            try {
+                PFReader reader = new PFReader(new FileInputStream(options.getParamFile()));
+                pfCpInt = reader.getCpInternal();
+                pfCpStream = reader.getCpStream();
+            } catch (IOException caught) {
+                
+            }
+        }
+     
+        if (options.getCpStream() != null) 
+            return options.getCpStream();
+        else if (pfCpStream != null)
+            return pfCpStream;
+        else if (options.getCpInternal() != null)
+            return options.getCpInternal();
+        else if (pfCpInt != null)
+            return pfCpInt;
+        else
+            return null;
     }
 
     /**

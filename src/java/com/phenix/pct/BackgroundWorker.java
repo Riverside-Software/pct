@@ -41,8 +41,8 @@ public abstract class BackgroundWorker {
 
     public final void initialize(Socket socket) throws IOException {
         this.socket = socket;
-        this.reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        this.writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+        this.reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), parent.getCharset()));
+        this.writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), parent.getCharset()));
 
         // FIXME Should be HELLO or something like that...
         reader.readLine();
