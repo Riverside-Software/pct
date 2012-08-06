@@ -5,8 +5,8 @@
   <property name="testdir" location="testbox" />
 
   <path id="test.run.cp">
-    <pathelement location="PCT-Tests-Deps.jar" />
     <pathelement location="classes" />
+    <pathelement location="PCT-Tests-Deps.jar" />
   </path>
 
   <path id="testng.cp">
