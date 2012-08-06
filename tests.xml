@@ -5,27 +5,24 @@
   <property name="testdir" location="testbox" />
 
   <path id="test.run.cp">
-    <pathelement location="PCT.jar" />
-    <pathelement location="ant.jar" />
-    <pathelement location="ant-launcher.jar" />
-    <pathelement location="ant-apache-regexp.jar" />
-    <pathelement location="jakarta-regexp-1.5.jar" />
-    <pathelement location="testng-6.3.1.jar" />
+    <pathelement location="PCT-Test-Deps.jar" />
     <pathelement location="classes" />
-    <pathelement location="ini4j-0.5.1.jar" />
   </path>
 
   <path id="testng.cp">
-    <fileset dir="." includes="testng-6.3.1.jar" />
+    <fileset dir="." includes="PCT-Test-Deps.jar" />
   </path>
 
   <target name="prepare-test" >
     <delete dir="${testdir}" />
     <delete dir="test-output" />
+    <delete dir="classes" />
     <delete file="emailable-report-${TESTENV}.html" />
-    <delete file="testng-results-${TESTENV}.html" />
+    <delete file="testng-results-${TESTENV}.xml" />
+
     <mkdir dir="${testdir}" />
     <unzip src="pct-tests.zip" dest="${testdir}" />
+
     <mkdir dir="classes" />
     <unjar src="PCT-Tests.jar" dest="classes" />
   </target>
@@ -39,7 +36,7 @@
       <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
     </testng>
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
-    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.html" />
+    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
   </target>
 
 
