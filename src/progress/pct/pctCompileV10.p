@@ -81,6 +81,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
 
 /** Named streams */
 DEFINE STREAM sXref.
+DEFINE STREAM sXref2.
 DEFINE STREAM sParams.
 DEFINE STREAM sFileset.
 DEFINE STREAM sIncludes.
@@ -472,31 +473,42 @@ PROCEDURE importXref.
     DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE cSearch AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cTmp AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cTmp2 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zz AS INTEGER NO-UNDO.
 
     EMPTY TEMP-TABLE ttXref.
 
     INPUT STREAM sXREF FROM VALUE (pcXref).
+    INPUT STREAM sXREF2 FROM VALUE (pcXref).
     REPEAT:
         CREATE ttXref.
         IMPORT STREAM sXREF ttXref.
+
+        /* Sorry, this is crude... */
+        IMPORT STREAM sXREF2 UNFORMATTED cTmp.
+        ASSIGN cTmp2 = ttXref.xLineNumber + ' ' + ttXref.xRefType + ' '.
+        ASSIGN ttXref.xObjID = SUBSTRING(cTmp, INDEX(cTmp, cTmp2) + LENGTH(cTmp2)).
+        
         IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
-        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
+        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) EQ 0) THEN
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */
     INPUT STREAM sXREF CLOSE.
+    INPUT STREAM sXREF2 CLOSE.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN
+        IF FIRST-OF (ttXref.xObjID) THEN
             EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
     
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
     FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN DO:
+        IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
                 EXPORT CRCList.
@@ -505,14 +517,33 @@ PROCEDURE importXref.
     END.
     OUTPUT CLOSE.
 
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.hierarchy':U).
+    FOR EACH ttXref WHERE xRefType EQ 'CLASS':U NO-LOCK:
+        ASSIGN cTmp = ENTRY(2, ttXref.xObjID).
+        IF cTmp BEGINS 'INHERITS ' THEN DO:
+            ASSIGN cTmp = SUBSTRING(cTmp, 10). /* To remove INHERITS */
+            DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+                EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
+            END.
+        END.
+        ASSIGN cTmp = ENTRY(3, ttXref.xObjID).
+        IF cTmp BEGINS 'IMPLEMENTS ' THEN DO:
+            ASSIGN cTmp = SUBSTRING(cTmp, 12). /* To remove IMPLEMENTS */
+            DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+                EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
+            END.
+        END.
+    END.
+    OUTPUT CLOSE.
+    
     IF RunList THEN DO:
         OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.run':U).
         FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*~~.p') OR (ttXref.xObjID MATCHES '*~~.w')) NO-LOCK BREAK BY ttXref.xObjID:
             IF FIRST-OF (ttXref.xObjID) THEN DO:
                 FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
                 IF (NOT AVAILABLE TimeStamps) THEN DO:
-                	ASSIGN cSearch = SEARCH(SUBSTRING(ttXref.xObjID, 1, R-INDEX(ttXref.xObjID, '.')) + 'r').
-                	IF (cSearch EQ ?) THEN
+                    ASSIGN cSearch = SEARCH(SUBSTRING(ttXref.xObjID, 1, R-INDEX(ttXref.xObjID, '.')) + 'r').
+                    IF (cSearch EQ ?) THEN
                         ASSIGN cSearch = SEARCH(ttXref.xObjID).
                     CREATE TimeStamps.
                     ASSIGN TimeStamps.ttFile = ttXref.xObjID
