@@ -85,6 +85,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
 
 /** Named streams */
 DEFINE STREAM sXref.
+DEFINE STREAM sXref2.
 DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
 
@@ -415,34 +416,64 @@ PROCEDURE importXref PRIVATE:
     DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE cSearch AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cTmp AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cTmp2 AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zz AS INTEGER NO-UNDO.
 
     EMPTY TEMP-TABLE ttXref.
 
     INPUT STREAM sXREF FROM VALUE (pcXref).
+    INPUT STREAM sXREF2 FROM VALUE (pcXref).
     REPEAT:
         CREATE ttXref.
         IMPORT STREAM sXREF ttXref.
+
+        /* Sorry, this is crude... */
+        IMPORT STREAM sXREF2 UNFORMATTED cTmp.
+        ASSIGN cTmp2 = ttXref.xLineNumber + ' ' + ttXref.xRefType + ' '.
+        ASSIGN ttXref.xObjID = SUBSTRING(cTmp, INDEX(cTmp, cTmp2) + LENGTH(cTmp2)).
+
         IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
-        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
+        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) EQ 0) THEN
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */
     INPUT STREAM sXREF CLOSE.
+    INPUT STREAM sXREF2 CLOSE.
 
     OUTPUT TO VALUE (pcdir + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN
+        IF FIRST-OF (ttXref.xObjID) THEN
             EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
 
     OUTPUT TO VALUE (pcdir + '.crc':U).
     FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN DO:
+        IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
                 EXPORT CRCList.
+            END.
+        END.
+    END.
+    OUTPUT CLOSE.
+
+    OUTPUT TO VALUE (pcdir + '.hierarchy':U).
+    FOR EACH ttXref WHERE xRefType EQ 'CLASS':U NO-LOCK:
+        ASSIGN cTmp = ENTRY(2, ttXref.xObjID).
+        IF cTmp BEGINS 'INHERITS ' THEN DO:
+            ASSIGN cTmp = SUBSTRING(cTmp, 10). /* To remove INHERITS */
+            DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+                EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
+            END.
+        END.
+        ASSIGN cTmp = ENTRY(3, ttXref.xObjID).
+        IF cTmp BEGINS 'IMPLEMENTS ' THEN DO:
+            ASSIGN cTmp = SUBSTRING(cTmp, 12). /* To remove IMPLEMENTS */
+            DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+                EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
             END.
         END.
     END.

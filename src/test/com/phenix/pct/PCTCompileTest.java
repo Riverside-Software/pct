@@ -395,4 +395,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
+    @Test(groups= {"all"})
+    public void test27() {
+        configureProject("PCTCompile/test27/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test27/build/eu/rssw/pct/A.r");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTCompile/test27/build/eu/rssw/pct/B.r");
+        assertTrue(f2.exists());
+        File f3 = new File("PCTCompile/test27/build/eu/rssw/pct/X.r");
+        assertTrue(f3.exists());
+        File f4 = new File("PCTCompile/test27/build/eu/rssw/pct/Y.r");
+        assertTrue(f4.exists());
+        File f5 = new File("PCTCompile/test27/build/eu/rssw/pct/Z.r");
+        assertTrue(f5.exists());
+        File f6 = new File("PCTCompile/test27/build/.pct/eu/rssw/pct/Z.cls.hierarchy");
+        assertTrue(f6.exists());
+        assertTrue(f6.length() > 0);
+    }
 }
