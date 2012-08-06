@@ -1,8 +1,10 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <project name="PCTCompileExt-test26">
   <taskdef resource="PCT.properties" />
 
   <target name="test">
+    <mkdir dir="src" />
+    <echo file="src/Ö_example.p">MESSAGE 'foo'.</echo>
     <mkdir dir="build" />
     <PCTCompileExt graphicalMode="true" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
       <fileset dir="src" />
