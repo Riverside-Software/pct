@@ -345,7 +345,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
         File f4 = new File("PCTCompile/test22/build/.pct/Y.cls.crc");
         assertTrue(f4.exists());
-    }
+
+        executeTarget("test2");
+        File f5 = new File("PCTCompile/test22/build2/Y.r");
+        assertTrue(f5.exists());
+        File f6 = new File("PCTCompile/test22/build2/X.r");
+        assertFalse(f6.exists());
+}
 
     @Test(groups= {"win"})
     public void test23() {
