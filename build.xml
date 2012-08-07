@@ -362,7 +362,7 @@ PCTBuild=${BUILD_NUMBER}
     </jar>
   </target>
 
-  <target name="dist" depends="srcdist,testdist" />
+  <target name="dist" depends="srcdist,jar,pbuild,testdist" />
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}" />
