@@ -67,13 +67,13 @@ import java.io.File;
  */
 public class ProlintTest extends BuildFileTestNg {
 
-    @Test(expectedExceptions = BuildException.class )
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("Prolint/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test2() {
         configureProject("Prolint/test2/build.xml");
         executeTarget("test");
@@ -82,7 +82,7 @@ public class ProlintTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
-    @Test
+    @Test(groups= {"all"})
     public void test3() {
         configureProject("Prolint/test3/build.xml");
         executeTarget("base");
