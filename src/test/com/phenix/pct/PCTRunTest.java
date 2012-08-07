@@ -167,7 +167,7 @@ public class PCTRunTest extends BuildFileTestNg {
     @Test(groups = { "all" }, expectedExceptions = BuildException.class)
     public void test15() {
         configureProject("PCTRun/test15/build.xml");
-        executeTarget("test15");
+        executeTarget("test");
     }
 
     @Test(groups = { "all" })
