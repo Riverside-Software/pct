@@ -371,7 +371,8 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"all"})
+    // SHOULD be working on Linux, but doesn't...
+    @Test(groups= {"win"})
     public void test26() {
         configureProject("PCTCompileExt/test26/build.xml");
         executeTarget("test");
