@@ -2,7 +2,6 @@
 
 <project name="PCT-Tests">
 
-  <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
   <property name="testdir" location="testbox" />
 
   <path id="test.run.cp">
@@ -38,8 +37,10 @@
     </testng>
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
-  	
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="test-output/emailable-report.html" targetfilename="TestNG-${TESTENV}.html" summary="TestNG report" labels="TestNG" />
+
+    <ftp server="ftp.rssw.eu" remotedir="/www" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
+      <fileset dir="." includes="emailable-report-${TESTENV}.html"/>
+    </ftp>
   </target>
 
 
