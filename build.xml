@@ -155,6 +155,7 @@ PCTBuild=${BUILD_NUMBER}
   <target name="build" depends="init" description="Java source files compilation">
     <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
+      <include name="eu/rssw/pct/**/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.compil" />
     </javac>
