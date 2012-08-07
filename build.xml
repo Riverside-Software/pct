@@ -331,18 +331,6 @@ PCTBuild=${BUILD_NUMBER}
     </javadoc>
   </target>
 
-  <target name="bindist" depends="jar,pbuild" description="Generates binary zip/tarball archive">
-    <zip destfile="pct-bin-${BUILD_NUMBER}.zip">
-      <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="lib/PCT.jar" />
-        <include name="CHANGELOG" />
-      </zipfileset>
-    </zip>
-    <zip destfile="pct-tests.zip" encoding="utf-8">
-      <fileset dir="tests" includes="**/*" />
-    </zip>
-  </target>
-
   <target name="srcdist" description="Generates source zip/tarball archive">
     <zip destfile="pct-src-${BUILD_NUMBER}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
@@ -357,6 +345,9 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="testdist">
+    <zip destfile="pct-tests.zip" encoding="utf-8">
+      <fileset dir="tests" includes="**/*" />
+    </zip>
     <jar destfile="${dist}/PCT-Tests-Deps.jar">
       <zipfileset src="ant.jar" />
       <zipfileset src="ant-apache-regexp.jar" />
@@ -371,7 +362,7 @@ PCTBuild=${BUILD_NUMBER}
     </jar>
   </target>
 
-  <target name="dist" depends="srcdist,bindist,testdist" />
+  <target name="dist" depends="srcdist,testdist" />
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}" />
@@ -394,7 +385,7 @@ PCTBuild=${BUILD_NUMBER}
 
   <target name="upload">
     <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="pct-bin-${BUILD_NUMBER}.zip" targetfilename="pct-bin-${BUILD_NUMBER}.zip" summary="Hudson build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="lib/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Hudson build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
   </target>
 
 </project>
