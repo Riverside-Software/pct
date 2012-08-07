@@ -24,14 +24,6 @@
         <pathelement location="src" />
       </propath>
     </PCTCompile>
-    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true" multiCompile="false">
-      <fileset dir="src">
-        <include name="X.cls" />
-      </fileset>
-      <propath>
-        <pathelement location="src" />
-      </propath>
-    </PCTCompile>
   </target>
 
 </project>
