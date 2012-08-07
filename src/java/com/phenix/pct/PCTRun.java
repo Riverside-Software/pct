@@ -797,7 +797,7 @@ public class PCTRun extends PCT {
             for (Iterator i = this.options.iterator(); i.hasNext();) {
                 PCTRunOption opt = (PCTRunOption) i.next();
                 if (opt.getName() == null) {
-                    throw new BuildException("PCTRun.8"); //$NON-NLS-1$
+                    throw new BuildException(Messages.getString("PCTRun.8")); //$NON-NLS-1$
                 }
                 list.add(opt.getName());
                 if (opt.getValue() != null)
