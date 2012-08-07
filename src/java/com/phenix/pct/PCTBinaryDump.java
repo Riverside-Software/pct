@@ -267,7 +267,7 @@ public class PCTBinaryDump extends PCT {
         // Database connections
         for (Iterator e = dbConnList.iterator(); e.hasNext();) {
             PCTConnection dbc = (PCTConnection) e.next();
-            exec.addPCTConnection(dbc);
+            exec.addDBConnection(dbc);
         }
 
         StringBuffer sb = new StringBuffer();

@@ -100,7 +100,7 @@ public class ProgressVersion extends PCT {
         if (this.minorVersion != null)
             getProject().setNewProperty(this.minorVersion, Integer.toString(getDLCMinorVersion()));
         if (this.revision != null)
-            getProject().setNewProperty(this.revision, getDLCRevision());
+            getProject().setNewProperty(this.revision, getDLCMaintenanceVersion());
         if (this.patchLevel != null)
             getProject().setNewProperty(this.patchLevel, getDLCPatchLevel());
         if (this.fullVersion != null)

@@ -144,7 +144,8 @@ public class PCTDumpIncremental extends PCTRun {
     public void addDBConnection(PCTConnection dbConn) {
         throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDatabase and targetDatabase instead");
     }
-    
+
+    @Deprecated
     public void addPCTConnection(PCTConnection dbConn) {
         log("PCTConnection is deprecrated. Use sourceDatabase and targetDatabase instead", Project.MSG_INFO);
         super.addDBConnection(dbConn);

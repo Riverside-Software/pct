@@ -338,7 +338,7 @@ public class PCTCreateBase extends PCT {
                     pc.setDbName(this.dbName);
                     pc.setDbDir(this.destDir);
                     pc.setSingleUser(true);
-                    pls.addPCTConnection(pc);
+                    pls.addDBConnection(pc);
                     pls.execute();
                 } else {
                     throw new BuildException(MessageFormat.format(Messages
@@ -363,7 +363,7 @@ public class PCTCreateBase extends PCT {
                 pc.setDbName(this.dbName);
                 pc.setDbDir(this.destDir);
                 pc.setSingleUser(true);
-                run.addPCTConnection(pc);
+                run.addDBConnection(pc);
                 run.execute();
 
                 if (holder.getSchemaFile() != null) {
@@ -373,7 +373,7 @@ public class PCTCreateBase extends PCT {
                     pls.setDlcHome(this.getDlcHome());
                     pls.setDlcBin(this.getDlcBin());
                     pls.addPropath(this.propath);
-                    pls.addPCTConnection(pc);
+                    pls.addDBConnection(pc);
                     pls.execute();
 
                 }
