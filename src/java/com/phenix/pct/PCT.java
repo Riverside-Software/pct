@@ -482,6 +482,10 @@ public abstract class PCT extends Task {
         return version.getFullVersion();
     }
 
+    protected boolean is64bits() {
+        return version.is64bits();
+    }
+
     /**
      * Returns r-code version
      * 
