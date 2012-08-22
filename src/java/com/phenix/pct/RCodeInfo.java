@@ -92,13 +92,12 @@ public class RCodeInfo {
             throw new InvalidRCodeException("Can't find magic number");
         }
 
-        int version = readUnsignedShort(fc, 14, swapped);
-        this.version = (version & 0x3FFF);
+        this.version = readUnsignedShort(fc, 14, swapped);
         this.sixty_four_bits = ((version & 0x4000) != 0);
 
-        if (version >= 1100) {
+        if ((version & 0x3FFF) >= 1100) {
             processV11(fc, swapped);
-        } else if (version > 1000) {
+        } else if ((version & 0x3FFF) > 1000) {
             processV10(fc, swapped);
         } else
             processV9(fc, swapped);
