@@ -68,6 +68,7 @@ public class ProgressVersion extends PCT {
     private String minorVersion;
     private String revision;
     private String patchLevel;
+    private String arch;
 
     public void setMajorVersion(String majorVersion) {
         this.majorVersion = majorVersion;
@@ -93,6 +94,10 @@ public class ProgressVersion extends PCT {
         this.reducedVersion = reducedVersion;
     }
 
+    public void setArch(String arch) {
+        this.arch = arch;
+    }
+
     public void execute() throws BuildException {
         checkDlcHome();
         if (this.majorVersion != null)
@@ -107,6 +112,8 @@ public class ProgressVersion extends PCT {
             getProject().setNewProperty(this.fullVersion, getFullVersion());
         if (this.reducedVersion != null)
             getProject().setNewProperty(this.reducedVersion, getReducedVersion());
+        if (this.arch != null) 
+            getProject().setNewProperty(this.arch, (is64bits() ? "64 bits" : "32 bits"));
     }
 
 }
