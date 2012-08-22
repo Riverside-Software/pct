@@ -82,7 +82,7 @@ public class DLCVersion implements Comparable {
     private static void readArch(Builder builder, File prostart) throws IOException, InvalidRCodeException {
         RCodeInfo rci = new RCodeInfo(prostart);
         builder.rCodeVersion = rci.getVersion();
-        builder.arch = ((builder.rCodeVersion & 0x4000) != 0);
+        builder.arch = rci.is64bits();
     }
 
     private static void extractNewVersion(Builder builder, String str) {
