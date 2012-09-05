@@ -142,11 +142,11 @@ public class PCTDumpIncremental extends PCTRun {
     }
 
     public void addDBConnection(PCTConnection dbConn) {
-        throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDatabase and targetDatabase instead");
+        throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
     }
     
     public void addPCTConnection(PCTConnection dbConn) {
-        log("PCTConnection is deprecrated. Use sourceDatabase and targetDatabase instead", Project.MSG_INFO);
+        log("PCTConnection is deprecrated. Use sourceDb and targetDb instead", Project.MSG_INFO);
         super.addDBConnection(dbConn);
     }
 
@@ -175,11 +175,11 @@ public class PCTDumpIncremental extends PCTRun {
      */
     public void execute() throws BuildException {
         if ((sourceDB != null) && (targetDB != null)) {
-            addDBConnection(sourceDB);
-            addDBConnection(targetDB);
+            super.addDBConnection(sourceDB);
+            super.addDBConnection(targetDB);
         } else if ((sourceDB != null) || (targetDB != null)) {
             cleanup();
-            throw new BuildException("SourceDatabase and TargetDatabase nodes should be defined");
+            throw new BuildException("SourceDb and TargetDb nodes should be defined");
         } else {
             if (dbConnList == null) {
                 this.cleanup();
