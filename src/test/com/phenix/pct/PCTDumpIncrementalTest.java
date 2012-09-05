@@ -241,4 +241,21 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         assertTrue(f1.length() != f2.length());
     }
+
+    /**
+     * Simple incremental test with new attributes SourceDb and TargetDb
+     */
+    @Test(groups= {"all"})
+    public void test5() {
+        configureProject("PCTDumpIncremental/test5/build.xml");
+        executeTarget("base");
+
+        executeTarget("test1");
+        File f1 = new File("PCTDumpIncremental/test5/incr/incremental.df");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File("PCTDumpIncremental/test5/build/test.r");
+        assertTrue(f2.exists());
+    }
 }
