@@ -3,6 +3,7 @@ package eu.rssw.pct.oedoc;
 import java.util.ArrayList;
 import java.util.List;
 
+import antlr.BaseAST;
 import antlr.Token;
 
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
@@ -43,7 +44,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.isInterface = decl.isInterface();
         cu.isAbstract = decl.isAbstract();
         cu.isFinal = decl.isFinal();
-        cu.classComment.addAll(findFirstComments(decl.getFirstChildRealToken().getTokenStart()));
+        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
+        cu.classComment.addAll(findFirstComments(realChild.getLine()));
 
         if (decl.getInherits() != null)
             cu.inherits = decl.getInherits().getQualifiedName();
@@ -63,7 +65,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
-        prop.propertyComment = findPreviousComment(decl.getFirstChildRealToken().getTokenStart(), decl.getFirstChildRealToken().getColumn());
+        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
+        prop.propertyComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
         cu.properties.add(prop);
 
         return true;
@@ -75,7 +78,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         Constructor constr = new Constructor();
         constr.signature = decl.getSignature();
         constr.modifier = AccessModifier.from(decl.getAccessModifier());
-        constr.constrComment = findPreviousComment(decl.getFirstChildRealToken().getTokenStart(), decl.getFirstChildRealToken().getColumn());
+        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
+        constr.constrComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
 
         if (decl.getParameters() != null) {
             for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
@@ -102,7 +106,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.modifier = AccessModifier.from(decl.getAccessModifier());
         method.returnType = decl.getReturnType();
         method.isStatic = decl.isStatic();
-        method.methodComment = findPreviousComment(decl.getFirstChildRealToken().getTokenStart(), decl.getFirstChildRealToken().getColumn());
+        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
+        method.methodComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
@@ -136,7 +141,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.isStatic = decl.isStatic();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
-        event.eventComment = findPreviousComment(decl.getFirstChildRealToken().getTokenStart(), decl.getFirstChildRealToken().getColumn());
+        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
+        event.eventComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
         cu.events.add(event);
 
         if (decl.getParameters() != null) {
@@ -187,7 +193,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     private List<String> findFirstComments(int line) {
         List<String> comments = new ArrayList<String>();
         for (Token token : lexer.getLexerBuffer()) {
-            if (token.getColumn() >= line)
+            if (token.getLine() >= line)
                 break;
             if (token.getType() == ProgressTokenTypes.ML__COMMENT)
                 comments.add(token.getText());
