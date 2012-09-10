@@ -415,4 +415,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.exists());
         assertTrue(f6.length() > 0);
     }
+
+    @Test(groups= {"all"})
+    public void test28() {
+        configureProject("PCTCompile/test28/build.xml");
+        executeTarget("build");
+        
+        File f1 = new File("PCTCompile/test28/src-tty/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f1.length() > 0);
+        File f2 = new File("PCTCompile/test28/src-gui/test.p");
+        assertTrue(f2.exists());
+        assertTrue(f2.length() > 0);
+        
+        executeTarget("test");
+        String str1 = getProject().getProperty("test28-tty");
+        assertTrue(str1.equals("TTY"));
+        String str2 = getProject().getProperty("test28-gui");
+        assertTrue(str2.startsWith("MS-WIN"));
+    }
 }
