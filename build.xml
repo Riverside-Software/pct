@@ -365,6 +365,7 @@ PCTBuild=${BUILD_NUMBER}
       <zipfileset src="jakarta-regexp-1.5.jar" />
       <zipfileset src="testng-6.3.1.jar" />
       <zipfileset src="${dist}/PCT.jar" />
+      <zipfileset src="oe_common_services.jar" />
     </jar>
     <jar jarfile="${dist}/PCT-Tests.jar">
       <fileset dir="${build-test}" includes="**/*" />
