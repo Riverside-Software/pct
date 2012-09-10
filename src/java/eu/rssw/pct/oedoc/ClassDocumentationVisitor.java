@@ -7,6 +7,7 @@ import antlr.BaseAST;
 import antlr.Token;
 
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
+import com.openedge.pdt.core.ast.CustomSimpleToken;
 import com.openedge.pdt.core.ast.EventDeclaration;
 import com.openedge.pdt.core.ast.MethodDeclaration;
 import com.openedge.pdt.core.ast.ProgressParser;
@@ -44,8 +45,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.isInterface = decl.isInterface();
         cu.isAbstract = decl.isAbstract();
         cu.isFinal = decl.isFinal();
-        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
-        cu.classComment.addAll(findFirstComments(realChild.getLine()));
+        cu.classComment.addAll(findFirstComments(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken()));
 
         if (decl.getInherits() != null)
             cu.inherits = decl.getInherits().getQualifiedName();
@@ -65,8 +65,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
-        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
-        prop.propertyComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
+        prop.propertyComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
         cu.properties.add(prop);
 
         return true;
@@ -78,8 +77,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         Constructor constr = new Constructor();
         constr.signature = decl.getSignature();
         constr.modifier = AccessModifier.from(decl.getAccessModifier());
-        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
-        constr.constrComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
+        constr.constrComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
 
         if (decl.getParameters() != null) {
             for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
@@ -106,8 +104,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.modifier = AccessModifier.from(decl.getAccessModifier());
         method.returnType = decl.getReturnType();
         method.isStatic = decl.isStatic();
-        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
-        method.methodComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
+        method.methodComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
@@ -141,8 +138,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.isStatic = decl.isStatic();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
-        BaseAST realChild = (BaseAST) decl.getFirstChildRealToken();
-        event.eventComment = findPreviousComment(realChild.getLine(), realChild.getColumn());
+        event.eventComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
         cu.events.add(event);
 
         if (decl.getParameters() != null) {
@@ -178,10 +174,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
-    private String findPreviousComment(int line, int col) {
+    private String findPreviousComment(Token t) {
         Token prevToken = null;
         for (Token token : lexer.getLexerBuffer()) {
-            if ((token.getLine() == line) && (token.getColumn() == col) && (prevToken != null)
+            if ((token == t) && (prevToken != null)
                     && (prevToken.getType() == ProgressTokenTypes.ML__COMMENT))
                 return prevToken.getText();
             prevToken = token;
@@ -190,10 +186,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return null;
     }
 
-    private List<String> findFirstComments(int line) {
+    private List<String> findFirstComments(Token t) {
         List<String> comments = new ArrayList<String>();
         for (Token token : lexer.getLexerBuffer()) {
-            if (token.getLine() >= line)
+            if (token == t)
                 break;
             if (token.getType() == ProgressTokenTypes.ML__COMMENT)
                 comments.add(token.getText());
