@@ -183,7 +183,7 @@ public class OpenEdgeClassDocumentation extends PCT {
                     ProgressParser parser = new ProgressParser(lexer.getTokenStream());
                     ASTNodeFactory factory = new ASTNodeFactory(parser.getTokenTypeToASTClassMap());
                     parser.setASTFactory(factory);
-                    parser.setASTNodeClass("com.openedge.pdt.core.ast.SimpleToken");
+                    parser.setASTNodeClass("com.openedge.pdt.core.ast.CustomSimpleToken");
 
                     parser.openedge__unit();
                     CompilationUnit root = (CompilationUnit) parser.getAST();
