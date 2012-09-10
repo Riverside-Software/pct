@@ -26,4 +26,5 @@
   <taskdef name="dump_sequences" classname="com.phenix.pct.DumpSequences" />
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
+  <typedef name="classdocumentatin" classname="eu.rssw.pct.oedoc.ClassDocumentation" />
 </antlib>
