@@ -156,12 +156,15 @@ PCTBuild=${BUILD_NUMBER}
   <target name="build" depends="init" description="Java source files compilation">
     <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
-      <include name="eu/rssw/pct/**/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.compil" />
     </javac>
+    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="1.6" target="1.6" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+      <include name="eu/rssw/pct/**/*.java" />
+      <classpath refid="pct.compil" />
+    </javac>
     <copy todir="${build}">
-      <fileset dir="${src.java}" includes="**/*.properties" />
+      <fileset dir="${src.java}" includes="**/*.properties,**/jaxb.index" />
     </copy>
   </target>
 
@@ -272,6 +275,7 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${build}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
+        <include name="**/jaxb.index" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
@@ -283,6 +287,7 @@ PCTBuild=${BUILD_NUMBER}
 	  <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
 	  </fileset>
+      <zipfileset src="parser.jar" includes="**/*.class" />
 	  <zipfileset src="proparse.jar" includes="**/*.class" />
 	  <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
