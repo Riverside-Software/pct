@@ -23,15 +23,17 @@
   </target>
 
   <target name="test">
-    <PCTRun procedure="test.r" failOnError="false" resultProperty="test28-tty" dlcHome="${DLC}">
+    <PCTRun procedure="test.r" dlcHome="${DLC}">
       <propath>
         <pathelement location="build-tty" />
       </propath>
+      <OutputParameter name="test28-tty" />
     </PCTRun>
-    <PCTRun procedure="test.r" failOnError="false" resultProperty="test28-gui" dlcHome="${DLC}">
+    <PCTRun procedure="test.r" dlcHome="${DLC}">
       <propath>
         <pathelement location="build-gui" />
       </propath>
+      <OutputParameter name="test28-gui" />
     </PCTRun>
   </target>
 </project>

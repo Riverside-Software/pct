@@ -416,7 +416,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.length() > 0);
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"win"})
     public void test28() {
         configureProject("PCTCompile/test28/build.xml");
         executeTarget("build");
