@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package com.phenix.pct;
+package eu.rssw.pct.oedoc;
 
 import java.io.File;
 import java.io.FileReader;
@@ -72,10 +72,11 @@ import antlr.ANTLRException;
 import com.openedge.pdt.core.ast.ASTNodeFactory;
 import com.openedge.pdt.core.ast.CompilationUnit;
 import com.openedge.pdt.core.ast.ProgressParser;
+import com.phenix.pct.Messages;
+import com.phenix.pct.PCT;
 
 import eu.rssw.parser.OELexer;
 import eu.rssw.parser.Propath;
-import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
 
 /**
  * Class for generating XML documentation from OpenEdge classes
