@@ -114,6 +114,7 @@
     <pathelement location="ant.jar" />
     <pathelement location="proparse.jar" />
     <pathelement location="antlr-2.7.7.jar" />
+    <pathelement location="parser.jar" />
     <pathelement location="oe_common_services.jar" />
   </path>
   <path id="pct.test.compil">
