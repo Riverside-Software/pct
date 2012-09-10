@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test28">
+  <taskdef resource="PCT.properties" />
+
+  <target name="build">
+    <mkdir dir="build-tty" />
+    <mkdir dir="build-gui" />
+    <mkdir dir="src-tty" />
+    <mkdir dir="src-gui" />
+    
+    <PCTCompile graphicalMode="false" destDir="build-tty" dlcHome="${DLC}" preprocessDir="src-tty">
+      <fileset dir="src" includes="*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompile>
+    <PCTCompile graphicalMode="true" destDir="build-gui" dlcHome="${DLC}" preprocessDir="src-gui">
+      <fileset dir="src" includes="*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompile>
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="test.r" failOnError="false" resultProperty="test28-tty" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build-tty" />
+      </propath>
+    </PCTRun>
+    <PCTRun procedure="test.r" failOnError="false" resultProperty="test28-gui" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build-gui" />
+      </propath>
+    </PCTRun>
+  </target>
+</project>

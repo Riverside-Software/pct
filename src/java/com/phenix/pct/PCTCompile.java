@@ -97,6 +97,7 @@ public class PCTCompile extends PCTRun {
     private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
+    private File preprocessDir = null;
 
     // Internal use
     private int fsListId = -1;
@@ -181,6 +182,10 @@ public class PCTCompile extends PCTRun {
      */
     public void setPreprocess(boolean preprocess) {
         this.preprocess = preprocess;
+    }
+
+    public void setPreprocessDir(File dir) {
+        this.preprocessDir = dir;
     }
 
     /**
@@ -406,6 +411,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            if (preprocess && (preprocessDir != null)) {
+                bw.write("PREPROCESSDIR=" + preprocessDir.getAbsolutePath());
+                bw.newLine();
+            }
             bw.write("DEBUGLISTING=" + (this.debugListing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
@@ -480,6 +489,10 @@ public class PCTCompile extends PCTRun {
                 throw new BuildException(Messages.getString("PCTCompile.39")); //$NON-NLS-1$
             }
         }
+
+        // If preprocessDir is set, then preprocess is always set to true
+        if (preprocessDir != null)
+            preprocess = true;
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
