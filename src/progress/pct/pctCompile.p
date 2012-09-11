@@ -383,8 +383,11 @@ PROCEDURE PCTCompileXref.
     IF PrePro THEN DO:
         IF preprocessDir = '' THEN
             ASSIGN preprocessFile = pcPCTDir + '/':U + pcInFile + '.preprocess':U.
-        ELSE
+        ELSE DO:
             ASSIGN preprocessFile = preprocessDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(preprocessDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
