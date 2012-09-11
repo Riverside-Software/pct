@@ -9,13 +9,13 @@
     <mkdir dir="src-gui" />
     
     <PCTCompile graphicalMode="false" destDir="build-tty" dlcHome="${DLC}" preprocessDir="src-tty">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="**/*.p" />
       <propath>
         <pathelement location="src" />
       </propath>
     </PCTCompile>
     <PCTCompile graphicalMode="true" destDir="build-gui" dlcHome="${DLC}" preprocessDir="src-gui">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="**/*.p" />
       <propath>
         <pathelement location="src" />
       </propath>
