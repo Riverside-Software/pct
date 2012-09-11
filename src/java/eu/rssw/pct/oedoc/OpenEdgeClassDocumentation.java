@@ -229,6 +229,10 @@ public class OpenEdgeClassDocumentation extends PCT {
                 ((ASTNode) child).setPrevSibling(prev);
             }
             prev = child;
+
+            if (child.getType() != 22) {
+                setSourceRange((ASTNode) child);
+            }
         }
     }
 
