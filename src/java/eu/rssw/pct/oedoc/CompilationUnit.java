@@ -54,8 +54,6 @@ public class CompilationUnit {
         public String signature;
         @XmlAttribute
         public AccessModifier modifier;
-        @XmlAttribute
-        public boolean isAbstract;
         public String constrComment;
         @XmlElement(name = "parameter")
         public List<Parameter> parameters = new ArrayList<Parameter>();
@@ -188,7 +186,7 @@ public class CompilationUnit {
 
     @XmlEnum
     public enum AccessModifier {
-        PUBLIC, PRIVATE, PROTECTED;
+        STATIC, PUBLIC, PRIVATE, PROTECTED;
 
         public static AccessModifier from(int value) {
             if (value == 294)

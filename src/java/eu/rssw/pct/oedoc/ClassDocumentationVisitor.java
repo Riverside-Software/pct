@@ -103,8 +103,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             return true;
         Constructor constr = new Constructor();
         constr.signature = decl.getSignature();
-        // TODO Ajouter isAbstract
-        constr.modifier = AccessModifier.from(decl.getAccessModifier());
+        if (decl.isStatic())
+            constr.modifier = AccessModifier.STATIC;
+        else
+            constr.modifier = AccessModifier.from(decl.getAccessModifier());
         constr.constrComment = findPreviousComment(((CustomSimpleToken) decl
                 .getFirstChildRealToken()).getLexerToken());
 
