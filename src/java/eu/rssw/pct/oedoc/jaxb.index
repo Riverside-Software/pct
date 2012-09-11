@@ -8,3 +8,4 @@ CompilationUnit$AccessModifier
 CompilationUnit$ParameterMode
 CompilationUnit$Event
 CompilationUnit$UsingType
+CompilationUnit$GetSetModifier
