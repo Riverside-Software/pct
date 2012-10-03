@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" structFile="test.st" />
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+</project>

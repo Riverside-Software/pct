@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="MyProject" default="build" basedir=".">
+  <property environment="env" />
+  <taskdef resource="PCT.properties" classpath="${env.PCT_HOME}/lib/PCT.jar" />
+
+  <target name="build-ade" description="Standard ADM2">
+    <mkdir dir="build-ade" />
+    <PCTCreateBase dbName="db" destDir="db" schemaFile="ade/temp-db.df" dlcHome="${env.DLC}" />
+    <PCTCompile destDir="build-ade" dlcHome="${env.DLC}">
+      <fileset dir="ade/src">
+        <include name="adm2/**/*.p" />
+        <include name="adm2/**/*.w" />
+        <exclude name="adm2/template/**" />
+      </fileset>
+      <PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" />
+      <propath>
+        <pathelement location="ade" />
+        <pathelement location="ade/src" />
+      </propath>
+    </PCTCompile>
+    <copy toDir="ade">
+      <fileset dir="ade/src">
+        <include name="adm2/image/**" />
+        <include name="adm2/template/**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="build-ade-custom" depends="build-ade" description="Customized ADM2">
+    <mkdir dir="build-ade-custom" />
+    <PCTCompile destDir="build-ade-custom" dlcHome="${env.DLC}">
+      <fileset dir="ade/src">
+        <include name="adm2/*.p" />
+        <include name="adm2/*.w" />
+      </fileset>
+      <fileset dir="ade-custom/src">
+        <include name="adm2/**/*.p" />
+        <include name="adm2/**/*.w" />
+        <exclude name="adm2/template/**" />
+      </fileset>
+      <PCTConnection dbName="temp-db" dbDir="base/temp-db" singleUser="${singleUser}" />
+      <propath>
+        <pathelement location="ade-custom" />
+        <pathelement location="ade" />
+        <pathelement location="ade/src" />
+      </propath>
+    </PCTCompile>
+    <copy toDir="build-ade-custom">
+      <fileset dir="ade-custom/src">
+        <include name="adm2/image/**" />
+        <include name="adm2/template/**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="build" description="Builds source files">
+    <mkdir dir="build" />
+    <PCTCreateBase dbName="db" destDir="db" schemaFile="db/db.df" dlcHome="${env.DLC}" />
+    <PCTCompile destDir="build" dlcHome="${env.DLC}">
+      <propath>
+        <pathelement location="pdfinc-src" />
+      </propath>
+      <fileset dir="src">
+        <include name="*.p" />
+      </fileset>
+      <PCTConnection dbName="db" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+</project>

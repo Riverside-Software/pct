@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<antlib>
+  <taskdef name="compile" classname="com.phenix.pct.PCTCompile" />
+  <taskdef name="library" classname="com.phenix.pct.PCTLibrary" />
+  <taskdef name="run" classname="com.phenix.pct.PCTRun" />
+  <taskdef name="compile_ext" classname="com.phenix.pct.PCTBgCompile" />
+  <taskdef name="db_create" classname="com.phenix.pct.PCTCreateBase" />
+  <taskdef name="schema_load" classname="com.phenix.pct.PCTLoadSchema" />
+  <taskdef name="schema_dump" classname="com.phenix.pct.PCTDumpSchema" />
+  <taskdef name="data_load" classname="com.phenix.pct.PCTLoadData" />
+  <taskdef name="data_dump" classname="com.phenix.pct.PCTDumpData" />
+  <taskdef name="binary_load" classname="com.phenix.pct.PCTBinaryLoad" />
+  <taskdef name="binary_dump" classname="com.phenix.pct.PCTBinaryDump" />
+  <taskdef name="proxygen" classname="com.phenix.pct.PCTProxygen" />
+  <taskdef name="webspeed" classname="com.phenix.pct.PCTWSComp" />
+  <taskdef name="incr_dump" classname="com.phenix.pct.PCTDumpIncremental" />
+  <taskdef name="crc" classname="com.phenix.pct.PCTCRC" />
+  <taskdef name="xcode" classname="com.phenix.pct.PCTXCode" />
+  <taskdef name="prounit" classname="net.cordova.prounit.ProUnit" />
+  <taskdef name="asbroker" classname="com.phenix.pct.PCTASBroker" />
+  <taskdef name="wsbroker" classname="com.phenix.pct.PCTWSBroker" />
+  <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
+  <taskdef name="progress_version" classname="com.phenix.pct.ProgressVersion" />
+  <taskdef name="version" classname="com.phenix.pct.Version" />
+  <taskdef name="prolint" classname="com.phenix.pct.Prolint" />
+  <taskdef name="dump_sequences" classname="com.phenix.pct.DumpSequences" />
+  <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
+  <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
+  <typedef name="classdocumentatin" classname="eu.rssw.pct.oedoc.ClassDocumentation" />
+</antlib>

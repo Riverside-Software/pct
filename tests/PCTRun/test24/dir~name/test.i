@@ -1,0 +1,2 @@
+MESSAGE "TEST".
+RETURN "0".

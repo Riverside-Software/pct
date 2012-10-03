@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test30">
+  <taskdef resource="PCT.properties" />
+
+  <path id="my.propath">
+    <pathelement location="foo" />
+  </path>
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="foo/test.p" dlcHome="${DLC}" />
+  </target>
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="foo/test.p" dlcHome="${DLC}">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="foo/test.p" dlcHome="${DLC}" includedPL="false">
+      <propath refid="my.propath" />
+    </PCTRun>
+  </target>
+
+</project>
