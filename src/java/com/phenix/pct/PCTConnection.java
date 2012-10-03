@@ -69,8 +69,7 @@ import java.util.Map;
 /**
  * Object to add a database connection to a PCTRun task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
- * @version $Revision$
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTConnection {
     private String dbName = null;
