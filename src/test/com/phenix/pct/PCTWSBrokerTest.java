@@ -125,4 +125,14 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
+    @Test(groups = { "all" })
+    public void test6() throws InvalidFileFormatException, IOException {
+        configureProject("PCTWSBroker/test6/build.xml");
+        executeTarget("test");
+
+        Ini ini = new Ini(new File("PCTWSBroker/test6/ubroker.properties"));
+        Section section = ini.get("UBroker.WS.Test");
+        assertEquals(section.get("srvrStartupParam", String.class), "-p web/objects/web-disp.p -db sp2k");
+    }
+
 }

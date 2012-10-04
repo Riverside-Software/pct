@@ -295,8 +295,11 @@ public class PCTWSBroker extends PCTBroker {
                 // TODO Erm, this is crap... I should use something else to handle correctly quotes
                 // in command line
                 if (this.server != null) {
-                    bw.print("PROPATH=");
-                    bw.println(this.server.getPropath());
+                    // getPropath() is empty if no <propath> defined in <server> node
+                    if (!"".equals(server.getPropath())) {
+                        bw.print("PROPATH=");
+                        bw.println(this.server.getPropath());
+                    }
 
                     bw.print("srvrStartupParam=");
                     for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
