@@ -308,14 +308,6 @@ public class PCTASBroker extends PCTBroker {
                         bw.print(' ');
                     }
                     
-                    if (this.server.dbConnList != null) {
-                        for (Iterator i = this.server.dbConnList.iterator(); i.hasNext();) {
-                            PCTConnection dbc = (PCTConnection) i.next();
-                            String connect = dbc.createConnectString();
-                            bw.write(connect);
-                            bw.print(' ');
-                        }
-                    }                    
                     bw.println("");
                 }
                 
