@@ -253,7 +253,7 @@ END.
 qSequence:QUERY-CLOSE().
 
 /* Parsing every _File record */
-hFile:QUERY-PREPARE ('FOR EACH _File WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS") BY _File._File-Name').
+hFile:QUERY-PREPARE ('FOR EACH _File WHERE _File._File-Number GT 0 AND _File._File-Number LT 32768 BY _File._File-Name').
 hFile:QUERY-OPEN().
 hFile:GET-FIRST(NO-LOCK).
 REPEAT:

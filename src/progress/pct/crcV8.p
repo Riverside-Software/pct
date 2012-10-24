@@ -61,7 +61,7 @@ DEFINE INPUT-OUTPUT PARAMETER TABLE FOR CRCList.
 
 DEFINE VARIABLE i AS INTEGER    NO-UNDO.
 
-FOR EACH DictDB._File WHERE DictDB._File._File-Number GT 0 AND NOT (DictDB._File._File-Name BEGINS "SYS") NO-LOCK:
+FOR EACH DictDB._File WHERE DictDB._File._File-Number GT 0 AND DictDB._File._File-Number LT 32768 NO-LOCK:
     CREATE CRCList.
     ASSIGN CRCList.ttTable = LDBNAME('DICTDB') + '.' + DictDB._File._File-name
            CRCList.ttCRC   = STRING(DictDB._File._crc).
