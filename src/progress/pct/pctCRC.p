@@ -80,7 +80,7 @@ DO i = 1 TO NUM-DBS:
   hQuery:SET-BUFFERS(hDB, h_File).
   ASSIGN hFld1 = h_File:BUFFER-FIELD('_file-name':U)
          hFld2 = h_File:BUFFER-FIELD('_crc':U).
-  hQuery:QUERY-PREPARE('FOR EACH _Db, EACH _file WHERE _File._Db-recid EQ RECID(_Db) AND _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS")').
+  hQuery:QUERY-PREPARE('FOR EACH _Db, EACH _file WHERE _File._Db-recid EQ RECID(_Db) AND _File._File-Number GT 0 AND _File._File-Number LT 32768').
   hQuery:QUERY-OPEN().
   REPEAT:
     hQuery:GET-NEXT().
