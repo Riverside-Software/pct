@@ -196,7 +196,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
-    @Test
+    @Test(groups = {"all"})
     public void testAttributes2() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test11/build.xml");
         executeTarget("test");
@@ -225,31 +225,31 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertTrue((startup.indexOf("-db myDB2") != -1), "Unable to find myDB2 connection");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes1() {
         configureProject("PCTASBroker/test12/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes2() {
         configureProject("PCTASBroker/test13/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes3() {
         configureProject("PCTASBroker/test14/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes4() {
         configureProject("PCTASBroker/test15/build.xml");
         executeTarget("test");
     }
 
-    @Test(expectedExceptions = BuildException.class)
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testDoubleCreate() {
         configureProject("PCTASBroker/test16/build.xml");
         executeTarget("test1");

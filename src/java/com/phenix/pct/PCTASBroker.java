@@ -296,9 +296,11 @@ public class PCTASBroker extends PCTBroker {
                 bw.println("operatingMode=" + this.operatingMode);
                 bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
                 if (this.server != null) {
-                    bw.print("PROPATH=");
-                    bw.println(this.server.getPropath());
-                    
+                    if (!"".equals(server.getPropath())) {
+                        bw.print("PROPATH=");
+                        bw.println(this.server.getPropath());
+                    }
+
                     // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
                     bw.print("srvrStartupParam=");
                     for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
@@ -306,14 +308,6 @@ public class PCTASBroker extends PCTBroker {
                         bw.print(' ');
                     }
                     
-                    if (this.server.dbConnList != null) {
-                        for (Iterator i = this.server.dbConnList.iterator(); i.hasNext();) {
-                            PCTConnection dbc = (PCTConnection) i.next();
-                            String connect = dbc.createConnectString();
-                            bw.write(connect);
-                            bw.print(' ');
-                        }
-                    }                    
                     bw.println("");
                 }
                 

@@ -79,7 +79,7 @@ DO i = 1 TO NUM-DBS:
   CREATE QUERY qry.
   qry:SET-BUFFERS(bFile).
   ASSIGN bfFileName = bFile:BUFFER-FIELD('_file-name':U).
-  qry:QUERY-PREPARE('FOR EACH _file WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS")').
+  qry:QUERY-PREPARE('FOR EACH _file WHERE _File._File-Number GT 0 AND _File._File-Number LT 32768').
   qry:QUERY-OPEN().
   REPEAT:
     qry:GET-NEXT(NO-LOCK).

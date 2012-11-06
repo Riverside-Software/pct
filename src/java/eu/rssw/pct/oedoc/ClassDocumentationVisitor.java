@@ -14,14 +14,17 @@ import com.openedge.pdt.core.ast.ProgressParser;
 import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
 import com.openedge.pdt.core.ast.ProgressTokenTypes;
 import com.openedge.pdt.core.ast.PropertyDeclaration;
+import com.openedge.pdt.core.ast.PropertyMethod;
 import com.openedge.pdt.core.ast.TypeDeclaration;
 import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
+import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
 import eu.rssw.pct.oedoc.CompilationUnit.AccessModifier;
 import eu.rssw.pct.oedoc.CompilationUnit.Constructor;
 import eu.rssw.pct.oedoc.CompilationUnit.Event;
+import eu.rssw.pct.oedoc.CompilationUnit.GetSetModifier;
 import eu.rssw.pct.oedoc.CompilationUnit.Method;
 import eu.rssw.pct.oedoc.CompilationUnit.Parameter;
 import eu.rssw.pct.oedoc.CompilationUnit.ParameterMode;
@@ -45,7 +48,9 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.isInterface = decl.isInterface();
         cu.isAbstract = decl.isAbstract();
         cu.isFinal = decl.isFinal();
-        cu.classComment.addAll(findFirstComments(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken()));
+        cu.classComment
+                .addAll(findFirstComments(((CustomSimpleToken) decl.getFirstChildRealToken())
+                        .getLexerToken()));
 
         if (decl.getInherits() != null)
             cu.inherits = decl.getInherits().getQualifiedName();
@@ -65,8 +70,30 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
-        prop.propertyComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
+        prop.propertyComment = findPreviousComment(((CustomSimpleToken) decl
+                .getFirstChildRealToken()).getLexerToken());
         cu.properties.add(prop);
+
+        return true;
+    }
+
+    public boolean visit(PropertyMethod decl) {
+        IASTNode node = decl.getParent();
+        if (node instanceof PropertyDeclaration) {
+            String propName = ((PropertyDeclaration) node).getName();
+            Property prop = null;
+            for (Property p : cu.properties) {
+                if (p.name.equalsIgnoreCase(propName))
+                    prop = p;
+            }
+            if (prop != null) {
+                if (decl.getName().equalsIgnoreCase("get")) {
+                    prop.getModifier = GetSetModifier.from(decl.getAccessModifier());
+                } else if (decl.getName().equalsIgnoreCase("set")) {
+                    prop.setModifier = GetSetModifier.from(decl.getAccessModifier());
+                }
+            }
+        }
 
         return true;
     }
@@ -76,8 +103,12 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             return true;
         Constructor constr = new Constructor();
         constr.signature = decl.getSignature();
-        constr.modifier = AccessModifier.from(decl.getAccessModifier());
-        constr.constrComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
+        if (decl.isStatic())
+            constr.modifier = AccessModifier.STATIC;
+        else
+            constr.modifier = AccessModifier.from(decl.getAccessModifier());
+        constr.constrComment = findPreviousComment(((CustomSimpleToken) decl
+                .getFirstChildRealToken()).getLexerToken());
 
         if (decl.getParameters() != null) {
             for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
@@ -104,7 +135,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.modifier = AccessModifier.from(decl.getAccessModifier());
         method.returnType = decl.getReturnType();
         method.isStatic = decl.isStatic();
-        method.methodComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
+        method.methodComment = findPreviousComment(((CustomSimpleToken) decl
+                .getFirstChildRealToken()).getLexerToken());
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
@@ -136,9 +168,11 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.signature = decl.getSignature();
         event.modifier = AccessModifier.from(decl.getAccessModifier());
         event.isStatic = decl.isStatic();
+        event.isAbstract = decl.isAbstract();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
-        event.eventComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken()).getLexerToken());
+        event.eventComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken())
+                .getLexerToken());
         cu.events.add(event);
 
         if (decl.getParameters() != null) {

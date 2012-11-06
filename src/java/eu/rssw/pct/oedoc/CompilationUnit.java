@@ -95,7 +95,7 @@ public class CompilationUnit {
         @XmlAttribute
         public AccessModifier modifier;
         @XmlAttribute
-        public boolean isStatic;
+        public boolean isStatic, isAbstract;
         public String eventComment;
         @XmlElement(name = "parameter")
         public List<Parameter> parameters = new ArrayList<Parameter>();
@@ -127,6 +127,8 @@ public class CompilationUnit {
         public int extent;
         @XmlAttribute
         public AccessModifier modifier;
+        @XmlAttribute
+        public GetSetModifier getModifier = GetSetModifier.NONE, setModifier = GetSetModifier.NONE;
         public String propertyComment;
     }
 
@@ -184,7 +186,7 @@ public class CompilationUnit {
 
     @XmlEnum
     public enum AccessModifier {
-        PUBLIC, PRIVATE, PROTECTED;
+        STATIC, PUBLIC, PRIVATE, PROTECTED;
 
         public static AccessModifier from(int value) {
             if (value == 294)
@@ -216,5 +218,20 @@ public class CompilationUnit {
     @XmlEnum
     public enum UsingType {
         NONE, PROPATH, ASSEMBLY;
+    }
+    
+    public enum GetSetModifier {
+        NONE, PUBLIC, PROTECTED, PRIVATE;
+        
+        public static GetSetModifier from(int value) {
+            if (value == 294)
+                return PRIVATE;
+            else if ((value == 295) || (value == -1) /* No modifier */)
+                return PUBLIC;
+            else if (value == 296)
+                return PROTECTED;
+            return null;
+        }
+        
     }
 }

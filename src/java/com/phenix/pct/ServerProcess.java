@@ -37,6 +37,7 @@ public class ServerProcess extends PCTRun {
     public void setShutdownProc(String shutdownProc) {
         this.shutdownProc = shutdownProc;
     }
+
     public void setStartupProc(String startupProc) {
         this.startupProc = startupProc;
     }
@@ -104,6 +105,9 @@ public class ServerProcess extends PCTRun {
      * @return String
      */
     public String getPropath() {
+        if (this.propath == null)
+            return "";
+
         StringBuffer propathList = new StringBuffer("");
         String[] lst = this.propath.list();
         for (int k = 0; k < lst.length; k++) {
