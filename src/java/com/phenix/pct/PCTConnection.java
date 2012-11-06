@@ -55,6 +55,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.DataType;
 
 import java.io.File;
 
@@ -62,16 +63,18 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Object to add a database connection to a PCTRun task
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class PCTConnection {
+public class PCTConnection extends DataType {
     private String dbName = null;
     private String dbPort = null;
     private String protocol = null;
@@ -94,6 +97,8 @@ public class PCTConnection {
      * @param dbName String
      */
     public void setDbName(String dbName) {
+        if (isReference())
+            throw tooManyAttributes();
         this.dbName = dbName;
     }
 
@@ -103,6 +108,8 @@ public class PCTConnection {
      * @param dbDir File
      */
     public void setDbDir(File dbDir) {
+        if (isReference())
+            throw tooManyAttributes();
         this.dbDir = dbDir;
     }
 
@@ -112,6 +119,8 @@ public class PCTConnection {
      * @param dbPort String
      */
     public void setDbPort(String dbPort) {
+        if (isReference())
+            throw tooManyAttributes();
         this.dbPort = dbPort;
     }
 
@@ -121,6 +130,8 @@ public class PCTConnection {
      * @param protocol "AS400SNA|TCP"
      */
     public void setProtocol(String protocol) {
+        if (isReference())
+            throw tooManyAttributes();
         this.protocol = protocol;
     }
 
@@ -130,6 +141,8 @@ public class PCTConnection {
      * @param logicalName String
      */
     public void setLogicalName(String logicalName) {
+        if (isReference())
+            throw tooManyAttributes();
         this.logicalName = logicalName;
     }
 
@@ -139,6 +152,8 @@ public class PCTConnection {
      * @param cacheFile File
      */
     public void setCacheFile(File cacheFile) {
+        if (isReference())
+            throw tooManyAttributes();
         this.cacheFile = cacheFile;
     }
 
@@ -148,6 +163,8 @@ public class PCTConnection {
      * @param dataService String
      */
     public void setDataService(String dataService) {
+        if (isReference())
+            throw tooManyAttributes();
         this.dataService = dataService;
     }
 
@@ -157,6 +174,8 @@ public class PCTConnection {
      * @param dbType String
      */
     public void setDbType(String dbType) {
+        if (isReference())
+            throw tooManyAttributes();
         this.dbType = dbType;
     }
 
@@ -166,6 +185,8 @@ public class PCTConnection {
      * @param hostName String
      */
     public void setHostName(String hostName) {
+        if (isReference())
+            throw tooManyAttributes();
         this.hostName = hostName;
     }
 
@@ -175,6 +196,8 @@ public class PCTConnection {
      * @param userName String
      */
     public void setUserName(String userName) {
+        if (isReference())
+            throw tooManyAttributes();
         this.userName = userName;
     }
 
@@ -184,6 +207,8 @@ public class PCTConnection {
      * @param password String
      */
     public void setPassword(String password) {
+        if (isReference())
+            throw tooManyAttributes();
         this.password = password;
     }
 
@@ -193,6 +218,8 @@ public class PCTConnection {
      * @param paramFile File
      */
     public void setParamFile(File paramFile) {
+        if (isReference())
+            throw tooManyAttributes();
         this.paramFile = paramFile;
     }
 
@@ -202,6 +229,8 @@ public class PCTConnection {
      * @param readOnly true|false|on|off|yes|no
      */
     public void setReadOnly(boolean readOnly) {
+        if (isReference())
+            throw tooManyAttributes();
         this.readOnly = readOnly;
     }
 
@@ -211,6 +240,8 @@ public class PCTConnection {
      * @param singleUser true|false|on|off|yes|no
      */
     public void setSingleUser(boolean singleUser) {
+        if (isReference())
+            throw tooManyAttributes();
         this.singleUser = singleUser;
     }
 
@@ -219,12 +250,16 @@ public class PCTConnection {
      * 
      * The previous method's name (addPCTAlias) was changed when I switched from Vector to HashMap
      * as a container for PCTAlias. When using addPCTAlias, you enter the method with a newly
-     * created object but with undefined attributes. If you method is called addConfigured then the
+     * created object but with undefined attributes. If your method is called addConfigured then the
      * object's attribute are set. See http://ant.apache.org/manual/develop.html#nested-elements
      * 
      * @param alias Instance of PCTAlias
      */
     public void addConfiguredPCTAlias(PCTAlias alias) {
+        addConfiguredAlias(alias);
+    }
+
+    public void addConfiguredAlias(PCTAlias alias) {
         if (this.aliases == null) {
             aliases = new HashMap();
         }
@@ -234,17 +269,18 @@ public class PCTConnection {
                     Messages.getString("PCTConnection.0"), new Object[]{alias.getName()})); //$NON-NLS-1$
     }
 
+    protected PCTConnection getRef() {
+        return (PCTConnection) getCheckedRef();
+    }
+
     /**
      * Checks if aliases defined
      * 
      * @return True if aliases defined for this database connection
      */
     public boolean hasAliases() {
-        if (aliases == null) {
-            return false;
-        } else {
-            return (aliases.size() > 0);
-        }
+        boolean refAliases = (isReference() ? getRef().hasAliases() : false);
+        return (refAliases || (aliases == null ? false : (aliases.size() > 0)));
     }
 
     /**
@@ -254,11 +290,8 @@ public class PCTConnection {
      * @return True if alias defined for this database connection
      */
     public boolean hasNamedAlias(String aliasName) {
-        if (aliases == null) {
-            return false;
-        }
-
-        return aliases.containsKey(aliasName);
+        boolean refAliases = (isReference() ? getRef().hasNamedAlias(aliasName) : false);
+        return (refAliases || (aliases == null ? false : (aliases.containsKey(aliasName))));
     }
 
     /**
@@ -268,6 +301,10 @@ public class PCTConnection {
      * @throws BuildException Something went wrong (dbName or paramFile not defined)
      */
     public List getConnectParametersList() {
+        if (isReference()) {
+            return getRef().getConnectParametersList();
+        }
+
         if ((dbName == null) && (paramFile == null)) {
             throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
@@ -399,7 +436,14 @@ public class PCTConnection {
      * @return Collection
      */
     public Collection getAliases() {
-        return (aliases == null ? null : aliases.values());
+        Set set = new HashSet();
+        if (aliases != null)
+            set.addAll(aliases.values());
+        if (isReference()) {
+            set.addAll(getRef().getAliases());
+        }
+
+        return set;
     }
 
     /**
@@ -408,7 +452,9 @@ public class PCTConnection {
      * @return String
      */
     public String getDbName() {
-        if (this.logicalName != null) {
+        if (isReference())
+            return getRef().getDbName();
+        else if (this.logicalName != null) {
             return this.logicalName;
         } else {
             return this.dbName;
