@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="Sports2000-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <sports2000 dlcHome="${DLC}" />
+  </target>
+
+  <target name="test2">
+    <sports2000 dbName="sp2k" dlcHome="${DLC}" />
+  </target>
+  
+  <target name="test3">
+    <mkdir dir="db" />
+    <sports2000 dbDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test4">
+    <mkdir dir="db" />
+    <sports2000 dbDir="db" dbName="sp2k" dlcHome="${DLC}" />
+  </target>
+  
+  <target name="test">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>
