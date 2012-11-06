@@ -73,7 +73,7 @@ PROCEDURE getCRC.
         hQuery:SET-BUFFERS(h_File).
         ASSIGN hFld1 = h_File:BUFFER-FIELD('_file-name':U)
                hFld2 = h_File:BUFFER-FIELD('_crc':U).
-        hQuery:QUERY-PREPARE('FOR EACH _file WHERE _File._File-Number GT 0 AND NOT (_File._File-Name BEGINS "SYS")').
+        hQuery:QUERY-PREPARE('FOR EACH _file WHERE _File._File-Number GT 0 AND _File._File-Number LT 32768').
         hQuery:QUERY-OPEN().
         REPEAT:
             hQuery:GET-NEXT().

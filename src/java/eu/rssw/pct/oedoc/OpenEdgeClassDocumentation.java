@@ -69,9 +69,12 @@ import org.apache.tools.ant.types.Path;
 
 import antlr.ANTLRException;
 
+import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ASTNodeFactory;
 import com.openedge.pdt.core.ast.CompilationUnit;
 import com.openedge.pdt.core.ast.ProgressParser;
+import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.ICompilationUnit;
 import com.phenix.pct.Messages;
 import com.phenix.pct.PCT;
 
@@ -187,7 +190,7 @@ public class OpenEdgeClassDocumentation extends PCT {
 
                     parser.openedge__unit();
                     CompilationUnit root = (CompilationUnit) parser.getAST();
-                    root.setSourceRange();
+                    setSourceRange(root);
                     lexer.attachIncludes(factory, root);
 
                     ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(lexer, parser);
@@ -197,7 +200,7 @@ public class OpenEdgeClassDocumentation extends PCT {
                     else
                         visitor.cu.toXML(new File(destDir, visitor.cu.packageName + "."
                                 + visitor.cu.className + ".xml"));
-                    
+
                 }
             }
         } catch (IOException caught) {
@@ -208,4 +211,29 @@ public class OpenEdgeClassDocumentation extends PCT {
             throw new BuildException(caught);
         }
     }
+
+    public static void setSourceRange(ASTNode node) {
+        if (node instanceof ICompilationUnit) {
+            node.setStartPosition(1);
+        }
+
+        if ((node.getFirstChild1() == null) || (node.getType() == 22)) {
+            node.setStartPosition(node.getTokenStart());
+            node.setLength(node.getTokenLength());
+        }
+
+        IASTNode prev = null;
+        for (IASTNode child = node.getFirstChild1(); child != null; child = child.getNextSibling1()) {
+            ((ASTNode) child).setParent(node);
+            if (prev != null) {
+                ((ASTNode) child).setPrevSibling(prev);
+            }
+            prev = child;
+
+            if (child.getType() != 22) {
+                setSourceRange((ASTNode) child);
+            }
+        }
+    }
+
 }
