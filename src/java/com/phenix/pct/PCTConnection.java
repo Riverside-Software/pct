@@ -63,11 +63,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Object to add a database connection to a PCTRun task
@@ -436,14 +434,21 @@ public class PCTConnection extends DataType {
      * @return Collection
      */
     public Collection getAliases() {
-        Set set = new HashSet();
-        if (aliases != null)
-            set.addAll(aliases.values());
+        Map map = new HashMap();
+        if (aliases != null) {
+            for (Iterator iter = aliases.keySet().iterator(); iter.hasNext(); ) {
+                String str = (String) iter.next();
+                map.put(str, aliases.get(str));
+            }
+        }
         if (isReference()) {
-            set.addAll(getRef().getAliases());
+            for (Iterator iter = getRef().getAliases().iterator(); iter.hasNext(); ) {
+                PCTAlias alias = (PCTAlias) iter.next();
+                map.put(alias.getName(), alias);
+            }
         }
 
-        return set;
+        return map.values();
     }
 
     /**
