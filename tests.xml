@@ -38,7 +38,7 @@
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
 
-    <ftp server="ftp.rssw.eu" remotedir="/www" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
+    <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
       <fileset dir="." includes="emailable-report-${TESTENV}.html"/>
     </ftp>
   </target>
