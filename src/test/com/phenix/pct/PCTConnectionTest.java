@@ -63,14 +63,15 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.Iterator;
-
 
 /**
  * Class for testing PCTConnection class
+ * 
  * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
  */
-public class PCTConnectionTest {
+public class PCTConnectionTest extends BuildFileTestNg {
     private ExecTask exec = null;
     private Project project = null;
 
@@ -83,24 +84,17 @@ public class PCTConnectionTest {
         exec.setProject(project);
     }
 
-    @Test(groups= {"all"})
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void testDbNameRequired() {
         PCTConnection conn = new PCTConnection();
-
-        try {
-            conn.createArguments(exec);
-        } catch (BuildException be) {
-            return;
-        }
-
-        fail("Should throw BuildException");
+        conn.createArguments(exec);
     }
 
-    @Test(groups= {"all"})
+    @Test(groups = {"all"})
     public void testAliases() {
         PCTConnection conn = new PCTConnection();
 
-        if (conn.getAliases() != null) {
+        if (conn.getAliases().size() > 0) {
             fail("No aliases should be defined at this time");
         }
 
@@ -131,7 +125,7 @@ public class PCTConnectionTest {
         }
     }
 
-    @Test(groups= {"all"})
+    @Test(groups = {"all"})
     public void testNamedAlias() {
         PCTConnection conn = new PCTConnection();
         PCTAlias alias1 = new PCTAlias();
@@ -144,5 +138,29 @@ public class PCTConnectionTest {
         assertTrue(conn.hasNamedAlias("alias1"));
         assertTrue(conn.hasNamedAlias("alias3"));
         assertFalse(conn.hasNamedAlias("alias2"));
+    }
+
+    @Test(groups = {"all"})
+    public void testReference() {
+        configureProject("PCTConnection/test1/build.xml");
+        Object o1 = getProject().getReference("db1");
+        Object o2 = getProject().getReference("db2");
+        Object o3 = getProject().getReference("db3");
+        Object o4 = getProject().getReference("db4");
+
+        assertTrue(o1 instanceof PCTConnection);
+        assertTrue(o2 instanceof PCTConnection);
+        assertTrue(o3 instanceof PCTConnection);
+        assertTrue(o4 instanceof PCTConnection);
+        
+        PCTConnection c1 = (PCTConnection) o1;
+        PCTConnection c2 = (PCTConnection) o2;
+        PCTConnection c3 = (PCTConnection) o3;
+        PCTConnection c4 = (PCTConnection) o4;
+        
+        assertTrue(c1.getAliases().size() == 0);
+        assertTrue(c2.getAliases().size() == 1);
+        assertTrue(c3.getAliases().size() == 3);
+        assertTrue(c4.getAliases().size() == 3);
     }
 }
