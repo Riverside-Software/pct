@@ -1,1 +1,0 @@
-MESSAGE "This is a test file".
