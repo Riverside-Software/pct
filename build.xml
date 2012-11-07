@@ -286,12 +286,12 @@ PCTBuild=${BUILD_NUMBER}
         <include name="pct-src.zip" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
-	  <fileset dir="${src.java}">
+    <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
-	  </fileset>
+    </fileset>
       <zipfileset src="parser.jar" includes="**/*.class" />
-	  <zipfileset src="proparse.jar" includes="**/*.class" />
-	  <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
+    <zipfileset src="proparse.jar" includes="**/*.class" />
+    <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
@@ -304,11 +304,6 @@ PCTBuild=${BUILD_NUMBER}
         </section>
       </manifest>
     </jar>
-  </target>
-
-  <target name="declare" depends="jar" description="PCT tasks declaration">
-    <taskdef resource="PCT.properties" classpath="${dist}/PCT.jar" />
-    <typedef resource="types.properties" classpath="${dist}/PCT.jar" />
   </target>
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
@@ -347,8 +342,8 @@ PCTBuild=${BUILD_NUMBER}
         <include name="build.xml" />
         <include name="doc/**" />
         <include name="CHANGELOG" />
-      	<include name="*.jar" />
-      	<include name="pct.build.properties" />
+        <include name="*.jar" />
+        <include name="pct.build.properties" />
       </zipfileset>
     </zip>
   </target>
