@@ -1,9 +1,12 @@
 package eu.rssw.pct.oedoc;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.BaseAST;
+import javax.xml.bind.JAXBException;
+
 import antlr.Token;
 
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
@@ -19,27 +22,33 @@ import com.openedge.pdt.core.ast.TypeDeclaration;
 import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
 import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.IParameter;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
-import eu.rssw.pct.oedoc.CompilationUnit.AccessModifier;
-import eu.rssw.pct.oedoc.CompilationUnit.Constructor;
-import eu.rssw.pct.oedoc.CompilationUnit.Event;
-import eu.rssw.pct.oedoc.CompilationUnit.GetSetModifier;
-import eu.rssw.pct.oedoc.CompilationUnit.Method;
-import eu.rssw.pct.oedoc.CompilationUnit.Parameter;
-import eu.rssw.pct.oedoc.CompilationUnit.ParameterMode;
-import eu.rssw.pct.oedoc.CompilationUnit.Property;
-import eu.rssw.pct.oedoc.CompilationUnit.Using;
-import eu.rssw.pct.oedoc.CompilationUnit.UsingType;
+import eu.rssw.parser.OELexer;
 
 public class ClassDocumentationVisitor extends ASTVisitor {
-    private eu.rssw.parser.OELexer lexer;
+    private OELexer lexer;
     private ProgressParser parser;
-    public CompilationUnit cu = new CompilationUnit();
+    private ClassCompilationUnit cu = new ClassCompilationUnit();
 
-    public ClassDocumentationVisitor(eu.rssw.parser.OELexer lexer, ProgressParser parser) {
+    public ClassDocumentationVisitor(OELexer lexer, ProgressParser parser) {
         this.lexer = lexer;
         this.parser = parser;
+    }
+
+    public String getPackageName() {
+        if (cu.packageName == null)
+            return "";
+        return cu.packageName;
+    }
+
+    public String getClassName() {
+        return cu.className;
+    }
+
+    public void toXML(File out) throws IOException, JAXBException {
+        cu.classToXML(out);
     }
 
     public boolean visit(TypeDeclaration decl) {
@@ -111,7 +120,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
                 .getFirstChildRealToken()).getLexerToken());
 
         if (decl.getParameters() != null) {
-            for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
+            for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
                 param.dataType = p.getDataType().getName();
@@ -140,12 +149,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
-            for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
+            for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
                 if (p.getDataType() == null) {
-                    System.out.println("Class " + cu.className + " -- Method " + method.methodName
-                            + " -- Param " + param.name + " -- Null dataType");
                     param.dataType = "";
                 } else {
                     param.dataType = p.getDataType().getName();
@@ -176,7 +183,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.events.add(event);
 
         if (decl.getParameters() != null) {
-            for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
+            for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
                 param.dataType = p.getDataType().getName();

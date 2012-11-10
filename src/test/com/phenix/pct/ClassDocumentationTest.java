@@ -81,5 +81,26 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f4.exists());
         File f5 = new File("ClassDocumentation/test1/doc/eu.rssw.pct.B.xml");
         assertTrue(f5.exists());
+        File f6 = new File("ClassDocumentation/test1/doc/dir1/test.p.xml");
+        assertTrue(f6.exists());
+    }
+
+    @Test(groups= {"v11"})
+    public void test2() {
+        configureProject("ClassDocumentation/test2/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("ClassDocumentation/test2/doc/eu.rssw.pct.X.xml");
+        assertTrue(f1.exists());
+        File f2 = new File("ClassDocumentation/test2/doc/eu.rssw.pct.Y.xml");
+        assertTrue(f2.exists());
+        File f3 = new File("ClassDocumentation/test2/doc/eu.rssw.pct.Z.xml");
+        assertTrue(f3.exists());
+        File f4 = new File("ClassDocumentation/test2/doc/eu.rssw.pct.A.xml");
+        assertTrue(f4.exists());
+        File f5 = new File("ClassDocumentation/test2/doc/eu.rssw.pct.B.xml");
+        assertTrue(f5.exists());
+        File f6 = new File("ClassDocumentation/test2/doc/dir1/test.p.xml");
+        assertTrue(f6.exists());
     }
 }

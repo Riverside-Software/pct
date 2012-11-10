@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
-<project name="ClassDocumentation-test1">
-  <taskdef resource="extras.properties" />
-    
+<project name="ClassDocumentation-test2" xmlns:extra="antlib:eu/rssw/pct/oedoc" >
+
   <target name="test">
       <mkdir dir="doc" />
-      <ClassDocumentation destDir="doc" >
+      <extra:classdocumentation destDir="doc" >
           <fileset dir="src" includes="**/*.cls,**/*.p" />
           <propath>
               <pathelement location="src" />
           </propath>
-      </ClassDocumentation>
+      </extra:classdocumentation>
   </target>
   
 </project>

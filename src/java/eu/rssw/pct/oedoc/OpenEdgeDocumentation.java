@@ -58,7 +58,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -86,13 +85,13 @@ import eu.rssw.parser.Propath;
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class OpenEdgeClassDocumentation extends PCT {
+public class OpenEdgeDocumentation extends PCT {
     private File destDir = null;
     private String encoding = null;
-    private List filesets = new ArrayList();
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     protected Path propath = null;
 
-    public OpenEdgeClassDocumentation() {
+    public OpenEdgeDocumentation() {
         super();
     }
 
@@ -169,15 +168,15 @@ public class OpenEdgeClassDocumentation extends PCT {
         Propath propath = new Propath(dirs);
 
         try {
-            for (Iterator e = filesets.iterator(); e.hasNext();) {
-                // Parse filesets
-                FileSet fs = (FileSet) e.next();
-
+            for (FileSet fs : filesets) {
                 // And get files from fileset
                 String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
                 for (int i = 0; i < dsfiles.length; i++) {
                     File file = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                    int extPos = file.getName().lastIndexOf('.');
+                    String ext = file.getName().substring(extPos);
+                    boolean isClass = ".cls".equalsIgnoreCase(ext);
 
                     OELexer lexer = new OELexer(propath);
                     Reader inputReader = new FileReader(file);
@@ -193,14 +192,21 @@ public class OpenEdgeClassDocumentation extends PCT {
                     setSourceRange(root);
                     lexer.attachIncludes(factory, root);
 
-                    ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(lexer, parser);
-                    root.accept(visitor);
-                    if ((visitor.cu.packageName == null) || (visitor.cu.packageName.length() == 0))
-                        visitor.cu.toXML(new File(visitor.cu.className + ".xml"));
-                    else
-                        visitor.cu.toXML(new File(destDir, visitor.cu.packageName + "."
-                                + visitor.cu.className + ".xml"));
-
+                    if (isClass) {
+                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(lexer, parser);
+                        root.accept(visitor);
+                        if (visitor.getPackageName().length() == 0)
+                            visitor.toXML(new File(destDir, visitor.getClassName() + ".xml"));
+                        else
+                            visitor.toXML(new File(destDir, visitor.getPackageName() + "."
+                                    + visitor.getClassName() + ".xml"));
+                    } else {
+                        ProcedureDocumentationVisitor visitor = new ProcedureDocumentationVisitor(lexer, parser);
+                        root.accept(visitor);
+                        File destFile = new File(destDir, dsfiles[i] + ".xml");
+                        destFile.getParentFile().mkdirs();
+                        visitor.toXML(destFile);
+                    }
                 }
             }
         } catch (IOException caught) {

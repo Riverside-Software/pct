@@ -24,7 +24,8 @@
   <taskdef name="version" classname="com.phenix.pct.Version" />
   <taskdef name="prolint" classname="com.phenix.pct.Prolint" />
   <taskdef name="dump_sequences" classname="com.phenix.pct.DumpSequences" />
+  <taskdef name="sports2000" classname="com.phenix.pct.Sports2000" />
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
-  <typedef name="classdocumentation" classname="eu.rssw.pct.oedoc.ClassDocumentation" />
+  <typedef name="db_connection" classname="com.phenix.pct.PCTConnection" />
 </antlib>

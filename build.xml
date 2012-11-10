@@ -288,6 +288,7 @@ PCTBuild=${BUILD_NUMBER}
       </fileset>
     <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
+        <include name="eu/rssw/pct/oedoc/antlib.xml" />
     </fileset>
       <zipfileset src="parser.jar" includes="**/*.class" />
     <zipfileset src="proparse.jar" includes="**/*.class" />
@@ -390,7 +391,7 @@ PCTBuild=${BUILD_NUMBER}
 
   <target name="upload">
     <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="lib/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Hudson build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="lib/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
   </target>
 
 </project>
