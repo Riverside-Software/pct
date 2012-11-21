@@ -367,6 +367,11 @@ PCTBuild=${BUILD_NUMBER}
     </jar>
   </target>
 
+  <target name="install" depends="jar" >
+      <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
+      <copy file="${dist}/PCT.jar" todir="w:\tmp"/>
+    </target>
+
   <target name="dist" depends="srcdist,jar,pbuild,testdist" />
 
   <target name="clean" description="Nettoyage">
