@@ -400,8 +400,11 @@ public class PCTWSBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
-        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
-                && (!action.equalsIgnoreCase(DELETE))) {
+        if (this.action == null) {
+            throw new BuildException("Action attribute is missing");
+        }
+        if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
+                && (!DELETE.equalsIgnoreCase(action))) {
             throw new BuildException("Unknown action : " + action);
         }
         if ((brokerLogLevel != -1) && ((brokerLogLevel < 1) || (brokerLogLevel > 5))) {
@@ -413,8 +416,8 @@ public class PCTWSBroker extends PCTBroker {
         if (this.name == null) {
             throw new BuildException("Name attribute is missing");
         }
-        if (this.action == null) {
-            throw new BuildException("Action attribute is missing");
+        if (this.name.trim().length() == 0) {
+            throw new BuildException("Name attribute is empty");
         }
     }
 
