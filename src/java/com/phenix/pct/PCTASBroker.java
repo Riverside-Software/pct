@@ -422,6 +422,9 @@ public class PCTASBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
+        if (this.action == null) {
+            throw new BuildException("Action attribute is missing");
+        }
         if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
                 && (!DELETE.equalsIgnoreCase(action))) {
             throw new BuildException("Unknown action : " + action);
@@ -435,8 +438,8 @@ public class PCTASBroker extends PCTBroker {
         if (this.name == null) {
             throw new BuildException("Name attribute is missing");
         }
-        if (this.action == null) {
-            throw new BuildException("Action attribute is missing");
+        if (this.name.trim().length() == 0) {
+            throw new BuildException("Name attribute is empty");
         }
         // FIXME Operating mode is case-sensitive, so we should always replace value with the correct one
         if ((!operatingMode.equals(STATELESS))
