@@ -147,20 +147,6 @@ public class PCTDumpDataTest extends BuildFileTestNg {
         assertEquals(readEncoding(f3), "utf-8");
     }
 
-    /**
-     * Should dump _User in target directory
-     */
-    @Test(groups= {"all"})
-    public void test7() {
-        configureProject("PCTDumpData/test7/build.xml");
-        executeTarget("prepare");
-
-        executeTarget("test");
-
-        File f1 = new File("PCTDumpData/test7/dump/_User.d");
-        assertTrue(f1.exists());
-    }
-
     // Quick'n'dirty method to read encoding in dump file
     private String readEncoding(File f) {
         BufferedReader reader = null;
