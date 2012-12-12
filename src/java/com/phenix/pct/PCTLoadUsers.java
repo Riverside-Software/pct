@@ -56,25 +56,22 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
- * Dumps schema from database
+ * Loads users to database
  *
  * @author <a href="mailto:cverbiest@users.sourceforge.net">Carl Verbiest</a>
  */
 public class PCTLoadUsers extends PCTRun {
-    private File destFile = null;
+    private File srcFile = null;
 
     /**
-     * Output file for dump
+     * Input file
      *
-     * @param destFile File
+     * @param srcFile File
      */
-    public void setDestFile(File destFile) {
-        this.destFile = destFile;
+    public void setSrcFile(File srcFile) {
+        this.srcFile = srcFile;
     }
 
     /**
@@ -93,14 +90,14 @@ public class PCTLoadUsers extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpSchema.1")); //$NON-NLS-1$
         }
 
-        if (this.destFile == null) {
+        if (this.srcFile == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
-        String param = destFile.toString();
+        String param = srcFile.toString();
 
-        this.setProcedure("pct/loadUsers.p"); //$NON-NLS-1$
+        this.setProcedure(getProgressProcedures().getLoadUsersProcedure());
         this.setParameter(param);
         super.execute();
     }

@@ -61,4 +61,4 @@ user_env[2] = cFile.
 user_env[10] = session:cpstream.
 run prodict/dump/_loduser.p.
 
-RETURN RETURN-VALUE.
+RETURN "0".

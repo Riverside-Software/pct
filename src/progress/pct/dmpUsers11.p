@@ -52,12 +52,12 @@
  * <http://www.apache.org/>.
  */
 
-{ prodict/user/uservar.i new }
-
 DEFINE VARIABLE cFile AS CHARACTER NO-UNDO.
 
 ASSIGN cFile   = ENTRY(1, SESSION:PARAMETER, ';').
-   user_env[2] = cFile.
-RUN prodict/dump/_dmpuser.p.
+
+{ prodict/user/uservar11.i new }
+user_env[2] = cFile.
+run prodict/dump/_dmpuser.p.
 
 RETURN "0".
