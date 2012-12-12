@@ -86,6 +86,11 @@
     <exclude name="pct/dump_seq.p" />
     <exclude name="pct/dump_inc.p" />
     <exclude name="pct/_dmputil.p" />
+    <exclude name="pct/dmpUsers.p" />
+    <exclude name="pct/dmpUsers102b.p" />
+    <exclude name="pct/dmpUsers11.p" />
+    <exclude name="pct/loadUsers.p" />
+    <exclude name="pct/loadUsers102b.p" />
     <exclude name="pct/loadUsers11.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
