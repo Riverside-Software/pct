@@ -86,6 +86,7 @@
     <exclude name="pct/dump_seq.p" />
     <exclude name="pct/dump_inc.p" />
     <exclude name="pct/_dmputil.p" />
+    <exclude name="pct/loadUsers11.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
@@ -98,6 +99,7 @@
     <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctCRCV8.p" />
     <exclude name="pct/crcV8.p" />
+    <exclude name="pct/loadUsers11.p" />
   </fileset>
   <fileset id="fs.v11" dir="${src.progress}">
     <include name="pct/**/*.p" />
@@ -367,6 +369,11 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${build-test}" includes="**/*" />
     </jar>
   </target>
+
+  <target name="install" depends="jar" >
+      <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
+      <copy file="${dist}/PCT.jar" todir="w:\tmp"/>
+    </target>
 
   <target name="dist" depends="srcdist,jar,pbuild,testdist" />
 

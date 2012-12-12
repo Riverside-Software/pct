@@ -68,6 +68,14 @@ public class ProgressV11 implements ProgressProcedures {
         return "pct/dump_inc11.p";
     }
 
+    public String getDumpUsersProcedure() {
+        return "pct/dmpUsers11.p";
+    }
+
+    public String getLoadUsersProcedure() {
+        return "pct/loadUsers11.p";
+    }
+
     public boolean needRedirector() {
         return false;
     }

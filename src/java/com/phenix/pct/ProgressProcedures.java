@@ -65,6 +65,8 @@ public abstract interface ProgressProcedures {
     // Starting from 10.2B, there are specific classes defined in _dmpincr.p
     // So post 10.2B use a different startup procedure
     String getIncrementalProcedure();
+    String getDumpUsersProcedure();
+    String getLoadUsersProcedure();
     boolean needRedirector();
     String getInitString();
     String getConnectString();
