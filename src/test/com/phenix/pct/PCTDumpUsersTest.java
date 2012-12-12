@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
 
@@ -65,27 +66,18 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Class for testing PCTDumpData task
+ * Class for testing PCTDumpUsers task
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class PCTDumpDataTest extends BuildFileTestNg {
+public class PCTDumpUsersTest extends BuildFileTestNg {
 
     /**
-     * Should throw BuildException : no filesets and no connection
+     * Should throw BuildException : no destFile and no connection
      */
     @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test1() {
-        configureProject("PCTDumpData/test1/build.xml");
-        executeTarget("test");
-    }
-
-    /**
-     * Should throw BuildException : no filesets (or srcDir) defined
-     */
-    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
-    public void test2() {
-        configureProject("PCTDumpData/test2/build.xml");
+        configureProject("PCTDumpUsers/test1/build.xml");
         executeTarget("test");
     }
 
@@ -93,86 +85,60 @@ public class PCTDumpDataTest extends BuildFileTestNg {
      * Should throw BuildException : no connection defined
      */
     @Test(groups= {"all"}, expectedExceptions = BuildException.class)
-    public void test3() {
-        configureProject("PCTDumpData/test3/build.xml");
+    public void test2() {
+        configureProject("PCTDumpUsers/test2/build.xml");
         executeTarget("test");
     }
 
     /**
-     * Should dump Tab1 in target directory
+     * Should throw BuildException : more than one connection defined
+     */
+    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
+    public void test3() {
+        configureProject("PCTDumpUsers/test3/build.xml");
+        executeTarget("test");
+    }
+
+    /**
+     * No users in database, so no dump file
      */
     @Test(groups= {"all"})
     public void test4() {
-        configureProject("PCTDumpData/test4/build.xml");
+        configureProject("PCTDumpUsers/test4/build.xml");
         executeTarget("prepare");
-
         executeTarget("test");
 
-        File f1 = new File("PCTDumpData/test4/dump/Tab1.d");
-        assertTrue(f1.exists());
+        File f1 = new File("PCTDumpUsers/test4/foo/_User.d");
+        assertFalse(f1.exists());
     }
 
     /**
-     * Should dump _File in target directory
+     * Should load 3 records in _User, and then dump 3 records
      */
     @Test(groups= {"all"})
     public void test5() {
-        configureProject("PCTDumpData/test5/build.xml");
+        configureProject("PCTDumpUsers/test5/build.xml");
         executeTarget("prepare");
+        executeTarget("assert");
 
         executeTarget("test");
-
-        File f1 = new File("PCTDumpData/test5/dump/_File.d");
+        File f1 = new File("PCTDumpUsers/test5/foo/_user.d");
         assertTrue(f1.exists());
+        assertEquals(countUsers(f1), 3);
     }
 
-    /**
-     * Tests various encodings
-     */
-    @Test(groups= {"all"})
-    public void test6() {
-        configureProject("PCTDumpData/test6/build.xml");
-        executeTarget("prepare");
-
-        executeTarget("test");
-
-        File f1 = new File("PCTDumpData/test6/dump/8859-1/_File.d");
-        assertTrue(f1.exists());
-        assertEquals(readEncoding(f1), "iso8859-1");
-        File f2 = new File("PCTDumpData/test6/dump/8859-15/_File.d");
-        assertTrue(f2.exists());
-        assertEquals(readEncoding(f2), "iso8859-15");
-        File f3 = new File("PCTDumpData/test6/dump/utf8/_File.d");
-        assertTrue(f3.exists());
-        assertEquals(readEncoding(f3), "utf-8");
-    }
-
-    /**
-     * Should dump _User in target directory
-     */
-    @Test(groups= {"all"})
-    public void test7() {
-        configureProject("PCTDumpData/test7/build.xml");
-        executeTarget("prepare");
-
-        executeTarget("test");
-
-        File f1 = new File("PCTDumpData/test7/dump/_User.d");
-        assertTrue(f1.exists());
-    }
-
-    // Quick'n'dirty method to read encoding in dump file
-    private String readEncoding(File f) {
+    // Quick'n'dirty method to count number of users in dump file
+    private int countUsers(File f) {
         BufferedReader reader = null;
-        String encoding = null;
+        int count = 0;
 
         try {
             reader = new BufferedReader(new FileReader(f));
-            String str = null;
+            String str = reader.readLine();
 
-            while ((str = reader.readLine()) != null) {
-                if (str.startsWith("cpstream="))
-                    encoding = str.substring(9);
+            while ((str != null) && !".".equals(str)) {
+                count++;
+                str = reader.readLine();
             }
         } catch (IOException uncaught) {
         } finally {
@@ -182,6 +148,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
 
             }
         }
-        return encoding;
+
+        return count;
     }
 }

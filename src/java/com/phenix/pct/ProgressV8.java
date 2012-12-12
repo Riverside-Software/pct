@@ -68,6 +68,14 @@ public class ProgressV8 implements ProgressProcedures {
         return "pct/_dmpincr.p";
     }
 
+    public String getDumpUsersProcedure() {
+        return "pct/dmpUsers8.p";
+    }
+
+    public String getLoadUsersProcedure() {
+        return "pct/loadUsers8.p";
+    }
+
     public boolean needRedirector() {
         return true;
     }

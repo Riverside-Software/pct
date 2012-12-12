@@ -53,87 +53,52 @@
  */
 package com.phenix.pct;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.apache.tools.ant.BuildException;
 
-public class ProgressV9 implements ProgressProcedures {
-    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV9"; //$NON-NLS-1$
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+import java.io.File;
 
-    public String getCompileProcedure() {
-        return "pct/pctCompile.p";
+/**
+ * Loads users to database
+ *
+ * @author <a href="mailto:cverbiest@users.sourceforge.net">Carl Verbiest</a>
+ */
+public class PCTLoadUsers extends PCTRun {
+    private File srcFile = null;
+
+    /**
+     * Input file
+     *
+     * @param srcFile File
+     */
+    public void setSrcFile(File srcFile) {
+        this.srcFile = srcFile;
     }
 
-    public String getIncrementalProcedure() {
-        return "pct/_dmpincr9.p";
-    }
-
-    public String getDumpUsersProcedure() {
-        return "pct/dmpUsers9.p";
-    }
-
-    public String getLoadUsersProcedure() {
-        return "pct/loadUsers9.p";
-    }
-
-    public boolean needRedirector() {
-        return false;
-    }
-
-    public String getInitString() {
-        return getString("ProgressV9.0"); //$NON-NLS-1$
-    }
-
-    public String getConnectString() {
-        return getString("ProgressV9.1"); //$NON-NLS-1$
-    }
-
-    public String getAliasString() {
-        return getString("ProgressV9.2"); //$NON-NLS-1$
-    }
-
-    public String getPropathString() {
-        return getString("ProgressV9.3"); //$NON-NLS-1$
-    }
-
-    public String getRunString() {
-        return getString("ProgressV9.4"); //$NON-NLS-1$
-    }
-
-    public String getReturnProc() {
-        return getString("ProgressV9.5"); //$NON-NLS-1$
-    }
-
-    public String getParameterString() {
-        return getString("ProgressV9.6"); //$NON-NLS-1$
-    }
-
-    public String getString(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
+    /**
+     * Do the work
+     *
+     * @throws BuildException Something went wrong
+     */
+    public void execute() throws BuildException {
+        if (this.dbConnList == null) {
+            this.cleanup();
+            throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }
-    }
 
-    public String getAfterRun() {
-        return getString("ProgressV9.10"); //$NON-NLS-1$
-    }
+        if (this.dbConnList.size() > 1) {
+            this.cleanup();
+            throw new BuildException(Messages.getString("PCTDumpSchema.1")); //$NON-NLS-1$
+        }
 
-    public String getOutputParameterCall() {
-        return getString("ProgressV9.11"); //$NON-NLS-1$
-    }
+        if (this.srcFile == null) {
+            this.cleanup();
+            throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
+        }
 
-    public String getOutputParameterDeclaration() {
-        return getString("ProgressV9.8"); //$NON-NLS-1$
-    }
+        String param = srcFile.toString();
 
-    public String getOutputParameterProc() {
-        return getString("ProgressV9.9"); //$NON-NLS-1$
+        this.setProcedure(getProgressProcedures().getLoadUsersProcedure());
+        this.setParameter(param);
+        super.execute();
     }
-
-    public String getQuit() {
-        return getString("ProgressV9.12"); //$NON-NLS-1$
-    }
-
 }
