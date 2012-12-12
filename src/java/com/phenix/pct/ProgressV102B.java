@@ -68,6 +68,14 @@ public class ProgressV102B implements ProgressProcedures {
         return "pct/dump_inc102b.p";
     }
 
+    public String getDumpUsersProcedure() {
+        return "pct/dmpUsers102b.p";
+    }
+
+    public String getLoadUsersProcedure() {
+        return "pct/loadUsers102b.p";
+    }
+
     public boolean needRedirector() {
         return false;
     }

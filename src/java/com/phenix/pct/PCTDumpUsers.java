@@ -56,12 +56,9 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
- * Dumps schema from database
+ * Dumps users from database
  *
  * @author <a href="mailto:cverbiest@users.sourceforge.net">Carl Verbiest</a>
  */
@@ -100,7 +97,7 @@ public class PCTDumpUsers extends PCTRun {
 
         String param = destFile.toString();
 
-        this.setProcedure("pct/dmpUsers.p"); //$NON-NLS-1$
+        this.setProcedure(getProgressProcedures().getDumpUsersProcedure());
         this.setParameter(param);
         super.execute();
     }

@@ -2,23 +2,24 @@
 <project name="PCTDumpUsers-test5">
   <property environment="env" />
   <taskdef resource="PCT.properties" />
-  <property name="cpstream" value="iso8859-1" />
-
-	<target name="echoprops">
-	    <echoproperties />
-	</target>
-
-  <target name="base">
+  
+  <target name="prepare">
     <mkdir dir="db" />
-    <PCTCreateBase dbName="test" destDir="db" dlcHome="${env.DLC}" schemaFile="schema.df" />
-    <PCTLoadUsers destFile="basic_user.d" dlcHome="${env.DLC}" cpstream="${cpstream}">
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+    <PCTLoadUsers srcFile="basic_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTLoadUsers>
   </target>
 
+  <target name="assert">
+    <PCTRun procedure="src/assertThreeUsers.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>      
+  </target>
+
   <target name="test">
     <mkdir dir="foo" />
-    <PCTDumpUsers destFile="foo/_user.d" dlcHome="${env.DLC}" cpstream="${cpstream}">
+    <PCTDumpUsers destFile="foo/_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTDumpUsers>
   </target>

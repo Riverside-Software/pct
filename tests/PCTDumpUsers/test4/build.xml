@@ -2,9 +2,9 @@
 <project name="PCTDumpUsers-test4">
   <taskdef resource="PCT.properties" />
 
-  <target name="base">
+  <target name="prepare">
     <mkdir dir="db" />
-    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
   </target>
 
   <target name="test">
