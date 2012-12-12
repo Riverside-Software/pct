@@ -65,7 +65,7 @@ public class ProgressV9 implements ProgressProcedures {
     }
 
     public String getIncrementalProcedure() {
-        return "pct/v9/_dmpincr.p";
+        return "pct/v9/dump_inc.p";
     }
 
     public String getDumpUsersProcedure() {
