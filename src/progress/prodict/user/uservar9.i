@@ -1,17 +1,26 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
-* reserved.  Prior versions of this work may contain portions        *
-* contributed by participants of Possenet.                           *
+* Copyright (C) 2000 by Progress Software Corporation ("PSC"),       *
+* 14 Oak Park, Bedford, MA 01730, and other contributors as listed   *
+* below.  All Rights Reserved.                                       *
+*                                                                    *
+* The Initial Developer of the Original Code is PSC.  The Original   *
+* Code is Progress IDE code released to open source December 1, 2000.*
+*                                                                    *
+* The contents of this file are subject to the Possenet Public       *
+* License Version 1.0 (the "License"); you may not use this file     *
+* except in compliance with the License.  A copy of the License is   *
+* available as of the date of this notice at                         *
+* http://www.possenet.org/license.html                               *
+*                                                                    *
+* Software distributed under the License is distributed on an "AS IS"*
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. You*
+* should refer to the License for the specific language governing    *
+* rights and limitations under the License.                          *
+*                                                                    *
+* Contributors:                                                      *
 *                                                                    *
 *********************************************************************/
 
-/* History:                                                         *
- * kmcintos     04/13/04    Added support for ODBC type DB2/400     *
- * kmcintos     04/04/05    Added variables for Auditing Support    *
- * kmcintos     07/27/05    Removed unused longchar variable        *
- * kmcintos     08/18/05    Added logical for audit policy commit   *
- *                          20050629-018                            */
-   
 /* uservar.i - dictionary user interface variable definitions */
 
 {adecomm/adestds.i}
@@ -26,7 +35,6 @@ DEFINE {1} SHARED VARIABLE user_menupos  AS INTEGER   INITIAL ? NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_path     AS CHARACTER           NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_trans    AS CHARACTER           NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_status   AS CHARACTER INITIAL ? NO-UNDO.
-DEFINE {1} SHARED VARIABLE user_library  AS CHARACTER           NO-UNDO.
 
 DEFINE {1} SHARED VARIABLE index-area-number AS INTEGER INITIAL 6 NO-UNDO.
 
@@ -38,11 +46,6 @@ DEFINE {1} SHARED VARIABLE logfile_open AS LOGICAL NO-UNDO INITIAL false.
 
 /*Fernando  20020129-017*/
 DEFINE {1} SHARED VARIABLE user_msg_count AS INTEGER NO-UNDO INITIAL 0.
-
-/* kmcintos "Auditing support" */
-DEFINE {1} SHARED VARIABLE user_overwrite AS LOGICAL   NO-UNDO.
-DEFINE {1} SHARED VARIABLE user_commit    AS LOGICAL   NO-UNDO.
-DEFINE {1} SHARED VARIABLE user_excepts   AS CHARACTER NO-UNDO.
 
 &GLOBAL-DEFINE ERROR_ROLLBACK 151
 

@@ -1,9 +1,9 @@
-/*********************************************************************
-* Copyright (C) 2006,2009-2010 by Progress Software Corporation. All rights    *
-* reserved.  Prior versions of this work may contain portions        *
-* contributed by participants of Possenet.                           *
-*                                                                    *
-*********************************************************************/
+/***********************************************************************
+* Copyright (C) 2006-2010 by Progress Software Corporation. All rights *
+* reserved.  Prior versions of this work may contain portions          *
+* contributed by participants of Possenet.                             *
+*                                                                      *
+************************************************************************/
 
 /* History:                                                         *
  * kmcintos     04/13/04    Added support for ODBC type DB2/400     *
@@ -45,9 +45,6 @@ DEFINE {1} SHARED VARIABLE user_excepts   AS CHARACTER NO-UNDO.
 
 /* for bug fix 20050930-006 */
 DEFINE {1} SHARED VARIABLE user_longchar  AS LONGCHAR NO-UNDO.
-
-&GLOBAL-DEFINE ERROR_ROLLBACK 151
-
 
 &IF "{&WINDOW-SYSTEM}" <> "TTY" &THEN 
    DEFINE RECTANGLE rect_Btns {&STDPH_OKBOX}.

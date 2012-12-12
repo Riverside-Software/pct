@@ -56,7 +56,7 @@ DEFINE VARIABLE cFile AS CHARACTER NO-UNDO.
 
 ASSIGN cFile   = ENTRY(1, SESSION:PARAMETER, ';').
 
-{ prodict/user/uservar102b.i new }
+{ prodict/user/uservar10.i new }
 user_env[2] = cFile.
 run prodict/dump/_dmpuser.p.
 

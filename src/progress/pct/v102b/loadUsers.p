@@ -52,19 +52,13 @@
  * <http://www.apache.org/>.
  */
 
-DEFINE TEMP-TABLE CRCList NO-UNDO
-  FIELD ttTable AS CHARACTER
-  FIELD ttCRC   AS CHARACTER
-  INDEX ttCRC-PK IS PRIMARY UNIQUE ttTable.
- 
-DEFINE INPUT-OUTPUT PARAMETER TABLE FOR CRCList.
+DEFINE VARIABLE cFile AS CHARACTER NO-UNDO.
 
-DEFINE VARIABLE i       AS INTEGER    NO-UNDO.
+ASSIGN cFile   = ENTRY(1, SESSION:PARAMETER, ';').
+{ prodict/dictvar10.i new }
+{ prodict/user/uservar10.i new }
+user_env[2] = cFile.
+user_env[10] = session:cpstream.
+run prodict/dump/_loduser.p.
 
-DO i = 1 TO NUM-DBS:
-    IF DBTYPE(i) NE "PROGRESS":U THEN NEXT.
-    CREATE ALIAS 'DICTDB' FOR DATABASE VALUE(LDBNAME(i)).
-    RUN pct/crcV8.p (INPUT-OUTPUT TABLE CRCList).
-END.
-
-RETURN '0'.
+RETURN "0".

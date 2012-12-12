@@ -61,19 +61,19 @@ public class ProgressV9 implements ProgressProcedures {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
-        return "pct/pctCompile.p";
+        return "pct/v9/pctCompile.p";
     }
 
     public String getIncrementalProcedure() {
-        return "pct/_dmpincr9.p";
+        return "pct/v9/_dmpincr.p";
     }
 
     public String getDumpUsersProcedure() {
-        return "pct/dmpUsers9.p";
+        return "pct/v9/dmpUsers.p";
     }
 
     public String getLoadUsersProcedure() {
-        return "pct/loadUsers9.p";
+        return "pct/v9/loadUsers.p";
     }
 
     public boolean needRedirector() {
