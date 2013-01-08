@@ -57,6 +57,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileSet;
 
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
@@ -68,6 +69,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -197,6 +199,14 @@ public abstract class PCT extends Task {
 
     protected final Environment getEnvironment() {
         return env;
+    }
+
+    /**
+     * Convenience method to retrieve a typed collection
+     */
+    @SuppressWarnings("unchecked")
+    protected final Collection<Variable> getEnvironmentVariables() {
+        return env.getVariablesVector();
     }
 
     /**

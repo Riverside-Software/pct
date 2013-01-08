@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
-public class DLCVersion implements Comparable {
+public class DLCVersion implements Comparable<DLCVersion> {
     private static final String MAIN_PATTERN = "(?:[a-zA-Z]+\\s+)+((\\d+)(?:[A-Z0-9\\u002E])*)\\s+as of(.*)";
     private static final String V11_PATTERN = "\\d+(?:\\u002E(\\d+)(?:\\u002E(\\d+)(?:\\u002E(\\d+))?)?)?[a-zA-Z]*";
     private static final String OLD_PATTERN = "\\d+\\u002E(\\d+)([A-Z])([A-Z0-9]*)";
@@ -184,16 +184,11 @@ public class DLCVersion implements Comparable {
     /**
      * Compares only major, minor and maintenance
      */
-    public int compareTo(Object other) {
-        if (other instanceof DLCVersion) {
-            DLCVersion obj = (DLCVersion) other;
-            if ((majorVersion - obj.majorVersion) != 0)
-                return (majorVersion - obj.majorVersion);
-            if ((minorVersion - obj.minorVersion) != 0)
-                return (minorVersion - obj.minorVersion);
-            return maintenanceVersion.compareTo(obj.maintenanceVersion);
-        }
-
-        throw new ClassCastException();
+    public int compareTo(DLCVersion other) {
+        if ((majorVersion - other.majorVersion) != 0)
+            return (majorVersion - other.majorVersion);
+        if ((minorVersion - other.minorVersion) != 0)
+            return (minorVersion - other.minorVersion);
+        return maintenanceVersion.compareTo(other.maintenanceVersion);
     }
 }

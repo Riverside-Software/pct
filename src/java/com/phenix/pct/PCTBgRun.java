@@ -58,6 +58,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.taskdefs.Parallel;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
@@ -75,7 +76,6 @@ import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -267,8 +267,8 @@ public abstract class PCTBgRun extends PCT {
         File executable = this.getExecPath((options.isGraphMode() ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
         exec.setExecutable(executable.toString());
 
-        for (Iterator i = options.getCmdLineParameters().iterator(); i.hasNext();) {
-            exec.createArg().setValue((String) i.next());
+        for (String str : options.getCmdLineParameters()) {
+            exec.createArg().setValue(str);
         }
 
         // Check for base directory
@@ -282,8 +282,7 @@ public abstract class PCTBgRun extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
-        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
-            Environment.Variable var2 = (Environment.Variable) iter.next();
+        for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
         }
 
@@ -444,8 +443,7 @@ public abstract class PCTBgRun extends PCT {
             }
 
             // Defines parameters
-            for (Iterator i = options.getRunParameters().iterator(); i.hasNext();) {
-                RunParameter param = (RunParameter) i.next();
+            for (RunParameter param : options.getRunParameters()) {
                 if (param.validate()) {
                     bw
                             .write(MessageFormat.format(this.getProgressProcedures()
@@ -463,8 +461,8 @@ public abstract class PCTBgRun extends PCT {
         }
     }
 
-    private List getPropathAsList() {
-        List list = new ArrayList();
+    private List<String> getPropathAsList() {
+        List<String> list = new ArrayList<String>();
         if (options.getPropath() != null) {
             String[] lst = options.getPropath().list();
             for (int k = lst.length - 1; k >= 0; k--) {
@@ -501,9 +499,8 @@ public abstract class PCTBgRun extends PCT {
         initProc.delete();
     }
 
-    protected synchronized void logMessages(List logs) {
-        for (Iterator i = logs.iterator(); i.hasNext(); ) {
-            Message s = (Message) i.next();
+    protected synchronized void logMessages(List<Message> logs) {
+        for (Message s : logs) {
             log(s.getMsg(), s.getLevel());
         }
     }

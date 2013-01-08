@@ -66,16 +66,15 @@ import java.io.OutputStreamWriter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Class for compiling Progress procedures
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
-    private List filesets = new ArrayList();
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
@@ -358,17 +357,13 @@ public class PCTCompile extends PCTRun {
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fsList), getCharset()));
 
-            for (Iterator e = filesets.iterator(); e.hasNext();) {
-                // Parse filesets
-                FileSet fs = (FileSet) e.next();
+            for (FileSet fs : filesets) {
                 bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
                 bw.newLine();
 
                 // And get files from fileset
-                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-                for (int i = 0; i < dsfiles.length; i++) {
-                    bw.write(dsfiles[i]);
+                for (String str : fs.getDirectoryScanner(this.getProject()).getIncludedFiles()) {
+                    bw.write(str);
                     bw.newLine();
                 }
             }

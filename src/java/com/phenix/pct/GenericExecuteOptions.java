@@ -3,7 +3,6 @@ package com.phenix.pct;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -14,10 +13,10 @@ import org.apache.tools.ant.types.Path;
 public class GenericExecuteOptions {
     private Project project = null;
 
-    private List dbConnList = null;
-    private List options = null;
-    private List runParameters = null;
-    private List outputParameters = null;
+    private List<PCTConnection> dbConnList = null;
+    private List<PCTRunOption> options = null;
+    private List<RunParameter> runParameters = null;
+    private List<OutputParameter> outputParameters = null;
     private Path propath = null;
 
     private int debugReady = -1;
@@ -56,7 +55,7 @@ public class GenericExecuteOptions {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (dbConnList == null) {
-            dbConnList = new ArrayList();
+            dbConnList = new ArrayList<PCTConnection>();
         }
         dbConnList.add(dbConn);
     }
@@ -66,8 +65,8 @@ public class GenericExecuteOptions {
      * 
      * @return List of PCTConnection objects. Empty list if no DB connections
      */
-    public List getDBConnections() {
-        return (dbConnList == null ? new ArrayList() : dbConnList);
+    public List<PCTConnection> getDBConnections() {
+        return (dbConnList == null ? new ArrayList<PCTConnection>() : dbConnList);
     }
 
     /**
@@ -77,7 +76,7 @@ public class GenericExecuteOptions {
      */
     public void addOption(PCTRunOption option) {
         if (options == null) {
-            options = new ArrayList();
+            options = new ArrayList<PCTRunOption>();
         }
         options.add(option);
     }
@@ -95,8 +94,8 @@ public class GenericExecuteOptions {
      * 
      * @return List of PCTRunOption objects. Empty list if no options.
      */
-    public List getOptions() {
-        return (options == null ? new ArrayList() : options);
+    public List<PCTRunOption> getOptions() {
+        return (options == null ? new ArrayList<PCTRunOption>() : options);
     }
 
     /**
@@ -106,7 +105,7 @@ public class GenericExecuteOptions {
      */
     public void addParameter(RunParameter param) {
         if (runParameters == null) {
-            runParameters = new ArrayList();
+            runParameters = new ArrayList<RunParameter>();
         }
         runParameters.add(param);
     }
@@ -116,8 +115,8 @@ public class GenericExecuteOptions {
      * 
      * @return List of RunParameters objects. Empty list if no parameter.
      */
-    public List getParameters() {
-        return (runParameters == null ? new ArrayList() : runParameters);
+    public List<RunParameter> getParameters() {
+        return (runParameters == null ? new ArrayList<RunParameter>() : runParameters);
     }
 
     /**
@@ -128,7 +127,7 @@ public class GenericExecuteOptions {
      */
     public void addOutputParameter(OutputParameter param) {
         if (outputParameters == null) {
-            outputParameters = new ArrayList();
+            outputParameters = new ArrayList<OutputParameter>();
         }
         outputParameters.add(param);
     }
@@ -138,8 +137,8 @@ public class GenericExecuteOptions {
      * 
      * @return List of OutputParameter objects. Empty list if no parameter.
      */
-    public List getOutputParameters() {
-        return (outputParameters == null ? new ArrayList() : outputParameters);
+    public List<OutputParameter> getOutputParameters() {
+        return (outputParameters == null ? new ArrayList<OutputParameter>() : outputParameters);
     }
 
     /**
@@ -372,14 +371,14 @@ public class GenericExecuteOptions {
 
     public void setFailOnError(boolean failOnError) {
         throw new BuildException(MessageFormat.format(
-                Messages.getString("PCTBgRun.0"), new Object[]{"failOnError"})); //$NON-NLS-1$ //$NON-NLS-2$
+                Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public List getDbConnList() {
+    public List<PCTConnection> getDbConnList() {
         return dbConnList;
     }
 
-    public List getRunParameters() {
+    public List<RunParameter> getRunParameters() {
         return runParameters;
     }
 
@@ -483,144 +482,143 @@ public class GenericExecuteOptions {
         this.procedure = procedure;
     }
 
-    protected List getCmdLineParameters() {
-        List list = new ArrayList();
+    protected List<String> getCmdLineParameters() {
+        List<String> list = new ArrayList<String>();
 
         // Parameter file
-        if (this.paramFile != null) {
+        if (paramFile != null) {
             list.add("-pf"); //$NON-NLS-1$
-            list.add(this.paramFile.getAbsolutePath());
+            list.add(paramFile.getAbsolutePath());
         }
 
         // Batch mode
-        if (this.batchMode) {
+        if (batchMode) {
             list.add("-b"); //$NON-NLS-1$
             list.add("-q"); //$NON-NLS-1$
         }
 
         // DebugReady
-        if (this.debugReady != -1) {
+        if (debugReady != -1) {
             list.add("-debugReady"); //$NON-NLS-1$
-            list.add(Integer.toString(this.debugReady));
+            list.add(Integer.toString(debugReady));
         }
 
         // Inifile
-        if (this.iniFile != null) {
+        if (iniFile != null) {
             list.add("-basekey"); //$NON-NLS-1$
             list.add("INI"); //$NON-NLS-1$
             list.add("-ininame"); //$NON-NLS-1$
-            list.add(Commandline.quoteArgument(this.iniFile.getAbsolutePath()));
+            list.add(Commandline.quoteArgument(iniFile.getAbsolutePath()));
         }
 
         // Max length of a line
-        if (this.inputChars != 0) {
+        if (inputChars != 0) {
             list.add("-inp"); //$NON-NLS-1$
-            list.add(Integer.toString(this.inputChars));
+            list.add(Integer.toString(inputChars));
         }
 
         // Stream code page
-        if (this.cpStream != null) {
+        if (cpStream != null) {
             list.add("-cpstream"); //$NON-NLS-1$
-            list.add(this.cpStream);
+            list.add(cpStream);
         }
 
         // Internal code page
-        if (this.cpInternal != null) {
+        if (cpInternal != null) {
             list.add("-cpinternal"); //$NON-NLS-1$
-            list.add(this.cpInternal);
+            list.add(cpInternal);
         }
 
         // Directory size
-        if (this.dirSize != 0) {
+        if (dirSize != 0) {
             list.add("-D"); //$NON-NLS-1$
-            list.add(Integer.toString(this.dirSize));
+            list.add(Integer.toString(dirSize));
         }
 
-        if (this.centuryYearOffset != 0) {
+        if (centuryYearOffset != 0) {
             list.add("-yy"); //$NON-NLS-1$
-            list.add(Integer.toString(this.centuryYearOffset));
+            list.add(Integer.toString(centuryYearOffset));
         }
 
-        if (this.maximumMemory != 0) {
+        if (maximumMemory != 0) {
             list.add("-mmax"); //$NON-NLS-1$
-            list.add(Integer.toString(this.maximumMemory));
+            list.add(Integer.toString(maximumMemory));
         }
 
-        if (this.stackSize != 0) {
+        if (stackSize != 0) {
             list.add("-s"); //$NON-NLS-1$
-            list.add(Integer.toString(this.stackSize));
+            list.add(Integer.toString(stackSize));
         }
 
-        if (this.token != 0) {
+        if (token != 0) {
             list.add("-tok"); //$NON-NLS-1$
-            list.add(Integer.toString(this.token));
+            list.add(Integer.toString(token));
         }
 
-        if (this.messageBufferSize != 0) {
+        if (messageBufferSize != 0) {
             list.add("-Mm"); //$NON-NLS-1$
-            list.add(Integer.toString(this.messageBufferSize));
+            list.add(Integer.toString(messageBufferSize));
         }
 
-        if (this.compileUnderscore) {
+        if (compileUnderscore) {
             list.add("-zn"); //$NON-NLS-1$
         }
 
-        if (this.ttBufferSize != 0) {
+        if (ttBufferSize != 0) {
             list.add("-Bt"); //$NON-NLS-1$
-            list.add(Integer.toString(this.ttBufferSize));
+            list.add(Integer.toString(ttBufferSize));
         }
 
-        if (this.numsep != null) {
+        if (numsep != null) {
             int tmpSep = 0;
             try {
-                tmpSep = Integer.parseInt(this.numsep);
+                tmpSep = Integer.parseInt(numsep);
             } catch (NumberFormatException nfe) {
-                if (this.numsep.length() == 1)
-                    tmpSep = this.numsep.charAt(0);
+                if (numsep.length() == 1)
+                    tmpSep = numsep.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numsep"}), nfe); //$NON-NLS-1$
+                            "numsep"), nfe); //$NON-NLS-1$
             }
             list.add("-numsep"); //$NON-NLS-1$
             list.add(Integer.toString(tmpSep));
         }
 
-        if (this.numdec != null) {
+        if (numdec != null) {
             int tmpDec = 0;
             try {
-                tmpDec = Integer.parseInt(this.numdec);
+                tmpDec = Integer.parseInt(numdec);
             } catch (NumberFormatException nfe) {
-                if (this.numdec.length() == 1)
-                    tmpDec = this.numdec.charAt(0);
+                if (numdec.length() == 1)
+                    tmpDec = numdec.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numdec"})); //$NON-NLS-1$
+                            "numdec")); //$NON-NLS-1$
             }
             list.add("-numdec"); //$NON-NLS-1$
             list.add(Integer.toString(tmpDec));
         }
 
         // Parameter
-        if (this.parameter != null) {
+        if (parameter != null) {
             list.add("-param"); //$NON-NLS-1$
-            list.add(this.parameter);
+            list.add(parameter);
         }
 
         // Temp directory
-        if (this.tempDir != null) {
+        if (tempDir != null) {
             // TODO Isn't exists method redundant with isDirectory ? Check JRE sources...
-            if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
+            if (!tempDir.exists() || !tempDir.isDirectory()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
-                        new Object[]{this.tempDir}));
+                        tempDir));
             }
             list.add("-T");
-            list.add(this.tempDir.getAbsolutePath());
+            list.add(tempDir.getAbsolutePath());
         }
 
         // Additional command line options
-        if (this.options != null) {
-            for (Iterator i = this.options.iterator(); i.hasNext();) {
-                PCTRunOption opt = (PCTRunOption) i.next();
+        if (options != null) {
+            for (PCTRunOption opt : options) {
                 if (opt.getName() == null) {
                     throw new BuildException("PCTRun.8"); //$NON-NLS-1$
                 }

@@ -67,7 +67,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -84,13 +83,13 @@ public class PCTLibrary extends PCT {
     private String encoding = null;
     private boolean noCompress = false;
     private FileSet fileset = new FileSet();
-    private List filesets = new ArrayList();
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     private File baseDir = null;
     private File sharedFile = null;
 
     // Files containing at least one space in file name : these files are handled separately (prolib
-    // bug)
-    private Map /*<File baseDir, List<String> fileName>*/ spaceFiles = new HashMap();
+    // bug). Key is baseDir, value is the file list
+    private Map<File, List<String>> spaceFiles = new HashMap<File, List<String>>();
 
     /**
      * Default constructor
@@ -215,64 +214,61 @@ public class PCTLibrary extends PCT {
 
         checkDlcHome();
         // Library name must be defined
-        if (this.destFile == null) {
+        if (destFile == null) {
             throw new BuildException(Messages.getString("PCTLibrary.1"));
         }
 
         // There must be at least one fileset
-        if ((this.baseDir == null) && (this.filesets.size() == 0)) {
+        if ((baseDir == null) && (filesets.size() == 0)) {
             throw new BuildException(Messages.getString("PCTLibrary.2"));
         }
 
         try {
-            log(MessageFormat.format(Messages.getString("PCTLibrary.6"), new Object[]{this.destFile
-                .getAbsolutePath()}));
+            log(MessageFormat
+                    .format(Messages.getString("PCTLibrary.6"), destFile.getAbsolutePath()));
 
             // Creates new library
             exec = createArchiveTask();
             exec.execute();
             // Parse fileset from task
-            if (this.baseDir != null) {
-                exec = addFilesTask(this.baseDir);
-                writeFileList(this.fileset);
+            if (baseDir != null) {
+                exec = addFilesTask(baseDir);
+                writeFileList(fileset);
                 exec.execute();
             }
-            // Parses filesets
-            for (Iterator e = filesets.iterator(); e.hasNext();) {
-                FileSet fs = (FileSet) e.next();
-                exec = addFilesTask(fs.getDir(this.getProject()));
+            for (FileSet fs : filesets) {
+                exec = addFilesTask(fs.getDir(getProject()));
                 writeFileList(fs);
                 exec.execute();
             }
             // Now adding files containing spaces
-            if (this.spaceFiles.size() > 0) {
-                for (Iterator iter = this.spaceFiles.keySet().iterator(); iter.hasNext();) {
-                    File f = (File) iter.next();
-                    for (Iterator iter2 = ((List) spaceFiles.get(f)).iterator(); iter2.hasNext(); ) {
-                        ExecTask task = spaceFileReplace(f, (String) iter2.next());
+            if (spaceFiles.size() > 0) {
+                for (File f : spaceFiles.keySet()) {
+                    for (String str : spaceFiles.get(f)) {
+                        ExecTask task = spaceFileReplace(f, str);
                         task.execute();
                     }
                 }
             }
 
-            this.cleanup();
+            cleanup();
 
             // Creates shared library if name defined
-            if (this.sharedFile != null) {
+            if (sharedFile != null) {
                 exec = makeSharedTask();
                 exec.execute();
             }
 
             // Compress library if noCompress set to false
-            if (!this.noCompress) {
-                log(MessageFormat.format(Messages.getString("PCTLibrary.7"), new Object[]{this.destFile
-                    .getAbsolutePath()}));
+            if (!noCompress) {
+                log(MessageFormat.format(Messages.getString("PCTLibrary.7"),
+                        destFile.getAbsolutePath()));
 
                 exec = compressTask();
                 exec.execute();
             }
         } catch (BuildException be) {
-            this.cleanup();
+            cleanup();
             throw be;
         }
     }
@@ -282,19 +278,19 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue(destFile.getAbsolutePath());
         exec.createArg().setValue("-create");
 
-        if (this.encoding != null) {
+        if (encoding != null) {
             exec.createArg().setValue("-codepage");
-            exec.createArg().setValue(this.encoding);
+            exec.createArg().setValue(encoding);
         }
 
         exec.createArg().setValue("-nowarn");
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
         return exec;
@@ -306,13 +302,13 @@ public class PCTLibrary extends PCT {
         exec.setDir(dir);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue(destFile.getAbsolutePath());
         exec.createArg().setValue("-pf");
-        exec.createArg().setValue(this.tmpFile.getAbsolutePath());
+        exec.createArg().setValue(tmpFile.getAbsolutePath());
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
         return exec;
@@ -323,12 +319,12 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue(destFile.getAbsolutePath());
         exec.createArg().setValue("-compress");
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
         return exec;
@@ -339,13 +335,13 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue(destFile.getAbsolutePath());
         exec.createArg().setValue("-makeshared");
-        exec.createArg().setValue(this.sharedFile.getAbsolutePath());
+        exec.createArg().setValue(sharedFile.getAbsolutePath());
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
         return exec;
@@ -361,24 +357,21 @@ public class PCTLibrary extends PCT {
             BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
             bw.write("-replace ");
 
-            List list = new ArrayList();
+            List<String> list = new ArrayList<String>();
 
-            // And get files from fileset
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
+            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 // check not including the pl itself in the pl
-                File resourceAsFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
-                if (resourceAsFile.equals(this.destFile)) {
+                File resourceAsFile = new File(fs.getDir(getProject()), str);
+                if (resourceAsFile.equals(destFile)) {
                     bw.close();
                     throw new BuildException(Messages.getString("PCTLibrary.3"));
                 }
 
                 // If there are spaces, don't put in the pf file
-                if ((dsfiles[i].indexOf(' ') == -1) && (dsfiles[i].length() < 128)) {
-                    bw.write(dsfiles[i] + " ");
+                if ((str.indexOf(' ') == -1) && (str.length() < 128)) {
+                    bw.write(str + " ");
                 } else {
-                    list.add(dsfiles[i]);
+                    list.add(str);
                 }
             }
             bw.write("-nowarn ");
@@ -399,14 +392,14 @@ public class PCTLibrary extends PCT {
         exec.setFailonerror(true);
 
         exec.setExecutable(getExecPath("prolib").toString());
-        exec.createArg().setValue(this.destFile.getAbsolutePath());
+        exec.createArg().setValue(destFile.getAbsolutePath());
         exec.createArg().setValue("-replace");
         exec.createArg().setValue(fileName);
         exec.createArg().setValue("-nowarn");
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
         return exec;
@@ -414,12 +407,11 @@ public class PCTLibrary extends PCT {
 
     /**
      * Delete temporary files if debug not activated
-     * 
      */
     protected void cleanup() {
-        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTLibrary.5"), new Object[]{this.tmpFile
-                    .getAbsolutePath()}), Project.MSG_VERBOSE);
+        if (tmpFile.exists() && !tmpFile.delete()) {
+            log(MessageFormat.format(Messages.getString("PCTLibrary.5"), tmpFile.getAbsolutePath()),
+                    Project.MSG_VERBOSE);
         }
     }
 

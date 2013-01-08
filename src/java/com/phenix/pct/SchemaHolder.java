@@ -167,5 +167,5 @@ public abstract class SchemaHolder {
      */
     public abstract boolean validate();
     public abstract String getProcedure();
-    public abstract Collection getParameters();
+    public abstract Collection<RunParameter> getParameters();
 }

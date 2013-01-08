@@ -57,19 +57,18 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Class for creating Progress databases
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
- * @version $Revision$
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
@@ -86,7 +85,7 @@ public class PCTCreateBase extends PCT {
     private Path propath = null;
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
     private int wordRule = -1;
-    private List holders = null;
+    private List<SchemaHolder> holders = null;
 
     /**
      * Structure file (.st)
@@ -211,7 +210,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addOracleHolder(OracleHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList();
+            this.holders = new ArrayList<SchemaHolder>();
         }
         this.holders.add(holder);
     }
@@ -223,7 +222,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addMSSHolder(MSSHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList();
+            this.holders = new ArrayList<SchemaHolder>();
         }
         this.holders.add(holder);
     }
@@ -235,7 +234,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addODBCHolder(ODBCHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList();
+            this.holders = new ArrayList<SchemaHolder>();
         }
         this.holders.add(holder);
     }
@@ -251,33 +250,33 @@ public class PCTCreateBase extends PCT {
         checkDlcHome();
         // TODO : rediriger la sortie standard
         // Checking there is at least an init or a structure creation
-        if ((this.structFile == null) && this.noInit) {
+        if ((structFile == null) && noInit) {
             throw new BuildException(Messages.getString("PCTCreateBase.2")); //$NON-NLS-1$
         }
 
         // Checking dbName is defined
-        if (this.dbName == null) {
+        if (dbName == null) {
             throw new BuildException(Messages.getString("PCTCreateBase.3")); //$NON-NLS-1$
         }
 
         // If schema holders defined, then no Progress schema can be loaded
-        if ((this.holders != null) && (this.holders.size() > 0)) {
-            if ((this.schema != null) && (this.schema.trim().length() > 0)) {
+        if ((holders != null) && (holders.size() > 0)) {
+            if ((schema != null) && (schema.trim().length() > 0)) {
                 throw new BuildException("On peut pas !!!");
             }
             // noInit also cannot be set to true
-            if (this.noInit) {
+            if (noInit) {
                 throw new BuildException("on peut pas non plus !!");
             }
         }
 
         // Update destDir if not defined
-        if (this.destDir == null) {
-            this.destDir = this.getProject().getBaseDir();
+        if (destDir == null) {
+            destDir = getProject().getBaseDir();
         }
 
         // Checking length of the database name
-        if (this.dbName.length() > DB_NAME_MAX_LENGTH) {
+        if (dbName.length() > DB_NAME_MAX_LENGTH) {
             throw new BuildException(Messages.getString("PCTCreateBase.4")); //$NON-NLS-1$
         }
 
@@ -285,13 +284,13 @@ public class PCTCreateBase extends PCT {
         File db = new File(destDir, dbName + ".db"); //$NON-NLS-1$
 
         if (db.exists()) {
-            if (this.overwrite) {
+            if (overwrite) {
                 // TODO : revoir l'effacement de l'ancienne base
                 Delete del = new Delete();
                 del.bindToOwner(this);
-                del.setOwningTarget(this.getOwningTarget());
-                del.setTaskName(this.getTaskName());
-                del.setDescription(this.getDescription());
+                del.setOwningTarget(getOwningTarget());
+                del.setTaskName(getTaskName());
+                del.setDescription(getDescription());
                 del.setFile(db);
                 del.execute();
             } else {
@@ -299,25 +298,25 @@ public class PCTCreateBase extends PCT {
             }
         }
 
-        if (this.structFile != null) {
+        if (structFile != null) {
             exec = structCmdLine();
             exec.execute();
         }
 
-        if (!this.noInit) {
+        if (!noInit) {
             exec = initCmdLine();
             exec.execute();
         }
 
         // Word rules are loaded before schema to avoid problems with newly created indexes
-        if (this.wordRule != -1) {
+        if (wordRule != -1) {
             exec = wordRuleCmdLine();
             exec.execute();
         }
 
-        if (this.schema != null) {
-            
-            String[] v = this.schema.split(",");
+        if (schema != null) {
+
+            String[] v = schema.split(",");
             for (int i = 0; i < v.length; i++) {
                 String sc = v[i];
                 // Bug #1245992 : use Project#resolveFile(String)
@@ -326,42 +325,41 @@ public class PCTCreateBase extends PCT {
                     PCTLoadSchema pls = new PCTLoadSchema();
                     pls.bindToOwner(this);
                     pls.setSrcFile(f);
-                    pls.setDlcHome(this.getDlcHome());
-                    pls.setDlcBin(this.getDlcBin());
-                    pls.addPropath(this.propath);
-                    pls.setIncludedPL(this.getIncludedPL());
-                    for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
-                        pls.addEnv((Environment.Variable) iter.next());
+                    pls.setDlcHome(getDlcHome());
+                    pls.setDlcBin(getDlcBin());
+                    pls.addPropath(propath);
+                    pls.setIncludedPL(getIncludedPL());
+                    for (Variable var : getEnvironmentVariables()) {
+                        pls.addEnv(var);
                     }
 
                     PCTConnection pc = new PCTConnection();
-                    pc.setDbName(this.dbName);
-                    pc.setDbDir(this.destDir);
+                    pc.setDbName(dbName);
+                    pc.setDbDir(destDir);
                     pc.setSingleUser(true);
                     pls.addDBConnection(pc);
                     pls.execute();
                 } else {
-                    throw new BuildException(MessageFormat.format(Messages
-                            .getString("PCTCreateBase.5"), new Object[]{f}));
+                    throw new BuildException(MessageFormat.format(
+                            Messages.getString("PCTCreateBase.5"), f));
                 }
             }
         }
 
-        if (this.holders != null) {
-            for (Iterator i = holders.iterator(); i.hasNext();) {
-                SchemaHolder holder = (SchemaHolder) i.next();
+        if (holders != null) {
+            for (SchemaHolder holder : holders) {
                 PCTRun run = new PCTRun();
                 run.bindToOwner(this);
-                run.setDlcHome(this.getDlcHome());
-                run.setDlcBin(this.getDlcBin());
-                run.addPropath(this.propath);
-                run.setIncludedPL(this.getIncludedPL());
+                run.setDlcHome(getDlcHome());
+                run.setDlcBin(getDlcBin());
+                run.addPropath(propath);
+                run.setIncludedPL(getIncludedPL());
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
 
                 PCTConnection pc = new PCTConnection();
-                pc.setDbName(this.dbName);
-                pc.setDbDir(this.destDir);
+                pc.setDbName(dbName);
+                pc.setDbDir(destDir);
                 pc.setSingleUser(true);
                 run.addDBConnection(pc);
                 run.execute();
@@ -370,9 +368,9 @@ public class PCTCreateBase extends PCT {
                     PCTLoadSchema pls = new PCTLoadSchema();
                     pls.bindToOwner(this);
                     pls.setSrcFile(holder.getSchemaFile());
-                    pls.setDlcHome(this.getDlcHome());
-                    pls.setDlcBin(this.getDlcBin());
-                    pls.addPropath(this.propath);
+                    pls.setDlcHome(getDlcHome());
+                    pls.setDlcBin(getDlcBin());
+                    pls.addPropath(propath);
                     pls.addDBConnection(pc);
                     pls.execute();
 
@@ -389,26 +387,26 @@ public class PCTCreateBase extends PCT {
     private ExecTask initCmdLine() {
         ExecTask exec = new ExecTask(this);
 
-        File srcDir = this.getDlcHome();
-        if (this.codepage != null) {
+        File srcDir = getDlcHome();
+        if (codepage != null) {
             srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
-            srcDir = new File(srcDir, this.codepage);
+            srcDir = new File(srcDir, codepage);
         }
-        File srcDB = new File(srcDir, "empty" + this.blockSize); //$NON-NLS-1$
+        File srcDB = new File(srcDir, "empty" + blockSize); //$NON-NLS-1$
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
-        exec.setDir(this.destDir);
+        exec.setDir(destDir);
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
         exec.createArg().setValue(srcDB.getAbsolutePath());
-        exec.createArg().setValue(this.dbName);
+        exec.createArg().setValue(dbName);
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
-        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
-            exec.addEnv((Environment.Variable) iter.next());
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
         }
 
         return exec;
@@ -423,21 +421,21 @@ public class PCTCreateBase extends PCT {
         ExecTask exec = new ExecTask(this);
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
-        exec.setDir(this.destDir);
+        exec.setDir(destDir);
         exec.createArg().setValue("prostrct"); //$NON-NLS-1$
         exec.createArg().setValue("create"); //$NON-NLS-1$
-        exec.createArg().setValue(this.dbName);
-        exec.createArg().setValue(this.structFile.getAbsolutePath());
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue(structFile.getAbsolutePath());
         exec.createArg().setValue("-blocksize"); //$NON-NLS-1$
-        exec.createArg().setValue(Integer.toString(blocks[this.blockSize]));
+        exec.createArg().setValue(Integer.toString(blocks[blockSize]));
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
-        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
-            exec.addEnv((Environment.Variable) iter.next());
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
         }
 
         return exec;
@@ -446,19 +444,19 @@ public class PCTCreateBase extends PCT {
     private ExecTask wordRuleCmdLine() {
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_proutil").toString()); //$NON-NLS-1$
-        exec.setDir(this.destDir);
-        exec.createArg().setValue(this.dbName);
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("word-rules"); //$NON-NLS-1$
-        exec.createArg().setValue(String.valueOf(this.wordRule));
+        exec.createArg().setValue(String.valueOf(wordRule));
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
-        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext(); ) {
-            exec.addEnv((Environment.Variable) iter.next());
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
         }
 
         return exec;

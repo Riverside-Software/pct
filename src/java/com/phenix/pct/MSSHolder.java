@@ -10,8 +10,8 @@ public class MSSHolder extends SchemaHolder {
         return true;
     }
 
-    public Collection getParameters() {
-        Collection c = new ArrayList();
+    public Collection<RunParameter> getParameters() {
+        Collection<RunParameter> c = new ArrayList<RunParameter>();
         c.add(new RunParameter("SchemaHolderName", this.getDbName()));
         c.add(new RunParameter("Collation", this.getCollation()));
         c.add(new RunParameter("Codepage", this.getCodepage()));

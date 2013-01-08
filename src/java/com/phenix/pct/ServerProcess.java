@@ -1,7 +1,6 @@
 package com.phenix.pct;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -86,12 +85,11 @@ public class ServerProcess extends PCTRun {
         return startupProc;
     }
 
-    protected List getCmdLineParameters() {
-        List list = super.getCmdLineParameters();
+    protected List<String> getCmdLineParameters() {
+        List<String> list = super.getCmdLineParameters();
 
         if (dbConnList != null) {
-            for (Iterator iter = dbConnList.iterator(); iter.hasNext(); ) {
-                PCTConnection conn = (PCTConnection) iter.next();
+            for (PCTConnection conn : dbConnList) {
                 list.addAll(conn.getConnectParametersList());
             }
         }
@@ -105,11 +103,11 @@ public class ServerProcess extends PCTRun {
      * @return String
      */
     public String getPropath() {
-        if (this.propath == null)
+        if (propath == null)
             return "";
 
         StringBuffer propathList = new StringBuffer("");
-        String[] lst = this.propath.list();
+        String[] lst = propath.list();
         for (int k = 0; k < lst.length; k++) {
             propathList.append(lst[k]);
             if (k < lst.length - 1)

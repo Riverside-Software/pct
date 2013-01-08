@@ -1,8 +1,6 @@
 package eu.rssw.pct.prolint.rules;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import org.prorefactor.core.JPNode;
 import org.prorefactor.treeparser.ParseUnit;
@@ -20,9 +18,7 @@ public class Unquoted extends AbstractLintRule {
     }
 
     public void execute(ParseUnit unit, File xref, ILintCallback callback) {
-        List list = unit.getTopNode().query(NodeTypes.FILENAME);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            JPNode node = (JPNode) iter.next();
+        for (JPNode node : unit.getTopNode().query(NodeTypes.FILENAME)) {
             JPNode headNode = node.parent().getStatement();
             JPNode prevNode = node.prevSibling();
 
@@ -40,9 +36,7 @@ public class Unquoted extends AbstractLintRule {
             }
         }
 
-        list = unit.getTopNode().query(NodeTypes.UNQUOTEDSTRING);
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            JPNode node = (JPNode) iter.next();
+        for (JPNode node : unit.getTopNode().query(NodeTypes.UNQUOTEDSTRING)) {
             LintWarning warning = new LintWarning(getRuleName(), getCategory(), getSeverity(), new File(
                     node.getFilename()));
             warning.setLine(node.getLine());

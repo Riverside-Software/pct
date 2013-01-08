@@ -74,10 +74,10 @@ import java.util.Set;
 /**
  * Class for compiling Progress procedures
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTBgCompile extends PCTBgRun {
-    private List filesets = new ArrayList();
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
@@ -98,7 +98,7 @@ public class PCTBgCompile extends PCTBgRun {
     private File xRefDir = null;
     private Mapper mapperElement = null;
 
-    private Set units = new HashSet();
+    private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
     private int compOk = 0, compNotOk = 0;
 
     /**
@@ -408,15 +408,12 @@ public class PCTBgCompile extends PCTBgRun {
         // .pct dir is where PCT output files are generated
         File dotPCTDir = new File(destDir, ".pct");
 
-        for (Iterator e = filesets.iterator(); e.hasNext();) {
-            FileSet fs = (FileSet) e.next();
-
-            String[] dsfiles = fs.getDirectoryScanner(getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
+        for (FileSet fs : filesets) {
+            
+            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 // File to be compiled
                 File inputDir = fs.getDir(getProject());
-                File inputFile = new File(fs.getDir(getProject()), dsfiles[i]);
+                File inputFile = new File(fs.getDir(getProject()), str);
                 String inputFileName = inputFile.getName();
 
                 File f = inputFile.getParentFile();
@@ -429,10 +426,10 @@ public class PCTBgCompile extends PCTBgRun {
                 int srcExtPos = inputFile.getName().lastIndexOf('.');
                 String extension = (srcExtPos != -1 ? inputFile.getName().substring(srcExtPos) : "");
                 String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0,
-                        srcExtPos) : dsfiles[0]);
+                        srcExtPos) : str);
 
                 // Output directory for .r file
-                String[] outputNames = getMapper().mapFileName(dsfiles[i]);
+                String[] outputNames = getMapper().mapFileName(str);
                 if ((outputNames != null) && (outputNames.length >= 1)) {
                     File outputDir = null;
                     File outputFile = new File(destDir, outputNames[0]);
@@ -509,17 +506,17 @@ public class PCTBgCompile extends PCTBgRun {
                 sendCommand("getCRC", "");
                 return true;
             } else if (customStatus == 5) {
-                List sending = new ArrayList();
+                List<CompilationUnit> sending = new ArrayList<CompilationUnit>();
                 boolean noMoreFiles = false;
                 synchronized (units) {
                     int size = units.size();
                     if (size > 0) {
                         int numCU = (size > 100 ? 10 : 1);
-                        Iterator iter = units.iterator();
+                        Iterator<CompilationUnit> iter = units.iterator();
                         for (int zz = 0; zz < numCU; zz++) {
                             sending.add((CompilationUnit) iter.next());
                         }
-                        for (Iterator iter2 = sending.iterator(); iter2.hasNext();) {
+                        for (Iterator<CompilationUnit> iter2 = sending.iterator(); iter2.hasNext();) {
                             units.remove((CompilationUnit) iter2.next());
                         }
                     } else {
@@ -530,7 +527,7 @@ public class PCTBgCompile extends PCTBgRun {
                 if (noMoreFiles) {
                     return false;
                 } else {
-                    for (Iterator iter = sending.iterator(); iter.hasNext();) {
+                    for (Iterator<CompilationUnit> iter = sending.iterator(); iter.hasNext();) {
                         CompilationUnit cu = (CompilationUnit) iter.next();
                         if (sb.length() > 0)
                             sb.append('#');
@@ -544,7 +541,7 @@ public class PCTBgCompile extends PCTBgRun {
             }
         }
 
-        public void setCustomOptions(Map options) {
+        public void setCustomOptions(Map<String, String> options) {
 
         }
 
@@ -567,7 +564,7 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         public void handleResponse(String command, String parameter, boolean err,
-                String customResponse, List returnValues) {
+                String customResponse, List<Message> returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
                 String[] str = customResponse.split("/");
                 int ok = 0, notOk = 0;

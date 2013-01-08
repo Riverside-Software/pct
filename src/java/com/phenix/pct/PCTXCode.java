@@ -64,7 +64,6 @@ import java.io.File;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -73,7 +72,7 @@ import java.util.List;
  * @author <a href="mailto:d.knol@steeg-software.nl">Dick Knol</a>
  */
 public class PCTXCode extends PCT {
-    private List filesets = new ArrayList();
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     private String key = null;
     private File destDir = null;
     private int tmpLogId = -1;
@@ -147,21 +146,16 @@ public class PCTXCode extends PCT {
      * @throws BuildException Something went wrong
      */
     private void createDirectories() throws BuildException {
-        for (Iterator e = filesets.iterator(); e.hasNext();) {
-            FileSet fs = (FileSet) e.next();
-
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
-                String s = dsfiles[i].replace('\\', '/');
-                int j = s.lastIndexOf('/');
+        for (FileSet fs : filesets) {
+            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+                int j = str.lastIndexOf('/');
 
                 if (j != -1) {
-                    File f2 = new File(this.destDir, s.substring(0, j));
+                    File f2 = new File(destDir, str.substring(0, j));
 
                     if (!f2.exists() && !f2.mkdirs()) {
-                            throw new BuildException(MessageFormat.format(Messages
-                                    .getString("PCTXCode.3"), new Object[]{f2.getAbsolutePath()})); //$NON-NLS-1$
+                        throw new BuildException(MessageFormat.format(
+                                Messages.getString("PCTXCode.3"), f2.getAbsolutePath())); //$NON-NLS-1$
                     }
                 }
             }
@@ -175,46 +169,40 @@ public class PCTXCode extends PCT {
      */
     public void execute() throws BuildException {
         checkDlcHome();
-        if (this.destDir == null) {
-            this.cleanup();
+        if (destDir == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTXCode.4")); //$NON-NLS-1$
         }
 
         log(Messages.getString("PCTXCode.5"), Project.MSG_INFO); //$NON-NLS-1$
 
         try {
-            this.createDirectories();
-            this.createExecTask();
+            createDirectories();
+            createExecTask();
 
-            for (Iterator e = filesets.iterator(); e.hasNext();) {
-                // Parse filesets
-                FileSet fs = (FileSet) e.next();
-                exec.setDir(fs.getDir(this.getProject()));
+            for (FileSet fs : filesets) {
+                exec.setDir(fs.getDir(getProject()));
 
-                // And get files from fileset
-                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
+                for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+                    File trgFile = new File(destDir, str);
+                    File srcFile = new File(fs.getDir(getProject()), str);
 
-                for (int i = 0; i < dsfiles.length; i++) {
-                    File trgFile = new File(this.destDir, dsfiles[i]);
-                    File srcFile = new File(fs.getDir(this.getProject()), dsfiles[i]);
-
-                    if (!trgFile.exists() || this.overwrite
+                    if (!trgFile.exists() || overwrite
                             || (srcFile.lastModified() > trgFile.lastModified())) {
-                        log(
-                                MessageFormat
-                                        .format(
-                                                Messages.getString("PCTXCode.6"), new Object[]{trgFile.toString()}), Project.MSG_VERBOSE); //$NON-NLS-1$
-                        arg.setValue(dsfiles[i]);
-                        if (this.overwrite) {
-                            if (!trgFile.delete()) throw new BuildException(Messages.getString("PCTXCode.7"));
+                        log(MessageFormat.format(
+                                Messages.getString("PCTXCode.6"), trgFile.toString()), Project.MSG_VERBOSE); //$NON-NLS-1$
+                        arg.setValue(str);
+                        if (overwrite) {
+                            if (!trgFile.delete())
+                                throw new BuildException(Messages.getString("PCTXCode.7"));
                         }
                         exec.execute();
                     }
                 }
             }
-            this.cleanup();
+            cleanup();
         } catch (BuildException be) {
-            this.cleanup();
+            cleanup();
             throw be;
         }
 
@@ -223,22 +211,22 @@ public class PCTXCode extends PCT {
     private void createExecTask() {
         exec = new ExecTask(this);
         exec.setOutput(tmpLog);
-        exec.setExecutable(this.getExecPath("xcode").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath("xcode").toString()); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(this.getDlcHome().toString());
+        var.setValue(getDlcHome().toString());
         exec.addEnv(var);
 
-        if (this.key != null) {
+        if (key != null) {
             exec.createArg().setValue("-k"); //$NON-NLS-1$
-            exec.createArg().setValue(this.key);
+            exec.createArg().setValue(key);
         }
 
         exec.createArg().setValue("-d"); //$NON-NLS-1$
-        exec.createArg().setValue(this.destDir.toString());
+        exec.createArg().setValue(destDir.toString());
 
-        if (this.lowercase) {
+        if (lowercase) {
             exec.createArg().setValue("-l"); //$NON-NLS-1$
         }
 
@@ -246,11 +234,9 @@ public class PCTXCode extends PCT {
     }
 
     protected void cleanup() {
-        if (this.tmpLog.exists() && !this.tmpLog.delete()) {
-            log(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCTXCode.13"), new Object[]{this.tmpLog.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        if (tmpLog.exists() && !tmpLog.delete()) {
+            log(MessageFormat.format(
+                    Messages.getString("PCTXCode.13"), tmpLog.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
         }
     }
 }

@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.server.UID;
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
@@ -302,8 +301,8 @@ public class PCTWSBroker extends PCTBroker {
                     }
 
                     bw.print("srvrStartupParam=");
-                    for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
-                        bw.print((String) i.next());
+                    for (String str : server.getCmdLineParameters()) {
+                        bw.print(str);
                         bw.print(' ');
                     }
                     bw.println("");

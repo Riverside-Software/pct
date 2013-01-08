@@ -64,18 +64,17 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Class for reading and extracting contents of a Progress Library file.
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PLReader {
     private static final int MAGIC = 0xd707;
     private static final int MAGIC_V11 = 0xd70b;
-    private static final int MAGIC_SIZE = 2;
+//    private static final int MAGIC_SIZE = 2;
     private static final int ENCODING_OFFSET = 0x02;
     private static final int ENCODING_SIZE = 20;
     private static final int FILE_LIST_OFFSET = 0x1e;
@@ -84,7 +83,7 @@ public class PLReader {
     // private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
 
     private File pl;
-    private List /* FileEntry */files = null;
+    private List<FileEntry> files = null;
 
     public PLReader(File file) {
         String name = file.getPath();
@@ -101,15 +100,14 @@ public class PLReader {
      * 
      * @throws RuntimeException If file is not a valid procedure library
      */
-    public List getFileList() {
+    public List<FileEntry> getFileList() {
         if (this.files == null)
             readFileList();
         return files;
     }
 
     public FileEntry getEntry(String name) {
-        for (Iterator iter = getFileList().iterator(); iter.hasNext();) {
-            FileEntry entry = (FileEntry) iter.next();
+        for (FileEntry entry : getFileList()) {
             if (entry.getFileName().equals(name))
                 return entry;
         }
@@ -135,7 +133,7 @@ public class PLReader {
 
             Charset charset = getCharset(fc);
             int offset = getTOCOffset(fc, version);
-            files = new ArrayList();
+            files = new ArrayList<FileEntry>();
             FileEntry fe = null;
             while ((fe = readEntry(fc, offset, charset, version)) != null) {
                 if (fe.isValid())

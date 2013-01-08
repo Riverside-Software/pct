@@ -58,7 +58,6 @@ import org.apache.tools.ant.BuildException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Dumps schema from database
@@ -67,7 +66,7 @@ import java.util.Iterator;
  */
 public class PCTDumpSchema extends PCTRun {
     private File destFile = null;
-    private Collection tableList = null;
+    private Collection<PCTTable> tableList = null;
     private String tables = null;
 
     /**
@@ -81,6 +80,7 @@ public class PCTDumpSchema extends PCTRun {
 
     /**
      * Tables list to dump
+     * 
      * @param tables the tables to dump
      */
     public void setTables(String tables) {
@@ -89,7 +89,7 @@ public class PCTDumpSchema extends PCTRun {
 
     public void addConfiguredTable(PCTTable table) {
         if (this.tableList == null) {
-            tableList = new ArrayList();
+            tableList = new ArrayList<PCTTable>();
         }
         tableList.add(table);
     }
@@ -100,8 +100,7 @@ public class PCTDumpSchema extends PCTRun {
             sb.append(tables);
 
         if (tableList != null) {
-            for (Iterator iter = tableList.iterator(); iter.hasNext();) {
-                PCTTable tbl = (PCTTable) iter.next();
+            for (PCTTable tbl : tableList) {
                 if (sb.length() > 0)
                     sb.append(',');
                 sb.append(tbl.getName());
@@ -120,25 +119,25 @@ public class PCTDumpSchema extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (this.dbConnList == null) {
-            this.cleanup();
+        if (dbConnList == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList.size() > 1) {
-            this.cleanup();
+        if (dbConnList.size() > 1) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.1")); //$NON-NLS-1$
         }
 
-        if (this.destFile == null) {
-            this.cleanup();
+        if (destFile == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
         String param = destFile.toString() + ";" + getTableList();
 
-        this.setProcedure("pct/dmpSch.p"); //$NON-NLS-1$
-        this.setParameter(param);
+        setProcedure("pct/dmpSch.p"); //$NON-NLS-1$
+        setParameter(param);
         super.execute();
     }
 }

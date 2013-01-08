@@ -25,7 +25,8 @@ public abstract class BackgroundWorker {
 
     // 0 tout début 1 connecté 2 db ok 3 propath ok 4 custom 5 terminé
     private int status;
-    private Iterator dbConnections, propath;
+    private Iterator<PCTConnection> dbConnections;
+    private Iterator<String> propath;
 
     // Dernière commande envoyée
     private String lastCommand, lastCommandParameter;
@@ -51,11 +52,11 @@ public abstract class BackgroundWorker {
         threadNumber = threadCounter.incrementAndGet();
     }
 
-    public final void setDBConnections(Iterator dbConnections) {
+    public final void setDBConnections(Iterator<PCTConnection> dbConnections) {
         this.dbConnections = dbConnections;
     }
 
-    public final void setPropath(Iterator propath) {
+    public final void setPropath(Iterator<String> propath) {
         this.propath = propath;
     }
 
@@ -78,7 +79,7 @@ public abstract class BackgroundWorker {
 
     public final void listen() {
         boolean end = false, err = false;
-        List retVals = new ArrayList();
+        List<Message> retVals = new ArrayList<Message>();
         String customResponse = "";
 
         while (!end) {
@@ -182,7 +183,7 @@ public abstract class BackgroundWorker {
      * 
      * @param options
      */
-    public abstract void setCustomOptions(Map options);
+    public abstract void setCustomOptions(Map<String, String> options);
 
     /**
      * This is where you can handle responses from the Progress process
@@ -194,10 +195,10 @@ public abstract class BackgroundWorker {
      * @param returnValues List of Message objects
      */
     public abstract void handleResponse(String command, String parameter, boolean err,
-            String customResponse, List returnValues);
+            String customResponse, List<Message> returnValues);
 
     public final void handleStandardEventResponse(String command, String parameter, boolean err,
-            String customResponse, List returnValues) {
+            String customResponse, List<Message> returnValues) {
         if ("connect".equalsIgnoreCase(command)) {
             if (err) {
                 parent.logMessages(returnValues);

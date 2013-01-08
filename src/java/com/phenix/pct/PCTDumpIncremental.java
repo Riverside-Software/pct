@@ -58,15 +58,12 @@ import org.apache.tools.ant.Project;
 
 import java.io.File;
 
-import java.util.Iterator;
-
 /**
  * Creates a schema diff file between two databases. This is a wrapper around prodict/dump_inc.p
  * from POSSENET code.
  * 
  * @author Phillip BAIRD
- * @author <a href="justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
+ * @author <a href="g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTDumpIncremental extends PCTRun {
     private File destFile = null;
@@ -142,7 +139,8 @@ public class PCTDumpIncremental extends PCTRun {
     }
 
     public void addDBConnection(PCTConnection dbConn) {
-        throw new BuildException("DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
+        throw new BuildException(
+                "DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
     }
 
     /**
@@ -185,40 +183,42 @@ public class PCTDumpIncremental extends PCTRun {
             throw new BuildException("SourceDb and TargetDb nodes should be defined");
         } else {
             if (dbConnList == null) {
-                this.cleanup();
+                cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
             }
-    
+
             if (dbConnList.size() != 2) {
-                this.cleanup();
+                cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
             }
-    
+
             if (!aliasDefined("dictdb")) { //$NON-NLS-1$
-                this.cleanup();
+                cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.3")); //$NON-NLS-1$
             }
-    
+
             if (!aliasDefined("dictdb2")) { //$NON-NLS-1$
-                this.cleanup();
+                cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.5")); //$NON-NLS-1$
             }
         }
 
-        if (this.destFile == null) {
-            this.cleanup();
+        if (destFile == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTDumpIncremental.6")); //$NON-NLS-1$
         }
 
-        this.prepareExecTask();
+        prepareExecTask();
 
-        this.setProcedure(this.getProgressProcedures().getIncrementalProcedure());
-        this.addParameter(new RunParameter("DFFileName", this.destFile.getAbsolutePath()));
-        this.addParameter(new RunParameter("CodePage", this.codePage));
-        this.addParameter(new RunParameter("RenameFile", (this.renameFile == null ? "" : this.renameFile.getAbsolutePath())));
-        this.addParameter(new RunParameter("IndexMode", Integer.toString(this.activeIndexes)));
-        this.addParameter(new RunParameter("DebugMode", Integer.toString(this.debugLevel)));
-        
+        setProcedure(getProgressProcedures().getIncrementalProcedure());
+        addParameter(new RunParameter("DFFileName", destFile.getAbsolutePath()));
+        addParameter(new RunParameter("CodePage", codePage));
+        addParameter(new RunParameter("RenameFile", (renameFile == null
+                ? ""
+                : renameFile.getAbsolutePath())));
+        addParameter(new RunParameter("IndexMode", Integer.toString(activeIndexes)));
+        addParameter(new RunParameter("DebugMode", Integer.toString(debugLevel)));
+
         super.execute();
     }
 
@@ -229,15 +229,11 @@ public class PCTDumpIncremental extends PCTRun {
      * @return boolean
      */
     private boolean aliasDefined(String aliasName) {
-        if (this.dbConnList == null) {
+        if (dbConnList == null) {
             return false;
         }
 
-        Iterator connections = this.dbConnList.iterator();
-
-        while (connections.hasNext()) {
-            PCTConnection c = (PCTConnection) connections.next();
-
+        for (PCTConnection c : dbConnList) {
             if (c.hasNamedAlias(aliasName)) {
                 return true;
             }

@@ -63,9 +63,6 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.util.Iterator;
-
 /**
  * Class for testing PCTConnection class
  * 
@@ -110,8 +107,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
             fail("There should be only 2 aliases");
         }
 
-        for (Iterator i = conn.getAliases().iterator(); i.hasNext();) {
-            PCTAlias a = (PCTAlias) i.next();
+        for (PCTAlias a : conn.getAliases()) {
             String s = a.getName();
 
             if (s.equalsIgnoreCase("alias1")) {

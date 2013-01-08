@@ -57,9 +57,9 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 
 import java.io.File;
-import java.util.Iterator;
 
 /**
  * Class for creating a sports2000 database
@@ -161,8 +161,8 @@ public class Sports2000 extends PCT {
         var.setValue(this.getDlcHome().toString());
         exec.addEnv(var);
 
-        for (Iterator iter = getEnvironment().getVariablesVector().iterator(); iter.hasNext();) {
-            exec.addEnv((Environment.Variable) iter.next());
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
         }
 
         return exec;

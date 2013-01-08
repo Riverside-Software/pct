@@ -61,18 +61,17 @@ import java.io.File;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Binary load task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class PCTBinaryLoad extends PCT {
-    private List dbConnList = null;
-    private List filesets = new ArrayList();
+    private List<PCTConnection> dbConnList = null;
+    private List<FileSet> filesets = new ArrayList<FileSet>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
 
@@ -83,7 +82,7 @@ public class PCTBinaryLoad extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList();
+            this.dbConnList = new ArrayList<PCTConnection>();
         }
 
         this.dbConnList.add(dbConn);
@@ -135,18 +134,12 @@ public class PCTBinaryLoad extends PCT {
 
         if (this.dbConnList.size() > 1) {
             throw new BuildException(MessageFormat.format(
-                    Messages.getString("PCTBinaryLoad.2"), new Object[]{"1"})); //$NON-NLS-1$ //$NON-NLS-2$
+                    Messages.getString("PCTBinaryLoad.2"), "1")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        for (Iterator e = filesets.iterator(); e.hasNext();) {
-            // Parse filesets
-            FileSet fs = (FileSet) e.next();
-
-            // And get files from fileset
-            String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-            for (int i = 0; i < dsfiles.length; i++) {
-                File foo = new File(fs.getDir(this.getProject()), dsfiles[i]);
+        for (FileSet fs : filesets) {
+            for (String str : fs.getDirectoryScanner(this.getProject()).getIncludedFiles()) {
+                File foo = new File(fs.getDir(this.getProject()), str);
                 exec = loadTask(foo);
                 exec.execute();
             }
@@ -155,12 +148,11 @@ public class PCTBinaryLoad extends PCT {
 
     private ExecTask loadTask(File binaryFile) {
         ExecTask exec = new ExecTask(this);
-        File a = this.getExecPath("_proutil"); //$NON-NLS-1$
+        File a = getExecPath("_proutil"); //$NON-NLS-1$
         exec.setExecutable(a.toString());
 
         // Database connections
-        for (Iterator e = dbConnList.iterator(); e.hasNext();) {
-            PCTConnection dbc = (PCTConnection) e.next();
+        for (PCTConnection dbc : dbConnList) {
             dbc.createArguments(exec);
         }
 
@@ -172,11 +164,11 @@ public class PCTBinaryLoad extends PCT {
         exec.createArg().setValue(binaryFile.getAbsolutePath());
 
         // Rebuild indexes
-        if (this.rebuildIndexes) {
+        if (rebuildIndexes) {
             exec.createArg().setValue("build"); //$NON-NLS-1$
             exec.createArg().setValue("indexes"); //$NON-NLS-1$
             exec.createArg().setValue("-G"); //$NON-NLS-1$
-            exec.createArg().setValue(Integer.toString(this.indexRebuildTimeout));
+            exec.createArg().setValue(Integer.toString(indexRebuildTimeout));
         }
 
         return exec;

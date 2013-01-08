@@ -59,7 +59,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -68,12 +67,12 @@ import org.apache.tools.ant.types.FileSet;
 /**
  * Loads data into database
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
- * @version $Revision$
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTLoadData extends PCTRun {
     private File srcDir = null;
-    private Collection tableList = null, tableFilesets = null;
+    private Collection<PCTTable> tableList = null;
+    private Collection<FileSet> tableFilesets = null;
     private String tables = null;
 
     // Internal use
@@ -111,7 +110,7 @@ public class PCTLoadData extends PCTRun {
 
     public void addConfiguredTable(PCTTable table) {
         if (this.tableList == null) {
-            tableList = new ArrayList();
+            tableList = new ArrayList<PCTTable>();
         }
         tableList.add(table);
     }
@@ -123,7 +122,7 @@ public class PCTLoadData extends PCTRun {
      */
     public void addConfiguredFileset(FileSet set) {
         if (this.tableFilesets == null) {
-            tableFilesets = new ArrayList();
+            tableFilesets = new ArrayList<FileSet>();
         }
         tableFilesets.add(set);
     }
@@ -134,23 +133,15 @@ public class PCTLoadData extends PCTRun {
             sb.append(tables);
 
         if (tableList != null) {
-            for (Iterator iter = tableList.iterator(); iter.hasNext();) {
-                PCTTable tbl = (PCTTable) iter.next();
+            for (PCTTable tbl : tableList) {
                 if (sb.length() > 0)
                     sb.append(',');
                 sb.append(tbl.getName());
             }
         }
         if (tableFilesets != null) {
-            for (Iterator e = tableFilesets.iterator(); e.hasNext();) {
-                // Parse filesets
-                FileSet fs = (FileSet) e.next();
-
-                // And get files from fileset
-                String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
-
-                for (int i = 0; i < dsfiles.length; i++) {
-                    String file = dsfiles[i];
+            for (FileSet fs : tableFilesets) {
+                for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     if (file.endsWith(".d")) {
                         if (sb.length() > 0) {
                             sb.append(',');
@@ -197,29 +188,29 @@ public class PCTLoadData extends PCTRun {
      */
     public void execute() throws BuildException {
 
-        if (this.dbConnList == null) {
-            this.cleanup();
+        if (dbConnList == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList.size() > 1) {
-            this.cleanup();
+        if (dbConnList.size() > 1) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.1")); //$NON-NLS-1$
         }
 
-        if (this.srcDir == null) {
-            this.cleanup();
+        if (srcDir == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.2")); //$NON-NLS-1$
         }
 
         try {
             writeParams();
-            this.setProcedure("pct/pctLoadData.p"); //$NON-NLS-1$
-            this.setParameter(params.getAbsolutePath());
+            setProcedure("pct/pctLoadData.p"); //$NON-NLS-1$
+            setParameter(params.getAbsolutePath());
             super.execute();
-            this.cleanup();
+            cleanup();
         } catch (BuildException be) {
-            this.cleanup();
+            cleanup();
             throw be;
         }
     }

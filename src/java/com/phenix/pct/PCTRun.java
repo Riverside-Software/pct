@@ -58,6 +58,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
@@ -76,14 +77,12 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Run a Progress procedure.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
- * @version $Revision$
  */
 public class PCTRun extends PCT {
     // Attributes
@@ -109,12 +108,12 @@ public class PCTRun extends PCT {
     private boolean graphMode = false;
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
-    protected Collection dbConnList = null;
-    private Collection options = null;
+    protected Collection<PCTConnection> dbConnList = null;
+    private Collection<PCTRunOption> options = null;
     protected Path propath = null;
     protected Path internalPropath = null;
-    protected Collection runParameters = null;
-    protected List outputParameters = null;
+    protected Collection<RunParameter> runParameters = null;
+    protected List<OutputParameter> outputParameters = null;
     private boolean batchMode = true;
     private boolean failOnError = true;
     private String resultProperty = null;
@@ -176,7 +175,7 @@ public class PCTRun extends PCT {
 
     public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList();
+            this.dbConnList = new ArrayList<PCTConnection>();
         }
 
         this.dbConnList.add(dbConn);
@@ -189,14 +188,15 @@ public class PCTRun extends PCT {
      */
     public void addOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new ArrayList();
+            this.options = new ArrayList<PCTRunOption>();
         }
 
         this.options.add(option);
     }
+
     public void addPCTRunOption(PCTRunOption option) {
         if (this.options == null) {
-            this.options = new ArrayList();
+            this.options = new ArrayList<PCTRunOption>();
         }
 
         this.options.add(option);
@@ -209,7 +209,7 @@ public class PCTRun extends PCT {
      */
     public void addParameter(RunParameter param) {
         if (this.runParameters == null) {
-            this.runParameters = new ArrayList();
+            this.runParameters = new ArrayList<RunParameter>();
         }
         this.runParameters.add(param);
     }
@@ -222,7 +222,7 @@ public class PCTRun extends PCT {
      */
     public void addOutputParameter(OutputParameter param) {
         if (this.outputParameters == null)
-            this.outputParameters = new ArrayList();
+            this.outputParameters = new ArrayList<OutputParameter>();
         this.outputParameters.add(param);
     }
 
@@ -231,7 +231,7 @@ public class PCTRun extends PCT {
      * 
      * @param params Collection<RunParameter>
      */
-    public void setParameters(Collection params) {
+    public void setParameters(Collection<RunParameter> params) {
         this.runParameters = params;
     }
 
@@ -529,10 +529,14 @@ public class PCTRun extends PCT {
         }
 
         try {
-            // File name generation is deffered at this stage, because when defined in constructor, we still don't know if
-            // we have to use source code or compiled version. And it's impossible to extract source code to a directory named
-            // something.pl as Progress tries to open a procedure library, and miserably fails with error 13.
-            pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            // File name generation is deffered at this stage, because when defined in constructor,
+            // we still don't know if
+            // we have to use source code or compiled version. And it's impossible to extract source
+            // code to a directory named
+            // something.pl as Progress tries to open a procedure library, and miserably fails with
+            // error 13.
+            pctLib = new File(
+                    System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             this.preparePropath();
             this.createInitProcedure();
@@ -569,18 +573,17 @@ public class PCTRun extends PCT {
 
         // Reads output parameter
         if (this.outputParameters != null) {
-            for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
-                OutputParameter param = (OutputParameter) iter.next();
+            for (OutputParameter param : outputParameters) {
                 File f = param.getTempFileName();
                 try {
-                    br = new BufferedReader(new InputStreamReader(new FileInputStream(f), Charset.forName("utf-8")));
+                    br = new BufferedReader(new InputStreamReader(new FileInputStream(f),
+                            Charset.forName("utf-8")));
                     String s = br.readLine();
                     br.close();
                     getProject().setNewProperty(param.getName(), s);
                 } catch (FileNotFoundException fnfe) {
-                    log(
-                            MessageFormat.format(
-                                    Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    log(MessageFormat
+                            .format(Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
                     cleanup();
                     throw new BuildException(fnfe);
                 } catch (IOException ioe) {
@@ -588,9 +591,8 @@ public class PCTRun extends PCT {
                         br.close();
                     } catch (IOException ioe2) {
                     }
-                    log(
-                            MessageFormat.format(
-                                    Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    log(MessageFormat
+                            .format(Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
                     cleanup();
                     throw new BuildException(ioe);
                 }
@@ -641,10 +643,8 @@ public class PCTRun extends PCT {
             var.setKey("DLC"); //$NON-NLS-1$
             var.setValue(this.getDlcHome().toString());
             exec.addEnv(var);
-            
-            Environment env = getEnvironment();
-            for (Iterator iter = env.getVariablesVector().iterator(); iter.hasNext(); ) {
-                Environment.Variable var2 = (Environment.Variable) iter.next();
+
+            for (Variable var2 : getEnvironmentVariables()) {
                 exec.addEnv(var2);
             }
         }
@@ -652,8 +652,8 @@ public class PCTRun extends PCT {
         this.prepared = true;
     }
 
-    protected List getCmdLineParameters() {
-        List list = new ArrayList();
+    protected List<String> getCmdLineParameters() {
+        List<String> list = new ArrayList<String>();
 
         // Parameter file
         if (this.paramFile != null) {
@@ -794,8 +794,7 @@ public class PCTRun extends PCT {
 
         // Additional command line options
         if (this.options != null) {
-            for (Iterator i = this.options.iterator(); i.hasNext();) {
-                PCTRunOption opt = (PCTRunOption) i.next();
+            for (PCTRunOption opt : options) {
                 if (opt.getName() == null) {
                     throw new BuildException(Messages.getString("PCTRun.8")); //$NON-NLS-1$
                 }
@@ -812,8 +811,8 @@ public class PCTRun extends PCT {
         File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
         exec.setExecutable(a.toString());
 
-        for (Iterator i = getCmdLineParameters().iterator(); i.hasNext();) {
-            exec.createArg().setValue((String) i.next());
+        for (String str : getCmdLineParameters()) {
+            exec.createArg().setValue(str);
         }
 
         // Check for base directory
@@ -843,8 +842,7 @@ public class PCTRun extends PCT {
                 charset = Charset.forName(zz);
             }
         } catch (IllegalArgumentException caught) {
-            log(MessageFormat.format(
-                    Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
+            log(MessageFormat.format(Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
             charset = Charset.defaultCharset();
         }
         if (charset == null) {
@@ -857,7 +855,7 @@ public class PCTRun extends PCT {
 
     private String readCharset() {
         String pfCpInt = null, pfCpStream = null;
-        
+
         // If paramFile is defined, then read it and check for cpStream or cpInternal
         if (paramFile != null) {
             try {
@@ -865,11 +863,11 @@ public class PCTRun extends PCT {
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
             } catch (IOException caught) {
-                
+
             }
         }
-     
-        if (cpStream != null) 
+
+        if (cpStream != null)
             return cpStream;
         else if (pfCpStream != null)
             return pfCpStream;
@@ -883,7 +881,8 @@ public class PCTRun extends PCT {
 
     private void createInitProcedure() throws BuildException {
         try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(initProc), getCharset()));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                    initProc), getCharset()));
 
             // Progress v8 is unable to write to standard output, so output is redirected in a file,
             // which is parsed in a later stage
@@ -892,26 +891,25 @@ public class PCTRun extends PCT {
                 outputStream = new File(
                         System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
-            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
+            bw.write(MessageFormat.format(
+                    this.getProgressProcedures().getInitString(),
                     new Object[]{(this.outputStream == null ? null : this.outputStream
                             .getAbsolutePath())}));
 
             // Defines aliases
             if (dbConnList != null) {
                 int dbNum = 1;
-                for (Iterator i = dbConnList.iterator(); i.hasNext();) {
-                    PCTConnection dbc = (PCTConnection) i.next();
+                for (PCTConnection dbc : dbConnList) {
                     String connect = dbc.createConnectString();
                     bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
                             new Object[]{connect}));
 
-                    Collection aliases = dbc.getAliases();
+                    Collection<PCTAlias> aliases = dbc.getAliases();
                     if (aliases != null) {
-                        for (Iterator i2 = aliases.iterator(); i2.hasNext();) {
-                            PCTAlias alias = (PCTAlias) i2.next();
+                        for (PCTAlias alias : aliases) {
                             bw.write(MessageFormat.format(this.getProgressProcedures()
-                                    .getAliasString(), new Object[]{alias.getName(),
-                                    Integer.valueOf(dbNum), alias.getNoError() ? "NO-ERROR" : ""}));
+                                    .getAliasString(), alias.getName(), Integer.valueOf(dbNum),
+                                    alias.getNoError() ? "NO-ERROR" : ""));
                             bw.newLine();
                         }
                     }
@@ -942,17 +940,14 @@ public class PCTRun extends PCT {
 
             // Defines parameters
             if (this.runParameters != null) {
-                for (Iterator i = this.runParameters.iterator(); i.hasNext();) {
-                    RunParameter param = (RunParameter) i.next();
+                for (RunParameter param : runParameters) {
                     if (param.validate()) {
                         bw.write(MessageFormat.format(this.getProgressProcedures()
                                 .getParameterString(), new Object[]{escapeString(param.getName()),
                                 escapeString(param.getValue())}));
                     } else {
-                        log(
-                                MessageFormat
-                                        .format(
-                                                Messages.getString("PCTRun.9"), new Object[]{param.getName()}), Project.MSG_WARN); //$NON-NLS-1$
+                        log(MessageFormat.format(
+                                Messages.getString("PCTRun.9"), new Object[]{param.getName()}), Project.MSG_WARN); //$NON-NLS-1$
                     }
                 }
             }
@@ -960,13 +955,10 @@ public class PCTRun extends PCT {
             // Defines variables for OUTPUT parameters
             if (this.outputParameters != null) {
                 int zz = 0;
-                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
-                    OutputParameter param = (OutputParameter) iter.next();
+                for (OutputParameter param : outputParameters) {
                     param.setProgressVar("outParam" + zz++);
-                    bw
-                            .write(MessageFormat.format(this.getProgressProcedures()
-                                    .getOutputParameterDeclaration(), new Object[]{param
-                                    .getProgressVar()}));
+                    bw.write(MessageFormat.format(this.getProgressProcedures()
+                            .getOutputParameterDeclaration(), new Object[]{param.getProgressVar()}));
                 }
             }
 
@@ -976,8 +968,7 @@ public class PCTRun extends PCT {
             if ((this.outputParameters != null) && (this.outputParameters.size() > 0)) {
                 sb.append('(');
                 int zz = 0;
-                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
-                    OutputParameter param = (OutputParameter) iter.next();
+                for (OutputParameter param : outputParameters) {
                     if (zz++ > 0)
                         sb.append(',');
                     sb.append("OUTPUT ").append(param.getProgressVar());
@@ -993,8 +984,7 @@ public class PCTRun extends PCT {
                     new Object[]{}));
             // Writing output parameters to temporary files
             if (this.outputParameters != null) {
-                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
-                    OutputParameter param = (OutputParameter) iter.next();
+                for (OutputParameter param : outputParameters) {
                     File tmpFile = new File(
                             System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
@@ -1102,8 +1092,7 @@ public class PCTRun extends PCT {
                         .format(Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
             if (this.outputParameters != null) {
-                for (Iterator iter = this.outputParameters.iterator(); iter.hasNext();) {
-                    OutputParameter param = (OutputParameter) iter.next();
+                for (OutputParameter param : outputParameters) {
                     if ((param.getTempFileName() != null)
                             && (param.getTempFileName().exists() && !param.getTempFileName()
                                     .delete())) {

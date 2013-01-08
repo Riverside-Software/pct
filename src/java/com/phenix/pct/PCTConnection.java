@@ -63,7 +63,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +86,7 @@ public class PCTConnection extends DataType {
     private File paramFile = null;
     private boolean singleUser = false;
     private boolean readOnly = false;
-    private Map aliases = null;
+    private Map<String, PCTAlias> aliases = null;
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
@@ -259,12 +258,12 @@ public class PCTConnection extends DataType {
 
     public void addConfiguredAlias(PCTAlias alias) {
         if (this.aliases == null) {
-            aliases = new HashMap();
+            aliases = new HashMap<String, PCTAlias>();
         }
 
         if (aliases.put(alias.getName(), alias) != null)
             throw new BuildException(MessageFormat.format(
-                    Messages.getString("PCTConnection.0"), new Object[]{alias.getName()})); //$NON-NLS-1$
+                    Messages.getString("PCTConnection.0"), alias.getName())); //$NON-NLS-1$
     }
 
     protected PCTConnection getRef() {
@@ -298,7 +297,7 @@ public class PCTConnection extends DataType {
      * @return List of String
      * @throws BuildException Something went wrong (dbName or paramFile not defined)
      */
-    public List getConnectParametersList() {
+    public List<String> getConnectParametersList() {
         if (isReference()) {
             return getRef().getConnectParametersList();
         }
@@ -307,7 +306,7 @@ public class PCTConnection extends DataType {
             throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
 
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         if (dbName != null) {
             list.add("-db"); //$NON-NLS-1$
 
@@ -323,55 +322,55 @@ public class PCTConnection extends DataType {
             list.add(paramFile.getAbsolutePath());
         }
 
-        if (this.protocol != null) {
+        if (protocol != null) {
             list.add("-N"); //$NON-NLS-1$
-            list.add(this.protocol);
+            list.add(protocol);
         }
 
-        if (this.dbPort != null) {
+        if (dbPort != null) {
             list.add("-S"); //$NON-NLS-1$
-            list.add(this.dbPort);
+            list.add(dbPort);
         }
 
-        if (this.logicalName != null) {
+        if (logicalName != null) {
             list.add("-ld"); //$NON-NLS-1$
-            list.add(this.logicalName);
+            list.add(logicalName);
         }
 
-        if (this.singleUser) {
+        if (singleUser) {
             list.add("-1"); //$NON-NLS-1$
         }
 
-        if (this.cacheFile != null) {
+        if (cacheFile != null) {
             list.add("-cache"); //$NON-NLS-1$
-            list.add(this.cacheFile.getAbsolutePath());
+            list.add(cacheFile.getAbsolutePath());
         }
 
-        if (this.dataService != null) {
+        if (dataService != null) {
             list.add("-DataService"); //$NON-NLS-1$
-            list.add(this.dataService);
+            list.add(dataService);
         }
 
-        if (this.dbType != null) {
+        if (dbType != null) {
             list.add("-dt"); //$NON-NLS-1$
-            list.add(this.dbType);
+            list.add(dbType);
         }
 
-        if (this.hostName != null) {
+        if (hostName != null) {
             list.add("-H"); //$NON-NLS-1$
-            list.add(this.hostName);
+            list.add(hostName);
         }
 
-        if (this.readOnly) {
+        if (readOnly) {
             list.add("-RO"); //$NON-NLS-1$
         }
 
-        if (this.userName != null) {
+        if (userName != null) {
             list.add("-U"); //$NON-NLS-1$
-            list.add(this.userName);
-            if(this.password != null) {
-              list.add("-P"); //$NON-NLS-1$
-              list.add(this.password);
+            list.add(userName);
+            if (password != null) {
+                list.add("-P"); //$NON-NLS-1$
+                list.add(password);
             }
         }
 
@@ -386,19 +385,18 @@ public class PCTConnection extends DataType {
      * @throws BuildException If DB name or parameter file not defined
      */
     public String createConnectString() {
-        List list = getConnectParametersList();
         StringBuffer sb = new StringBuffer();
-        for (Iterator i = list.iterator(); i.hasNext();) {
-            String s = PCTRun.escapeString((String) i.next());
+        for (String str : getConnectParametersList()) {
+            String s = PCTRun.escapeString(str);
             sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' '); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return sb.toString();
     }
 
     /**
-     * Returns a string which could be used to connect a database from a background worker
-     * Pipe separated list, first entry is connection string, followed by aliases.
-     * Aliases are comma separated list, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
+     * Returns a string which could be used to connect a database from a background worker Pipe
+     * separated list, first entry is connection string, followed by aliases. Aliases are comma
+     * separated list, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
      * 
      * @return Connection string
      * @throws BuildException
@@ -406,9 +404,9 @@ public class PCTConnection extends DataType {
     public String createBackgroundConnectString() {
         StringBuffer sb = new StringBuffer(createConnectString());
         if (hasAliases()) {
-            for (Iterator iter = getAliases().iterator(); iter.hasNext(); ) {
-                PCTAlias alias = (PCTAlias) iter.next();
-                sb.append('|').append(alias.getName()).append(',').append(alias.getNoError() ? '1' : '0');
+            for (PCTAlias alias : getAliases()) {
+                sb.append('|').append(alias.getName()).append(',')
+                        .append(alias.getNoError() ? '1' : '0');
             }
         }
 
@@ -422,9 +420,8 @@ public class PCTConnection extends DataType {
      * @throws BuildException Something went wrong
      */
     public void createArguments(ExecTask task) throws BuildException {
-        List list = getConnectParametersList();
-        for (Iterator i = list.iterator(); i.hasNext();) {
-            task.createArg().setValue((String) i.next());
+        for (String str : getConnectParametersList()) {
+            task.createArg().setValue(str);
         }
     }
 
@@ -433,17 +430,15 @@ public class PCTConnection extends DataType {
      * 
      * @return Collection
      */
-    public Collection getAliases() {
-        Map map = new HashMap();
+    public Collection<PCTAlias> getAliases() {
+        Map<String, PCTAlias> map = new HashMap<String, PCTAlias>();
         if (aliases != null) {
-            for (Iterator iter = aliases.keySet().iterator(); iter.hasNext(); ) {
-                String str = (String) iter.next();
+            for (String str : aliases.keySet()) {
                 map.put(str, aliases.get(str));
             }
         }
         if (isReference()) {
-            for (Iterator iter = getRef().getAliases().iterator(); iter.hasNext(); ) {
-                PCTAlias alias = (PCTAlias) iter.next();
+            for (PCTAlias alias : getRef().getAliases()) {
                 map.put(alias.getName(), alias);
             }
         }
@@ -459,10 +454,10 @@ public class PCTConnection extends DataType {
     public String getDbName() {
         if (isReference())
             return getRef().getDbName();
-        else if (this.logicalName != null) {
-            return this.logicalName;
+        else if (logicalName != null) {
+            return logicalName;
         } else {
-            return this.dbName;
+            return dbName;
         }
     }
 }

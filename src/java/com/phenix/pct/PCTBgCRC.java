@@ -60,7 +60,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -104,17 +103,17 @@ public class PCTBgCRC extends PCTBgRun {
             return false;
         }
 
-        public void setCustomOptions(Map options) {
+        public void setCustomOptions(Map<String, String> options) {
 
         }
 
-        public void handleResponse(String command, String parameter, boolean err, String customResponse, List returnValues) {
+        public void handleResponse(String command, String parameter, boolean err, String customResponse, List<Message> returnValues) {
             BufferedWriter bw = null;
 
             try {
                 bw = new BufferedWriter(new FileWriter(getDestFile()));
-                for (Iterator i = returnValues.iterator(); i.hasNext();) {
-                    bw.write((String) i.next());
+                for (Message msg : returnValues) {
+                    bw.write(msg.getMsg());
                     bw.newLine();
                 }
             } catch (IOException caught) {

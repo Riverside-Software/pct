@@ -1,7 +1,6 @@
 package com.phenix.pct;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -38,8 +37,8 @@ public class WSServerProcess extends PCTRun {
         this.webLogError = webLogError;
     }
 
-    protected List getCmdLineParameters() {
-        List list = super.getCmdLineParameters();
+    protected List<String> getCmdLineParameters() {
+        List<String> list = super.getCmdLineParameters();
 
         if (this.webLogError)
             list.add("-weblogerror");
@@ -48,8 +47,7 @@ public class WSServerProcess extends PCTRun {
         list.add(procedure);
         
         if (dbConnList != null) {
-            for (Iterator iter = dbConnList.iterator(); iter.hasNext(); ) {
-                PCTConnection conn = (PCTConnection) iter.next();
+            for (PCTConnection conn : dbConnList) {
                 list.addAll(conn.getConnectParametersList());
             }
         }

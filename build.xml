@@ -48,8 +48,8 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.2" />
-  <property name="javac.target" value="1.2" />
+  <property name="javac.source" value="1.5" />
+  <property name="javac.target" value="1.5" />
 
   <!-- PCT Version -->
   <property name="pct.version" value="0.19-pre" />

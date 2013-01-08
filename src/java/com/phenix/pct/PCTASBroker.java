@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.server.UID;
 import java.text.MessageFormat;
-import java.util.Iterator;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -257,12 +256,12 @@ public class PCTASBroker extends PCTBroker {
         File propFile = null;
 
         try {
-            this.checkAttributes();
+            checkAttributes();
             // Choosing right properties file
-            if (this.file == null) {
-                propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
+            if (file == null) {
+                propFile = new File(getDlcHome(), "properties/" + UBROKER_PROPERTIES);
             } else {
-                propFile = getProject().resolveFile(this.file);
+                propFile = getProject().resolveFile(file);
             }
             if (!propFile.exists())
                 throw new BuildException("Unable to find properties file "
@@ -274,7 +273,7 @@ public class PCTASBroker extends PCTBroker {
         } catch (BuildException be) {
             throw be;
         } finally {
-            this.cleanup();
+            cleanup();
         }
     }
 
@@ -287,72 +286,73 @@ public class PCTASBroker extends PCTBroker {
     private void writeDeltaFile() {
         try {
             PrintWriter bw = new PrintWriter(new FileWriter(tmpFile));
-            bw.println("[UBroker.AS." + this.name + "]");
-            if (!this.action.equalsIgnoreCase("delete")) {
-                bw.println("appserviceNameList=" + this.name);
+            bw.println("[UBroker.AS." + name + "]");
+            if (!action.equalsIgnoreCase("delete")) {
+                bw.println("appserviceNameList=" + name);
                 bw.println("registerNameServer=1");
-                bw.println("controllingNameServer=" + this.nameServer);
+                bw.println("controllingNameServer=" + nameServer);
                 bw.println("registrationMode=Register-IP");
-                bw.println("operatingMode=" + this.operatingMode);
-                bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-                if (this.server != null) {
+                bw.println("operatingMode=" + operatingMode);
+                bw.println("autoStart=" + (autoStart ? "1" : "0"));
+                if (server != null) {
                     if (!"".equals(server.getPropath())) {
                         bw.print("PROPATH=");
-                        bw.println(this.server.getPropath());
+                        bw.println(server.getPropath());
                     }
 
-                    // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
+                    // TODO Erm, this is crap... I should use something else to handle correctly
+                    // quotes in command line
                     bw.print("srvrStartupParam=");
-                    for (Iterator i = this.server.getCmdLineParameters().iterator(); i.hasNext();) {
-                        bw.print((String) i.next());
+                    for (String str : server.getCmdLineParameters()) {
+                        bw.print(str);
                         bw.print(' ');
                     }
-                    
+
                     bw.println("");
                 }
-                
-                if (this.portNumber != -1)
-                    bw.println("portNumber=" + this.portNumber);
-                if (this.brokerLogFile != null)
-                    bw.println("brokerLogFile=" + this.brokerLogFile);
-                if (this.brokerLogLevel != -1)
-                    bw.println("brkrLoggingLevel=" + this.brokerLogLevel);
-                bw.println("brkrLogAppend=" + (this.brokerLogFileAppend ? "1" : "0"));
-                if (this.serverLogFile != null)
-                    bw.println("srvrLogFile=" + this.serverLogFile);
-                if (this.serverLogLevel != -1)
-                    bw.println("srvrLoggingLevel=" + this.serverLogLevel);
-                bw.println("srvrLogAppend=" + (this.serverLogFileAppend ? "1" : "0"));
-                if (this.workDir != null)
-                    bw.println("workDir=" + this.workDir);
-                if (this.initialPool != -1)
-                    bw.println("initialSrvrInstance=" + this.initialPool);
-                if (this.minPool != -1)
-                    bw.println("minSrvrInstance=" + this.minPool);
-                if (this.maxPool != -1)
-                    bw.println("maxSrvrInstance=" + this.maxPool);
-                if ((this.server != null) && (this.server.getActivateProc() != null)) {
-                    bw.println("srvrActivateProc=" + this.server.getActivateProc());
+
+                if (portNumber != -1)
+                    bw.println("portNumber=" + portNumber);
+                if (brokerLogFile != null)
+                    bw.println("brokerLogFile=" + brokerLogFile);
+                if (brokerLogLevel != -1)
+                    bw.println("brkrLoggingLevel=" + brokerLogLevel);
+                bw.println("brkrLogAppend=" + (brokerLogFileAppend ? "1" : "0"));
+                if (serverLogFile != null)
+                    bw.println("srvrLogFile=" + serverLogFile);
+                if (serverLogLevel != -1)
+                    bw.println("srvrLoggingLevel=" + serverLogLevel);
+                bw.println("srvrLogAppend=" + (serverLogFileAppend ? "1" : "0"));
+                if (workDir != null)
+                    bw.println("workDir=" + workDir);
+                if (initialPool != -1)
+                    bw.println("initialSrvrInstance=" + initialPool);
+                if (minPool != -1)
+                    bw.println("minSrvrInstance=" + minPool);
+                if (maxPool != -1)
+                    bw.println("maxSrvrInstance=" + maxPool);
+                if ((server != null) && (server.getActivateProc() != null)) {
+                    bw.println("srvrActivateProc=" + server.getActivateProc());
                 }
-                if ((this.server != null) && (this.server.getDeactivateProc() != null)) {
-                    bw.println("srvrDeactivateProc=" + this.server.getDeactivateProc());
+                if ((server != null) && (server.getDeactivateProc() != null)) {
+                    bw.println("srvrDeactivateProc=" + server.getDeactivateProc());
                 }
-                if ((this.server != null) && (this.server.getConnectProc() != null)) {
-                    bw.println("srvrConnectProc=" + this.server.getConnectProc());
+                if ((server != null) && (server.getConnectProc() != null)) {
+                    bw.println("srvrConnectProc=" + server.getConnectProc());
                 }
-                if ((this.server != null) && (this.server.getDisconnectProc() != null)) {
-                    bw.println("srvrDisconnProc=" + this.server.getDisconnectProc());
+                if ((server != null) && (server.getDisconnectProc() != null)) {
+                    bw.println("srvrDisconnProc=" + server.getDisconnectProc());
                 }
-                if ((this.server != null) && (this.server.getStartupProc() != null)) {
-                    bw.println("srvrStartupProc=" + this.server.getStartupProc());
+                if ((server != null) && (server.getStartupProc() != null)) {
+                    bw.println("srvrStartupProc=" + server.getStartupProc());
                 }
-                if ((this.server != null) && (this.server.getShutdownProc() != null)) {
-                    bw.println("srvrShutdownProc=" + this.server.getShutdownProc());
+                if ((server != null) && (server.getShutdownProc() != null)) {
+                    bw.println("srvrShutdownProc=" + server.getShutdownProc());
                 }
-                if (this.UID.equalsIgnoreCase("auto")) {
+                if (UID.equalsIgnoreCase("auto")) {
                     bw.println("uuid=" + new UID().toString());
-                } else if (!this.UID.equalsIgnoreCase("none")) {
-                    bw.println("uuid=" + this.UID);
+                } else if (!UID.equalsIgnoreCase("none")) {
+                    bw.println("uuid=" + UID);
                 }
             }
             bw.close();
@@ -387,13 +387,13 @@ public class PCTASBroker extends PCTBroker {
      */
     private Task getCmdLineMergeTask(File propFile, File deltaFile) {
         ExecTask task = new ExecTask(this);
-        task.setDir(this.getProject().getBaseDir());
-        task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
+        task.setDir(getProject().getBaseDir());
+        task.setExecutable(getExecPath("mergeprop").getAbsolutePath());
         task.setFailonerror(true);
 
         Environment.Variable var1 = new Environment.Variable();
         var1.setKey("DLC"); //$NON-NLS-1$
-        var1.setValue(this.getDlcHome().toString());
+        var1.setValue(getDlcHome().toString());
         task.addEnv(var1);
         Environment.Variable var2 = new Environment.Variable();
         var2.setKey("JAVA_HOME"); //$NON-NLS-1$
@@ -407,7 +407,7 @@ public class PCTASBroker extends PCTBroker {
         task.createArg().setValue("-type");
         task.createArg().setValue("ubroker");
         task.createArg().setValue("-action");
-        task.createArg().setValue(this.action);
+        task.createArg().setValue(action);
         task.createArg().setValue("-target");
         task.createArg().setValue(propFile.getAbsolutePath());
         task.createArg().setValue("-delta");
@@ -422,7 +422,7 @@ public class PCTASBroker extends PCTBroker {
      * @throws BuildException Attributes are wrong...
      */
     private void checkAttributes() throws BuildException {
-        if (this.action == null) {
+        if (action == null) {
             throw new BuildException("Action attribute is missing");
         }
         if ((!UPDATE.equalsIgnoreCase(action)) && (!CREATE.equalsIgnoreCase(action))
@@ -435,28 +435,26 @@ public class PCTASBroker extends PCTBroker {
         if ((serverLogLevel != -1) && ((serverLogLevel < 1) || (brokerLogLevel > 5)))
             throw new BuildException("Log level should be between 1 and 5");
 
-        if (this.name == null) {
+        if (name == null) {
             throw new BuildException("Name attribute is missing");
         }
-        if (this.name.trim().length() == 0) {
+        if (name.trim().length() == 0) {
             throw new BuildException("Name attribute is empty");
         }
-        // FIXME Operating mode is case-sensitive, so we should always replace value with the correct one
-        if ((!operatingMode.equals(STATELESS))
-                && (!operatingMode.equals(STATE_AWARE))
-                && (!operatingMode.equals(STATE_RESET))
-                && (!operatingMode.equals(STATE_FREE)))
-            throw new BuildException("Invalid operating mode (warning : operatingMode attribute is case sensitive)");
+        // FIXME Operating mode is case-sensitive, so we should always replace value with the
+        // correct one
+        if ((!operatingMode.equals(STATELESS)) && (!operatingMode.equals(STATE_AWARE))
+                && (!operatingMode.equals(STATE_RESET)) && (!operatingMode.equals(STATE_FREE)))
+            throw new BuildException(
+                    "Invalid operating mode (warning : operatingMode attribute is case sensitive)");
 
         // TODO Server's attribute should be checked there...
     }
 
     private void cleanup() {
-        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
-            log(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmpFile.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        if (tmpFile.exists() && !tmpFile.delete()) {
+            log(MessageFormat
+                    .format(Messages.getString("PCTASBroker.1"), tmpFile.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
         }
     }
 
