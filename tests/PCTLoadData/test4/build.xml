@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="load">
+    <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTLoadData>
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>

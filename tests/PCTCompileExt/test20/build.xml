@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test20">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="false" listing="false" preprocess="false" debugListing="false">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <target name="test2">
+    <sleep seconds="3" />
+    <touch file="src/test.p" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+</project>
