@@ -97,16 +97,16 @@ rename field support
 DEFINE VARIABLE rename-file  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE df-file-name AS CHARACTER NO-UNDO.
 DEFINE VARIABLE code-page    AS CHARACTER NO-UNDO.
-DEFINE VARIABLE index-mode   AS INTEGER   NO-UNDO INITIAL ?.
+DEFINE VARIABLE index-mode   AS INTEGER   NO-UNDO.
 DEFINE VARIABLE debug-mode   AS INTEGER   NO-UNDO.
 
 DEFINE VARIABLE foo          AS CHARACTER NO-UNDO.
 
 DEFINE STREAM err-log. 
 
-{ prodict/user/uservar102b.i NEW }
-{ prodict/user/userhue102b.i NEW }
-{ prodict/dictvar102b.i NEW }
+{ prodict/user/uservar9.i NEW }
+{ prodict/user/userhue.i NEW }
+{ prodict/dictvar9.i NEW }
 
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
 DEFINE VARIABLE new_lang AS CHARACTER EXTENT 06 NO-UNDO INITIAL [
@@ -125,14 +125,33 @@ new_lang[06] = "WARNING: ~"&1~" is not valid ~"index-mode~" identifier. " +
                "Using default value of ~"&2~" instead.".
 /* LANGUAGE DEPENDENCIES END */ /*-------------------------------------------*/
 
+/* function prototypes ****************************************************/
+FUNCTION getEnvironment RETURNS CHARACTER (
+  INPUT pcVariableName AS CHARACTER) FORWARD.
+
+FUNCTION getEnvironmentInt RETURNS INTEGER (
+  INPUT pcVariableName AS CHARACTER) FORWARD.
+
+/* mainline code **********************************************************/
+
+IF NOT SESSION:BATCH-MODE THEN DO:
+  MESSAGE SUBSTITUTE(new_lang[01], "{0}":U) 
+          VIEW-AS ALERT-BOX ERROR BUTTONS OK.
+  RETURN.
+END.  /* NOT SESSION:BATCH-MODE */
+
+
 ASSIGN debug-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DebugMode'))
        rename-file  = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'RenameFile')
        df-file-name = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DFFileName')
        code-page    = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'CodePage')
        index-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'IndexMode')).
 
+IF debug-mode GT 0 THEN
+  OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+
 IF NUM-DBS LT 2 THEN DO:
-  MESSAGE new_lang[02].
+  PUT STREAM err-log UNFORMATTED new_lang[02].
   RETURN.
 END.  /* NUM-DBS LT 2 */
 
@@ -143,7 +162,7 @@ IF rename-file NE "":U THEN DO:
   IF FILE-INFO:FILE-TYPE MATCHES "*R*":U THEN.  /* this deals with the ? */
   ELSE DO:
     IF debug-mode GT 0 THEN
-      MESSAGE SUBSTITUTE(new_lang[03], rename-file) SKIP.
+      PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[03], rename-file) SKIP.
     ASSIGN rename-file = "":U.
   END.
 END.
@@ -152,7 +171,7 @@ END.
 IF df-file-name EQ "":U THEN DO:
   ASSIGN df-file-name = "{&DEFAULT_DF}":U.
   IF debug-mode GT 0 THEN
-    MESSAGE SUBSTITUTE(new_lang[04], "{&DEFAULT_DF}":U, "delta file":U) SKIP.
+    PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[04], "{&DEFAULT_DF}":U, "delta file":U) SKIP.
 END.
 
 /* codepage checking */
@@ -160,7 +179,7 @@ IF code-page NE "":U THEN DO:
   ASSIGN foo = CODEPAGE-CONVERT("x":U, SESSION:CPSTREAM, code-page) NO-ERROR.
   IF ERROR-STATUS:ERROR OR ERROR-STATUS:NUM-MESSAGES GT 0 THEN DO:
     IF debug-mode GT 0 THEN
-      MESSAGE SUBSTITUTE(new_lang[05], code-page, SESSION:CPSTREAM) SKIP.
+      PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[05], code-page, SESSION:CPSTREAM) SKIP.
     ASSIGN code-page = SESSION:CPSTREAM.
   END.  /* codepage error */
   ERROR-STATUS:ERROR = NO.
@@ -168,39 +187,40 @@ END.
 ELSE DO:
   ASSIGN code-page = SESSION:CPSTREAM.
   IF debug-mode GT 0 THEN
-    MESSAGE SUBSTITUTE(new_lang[04], code-page, "code page":U) SKIP.
+    PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[04], code-page, "code page":U) SKIP.
 END.  /* code-page EQ "":U */
 
 /* index-mode checking */
 IF index-mode NE ? THEN DO:
-  IF NOT CAN-DO("0,1,2":U, STRING(index-mode)) THEN DO:
+  IF (index-mode LT 0) OR (index-mode GT 2) THEN DO:
     IF debug-mode GT 0 THEN
-      MESSAGE SUBSTITUTE(new_lang[06], STRING(index-mode), "{&DEFAULT_INDEX}":U) SKIP.
-    ASSIGN index-mode = INTEGER("{&DEFAULT_INDEX}":U).
+      PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[06], index-mode, "{&DEFAULT_INDEX}":U) SKIP.
+    ASSIGN index-mode = {&DEFAULT_INDEX}.
   END.
 END.
 ELSE DO:
-  ASSIGN index-mode = INTEGER("{&DEFAULT_INDEX}":U).
+  ASSIGN index-mode = {&DEFAULT_INDEX}.
   IF debug-mode GT 0 THEN
-    MESSAGE SUBSTITUTE(new_lang[04], STRING(index-mode), "index mode":U) SKIP.
+    PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[04], index-mode, "index mode":U) SKIP.
 END.  /* index-mode EQ "":U */
 
 /* user_env[19] will be changed BY _dmpincr.p */
-ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U +
+ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U + 
                       STRING(debug-mode)
        user_env[02] = df-file-name
        user_env[05] = code-page.
 
 IF debug-mode GT 1 THEN DO:
-  MESSAGE "DUMP_INC_DFFILE     = ":U df-file-name SKIP.
-  MESSAGE "DUMP_INC_CODEPAGE   = ":U code-page SKIP.
-  MESSAGE "DUMP_INC_INDEXMODE  = ":U index-mode SKIP.
-  MESSAGE "DUMP_INC_RENAMEFILE = ":U rename-file SKIP.
-  MESSAGE "DUMP_INC_DEBUG      = ":U debug-mode SKIP.
+  PUT STREAM err-log UNFORMATTED "DUMP_INC_DFFILE     = ":U df-file-name SKIP.
+  PUT STREAM err-log UNFORMATTED "DUMP_INC_CODEPAGE   = ":U code-page SKIP.
+  PUT STREAM err-log UNFORMATTED "DUMP_INC_INDEXMODE  = ":U index-mode SKIP.
+  PUT STREAM err-log UNFORMATTED "DUMP_INC_RENAMEFILE = ":U rename-file SKIP.
+  PUT STREAM err-log UNFORMATTED "DUMP_INC_DEBUG      = ":U debug-mode SKIP.
 END.  /* debug-mode GT 1 */
 
 IF debug-mode GT 0 THEN DO:
-  MESSAGE "" SKIP.
+  PUT STREAM err-log UNFORMATTED "" SKIP.
+  OUTPUT STREAM err-log CLOSE.
 END.
 
 FIND FIRST DICTDB._Db NO-LOCK.
@@ -209,6 +229,30 @@ ASSIGN drec_db = RECID(DICTDB._Db).
 DELETE ALIAS "DICTDB2":U.
 CREATE ALIAS "DICTDB2":U FOR DATABASE VALUE(LDBNAME(2)).
 
-RUN pct/_dmpincr102b.p.
+RUN pct/v9/_dmpincr.p.
 
-RETURN '0'.
+RETURN.
+
+/* functions **************************************************************/
+
+FUNCTION getEnvironment RETURNS CHARACTER (INPUT pcVariableName AS CHARACTER).
+  DEFINE VARIABLE cReturnValue AS CHARACTER NO-UNDO.
+  ASSIGN cReturnValue = OS-GETENV(pcVariableName)
+         cReturnValue = IF cReturnValue EQ ? THEN "":U
+                        ELSE cReturnValue.
+  RETURN cReturnValue.
+END FUNCTION.  /* getEnvironment() */
+
+FUNCTION getEnvironmentInt RETURNS INTEGER (INPUT pcVariableName AS CHARACTER).
+  DEFINE VARIABLE iReturnValue AS INTEGER   NO-UNDO.
+  DEFINE VARIABLE cValue       AS CHARACTER NO-UNDO.
+  
+  ASSIGN cValue       = getEnvironment(pcVariableName)
+         iReturnValue = INTEGER(cValue) NO-ERROR.
+
+  ERROR-STATUS:ERROR = NO.
+
+  RETURN iReturnValue.
+END FUNCTION.  /* getEnvironmentInt() */
+
+/* prodict/dump_inc.p */

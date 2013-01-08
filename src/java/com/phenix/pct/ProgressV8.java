@@ -61,11 +61,19 @@ public class ProgressV8 implements ProgressProcedures {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
-        return "pct/pctCompileV8.p"; //$NON-NLS-1$
+        return "pct/v8/pctCompile.p"; //$NON-NLS-1$
     }
 
     public String getIncrementalProcedure() {
-        return "pct/_dmpincr.p";
+        return "pct/v8/dump_inc.p";
+    }
+
+    public String getDumpUsersProcedure() {
+        return "pct/v8/dmpUsers.p";
+    }
+
+    public String getLoadUsersProcedure() {
+        return "pct/v8/loadUsers.p";
     }
 
     public boolean needRedirector() {

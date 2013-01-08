@@ -1,6 +1,6 @@
 /*********************************************************************
-* Copyright (C) 2005-2008 by Progress Software Corporation. All rights    *
-* reserved.  Prior versions of this work may contain portions        *
+* Copyright (C) 2005-2009,2011 by Progress Software Corporation. All *
+* rights  reserved.  Prior versions of this work may contain portions*
 * contributed by participants of Possenet.                           *
 *                                                                    *
 *********************************************************************/
@@ -80,14 +80,40 @@ History:
     fernando    02/27/2007  Added case for critical field change - OE00147106   
     fernando    08/10/2007  Close error stream when area mismatch error is detected - OE00136202
     fernando    11/12/07    Ignore blank -sa fields during incremental - OE00150364
+    fernando    07/22/08    Support for encryption
     fernando    11/24/08    Handle clob field differences - OE00177533
+    fernando    04/08/09    Support for alternate buffer pool
+    Rkamboj     05/06/11    Add multitenant support for incremental dump
+    rkamboj     06/02/11    Fixed problem of case-sensitive issue with index field.
+    kmayur      06/21/11    Added support for constraint dump
+    rkamboj     07/19/2011  Fixed problem of multi-tenant problem of shared table during dump.
+                            Also fixed no _area found problem.
+    Rkamboj     09/30/11    Added CATEGORY field support for incremental dump.
+    rkamboj     03/30/2012  Added check for sql-92 tables with unsupported ABL prop - OE00208080
 */
+
+using Progress.Lang.*.
+routine-level on error undo, throw.
+
 /*h-*/
 
-{ prodict/dictvar.i }
-{ prodict/user/uservar.i }
+{ prodict/dictvar11.i }
+{ prodict/user/uservar11.i }
 { prodict/user/userhue.i }
-{ prodict/dump/dumpvars.i "NEW SHARED" }
+{ prodict/dump/dumpvars11.i "NEW SHARED" }
+{ prodict/sec/sec-pol.i}
+
+/* these are for the encryption policies and object attributes for
+   objects in the DICTDB2 db */
+DEFINE TEMP-TABLE ttObjAttrs2 NO-UNDO 
+    LIKE ttObjAttrs BEFORE-TABLE bfttObjAttrs2.
+DEFINE TEMP-TABLE ttObjEncPolicyVersions2 NO-UNDO LIKE ttObjEncPolicyVersions.
+DEFINE DATASET dsObjAttrs2 FOR ttObjAttrs2, ttObjEncPolicyVersions2.
+
+DEFINE TEMP-TABLE renameList
+    FIELD old-name AS CHAR
+    FIELD new-name AS CHAR
+    INDEX old-name old-name.
 
 DEFINE            VARIABLE ans            AS LOGICAL   INITIAL FALSE NO-UNDO.
 DEFINE            VARIABLE c              AS CHARACTER               NO-UNDO.
@@ -120,11 +146,28 @@ DEFINE            VARIABLE to-int64       AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE i-to-int64     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE numEntries     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE num-diff       AS INTEGER                 NO-UNDO.
+DEFINE            VARIABLE dumpPol        AS LOGICAL                 NO-UNDO.
+DEFINE            VARIABLE dumpAltBuf     AS LOGICAL                 NO-UNDO.
+DEFINE            VARIABLE p-silentincrd  AS LOGICAL                 NO-UNDO.
+DEFINE            VARIABLE isDictdbMultiTenant  AS LOGICAL           NO-UNDO.
+DEFINE            VARIABLE isDictdb2MultiTenant AS LOGICAL           NO-UNDO.
+DEFINE            VARIABLE Constr         AS CHARACTER               NO-UNDO.
+DEFINE            VARIABLE Constr1        AS CHARACTER               NO-UNDO.
+DEFINE            VARIABLE isIndexDel           AS LOGICAL           NO-UNDO.
+DEFINE            VARIABLE indxRecid            AS RECID             NO-UNDO.
 
+DEFINE NEW SHARED VARIABLE df-con AS CHARACTER EXTENT 7    NO-UNDO.
+DEFINE NEW SHARED VARIABLE dfseq  AS INTEGER INITIAL 1 NO-UNDO.
+DEFINE NEW SHARED TEMP-TABLE df-info NO-UNDO
+    FIELD df-seq  AS INTEGER
+    FIELD df-line AS CHARACTER
+    FIELD df-tbl  AS CHARACTER
+    FIELD df-fld  AS CHARACTER
+    INDEX rt-line IS PRIMARY df-seq.
 
 
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
-DEFINE VARIABLE new_lang AS CHARACTER EXTENT 31 NO-UNDO INITIAL [
+DEFINE VARIABLE new_lang AS CHARACTER EXTENT 52 NO-UNDO INITIAL [
   /* 1*/ "(initializing)",
   /* 2*/ "", /* See Below */
   /* 3*/ "WARNING: The ",
@@ -148,14 +191,35 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 31 NO-UNDO INITIAL [
   /*21*/ " AREA does not exist",
   /*22*/ "in the target database.  This area must be created before",
   /*23*/ "loading this .df or an error will result.  The new index",       
-  /*24*/ " is in this AREA.  See the ""PROSTRUCT""",
+  /*24*/ " is in this AREA.  See the ""PROSTRCT""",
   /*25*/ "entry in the {&PRO_DISPLAY_NAME} Database Administration Guide and",
   /*26*/ "Reference for details.",
   /*27*/ "Warnings have been written to a file called "{&errFileName}"",
   /*28*/ "located in your current working directory.  Please check",   
   /*29*/ "this file prior to loading this incremental .df.  Failure",
   /*30*/ "to do so could result in errors or other undesirable results.",
-  /*31*/ "loading this .df or an error will result.  The new table"
+  /*31*/ "loading this .df or an error will result.  The new table",
+  /*32*/ "The target database does not have encryption enabled." ,
+  /*33*/ "The .df may contain encryption policy information but you will have",
+  /*34*/ "to enable encryption on the target database before you can load",
+  /*35*/ "the .df successfully.",
+  /*36*/ "The .df file will not contain any encryption policy settings.",
+  /*37*/ "The target database does not support buffer pool settings.",
+  /*38*/ "The .df file will not contain any buffer pool settings.",
+  /*39*/ " is multi-tenant database and ",
+  /*40*/ " is non multi-tenant database. As a result some multi-tenant features have been ignored while generating incremental df.",
+  /*41*/ " is non multi-tenant database and ",
+  /*42*/ " is multi-tenant database. As a result some multi-tenant features have been ignored while generating incremental df.",
+  /*43*/ " table is defined as multi-tenant table in ",
+  /*44*/ " multi-tenant database but ",
+  /*45*/ " database is non multi-tenant. The generated incremental df will not be uploaded in the non multi-tenant database.",
+  /*46*/ " defined as non multi-tenant in ",
+  /*47*/ " database. Multi-tenant table can not be changed into non multi-tenant table.",
+  /*48*/ " sequence is defined as multi-tenant in ",
+  /*49*/ " database but defined as non multi-tenant in  ",
+  /*50*/ " database is defined as non multi-tenant database. Multi-tenant sequence feature has been ignored while generating incremental df.",
+  /*51*/ "sequence ", 
+  /*52*/ " definition is not identical in both databases."
 ]. 
 
 new_lang[2] = "The incremental definitions file will contain at least "
@@ -197,9 +261,12 @@ DEFINE VARIABLE ddl  AS CHARACTER EXTENT 40 NO-UNDO.
 DEFINE VARIABLE iact AS LOGICAL   INITIAL ? NO-UNDO.
 DEFINE VARIABLE pri1 AS CHARACTER           NO-UNDO.
 DEFINE VARIABLE pri2 AS CHARACTER           NO-UNDO.
+/*DEFINE VARIABLE setincrdmpSilent AS LOGICAL INITIAL FALSE NO-UNDO.*/
 
 DEFINE BUFFER database2 FOR DICTDB2._Db.
 FIND FIRST database2 WHERE database2._Db-local NO-LOCK.
+DEFINE BUFFER confile2 FOR DICTDB._File.
+DEFINE BUFFER index2 FOR DICTDB._Index.
 
 DEFINE WORKFILE drop-list NO-UNDO
    FIELD file-name  LIKE _File._File-Name
@@ -210,8 +277,10 @@ DEFINE WORKFILE drop-temp-idx NO-UNDO
     FIELD temp-name LIKE _Index._Index-name
     FIELD fil-name  LIKE _File._File-name.
    
+DEF VAR myEPolicy  AS prodict.sec._sec-pol-util    EXTENT 2 NO-UNDO.
+DEF VAR myObjAttrs AS prodict.pro._obj-attrib-util EXTENT 2 NO-UNDO.
 /* Persistent procedure library */
-RUN pct/_dmputil.p PERSISTENT SET h_dmputil.
+RUN prodict/dump/_dmputil.p PERSISTENT SET h_dmputil.
 
 /* Forward Declare functions contained in library */
 FUNCTION fileAreaMatch RETURNS LOGICAL (INPUT db1FileNo AS INT,
@@ -246,20 +315,260 @@ FUNCTION checkRenameSequence RETURNS CHARACTER (  /* 02/01/29 vap (IZ# 1525) */
 
 FUNCTION CHECK_SA_FIELDS RETURNS LOGICAL (INPUT c1 AS CHAR, INPUT c2 AS CHAR) FORWARD.
 
+/* Functions and procedures */
+
+FUNCTION CHECK_SA_FIELDS RETURNS LOGICAL (INPUT c1 AS CHAR, INPUT c2 AS CHAR) :
+
+    /* ignore this field if they are a combination of ? and empty strings */
+    RETURN 
+            ( NOT (c1 EQ '' AND c2 EQ ?) AND 
+              NOT (c1 EQ ? AND c2 EQ '')).
+
+END FUNCTION.
+
+PROCEDURE checkEPolicy:
+
+    DEF VAR cMsg      AS CHAR EXTENT 2 NO-UNDO.
+    DEF VAR cTmp      AS CHAR          NO-UNDO.
+    
+    DO ON ERROR UNDO, LEAVE
+       ON STOP UNDO, LEAVE:
+        /* we will try to compare encryption current policies. Must be enabled
+           in both, or we won't do anything with them.
+        */
+        myEPolicy[1] = NEW prodict.sec._sec-pol-util(LDBNAME("DICTDB")).
+        CATCH ae AS PROGRESS.Lang.AppError:
+           /* if encryption is not enabled, we simply ignore it */
+            IF ae:GetMessageNum(1) NE 14889 THEN
+               cMsg[1] = "Database " + LDBNAME("DICTDB") + " : " + ae:GetMessage(1).
+            DELETE OBJECT ae.
+        END CATCH.
+    END.
+
+    DO ON ERROR UNDO, LEAVE
+        ON STOP UNDO, LEAVE:
+        /* we will try to compare encryption current policies. Must be enabled
+           in both, or we won't do anything with them.
+        */
+        myEPolicy[2] = NEW prodict.sec._sec-pol-util(LDBNAME("DICTDB2")).
+        CATCH ae AS PROGRESS.Lang.AppError:
+            /* if encryption is not enabled, we simply ignore it */
+            IF ae:GetMessageNum(1) NE 14889 THEN
+               cMsg[2] = "Database " + LDBNAME("DICTDB2") + " : " + ae:GetMessage(1).
+            DELETE OBJECT ae.
+        END CATCH.
+    END.
+    
+    /* if both are valid, we are good */
+    IF NOT (VALID-OBJECT(myEPolicy[1]) AND VALID-OBJECT(myEPolicy[2])) THEN DO:
+       /* now if both are invalid and there is no error, then both have encryption
+          disabled, and we are also good. And if the target only is invalid and there
+          is no error (meaning it's disabled), then we will issue a warning message and
+          let it go through.
+       */
+        IF cMsg[1] = "" AND cMsg[2] = "" AND NOT VALID-OBJECT(myEPolicy[2]) THEN DO:
+            /* here both have encryption disabled or the target does */
+            IF VALID-OBJECT(myEPolicy[1]) THEN DO:
+                IF NOT p-batchmode and not p-silentincrd THEN DO:
+                    MESSAGE new_lang[32] SKIP
+                            new_lang[33] SKIP
+                            new_lang[34] SKIP
+                            new_lang[35]
+                        VIEW-AS ALERT-BOX WARNING BUTTONS OK.
+
+                    ASSIGN s_errorsLogged = TRUE.         
+                    OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+
+                    PUT STREAM err-log UNFORMATTED
+                         new_lang[32]    SKIP
+                         new_lang[33]    SKIP
+                         new_lang[34]    SKIP
+                         new_lang[35]    SKIP(1).
+
+                    OUTPUT STREAM err-log CLOSE.
+                END.
+                ELSE DO:
+                   if p-silentincrd THEN 
+                       undo, throw new AppError(new_lang[32] + "~n" +
+                            new_lang[33] + "~n" +
+                            new_lang[34] + "~n" +
+                            new_lang[35]). 
+                   ELSE
+                    MESSAGE new_lang[32] SKIP
+                            new_lang[33] SKIP
+                            new_lang[34] SKIP
+                            new_lang[35].
+                END.
+            END.
+        END.
+        ELSE DO:
+            IF cMsg[1] = "" AND cMsg[2] = "" AND VALID-OBJECT(myEPolicy[2]) THEN
+                cTmp = "Source db does not have encryption enabled".
+            ELSE DO:
+                IF cMsg[1] NE "" THEN
+                   cTmp = cMsg[1].
+                IF cTmp NE "" THEN
+                   cTmp = cTmp + "~n".
+                IF cMsg[2] NE "" THEN
+                   cTmp = cTmp + cMsg[2].
+            END.
+                   
+            IF NOT p-batchmode and not p-silentincrd THEN
+                MESSAGE new_lang[36] SKIP cTmp
+                    VIEW-AS ALERT-BOX WARNING.
+            ELSE DO:
+                   if p-silentincrd THEN 
+                       undo, throw new AppError(new_lang[36] + "~n" + cTmp). 
+                   ELSE
+                       MESSAGE new_lang[36] SKIP cTmp.
+            END.
+
+            ASSIGN s_errorsLogged = TRUE.         
+            OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+
+            PUT STREAM err-log UNFORMATTED
+                 new_lang[36]   SKIP
+                 cTmp           SKIP(1).
+
+            OUTPUT STREAM err-log CLOSE.
+
+            /* don't need them if they are not both enabled */
+            IF VALID-OBJECT(myEPolicy[1]) THEN
+                DELETE OBJECT myEPolicy[1].
+
+            IF VALID-OBJECT(myEPolicy[2]) THEN
+                DELETE OBJECT myEPolicy[2].
+        END.
+    END.
+
+END.
+
+PROCEDURE checkObjectAttributes:
+
+    DEF VAR cMsg      AS CHAR EXTENT 2 NO-UNDO.
+    DEF VAR cTmp      AS CHAR          NO-UNDO.
+    
+    DO ON ERROR UNDO, LEAVE
+       ON STOP UNDO, LEAVE:
+        /* we will try to compare encryption current policies. Must be enabled
+           in both, or we won't do anything with them.
+        */
+        myObjAttrs[1] = NEW prodict.pro._obj-attrib-util(LDBNAME("DICTDB")).
+        CATCH ae AS PROGRESS.Lang.AppError:
+           /* if database doesn't support it, we just ignore it */
+            IF ae:GetMessageNum(1) NE 4634 THEN
+               cMsg[1] = "Database " + LDBNAME("DICTDB") + " : " + ae:GetMessage(1).
+            DELETE OBJECT ae.
+        END CATCH.
+    END.
+
+    DO ON ERROR UNDO, LEAVE
+        ON STOP UNDO, LEAVE:
+        /* we will try to compare encryption current policies. Must be enabled
+           in both, or we won't do anything with them.
+        */
+        myObjAttrs[2] = NEW prodict.pro._obj-attrib-util(LDBNAME("DICTDB2")).
+        CATCH ae AS PROGRESS.Lang.AppError:
+            /* if database doesn't support it, we just ignore it */
+            IF ae:GetMessageNum(1) NE 4634 THEN
+               cMsg[2] = "Database " + LDBNAME("DICTDB2") + " : " + ae:GetMessage(1).
+            DELETE OBJECT ae.
+        END CATCH.
+    END.
+    
+    /* if both are valid, we are good */
+    IF NOT (VALID-OBJECT(myObjAttrs[1]) AND VALID-OBJECT(myObjAttrs[2])) THEN DO:
+       /* now if both are invalid and there is no error, then both don't support 
+          object attributes and we are also good. And if the target only is invalid and there
+          is no error (meaning it doesn't support), then we will issue a warning message and
+          let it go through.
+       */
+        IF cMsg[1] = "" AND cMsg[2] = "" AND NOT VALID-OBJECT(myObjAttrs[2]) THEN DO:
+            /* here both don't support obj attribs or the target doesn't */
+            IF VALID-OBJECT(myObjAttrs[1]) THEN DO:
+                IF NOT p-batchmode and not p-silentincrd  THEN DO:
+                    MESSAGE new_lang[37] SKIP
+                            new_lang[38]
+                        VIEW-AS ALERT-BOX WARNING BUTTONS OK.
+
+                    ASSIGN s_errorsLogged = TRUE.         
+                    OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+
+                    PUT STREAM err-log UNFORMATTED
+                         new_lang[37]    SKIP
+                         new_lang[38]    SKIP(1).
+
+                    OUTPUT STREAM err-log CLOSE.
+                END.
+                ELSE DO:
+                   if p-silentincrd THEN 
+                       undo, throw new AppError(new_lang[37] + "~n" + new_lang[38]). 
+                   ELSE
+                    MESSAGE new_lang[37] SKIP
+                            new_lang[38].
+                   END.
+
+                /* don't need it */
+                ASSIGN myObjAttrs[1] = ?.
+            END.
+        END.
+        ELSE DO:
+            IF cMsg[1] = "" AND cMsg[2] = "" AND VALID-OBJECT(myObjAttrs[2]) THEN
+                cTmp = "Source db does not support alternate buffer pool".
+            ELSE DO:
+                IF cMsg[1] NE "" THEN
+                   cTmp = cMsg[1].
+                IF cTmp NE "" THEN
+                   cTmp = cTmp + "~n".
+                IF cMsg[2] NE "" THEN
+                   cTmp = cTmp + cMsg[2].
+            END.
+                   
+            IF NOT p-batchmode and not p-silentincrd THEN
+                MESSAGE new_lang[38] SKIP cTmp
+                    VIEW-AS ALERT-BOX WARNING.
+            ELSE DO:
+                   if p-silentincrd THEN 
+                       undo, throw new AppError(new_lang[38] + "~n" + cTmp).
+                   ELSE
+                       MESSAGE new_lang[38] SKIP cTmp.
+            END.
+
+            ASSIGN s_errorsLogged = TRUE.         
+            OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+
+            PUT STREAM err-log UNFORMATTED
+                 new_lang[38]   SKIP
+                 cTmp           SKIP(1).
+
+            OUTPUT STREAM err-log CLOSE.
+
+            /* don't need them if they are not both enabled */
+            IF VALID-OBJECT(myObjAttrs[1]) THEN
+                DELETE OBJECT myObjAttrs[1].
+
+            IF VALID-OBJECT(myObjAttrs[2]) THEN
+                DELETE OBJECT myObjAttrs[2].
+        END.
+    END.
+
+END.
+
 /* mainline code **********************************************************/
 
 /* 02/01/29 vap (IZ# 1525) */
 ASSIGN p-batchmode = SESSION:BATCH-MODE.
-IF p-batchmode THEN DO:
+/*IF p-batchmode THEN DO: */
   ASSIGN p-rename-file = ENTRY(1,user_env[19])
          p-index-mode  = ENTRY(2,user_env[19])
-         p-debug-mode  = INTEGER(ENTRY(3,user_env[19])) NO-ERROR.
-  RUN set_Variables           IN h_dmputil(p-rename-file, p-debug-mode).
+         p-debug-mode  = INTEGER(ENTRY(3,user_env[19])) 
+         p-silentincrd = LOGICAL(ENTRY(4,user_env[19])) NO-ERROR.
+  RUN set_Variables           IN h_dmputil(p-rename-file, p-debug-mode, p-silentincrd).
   RUN load_Rename_Definitions IN h_dmputil.
-END.  /* batchmode */
+/*END. */  /* batchmode */
 
-IF  user_env[5] = "" 
- OR user_env[5] = ?  THEN assign user_env[5] = "<internal defaults apply>". 
+IF  ENTRY(1,user_env[5]) = "" 
+ OR ENTRY(1,user_env[5]) = ?  THEN assign user_env[5] = "<internal defaults apply>". 
 
 IF  user_env[5] = "<internal defaults apply>" 
  THEN OUTPUT STREAM ddl TO VALUE(user_env[2]) NO-ECHO NO-MAP
@@ -270,20 +579,29 @@ IF  user_env[5] = "<internal defaults apply>"
 SESSION:IMMEDIATE-DISPLAY = yes.
 /* Display database name at the top of the respective column. */
 FIND FIRST DICTDB._Db WHERE RECID(DICTDB._Db) = drec_db NO-LOCK.
-IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   DISPLAY LDBNAME("DICTDB") @ db WITH FRAME seeking.
 FIND FIRST DICTDB2._Db WHERE RECID(DICTDB2._Db) = RECID(database2) NO-LOCK.
-IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   DISPLAY LDBNAME("DICTDB2") @ db2 WITH FRAME seeking.
 
-IF NOT p-batchmode THEN DO:  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN DO:  /* 02/01/29 vap (IZ# 1525) */
   DISPLAY new_lang[1] @ fil  WITH FRAME seeking. /* initializing */
   DISPLAY new_lang[1] @ fil2 WITH FRAME seeking. /* initializing */
   run adecomm/_setcurs.p ("WAIT").
 END.  /* batchmode */
+ASSIGN isDictdbMultiTenant  = can-find(first dictdb._tenant)
+       isDictdb2MultiTenant = can-find(first dictdb2._tenant).
 
-DO ON STOP UNDO, LEAVE:
+RUN checkEPolicy.
+
+RUN checkObjectAttributes.
+
+DO ON STOP UNDO, LEAVE
+   ON ERROR UNDO, LEAVE:
+    
   /* build missing file list for rename/delete determination */
+  
   FOR EACH DICTDB2._File
     WHERE DICTDB2._File._Db-recid = RECID(database2)
       AND (DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN")
@@ -293,13 +611,14 @@ DO ON STOP UNDO, LEAVE:
         AND DICTDB._File._File-name = DICTDB2._File._File-name
       AND (DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN")
       AND DICTDB._File._Tbl-type = "T" NO-ERROR.
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB2._File._File-name @ fil WITH FRAME seeking.
     IF AVAILABLE DICTDB._File THEN DO:
       IF NOT fileAreaMatch(INPUT DICTDB._File._File-number,
                            INPUT DICTDB2._File._File-Number,
                            INPUT DICTDB._File._Db-recid,
                            INPUT DICTDB2._File._Db-recid) THEN DO:
+                               
         s_errorsLogged = TRUE.
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
         p-log-line = new_lang[3] + '"' + DICTDB2._File._File-Name + '"' + 
@@ -329,7 +648,7 @@ DO ON STOP UNDO, LEAVE:
                                AND (DICTDB2._File._Owner = "PUB" OR 
                                     DICTDB2._File._Owner = "_FOREIGN")
                                     NO-ERROR.
-    IF NOT p-batchmode THEN /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._File._File-name @ fil WITH FRAME seeking.
     CREATE table-list.
     ASSIGN table-list.t1-name = DICTDB._File._File-name.
@@ -342,7 +661,7 @@ DO ON STOP UNDO, LEAVE:
      there is also a file in DICTDB that's not in DICTDB2.  The 2nd list
      is the potential values to rename to.
   */
-  IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+  IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("").  /* while dmpisub is running */
   ELSE DO:  /* 02/01/29 vap (IZ# 1525) */
     ASSIGN p-comma = "":U
@@ -355,7 +674,7 @@ DO ON STOP UNDO, LEAVE:
   END.
   FOR EACH missing:
     /* 02/01/29 vap (IZ# 1525) */
-    IF NOT p-batchmode THEN DO:
+    IF NOT p-batchmode and not p-silentincrd THEN DO:
       DISPLAY missing.name @ fil WITH FRAME seeking.
       RUN "prodict/dump/_dmpisub.p"
         (INPUT "t",INPUT-OUTPUT missing.name,OUTPUT ans).
@@ -385,7 +704,7 @@ DO ON STOP UNDO, LEAVE:
       END.  /* p-foo NE ? */
     END.  /* p-batchmode */
   END.
-  IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+  IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("WAIT").
   
   /* handle deleted files */
@@ -394,7 +713,7 @@ DO ON STOP UNDO, LEAVE:
     ans = TRUE.
     PUT STREAM ddl UNFORMATTED
       'DROP TABLE "' missing.name '"' SKIP.
-    IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
       DISPLAY missing.name @ fil WITH FRAME seeking.
       DISPLAY missing.name @ fil2 WITH FRAME seeking.
     END.
@@ -410,28 +729,67 @@ DO ON STOP UNDO, LEAVE:
     PUT STREAM ddl UNFORMATTED
       'RENAME TABLE "' table-list.t2-name
       '" TO "' table-list.t1-name '"' SKIP.
-    IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
       DISPLAY table-list.t1-name @ fil WITH FRAME seeking.
       DISPLAY table-list.t1-name @ fil2 WITH FRAME seeking.
     END.
   END.
   IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-
+  IF isDictdbMultiTenant = yes and isDictdb2MultiTenant = no THEN  /* IF one database is MT and other one is non MT. Give warning message */
+  DO:
+     ASSIGN s_errorsLogged = TRUE.        
+     OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+         
+       PUT STREAM err-log UNFORMATTED new_lang[3] +
+                  '"' + LDBNAME("DICTDB") + '"' + new_lang[39]     SKIP
+                  '"' + LDBNAME("DICTDB2") + '"' + new_lang[40]    SKIP(1).
+     OUTPUT STREAM err-log CLOSE.
+   END.
+   ELSE IF isDictdbMultiTenant = no and isDictdb2MultiTenant = yes THEN
+   DO:
+      ASSIGN s_errorsLogged = TRUE.        
+      OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+         
+       PUT STREAM err-log UNFORMATTED new_lang[3] +
+                  '"' + LDBNAME("DICTDB") + '"' + new_lang[41]     SKIP
+                  '"' + LDBNAME("DICTDB2") + '"' + new_lang[42]    SKIP(1).
+     OUTPUT STREAM err-log CLOSE.
+   END.
   /* dump newly created files */
   FOR EACH table-list WHERE table-list.t2-name = ?:
     FIND DICTDB._File WHERE DICTDB._File._Db-recid = drec_db AND
          DICTDB._File._File-name = table-list.t1-name AND
        (DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN").
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    /* OE00208080 
+       Now due to the unified schema for sql92, we will get through
+       for PUB tables but we can't dump tables with constraints 
+       or non-ABL data types.
+    */
+    IF DICTDB._File._Has-Ccnstrs = "Y" 
+       OR DICTDB._File._Has-Fcnstrs = "Y"
+       OR DICTDB._File._Has-Pcnstrs = "Y" 
+       OR DICTDB._File._Has-Ucnstrs = "Y"  THEN
+       NEXT.
+    /* check if any of the non-ABL data types are used in any of the columns */
+    FIND FIRST DICTDB._Field OF DICTDB._File WHERE
+         CAN-DO("short,byte,fixchar,fixraw,time,double,float":U,
+                 DICTDB._Field._Data-type) NO-LOCK NO-ERROR.
+    IF AVAILABLE DICTDB._Field THEN
+       NEXT.   
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._File._File-name @ fil WITH FRAME seeking.
-    FIND DICTDB._StorageObject WHERE
-         DICTDB._StorageObject._Object-type = 1 AND
-         DICTDB._StorageObject._Object-number = DICTDB._File._File-number
-    NO-ERROR.
+    FIND DICTDB._StorageObject
+         where DICTDB._StorageObject._Db-recid      = DICTDB._File._Db-recid
+           and DICTDB._StorageObject._Object-type   = 1 
+           and DICTDB._StorageObject._Object-number = DICTDB._File._File-number
+           and DICTDB._Storageobject._Partitionid   = 0                       
+         NO-ERROR.
+   
     IF AVAILABLE DICTDB._StorageObject THEN
        FIND DICTDB._Area WHERE
             DICTDB._Area._Area-number = DICTDB._StorageObject._Area-number
        NO-ERROR.
+       IF AVAILABLE DICTDB._Area THEN
        FIND DICTDB2._Area WHERE
             DICTDB2._Area._Area-name = DICTDB._Area._Area-name NO-ERROR.
        IF NOT AVAILABLE DICTDB2._Area THEN
@@ -439,7 +797,7 @@ DO ON STOP UNDO, LEAVE:
          ASSIGN s_errorsLogged = TRUE.
          OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
          PUT STREAM err-log UNFORMATTED new_lang[3] +
-            '"' + DICTDB._Area._Area-name + '"' + new_lang[21]     SKIP
+            '"' + IF AVAIL DICTDB._Area THEN DICTDB._Area._Area-name ELSE '' + '"' + new_lang[21]     SKIP
             new_lang[22]                                           SKIP
             new_lang[31]                                           SKIP
             '"' + DICTDB._File._File-name + '"' + new_lang[24]     SKIP
@@ -447,15 +805,84 @@ DO ON STOP UNDO, LEAVE:
             new_lang[26]                                           SKIP(1).      
          OUTPUT STREAM err-log CLOSE.
        END.         
+       IF isDictdb2MultiTenant = no and DICTDB._File._File-attributes[1] = yes THEN
+       DO:
+          ASSIGN s_errorsLogged = TRUE.
+             OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+               PUT STREAM err-log UNFORMATTED new_lang[3] +
+                        '"' + DICTDB._File._File-name + '"' + new_lang[43]     SKIP
+                        '"' + LDBNAME("DICTDB")       + '"' + new_lang[44]     SKIP
+                        '"' + LDBNAME("DICTDB2")      + '"' + new_lang[45]     SKIP(1).
+             OUTPUT STREAM err-log CLOSE.
+       END.
+       ELSE IF isDictdbMultiTenant = yes and isDictdb2MultiTenant = yes 
+            AND DICTDB._File._File-attributes[1] = no and available DICTDB2._File and DICTDB2._File._File-attributes[1] = yes THEN
+       DO:
+           ASSIGN s_errorsLogged = TRUE.
+             OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+               PUT STREAM err-log UNFORMATTED new_lang[3] +
+                        '"' + DICTDB._File._File-name + '"' + new_lang[43]     SKIP
+                        '"' + LDBNAME("DICTDB2")      + '"' + new_lang[49]    SKIP
+                        '"' + LDBNAME("DICTDB")      + '"'  + new_lang[47]     SKIP.
+                        
+             OUTPUT STREAM err-log CLOSE.
+       END.
     RUN "prodict/dump/_dmpdefs.p" ("t",RECID(DICTDB._File),"Y").
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._File._File-name @ fil2 WITH FRAME seeking.
     DELETE table-list.
+
+    /* let's cache the encryption info in a temp-table */
+    IF VALID-OBJECT(myEPolicy[1]) OR VALID-OBJECT(myObjAttrs[1]) THEN DO:
+
+       IF VALID-OBJECT(myEPolicy[1]) THEN
+           myEPolicy[1]:getPolicyVersions(DICTDB._File._File-Number, 
+                                          DICTDB._File._File-Name, 
+                                          "Table", 
+                                          OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+       IF VALID-OBJECT(myObjAttrs[1]) and NOT DICTDB._File._File-attributes[1] THEN
+           myObjAttrs[1]:getObjectAttributes(DICTDB._File._File-Number, 
+                                             DICTDB._File._File-Name, 
+                                             "Table", 
+                                             OUTPUT DATASET dsObjAttrs BY-REFERENCE). 
+
+       FOR EACH DICTDB._Field OF DICTDB._File WHERE DICTDB._Field._Dtype = 18 /* blob*/ OR
+           DICTDB._Field._Dtype = 19 /* clob */ NO-LOCK:
+           IF VALID-OBJECT(myEPolicy[1]) THEN
+               myEPolicy[1]:getPolicyVersions(DICTDB._Field._fld-stlen, 
+                                              DICTDB._File._File-Name + "." + DICTDB._Field._Field-Name, 
+                                              DICTDB._Field._Data-type, 
+                                              OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+           IF VALID-OBJECT(myObjAttrs[1]) and NOT DICTDB._File._File-attributes[1] 
+               AND NOT DICTDB._Field._Field-attributes[1] THEN
+               myObjAttrs[1]:getObjectAttributes(DICTDB._Field._fld-stlen, 
+                                                 DICTDB._File._File-Name + "." + DICTDB._Field._Field-Name, 
+                                                 DICTDB._Field._Data-type, 
+                                                 OUTPUT DATASET dsObjAttrs BY-REFERENCE). 
+       END.
+
+       FOR EACH DICTDB._Index OF DICTDB._File NO-LOCK:
+           IF VALID-OBJECT(myEPolicy[1]) THEN
+               myEPolicy[1]:getPolicyVersions(DICTDB._Index._Idx-num, 
+                                              DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                              "Index", 
+                                              OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+           IF VALID-OBJECT(myObjAttrs[1]) and not DICTDB._File._File-attributes[1] THEN
+               myObjAttrs[1]:getObjectAttributes(DICTDB._Index._Idx-num, 
+                                                 DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                                 "Index", 
+                                                 OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+       END.
+    END.
+
   END.
   
   /* handle potentially altered files */
   FOR EACH table-list:
-    IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
       DISPLAY table-list.t1-name @ fil "" @ fld "" @ idx WITH FRAME seeking.
       DISPLAY table-list.t1-name @ fil2 "" @ fld2 "" @ idx2 WITH FRAME seeking.
     END.
@@ -474,12 +901,26 @@ DO ON STOP UNDO, LEAVE:
       DELETE index-list.
     END.
 
-  
-    /* write out appropriate file definition changes */
+      /* write out appropriate file definition changes */
     ASSIGN
       j      = 1
       ddl    = ""
       ddl[1] = 'UPDATE TABLE "' + DICTDB._File._File-name + '"'.
+    /*RUN dctquot IN h_dmputil (DICTDB._File._File-Attributes[1],'"',OUTPUT c).*/
+    IF DICTDB._File._File-Attributes[1] = yes AND AVAILABLE DICTDB2._File and DICTDB2._File._File-Attributes[1] = no THEN
+    ASSIGN j = j + 1
+           ddl[j] = "  MULTITENANT " + STRING(DICTDB._File._File-Attributes[1]) .
+    ELSE IF DICTDB._File._File-Attributes[1] = no AND AVAILABLE DICTDB2._File AND DICTDB2._File._File-Attributes[1] = yes THEN  
+    DO:
+        ASSIGN s_errorsLogged = TRUE.
+        OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+            PUT STREAM err-log UNFORMATTED new_lang[3] +
+                        '"' + DICTDB._File._File-name  + '"'  + new_lang[43]     SKIP
+                        '"' + LDBNAME("DICTDB2")       + '"'  + new_lang[49]     SKIP
+                        '"' + LDBNAME("DICTDB")        + '"'  + new_lang[47]     SKIP.
+                        
+        OUTPUT STREAM err-log CLOSE.
+    END.
     RUN dctquot IN h_dmputil (DICTDB._File._Can-Read,'"',OUTPUT c).
     IF COMPARE(DICTDB._File._Can-read,"NE",DICTDB2._File._Can-read,"RAW") THEN ASSIGN
       j = j + 1
@@ -532,6 +973,10 @@ DO ON STOP UNDO, LEAVE:
     IF DICTDB._File._Dump-name <> DICTDB2._File._Dump-name THEN ASSIGN
       j = j + 1
       ddl[j] = "  DUMP-NAME " + c.
+    RUN dctquot IN h_dmputil (DICTDB._File._category,'"',OUTPUT c).
+    IF COMPARE(DICTDB._File._category,"NE",DICTDB2._File._category,"RAW") THEN ASSIGN
+      j = j + 1
+      ddl[j] = "  CATEGORY " + c.
     RUN dctquot IN h_dmputil (DICTDB._File._Fil-misc2[6],'"',OUTPUT c).
     IF COMPARE(DICTDB._File._Fil-misc2[6],"NE",DICTDB2._File._Fil-misc2[6],"RAW") THEN ASSIGN
       j = j + 1
@@ -548,6 +993,44 @@ DO ON STOP UNDO, LEAVE:
         ASSIGN j = j + 1
                ddl[j] = "  FROZEN".
   
+    /* let's cache the encryption info and object attributes in temp-tables */
+    IF VALID-OBJECT(myEPolicy[1]) OR VALID-OBJECT(myObjAttrs[1]) THEN DO:
+
+       IF  VALID-OBJECT(myEPolicy[1]) THEN
+           myEPolicy[1]:getPolicyVersions(DICTDB._File._File-Number, 
+                                          DICTDB._File._File-Name, 
+                                          "Table", 
+                                          OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+       IF VALID-OBJECT(myObjAttrs[1]) and not DICTDB._File._File-attributes[1] THEN
+           myObjAttrs[1]:getObjectAttributes(DICTDB._File._File-Number, 
+                                             DICTDB._File._File-Name, 
+                                             "Table", 
+                                             OUTPUT DATASET dsObjAttrs BY-REFERENCE). 
+
+       IF VALID-OBJECT(myEPolicy[2]) OR VALID-OBJECT(myObjAttrs[2]) THEN DO:
+           /* need to save away old and new name for table if different, so we find the
+              right object when comparing the encryption policies.
+           */
+           IF DICTDB._File._File-Name NE DICTDB2._File._File-Name THEN DO:
+               CREATE renameList.
+               ASSIGN renameList.old-name = DICTDB2._File._File-Name
+                      renameList.new-name = DICTDB._File._File-Name.
+           END.
+
+           IF VALID-OBJECT(myEPolicy[2]) THEN
+               myEPolicy[2]:getPolicyVersions(DICTDB2._File._File-Number, 
+                                              DICTDB2._File._File-Name,
+                                              "Table", 
+                                              OUTPUT DATASET dsObjAttrs2 BY-REFERENCE).
+           IF VALID-OBJECT(myObjAttrs[2]) and not DICTDB2._File._File-attributes[1]THEN 
+               myObjAttrs[2]:getObjectAttributes(DICTDB2._File._File-Number, 
+                                                 DICTDB2._File._File-Name, 
+                                                 "Table", 
+                                                 OUTPUT DATASET dsObjAttrs2 BY-REFERENCE). 
+       END.
+    END.
+
     /* deal with file triggers */
     /* 1st, find ones to be deleted */
     FOR EACH DICTDB2._File-trig OF DICTDB2._File:
@@ -580,6 +1063,8 @@ DO ON STOP UNDO, LEAVE:
                   THEN "?" ELSE STRING(DICTDB._File-trig._Trig-CRC))
                + """".
     END.
+    
+ 
   
     /* don't write out ddl[1] if j = 1 (i.e., we only have table header) */
     IF j > 1 THEN 
@@ -594,7 +1079,7 @@ DO ON STOP UNDO, LEAVE:
     FOR EACH DICTDB2._Field OF DICTDB2._File BY DICTDB2._Field._field-rpos:
       FIND FIRST DICTDB._Field OF DICTDB._File 
         WHERE DICTDB._Field._Field-name = DICTDB2._Field._Field-name NO-ERROR.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB2._Field._Field-name @ fld WITH FRAME seeking.
       IF AVAILABLE DICTDB._Field THEN DO: 
           /* OE00147106
@@ -629,7 +1114,7 @@ DO ON STOP UNDO, LEAVE:
     FOR EACH DICTDB._Field OF DICTDB._File BY DICTDB._Field._field-rpos:
       FIND FIRST DICTDB2._Field OF DICTDB2._File
         WHERE DICTDB2._Field._Field-name = DICTDB._Field._Field-name NO-ERROR.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB._Field._Field-name @ fld WITH FRAME seeking.
       CREATE field-list.
       field-list.f1-name = DICTDB._Field._Field-name.
@@ -643,7 +1128,7 @@ DO ON STOP UNDO, LEAVE:
        is the potential values to rename to.
     */
 
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       run adecomm/_setcurs.p ("").
     ELSE DO:  /* 02/01/29 vap (IZ# 1525) */
       ASSIGN p-comma = "":U
@@ -657,7 +1142,7 @@ DO ON STOP UNDO, LEAVE:
     user_env[19] = DICTDB._File._File-name. /* this is a hack */
     FOR EACH missing:
       /* 02/01/29 vap (IZ# 1525) */
-      IF NOT p-batchmode THEN DO:
+      IF NOT p-batchmode and not p-silentincrd THEN DO:
         DISPLAY missing.name @ fld WITH FRAME seeking.
         /* OE00147106 If crit = yes, this is a special case. See above */
         IF missing.crit = YES THEN
@@ -700,7 +1185,7 @@ DO ON STOP UNDO, LEAVE:
 
       END.  /* p-batchmode */
     END.
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       run adecomm/_setcurs.p ("WAIT").
   
     /* We use to handle deleted fields here but now it's done after
@@ -715,10 +1200,10 @@ DO ON STOP UNDO, LEAVE:
       FIND FIRST DICTDB._Field OF DICTDB._File
         WHERE DICTDB._Field._Field-name = field-list.f1-name.
       FIND FIRST DICTDB2._Field OF DICTDB2._File
-        WHERE DICTDB2._Field._Field-name = field-list.f2-name NO-ERROR.
+        WHERE DICTDB2._Field._Field-name = field-list.f1-name NO-ERROR.
 
       ans = TRUE.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY field-list.f1-name @ fld2 WITH FRAME seeking.
 
       /* If the field is in an index and a critical aspect of it changed,
@@ -742,7 +1227,7 @@ DO ON STOP UNDO, LEAVE:
         WHERE DICTDB._Field._Field-name = field-list.f1-name.
       FIND FIRST DICTDB2._Field OF DICTDB2._File
         WHERE DICTDB2._Field._Field-name = field-list.f2-name NO-ERROR.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY field-list.f1-name @ fld2 WITH FRAME seeking.
 
       ASSIGN l = AVAILABLE DICTDB2._Field
@@ -753,6 +1238,7 @@ DO ON STOP UNDO, LEAVE:
          difference, so we need to check if the dype if 34.
       */
       IF l THEN DO:
+
         IF DICTDB._Field._Data-type <> DICTDB2._Field._Data-type THEN DO:
             
            /* check if this is a change from integer to int64 */
@@ -833,97 +1319,201 @@ DO ON STOP UNDO, LEAVE:
         END.
       END.
       /* If l is true we're updating otherwise we're adding */
+      /* we are checking if case-sensitive is diffrent in both db's field 
+       If they are changes we have to check if it is part of any index. If it is, then we have to drop index and 
+       then recreate. */
+      IF l and DICTDB._Field._Fld-case <> DICTDB2._Field._Fld-case THEN 
+      DO:                                                               
+          FIND FIRST DICTDB2._Index-Field WHERE DICTDB2._Index-Field._Field-recid = RECID(DICTDB2._Field) NO-LOCK .
+          IF AVAIL(DICTDB2._Index-Field) THEN
+          DO:
+              FIND FIRST DICTDB2._Index WHERE RECID(DICTDB2._Index) = DICTDB2._Index-Field._Index-recid NO-LOCK .
+              IF AVAIL(DICTDB2._Index) 
+              AND CAN-FIND(FIRST DICTDB._Index WHERE DICTDB._Index._Index-Name = DICTDB2._Index._Index-Name
+                  AND DICTDB._Index._File-recid = RECID(DICTDB._File) ) THEN
+              DO:
+                 ASSIGN isIndexDel = yes
+                        indxRecid  = RECID(DICTDB2._Index).
+                 PUT STREAM ddl UNFORMATTED
+                 'DROP INDEX "' DICTDB2._Index._Index-Name
+                 '" ON "' DICTDB2._File._File-Name '"' SKIP(1).
+              END.
+              ELSE
+              Assign isIndexDel = no.
+          END.
+      END.
       ASSIGN ddl    = ""
              ddl[1] = (IF l THEN "UPDATE" ELSE "ADD")
                       + ' FIELD "' + DICTDB._Field._Field-name
                       + '" OF "' + DICTDB._File._File-name + '"'
                       + (IF l AND NOT to-int64 THEN "" ELSE " AS " + DICTDB._Field._Data-type).
-      RUN dctquot IN h_dmputil (DICTDB._Field._Desc,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Desc,"NE",DICTDB2._Field._Desc,"RAW") THEN 
-           ddl[2] = "  DESCRIPTION " + c.
+
+      /* don't write lines with unknown or blank value (like we do in _dmpdefs.p) */
+      IF NOT l AND (DICTDB._Field._Desc = ? OR DICTDB._Field._Desc = '') THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Desc,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Desc,"NE",DICTDB2._Field._Desc,"RAW") THEN 
+               ddl[2] = "  DESCRIPTION " + c.
+      END.
+
       RUN dctquot IN h_dmputil (DICTDB._Field._Format,'"',OUTPUT c).
       IF NOT l OR COMPARE(DICTDB._Field._Format,"NE",DICTDB2._Field._Format,"RAW") THEN 
         ddl[3] = "  FORMAT " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Format-SA,'"',OUTPUT c).
-      IF NOT l OR 
-          /* ignore this field if they are a combination of ? and empty strings */
-          (CHECK_SA_FIELDS(DICTDB._Field._Format-SA,DICTDB2._Field._Format-SA) AND 
-          COMPARE(DICTDB._Field._Format-SA,"NE",DICTDB2._Field._Format-SA,"RAW")) THEN
-        ddl[4] = "  FORMAT-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Initial,'"',OUTPUT c).
+      
+      IF NOT l AND (DICTDB._Field._Format-SA = ? OR DICTDB._Field._Format-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Format-SA,'"',OUTPUT c).
+          IF NOT l OR 
+              /* ignore this field if they are a combination of ? and empty strings */
+              (CHECK_SA_FIELDS(DICTDB._Field._Format-SA,DICTDB2._Field._Format-SA) AND 
+              COMPARE(DICTDB._Field._Format-SA,"NE",DICTDB2._Field._Format-SA,"RAW")) THEN
+            ddl[4] = "  FORMAT-SA " + c.
+      END.
+
       IF NOT l OR DICTDB._Field._Field-rpos <> DICTDB2._Field._Field-rpos THEN 
         ddl[5] = "  POSITION " + STRING(DICTDB._Field._Field-rpos).       
+
+      RUN dctquot IN h_dmputil (DICTDB._Field._Initial,'"',OUTPUT c).
       IF NOT l OR COMPARE(DICTDB._Field._Initial,"NE",DICTDB2._Field._Initial,"RAW") THEN
         ddl[6] = "  INITIAL " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Initial-SA,'"',OUTPUT c).
-      IF NOT l OR 
-           /* ignore this field if they are a combination of ? and empty strings */
-           (CHECK_SA_FIELDS(DICTDB._Field._Initial-SA,DICTDB2._Field._Initial-SA) AND 
-             COMPARE(DICTDB._Field._Initial-SA,"NE",DICTDB2._Field._Initial-SA,"RAW")) THEN
-        ddl[7] = "  INITIAL-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Help,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Help,"NE",DICTDB2._Field._Help,"RAW") THEN
-        ddl[8] = "  HELP " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Help-SA,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Help-SA,"NE",DICTDB2._Field._Help-SA,"RAW") THEN
-        ddl[9] = "  HELP-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Label,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Label,"NE",DICTDB2._Field._Label,"RAW") THEN
-        ddl[10] = "  LABEL " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Label-SA,'"',OUTPUT c).
-      IF NOT l OR 
-             /* ignore this field if they are a combination of ? and empty strings */
-             (CHECK_SA_FIELDS(DICTDB._Field._Label-SA,DICTDB2._Field._Label-SA) AND 
-             COMPARE(DICTDB._Field._Label-SA,"NE",DICTDB2._Field._Label-SA,"RAW")) THEN
-        ddl[11] = "  LABEL-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Col-label,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Col-label,"NE",DICTDB2._Field._Col-label,"RAW") THEN
-        ddl[12] = "  COLUMN-LABEL " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Col-label-SA,'"',OUTPUT c).
-      IF NOT l OR 
-              /* ignore this field if they are a combination of ? and empty strings */
-              (CHECK_SA_FIELDS(DICTDB._Field._Col-label-SA,DICTDB2._Field._Col-label-SA) AND 
-               COMPARE(DICTDB._Field._Col-label-SA,"NE",DICTDB2._Field._Col-label-SA,"RAW")) THEN
-        ddl[13] = "  COLUMN-LABEL-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Can-Read,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Can-read,"NE",DICTDB2._Field._Can-read,"RAW") THEN
-        ddl[14] = "  CAN-READ " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Can-Write,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Can-write,"NE",DICTDB2._Field._Can-write,"RAW") THEN
-        ddl[15] = "  CAN-WRITE " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Valexp,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Valexp,"NE",DICTDB2._Field._Valexp,"RAW") THEN
-        ddl[16] = "  VALEXP " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Valmsg,'"',OUTPUT c).
-      IF NOT l OR DICTDB._Field._Valmsg <> DICTDB2._Field._Valmsg THEN
-        ddl[17] = "  VALMSG " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._Valmsg-SA,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Valmsg-SA,"NE",DICTDB2._Field._Valmsg-SA,"RAW") THEN
-        ddl[18] = "  VALMSG-SA " + c.
-      RUN dctquot IN h_dmputil (DICTDB._Field._View-as,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._View-as,"NE",DICTDB2._Field._View-as,"RAW") THEN
-        ddl[19] = "  VIEW-AS " + c.
-      IF NOT l OR DICTDB._Field._Extent <> DICTDB2._Field._Extent THEN
-        ddl[20] = "  EXTENT " + STRING(DICTDB._Field._Extent).
-      IF NOT l OR DICTDB._Field._Decimals <> DICTDB2._Field._Decimals THEN
-        ddl[21] = "  DECIMALS " + (IF DICTDB._Field._Decimals = ? THEN "?"
-                    ELSE STRING(DICTDB._Field._Decimals)).
+
+      IF NOT l AND (DICTDB._Field._Initial-SA = ? OR DICTDB._Field._Initial-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Initial-SA,'"',OUTPUT c).
+          IF NOT l OR 
+               /* ignore this field if they are a combination of ? and empty strings */
+               (CHECK_SA_FIELDS(DICTDB._Field._Initial-SA,DICTDB2._Field._Initial-SA) AND 
+                 COMPARE(DICTDB._Field._Initial-SA,"NE",DICTDB2._Field._Initial-SA,"RAW")) THEN
+            ddl[7] = "  INITIAL-SA " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Help = ? OR DICTDB._Field._Help = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Help,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Help,"NE",DICTDB2._Field._Help,"RAW") THEN
+            ddl[8] = "  HELP " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Help-SA = ? OR DICTDB._Field._Help-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Help-SA,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Help-SA,"NE",DICTDB2._Field._Help-SA,"RAW") THEN
+            ddl[9] = "  HELP-SA " + c.
+      END.
+
+      IF NOT l AND DICTDB._Field._Label = ? THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Label,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Label,"NE",DICTDB2._Field._Label,"RAW") THEN
+            ddl[10] = "  LABEL " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Label-SA = ? OR DICTDB._Field._Label-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Label-SA,'"',OUTPUT c).
+          IF NOT l OR 
+                 /* ignore this field if they are a combination of ? and empty strings */
+                 (CHECK_SA_FIELDS(DICTDB._Field._Label-SA,DICTDB2._Field._Label-SA) AND 
+                 COMPARE(DICTDB._Field._Label-SA,"NE",DICTDB2._Field._Label-SA,"RAW")) THEN
+            ddl[11] = "  LABEL-SA " + c.
+      END.
+
+      IF NOT l AND DICTDB._Field._Col-label = ? THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Col-label,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Col-label,"NE",DICTDB2._Field._Col-label,"RAW") THEN
+            ddl[12] = "  COLUMN-LABEL " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Col-label-SA = ? OR DICTDB._Field._Col-label-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Col-label-SA,'"',OUTPUT c).
+          IF NOT l OR 
+                  /* ignore this field if they are a combination of ? and empty strings */
+                  (CHECK_SA_FIELDS(DICTDB._Field._Col-label-SA,DICTDB2._Field._Col-label-SA) AND 
+                   COMPARE(DICTDB._Field._Col-label-SA,"NE",DICTDB2._Field._Col-label-SA,"RAW")) THEN
+            ddl[13] = "  COLUMN-LABEL-SA " + c.
+      END.
+
+      /* don't write default value for new field */
+      IF NOT l AND DICTDB._Field._Can-Read = '*' THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Can-Read,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Can-read,"NE",DICTDB2._Field._Can-read,"RAW") THEN
+            ddl[14] = "  CAN-READ " + c.
+      END.
+
+      /* don't write default value for new field */
+      IF NOT l AND DICTDB._Field._Can-Write = '*' THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Can-Write,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Can-write,"NE",DICTDB2._Field._Can-write,"RAW") THEN
+            ddl[15] = "  CAN-WRITE " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Valexp = ? OR DICTDB._Field._Valexp = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Valexp,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Valexp,"NE",DICTDB2._Field._Valexp,"RAW") THEN
+            ddl[16] = "  VALEXP " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Valmsg = ? OR DICTDB._Field._Valmsg = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Valmsg,'"',OUTPUT c).
+          IF NOT l OR DICTDB._Field._Valmsg <> DICTDB2._Field._Valmsg THEN
+            ddl[17] = "  VALMSG " + c.
+      END.
+
+      IF NOT l AND (DICTDB._Field._Valmsg-SA = ? OR DICTDB._Field._Valmsg-SA = '' ) THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._Valmsg-SA,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._Valmsg-SA,"NE",DICTDB2._Field._Valmsg-SA,"RAW") THEN
+            ddl[18] = "  VALMSG-SA " + c.
+      END.
+
+      IF NOT l AND DICTDB._Field._View-as = ? THEN .
+      ELSE DO:
+          RUN dctquot IN h_dmputil (DICTDB._Field._View-as,'"',OUTPUT c).
+          IF NOT l OR COMPARE(DICTDB._Field._View-as,"NE",DICTDB2._Field._View-as,"RAW") THEN
+            ddl[19] = "  VIEW-AS " + c.
+      END.
+
+      IF NOT l AND DICTDB._Field._Extent = 0 THEN .
+      ELSE DO:
+          IF NOT l OR DICTDB._Field._Extent <> DICTDB2._Field._Extent THEN
+            ddl[20] = "  EXTENT " + STRING(DICTDB._Field._Extent).
+      END.
+
+      IF NOT l AND DICTDB._Field._Decimals = ? THEN .
+      ELSE DO:
+          IF NOT l OR DICTDB._Field._Decimals <> DICTDB2._Field._Decimals THEN
+            ddl[21] = "  DECIMALS " + (IF DICTDB._Field._Decimals = ? THEN "?"
+                        ELSE STRING(DICTDB._Field._Decimals)).
+      END.
+
       IF NOT l OR DICTDB._Field._Order <> DICTDB2._Field._Order THEN
         ddl[22] = "  ORDER " + STRING(DICTDB._Field._Order).
-      IF NOT l OR DICTDB._Field._Mandatory <> DICTDB2._Field._Mandatory THEN
+
+      IF NOT l AND NOT DICTDB._Field._Mandatory THEN .
+      ELSE IF NOT l OR DICTDB._Field._Mandatory <> DICTDB2._Field._Mandatory THEN
         ddl[23] = (IF DICTDB._Field._Mandatory
                     THEN "  MANDATORY" ELSE "  NULL-ALLOWED").
-      IF NOT l OR DICTDB._Field._Fld-case <> DICTDB2._Field._Fld-case THEN
+
+      IF NOT l AND NOT DICTDB._Field._Fld-case THEN .
+      ELSE IF NOT l OR DICTDB._Field._Fld-case <> DICTDB2._Field._Fld-case THEN
         ddl[24] = (IF DICTDB._Field._Fld-case
                     THEN "  CASE-SENSITIVE" ELSE "  NOT-CASE-SENSITIVE").
+
       IF NOT l AND CAN-DO("BLOB,CLOB",DICTDB._Field._Data-type) THEN DO:
         FIND DICTDB._storageobject WHERE DICTDB._Storageobject._Db-recid = RECID(DICTDB._Db)
                                 AND DICTDB._Storageobject._Object-type = 3
                                 AND DICTDB._Storageobject._Object-number = DICTDB._Field._Fld-stlen
+                                and DICTDB._Storageobject._Partitionid   = 0                
                               NO-LOCK.
-        FIND DICTDB._Area WHERE DICTDB._Area._Area-number = DICTDB._StorageObject._Area-number NO-LOCK.
+        FIND DICTDB._Area WHERE DICTDB._Area._Area-number = DICTDB._StorageObject._Area-number NO-LOCK .
         
-        ASSIGN ddl[25] = "  LOB-AREA " + DICTDB._Area._Area-name
+        ASSIGN ddl[25] = "  LOB-AREA " + IF AVAIL DICTDB._Area THEN QUOTER(DICTDB._Area._Area-name) ELSE ''
                ddl[26] = "  LOB-BYTES "+ STRING(DICTDB._Field._Width)
                ddl[27] = "  LOB-SIZE " + DICTDB._Field._Fld-Misc2[1].
 
@@ -955,10 +1545,12 @@ DO ON STOP UNDO, LEAVE:
         FIND DICTDB._storageobject WHERE DICTDB._Storageobject._Db-recid = RECID(DICTDB._Db)
                                 AND DICTDB._Storageobject._Object-type = 3
                                 AND DICTDB._Storageobject._Object-number = DICTDB._Field._Fld-stlen
+                                and DICTDB._Storageobject._Partitionid   = 0                
                                 NO-LOCK. 
         FIND DICTDB2._storageobject WHERE DICTDB2._Storageobject._Db-recid = RECID(DICTDB2._Db)
                                 AND DICTDB2._Storageobject._Object-type = 3
                                 AND DICTDB2._Storageobject._Object-number = DICTDB2._Field._Fld-stlen
+                                and DICTDB2._Storageobject._Partitionid   = 0                
                                 NO-LOCK.
         IF DICTDB._StorageObject._Area-number <> DICTDB2._StorageObject._Area-number THEN DO:
           OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
@@ -976,6 +1568,54 @@ DO ON STOP UNDO, LEAVE:
       END.
       ELSE IF NOT l OR DICTDB._Field._Width <> DICTDB2._Field._Width THEN
         ddl[25] = "  MAX-WIDTH " + STRING(DICTDB._Field._Width).
+
+      /* let's cache the encryption info and/or object attributes in temp-tables 
+         for BLOB and CLOB fields */
+      IF CAN-DO("BLOB,CLOB",DICTDB._Field._Data-type) AND 
+         (VALID-OBJECT(myEPolicy[1]) OR VALID-OBJECT(myObjAttrs[1])) THEN DO:
+
+          IF VALID-OBJECT(myEPolicy[1]) THEN
+             myEPolicy[1]:getPolicyVersions(DICTDB._Field._fld-stlen, 
+                                            DICTDB._File._File-Name + "." + DICTDB._Field._Field-Name, 
+                                            DICTDB._Field._Data-type, 
+                                            OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+    
+         IF VALID-OBJECT(myObjAttrs[1]) and NOT DICTDB._File._File-attributes[1] 
+             AND not DICTDB._Field._Field-attributes[1] THEN
+             myObjAttrs[1]:getObjectAttributes(DICTDB._Field._fld-stlen, 
+                                               DICTDB._File._File-Name + "." + DICTDB._Field._Field-Name, 
+                                               DICTDB._Field._Data-type, 
+                                               OUTPUT DATASET dsObjAttrs BY-REFERENCE). 
+
+         /* if field is available, do this too. Note that the object name is from the DICTDB db,
+            even though we are reading DICTDB2, because the field may have been renamed.
+         */
+         IF l AND (VALID-OBJECT(myEPolicy[2]) OR VALID-OBJECT(myObjAttrs[2])) THEN DO:
+         
+             /* need to save away old and new name for field if different, so we find the
+                right object when comparing the encryption policies.
+             */
+             IF DICTDB._File._File-Name   NE DICTDB2._File._File-Name OR 
+                DICTDB._Field._Field-Name NE DICTDB2._Field._Field-Name THEN DO:
+                 CREATE renameList.
+                 ASSIGN renameList.old-name = DICTDB2._File._File-Name + "." + DICTDB2._Field._Field-Name
+                        renameList.new-name = DICTDB._File._File-Name + "." + DICTDB._Field._Field-Name.
+             END.
+
+             IF VALID-OBJECT(myEPolicy[2]) THEN
+                 myEPolicy[2]:getPolicyVersions(DICTDB2._Field._fld-stlen, 
+                                                DICTDB2._File._File-Name + "." + DICTDB2._Field._Field-Name, 
+                                                DICTDB2._Field._Data-type, 
+                                                OUTPUT DATASET dsObjAttrs2 BY-REFERENCE).
+
+             IF VALID-OBJECT(myObjAttrs[2]) and NOT DICTDB2._File._File-attributes[1] 
+                AND not DICTDB2._Field._Field-attributes[1] THEN
+                 myObjAttrs[2]:getObjectAttributes(DICTDB2._Field._fld-stlen, 
+                                                   DICTDB2._File._File-Name + "." + DICTDB2._Field._Field-Name, 
+                                                   DICTDB2._Field._Data-type, 
+                                                   OUTPUT DATASET dsObjAttrs2 BY-REFERENCE).
+         END.
+      END.
 
       /* deal with field triggers */
       /* 1st, find ones to be deleted if field is being updated */
@@ -1034,12 +1674,68 @@ DO ON STOP UNDO, LEAVE:
     ASSIGN
       pri1   = ""
       pri2   = "".
-  
+    /* Checking if Drop Index statement has been generated or not in case of field case-sensitivity.
+       If it has been generated then we need to create Index again. */
+    
+    IF isIndexDel THEN
+    DO:
+       FIND FIRST DICTDB2._Index WHERE RECID(DICTDB2._Index) = indxRecid NO-LOCK NO-ERROR.
+       IF AVAIL(DICTDB2._Index) THEN
+       DO:
+           PUT STREAM ddl UNFORMATTED "ADD "
+           'INDEX "' DICTDB2._Index._Index-Name
+           '" ON "' DICTDB2._File._File-name '"' SKIP. 
+           FIND FIRST DICTDB2._StorageObject where DICTDB2._StorageObject._Db-recid  = DICTDB2._File._Db-recid
+           and DICTDB2._StorageObject._Object-type   = 2 
+           and DICTDB2._StorageObject._Object-number = DICTDB2._Index._idx-num
+           and DICTDB2._Storageobject._Partitionid   = 0  NO-LOCK NO-ERROR.
+           IF AVAILABLE DICTDB2._StorageObject THEN
+             FIND DICTDB2._Area WHERE DICTDB2._Area._Area-number = DICTDB2._StorageObject._Area-number NO-LOCK .
+           ELSE
+             FIND DICTDB2._Area WHERE DICTDB2._Area._Area-number = DICTDB2._Index._idx-num NO-LOCK .
+
+           PUT STREAM ddl UNFORMATTED
+             "  AREA " '"' IF AVAIL DICTDB2._Area THEN DICTDB2._Area._Area-name ELSE '' '"' SKIP.
+           
+           IF DICTDB2._Index._Unique THEN 
+           DO:     
+             PUT STREAM ddl UNFORMATTED "  UNIQUE" SKIP.
+             IF NOT DICTDB2._Index._Active THEN
+             PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
+           END.
+           ELSE IF NOT DICTDB2._Index._Active AND NOT DICTDB2._Index._Unique THEN
+           PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
+           
+           IF DICTDB2._Index._Wordidx = 1 THEN 
+             PUT STREAM ddl UNFORMATTED "  WORD" SKIP.
+             
+           IF DICTDB2._Index._Desc <> ? AND DICTDB2._Index._Desc <> '' THEN 
+           DO:
+              PUT STREAM ddl CONTROL "  DESCRIPTION ".
+              EXPORT STREAM ddl DICTDB2._Index._Desc SKIP.
+           END.
+           
+           FOR EACH DICTDB2._Index-field OF _Index,DICTDB2._Field OF _Index-field
+           BREAK BY DICTDB2._Index-field._Index-seq:
+             PUT STREAM ddl UNFORMATTED
+               '  INDEX-FIELD "' DICTDB2._Field._Field-Name '" '
+               TRIM(STRING(DICTDB2._Index-field._Ascending,"A/DE")) "SCENDING"
+              (IF DICTDB2._Index-field._Abbreviate THEN " ABBREVIATED" ELSE "")
+              (IF DICTDB2._Index-field._Unsorted   THEN " UNSORTED"    ELSE "") SKIP.
+           END.
+           PUT STREAM ddl UNFORMATTED SKIP(1).
+           IF DICTDB2._File._Prime-Index = RECID(DICTDB2._Index) THEN
+             PUT STREAM ddl UNFORMATTED
+               'UPDATE PRIMARY INDEX "' DICTDB2._Index._Index-name
+               '" ON "' DICTDB2._File._File-name '"' SKIP(1).
+        END.       
+    END.
     /* build index component match list */
+    
     FOR EACH DICTDB2._Index OF DICTDB2._File:
       IF DICTDB2._Index._Index-name = "default" OR
           DICTDB2._Index._Index-name = "sql-default"  THEN NEXT.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB2._Index._Index-name @ idx WITH FRAME seeking.
       c = STRING(DICTDB2._Index._Unique,"u/a")
         + (IF DICTDB2._Index._Wordidx = 1 THEN "w" ELSE "f").
@@ -1063,7 +1759,7 @@ DO ON STOP UNDO, LEAVE:
     FOR EACH DICTDB._Index OF DICTDB._File:
       IF DICTDB._Index._Index-name = "default" OR 
          DICTDB._Index._Index-name = "sql-default" THEN NEXT.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB._Index._Index-name @ idx WITH FRAME seeking.
       c = STRING(DICTDB._Index._Unique,"u/a")
         + (IF DICTDB._Index._Wordidx = 1 THEN "w" ELSE "f").
@@ -1152,7 +1848,7 @@ DO ON STOP UNDO, LEAVE:
 
     /* find all unchanged or renamed indexes by comparing idx comp lists */
     FOR EACH index-list WHERE index-list.i1-i2:    
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY index-list.i2-name @ idx WITH FRAME seeking.
       FIND FIRST index-alt WHERE NOT index-alt.i1-i2
         AND index-list.i1-comp = index-alt.i1-comp NO-ERROR.
@@ -1164,27 +1860,75 @@ DO ON STOP UNDO, LEAVE:
       FIND DICTDB2._Index WHERE
            DICTDB2._Index._Index-name = index-alt.i1-name AND
            DICTDB2._Index._File-recid = RECID(DICTDB2._File) NO-ERROR.
-      IF AVAIL DICTDB._Index AND AVAIL DICTDB2._Index THEN
-      IF NOT indexAreaMatch(INPUT DICTDB._Index._idx-num,
-                            INPUT DICTDB2._Index._idx-num,
-                            INPUT RECID(DICTDB._Db),
-                            INPUT RECID(DICTDB2._DB)) THEN DO:
-        ASSIGN s_errorsLogged = TRUE.
-            
-        OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-            
-        PUT STREAM err-log UNFORMATTED new_lang[10] +
-                 '"' + DICTDB._Index._Index-name + '"' + new_lang[11] + 
-                 '"' + LDBNAME("DICTDB") + '"'     SKIP
-                 new_lang[12] + DICTDB2._Index._Index-name + '"' +
-                 new_lang[11] + '"' + LDBNAME("DICTDB2") + '"'   SKIP.
-        DO i = 13 TO 16:          
-          PUT STREAM err-log UNFORMATTED new_lang[i] SKIP.
-        END.
-            
-        PUT STREAM err-log UNFORMATTED new_lang[17] SKIP(1).            
-        OUTPUT STREAM err-log CLOSE.
-      END.            
+      IF AVAIL DICTDB._Index AND AVAIL DICTDB2._Index THEN DO:
+      
+          IF NOT indexAreaMatch(INPUT DICTDB._Index._idx-num,
+                                INPUT DICTDB2._Index._idx-num,
+                                INPUT RECID(DICTDB._Db),
+                                INPUT RECID(DICTDB2._DB)) THEN DO:
+            ASSIGN s_errorsLogged = TRUE.
+                
+            OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+                
+            PUT STREAM err-log UNFORMATTED new_lang[10] +
+                     '"' + DICTDB._Index._Index-name + '"' + new_lang[11] + 
+                     '"' + LDBNAME("DICTDB") + '"'     SKIP
+                     new_lang[12] + DICTDB2._Index._Index-name + '"' +
+                     new_lang[11] + '"' + LDBNAME("DICTDB2") + '"'   SKIP.
+            DO i = 13 TO 16:          
+              PUT STREAM err-log UNFORMATTED new_lang[i] SKIP.
+            END.
+                
+            PUT STREAM err-log UNFORMATTED new_lang[17] SKIP(1).            
+            OUTPUT STREAM err-log CLOSE.
+          END.
+    
+          /* store encryption policy info */
+          IF VALID-OBJECT(myEPolicy[1]) OR VALID-OBJECT(myObjAttrs[1]) THEN DO:
+              IF VALID-OBJECT(myEPolicy[1])  THEN
+                  myEPolicy[1]:getPolicyVersions(DICTDB._Index._Idx-num, 
+                                                 DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                                 "Index", 
+                                                 OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+              IF VALID-OBJECT(myObjAttrs[1]) and NOT DICTDB._File._File-attributes[1] 
+                 AND not DICTDB._Index._Index-attributes[1] THEN
+                  myObjAttrs[1]:getObjectAttributes(DICTDB._Index._Idx-num, 
+                                                    DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                                    "Index", 
+                                                    OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+              IF VALID-OBJECT(myEPolicy[2]) OR VALID-OBJECT(myObjAttrs[2]) THEN DO:
+              
+                  /* need to save away old and new name for field if different, so we find the
+                     right object when comparing the encryption policies.
+                  */
+                  IF DICTDB._File._File-Name   NE DICTDB2._File._File-Name OR 
+                     DICTDB._Index._Index-name NE DICTDB2._Index._Index-name THEN DO:
+                      CREATE renameList.
+                      ASSIGN renameList.old-name = DICTDB2._File._File-Name + "." + DICTDB2._Index._Index-name
+                             renameList.new-name = DICTDB._File._File-Name + "." + DICTDB._Index._Index-name.
+                  END.
+
+                  IF VALID-OBJECT(myEPolicy[2]) THEN
+                      myEPolicy[2]:getPolicyVersions(DICTDB2._Index._Idx-num, 
+                                                     DICTDB2._File._File-Name + "." + DICTDB2._Index._Index-name, 
+                                                     "Index", 
+                                                     OUTPUT DATASET dsObjAttrs2 BY-REFERENCE).
+
+                  IF VALID-OBJECT(myObjAttrs[2]) and NOT DICTDB2._File._File-attributes[1] 
+                     AND not DICTDB2._Index._Index-attributes[1] THEN
+                     myObjAttrs[2]:getObjectAttributes(DICTDB2._Index._Idx-num, 
+                                                       DICTDB2._File._File-Name + "." +  DICTDB2._Index._Index-name, 
+                                                       "Index", 
+                                                       OUTPUT DATASET dsObjAttrs2 BY-REFERENCE).
+                                                       
+
+              END.
+          END.
+
+      END.
+
       ASSIGN index-list.i2-name = index-alt.i1-name.
       DELETE index-alt. 
     END.
@@ -1202,7 +1946,7 @@ DO ON STOP UNDO, LEAVE:
       FIND DICTDB2._Index OF DICTDB2._File
         WHERE DICTDB2._Index._Index-name = index-list.i2-name NO-ERROR.
       IF NOT AVAILABLE DICTDB2._Index THEN NEXT.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB._Index._Index-name @ idx2 WITH FRAME seeking.
       IF NOT DICTDB._Index._Active AND DICTDB2._Index._Active THEN DO:
         PUT STREAM ddl UNFORMATTED
@@ -1232,7 +1976,7 @@ DO ON STOP UNDO, LEAVE:
         WHERE DICTDB2._Index._Index-name = index-list.i2-name NO-ERROR.
       IF NOT AVAILABLE DICTDB._Index OR NOT AVAILABLE DICTDB2._Index THEN NEXT.
       ans = TRUE.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY index-list.i1-name @ idx2 WITH FRAME seeking.
       RUN Check_Index_Conflict IN h_dmputil (INPUT index-list.i1-name,
           INPUT DICTDB._File._File-name).     
@@ -1266,7 +2010,7 @@ DO ON STOP UNDO, LEAVE:
       WHERE DICTDB._Index._Index-name = index-list.i1-name
         AND DICTDB._Index._Unique AND DICTDB._Index._Active:
       /* 02/01/29 vap (IZ# 1525) */
-      IF NOT p-batchmode THEN DO:
+      IF NOT p-batchmode and not p-silentincrd THEN DO:
         iact = TRUE.
         RUN "prodict/user/_usrdbox.p" (INPUT-OUTPUT iact,?,?,new_lang[2]).
       END.
@@ -1292,7 +2036,7 @@ DO ON STOP UNDO, LEAVE:
     FOR EACH index-list WHERE index-list.i1-i2,
         DICTDB._Index OF DICTDB._File
         WHERE DICTDB._Index._Index-name = index-list.i1-name.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB._Index._Index-name @ idx2 WITH FRAME seeking.
       /* Determine if a component of this index has been dropped.  If so,    *
        * no need to rename the index first.  Since the field is dropped,     *
@@ -1309,25 +2053,30 @@ DO ON STOP UNDO, LEAVE:
       PUT STREAM ddl UNFORMATTED "ADD "
         'INDEX "' DICTDB._Index._Index-Name
         '" ON "' DICTDB._File._File-name '"' SKIP.
-      FIND DICTDB._StorageObject WHERE
-           DICTDB._StorageObject._Object-type = 2 AND
-           DICTDB._Storageobject._Object-number = DICTDB._Index._idx-num
+      /* first - could have collation */
+      FIND first DICTDB._StorageObject
+         where DICTDB._StorageObject._Db-recid      = DICTDB._File._Db-recid
+           and DICTDB._StorageObject._Object-type   = 2 
+           and DICTDB._StorageObject._Object-number = DICTDB._Index._idx-num
+           and DICTDB._Storageobject._Partitionid   = 0                       
       NO-LOCK NO-ERROR.
+      
       IF AVAILABLE DICTDB._StorageObject THEN
          FIND DICTDB._Area WHERE
               DICTDB._Area._Area-number = DICTDB._StorageObject._Area-number
          NO-ERROR.
       ELSE
       FIND DICTDB._Area WHERE
-           DICTDB._Area._Area-number = DICTDB._Index._idx-num NO-LOCK NO-ERROR.
+           DICTDB._Area._Area-number = DICTDB._Index._idx-num NO-LOCK .
+      IF AVAIL DICTDB._Area THEN   
       FIND DICTDB2._Area WHERE
-           DICTDB2._Area._Area-name = DICTDB._Area._Area-name NO-ERROR.
+           DICTDB2._Area._Area-name = DICTDB._Area._Area-name .
       IF NOT AVAIL DICTDB2._Area THEN DO:
         ASSIGN s_errorsLogged = TRUE.        
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
          
         PUT STREAM err-log UNFORMATTED new_lang[3] +
-             '"' + DICTDB._Area._Area-name + '"' + new_lang[21]     SKIP
+             '"' + IF AVAIL DICTDB._Area THEN DICTDB._Area._Area-name ELSE '' + '"' + new_lang[21]     SKIP
              new_lang[22]                                           SKIP
              new_lang[23]                                           SKIP
              '"' + DICTDB._Index._Index-name + '"' + new_lang[24]   SKIP
@@ -1335,7 +2084,8 @@ DO ON STOP UNDO, LEAVE:
              new_lang[26]                                           SKIP(1).
       
         OUTPUT STREAM err-log CLOSE.
-      END.         
+      END.      
+      IF AVAIL DICTDB._Area THEN   
       PUT STREAM ddl UNFORMATTED
          "  AREA " '"' DICTDB._Area._Area-name '"' SKIP.
 
@@ -1362,6 +2112,20 @@ DO ON STOP UNDO, LEAVE:
           (IF DICTDB._Index-field._Unsorted   THEN " UNSORTED"    ELSE "") SKIP.
       END.
       PUT STREAM ddl UNFORMATTED SKIP(1).
+
+      /* store encryption policy info */
+      IF VALID-OBJECT(myEPolicy[1]) THEN
+          myEPolicy[1]:getPolicyVersions(DICTDB._Index._Idx-num, 
+                                         DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                         "Index", 
+                                         OUTPUT DATASET dsObjAttrs BY-REFERENCE).
+
+      IF VALID-OBJECT(myObjAttrs[1]) and NOT DICTDB._File._File-attributes[1] 
+         AND not DICTDB._Index._Index-attributes[1] THEN
+          myObjAttrs[1]:getObjectAttributes(DICTDB._Index._Idx-num, 
+                                            DICTDB._File._File-Name + "." + DICTDB._Index._Index-name, 
+                                            "Index", 
+                                            OUTPUT DATASET dsObjAttrs BY-REFERENCE).
     END.
   
     /* set primary index */
@@ -1392,7 +2156,7 @@ DO ON STOP UNDO, LEAVE:
              NEXT.
       END.
       ans = TRUE.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY index-list.i1-name @ idx2 WITH FRAME seeking.
       IF index-list.i1-name <> "default" AND
           index-list.i1-name <> "sql-default" THEN
@@ -1425,7 +2189,7 @@ DO ON STOP UNDO, LEAVE:
     ans = FALSE.
     FOR EACH missing:
       ans = TRUE.
-      IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+      IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY missing.name @ fld2 WITH FRAME seeking.
       PUT STREAM ddl UNFORMATTED
         'DROP FIELD "' missing.name
@@ -1438,9 +2202,126 @@ DO ON STOP UNDO, LEAVE:
     DO ON ERROR UNDO,LEAVE ON ENDKEY UNDO,LEAVE:
       HIDE MESSAGE.
     END.
-  END.  /* end FOR EACH potentially altered file */
+/************************************************************************************************/
+/********************************         constraint       **************************************/
+/************************************************************************************************/
+
+    FOR EACH DICTDB._Constraint OF DICTDB._File WHERE DICTDB._constraint._con-Status <> "O"
+                          AND DICTDB._constraint._con-Status <> "D":
+     Constr = "".
+     FIND FIRST DICTDB2._Constraint OF DICTDB2._File WHERE DICTDB2._constraint._con-Status <> "O" AND
+      DICTDB2._constraint._con-Status <> "D" AND DICTDB2._Constraint._Con-Name = DICTDB._Constraint._Con-Name NO-LOCK NO-ERROR.
+     IF NOT AVAILABLE (DICTDB2._Constraint)
+      THEN DO:
+          FIND FIRST DICTDB._Index WHERE RECID(DICTDB._Index) = DICTDB._Constraint._Index-Recid NO-LOCK NO-ERROR.
+          FIND FIRST DICTDB._Field WHERE RECID(DICTDB._Field) = DICTDB._Constraint._Field-Recid NO-LOCK NO-ERROR.
+          
+          IF DICTDB._Constraint._Con-Type <> "F" THEN DO:
+           
+           Constr = Constr + 'ADD CONSTRAINT ' + '"' + DICTDB._Constraint._Con-Name + '" ON "' + DICTDB._File._File-Name + '"'+ "~n".
+           IF  DICTDB._Constraint._Con-Type = "P" THEN       
+                Constr = Constr + '  PRIMARY' + "~n".
+           ELSE IF DICTDB._constraint._con-type = "PC" OR  DICTDB._constraint._con-type = "MP" THEN  
+                Constr = Constr + '  PRIMARY-CLUSTERED' + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "M" THEN
+                Constr = Constr + '  CLUSTERED' + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "U" THEN
+                Constr = Constr + '  UNIQUE' + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "D" THEN
+                Constr = Constr + '  DEFAULT' + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "C" THEN
+                Constr = Constr + '  CHECK' + "~n".  
+                     
+           IF DICTDB._Constraint._Con-Active = FALSE
+           THEN Constr = Constr + '  INACTIVE' + "~n".
+           ELSE Constr = Constr + '  ACTIVE' + "~n".    
+           
+           IF DICTDB._Constraint._Con-Type = "P" OR DICTDB._Constraint._Con-Type = "PC" OR DICTDB._Constraint._Con-Type = "MP" OR 
+           DICTDB._Constraint._Con-Type = "M" OR DICTDB._Constraint._Con-Type = "U" THEN
+                Constr = Constr + '  CONSTRAINT-INDEX "' + DICTDB._Index._Index-Name + '"' + "~n" + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "C" OR DICTDB._Constraint._Con-Type = "D" THEN
+                Constr = Constr + '  CONSTRAINT-FIELD "' + DICTDB._Field._Field-Name + '"' + "~n". 
+           
+           IF DICTDB._Constraint._Con-Type = "D" THEN
+                Constr = Constr + '  CONSTRAINT-EXPR "' + DICTDB._Constraint._Con-Expr + '"' + "~n" + "~n".
+           ELSE IF DICTDB._Constraint._Con-Type = "C" THEN
+                Constr = Constr + '  CONSTRAINT-EXPR "' + DICTDB._Constraint._Con-Expr + '"' + "~n" + "~n".
+          END.   
+          ELSE IF DICTDB._Constraint._Con-Type = "F" THEN DO:
+               df-con[1] = 'ADD CONSTRAINT ' + '"' + DICTDB._Constraint._Con-Name + '" ON "' + DICTDB._File._File-Name + '"'.
+               df-con[2] = '  FOREIGN-KEY'.
+
+               IF DICTDB._Constraint._Con-Active = FALSE
+                THEN df-con[3] = '  INACTIVE'.
+                ELSE df-con[3] = '  ACTIVE'.
+               
+               df-con[4] = '  CONSTRAINT-INDEX "' + DICTDB._Index._Index-Name + '"'.
+               
+               FIND FIRST Index2 WHERE RECID(Index2) = DICTDB._Constraint._Index-Parent-Recid NO-LOCK NO-ERROR.
+               IF AVAILABLE (Index2)
+               THEN DO:
+               FIND FIRST confile2 WHERE Index2._File-Recid = RECID(confile2) NO-LOCK NO-ERROR.
+               IF AVAILABLE (confile2) THEN 
+                 df-con[5] = '  PARENT-TABLE "' + confile2._File-Name + '"'.     
+                 df-con[6] = '  PARENT-INDEX "' + Index2._Index-Name + '"'.         
+               END.
+	             df-con[7] = '  CONSTRAINT-ACTION "' + DICTDB._Constraint._Con-Misc2[1] + '"'.               
+               IF df-con[1] <> ? THEN DO:
+               DO i = 1 TO 7:
+                  IF df-con[i] <> ? THEN DO:
+                     CREATE df-info.
+                     ASSIGN df-info.df-seq = dfseq
+                            dfseq = dfseq + 1
+                            df-info.df-tbl = DICTDB._File._File-name
+                            df-info.df-line = df-con[i].
+                  END.
+               END.
+               ASSIGN df-con = ?.
+               END.
+           END.    
+      END.
+      ELSE IF DICTDB._Constraint._Con-Active <> DICTDB2._Constraint._Con-Active 
+      THEN DO:
+        Constr = Constr + 'UPDATE CONSTRAINT ' + '"' + DICTDB2._Constraint._Con-Name + '" ON "' + DICTDB._File._File-Name + '"'+ "~n".
+        IF DICTDB._Constraint._Con-Active = FALSE 
+        THEN Constr = Constr + '  INACTIVE' + "~n" + "~n".
+        ELSE Constr = Constr + '  ACTIVE' + "~n" + "~n".           
+      END.
+      
+     PUT STREAM ddl UNFORMATTED Constr.
+    END.          
+    /** code for drop constraints. we dont drop clustered constraint **/
+    FOR EACH DICTDB2._Constraint OF DICTDB2._File  WHERE DICTDB2._constraint._con-Status <> "O" AND
+      DICTDB2._constraint._con-Status <> "D" AND DICTDB._Constraint._Con-Type <> "M": 
+     Constr1 = "".
+     df-con = ?.
+     FIND FIRST DICTDB._Constraint OF DICTDB._File WHERE
+     DICTDB._Constraint._Con-Name = DICTDB2._Constraint._Con-Name NO-LOCK NO-ERROR.
+     IF NOT AVAILABLE (DICTDB._Constraint)
+      THEN
+       IF DICTDB2._Constraint._Con-Type = "C" OR DICTDB2._Constraint._Con-Type = "D" OR DICTDB2._Constraint._Con-Type = "F" THEN
+         Constr1 = Constr1 + 'DROP CONSTRAINT "' + DICTDB2._Constraint._Con-Name + '" ON "' + DICTDB2._File._File-Name + '"'+ "~n" + "~n" .
+       ELSE DO:
+           df-con[1] = 'DROP CONSTRAINT "' + DICTDB2._Constraint._Con-Name + '" ON "' + DICTDB2._File._File-Name + '"'.
+           CREATE df-info.
+           ASSIGN df-info.df-seq = dfseq
+                  dfseq = dfseq + 1
+                  df-info.df-tbl = DICTDB2._File._File-name
+                  df-info.df-line = df-con[1].           
+       END.           
+       IF Constr1 <> "" THEN 
+          PUT STREAM ddl UNFORMATTED Constr1.
+    END.          
   
-  IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+  END.  /* end FOR EACH potentially altered file */
+
+  FOR EACH df-info:  
+    IF SUBSTRING(df-line,1,1) <> " " THEN
+      PUT STREAM ddl UNFORMATTED " " SKIP.
+    PUT STREAM ddl UNFORMATTED df-line SKIP.
+  END.
+    
+  IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
     DISPLAY "" @ fil "" @ fld "" @ idx WITH FRAME seeking.
     DISPLAY "" @ fil2 "" @ fld2 "" @ idx2 WITH FRAME seeking.
   END.
@@ -1452,7 +2333,7 @@ DO ON STOP UNDO, LEAVE:
     FIND FIRST DICTDB._Sequence
       WHERE DICTDB._Sequence._Db-recid = drec_db
         AND DICTDB._Sequence._Seq-name = DICTDB2._Sequence._Seq-name NO-ERROR.
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB2._Sequence._Seq-name @ seq WITH FRAME seeking.
     IF AVAILABLE DICTDB._Sequence THEN NEXT.
     CREATE missing.
@@ -1466,7 +2347,7 @@ DO ON STOP UNDO, LEAVE:
     FIND FIRST DICTDB2._Sequence
       WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
         AND DICTDB2._Sequence._Seq-name = DICTDB._Sequence._Seq-name NO-ERROR.
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._Sequence._Seq-name @ seq WITH FRAME seeking.
     CREATE seq-list.
     seq-list.s1-name = DICTDB._Sequence._Seq-name.
@@ -1479,7 +2360,7 @@ DO ON STOP UNDO, LEAVE:
      there is also a seq in DICTDB that's not in DICTDB2.  The 2nd list
      is the potential values to rename to.
   */
-  IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+  IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("").
   ELSE DO:  /* 02/01/29 vap (IZ# 1525) */
     ASSIGN p-comma = "":U
@@ -1491,13 +2372,13 @@ DO ON STOP UNDO, LEAVE:
     END.
   END.
   FOR EACH missing:
-    IF NOT p-batchmode THEN DO:  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO:  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY missing.name @ seq WITH FRAME seeking.
       RUN "prodict/dump/_dmpisub.p"
         (INPUT "s",INPUT-OUTPUT missing.name,OUTPUT ans).
       IF missing.name = ? THEN DELETE missing.
       IF ans = ? THEN DO:
-        IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+        IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
           HIDE FRAME seeking NO-PAUSE.
         user_path = "".
         RETURN.
@@ -1516,7 +2397,7 @@ DO ON STOP UNDO, LEAVE:
       END.  /* p-foo NE ? */
     END.  /* p-batchmode */
   END.  /* FOR EACH missing */
-  IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+  IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("WAIT").
   
   /* handle deleted sequences */
@@ -1525,7 +2406,7 @@ DO ON STOP UNDO, LEAVE:
     ans = TRUE.
     PUT STREAM ddl UNFORMATTED
       'DROP SEQUENCE "' missing.name '"' SKIP.
-    IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
       DISPLAY missing.name @ seq WITH FRAME seeking.
       DISPLAY missing.name @ seq2 WITH FRAME seeking.
     END.
@@ -1542,7 +2423,7 @@ DO ON STOP UNDO, LEAVE:
     PUT STREAM ddl UNFORMATTED
       'RENAME SEQUENCE "' seq-list.s2-name
       '" TO "' seq-list.s1-name '"' SKIP.
-    IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN DO: /* 02/01/29 vap (IZ# 1525) */
       DISPLAY seq-list.s1-name @ seq WITH FRAME seeking.
       DISPLAY seq-list.s1-name @ seq2 WITH FRAME seeking.
     END.
@@ -1555,7 +2436,7 @@ DO ON STOP UNDO, LEAVE:
      Some day!
   */
   FOR EACH seq-list:
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY seq-list.s1-name @ seq WITH FRAME seeking.
   
     FIND DICTDB._Sequence WHERE DICTDB._Sequence._Db-recid = drec_db
@@ -1563,7 +2444,7 @@ DO ON STOP UNDO, LEAVE:
     FIND DICTDB2._Sequence WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
       AND DICTDB2._Sequence._Seq-name = seq-list.s2-name NO-ERROR.
   
-    IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+    IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY seq-list.s1-name @ seq2 WITH FRAME seeking.
   
     /* If l is true we're updateing otherwise we're adding */
@@ -1575,6 +2456,37 @@ DO ON STOP UNDO, LEAVE:
       ddl    = ""
       ddl[1] = (IF l THEN "UPDATE" ELSE "ADD")
                + ' SEQUENCE "' + DICTDB._Sequence._Seq-name + '"'.
+      
+      IF NOT l THEN 
+      DO:
+         IF isDictdbMultiTenant = yes and isDictdb2MultiTenant = no THEN
+         DO:
+             ASSIGN s_errorsLogged = TRUE.
+             OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+               PUT STREAM err-log UNFORMATTED new_lang[3] +
+                        '"' + DICTDB._Sequence._Seq-name + '"' + new_lang[48]     SKIP
+                        '"' + LDBNAME("DICTDB")      + '"'    + new_lang[44]      SKIP
+                        '"' + LDBNAME("DICTDB2")      + '"'     + new_lang[50]     SKIP(1).
+                        
+             OUTPUT STREAM err-log CLOSE.
+ 
+         END.
+         ELSE
+         ASSIGN j = j + 1
+                ddl[j] = " MULTITENANT "  + STRING(DICTDB._Sequence._Seq-attributes[1]).
+      END.
+      ELSE
+      DO:
+         IF DICTDB._Sequence._Seq-attributes[1] <> DICTDB2._Sequence._Seq-attributes[1] THEN
+         DO:
+             ASSIGN s_errorsLogged = TRUE.        
+             OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+         
+             PUT STREAM err-log UNFORMATTED new_lang[3] + new_lang[51]
+                 '"' + DICTDB._Sequence._Seq-name + '"' + new_lang[52] SKIP(1).
+             OUTPUT STREAM err-log CLOSE.    
+         END.
+      END.
       IF NOT l OR 
                DICTDB._Sequence._Seq-init <> DICTDB2._Sequence._Seq-init THEN 
         ASSIGN
@@ -1638,9 +2550,75 @@ DO ON STOP UNDO, LEAVE:
      PUT STREAM ddl UNFORMATTED SKIP(1).
   END.
 
+/*
+OUTPUT TO a.LOG.
+FOR EACH ttObjAttrs.
+    EXPORT ttObjAttrs.
+END.
 
-  {prodict/dump/dmptrail.i
-    &entries      = " "
+FOR EACH ttObjAttrs2.
+    EXPORT ttObjAttrs2.
+END.
+       
+OUTPUT CLOSE.
+
+*/
+
+  /* now for every object we collected, let's dump their encryption policy settings and/or
+     buffer pool settings */
+  FOR EACH ttObjAttrs:
+      /* first see if the object name has been renamed */
+      FIND FIRST renameList WHERE renameList.new-name = ttObjAttrs.obj-name NO-ERROR.
+      IF AVAILABLE renameList THEN
+         FIND FIRST ttObjAttrs2 WHERE ttObjAttrs2.obj-name = renameList.old-name NO-ERROR.
+      ELSE
+         FIND FIRST ttObjAttrs2 WHERE ttObjAttrs2.obj-name = ttObjAttrs.obj-name NO-ERROR.
+      
+      /* if new one with encryption disabled and in primary buffer pool,
+         or in both db's with same cipher or same buffer pool, skip it */
+      IF NOT AVAILABLE ttObjAttrs2 AND ttObjAttrs.obj-cipher = "" AND
+         (ttObjAttrs.obj-buf-pool = "Primary" OR ttObjAttrs.obj-buf-pool = "") THEN NEXT.
+
+      /* now it's either a new one with a cipher or not primary buffer pool,
+        or a different cipher or buffer pool in one of the db's */
+      IF NOT AVAILABLE ttObjAttrs2
+          OR ttObjAttrs.obj-cipher NE ttObjAttrs2.obj-cipher
+          OR ttObjAttrs.obj-buf-pool NE ttObjAttrs2.obj-buf-pool THEN DO:
+
+          /* syntax is 
+            obj-name;obj-type;cipher,value;[buffer-pool,value]
+             
+            where obj-type is TABLE,INDEX or FIELD 
+            cipher and/or buffer-pool may be an empty string
+          */
+
+          ASSIGN c = ttObjAttrs.obj-name + ";".
+          IF ttObjAttrs.obj-type = "blob" OR ttObjAttrs.obj-type = "clob" THEN
+              ASSIGN c = c + "FIELD".
+          ELSE
+              ASSIGN c = c + ttObjAttrs.obj-type.
+    
+          IF (NOT AVAILABLE ttObjAttrs2 AND ttObjAttrs.obj-cipher NE "")
+              OR (AVAILABLE ttObjAttrs2 AND ttObjAttrs.obj-cipher NE ttObjAttrs2.obj-cipher) THEN DO:
+              ASSIGN dumpPol= YES
+                     c = c + ";cipher," + ttObjAttrs.obj-cipher.
+          END.
+    
+          IF (NOT AVAILABLE ttObjAttrs2 AND ttObjAttrs.obj-buf-pool NE "Primary")
+              OR (AVAILABLE ttObjAttrs2 AND ttObjAttrs.obj-buf-pool NE ttObjAttrs2.obj-buf-pool) THEN DO:
+              ASSIGN dumpAltBuf= YES
+                     c = c + ";buffer-pool," + ttObjAttrs.obj-buf-pool.
+          END.
+
+          RUN "prodict/dump/_dmpdefs.p" ("o",0, c).
+      END.
+  END.
+
+  {prodict/dump/dmptrail11.i
+    &entries      = "IF dumpPol THEN PUT STREAM ddl UNFORMATTED
+                      ""encpolicy=yes"" SKIP.
+                     IF dumpAltBuf THEN PUT STREAM ddl UNFORMATTED
+                                            ""bufpool=yes"" SKIP."
     &seek-stream  = "ddl"
     &stream       = "STREAM ddl "
     }  /* adds trailer with code-page-entrie to end of file */
@@ -1649,14 +2627,14 @@ DO ON STOP UNDO, LEAVE:
 END. /* on stop */
 
 /* 02/01/29 vap (IZ# 1525) */
-IF NOT p-batchmode AND NOT stopped AND s_errorsLogged THEN
+IF NOT p-batchmode and not p-silentincrd AND NOT stopped AND s_errorsLogged THEN
    MESSAGE new_lang[27] SKIP
            new_lang[28] SKIP
            new_lang[29] SKIP
            new_lang[30]
    VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
    
-IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   IF stopped THEN
      MESSAGE "Dump terminated."
                    VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
@@ -1665,18 +2643,24 @@ IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
                    VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
 
 DELETE PROCEDURE h_dmputil NO-ERROR.
-IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   HIDE FRAME seeking NO-PAUSE.
 SESSION:IMMEDIATE-DISPLAY = no.
-IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
+IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   run adecomm/_setcurs.p ("").
-RETURN.
 
-FUNCTION CHECK_SA_FIELDS RETURNS LOGICAL (INPUT c1 AS CHAR, INPUT c2 AS CHAR) :
+FINALLY:
+   /* make sure we always delete these */
+   IF VALID-OBJECT(myEPolicy[1]) THEN
+      DELETE OBJECT myEPolicy[1].
 
-    /* ignore this field if they are a combination of ? and empty strings */
-    RETURN 
-            ( NOT (c1 EQ '' AND c2 EQ ?) AND 
-              NOT (c1 EQ ? AND c2 EQ '')).
+   IF VALID-OBJECT(myEPolicy[2]) THEN
+      DELETE OBJECT myEPolicy[2].
 
-END FUNCTION.
+   IF VALID-OBJECT(myObjAttrs[1]) THEN
+      DELETE OBJECT myObjAttrs[1].
+
+   IF VALID-OBJECT(myObjAttrs[2]) THEN
+      DELETE OBJECT myObjAttrs[2].
+   
+END FINALLY.
