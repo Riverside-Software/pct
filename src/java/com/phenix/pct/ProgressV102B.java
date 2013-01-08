@@ -61,11 +61,19 @@ public class ProgressV102B implements ProgressProcedures {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
-        return "pct/pctCompileV10.p";
+        return "pct/v10/pctCompile.p";
     }
 
     public String getIncrementalProcedure() {
-        return "pct/dump_inc102b.p";
+        return "pct/v102b/dump_inc.p";
+    }
+
+    public String getDumpUsersProcedure() {
+        return "pct/v10/dmpUsers.p";
+    }
+
+    public String getLoadUsersProcedure() {
+        return "pct/v10/loadUsers.p";
     }
 
     public boolean needRedirector() {

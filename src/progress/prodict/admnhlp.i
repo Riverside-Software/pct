@@ -30,6 +30,33 @@
 /* Admin Help Contents screen */
 &Global-define Adjust_Schema_dialog_box 37
 
+/* Oracle Dataservers - Server Attributes - Create Foreign Constraints */ 
+&Global-define ORACLE_DatatServer_Create_Constraints_Dialog 53
+/* Oracle Dataservers - Server Attributes - Delete Foreign Constraints */ 
+&Global-define ORACLE_DataServer_Delete_Constraints_Dialog_Box 54
+/* Dataservers - Server Attributes - Activate/Deactivaye Constraints */ 
+&Global-define DataServer_Activate_Deactivate_Constraint_Definitions_Dialog_Box 55
+
+/* MSS Dataservers - Server Attributes - Create Foreign Constraints */ 
+&Global-define MS_SQL_Server_Data_Server_Create_Constraints_Dialog 61
+/* MSS Dataservers - Server Attributes - Delete Foreign Constraints */ 
+&Global-define MS_SQL_Server_DataServer_Delete_Constraints_Dialog_Box 62
+
+/*  */
+&Global-define MS_SQL_Server_DataServer_View_Maintains_Foreign_Constraints 63
+/* MSS Dataservers - Server Attributes - Constraint Properties */
+&Global-define MS_SQL_Server_DataServer_View_Modify_Contraint_Properties_Dialog_Box 64
+
+/* Create MSS DataServer Schema - migration "Advanced" button */
+&Global-define OpenEdge_DB_to_MS_SQL_Advanced_Dialog_Box 65
+/* Create Oracle DataServer Schema - migration "Advanced" button */
+&Global-define OpenEdge_DB_to_ORACLE_Advanced_Dialog_Box 66
+
+/*  */
+&Global-define ORACLE_DataServer_View_Maintains_Foreign_Constraints 67
+/* Oracle Dataservers - Server Attributes - Constraint Properties */
+&Global-define ORACLE_DataServer_View_Modify_Contraint_Properties_Dialog_Box 68
+
 /* Admin Help Contents screen */
 &Global-define Main_Contents 49153
 
@@ -176,7 +203,8 @@
 &GLOBAL-DEFINE Cascade_Revoke_Permissions_Dialog_Box 6
 
 /* Authentication System Domains Dialog Box */
-&GLOBAL-DEFINE Authentication_System_Domains_Dialog_Box 80
+/* &GLOBAL-DEFINE Authentication_System_Domains_Dialog_Box 80 */
+/* &GLOBAL-DEFINE Authentication_System_Domains_Dialog_Box 80 */
 
 /* Select Audit Policies for Dump Dialog Box */
 &GLOBAL-DEFINE Select_Audit_Policies_for_Dump_Dialog_Box 118
@@ -389,3 +417,12 @@
 &Global-define Deselect_Objects_by_Pattern_Match   51
 
 &Global-define Select_Objects_by_Pattern_Match       52
+
+/* Confirm Domain dialog box */
+&Global-define Domains_Dialog_Box 56 
+
+/* Confirm dump data Multi-tenancy dialog box */
+&Global-define Dump_Data_Contents_for_Some_Tables_Multi_tenant_enabled_Dialog_Box 57
+
+/* Confirm Select tenant dialog box */
+&Global-define Select_Tenant_Dialog_Box 60

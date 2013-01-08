@@ -50,6 +50,7 @@ DEFINE {1} SHARED VARIABLE dictObjAttrCache AS LOGICAL                      NO-U
 DEFINE {1} SHARED VARIABLE dictEPolicy      AS prodict.sec._sec-pol-util    NO-UNDO.
 DEFINE {1} SHARED VARIABLE dictObjAttrs     AS prodict.pro._obj-attrib-util NO-UNDO.
 DEFINE {1} SHARED VARIABLE dictLoadOptions  AS OpenEdge.DataAdmin.Binding.IDataDefinitionOptions NO-UNDO.
+DEFINE {1} SHARED VARIABLE dictMonitor      AS OpenEdge.DataAdmin.Binding.ITableDataMonitor NO-UNDO.
 
 /* for bug fix 20050930-006 */
 &IF DEFINED(NOTTCACHE) = 0 &THEN

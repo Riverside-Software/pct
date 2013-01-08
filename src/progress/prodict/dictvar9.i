@@ -1,9 +1,26 @@
 /*********************************************************************
-* Copyright (C) 2005 by Progress Software Corporation. All rights    *
-* reserved.  Prior versions of this work may contain portions        *
-* contributed by participants of Possenet.                           *
+* Copyright (C) 2000,2006 by Progress Software Corporation ("PSC"),  *
+* 14 Oak Park, Bedford, MA 01730, and other contributors as listed   *
+* below.  All Rights Reserved.                                       *
+*                                                                    *
+* The Initial Developer of the Original Code is PSC.  The Original   *
+* Code is Progress IDE code released to open source December 1, 2000.*
+*                                                                    *
+* The contents of this file are subject to the Possenet Public       *
+* License Version 1.0 (the "License"); you may not use this file     *
+* except in compliance with the License.  A copy of the License is   *
+* available as of the date of this notice at                         *
+* http://www.possenet.org/license.html                               *
+*                                                                    *
+* Software distributed under the License is distributed on an "AS IS"*
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. You*
+* should refer to the License for the specific language governing    *
+* rights and limitations under the License.                          *
+*                                                                    *
+* Contributors:                                                      *
 *                                                                    *
 *********************************************************************/
+
 
 /*dictvar.i - dictionary shared variable definitions 
 
@@ -12,6 +29,7 @@ Modified:
    12/28/98 Mario B 12/28/98 Add s_In_Schema_Area enable 1 time notification. 
    07/28/99 Mario B Support for array data types. BUG 19990716-033.
    10/14/99 Mario B Removed shared variable s_Set_Anyway.  No longer needed.
+   02/02/06 fernando Store table names in temp-table - bug 20050930-006.
 */
 
 DEFINE {1} SHARED VARIABLE dict_rog        AS LOGICAL               NO-UNDO.
@@ -30,12 +48,20 @@ DEFINE {1} SHARED VARIABLE cache_db_e       AS CHARACTER EXTENT 64   NO-UNDO.
 
 DEFINE {1} SHARED VARIABLE cache_file#      AS INTEGER  INITIAL 0    NO-UNDO.
 DEFINE {1} SHARED VARIABLE cache_file       AS CHARACTER EXTENT 2048 NO-UNDO.
+DEFINE {1} SHARED VARIABLE l_cache_tt       AS LOGICAL  INIT NO      NO-UNDO.
 
 DEFINE {1} SHARED VARIABLE drec_db          AS RECID    INITIAL ?    NO-UNDO.
 DEFINE {1} SHARED VARIABLE drec_file        AS RECID    INITIAL ?    NO-UNDO.
 
 DEFINE {1} SHARED VARIABLE s_DbRecId        AS RECID    INITIAL ?    NO-UNDO.
 DEFINE {1} SHARED VARIABLE s_In_Schema_Area AS LOGICAL  INIT NO      NO-UNDO.
+
+/* for bug fix 20050930-006 */
+DEFINE {1} SHARED TEMP-TABLE tt_cache_file NO-UNDO
+    FIELD nPos       AS INTEGER
+    FIELD cName      AS CHARACTER
+    FIELD p_flag     AS LOGICAL
+    INDEX nPos IS UNIQUE PRIMARY nPos.
 
 &IF "{&DATASERVER}" = "YES" OR "{&ORACLE-DATASERVER}" = "YES"
  &THEN

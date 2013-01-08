@@ -61,52 +61,26 @@
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
-    <include name="pct/pctCompileV8.p" />
-    <include name="pct/pctCRCV8.p" />
-    <include name="pct/pctDumpData.p" />
-    <include name="pct/dumpSch.p" />
-    <include name="pct/pctLoadData.p" />
-    <include name="pct/loadSch.p" />
+    <!-- I have absolutely no way to test compilation on v8... -->
+    <!-- This may or may not work -->
+    <include name="pct/*.p" />
+    <include name="pct/v8/*.p" />
   </fileset>
   <fileset id="fs.v9" dir="${src.progress}">
     <include name="pct/*.p" />
-    <include name="prodict/**/*.p" />
-    <exclude name="pct/pctCompileV8.p" />
-    <exclude name="pct/pctCompileV10.p" />
-    <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/crcV8.p" />
+    <include name="pct/v9/*.p" />
     <exclude name="pct/_server.p" />
     <exclude name="pct/pctBgCompile.p" />
-    <exclude name="pct/_dmpincr102b.p" />
-    <exclude name="pct/_dmpincr11.p" />
-    <exclude name="pct/_dmpincr.p" />
-    <exclude name="pct/_dmputil11.p" />
-    <exclude name="pct/dump_inc102b.p" />
-    <exclude name="pct/dump_inc11.p" />
     <exclude name="pct/dump_seq.p" />
-    <exclude name="pct/dump_inc.p" />
-    <exclude name="pct/_dmputil.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
     <include name="pct/*.p" />
-    <include name="prodict/**/*.p" />
-    <exclude name="pct/_dmpincr9.p" />
-    <exclude name="pct/_dmpincr11.p" />
-    <exclude name="pct/_dmputil11.p" />
-    <exclude name="pct/dump_inc11.p" />
-    <exclude name="pct/pctCompileV8.p" />
-    <exclude name="pct/pctCompile.p" />
-    <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/crcV8.p" />
-  </fileset>
+    <include name="pct/v10/*.p" />
+    <include name="pct/v102b/*.p" />
+    </fileset>
   <fileset id="fs.v11" dir="${src.progress}">
-    <include name="pct/**/*.p" />
-    <include name="prodict/**/*.p" />
-    <exclude name="pct/_dmpincr9.p" />
-    <exclude name="pct/pctCompileV8.p" />
-    <exclude name="pct/pctCompile.p" />
-    <exclude name="pct/pctCRCV8.p" />
-    <exclude name="pct/crcV8.p" />
+    <include name="pct/*.p" />
+    <include name="pct/v11/*.p" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -208,7 +182,6 @@ PCTBuild=${BUILD_NUMBER}
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
       <fileset dir="${buildDir}">
         <include name="pct/**/*.r" />
-        <include name="prodict/dump/*.r" />
       </fileset>
     </bootstrapLibrary>
 
@@ -367,6 +340,11 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${build-test}" includes="**/*" />
     </jar>
   </target>
+
+  <target name="install" depends="jar" >
+      <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
+      <copy file="${dist}/PCT.jar" todir="w:\tmp"/>
+    </target>
 
   <target name="dist" depends="srcdist,jar,pbuild,testdist" />
 
