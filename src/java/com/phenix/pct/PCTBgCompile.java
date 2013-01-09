@@ -45,7 +45,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
-    private boolean failOnError = false; // FIXME
+    private boolean failOnError = false;
     private boolean xcode = false;
     private boolean noCompile = false;
     private boolean runList = false;
@@ -541,11 +541,9 @@ public class PCTBgCompile extends PCTBgRun {
                 }
                 addCompilationCounters(ok, notOk);
                 logMessages(returnValues);
-                if (err) {
+                if (err && failOnError) {
                     setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
-                    if (failOnError) {
-                        quit();
-                    }
+                    quit();
                 }
             }
         }
