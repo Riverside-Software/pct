@@ -181,10 +181,14 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups={"v10", "v11"})
     public void test11() {
         configureProject("PCTCompileExt/test11/build.xml");
-        expectBuildException("test", "Second task should not be launched");
 
+        expectBuildException("test", "Second task should not be launched");
         File f = new File("PCTCompileExt/test11/build/test2.r");
         assertFalse(f.exists());
+        
+        executeTarget("test2");
+        File f2 = new File("PCTCompileExt/test11/build2/test2.r");
+        assertTrue(f2.exists());
     }
 
     @Test(groups={"v10", "v11"})
