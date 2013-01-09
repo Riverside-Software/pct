@@ -12,6 +12,7 @@
     <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
     <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="schema2.df" />
 
+    <echo file="src/test.i" append="false" message="MESSAGE 'Hello2 !'." />
     <mkdir dir="build1" />
     <PCTCompile destDir="build1" dlcHome="${DLC}" md5="true">
       <fileset dir="src" includes="*.p" />
