@@ -17,18 +17,17 @@
 
 package com.phenix.pct;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
 
 /**
  * Gathers informations from r-code, as the RCODE-INFO system handle could provide. This class is
  * based upon procrc.c from Grant Maizels (grant AT maizels DOT nu). All credits go to his work.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
- * @version $Revision$
  * @since PCT 0.11
  */
 public class RCodeInfo {
@@ -45,20 +44,28 @@ public class RCodeInfo {
     private String md5;
     private long timeStamp;
 
-    private File file;
-    private FileInputStream input;
+    private InputStream input;
     private int segmentTableSize;
     private long signatureSize;
 
     public RCodeInfo(File file) throws InvalidRCodeException, IOException {
-        this.file = file;
-        this.input = new FileInputStream(file);
-
-        processFile();
+        this(new BufferedInputStream(new FileInputStream(file), 8192));
     }
 
-    public File getFile() {
-        return file;
+    /**
+     * Input stream has to support mark()/reset(). Buffer should be large enough, otherwise
+     * this method may throw an IOException. Large enough depends on number of methods and signatures.
+     * This will be fixed in later releases.
+     * 
+     * @param input
+     * @throws InvalidRCodeException
+     * @throws IOException
+     */
+    public RCodeInfo(InputStream input) throws InvalidRCodeException, IOException {
+        this.input = input;
+        this.input.mark(0);
+        processFile();
+        input.close();
     }
 
     /**
@@ -97,9 +104,7 @@ public class RCodeInfo {
     }
 
     private void processFile() throws InvalidRCodeException, IOException {
-        FileChannel fc = input.getChannel();
-
-        long magic = readUnsignedInt(fc, 0, false);
+        long magic = readUnsignedInt(input, 0, false);
         if (magic == MAGIC1) {
             swapped = false;
         } else if (magic == MAGIC2) {
@@ -108,19 +113,19 @@ public class RCodeInfo {
             input.close();
             throw new InvalidRCodeException("Can't find magic number");
         }
-
-        this.version = readUnsignedShort(fc, 14, swapped);
+        
+        this.version = readUnsignedShort(input, 14, swapped);
         this.sixty_four_bits = ((version & 0x4000) != 0);
 
         if ((version & 0x3FFF) >= 1100) {
-            processV11(fc, swapped);
+            processV11(input, swapped);
         } else if ((version & 0x3FFF) > 1000) {
-            processV10(fc, swapped);
+            processV10(input, swapped);
         } else
-            processV9(fc, swapped);
+            processV9(input, swapped);
     }
 
-    void processV11(FileChannel fc, boolean swapped) throws IOException {
+    void processV11(InputStream fc, boolean swapped) throws IOException {
         timeStamp = readUnsignedInt(fc, 4, swapped);
         int md5Offset = readUnsignedShort(fc, 10, swapped);
         // maxFileNumber = readUnsignedShort(fc, 10, swapped);
@@ -136,7 +141,7 @@ public class RCodeInfo {
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
     }
 
-    void processV10(FileChannel fc, boolean swapped) throws IOException {
+    void processV10(InputStream fc, boolean swapped) throws IOException {
         timeStamp = readUnsignedInt(fc, 4, swapped);
         signatureSize = readUnsignedShort(fc, 8, swapped);
         int md5Offset = readUnsignedShort(fc, 10, swapped);
@@ -146,7 +151,7 @@ public class RCodeInfo {
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
     }
 
-    void processV9(FileChannel fc, boolean swapped) throws IOException {
+    void processV9(InputStream fc, boolean swapped) throws IOException {
         timeStamp = readUnsignedInt(fc, 4, swapped);
         signatureSize = readUnsignedShort(fc, 8, swapped);
         int md5Offset = readUnsignedShort(fc, 10, swapped);
@@ -156,40 +161,44 @@ public class RCodeInfo {
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
     }
 
-    private static int readUnsignedShort(FileChannel fc, long pos, boolean swapped)
+    private static int readUnsignedShort(InputStream input, long pos, boolean swapped)
             throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(2);
-        if (fc.position(pos).read(buf) != 2)
-            throw new IOException("Unable to read short at position " + pos);
-
+        byte[] buf = new byte[2];
+        input.reset();
+        input.skip(pos);
+        input.read(buf);
+        
         if (swapped)
-            return (((int) buf.get(1) & 0xFF) << 8) + ((int) buf.get(0) & 0xFF);
+            return (((int) buf[1] & 0xFF) << 8) + ((int) buf[0] & 0xFF);
         else
-            return (((int) buf.get(0) & 0xFF) << 8) + ((int) buf.get(1) & 0xFF);
+            return (((int) buf[0] & 0xFF) << 8) + ((int) buf[1] & 0xFF);
     }
 
-    private static long readUnsignedInt(FileChannel fc, long pos, boolean swapped)
+    private static long readUnsignedInt(InputStream input, long pos, boolean swapped)
             throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(4);
-        if (fc.position(pos).read(buf) != 4)
-            throw new IOException("Unable to read int at position " + pos);
-
+        byte[] buf = new byte[4];
+        input.reset();
+        input.skip(pos);
+        input.read(buf);
+        
         if (swapped)
-            return (((int) buf.get(3) & 0xFF) << 24) + (((int) buf.get(2) & 0xFF) << 16)
-                    + (((int) buf.get(1) & 0xFF) << 8) + ((int) buf.get(0) & 0xFF);
+            return (((int) buf[3] & 0xFF) << 24) + (((int) buf[2] & 0xFF) << 16)
+                    + (((int) buf[1] & 0xFF) << 8) + ((int) buf[0] & 0xFF);
         else
-            return (((int) buf.get(0) & 0xFF) << 24) + (((int) buf.get(1) & 0xFF) << 16)
-                    + (((int) buf.get(2) & 0xFF) << 8) + ((int) buf.get(3) & 0xFF);
+            return (((int) buf[0] & 0xFF) << 24) + (((int) buf[1] & 0xFF) << 16)
+                    + (((int) buf[2] & 0xFF) << 8) + ((int) buf[3] & 0xFF);
     }
 
-    private static String bufferToHex(FileChannel fc, int startOffset, int length)
+    private static String bufferToHex(InputStream input, int startOffset, int length)
             throws IOException {
-        ByteBuffer buf = ByteBuffer.allocate(length);
-        fc.position(startOffset).read(buf);
+        byte[] buf = new byte[length];
+        input.reset();
+        input.skip(startOffset);
+        input.read(buf);
 
         StringBuffer hexString = new StringBuffer(2 * length);
         for (int i = 0; i < length; i++)
-            appendHexPair(buf.get(i), hexString);
+            appendHexPair(buf[i], hexString);
 
         return hexString.toString();
     }

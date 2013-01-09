@@ -19,13 +19,12 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.text.MessageFormat;
 
 /**
  * Selector for rcode
@@ -104,31 +103,20 @@ public class RCodeSelector extends BaseExtendSelector {
             if (e == null)
                 return true;
             try {
-                File f = File.createTempFile("pct", ".r");
-                f.deleteOnExit();
-                FileOutputStream fos = new FileOutputStream(f);
-                copyFile(reader.getInputStream(e), fos);
-                fos.close();
-                file2 = new RCodeInfo(f);
+                file2 = new RCodeInfo(new BufferedInputStream(reader.getInputStream(e)));
             } catch (Exception e2) {
                 return true;
             }
         }
 
         switch (mode) {
-            case MODE_CRC: return (file1.getCRC() != file2.getCRC());
-            case MODE_MD5: return !file1.getMD5().equals(file2.getMD5());
+            case MODE_CRC: 
+                log(MessageFormat.format("CRC File1 {0} File2 {1}", file1.getCRC(), file2.getCRC()), Project.MSG_INFO);
+                return (file1.getCRC() != file2.getCRC());
+            case MODE_MD5:
+                log(MessageFormat.format("MD5 File1 {0} File2 {1}", file1.getMD5(), file2.getMD5()), Project.MSG_INFO);
+                return !file1.getMD5().equals(file2.getMD5());
             default: return true;
         }
-    }
-    
-    public static void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[4096];
-        int bytesRead = in.read(buf);
-        while (bytesRead != -1) {
-            out.write(buf, 0, bytesRead);
-            bytesRead = in.read(buf);
-        }
-        out.flush();
     }
 }
