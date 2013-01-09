@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.BuildException;
@@ -181,5 +182,14 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("test2");
         f = new File("PCTCreateBase/test11/build/test.r");
         assertTrue(f.exists());
+    }
+
+    @Test(groups = {"all"})
+    public void test12() {
+        configureProject("PCTCreateBase/test12/build.xml");
+        
+        expectBuildException("test", "Structure file not found");
+        File f = new File("PCTCreateBase/test12/db/test.db");
+        assertFalse(f.exists());
     }
 }

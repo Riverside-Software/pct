@@ -263,6 +263,9 @@ public class PCTCreateBase extends PCT {
         }
 
         if (structFile != null) {
+            if (!structFile.exists())
+                throw new BuildException(MessageFormat.format(
+                        Messages.getString("PCTCreateBase.6"), structFile.getAbsolutePath()));
             exec = structCmdLine();
             exec.execute();
         }
