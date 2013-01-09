@@ -16,4 +16,18 @@
     </PCTCompileExt>
   </target>
 
+  <target name="test2">
+  	<mkdir dir="build2" />
+  	<PCTCompileExt graphicalMode="false" destDir="build2" dlcHome="${DLC}" failOnError="false">
+      <fileset dir="src">
+        <include name="test1.p" />	
+      </fileset>
+    </PCTCompileExt>
+  	<PCTCompileExt graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test2.p" />	
+      </fileset>	
+    </PCTCompileExt>
+  </target>
+
 </project>
