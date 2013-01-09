@@ -21,7 +21,7 @@ package com.phenix.pct;
  * Interface which has to be implement to reflect programs used by PCT depending on Progress
  * version.
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
 public abstract interface ProgressProcedures {

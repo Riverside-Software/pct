@@ -24,7 +24,7 @@ import java.io.File;
 /**
  * Generates a file containing CRC for each table (multiple databases allowed)
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  * @deprecated Since PCT 0.9 -- Use PCTBgCRC instead
  */

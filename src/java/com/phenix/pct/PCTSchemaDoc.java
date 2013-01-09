@@ -24,7 +24,7 @@ import java.io.File;
 /**
  * Creates database documentation
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTSchemaDoc extends PCTRun {
     private File destFile = null;
