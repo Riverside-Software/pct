@@ -26,7 +26,7 @@ import java.io.File;
 /**
  * Selector for rcode
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  * @since PCT 0.11
  */
 public class CRCDifferent extends BaseExtendSelector {

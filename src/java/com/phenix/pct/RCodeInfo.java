@@ -1,3 +1,20 @@
+/*
+ * Copyright  2000-2004 The Apache Software Foundation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.phenix.pct;
 
 import java.io.File;
@@ -10,7 +27,7 @@ import java.nio.channels.FileChannel;
  * Gathers informations from r-code, as the RCODE-INFO system handle could provide. This class is
  * based upon procrc.c from Grant Maizels (grant AT maizels DOT nu). All credits go to his work.
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  * @version $Revision$
  * @since PCT 0.11
  */

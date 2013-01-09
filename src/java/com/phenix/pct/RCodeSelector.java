@@ -15,6 +15,7 @@
  *
  */
 
+
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
@@ -29,7 +30,7 @@ import java.io.OutputStream;
 /**
  * Selector for rcode
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  * @since PCT 0.17
  */
 public class RCodeSelector extends BaseExtendSelector {
