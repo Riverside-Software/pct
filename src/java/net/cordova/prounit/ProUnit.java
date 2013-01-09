@@ -13,7 +13,7 @@ import com.phenix.pct.PCTRun;
  * <a href="http://sourceforge.net/projects/prounit/">the SourceForge project's page</a>
  * or <a href="http://www.mycgiserver.com/~flaviocordova/prounit/index.htm">ProUnit's website</a>.
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class ProUnit extends PCTRun {

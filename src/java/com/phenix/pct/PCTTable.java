@@ -20,7 +20,7 @@ package com.phenix.pct;
 /**
  * Table object for PCTLoadData
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
 public class PCTTable {

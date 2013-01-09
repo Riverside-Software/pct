@@ -26,7 +26,7 @@ import java.text.MessageFormat;
 /**
  * Loads schema into database
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
