@@ -53,8 +53,13 @@
  */
 package com.phenix.pct;
 
+import java.io.File;
+
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 
 /**
  * Class for testing PCTLoadSchema task
@@ -103,12 +108,50 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     public void test5() {
         configureProject("PCTLoadSchema/test5/build.xml");
         executeTarget("base");
-        executeTarget("update");
+        expectBuildException("update", "Frozen table, so index can't be created");
 
         expectBuildException("test1", "");
         executeTarget("update-unfreeze");
 
         executeTarget("test1");
         expectBuildException("test2", "");
+    }
+    
+    @Test(groups = { "all" })
+    public void test6() {
+        configureProject("PCTLoadSchema/test6/build.xml");
+        
+        expectBuildException("base", "Invalid schema file");
+        File f = new File("PCTLoadSchema/test6/test.e");
+        assertTrue(f.exists());
+    }
+    
+    @Test(groups = { "all" })
+    public void test7() {
+        configureProject("PCTLoadSchema/test7/build.xml");
+
+        File f = new File("PCTLoadSchema/test7/test.e");
+        assertTrue(f.exists());
+        executeTarget("base");
+        assertFalse(f.exists());
+    }
+
+    @Test(groups = { "all" })
+    public void test8() {
+        configureProject("PCTLoadSchema/test8/build.xml");
+        
+        expectBuildException("base", "Invalid schema file");
+        File f = new File("PCTLoadSchema/test8/test.e");
+        assertTrue(f.exists());
+
+        executeTarget("base2");
+        assertTrue(f.exists());
+        
+        expectBuildException("test1", "No Tab2 in DB");
+        File f2 = new File("PCTLoadSchema/test8/build/test.r");
+        assertFalse(f2.exists());
+        
+        executeTarget("test2");
+        assertTrue(f2.exists());
     }
 }

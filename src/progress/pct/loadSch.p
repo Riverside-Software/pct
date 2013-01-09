@@ -95,6 +95,12 @@ IF lOnline THEN
   SESSION:SCHEMA-CHANGE = 'NEW OBJECTS'.
 &ENDIF
 
+/* Clears existing error files */
+FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
+IF FILE-INFO:FULL-PATHNAME NE ? THEN DO:
+  OS-DELETE VALUE(FILE-INFO:FULL-PATHNAME).
+END.
+
 RUN prodict/load_df.p (INPUT cSrcFile + ',' + STRING(lCommit, 'yes/no')) NO-ERROR.
 
 IF lUnfreeze THEN DO:
@@ -112,4 +118,14 @@ IF lUnfreeze THEN DO:
    DELETE OBJECT hBuffer.
 END.
 
-RETURN RETURN-VALUE.
+/* If file is present, then there are errors during load */
+FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
+IF (FILE-INFO:FULL-PATHNAME NE ?) THEN DO:
+  MESSAGE 'Errors during load. Log file can be found in ' + FILE-INFO:FULL-PATHNAME.
+  IF lCommit THEN 
+    RETURN '0'.
+  ELSE
+    RETURN '1'.
+END.
+
+RETURN '0'.
