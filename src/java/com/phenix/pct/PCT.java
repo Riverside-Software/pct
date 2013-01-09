@@ -90,6 +90,7 @@ public abstract class PCT extends Task {
 
         try {
             version = DLCVersion.getObject(dlcHome);
+            log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
         } catch (IOException caught) {
             throw new BuildException(caught);
         } catch (InvalidRCodeException caught) {
@@ -108,6 +109,7 @@ public abstract class PCT extends Task {
             this.pp = new ProgressV8();
         else
             throw new BuildException("Invalid Progress version : " + version.toString());
+        log("Using object : " + pp.getClass().getName(), Project.MSG_VERBOSE);
     }
 
     /**
