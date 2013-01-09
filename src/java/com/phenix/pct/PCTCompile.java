@@ -42,7 +42,6 @@ public class PCTCompile extends PCTRun {
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
-    private boolean failOnError = false;
     private boolean xcode = false;
     private boolean noCompile = false;
     private boolean runList = false;
@@ -160,16 +159,6 @@ public class PCTCompile extends PCTRun {
      */
     public void setDebugListing(boolean debugListing) {
         this.debugListing = debugListing;
-    }
-
-    /**
-     * Immediatly quit if a progress procedure fails to compile
-     * 
-     * @param failOnError "true|false|on|off|yes|no"
-     * TODO Useless method, already present in PCTRun
-     */
-    public void setFailOnError(boolean failOnError) {
-        this.failOnError = failOnError;
     }
 
     /**
@@ -358,7 +347,7 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FORCECOMPILE=" + (this.forceCompile ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FAILONERROR=" + (this.failOnError ? 1 : 0)); //$NON-NLS-1$
+            bw.write("FAILONERROR=" + (failOnError ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XCODE=" + (this.xcode ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();

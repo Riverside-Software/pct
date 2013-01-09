@@ -79,7 +79,7 @@ public class PCTRun extends PCT {
     protected Collection<RunParameter> runParameters = null;
     protected List<OutputParameter> outputParameters = null;
     private boolean batchMode = true;
-    private boolean failOnError = true;
+    protected boolean failOnError = true;
     private String resultProperty = null;
     private File assemblies = null;
 
