@@ -2,7 +2,6 @@ package eu.rssw.pct.prolint;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +22,7 @@ import org.w3c.dom.Element;
 
 public class XMLLintCallback implements ILintCallback {
     private File output;
-    private List /*<LintWarning>*/ warnings = new ArrayList /*<LintWarning>*/ ();
+    private List<LintWarning> warnings = new ArrayList<LintWarning>();
 
     public XMLLintCallback(File file) {
         this.output = file;
@@ -49,8 +48,7 @@ public class XMLLintCallback implements ILintCallback {
             Document doc = DOM_IMPL.createDocument(null, "lint", null);
             Element root = doc.getDocumentElement();
 
-            for (Iterator iter = warnings.iterator(); iter.hasNext();) {
-                LintWarning warning = (LintWarning) iter.next();
+            for (LintWarning warning : warnings) {
                 Element w = doc.createElement("warning");
                 w.setAttribute("rule", warning.getRule());
                 w.setAttribute("category", warning.getCategory());
