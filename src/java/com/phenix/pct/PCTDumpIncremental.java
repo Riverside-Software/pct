@@ -172,7 +172,7 @@ public class PCTDumpIncremental extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpIncremental.6")); //$NON-NLS-1$
         }
 
-        prepareExecTask();
+        checkDlcHome();
 
         setProcedure(getProgressProcedures().getIncrementalProcedure());
         addParameter(new RunParameter("DFFileName", destFile.getAbsolutePath()));
