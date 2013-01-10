@@ -45,7 +45,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
-    private boolean failOnError = false;
+    private boolean failOnError = true;
     private boolean xcode = false;
     private boolean noCompile = false;
     private boolean runList = false;
