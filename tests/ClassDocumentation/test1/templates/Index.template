@@ -1,0 +1,24 @@
+<!--
+/**********************************************************************
+ * Copyright (C) 2006-2012 by Consultingwerk Ltd. ("CW") -            *
+ * www.consultingwerk.de and other contributors as listed             *
+ * below.  All Rights Reserved.                                       *
+ *                                                                    *
+ *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
+ *   KIND, either express or implied.                                 *
+ *                                                                    *
+ *  Contributors:                                                     *
+ *                                                                    *
+ **********************************************************************/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+    <HEAD>
+        <meta http-equiv="expires" content="0">
+        <TITLE>@PAGETITLE@</TITLE>
+    </HEAD>
+    <frameset cols="400,*">
+    <frame src="DocumentList.html" name="DocumentList">
+    <frame name="DocumentDetails">
+    </frameset> 
+</HTML>
