@@ -72,6 +72,8 @@ DEFINE TEMP-TABLE ttDirs NO-UNDO
     FIELD baseDir AS CHARACTER
     FIELD dirName AS CHARACTER.
 
+DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
+
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
 FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
 FUNCTION CheckIncludes RETURNS LOGICAL  (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER) FORWARD.
@@ -352,6 +354,7 @@ PROCEDURE PCTCompile.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+    IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
     COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
@@ -399,6 +402,7 @@ PROCEDURE PCTCompileXref.
     ELSE
         ASSIGN preprocessFile = ?.
         
+    IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
     IF (languages EQ ?) THEN 
         COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
