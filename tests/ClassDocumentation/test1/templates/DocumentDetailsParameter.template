@@ -1,0 +1,21 @@
+<tr>
+    <td colspan="2" style="width:50px">
+        <i>@PARAMETERNAME@</i>
+    </td>
+    <td>
+    </td>
+</tr>
+<tr>
+    <td>
+    </td>
+    <td>
+        Type: <b>@PARAMETERFULLDATATYPE@</b>
+    </td>
+</tr>
+<tr>
+    <td>
+    </td>
+    <td>
+        @PARAMETERCOMMENT@
+    </td>
+</tr>

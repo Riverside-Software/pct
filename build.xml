@@ -81,6 +81,8 @@
   <fileset id="fs.v11" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="pct/v11/*.p" />
+    <include name="ConsultingWerk/**/*.cls" />
+    <include name="ConsultingWerk/**/*.p" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -181,7 +183,7 @@ PCTBuild=${BUILD_NUMBER}
     </bootstrapCompile>
     <bootstrapLibrary destfile="${build}/${libName}" dlcHome="${dlcHome}" encoding="undefined">
       <fileset dir="${buildDir}">
-        <include name="pct/**/*.r" />
+        <include name="**/*.r" />
       </fileset>
     </bootstrapLibrary>
 
