@@ -392,10 +392,7 @@ public abstract class PCTBgRun extends PCT {
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
-                    new Object[]{ /*
-                                   * (this.outputStream == null ? null : this.outputStream
-                                   * .getAbsolutePath())
-                                   */}));
+                    null, options.isVerbose()));
 
             // Defines internal propath
             if (this.internalPropath != null) {

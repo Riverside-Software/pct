@@ -21,7 +21,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class ProgressV102B implements ProgressProcedures {
-    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV102B"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV10"; //$NON-NLS-1$
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
