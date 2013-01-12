@@ -82,6 +82,7 @@ public class PCTRun extends PCT {
     protected boolean failOnError = true;
     private String resultProperty = null;
     private File assemblies = null;
+    private boolean verbose = false;
 
     // Internal use
     protected ExecTask exec = null;
@@ -438,6 +439,20 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Tells underlying Progress session to be verbose
+     * 
+     * @param verbose Boolean
+     * @since 0.19
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    /**
      * Sets the name of a property in which the return valeur of the Progress procedure should be
      * stored. Only of interest if failonerror=false.
      * 
@@ -546,8 +561,8 @@ public class PCTRun extends PCT {
                     br.close();
                     getProject().setNewProperty(param.getName(), s);
                 } catch (FileNotFoundException fnfe) {
-                    log(MessageFormat
-                            .format(Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    log(MessageFormat.format(
+                            Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
                     cleanup();
                     throw new BuildException(fnfe);
                 } catch (IOException ioe) {
@@ -555,8 +570,8 @@ public class PCTRun extends PCT {
                         br.close();
                     } catch (IOException ioe2) {
                     }
-                    log(MessageFormat
-                            .format(Messages.getString("PCTRun.10"), new Object[]{param.getName(), f.getAbsolutePath()}), Project.MSG_ERR); //$NON-NLS-1$
+                    log(MessageFormat.format(
+                            Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
                     cleanup();
                     throw new BuildException(ioe);
                 }
@@ -574,8 +589,7 @@ public class PCTRun extends PCT {
             int ret = Integer.parseInt(s);
 
             if (ret != 0 && failOnError) {
-                throw new BuildException(MessageFormat.format(
-                        Messages.getString("PCTRun.6"), new Object[]{Integer.valueOf(ret)})); //$NON-NLS-1$
+                throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.6"), ret)); //$NON-NLS-1$
             }
             maybeSetResultPropertyValue(ret);
         } catch (FileNotFoundException fnfe) {
@@ -712,7 +726,7 @@ public class PCTRun extends PCT {
                     tmpSep = this.numsep.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numsep"}), nfe); //$NON-NLS-1$
+                            "numsep"), nfe); //$NON-NLS-1$
             }
             list.add("-numsep"); //$NON-NLS-1$
             list.add(Integer.toString(tmpSep));
@@ -727,7 +741,7 @@ public class PCTRun extends PCT {
                     tmpDec = this.numdec.charAt(0);
                 else
                     throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            new Object[]{"numdec"}), nfe); //$NON-NLS-1$
+                            "numdec"), nfe); //$NON-NLS-1$
             }
             list.add("-numdec"); //$NON-NLS-1$
             list.add(Integer.toString(tmpDec));
@@ -745,7 +759,7 @@ public class PCTRun extends PCT {
             // XXX Yes, it's redundant !
             if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
-                        new Object[]{this.tempDir}));
+                        this.tempDir));
             }
             list.add("-T");
             list.add(this.tempDir.getAbsolutePath());
@@ -806,7 +820,7 @@ public class PCTRun extends PCT {
                 charset = Charset.forName(zz);
             }
         } catch (IllegalArgumentException caught) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
+            log(MessageFormat.format(Messages.getString("PCTCompile.46"), zz), Project.MSG_INFO); //$NON-NLS-1$
             charset = Charset.defaultCharset();
         }
         if (charset == null) {
@@ -855,10 +869,9 @@ public class PCTRun extends PCT {
                 outputStream = new File(
                         System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
-            bw.write(MessageFormat.format(
-                    this.getProgressProcedures().getInitString(),
-                    new Object[]{(this.outputStream == null ? null : this.outputStream
-                            .getAbsolutePath())}));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
+                    (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
+                    verbose));
 
             // Defines aliases
             if (dbConnList != null) {
@@ -866,7 +879,7 @@ public class PCTRun extends PCT {
                 for (PCTConnection dbc : dbConnList) {
                     String connect = dbc.createConnectString();
                     bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
-                            new Object[]{connect}));
+                            connect));
 
                     Collection<PCTAlias> aliases = dbc.getAliases();
                     if (aliases != null) {
@@ -886,7 +899,7 @@ public class PCTRun extends PCT {
                 String[] lst = this.internalPropath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
                     bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
-                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                            escapeString(lst[k]) + File.pathSeparatorChar));
                 }
             }
 
@@ -898,7 +911,7 @@ public class PCTRun extends PCT {
                 String[] lst = this.propath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
                     bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
-                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                            escapeString(lst[k]) + File.pathSeparatorChar));
                 }
             }
 
@@ -907,11 +920,10 @@ public class PCTRun extends PCT {
                 for (RunParameter param : runParameters) {
                     if (param.validate()) {
                         bw.write(MessageFormat.format(this.getProgressProcedures()
-                                .getParameterString(), new Object[]{escapeString(param.getName()),
-                                escapeString(param.getValue())}));
+                                .getParameterString(), escapeString(param.getName()),
+                                escapeString(param.getValue())));
                     } else {
-                        log(MessageFormat.format(
-                                Messages.getString("PCTRun.9"), new Object[]{param.getName()}), Project.MSG_WARN); //$NON-NLS-1$
+                        log(MessageFormat.format(Messages.getString("PCTRun.9"), param.getName()), Project.MSG_WARN); //$NON-NLS-1$
                     }
                 }
             }
@@ -922,7 +934,7 @@ public class PCTRun extends PCT {
                 for (OutputParameter param : outputParameters) {
                     param.setProgressVar("outParam" + zz++);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
-                            .getOutputParameterDeclaration(), new Object[]{param.getProgressVar()}));
+                            .getOutputParameterDeclaration(), param.getProgressVar()));
                 }
             }
 
@@ -942,7 +954,7 @@ public class PCTRun extends PCT {
 
             // Calls progress procedure
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    new Object[]{escapeString(this.procedure), sb.toString()}));
+                    escapeString(this.procedure), sb.toString()));
             // Checking return value
             bw.write(MessageFormat.format(this.getProgressProcedures().getAfterRun(),
                     new Object[]{}));

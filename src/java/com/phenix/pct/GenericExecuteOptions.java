@@ -60,6 +60,7 @@ public class GenericExecuteOptions {
     private String resultProperty = null;
     private File tempDir = null;
     private File baseDir = null;
+    private boolean verbose = false;
 
     public GenericExecuteOptions(Project p) {
         project = p;
@@ -386,6 +387,13 @@ public class GenericExecuteOptions {
         this.resultProperty = resultProperty;
     }
 
+    /**
+     * @since 0.19 
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
     public void setFailOnError(boolean failOnError) {
         throw new BuildException(MessageFormat.format(
                 Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -493,6 +501,10 @@ public class GenericExecuteOptions {
 
     public String getProcedure() {
         return procedure;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 
     public void setProcedure(String procedure) {
