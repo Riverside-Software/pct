@@ -24,10 +24,12 @@ public class ProcedureCompilationUnit {
     public List<Procedure> procedures = new ArrayList<Procedure>();
 
     public void toXML(File out) throws JAXBException, IOException {
+        FileOutputStream fos = new FileOutputStream(out);
         JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(this, new FileOutputStream(out));
+        marshaller.marshal(this, fos);
+        fos.close();
     }
 
     @XmlRootElement(name = "comment")
