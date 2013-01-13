@@ -1,3 +1,4 @@
+^.sonar$
 ^build$
 ^build-test$
 ^build-v8$
