@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+  <property name="sonar.host.url" value="http://epsilon:9000" />
+  <property name="sonar.jdbc.url" value="jdbc:mysql://epsilon:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+  <property name="sonar.jdbc.username" value="sonar" />
+  <property name="sonar.jdbc.password" value="sonar" />
+  <property name="sonar.projectKey" value="eu.rssw.pct:${JOB_NAME}" />
+  <property name="sonar.projectName" value="Simple Java Project analyzed with the Sonar Ant Task" />
+  <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
+  <property name="sonar.projectDate" value="" />
+  <property name="sonar.language" value="java" />
+  <property name="sonar.sources" value="src/java" />
+  <property name="sonar.binaries" value="build" />
+  <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" />
+
+  <target name="sonar" depends="build">
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+        <classpath path="sonar-ant-task-*.jar" />
+    </taskdef>
+ 
+    <sonar:sonar />
+  </target>
+
+</project>
