@@ -37,10 +37,12 @@ public class ClassCompilationUnit {
     public List<Using> usings = new ArrayList<Using>();
 
     public void classToXML(File out) throws JAXBException, IOException {
+        FileOutputStream fos = new FileOutputStream(out);
         JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(this, new FileOutputStream(out));
+        marshaller.marshal(this, fos);
+        fos.close();
     }
 
     
