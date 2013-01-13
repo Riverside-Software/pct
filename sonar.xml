@@ -14,7 +14,7 @@
   <property name="sonar.binaries" value="build" />
   <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" />
 
-  <target name="sonar" depends="build">
+  <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
         <classpath path="sonar-ant-task-*.jar" />
     </taskdef>
