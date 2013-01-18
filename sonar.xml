@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
-  <property name="sonar.host.url" value="http://epsilon:9000" />
+  <property name="sonar.host.url" value="http://epsilon:8080/sonar" />
   <property name="sonar.jdbc.url" value="jdbc:mysql://epsilon:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
   <property name="sonar.jdbc.username" value="sonar" />
   <property name="sonar.jdbc.password" value="sonar" />
