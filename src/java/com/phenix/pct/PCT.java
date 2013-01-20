@@ -66,10 +66,8 @@ public abstract class PCT extends Task {
      */
     public final void setDlcHome(File dlcHome) {
         if (!dlcHome.exists()) {
-            throw new BuildException(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCT.1"), new Object[]{"dlcHome", dlcHome.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("PCT.1"), "dlcHome", dlcHome.getAbsolutePath())); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         this.dlcHome = dlcHome;
@@ -136,9 +134,8 @@ public abstract class PCT extends Task {
     public final void setDlcJava(File dlcJava) {
         if (!dlcJava.exists()) {
             throw new BuildException(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCT.1"), new Object[]{"dlcJava", dlcJava.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
+                    MessageFormat.format(
+                            Messages.getString("PCT.1"), new Object[]{"dlcJava", dlcJava.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         this.dlcJava = dlcJava;
@@ -156,7 +153,7 @@ public abstract class PCT extends Task {
 
     /**
      * Add an environment variable to the launched process.
-     *
+     * 
      * @param var new environment variable.
      */
     public final void addEnv(Environment.Variable var) {
@@ -212,7 +209,7 @@ public abstract class PCT extends Task {
     protected final File getJVM() {
         File f1 = new File(getJDKBin(), "java");
         File f2 = new File(getJDKBin(), "java.exe");
-        
+
         return (f1.exists() ? f1 : f2);
     }
 
@@ -287,23 +284,30 @@ public abstract class PCT extends Task {
     public abstract void execute() throws BuildException;
 
     protected void checkDlcHome() {
-        if (getDlcHome() == null) {
+        if (dlcHome == null) {
+            File f = DlcHome.getDlcHome();
+            if (f != null) {
+                setDlcHome(f);
+            }
+        }
+
+        if (dlcHome == null) {
             // dlcHome attribute is not defined, try to use DLC variable (-DDLC=...)
             String str = System.getProperty("DLC"); //$NON-NLS-1$
             if (str != null) {
-                log(MessageFormat.format(Messages.getString("PCT.4"), new Object[]{ str }));
+                log(MessageFormat.format(Messages.getString("PCT.4"), str));
                 setDlcHome(new File(str));
             }
         }
-        if (getDlcHome() == null) {
+        if (dlcHome == null) {
             // dlcHome still not defined, try to use DLC environment variable
             String str = System.getenv("DLC"); //$NON-NLS-1$
             if (str != null) {
-                log(MessageFormat.format(Messages.getString("PCT.5"), new Object[]{ str }));
+                log(MessageFormat.format(Messages.getString("PCT.5"), str));
                 setDlcHome(new File(str));
             }
         }
-        if (getDlcHome() == null) {
+        if (dlcHome == null) {
             // Fail...
             throw new BuildException(Messages.getString("PCT.3")); //$NON-NLS-1$
         }
@@ -520,9 +524,9 @@ public abstract class PCT extends Task {
     // Extracted from commons-io
 
     /**
-     * Deletes a directory recursively. 
-     *
-     * @param directory  directory to delete
+     * Deletes a directory recursively.
+     * 
+     * @param directory directory to delete
      * @throws IOException in case deletion is unsuccessful
      */
     protected static void deleteDirectory(File directory) throws IOException {
@@ -533,15 +537,14 @@ public abstract class PCT extends Task {
         cleanDirectory(directory);
 
         if (!directory.delete()) {
-            String message =
-                "Unable to delete directory " + directory + ".";
+            String message = "Unable to delete directory " + directory + ".";
             throw new IOException(message);
         }
     }
 
     /**
      * Cleans a directory without deleting it.
-     *
+     * 
      * @param directory directory to clean
      * @throws IOException in case cleaning is unsuccessful
      */
@@ -557,7 +560,7 @@ public abstract class PCT extends Task {
         }
 
         File[] files = directory.listFiles();
-        if (files == null) {  // null if security restricted
+        if (files == null) { // null if security restricted
             throw new IOException("Failed to list contents of " + directory);
         }
 
@@ -581,11 +584,11 @@ public abstract class PCT extends Task {
      * The difference between File.delete() and this method are:
      * <ul>
      * <li>A directory to be deleted does not have to be empty.</li>
-     * <li>You get exceptions when a file or directory cannot be deleted.
-     *      (java.io.File methods returns a boolean)</li>
+     * <li>You get exceptions when a file or directory cannot be deleted. (java.io.File methods
+     * returns a boolean)</li>
      * </ul>
-     *
-     * @param file  file or directory to delete, must not be <code>null</code>
+     * 
+     * @param file file or directory to delete, must not be <code>null</code>
      * @throws NullPointerException if the directory is <code>null</code>
      * @throws FileNotFoundException if the file was not found
      * @throws IOException in case deletion is unsuccessful
@@ -596,11 +599,10 @@ public abstract class PCT extends Task {
         } else {
             boolean filePresent = file.exists();
             if (!file.delete()) {
-                if (!filePresent){
+                if (!filePresent) {
                     throw new FileNotFoundException("File does not exist: " + file);
                 }
-                String message =
-                    "Unable to delete file: " + file;
+                String message = "Unable to delete file: " + file;
                 throw new IOException(message);
             }
         }
