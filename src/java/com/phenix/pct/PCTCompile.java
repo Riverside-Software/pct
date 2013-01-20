@@ -492,6 +492,8 @@ public class PCTCompile extends PCTRun {
             this.preprocess = false; // Useless for now, but just in case...
         }
 
+        checkDlcHome();
+
         try {
             writeFileList();
             writeParams();
