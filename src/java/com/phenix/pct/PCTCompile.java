@@ -20,6 +20,7 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.util.FileUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -90,11 +91,11 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Generate String Xref Files (STRING-XREF).
-     * Option is ignored when working with Progress v9 and below (FIXME)
-     *
+     * Generate String Xref Files (STRING-XREF). Option is ignored when working with Progress v9 and
+     * below (FIXME)
+     * 
      * @param stringXref "true|false|on|off|yes|no"
-     *
+     * 
      * @since 0.19
      */
     public void setStringXref(boolean stringXref) {
@@ -102,11 +103,10 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Turns on/off R-Code generation in destDir
-     * Attribute SAVE=[TRUE|FALSE] from COMPILE statement
-     *
+     * Turns on/off R-Code generation in destDir Attribute SAVE=[TRUE|FALSE] from COMPILE statement
+     * 
      * @param saveR "true|false|on|off|yes|no"
-     *
+     * 
      * @since 0.19
      */
     public void setSaveR(boolean saveR) {
@@ -276,7 +276,8 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Identifies which language segments to include in the compiled r-code. LANGUAGES option of the COMPILE statement
+     * Identifies which language segments to include in the compiled r-code. LANGUAGES option of the
+     * COMPILE statement
      * 
      * @param languages String
      */
@@ -285,7 +286,8 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Specifies the factor by which ABL increases the length of strings. TEXT-SEG-GROWTH option of the COMPILE statement
+     * Specifies the factor by which ABL increases the length of strings. TEXT-SEG-GROWTH option of
+     * the COMPILE statement
      * 
      * @param growthFactor int (must be positive)
      */
@@ -303,15 +305,52 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
+     * Use relative paths in COMPILE statements, and when defining PROPATH
+     * 
+     * @param rel Boolean
+     * @since PCT 0.19
+     */
+    public void setRelativePaths(boolean rel) {
+        this.relativePaths = rel;
+    }
+
+    private boolean isDirInPropath(File dir) {
+        for (String str : propath.list()) {
+            if (new File(str).equals(dir))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * 
      * @throws BuildException
      */
     private void writeFileList() throws BuildException {
         try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fsList), getCharset()));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                    fsList), getCharset()));
 
             for (FileSet fs : filesets) {
-                bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
+                if (relativePaths) {
+                    if (!isDirInPropath(fs.getDir()))
+                        log(MessageFormat.format(Messages.getString("PCTCompile.48"), fs.getDir()
+                                .getAbsolutePath()), Project.MSG_WARN);
+                    try {
+                        bw.write("FILESET="
+                                + FileUtils.getRelativePath(
+                                        (baseDir == null ? getProject().getBaseDir() : baseDir),
+                                        fs.getDir()).replace('/', File.separatorChar));
+                    } catch (Exception caught) {
+                        try {
+                            bw.close();
+                        } catch (IOException uncaught) {
+
+                        }
+                        throw new BuildException(caught);
+                    }
+                } else
+                    bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
                 bw.newLine();
 
                 // And get files from fileset
@@ -376,6 +415,8 @@ public class PCTCompile extends PCTRun {
             bw.write("STREAM-IO=" + (this.streamIO ? 1 : 0));
             bw.newLine();
             bw.write("SAVER=" + (this.saveR ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("RELATIVE=" + (relativePaths ? 1 : 0));
             bw.newLine();
             if (languages != null) {
                 bw.write("LANGUAGES=" + languages); //$NON-NLS-1$
@@ -474,17 +515,13 @@ public class PCTCompile extends PCTRun {
 
         if (!this.getDebugPCT()) {
             if (this.fsList.exists() && !this.fsList.delete()) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{this.fsList.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(MessageFormat.format(
+                        Messages.getString("PCTCompile.42"), this.fsList.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
 
             if (this.params.exists() && !this.params.delete()) {
-                log(
-                        MessageFormat
-                                .format(
-                                        Messages.getString("PCTCompile.42"), new Object[]{this.params.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                log(MessageFormat.format(
+                        Messages.getString("PCTCompile.42"), this.params.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
             }
         }
     }

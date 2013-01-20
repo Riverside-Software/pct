@@ -102,6 +102,7 @@ DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL 100.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 
 PROCEDURE getCRC:
     DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
@@ -134,7 +135,8 @@ PROCEDURE setOptions:
            languages = (IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';'))
            gwtFact   = INTEGER(ENTRY(10, ipPrm, ';'))
            multiComp = ENTRY(11, ipPrm, ';') EQ 'true'
-           streamIO  = ENTRY(12, ipPrm, ';') EQ 'true' NO-ERROR.
+           streamIO  = ENTRY(12, ipPrm, ';') EQ 'true'
+           lRelative = ENTRY(13, ipPrm, ';') EQ 'true' NO-ERROR.
 
     ASSIGN opOk = (ERROR-STATUS:ERROR EQ FALSE).
 
@@ -292,12 +294,12 @@ PROCEDURE pctCompile2 PRIVATE:
         RUN logVerbose IN ipSrcProc (SUBSTITUTE("Thread &1 - Compiling &2/&3/&4 [&5]", DYNAMIC-FUNCTION('getThreadNumber' IN ipSrcProc), fsRootDir, fsDir, fsFile, getRecompileLabel(Recompile))).
         IF lXCode THEN DO:
             IF (XCodeKey NE ?) THEN
-                COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
+                COMPILE VALUE(IF lRelative THEN fsDir + (IF fsDir NE '' THEN '/' ELSE '') + fsFile ELSE fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
             ELSE
-                COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+                COMPILE VALUE(IF lRelative THEN fsDir + (IF fsDir NE '' THEN '/' ELSE '') + fsFile ELSE fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
         END.
         ELSE DO:
-            COMPILE VALUE(fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
+            COMPILE VALUE(IF lRelative THEN fsDir + (IF fsDir NE '' THEN '/' ELSE '') + fsFile ELSE fsRootDir + '/' + fsDir + '/' + fsFile) SAVE INTO VALUE(outputDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(dbgList) PREPROCESS VALUE(prepro) LISTING VALUE(listingFile) MIN-SIZE=MinSize GENERATE-MD5=MD5 XREF VALUE(xreffile) APPEND=FALSE NO-ERROR.
         END.
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.

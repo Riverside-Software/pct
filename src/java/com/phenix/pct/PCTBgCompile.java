@@ -65,6 +65,10 @@ public class PCTBgCompile extends PCTBgRun {
     private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
     private int compOk = 0, compNotOk = 0;
 
+    public void setRelativePaths(boolean rel) {
+        getOptions().setRelativePaths(rel);
+    }
+
     /**
      * Reduce r-code size ? MIN-SIZE option of the COMPILE statement
      * 
@@ -398,16 +402,20 @@ public class PCTBgCompile extends PCTBgRun {
                     File outputDir = null;
                     File outputFile = new File(destDir, outputNames[0]);
                     String targetFile = outputFile.getName();
-                    if (extension.equalsIgnoreCase(".cls")) {
-                        // Specific case, as Progress prepends package name automatically
+                    if (extension.equalsIgnoreCase(".cls") || getOptions().useRelativePaths()) {
+                        // Specific case, as Progress prepends package or directory name automatically
                         // So outputDir has to be destDir
                         outputDir = destDir;
                     } else {
                         outputDir = outputFile.getParentFile();
                     }
 
-                    if (!outputDir.exists())
+                    if (getOptions().useRelativePaths() && !outputFile.getParentFile().exists()) {
+                        // When using relative paths, we have to create directory structure 
+                        outputFile.getParentFile().mkdirs();
+                    } else if (!outputDir.exists()) {
                         outputDir.mkdirs();
+                    }
 
                     // Output directory for PCT files
                     File PCTDir = new File(dotPCTDir, outputNames[0]).getParentFile();
@@ -522,7 +530,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(languages == null ? "" : languages).append(';');
             sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
             sb.append(Boolean.toString(multiCompile)).append(';');
-            sb.append(Boolean.toString(streamIO));
+            sb.append(Boolean.toString(streamIO)).append(';');
+            sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths()));
 
             return sb.toString();
         }
