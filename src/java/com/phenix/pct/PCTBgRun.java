@@ -25,6 +25,7 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
 
 import com.phenix.pct.BackgroundWorker.Message;
 
@@ -60,7 +61,7 @@ public abstract class PCTBgRun extends PCT {
     // Internal use : throw BuildException
     private boolean buildException;
     private Throwable buildExceptionSource;
-    
+
     protected File pctLib = null;
     protected int plID = -1; // Unique ID when creating temp files
     private File initProc = null;
@@ -224,7 +225,7 @@ public abstract class PCTBgRun extends PCT {
         buildException = true;
         buildExceptionSource = exception;
     }
-    
+
     private ExecTask prepareExecTask() {
         ExecTask exec = new ExecTask(this);
 
@@ -263,7 +264,8 @@ public abstract class PCTBgRun extends PCT {
         checkDlcHome();
 
         // See comment in PCTRun#execute() on why file name is generated now
-        pctLib = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        pctLib = new File(
+                System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         // Starting the listener thread
         try {
@@ -321,7 +323,7 @@ public abstract class PCTBgRun extends PCT {
             else
                 throw new BuildException(buildExceptionSource);
         }
-            
+
     }
 
     /**
@@ -344,8 +346,7 @@ public abstract class PCTBgRun extends PCT {
                 charset = Charset.forName(zz);
             }
         } catch (IllegalArgumentException caught) {
-            log(MessageFormat.format(
-                    Messages.getString("PCTCompile.46"), new Object[]{zz}), Project.MSG_INFO); //$NON-NLS-1$
+            log(MessageFormat.format(Messages.getString("PCTCompile.46"), zz), Project.MSG_INFO); //$NON-NLS-1$
             charset = Charset.defaultCharset();
         }
         if (charset == null) {
@@ -358,7 +359,7 @@ public abstract class PCTBgRun extends PCT {
 
     private String readCharset() {
         String pfCpInt = null, pfCpStream = null;
-        
+
         // If paramFile is defined, then read it and check for cpStream or cpInternal
         if (options.getParamFile() != null) {
             try {
@@ -366,11 +367,11 @@ public abstract class PCTBgRun extends PCT {
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
             } catch (IOException caught) {
-                
+
             }
         }
-     
-        if (options.getCpStream() != null) 
+
+        if (options.getCpStream() != null)
             return options.getCpStream();
         else if (pfCpStream != null)
             return pfCpStream;
@@ -391,30 +392,29 @@ public abstract class PCTBgRun extends PCT {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 
-            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
-                    null, options.isVerbose()));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(), null,
+                    options.isVerbose()));
 
             // Defines internal propath
             if (this.internalPropath != null) {
                 String[] lst = this.internalPropath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
                     bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
-                            new Object[]{escapeString(lst[k]) + File.pathSeparatorChar}));
+                            escapeString(lst[k]) + File.pathSeparatorChar));
                 }
             }
 
             // Defines parameters
             for (RunParameter param : options.getRunParameters()) {
                 if (param.validate()) {
-                    bw
-                            .write(MessageFormat.format(this.getProgressProcedures()
-                                    .getParameterString(), new Object[]{
-                                    escapeString(param.getName()), escapeString(param.getValue())}));
+                    bw.write(MessageFormat.format(
+                            this.getProgressProcedures().getParameterString(),
+                            escapeString(param.getName()), escapeString(param.getValue())));
                 }
             }
 
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    new Object[]{escapeString(options.getProcedure())}));
+                    escapeString(options.getProcedure())));
 
             bw.close();
         } catch (IOException ioe) {
@@ -427,13 +427,23 @@ public abstract class PCTBgRun extends PCT {
         if (options.getPropath() != null) {
             String[] lst = options.getPropath().list();
             for (int k = lst.length - 1; k >= 0; k--) {
-                list.add(lst[k]);
+                if (options.useRelativePaths()) {
+                    try {
+                        list.add(FileUtils.getRelativePath(
+                                (options.getBaseDir() == null ? getProject().getBaseDir() : options
+                                        .getBaseDir()), new File(lst[k])).replace('/',
+                                File.separatorChar));
+                    } catch (Exception caught) {
+                        throw new BuildException(caught);
+                    }
+                } else {
+                    list.add(lst[k]);
+                }
             }
         }
 
         return list;
     }
-
     protected void preparePropath() {
         if (this.getIncludedPL()) {
             // PL is extracted later, we just have a reference on filename

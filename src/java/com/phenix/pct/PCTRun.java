@@ -25,6 +25,7 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -59,7 +60,7 @@ public class PCTRun extends PCT {
     private File paramFile = null;
     private File iniFile = null;
     private File tempDir = null;
-    private File baseDir = null;
+    protected File baseDir = null;
     private int inputChars = 0;
     private int dirSize = 0;
     private int centuryYearOffset = 0;
@@ -83,6 +84,8 @@ public class PCTRun extends PCT {
     private String resultProperty = null;
     private File assemblies = null;
     private boolean verbose = false;
+    // Defined here, but setter only defined in PCTCompile
+    protected boolean relativePaths = false;
 
     // Internal use
     protected ExecTask exec = null;
@@ -503,8 +506,8 @@ public class PCTRun extends PCT {
         BufferedReader br = null;
 
         checkDlcHome();
-        if (!this.prepared) {
-            this.prepareExecTask();
+        if (!prepared) {
+            prepareExecTask();
         }
 
         try {
@@ -517,30 +520,30 @@ public class PCTRun extends PCT {
             pctLib = new File(
                     System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-            this.preparePropath();
-            this.createInitProcedure();
-            this.setExecTaskParams();
+            preparePropath();
+            createInitProcedure();
+            setExecTaskParams();
 
             // Startup procedure
             exec.createArg().setValue("-p"); //$NON-NLS-1$
-            exec.createArg().setValue(this.initProc.getAbsolutePath());
+            exec.createArg().setValue(initProc.getAbsolutePath());
             if (getIncludedPL() && !extractPL(pctLib)) {
                 throw new BuildException("Unable to extract pct.pl.");
             }
 
             exec.execute();
         } catch (BuildException be) {
-            this.cleanup();
+            cleanup();
             throw be;
         } catch (IOException caught) {
             cleanup();
             throw new BuildException(caught);
         }
 
-        if (this.getProgressProcedures().needRedirector()) {
+        if (getProgressProcedures().needRedirector()) {
             String s = null;
             try {
-                BufferedReader br2 = new BufferedReader(new FileReader(this.outputStream));
+                BufferedReader br2 = new BufferedReader(new FileReader(outputStream));
                 while ((s = br2.readLine()) != null) {
                     log(s, Project.MSG_INFO);
                 }
@@ -551,7 +554,7 @@ public class PCTRun extends PCT {
         }
 
         // Reads output parameter
-        if (this.outputParameters != null) {
+        if (outputParameters != null) {
             for (OutputParameter param : outputParameters) {
                 File f = param.getTempFileName();
                 try {
@@ -614,12 +617,12 @@ public class PCTRun extends PCT {
      * Creates and initialize
      */
     protected void prepareExecTask() {
-        if (!this.prepared) {
+        if (!prepared) {
             exec = new ExecTask(this);
 
             Environment.Variable var = new Environment.Variable();
             var.setKey("DLC"); //$NON-NLS-1$
-            var.setValue(this.getDlcHome().toString());
+            var.setValue(getDlcHome().toString());
             exec.addEnv(var);
 
             for (Variable var2 : getEnvironmentVariables()) {
@@ -910,8 +913,29 @@ public class PCTRun extends PCT {
                 // statement--use -inp parm)
                 String[] lst = this.propath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
-                    bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
-                            escapeString(lst[k]) + File.pathSeparatorChar));
+                    if (relativePaths) {
+                        try {
+                            bw.write(MessageFormat.format(
+                                    this.getProgressProcedures().getPropathString(),
+                                    escapeString(FileUtils
+                                            .getRelativePath(
+                                                    (baseDir == null
+                                                            ? getProject().getBaseDir()
+                                                            : baseDir), new File(lst[k])).replace(
+                                                    '/', File.separatorChar))
+                                            + File.pathSeparatorChar));
+                        } catch (Exception caught) {
+                            try {
+                                bw.close();
+                            } catch (IOException uncaught) {
+                                
+                            }
+                            throw new BuildException(caught);
+                        }
+                    } else {
+                        bw.write(MessageFormat.format(this.getProgressProcedures()
+                                .getPropathString(), escapeString(lst[k]) + File.pathSeparatorChar));
+                    }
                 }
             }
 

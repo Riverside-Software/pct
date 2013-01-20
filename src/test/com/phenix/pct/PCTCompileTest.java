@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
@@ -441,5 +442,40 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(str1.equals("TTY"));
         String str2 = getProject().getProperty("test28-gui");
         assertTrue(str2.startsWith("MS-WIN"));
+    }
+
+    @Test(groups = {"all"})
+    public void test29() {
+        configureProject("PCTCompile/test29/build.xml");
+        executeTarget("build");
+        
+        File f1 = new File("PCTCompile/test29/build1/test.r");
+        assertTrue(f1.exists());
+        File f2 = new File("PCTCompile/test29/build2/test.r");
+        assertTrue(f2.exists());
+        
+        executeTarget("test1");
+        executeTarget("test2");
+        executeTarget("test3");
+
+        String test1Inc = getProject().getProperty("test1-inc");
+        // Absolute paths, so it should be found
+        File ff = new File(test1Inc);
+        assertTrue(ff.exists());
+        String test1Main = getProject().getProperty("test1-main");
+        File ff2 =new File(test1Main);
+        assertTrue(ff2.exists());
+        
+        String test2Inc = getProject().getProperty("test2-inc");
+        assertEquals(test2Inc.replace('\\', '/'), "inc/test.i");
+        String test2Main = getProject().getProperty("test2-main");
+        assertEquals(test2Main.replace('\\', '/'), "src/test.p");
+
+        String test3Main = getProject().getProperty("test3-main");
+        assertEquals(test3Main.replace('\\', '/'), "src/foo/bar/test.p");
+        String test3Inc1 = getProject().getProperty("test3-inc1");
+        assertEquals(test3Inc1.replace('\\', '/'), "src/foo/foo.i");
+        String test3Inc2 = getProject().getProperty("test3-inc2");
+        assertEquals(test3Inc2.replace('\\', '/'), "inc/foo/bar.i");
     }
 }

@@ -61,6 +61,7 @@ public class GenericExecuteOptions {
     private File tempDir = null;
     private File baseDir = null;
     private boolean verbose = false;
+    private boolean relativePaths = false;
 
     public GenericExecuteOptions(Project p) {
         project = p;
@@ -392,6 +393,20 @@ public class GenericExecuteOptions {
      */
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
+    }
+
+    /**
+     * @since PCT 0.19 
+     */
+    public void setRelativePaths(boolean relativePaths) {
+        this.relativePaths = relativePaths;
+    }
+
+    /**
+     * @since PCT 0.19 
+     */
+    public boolean useRelativePaths() {
+        return relativePaths;
     }
 
     public void setFailOnError(boolean failOnError) {
