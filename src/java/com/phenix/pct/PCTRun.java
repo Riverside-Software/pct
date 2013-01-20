@@ -827,7 +827,7 @@ public class PCTRun extends PCT {
             charset = Charset.defaultCharset();
         }
         if (charset == null) {
-            log(Messages.getString("PCTCompile.47"), Project.MSG_INFO); //$NON-NLS-1$
+            log(Messages.getString("PCTCompile.47"), Project.MSG_VERBOSE); //$NON-NLS-1$
             charset = Charset.defaultCharset();
         }
 
@@ -843,11 +843,11 @@ public class PCTRun extends PCT {
                 PFReader reader = new PFReader(new FileInputStream(paramFile));
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
-            } catch (IOException caught) {
+            } catch (IOException uncaught) {
 
             }
         }
-
+        
         if (cpStream != null)
             return cpStream;
         else if (pfCpStream != null)
