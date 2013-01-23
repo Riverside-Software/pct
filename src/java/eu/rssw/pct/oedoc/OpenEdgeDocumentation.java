@@ -207,6 +207,7 @@ public class OpenEdgeDocumentation extends PCT {
                         destFile.getParentFile().mkdirs();
                         visitor.toXML(destFile);
                     }
+                    inputReader.close();
                 }
             }
         } catch (IOException caught) {
