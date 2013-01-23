@@ -30,4 +30,5 @@
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
   <typedef name="db_connection" classname="com.phenix.pct.PCTConnection" />
+  <typedef name="dlc_home" classname="com.phenix.pct.DlcHome" />
 </antlib>
