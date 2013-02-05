@@ -84,6 +84,10 @@
     <!-- <include name="ConsultingWerk/**/*.cls" />
     <include name="ConsultingWerk/**/*.p" /> -->
   </fileset>
+  <fileset id="fs.classDoc" dir="${src.progress}">
+    <include name="ConsultingWerk/**/*.cls" />
+    <include name="ConsultingWerk/**/*.p" />
+  </fileset>
 
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
@@ -245,6 +249,20 @@ PCTBuild=${BUILD_NUMBER}
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" />
     </zip>
+  </target>
+
+  <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
+    <mkdir dir="build-win" />
+    <bootstrapCompile destdir="build-win" md5="true" minSize="true" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+	<zip destFile="classDoc.zip">
+	  <fileset dir="build-win" includes="**/*.r" />
+	</zip>
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
