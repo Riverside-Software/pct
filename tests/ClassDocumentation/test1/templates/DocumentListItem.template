@@ -1,5 +1,0 @@
-<tr>
-    <td style="border:solid 1px gray;">
-        <a href="@HREF@" target="DocumentDetails">@CLASSNAME@</a>
-    </td>
-</tr>

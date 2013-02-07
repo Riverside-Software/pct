@@ -5,13 +5,13 @@
   <target name="test">
       <mkdir dir="doc" />
       <mkdir dir="html" />
-      <ClassDocumentation destDir="doc" >
+      <ClassDocumentation destDir="doc" dlcHome="${DLC}">
           <fileset dir="src" includes="**/*.cls,**/*.p" />
           <propath>
               <pathelement location="src" />
           </propath>
       </ClassDocumentation>
-      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" templateDir="templates" />
+      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" />
   </target>
   
 </project>

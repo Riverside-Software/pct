@@ -3,7 +3,7 @@
 
   <target name="test">
       <mkdir dir="doc" />
-      <extra:classdocumentation destDir="doc" >
+      <extra:classdocumentation destDir="doc" dlcHome="${DLC}">
           <fileset dir="src" includes="**/*.cls,**/*.p" />
           <propath>
               <pathelement location="src" />

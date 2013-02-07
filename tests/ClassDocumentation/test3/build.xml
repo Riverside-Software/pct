@@ -5,7 +5,7 @@
   <target name="test">
       <mkdir dir="doc" />
       <mkdir dir="html" />
-      <ClassDocumentation destDir="doc" >
+      <ClassDocumentation destDir="doc" dlcHome="${DLC}">
           <fileset dir="src" includes="**/*.cls" />
           <propath>
               <pathelement location="src" />

@@ -6,6 +6,7 @@
 ^build-v10$
 ^build-v10-64$
 ^build-v11$
+^build-win$
 ^javadoc$
 ^lib$
 ^sports2000$
@@ -19,3 +20,5 @@
 ^pct-src-.*\.zip$
 ^website-.*\.zip$
 ^src/java/com/phenix/pct/PCT\.properties$
+^temp$
+^classDocTemp$
