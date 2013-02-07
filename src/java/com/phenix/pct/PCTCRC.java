@@ -51,7 +51,7 @@ public class PCTCRC extends PCTRun {
             throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCRC.1")); //$NON-NLS-1$
         }

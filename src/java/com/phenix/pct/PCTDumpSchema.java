@@ -83,12 +83,12 @@ public class PCTDumpSchema extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }
 
-        if (dbConnList.size() > 1) {
+        if (getDbConnections().size() > 1) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.1")); //$NON-NLS-1$
         }

@@ -49,12 +49,12 @@ public class PCTSchemaDoc extends PCTRun {
             throw new BuildException(Messages.getString("PCTSchemaDoc.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.1")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList.size() > 1) {
+        if (getDbConnections().size() > 1) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.2")); //$NON-NLS-1$
         }

@@ -63,10 +63,8 @@ public class WSServerProcess extends PCTRun {
         list.add("-p");
         list.add(procedure);
         
-        if (dbConnList != null) {
-            for (PCTConnection conn : dbConnList) {
-                list.addAll(conn.getConnectParametersList());
-            }
+        for (PCTConnection conn : getDbConnections()) {
+            list.addAll(conn.getConnectParametersList());
         }
 
         return list;

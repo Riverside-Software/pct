@@ -71,12 +71,12 @@ public class PCTLoadSchema extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (this.dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.0")); //$NON-NLS-1$
         }
 
-        if (this.dbConnList.size() > 1) {
+        if (getDbConnections().size() > 1) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.1")); //$NON-NLS-1$
         }

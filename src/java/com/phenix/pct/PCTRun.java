@@ -73,7 +73,8 @@ public class PCTRun extends PCT {
     private boolean graphMode = false;
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
-    protected Collection<PCTConnection> dbConnList = null;
+    private Collection<PCTConnection> dbConnList = null;
+    private Collection<DBConnectionSet> dbConnSet = null;
     private Collection<PCTRunOption> options = null;
     protected Path propath = null;
     protected Path internalPropath = null;
@@ -147,6 +148,13 @@ public class PCTRun extends PCT {
         }
 
         this.dbConnList.add(dbConn);
+    }
+
+    public void addDBConnectionSet(DBConnectionSet set) {
+        if (this.dbConnSet == null)
+            this.dbConnSet = new ArrayList<DBConnectionSet>();
+
+        dbConnSet.add(set);
     }
 
     /**
@@ -453,6 +461,29 @@ public class PCTRun extends PCT {
 
     public boolean isVerbose() {
         return verbose;
+    }
+
+    /**
+     * Returns a collection of PCTConnection objects, appending DBConnectionSets to PCTConnection
+     * list.
+     * 
+     * @return A non-null PCTConnection collection
+     * @since PCT 0.19
+     */
+    public Collection<PCTConnection> getDbConnections() {
+        Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
+        if (dbConnSet != null) {
+            for (DBConnectionSet set : dbConnSet) {
+                coll.addAll(set.getDBConnections());
+            }
+        }
+        if (dbConnList != null) {
+            for (PCTConnection conn : dbConnList) {
+                coll.add(conn);
+            }
+        }
+
+        return coll;
     }
 
     /**
@@ -847,7 +878,7 @@ public class PCTRun extends PCT {
 
             }
         }
-        
+
         if (cpStream != null)
             return cpStream;
         else if (pfCpStream != null)
@@ -928,7 +959,7 @@ public class PCTRun extends PCT {
                             try {
                                 bw.close();
                             } catch (IOException uncaught) {
-                                
+
                             }
                             throw new BuildException(caught);
                         }
