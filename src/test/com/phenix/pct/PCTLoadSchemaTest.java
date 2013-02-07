@@ -154,4 +154,22 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test2");
         assertTrue(f2.exists());
     }
-}
+
+    @Test(groups = { "all" })
+    public void test9() {
+        configureProject("PCTLoadSchema/test9/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+    }
+    
+    @Test(groups = { "all" })
+    public void test10() {
+        configureProject("PCTLoadSchema/test10/build.xml");
+        expectBuildException("base", "002.df is invalid");
+        executeTarget("base2");
+        
+        expectBuildException("test", "Fld3 not added");
+        executeTarget("test2");
+    }
+
+ }
