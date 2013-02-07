@@ -18,10 +18,13 @@
 package eu.rssw.pct.oedoc;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.apache.tools.ant.BuildException;
 
 import com.phenix.pct.Messages;
+import com.phenix.pct.PCT;
 import com.phenix.pct.PCTRun;
 import com.phenix.pct.RunParameter;
 
@@ -65,16 +68,39 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         checkDlcHome();
 
         // Destination directory must exist
-        if (this.destDir == null) {
-            throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
+        if (destDir == null) {
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
         }
-        if (this.sourceDir == null) {
-            throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
+        // And source directory too
+        if (sourceDir == null) {
+            throw new BuildException(MessageFormat.format(
+                    Messages.getString("OpenEdgeClassDocumentation.0"), "sourceDir"));
         }
-        if (this.templateDir == null) {
-            throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
+        // Template directory is optional. If not set, then extract the template directory from
+        // PCT.jar
+        if (templateDir == null) {
+            int tempDirNum = PCT.nextRandomInt();
+            templateDir = new File(System.getProperty("java.io.tmpdir"), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
+            templateDir.mkdirs();
+            try {
+                copyStreamFromJar("/templates/Document.template", new File(templateDir, "Document.template"));
+                copyStreamFromJar("/templates/DocumentDetails.template", new File(templateDir,
+                        "DocumentDetails.template"));
+                copyStreamFromJar("/templates/DocumentDetailsParameter.template", new File(templateDir,
+                        "DocumentDetailsParameter.template"));
+                copyStreamFromJar("/templates/DocumentList.template", new File(templateDir, "DocumentList.template"));
+                copyStreamFromJar("/templates/DocumentListItem.template", new File(templateDir,
+                        "DocumentListItem.template"));
+                copyStreamFromJar("/templates/DocumentOverview.template", new File(templateDir,
+                        "DocumentOverview.template"));
+                copyStreamFromJar("/templates/Index.template", new File(templateDir, "Index.template"));
+            } catch (IOException caught) {
+                throw new BuildException(caught);
+            }
         }
 
+        log("Generating HTML documentation for " + sourceDir.getAbsolutePath());
         try {
             setProcedure("ConsultingWerk/studio/generate-class-reference.p"); //$NON-NLS-1$
             addParameter(new RunParameter("TargetDir", destDir.getAbsolutePath()));
@@ -87,5 +113,4 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             throw be;
         }
     }
-
 }
