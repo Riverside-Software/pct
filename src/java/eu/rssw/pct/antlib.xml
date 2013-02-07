@@ -31,4 +31,5 @@
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
   <typedef name="db_connection" classname="com.phenix.pct.PCTConnection" />
   <typedef name="dlc_home" classname="com.phenix.pct.DlcHome" />
+  <typedef name="db_connection_set" classname="com.phenix.pct.DBConnectionSet" />
 </antlib>

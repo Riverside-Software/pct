@@ -146,12 +146,12 @@ public class PCTDumpIncremental extends PCTRun {
             cleanup();
             throw new BuildException("SourceDb and TargetDb nodes should be defined");
         } else {
-            if (dbConnList == null) {
+            if (getDbConnections().size() > 1) {
                 cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
             }
 
-            if (dbConnList.size() != 2) {
+            if (getDbConnections().size() != 2) {
                 cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
             }
@@ -193,11 +193,11 @@ public class PCTDumpIncremental extends PCTRun {
      * @return boolean
      */
     private boolean aliasDefined(String aliasName) {
-        if (dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             return false;
         }
 
-        for (PCTConnection c : dbConnList) {
+        for (PCTConnection c : getDbConnections()) {
             if (c.hasNamedAlias(aliasName)) {
                 return true;
             }

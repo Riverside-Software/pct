@@ -152,12 +152,12 @@ public class PCTLoadData extends PCTRun {
      */
     public void execute() throws BuildException {
 
-        if (dbConnList == null) {
+        if (getDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }
 
-        if (dbConnList.size() > 1) {
+        if (getDbConnections().size() > 1) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.1")); //$NON-NLS-1$
         }

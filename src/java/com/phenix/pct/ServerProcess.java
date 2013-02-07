@@ -105,10 +105,8 @@ public class ServerProcess extends PCTRun {
     protected List<String> getCmdLineParameters() {
         List<String> list = super.getCmdLineParameters();
 
-        if (dbConnList != null) {
-            for (PCTConnection conn : dbConnList) {
-                list.addAll(conn.getConnectParametersList());
-            }
+        for (PCTConnection conn : getDbConnections()) {
+            list.addAll(conn.getConnectParametersList());
         }
 
         return list;
