@@ -146,11 +146,6 @@ public class PCTDumpIncremental extends PCTRun {
             cleanup();
             throw new BuildException("SourceDb and TargetDb nodes should be defined");
         } else {
-            if (getDbConnections().size() > 1) {
-                cleanup();
-                throw new BuildException(Messages.getString("PCTDumpIncremental.0")); //$NON-NLS-1$
-            }
-
             if (getDbConnections().size() != 2) {
                 cleanup();
                 throw new BuildException(Messages.getString("PCTDumpIncremental.1")); //$NON-NLS-1$
