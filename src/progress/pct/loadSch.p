@@ -60,12 +60,14 @@ DEFINE TEMP-TABLE ttUnfrozen NO-UNDO
 /*
  * Parameters from ANT call 
  */
-DEFINE VARIABLE cSrcFile  AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cFileList AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cFile     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lUnfreeze AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lCommit   AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lOnline   AS LOGICAL   NO-UNDO.
+DEFINE VARIABLE lErr      AS LOGICAL   NO-UNDO INITIAL FALSE.
 
-ASSIGN cSrcFile = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
+ASSIGN cFileList = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileList')
        lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U
        lCommit   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'commitWhenErrors') EQ "true":U
        lOnline   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'online') EQ "true":U.
@@ -95,13 +97,29 @@ IF lOnline THEN
   SESSION:SCHEMA-CHANGE = 'NEW OBJECTS'.
 &ENDIF
 
-/* Clears existing error files */
-FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
-IF FILE-INFO:FULL-PATHNAME NE ? THEN DO:
-  OS-DELETE VALUE(FILE-INFO:FULL-PATHNAME).
-END.
+INPUT FROM VALUE(cFileList).
+RptLoop:
+REPEAT:
+  IMPORT cFile.
 
-RUN prodict/load_df.p (INPUT cSrcFile + ',' + STRING(lCommit, 'yes/no')) NO-ERROR.
+  /* Clears existing error files */
+  FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
+  IF FILE-INFO:FULL-PATHNAME NE ? THEN DO:
+    OS-DELETE VALUE(FILE-INFO:FULL-PATHNAME).
+  END.
+
+  RUN prodict/load_df.p (INPUT cFile + ',' + STRING(lCommit, 'yes/no')) NO-ERROR.
+
+  /* If file is present, then there are errors during load */
+  FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
+  IF (FILE-INFO:FULL-PATHNAME NE ?) THEN DO:
+    OS-RENAME VALUE(FILE-INFO:FULL-PATHNAME) VALUE(FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME)).
+    MESSAGE 'Errors during load. Log file can be found in ' + FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME).
+    lErr = TRUE.
+    IF NOT lCommit THEN LEAVE RptLoop.
+  END.
+END.
+INPUT CLOSE.
 
 IF lUnfreeze THEN DO:
    FOR EACH ttUnfrozen:
@@ -118,14 +136,5 @@ IF lUnfreeze THEN DO:
    DELETE OBJECT hBuffer.
 END.
 
-/* If file is present, then there are errors during load */
-FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
-IF (FILE-INFO:FULL-PATHNAME NE ?) THEN DO:
-  MESSAGE 'Errors during load. Log file can be found in ' + FILE-INFO:FULL-PATHNAME.
-  IF lCommit THEN 
-    RETURN '0'.
-  ELSE
-    RETURN '1'.
-END.
-
+IF lErr AND NOT lCommit THEN RETURN '1'.
 RETURN '0'.
