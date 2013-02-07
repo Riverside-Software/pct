@@ -250,7 +250,7 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${src.progress}" includes="**/*" />
     </zip>
   </target>
-
+ 
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="build-win" />
     <bootstrapCompile destdir="build-win" md5="true" minSize="true" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8">
@@ -266,6 +266,15 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
+    <!--  Updating pct11.pl with rcode compiled on Windowss -->
+    <mkdir dir="temp" />
+    <copy todir="classDocTemp">
+      <zipfileset src="classDoc.zip" />
+    </copy>
+    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
+      <fileset dir="classDocTemp" includes="**/*.r" />
+    </bootstrapLibrary>
+
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
         <include name="**/*.class" />
@@ -283,8 +292,9 @@ PCTBuild=${BUILD_NUMBER}
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
     </fileset>
-      <zipfileset src="parser.jar" includes="**/*.class" />
     <zipfileset src="proparse.jar" includes="**/*.class" />
+    <zipfileset dir="${src.progress}/ConsultingWerk/Studio/ClassDocumentation/Templates" prefix="templates" />
+    <zipfileset src="parser.jar" includes="**/*.class" />
     <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
