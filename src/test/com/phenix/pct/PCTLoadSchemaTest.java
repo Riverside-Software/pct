@@ -145,9 +145,9 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
                 return name.startsWith("test.e");
             }
         });
-        // test.e is deleted, test.e.XX.YY should be there
+        // test.e is deleted, and no test.e.XX.YY should be there
         assertFalse(new File("PCTLoadSchema/test7/test.e").exists());
-        assertEquals(files.length, 1);   
+        assertEquals(files.length, 0);   
     }
 
     @Test(groups = { "all" })
