@@ -49,7 +49,7 @@ public class RCodeInfo {
     private long signatureSize;
 
     public RCodeInfo(File file) throws InvalidRCodeException, IOException {
-        this(new BufferedInputStream(new FileInputStream(file), 8192));
+        this(new BufferedInputStream(new FileInputStream(file), 65536));
     }
 
     /**
@@ -224,4 +224,19 @@ public class RCodeInfo {
             super(s);
         }
     }
+    
+    public static void main(String[] args) throws Exception {
+        RCodeInfo rci = new RCodeInfo(new File("C:\\Users\\gquerret\\Downloads\\catalogue.r"));
+        System.out.println("CRC : " + rci.getCRC());
+        System.out.println("MD5 : " + rci.getMD5());
+        System.out.println("Val : " + rci.getVersion());
+        System.out.println("64 bits : " + ((rci.getVersion() & 0x4000) != 0));
+        
+        rci = new RCodeInfo(new File("C:\\Users\\gquerret\\Downloads\\catalogueProd.r"));
+        System.out.println("CRC : " + rci.getCRC());
+        System.out.println("MD5 : " + rci.getMD5());
+        System.out.println("Val : " + rci.getVersion());
+        System.out.println("64 bits : " + ((rci.getVersion() & 0x4000) != 0));
+    }
+
 }
