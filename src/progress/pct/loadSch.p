@@ -69,6 +69,7 @@ DEFINE VARIABLE lErr      AS LOGICAL   NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE iErrors   AS INTEGER   NO-UNDO.
 DEFINE VARIABLE iWarnings AS INTEGER   NO-UNDO.
 DEFINE VARIABLE cLine     AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cLogFile  AS CHARACTER NO-UNDO.
 
 DEFINE STREAM sLogFile.
 
@@ -127,9 +128,10 @@ REPEAT:
       ELSE IF (LENGTH(cLine) GE 25) AND (cLine BEGINS '** ') AND (SUBSTRING(cLine, LENGTH(cLine) - 19) EQ ' caused a warning **') THEN ASSIGN iWarnings = iWarnings + 1.
     END.
     INPUT STREAM sLogFile CLOSE.
-    OS-RENAME VALUE(FILE-INFO:FULL-PATHNAME) VALUE(FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME)).
+    ASSIGN cLogFile = FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME) + "." + STRING(ETIME(FALSE)).
+    OS-RENAME VALUE(FILE-INFO:FULL-PATHNAME) VALUE(cLogFile).
     MESSAGE SUBSTITUTE('&1 errors and &2 warnings during load', iErrors, iWarnings).
-    MESSAGE 'Log file can be found in ' + FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME).
+    MESSAGE 'Log file can be found in ' + cLogFile.
     IF (iErrors GT 0) THEN DO:
       lErr = TRUE.
       IF NOT lCommit THEN LEAVE RptLoop.

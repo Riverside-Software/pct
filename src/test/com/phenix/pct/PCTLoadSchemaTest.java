@@ -201,7 +201,14 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     public void test11() {
         configureProject("PCTLoadSchema/test11/build.xml");
         executeTarget("base");
-        executeTarget("test");
+        File[] files = new File("PCTLoadSchema/test11").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 3);
+      executeTarget("test");
     }
 
  }
