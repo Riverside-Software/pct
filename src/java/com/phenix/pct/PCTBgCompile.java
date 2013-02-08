@@ -502,7 +502,7 @@ public class PCTBgCompile extends PCTBgRun {
                     for (Iterator<CompilationUnit> iter = sending.iterator(); iter.hasNext();) {
                         CompilationUnit cu = (CompilationUnit) iter.next();
                         if (sb.length() > 0)
-                            sb.append('#');
+                            sb.append('*');
                         sb.append(cu.toString());
                     }
                     sendCommand("PctCompile", sb.toString());
