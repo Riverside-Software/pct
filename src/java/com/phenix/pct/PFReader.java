@@ -52,6 +52,7 @@ public class PFReader {
 
             line = reader.readLine();
         }
+        reader.close();
     }
 
     private void parseLine(String line) {
