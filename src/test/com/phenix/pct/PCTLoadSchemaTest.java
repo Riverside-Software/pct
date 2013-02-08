@@ -137,22 +137,18 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     public void test7() {
         configureProject("PCTLoadSchema/test7/build.xml");
 
+        executeTarget("base");
+        // Still only one file
         File[] files = new File("PCTLoadSchema/test7").listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.startsWith("test.e.");
+                return name.startsWith("test.e");
             }
         });
-        assertEquals(files.length, 1);
-        executeTarget("base");
-        // Still only one file
-        files = new File("PCTLoadSchema/test7").listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith("test.e.");
-            }
-        });
-        assertEquals(files.length, 1);    }
+        // test.e is deleted, test.e.XX.YY should be there
+        assertFalse(new File("PCTLoadSchema/test7/test.e").exists());
+        assertEquals(files.length, 1);   
+    }
 
     @Test(groups = { "all" })
     public void test8() {
