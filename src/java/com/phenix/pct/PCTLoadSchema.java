@@ -136,8 +136,6 @@ public class PCTLoadSchema extends PCTRun {
             addParameter(new RunParameter("unfreeze", Boolean.toString(unfreeze))); //$NON-NLS-1$
             addParameter(new RunParameter(
                     "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
-            log(MessageFormat.format(Messages.getString("PCTLoadSchema.3"), srcFile),
-                    Project.MSG_INFO);
             super.execute();
         } catch (BuildException caught) {
             cleanup();
