@@ -54,12 +54,14 @@
 package com.phenix.pct;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Class for testing PCTLoadSchema task
@@ -122,30 +124,57 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         configureProject("PCTLoadSchema/test6/build.xml");
         
         expectBuildException("base", "Invalid schema file");
-        File f = new File("PCTLoadSchema/test6/test.e");
-        assertTrue(f.exists());
+        File[] files = new File("PCTLoadSchema/test6").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 1);
     }
     
     @Test(groups = { "all" })
     public void test7() {
         configureProject("PCTLoadSchema/test7/build.xml");
 
-        File f = new File("PCTLoadSchema/test7/test.e");
-        assertTrue(f.exists());
+        File[] files = new File("PCTLoadSchema/test7").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 1);
         executeTarget("base");
-        assertFalse(f.exists());
-    }
+        // Still only one file
+        files = new File("PCTLoadSchema/test7").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 1);    }
 
     @Test(groups = { "all" })
     public void test8() {
         configureProject("PCTLoadSchema/test8/build.xml");
         
         expectBuildException("base", "Invalid schema file");
-        File f = new File("PCTLoadSchema/test8/test.e");
-        assertTrue(f.exists());
+        File[] files = new File("PCTLoadSchema/test8").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 1);
 
         executeTarget("base2");
-        assertTrue(f.exists());
+        files = new File("PCTLoadSchema/test8").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("test.e.");
+            }
+        });
+        assertEquals(files.length, 2);
         
         expectBuildException("test1", "No Tab2 in DB");
         File f2 = new File("PCTLoadSchema/test8/build/test.r");
