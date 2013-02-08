@@ -66,6 +66,11 @@ DEFINE VARIABLE lUnfreeze AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lCommit   AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lOnline   AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lErr      AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE iErrors   AS INTEGER   NO-UNDO.
+DEFINE VARIABLE iWarnings AS INTEGER   NO-UNDO.
+DEFINE VARIABLE cLine     AS CHARACTER NO-UNDO.
+
+DEFINE STREAM sLogFile.
 
 ASSIGN cFileList = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileList')
        lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U
@@ -100,7 +105,7 @@ IF lOnline THEN
 INPUT FROM VALUE(cFileList).
 RptLoop:
 REPEAT:
-  IMPORT cFile.
+  IMPORT UNFORMATTED cFile.
 
   /* Clears existing error files */
   FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
@@ -108,15 +113,27 @@ REPEAT:
     OS-DELETE VALUE(FILE-INFO:FULL-PATHNAME).
   END.
 
+  MESSAGE 'Loading ' + cFile + ' in database'.
   RUN prodict/load_df.p (INPUT cFile + ',' + STRING(lCommit, 'yes/no')) NO-ERROR.
 
-  /* If file is present, then there are errors during load */
+  /* If file is present, then there are errors or warnings during load */
   FILE-INFO:FILE-NAME = LDBNAME("DICTDB") + ".e".
   IF (FILE-INFO:FULL-PATHNAME NE ?) THEN DO:
+    ASSIGN iWarnings = 0 iErrors = 0.
+    INPUT STREAM sLogFile FROM VALUE(FILE-INFO:FULL-PATHNAME).
+    REPEAT:
+      IMPORT STREAM sLogFile UNFORMATTED cLine.
+      IF (cLine BEGINS '** Error') THEN ASSIGN iErrors = iErrors + 1.
+      ELSE IF (LENGTH(cLine) GE 25) AND (cLine BEGINS '** ') AND (SUBSTRING(cLine, LENGTH(cLine) - 19) EQ ' caused a warning **') THEN ASSIGN iWarnings = iWarnings + 1.
+    END.
+    INPUT STREAM sLogFile CLOSE.
     OS-RENAME VALUE(FILE-INFO:FULL-PATHNAME) VALUE(FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME)).
-    MESSAGE 'Errors during load. Log file can be found in ' + FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME).
-    lErr = TRUE.
-    IF NOT lCommit THEN LEAVE RptLoop.
+    MESSAGE SUBSTITUTE('&1 errors and &2 warnings during load', iErrors, iWarnings).
+    MESSAGE 'Log file can be found in ' + FILE-INFO:FULL-PATHNAME + "." + STRING(TODAY, "99999999") + "." + STRING(TIME).
+    IF (iErrors GT 0) THEN DO:
+      lErr = TRUE.
+      IF NOT lCommit THEN LEAVE RptLoop.
+    END.
   END.
 END.
 INPUT CLOSE.

@@ -197,4 +197,11 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
+    @Test(groups = { "all" })
+    public void test11() {
+        configureProject("PCTLoadSchema/test11/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+    }
+
  }
