@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * Class representing a file entry in a PL file
  */
-public class FileEntry {
+public class FileEntry implements Comparable<FileEntry> {
     private final boolean valid;
     private final String fileName;
     private final long modDate, addDate;
@@ -31,7 +31,8 @@ public class FileEntry {
 
     /**
      * Invalid file entry - Will be skipped in entries list
-     * @param tocSize 
+     * 
+     * @param tocSize
      */
     public FileEntry(int tocSize) {
         this.tocSize = tocSize;
@@ -41,8 +42,7 @@ public class FileEntry {
         size = 0;
     }
 
-    public FileEntry(String fileName, long modDate, long addDate, int offSet, int size,
-            int tocSize) {
+    public FileEntry(String fileName, long modDate, long addDate, int offSet, int size, int tocSize) {
         this.valid = true;
         this.fileName = fileName;
         this.modDate = modDate;
@@ -82,6 +82,23 @@ public class FileEntry {
 
     public String toString() {
         return MessageFormat
-                .format(Messages.getString("PLReader.6"), new Object[]{this.fileName, Integer.valueOf(size), new Date(addDate), new Date(modDate), Long.valueOf(offset)}); //$NON-NLS-1$
+                .format(Messages.getString("PLReader.6"), this.fileName, Integer.valueOf(size), new Date(addDate), new Date(modDate), Long.valueOf(offset)); //$NON-NLS-1$
+    }
+
+    @Override
+    public int compareTo(FileEntry o) {
+        return fileName.compareTo(o.getFileName());
+    }
+
+    @Override
+    public int hashCode() {
+        return fileName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FileEntry)
+            return fileName.equals(((FileEntry) obj).getFileName());
+        return false;
     }
 }
