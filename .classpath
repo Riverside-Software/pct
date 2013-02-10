@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="antlr-2.7.7.jar" />
 	<classpathentry kind="lib" path="parser.jar" />
 	<classpathentry kind="lib" path="oe_common_services.jar" />
+	<classpathentry kind="lib" path="jcommander-1.30.jar" />
 	<classpathentry kind="output" path="bin"/>
 </classpath>

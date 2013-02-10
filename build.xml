@@ -160,6 +160,18 @@ PCTBuild=${BUILD_NUMBER}
       <zipfileset src="proparse.jar" />
       <zipfileset src="antlr-2.7.7.jar" />
     </jar>
+    <jar jarfile="${dist}/prolib.jar">
+      <zipfileset src="jcommander-1.30.jar" />
+      <fileset dir="${build}">
+        <include name="eu/rssw/pct/standalone/**/*.class" />
+        <include name="com/phenix/pct/PLReader.class" />
+        <include name="com/phenix/pct/FileEntry.class" />
+        <include name="com/phenix/pct/RCodeInfo*.class" />
+      </fileset>
+      <manifest>
+        <attribute name="Main-Class" value="eu.rssw.pct.standalone.Prolib" />
+      </manifest>
+    </jar>
   </target>
 
   <target name="declare-bootstrap" depends="jar-lite" description="Bootstrap tasks declaration">
@@ -292,6 +304,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
     </fileset>
+    <zipfileset src="jcommander-1.30.jar" />
     <zipfileset src="proparse.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/ConsultingWerk/Studio/ClassDocumentation/Templates" prefix="templates" />
     <zipfileset src="parser.jar" includes="**/*.class" />
