@@ -96,6 +96,7 @@
     <pathelement location="antlr-2.7.7.jar" />
     <pathelement location="parser.jar" />
     <pathelement location="oe_common_services.jar" />
+    <pathelement location="jcommander-1.30.jar" />
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
