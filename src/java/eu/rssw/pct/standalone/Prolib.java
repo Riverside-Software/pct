@@ -76,7 +76,8 @@ public class Prolib {
                     RCodeInfo info2 = new RCodeInfo(lib2.getInputStream(list2.get(idx)));
                     if ((info1.getCRC() == info2.getCRC())
                             && (info1.getMD5().equals(info2.getMD5()))) {
-                        System.out.println("I " + entry1.getFileName());
+                        if (compare.showIdenticals)
+                            System.out.println("I " + entry1.getFileName());
                     } else {
                         System.out.println("M " + entry1.getFileName());
                     }
@@ -115,5 +116,8 @@ public class Prolib {
     public static class CommandCompare {
         @Parameter(names = "-lib", arity = 2, description = "Source and target PL files", required = true)
         private List<File> libs;
+
+        @Parameter(names = "-showIdenticals", description = "Also display identical files")
+        private Boolean showIdenticals;
     }
 }
