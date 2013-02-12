@@ -118,6 +118,6 @@ public class Prolib {
         private List<File> libs;
 
         @Parameter(names = "-showIdenticals", description = "Also display identical files")
-        private Boolean showIdenticals;
+        private Boolean showIdenticals = false;
     }
 }
