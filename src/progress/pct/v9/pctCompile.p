@@ -95,6 +95,7 @@ DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE PCTDir    AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE preprocessDir AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE dbgListDir AS CHARACTER NO-UNDO.
 DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
@@ -130,7 +131,6 @@ DEFINE VARIABLE iCompOK   AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE iCompFail AS INTEGER    NO-UNDO.
 /** Throw build exception ? */
 DEFINE VARIABLE BuildExc  AS LOGICAL    NO-UNDO INITIAL FALSE.
-
 
 /* Gets CRC list */
 DEFINE VARIABLE h AS HANDLE     NO-UNDO.
@@ -180,6 +180,8 @@ REPEAT:
             ASSIGN preprocessDir = ENTRY(2, cLine, '=':U).
         WHEN 'DEBUGLISTING':U THEN
             ASSIGN DebugLst = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'DEBUGLISTINGDIR':U THEN
+            ASSIGN dbgListDir = ENTRY(2, cLine, '=':U).
         WHEN 'STRINGXREF':U THEN
             ASSIGN StrXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'SAVER':U THEN
@@ -377,6 +379,7 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
 
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
@@ -396,14 +399,25 @@ PROCEDURE PCTCompileXref.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
+    IF debugLst THEN DO:
+        IF dbgListDir = '' THEN
+            ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
+        ELSE DO:
+            ASSIGN debugListingFile = dbgListDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(dbgListDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
+    END.
+    ELSE
+       ASSIGN debugListingFile = ?.
 
     IF (languages EQ ?) THEN 
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
       IF (gwtFact GE 0) THEN
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
       ELSE
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE((IF DebugLst THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.dbg':U ELSE ?)) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
     END.      
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:

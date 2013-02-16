@@ -313,11 +313,14 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         configureProject("PCTCompileExt/test20/build.xml");
         executeTarget("test1");
 
-        File dotR = new File("PCTCompileExt/test20/build//test.r");
+        File dotR = new File("PCTCompileExt/test20/build/test.r");
         File f1 = new File("PCTCompileExt/test20/build/.pct/test.p");
         File f2 = new File("PCTCompileExt/test20/build/.pct/test.p.preprocess");
-        File f3 = new File("PCTCompileExt/test20/build/.pct/test.dbg");
+        File f3 = new File("PCTCompileExt/test20/build/.pct/test.p.dbg");
         File f4 = new File("PCTCompileExt/test20/build/.pct/test.p.xref");
+        File f5 = new File("PCTCompileExt/test20/debug/test.p");
+        File f6 = new File("PCTCompileExt/test20/debug/dir1/dir2/test.p");
+
         assertTrue(dotR.exists());
         assertFalse(f1.exists());
         assertFalse(f2.exists());
@@ -330,6 +333,10 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f3.exists(), "Unable to find debug-listing file");
         assertTrue(f4.exists(), "Unable to find xref file");
         assertTrue((f4.length() > 0), "Empty xref file");
+
+        executeTarget("test3");
+        assertTrue(f5.exists(), "Unable to find debug-listing file");
+        assertTrue(f6.exists(), "Unable to find debug-listing file");
     }
 
     @Test(groups={"v10", "v11"})
@@ -404,6 +411,29 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f6 = new File("PCTCompileExt/test27/build/.pct/eu/rssw/pct/Z.cls.hierarchy");
         assertTrue(f6.exists());
         assertTrue(f6.length() > 0);
+    }
+
+    @Test(groups= {"win"})
+    public void test28() {
+        configureProject("PCTCompileExt/test28/build.xml");
+        executeTarget("build");
+        
+        File f1 = new File("PCTCompileExt/test28/src-tty/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f1.length() > 0);
+        File f2 = new File("PCTCompileExt/test28/src-gui/test.p");
+        assertTrue(f2.exists());
+        assertTrue(f2.length() > 0);
+        File f3 = new File("PCTCompileExt/test28/src-tty/sub1/sub2/sub3/test.p");
+        assertTrue(f3.exists());
+        File f4 = new File("PCTCompileExt/test28/src-tty/sub1/sub2/sub4/test.p");
+        assertTrue(f4.exists());
+
+        executeTarget("test");
+        String str1 = getProject().getProperty("test28-tty");
+        assertTrue(str1.equals("TTY"));
+        String str2 = getProject().getProperty("test28-gui");
+        assertTrue(str2.startsWith("MS-WIN"));
     }
 
     @Test(groups = {"all"})
