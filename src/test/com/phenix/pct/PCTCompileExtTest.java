@@ -374,7 +374,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test25() {
         configureProject("PCTCompileExt/test25/build.xml");
         executeTarget("test");
@@ -384,7 +384,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     // SHOULD be working on Linux, but doesn't...
-    @Test(groups= {"win"})
+    @Test(groups= {"v10", "v11", "win"})
     public void test26() {
         configureProject("PCTCompileExt/test26/build.xml");
         executeTarget("test");
@@ -413,7 +413,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f6.length() > 0);
     }
 
-    @Test(groups= {"win"})
+    @Test(groups= {"v10", "v11", "win"})
     public void test28() {
         configureProject("PCTCompileExt/test28/build.xml");
         executeTarget("build");
@@ -436,7 +436,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(str2.startsWith("MS-WIN"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v10", "v11"})
     public void test29() {
         configureProject("PCTCompileExt/test29/build.xml");
         executeTarget("build");
