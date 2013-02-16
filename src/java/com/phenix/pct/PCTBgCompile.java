@@ -60,6 +60,8 @@ public class PCTBgCompile extends PCTBgRun {
     private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
+    private File preprocessDir = null;
+    private File debugListingDir = null;
     private Mapper mapperElement = null;
 
     private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
@@ -121,6 +123,15 @@ public class PCTBgCompile extends PCTBgRun {
     }
 
     /**
+     * 
+     * @param dir
+     * @since 0.19
+     */
+    public void setPreprocessDir(File dir) {
+        this.preprocessDir = dir;
+    }
+
+    /**
      * Create debug list files during compilation
      * 
      * @param debugListing "true|false|on|off|yes|no"
@@ -129,6 +140,15 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setDebugListing(boolean debugListing) {
         this.debugListing = debugListing;
+    }
+
+    /**
+     * 
+     * @param dir
+     * @since 0.19
+     */
+    public void setDebugListingDir(File dir) {
+        this.debugListingDir = dir;
     }
 
     /**
@@ -344,6 +364,12 @@ public class PCTBgCompile extends PCTBgRun {
             }
         }
 
+        // If preprocessDir is set, then preprocess is always set to true
+        if (preprocessDir != null)
+            preprocess = true;
+        if (debugListingDir != null)
+            debugListing = true;
+
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
         // Checking xcode and (listing || preprocess) attributes -- They're mutually exclusive
@@ -421,7 +447,20 @@ public class PCTBgCompile extends PCTBgRun {
                     File PCTDir = new File(dotPCTDir, outputNames[0]).getParentFile();
                     if (!PCTDir.exists())
                         PCTDir.mkdirs();
-
+                    // Output directory for preprocess files
+                    File tmpPreprocessDir = null;
+                    if (preprocess && (preprocessDir != null)) {
+                        tmpPreprocessDir = new File(preprocessDir, outputNames[0]).getParentFile();
+                        if (!tmpPreprocessDir.exists())
+                            tmpPreprocessDir.mkdirs();
+                    }
+                    // Output directory for debug listing files
+                    File tmpDebugListingDir = null;
+                    if (debugListing && (debugListingDir != null)) {
+                        tmpDebugListingDir = new File(debugListingDir, outputNames[0]).getParentFile();
+                        if (!tmpDebugListingDir.exists())
+                            tmpDebugListingDir.mkdirs();
+                    }
                     CompilationUnit unit = new CompilationUnit();
                     unit.fsRootDir = inputDir;
                     unit.fsDir = inputFileDir;
@@ -429,10 +468,10 @@ public class PCTBgCompile extends PCTBgRun {
                     unit.destDir = destDir;
                     unit.compilDestDir = outputDir;
                     unit.debugFile = (debugListing
-                            ? new File(PCTDir, fileNameNoExt + ".dbg")
+                            ? (debugListingDir == null ? new File(PCTDir, fileNameNoExt + extension + ".dbg") : new File(tmpDebugListingDir, fileNameNoExt + extension))
                             : null);
-                    unit.preprocessFile = (preprocess ? new File(PCTDir, fileNameNoExt + extension
-                            + ".preprocess") : null);
+                    unit.preprocessFile = (preprocess ? (preprocessDir == null ? new File(PCTDir, fileNameNoExt + extension
+                            + ".preprocess") : new File(tmpPreprocessDir,  fileNameNoExt + extension)) : null);
                     unit.listingFile = (listing
                             ? new File(PCTDir, fileNameNoExt + extension)
                             : null);

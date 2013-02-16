@@ -309,11 +309,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         configureProject("PCTCompile/test20/build.xml");
         executeTarget("test1");
 
-        File dotR = new File("PCTCompile/test20/build//test.r");
+        File dotR = new File("PCTCompile/test20/build/test.r");
         File f1 = new File("PCTCompile/test20/build/.pct/test.p");
         File f2 = new File("PCTCompile/test20/build/.pct/test.p.preprocess");
-        File f3 = new File("PCTCompile/test20/build/.pct/test.dbg");
+        File f3 = new File("PCTCompile/test20/build/.pct/test.p.dbg");
         File f4 = new File("PCTCompile/test20/build/.pct/test.p.xref");
+        File f5 = new File("PCTCompile/test20/debug/test.p");
+        File f6 = new File("PCTCompile/test20/debug/dir1/dir2/test.p");
         assertTrue(dotR.exists());
         assertFalse(f1.exists());
         assertFalse(f2.exists());
@@ -326,6 +328,10 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists(), "Unable to find debug-listing file");
         assertTrue(f4.exists(), "Unable to find xref file");
         assertTrue((f4.length() > 0), "Empty xref file");
+
+        executeTarget("test3");
+        assertTrue(f5.exists(), "Unable to find debug-listing file");
+        assertTrue(f6.exists(), "Unable to find debug-listing file");
     }
 
     @Test(groups= {"v10", "v11"})
@@ -356,7 +362,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f5.exists());
         File f6 = new File("PCTCompile/test22/build2/X.r");
         assertTrue(f6.exists());
-}
+    }
 
     @Test(groups= {"win"})
     public void test23() {
