@@ -12,7 +12,7 @@ public class Property {
     @XmlAttribute
     public String name, dataType;
     @XmlAttribute
-    public boolean isAbstract;
+    public boolean isAbstract, isStatic;
     @XmlAttribute
     public int extent;
     @XmlAttribute

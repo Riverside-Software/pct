@@ -75,6 +75,9 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     public boolean visit(PropertyDeclaration decl) {
         Property prop = new Property();
         prop.name = decl.getName();
+        for (int zz : decl.getAllModifiers()) {
+            prop.isStatic |= (zz == ProgressParserTokenTypes.STATIC);
+        }
         prop.isAbstract = decl.isAbstract();
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();

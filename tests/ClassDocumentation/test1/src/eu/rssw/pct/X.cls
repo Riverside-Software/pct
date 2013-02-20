@@ -12,7 +12,8 @@ class eu.rssw.pct.X:
   define protected property foo2 as char get. set.
   define private property foo3 as class eu.rssw.pct.X get. set.
   define property foo4 as char.
-  
+  define public static property foo5 as char.
+
   define public event isSomething signature void (piCustNum as integer). 
   
   define public event MyEvent void (sender AS Progress.Lang.Object, e AS System.EventArgs).
