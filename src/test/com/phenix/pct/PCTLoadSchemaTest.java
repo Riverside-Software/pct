@@ -106,7 +106,8 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test(groups = { "all" })
+    // Error message due to frozen tables isn't trapped in v10
+    @Test(groups = { "v11" })
     public void test5() {
         configureProject("PCTLoadSchema/test5/build.xml");
         executeTarget("base");
@@ -150,7 +151,8 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertEquals(files.length, 0);   
     }
 
-    @Test(groups = { "all" })
+    // Error message due to frozen tables isn't trapped in v10
+    @Test(groups = { "v11" })
     public void test8() {
         configureProject("PCTLoadSchema/test8/build.xml");
         
