@@ -213,4 +213,12 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
       executeTarget("test");
     }
 
+    @Test(groups = { "all" })
+    public void test12() {
+        configureProject("PCTLoadSchema/test12/build.xml");
+        executeTarget("base");
+        executeTarget("base2");
+        executeTarget("test");
+    }
+
  }

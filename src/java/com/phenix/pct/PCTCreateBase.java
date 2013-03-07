@@ -22,6 +22,7 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
+import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class PCTCreateBase extends PCT {
     private boolean noInit = false;
     private boolean overwrite = false;
     private String schema = null;
+    private List<ResourceCollection> schemaResColl = new ArrayList<ResourceCollection>();
     private Path propath = null;
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
     private int wordRule = -1;
@@ -123,6 +125,15 @@ public class PCTCreateBase extends PCT {
      */
     public void setSchemaFile(String schemaFile) {
         this.schema = schemaFile;
+    }
+
+    /**
+     * Load schema after creating database. They are loaded AFTER df files in the schema attribute.
+     * 
+     * @param rc Fileset
+     */
+    public void add(ResourceCollection rc) {
+        schemaResColl.add(rc);
     }
 
     /**
@@ -258,6 +269,7 @@ public class PCTCreateBase extends PCT {
                 del.setFile(db);
                 del.execute();
             } else {
+                log("Database " + dbName + " already exists");
                 return;
             }
         }
@@ -311,6 +323,26 @@ public class PCTCreateBase extends PCT {
                             Messages.getString("PCTCreateBase.5"), f));
                 }
             }
+        }
+
+        if (schemaResColl.size() > 0) {
+            PCTLoadSchema pls = new PCTLoadSchema();
+            pls.bindToOwner(this);
+            pls.setDlcHome(getDlcHome());
+            pls.addPropath(propath);
+            pls.setIncludedPL(getIncludedPL());
+            for (Variable var : getEnvironmentVariables()) {
+                pls.addEnv(var);
+            }
+            for (ResourceCollection fs : schemaResColl) {
+                pls.add(fs);
+            }
+            PCTConnection pc = new PCTConnection();
+            pc.setDbName(dbName);
+            pc.setDbDir(destDir);
+            pc.setSingleUser(true);
+            pls.addDBConnection(pc);
+            pls.execute();
         }
 
         if (holders != null) {
