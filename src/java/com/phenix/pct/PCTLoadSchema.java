@@ -19,7 +19,8 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +29,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Loads schema into database
@@ -37,7 +39,7 @@ import java.util.Collection;
  */
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
-    private Collection<FileSet> filesets = new ArrayList<FileSet>();
+    private List<ResourceCollection> rcs = new ArrayList<ResourceCollection>();
     private boolean unfreeze = false;
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
@@ -56,13 +58,8 @@ public class PCTLoadSchema extends PCTRun {
         fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    /**
-     * Adds a set of files to archive.
-     * 
-     * @param set FileSet
-     */
-    public void addFileset(FileSet set) {
-        filesets.add(set);
+    public void add(ResourceCollection rc) {
+        rcs.add(rc);
     }
 
     /**
@@ -112,12 +109,12 @@ public class PCTLoadSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTLoadSchema.1")); //$NON-NLS-1$
         }
 
-        if ((srcFile == null) && (filesets.size() == 0)) {
+        if ((srcFile == null) && (rcs.size() == 0)) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.2")); //$NON-NLS-1$
         }
 
-        if ((srcFile != null) && (filesets.size() > 0)) {
+        if ((srcFile != null) && (rcs.size() > 0)) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.5")); //$NON-NLS-1$
         }
@@ -126,6 +123,14 @@ public class PCTLoadSchema extends PCTRun {
             cleanup();
             throw new BuildException(MessageFormat.format(
                     Messages.getString("PCTLoadSchema.4"), this.srcFile)); //$NON-NLS-1$
+        }
+
+        // Verify resource collections
+        for (ResourceCollection rc : rcs) {
+            if (!rc.isFilesystemOnly()) {
+                cleanup();
+                throw new BuildException("PCTLoadSchema only accepts file-system resources collections");
+            }
         }
 
         try {
@@ -153,10 +158,16 @@ public class PCTLoadSchema extends PCTRun {
                 bw.newLine();
             }
 
-            for (FileSet fs : filesets) {
-                for (String str : fs.getDirectoryScanner(this.getProject()).getIncludedFiles()) {
-                    bw.write(new File(fs.getDir(), str).getAbsolutePath());
-                    bw.newLine();
+            for (ResourceCollection rc : rcs) {
+                Iterator<FileResource> iter = rc.iterator();
+                while (iter.hasNext()) {
+                    FileResource frs = iter.next();
+                    if (frs.isDirectory()) {
+                        log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
+                    } else {
+                        bw.write(frs.getFile().getAbsolutePath());
+                        bw.newLine();
+                    }
                 }
             }
 
