@@ -229,7 +229,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
      * dump file between test and test2 DBs with and without rename file 5/ Compares differences
      * between both output files
      */
-    @Test(groups= {"all"})
+    @Test(groups= {"v10", "v11"})
     public void test4() {
         configureProject("PCTDumpIncremental/test4/build.xml");
         executeTarget("base");
