@@ -54,28 +54,22 @@ public class NaturalComparator extends ResourceComparator {
             thatMarker += thatChunk.length();
 
             // If both chunks contain numeric characters, sort them numerically
-            int result = 0;
+            long result = 0;
             if (Character.isDigit(thisChunk.charAt(0)) && Character.isDigit(thatChunk.charAt(0))) {
-                // Simple chunk comparison by length.
-                int thisChunkLength = thisChunk.length();
-                result = thisChunkLength - thatChunk.length();
-                // If equal, the first different number counts
-                if (result == 0) {
-                    for (int i = 0; i < thisChunkLength; i++) {
-                        result = thisChunk.charAt(i) - thatChunk.charAt(i);
-                        if (result != 0) {
-                            return result;
-                        }
-                    }
-                }
+                result = Long.valueOf(thisChunk) - Long.valueOf(thatChunk);
             } else {
                 result = thisChunk.compareTo(thatChunk);
             }
 
             if (result != 0)
-                return result;
+                return (int) result;
         }
 
         return s1Length - s2Length;
+    }
+    
+    public static void main(String[] args) {
+        NaturalComparator comp = new NaturalComparator();
+        System.out.println("Comp : " + comp.compareNatural2("foo400a", "foo400b"));
     }
 }
