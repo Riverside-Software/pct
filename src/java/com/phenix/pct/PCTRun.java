@@ -87,6 +87,7 @@ public class PCTRun extends PCT {
     private boolean verbose = false;
     // Defined here, but setter only defined in PCTCompile
     protected boolean relativePaths = false;
+    private Profiler profiler = null;
 
     // Internal use
     protected ExecTask exec = null;
@@ -94,10 +95,13 @@ public class PCTRun extends PCT {
     protected int initID = -1; // Unique ID when creating temp files
     protected int plID = -1; // Unique ID when creating temp files
     protected int outputStreamID = -1; // Unique ID when creating temp files
+    private int profilerID = -1;
+    private int profilerOutID = -1;
     protected File initProc = null;
     protected File status = null;
     protected File pctLib = null;
     protected File outputStream = null;
+    private File profilerParamFile = null;
     private boolean prepared = false;
     private Charset charset = null;
 
@@ -121,9 +125,13 @@ public class PCTRun extends PCT {
             statusID = PCT.nextRandomInt();
             initID = PCT.nextRandomInt();
             plID = PCT.nextRandomInt();
+            profilerID = PCT.nextRandomInt();
+            profilerOutID = PCT.nextRandomInt();
 
             status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            profilerParamFile = new File(
+                    System.getProperty("java.io.tmpdir"), "prof" + profilerID + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -499,6 +507,15 @@ public class PCTRun extends PCT {
     }
 
     /**
+     * Defines profiler
+     * 
+     * @param profiler
+     */
+    public void addProfiler(Profiler profiler) {
+        this.profiler = profiler;
+    }
+
+    /**
      * Helper method to set result property to the passed in value if appropriate.
      * 
      * @param result value desired for the result property value.
@@ -539,6 +556,9 @@ public class PCTRun extends PCT {
         checkDlcHome();
         if (!prepared) {
             prepareExecTask();
+            if (profiler != null) {
+                profiler.validate();
+            }
         }
 
         try {
@@ -553,6 +573,7 @@ public class PCTRun extends PCT {
 
             preparePropath();
             createInitProcedure();
+            createProfilerFile();
             setExecTaskParams();
 
             // Startup procedure
@@ -804,6 +825,11 @@ public class PCTRun extends PCT {
             list.add(assemblies.getAbsolutePath());
         }
 
+        if ((profiler != null) && profiler.isEnabled()) {
+            list.add("-profile");
+            list.add(profilerParamFile.getAbsolutePath());
+        }
+
         // Additional command line options
         if (this.options != null) {
             for (PCTRunOption opt : options) {
@@ -889,6 +915,44 @@ public class PCTRun extends PCT {
             return pfCpInt;
         else
             return null;
+    }
+
+    private void createProfilerFile() throws BuildException {
+        if ((profiler != null) && profiler.isEnabled()) {
+            BufferedWriter bw = null;
+            try {
+                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                        profilerParamFile)));
+                if (profiler.getOutputFile() != null) {
+                    bw.write("-FILENAME " + profiler.getOutputFile().getAbsolutePath());
+                    bw.newLine();
+                } else {
+                    // Assuming nobody will use file names with double quotes in this case... 
+                    bw.write("-FILENAME \""
+                            + new File(profiler.getOutputDir(), "profiler" + profilerOutID
+                                    + ".out\""));
+                    bw.newLine();
+                }
+                if (profiler.hasCoverage()) {
+                    bw.write("-COVERAGE");
+                    bw.newLine();
+                }
+                if (profiler.getListings() != null) {
+                    bw.write("-LISTINGS \"" + profiler.getListings().getAbsolutePath() + "\"");
+                    bw.newLine();
+                }
+                bw.write("-DESCRIPTION \"" + profiler.getDescription() + "\"");
+                bw.newLine();
+                bw.close();
+            } catch (IOException caught) {
+                throw new BuildException(caught);
+            } finally {
+                try {
+                    bw.close();
+                } catch (IOException uncaught) {
+                }
+            }
+        }
     }
 
     private void createInitProcedure() throws BuildException {
@@ -1107,28 +1171,30 @@ public class PCTRun extends PCT {
      * 
      */
     protected void cleanup() {
-        if (!this.debugPCT) {
-            if ((this.initProc != null) && (this.initProc.exists() && !this.initProc.delete())) {
+        if (!debugPCT) {
+            if ((initProc != null) && initProc.exists() && !initProc.delete()) {
                 log(MessageFormat
-                        .format(Messages.getString("PCTRun.5"), new Object[]{this.initProc.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                        .format(Messages.getString("PCTRun.5"), initProc.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
 
-            if ((this.status != null) && (this.status.exists() && !this.status.delete())) {
-                log(MessageFormat
-                        .format(Messages.getString("PCTRun.5"), new Object[]{this.status.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            if ((status != null) && status.exists() && !status.delete()) {
+                log(MessageFormat.format(Messages.getString("PCTRun.5"), status.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
-            if ((this.outputStream != null)
-                    && (this.outputStream.exists() && !this.outputStream.delete())) {
-                log(MessageFormat
-                        .format(Messages.getString("PCTRun.5"), new Object[]{this.outputStream.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+            if ((outputStream != null) && outputStream.exists() && !outputStream.delete()) {
+                log(MessageFormat.format(
+                        Messages.getString("PCTRun.5"), outputStream.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
-            if (this.outputParameters != null) {
+            if ((profilerParamFile != null) && profilerParamFile.exists()
+                    && !profilerParamFile.delete()) {
+                log(MessageFormat.format(Messages.getString("PCTRun.5"), status.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+            }
+            if (outputParameters != null) {
                 for (OutputParameter param : outputParameters) {
                     if ((param.getTempFileName() != null)
                             && (param.getTempFileName().exists() && !param.getTempFileName()
                                     .delete())) {
                         log(MessageFormat
-                                .format(Messages.getString("PCTRun.5"), new Object[]{param.getTempFileName().getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                                .format(Messages.getString("PCTRun.5"), param.getTempFileName().getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
                     }
                 }
             }
@@ -1143,8 +1209,8 @@ public class PCTRun extends PCT {
                 }
             } else {
                 if (!pctLib.delete()) {
-                    log(MessageFormat
-                            .format(Messages.getString("PCTRun.5"), new Object[]{this.pctLib.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+                    log(MessageFormat.format(
+                            Messages.getString("PCTRun.5"), pctLib.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
                 }
             }
         }
