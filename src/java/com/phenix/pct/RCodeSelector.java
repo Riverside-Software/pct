@@ -89,6 +89,7 @@ public class RCodeSelector extends BaseExtendSelector {
         try {
             file1 = new RCodeInfo(file);
         } catch (Exception e) {
+            log(MessageFormat.format("Source {0} is an invalid rcode -- {1}", filename, e.getMessage()));
             return true;
         }
         
@@ -96,25 +97,29 @@ public class RCodeSelector extends BaseExtendSelector {
             try {
                 file2 = new RCodeInfo(new File(dir, filename));
             } catch (Exception e) {
+                log(MessageFormat.format("Target {0} is an invalid rcode -- {1}", filename, e.getMessage()));
                 return true;
             }
         } else {
             FileEntry e = reader.getEntry(filename);
-            if (e == null)
+            if (e == null) {
+                log(MessageFormat.format("Unable to find entry {0}", filename));
                 return true;
+            }
             try {
                 file2 = new RCodeInfo(new BufferedInputStream(reader.getInputStream(e)));
             } catch (Exception e2) {
+                log(MessageFormat.format("PLTarget {0} is an invalid rcode -- {1}", filename, e2.getMessage()));
                 return true;
             }
         }
 
         switch (mode) {
             case MODE_CRC: 
-                log(MessageFormat.format("CRC File1 {0} File2 {1}", file1.getCRC(), file2.getCRC()), Project.MSG_INFO);
+                log(MessageFormat.format("CRC {2} File1 {0} File2 {1}", file1.getCRC(), file2.getCRC(), filename), Project.MSG_VERBOSE);
                 return (file1.getCRC() != file2.getCRC());
             case MODE_MD5:
-                log(MessageFormat.format("MD5 File1 {0} File2 {1}", file1.getMD5(), file2.getMD5()), Project.MSG_INFO);
+                log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getMD5(), file2.getMD5(), filename), Project.MSG_VERBOSE);
                 return !file1.getMD5().equals(file2.getMD5());
             default: return true;
         }
