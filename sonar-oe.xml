@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+
+  <property name="sonar.host.url" value="${SONAR_URL}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.oe:${JOB_NAME}" />
+  <property name="sonar.projectName" value="PCT - OpenEdge module" />
+  <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
+  <property name="sonar.language" value="oe" />
+  <property name="sonar.sources" value="src/progress" />
+  <property name="sonar.binaries" value="build-v11" />
+  <property name="sonar.verbose" value="false" />
+  <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+  <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
+  <property name="sonar.jdbc.username" value="sonar" />
+  <property name="sonar.jdbc.password" value="sonar" />
+
+  <target name="sonar">
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+        <classpath path="sonar-ant-task-*.jar" />
+    </taskdef>
+    <sonar:sonar />
+  </target>
+
+</project>
