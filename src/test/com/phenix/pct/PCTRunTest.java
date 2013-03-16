@@ -54,6 +54,7 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.BuildException;
@@ -354,5 +355,32 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test3", "Result : Big5 ±÷");
         expectLog("test4", "Result : 1252 ±÷");
         expectLog("test5", "Result : UTF 8 ±÷");
+    }
+
+    @Test(groups = { "all" })
+    public void test40() {
+        configureProject("PCTRun/test40/build.xml");
+        
+        File f1 = new File("PCTRun/test40/profiler1/profiler.out");
+        executeTarget("test1");
+        assertFalse(f1.exists());
+        
+        File f2 = new File("PCTRun/test40/profiler2/profiler.out");
+        executeTarget("test2");
+        assertTrue(f2.exists());
+        
+        executeTarget("test3");
+        File f3 = new File("PCTRun/test40/profiler3");
+        assertEquals(f3.list().length, 1);
+        
+        expectBuildException("test4", "OutputDir and OutputFile");
+        
+        File f5 = new File("PCTRun/test40/profiler5/profiler.out");
+        executeTarget("test5");
+        assertTrue(f5.exists());
+
+        executeTarget("test6");
+        File f6 = new File("PCTRun/test40/profiler6");
+        assertEquals(f6.list().length, 3);
     }
 }
