@@ -187,7 +187,7 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="true" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
+    <bootstrapCompile destdir="${buildDir}" md5="true" minSize="false" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
