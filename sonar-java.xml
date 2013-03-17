@@ -9,6 +9,7 @@
   <property name="sonar.language" value="java" />
   <property name="sonar.sources" value="src/java" />
   <property name="sonar.binaries" value="build" />
+  <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" />
   <property name="sonar.verbose" value="false" />
   <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
   <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
