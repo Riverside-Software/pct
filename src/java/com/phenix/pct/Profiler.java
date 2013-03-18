@@ -112,7 +112,13 @@ public class Profiler {
         return listings;
     }
 
-    public void validate() throws BuildException {
+    /**
+     * Validates object. If background task is set to true, then you can't set outputFile, only outputDir
+     * 
+     * @param backgroundTask
+     * @throws BuildException
+     */
+    public void validate(boolean backgroundTask) throws BuildException {
         if (!enabled)
             return;
         if ((outputDir == null) && (outputFile == null))
@@ -123,6 +129,8 @@ public class Profiler {
             if (!outputDir.exists() || !outputDir.isDirectory())
                 throw new BuildException("Output dir doesn't exist or is not a directory");
         }
+        if (backgroundTask && (outputFile != null))
+            throw new BuildException("Only outputDir can be set for multi-threaded tasks");
         if (listings != null) {
             if (!listings.exists() || !listings.isDirectory())
                 throw new BuildException("Listing dir doesn't exist or is not a directory");

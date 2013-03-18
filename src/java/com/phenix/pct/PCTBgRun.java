@@ -41,13 +41,13 @@ import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Run a background Progress procedure.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
- * @version $Revision$
  */
 public abstract class PCTBgRun extends PCT {
     private GenericExecuteOptions options;
@@ -67,6 +67,7 @@ public abstract class PCTBgRun extends PCT {
     private File initProc = null;
     private int initProcId = -1; // Unique ID when creating temp files
     private Charset charset = null;
+    private Collection<File> profilerParams = new ArrayList<File>();
 
     /**
      * Default constructor
@@ -102,6 +103,10 @@ public abstract class PCTBgRun extends PCT {
 
     public void addOutputParameter(OutputParameter param) {
         options.addOutputParameter(param);
+    }
+
+    public void addProfiler(Profiler profiler) {
+        options.addProfiler(profiler);
     }
 
     public void setParamFile(File pf) {
@@ -242,6 +247,16 @@ public abstract class PCTBgRun extends PCT {
             exec.setDir(options.getBaseDir());
         }
 
+        // Specific configuration for profiler
+        if ((options.getProfiler() != null) && options.getProfiler().isEnabled()) {
+            File profParam = new File(System.getProperty("java.io.tmpdir"), "prof" + PCT.nextRandomInt() + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            createProfilerParamFile(profParam);
+            exec.createArg().setValue("-profiler");
+            exec.createArg().setValue(profParam.getAbsolutePath());
+            // Kept for cleanup
+            profilerParams.add(profParam);
+        }
+
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
         var.setValue(this.getDlcHome().toString());
@@ -262,7 +277,9 @@ public abstract class PCTBgRun extends PCT {
     public void execute() throws BuildException {
         ListenerThread listener = null;
         checkDlcHome();
-
+        if (options.getProfiler() != null)
+            options.getProfiler().validate(true);
+        
         // See comment in PCTRun#execute() on why file name is generated now
         pctLib = new File(
                 System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -422,6 +439,37 @@ public abstract class PCTBgRun extends PCT {
         }
     }
 
+    private void createProfilerParamFile(File paramFile) throws BuildException {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(paramFile));
+            // Assuming nobody will use file names with double quotes in this case...
+            bw.write("-FILENAME \""
+                    + new File(options.getProfiler().getOutputDir(), "profiler"
+                            + PCT.nextRandomInt() + ".out\""));
+            bw.newLine();
+            if (options.getProfiler().hasCoverage()) {
+                bw.write("-COVERAGE");
+                bw.newLine();
+            }
+            if (options.getProfiler().getListings() != null) {
+                bw.write("-LISTINGS \"" + options.getProfiler().getListings().getAbsolutePath()
+                        + "\"");
+                bw.newLine();
+            }
+            bw.write("-DESCRIPTION \"" + options.getProfiler().getDescription() + "\"");
+            bw.newLine();
+            bw.close();
+        } catch (IOException caught) {
+            throw new BuildException(caught);
+        } finally {
+            try {
+                bw.close();
+            } catch (IOException uncaught) {
+            }
+        }
+    }
+
     private List<String> getPropathAsList() {
         List<String> list = new ArrayList<String>();
         if (options.getPropath() != null) {
@@ -468,6 +516,13 @@ public abstract class PCTBgRun extends PCT {
             }
         }
         initProc.delete();
+        for (File f : profilerParams) {
+            if (!f.delete()) {
+                log(MessageFormat
+                        .format(Messages.getString("PCTRun.5"), f.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+            }
+
+        }
     }
 
     protected synchronized void logMessages(List<Message> logs) {
