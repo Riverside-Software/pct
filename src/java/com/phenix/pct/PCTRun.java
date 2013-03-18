@@ -512,6 +512,9 @@ public class PCTRun extends PCT {
      * @param profiler
      */
     public void addProfiler(Profiler profiler) {
+        if (this.profiler != null) {
+            throw new BuildException("Only one Profiler node can be defined");
+        }
         this.profiler = profiler;
     }
 
@@ -557,7 +560,7 @@ public class PCTRun extends PCT {
         if (!prepared) {
             prepareExecTask();
             if (profiler != null) {
-                profiler.validate();
+                profiler.validate(false);
             }
         }
 

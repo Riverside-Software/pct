@@ -545,6 +545,16 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertFalse(f2.exists());
     }
 
+    @Test(groups = { "v10", "v11" } )
+    public void test106() throws IOException {
+        configureProject("PCTCompileExt/test106/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompileExt/test106/profiler");
+        // 2 profiler files generated
+        assertEquals(f1.list().length, 2);
+    }
+
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
         FileChannel srcChannel = new FileInputStream(src).getChannel();
