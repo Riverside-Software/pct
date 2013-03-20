@@ -62,6 +62,7 @@ public class GenericExecuteOptions {
     private File baseDir = null;
     private boolean verbose = false;
     private boolean relativePaths = false;
+    private Profiler profiler = null;
 
     public GenericExecuteOptions(Project p) {
         project = p;
@@ -409,6 +410,16 @@ public class GenericExecuteOptions {
         return relativePaths;
     }
 
+    /**
+     * @since PCT 0.19
+     */
+    public void addProfiler(Profiler profiler) {
+        if (this.profiler != null) {
+            throw new BuildException("Only one Profiler node can be defined");
+        }
+        this.profiler = profiler;
+    }
+
     public void setFailOnError(boolean failOnError) {
         throw new BuildException(MessageFormat.format(
                 Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -524,6 +535,10 @@ public class GenericExecuteOptions {
 
     public void setProcedure(String procedure) {
         this.procedure = procedure;
+    }
+
+    public Profiler getProfiler() {
+        return profiler;
     }
 
     protected List<String> getCmdLineParameters() {
