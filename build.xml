@@ -283,7 +283,7 @@ PCTBuild=${BUILD_NUMBER}
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="build-win" />
-    <bootstrapCompile destdir="build-win" md5="true" minSize="true" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8">
+    <bootstrapCompile destdir="build-win" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
