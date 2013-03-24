@@ -7,6 +7,14 @@
 ^build-v10-64$
 ^build-v11$
 ^build-win$
+^debug-v9$
+^debug-v10$
+^debug-v10-64$
+^debug-v11$
+^preprocess-v9$
+^preprocess-v10$
+^preprocess-v10-64$
+^preprocess-v11$
 ^javadoc$
 ^lib$
 ^sports2000$
