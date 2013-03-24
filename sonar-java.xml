@@ -2,7 +2,7 @@
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
   <path id="lib.cp">
-    <filelist dir="." files="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" />
+    <filelist dir="." files="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar,parser.jar,testng-6.3.1.jar" />
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
