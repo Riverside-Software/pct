@@ -186,6 +186,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test2");
         File f2 = new File("PCTCompile/test11/build2/test2.r");
         assertTrue(f2.exists());
+        
+        executeTarget("test3");
+        assertTrue(new File("PCTCompile/test11/build3/test0.r").exists());
+        assertFalse(new File("PCTCompile/test11/build3/test1.r").exists());
+        assertTrue(new File("PCTCompile/test11/build3/test2.r").exists());
+        
+        expectBuildException("test4", "failOnError set to true");
+        assertTrue(new File("PCTCompile/test11/build4/test0.r").exists());
+        assertFalse(new File("PCTCompile/test11/build4/test1.r").exists());
+        assertFalse(new File("PCTCompile/test11/build4/test2.r").exists());
     }
 
     @Test(groups= {"all"})
@@ -484,4 +494,5 @@ public class PCTCompileTest extends BuildFileTestNg {
         String test3Inc2 = getProject().getProperty("test3-inc2");
         assertEquals(test3Inc2.replace('\\', '/'), "inc/foo/bar.i");
     }
+    
 }
