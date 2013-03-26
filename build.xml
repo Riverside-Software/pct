@@ -384,21 +384,13 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="testdist">
-    <zip destfile="pct-tests.zip" encoding="utf-8">
-      <fileset dir="tests" includes="**/*" />
-    </zip>
-    <jar destfile="${dist}/PCT-Tests-Deps.jar">
-      <zipfileset src="ant.jar" />
-      <zipfileset src="ant-apache-regexp.jar" />
-      <zipfileset src="ant-launcher.jar" />
-      <zipfileset src="ini4j-0.5.1.jar" />
-      <zipfileset src="jakarta-regexp-1.5.jar" />
-      <zipfileset src="testng-6.3.1.jar" />
-      <zipfileset src="${dist}/PCT.jar" />
-      <zipfileset src="oe_common_services.jar" />
-    </jar>
     <jar jarfile="${dist}/PCT-Tests.jar">
       <fileset dir="${build-test}" includes="**/*" />
+    </jar>
+    <zip destfile="testcases.zip" encoding="utf-8">
+      <zipfileset dir="tests" includes="**/*" prefix="testbox" />
+      <zipfileset dir="." includes="ant.jar,ant-apache-regexp.jar,ini4j-0.5.1.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar" prefix="lib" />
+      <zipfileset dir="${dist}" includes="PCT.jar,PCT-Tests.jar" prefix="lib" />
     </jar>
   </target>
 
