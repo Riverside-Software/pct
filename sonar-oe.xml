@@ -11,6 +11,7 @@
   <property name="sonar.binaries" value="build-v11" />
   <property name="sonar.oe.preprocess" value="preprocess-v11" />
   <property name="sonar.oe.debug" value="debug-v11" />
+  <property name="sonar.oe.profiler" value="profiler" />
   <property name="sonar.verbose" value="false" />
   <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
   <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
@@ -18,8 +19,13 @@
   <property name="sonar.jdbc.password" value="sonar" />
 
   <target name="sonar">
+    <mkdir dir="profiler" />
+    <copy todir="profiler">
+      <zipfileset src="profiler-v11.1-linux64.zip" />
+      <flattenmapper />
+    </copy>
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-        <classpath path="sonar-ant-task-*.jar" />
+      <classpath path="sonar-ant-task-*.jar" />
     </taskdef>
     <sonar:sonar />
   </target>
