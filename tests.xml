@@ -19,6 +19,7 @@
     <delete dir="lib" />
     <delete dir="testbox" />
     <delete dir="test-output" />
+    <delete dir="profiler" />
     <delete file="emailable-report-${TESTENV}.html" />
     <delete file="testng-results-${TESTENV}.xml" />
 
@@ -29,9 +30,10 @@
 
   <target name="test" depends="prepare-test">
     <mkdir dir="test-output" />
+    <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
-    <jacoco:coverage>
+    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
         <classfileset dir="classes" includes="**/*Test.class" />
         <classpath refid="test.run.cp" />
@@ -40,6 +42,10 @@
     </jacoco:coverage>
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
+    <copy todir="profiler">
+      <fileset dir="testbox" includes="**/profiler*.out" />
+      <flattenmapper />
+    </copy>
 
     <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
       <fileset dir="." includes="emailable-report-${TESTENV}.html"/>
