@@ -391,7 +391,7 @@ PCTBuild=${BUILD_NUMBER}
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="." includes="ant.jar,ant-apache-regexp.jar,ini4j-0.5.1.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar" prefix="lib" />
       <zipfileset dir="${dist}" includes="PCT.jar,PCT-Tests.jar" prefix="lib" />
-    </jar>
+    </zip>
   </target>
 
   <target name="install" depends="jar" >
