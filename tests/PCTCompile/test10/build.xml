@@ -4,7 +4,9 @@
 
   <target name="test1">
   	<mkdir dir="build" />
+    <mkdir dir="profiler" />
   	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
       <fileset dir="src">
         <include name="test.p"/>	
       </fileset>	
