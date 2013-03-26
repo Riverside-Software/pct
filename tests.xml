@@ -2,9 +2,8 @@
 
 <project name="PCT-Tests" xmlns:jacoco="antlib:org.jacoco.ant">
 
-  <property name="testdir" location="testbox" />
-
   <path id="test.run.cp">
+    <pathelement location="classes" />
     <fileset dir="lib" includes="*.jar" />
   </path>
 
@@ -16,13 +15,16 @@
   </path>
 
   <target name="prepare-test" >
-    <delete dir="${testdir}" />
+    <delete dir="classes" />
     <delete dir="lib" />
+    <delete dir="testbox" />
     <delete dir="test-output" />
     <delete file="emailable-report-${TESTENV}.html" />
     <delete file="testng-results-${TESTENV}.xml" />
 
     <unzip src="testcases.zip" dest="." />
+    <mkdir dir="classes" />
+    <unjar src="lib/PCT-Tests.jar" dest="classes" />
   </target>
 
   <target name="test" depends="prepare-test">
@@ -30,7 +32,7 @@
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
     <jacoco:coverage>
-      <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
+      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
         <classfileset dir="classes" includes="**/*Test.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
