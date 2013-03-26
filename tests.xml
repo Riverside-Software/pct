@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="PCT-Tests">
+<project name="PCT-Tests" xmlns:jacoco="antlib:org.jacoco.ant">
 
   <property name="testdir" location="testbox" />
 
