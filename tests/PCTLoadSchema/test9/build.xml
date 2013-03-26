@@ -4,8 +4,10 @@
 
   <target name="base">
     <mkdir dir="db" />
+    <mkdir dir="profiler" />
     <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
     <PCTLoadSchema dlcHome="${DLC}">
+  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
 	  <fileset dir="." includes="*.df" />
     </PCTLoadSchema>
