@@ -5,36 +5,37 @@
   <property name="testdir" location="testbox" />
 
   <path id="test.run.cp">
-    <pathelement location="classes" />
-    <pathelement location="PCT-Tests-Deps.jar" />
+    <fileset dir="lib" includes="*.jar" />
   </path>
 
   <path id="testng.cp">
-    <fileset dir="." includes="PCT-Tests-Deps.jar" />
+    <fileset dir="lib" includes="*.jar" excludes="PCT-Tests.jar" />
+  </path>
+  <path id="jacoco.cp">
+    <fileset dir="lib" includes="jacocoant.jar" />  
   </path>
 
   <target name="prepare-test" >
     <delete dir="${testdir}" />
+    <delete dir="lib" />
     <delete dir="test-output" />
-    <delete dir="classes" />
     <delete file="emailable-report-${TESTENV}.html" />
     <delete file="testng-results-${TESTENV}.xml" />
 
-    <mkdir dir="${testdir}" />
-    <unzip src="pct-tests.zip" dest="${testdir}" />
-
-    <mkdir dir="classes" />
-    <unjar src="PCT-Tests.jar" dest="classes" />
+    <unzip src="testcases.zip" dest="." />
   </target>
 
   <target name="test" depends="prepare-test">
     <mkdir dir="test-output" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
-      <classfileset dir="classes" includes="**/*Test.class" />
-      <classpath refid="test.run.cp" />
-      <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
-    </testng>
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
+    <jacoco:coverage>
+      <testng workingDir="${testdir}" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
+        <classfileset dir="classes" includes="**/*Test.class" />
+        <classpath refid="test.run.cp" />
+        <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
+      </testng>
+    </jacoco:coverage>
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
 
