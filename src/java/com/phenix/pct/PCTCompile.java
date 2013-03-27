@@ -59,6 +59,7 @@ public class PCTCompile extends PCTRun {
     private boolean streamIO = false;
     private boolean stringXref = false;
     private boolean saveR = true;
+    private boolean twoPass = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -72,6 +73,7 @@ public class PCTCompile extends PCTRun {
     private File fsList = null;
     private int paramsId = -1;
     private File params = null;
+    private int twoPassId = -1;
 
     /**
      * Creates a new PCTCompile object
@@ -81,6 +83,7 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
+        twoPassId = PCT.nextRandomInt();
 
         fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -330,6 +333,16 @@ public class PCTCompile extends PCTRun {
         this.relativePaths = rel;
     }
 
+    /**
+     * Two-pass compilation: first pass preprocess source code, second pass compiles the result
+     *  
+     * @param twoPass Boolean
+     * @since PCT 0.19
+     */
+    public void setTwoPass(boolean twoPass) {
+        this.twoPass = twoPass;
+    }
+
     private boolean isDirInPropath(File dir) {
         for (String str : propath.list()) {
             if (new File(str).equals(dir))
@@ -462,6 +475,12 @@ public class PCTCompile extends PCTRun {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$
                 bw.newLine();
             }
+            if (twoPass) {
+                bw.write("TWOPASS=1");
+                bw.newLine();
+                bw.write("TWOPASSID=" + Integer.toString(twoPassId));
+                bw.newLine();
+            }
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
@@ -516,6 +535,9 @@ public class PCTCompile extends PCTRun {
             preprocess = true;
         if (debugListingDir != null)
             debugListing = true;
+        if (twoPass) {
+            log("Two pass compilation activated", Project.MSG_VERBOSE);
+        }
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
@@ -555,15 +577,15 @@ public class PCTCompile extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        if (!this.getDebugPCT()) {
-            if (this.fsList.exists() && !this.fsList.delete()) {
+        if (!getDebugPCT()) {
+            if (fsList.exists() && !fsList.delete()) {
                 log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), this.fsList.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
+                        Messages.getString("PCTCompile.42"), fsList.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
 
-            if (this.params.exists() && !this.params.delete()) {
+            if (params.exists() && !params.delete()) {
                 log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), this.params.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
+                        Messages.getString("PCTCompile.42"), params.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
         }
     }

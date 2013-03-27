@@ -116,6 +116,8 @@ DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL -1.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lTwoPass  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE twoPassID AS INTEGER    NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -200,6 +202,10 @@ REPEAT:
             ASSIGN streamIO = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'TWOPASS':U THEN
+            ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'TWOPASSID':U THEN
+            ASSIGN twoPassID = INTEGER(ENTRY(2, cLine, '=':U)).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -233,32 +239,37 @@ REPEAT:
             RUN adecomm/_osfext.p(cLine, OUTPUT cFileExt).
             ASSIGN RCodeName = SUBSTRING(cLine, 1, R-INDEX(cLine, cFileExt) - 1) + '.r':U.
             ASSIGN RCodeTS = getTimeStampDF(OutputDir, RCodeName).
-            Recompile = (RCodeTS EQ ?).
+            Recompile = (ltwoPass EQ TRUE).
             IF Recompile AND NoComp THEN
-                MESSAGE cLine + ' [NO RCODE]':U.
+                MESSAGE cLine + ' [TWO PASS]'.
             IF (NOT Recompile) THEN DO:
-                /* Checking .r timestamp is prior procedure timestamp */
-                ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
-                Recompile = (ProcTS GT RCodeTS).
+                Recompile = (RCodeTS EQ ?).
                 IF Recompile AND NoComp THEN
-                    MESSAGE cLine + ' [OLD RCODE]':U.
+                    MESSAGE cLine + ' [NO RCODE]':U.
                 IF (NOT Recompile) THEN DO:
-                    /* Checking included files */
-                    Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
+                    /* Checking .r timestamp is prior procedure timestamp */
+                    ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
+                    Recompile = (ProcTS GT RCodeTS).
                     IF Recompile AND NoComp THEN
-                        MESSAGE cLine + ' [INCLUDES]':U.
+                        MESSAGE cLine + ' [OLD RCODE]':U.
                     IF (NOT Recompile) THEN DO:
-                        /* Checking CRC */
-                        Recompile = CheckCRC(cLine, PCTDir).
+                        /* Checking included files */
+                        Recompile = CheckIncludes(cLine, RCodeTS, PCTDir).
                         IF Recompile AND NoComp THEN
-                          MESSAGE cLine + ' [CRC]':U.
-                        /* Compilation options should also be checked */
-                        /* This is another story... */
-                    END.
+                            MESSAGE cLine + ' [INCLUDES]':U.
+                        IF (NOT Recompile) THEN DO:
+                            /* Checking CRC */
+                            Recompile = CheckCRC(cLine, PCTDir).
+                            IF Recompile AND NoComp THEN
+                              MESSAGE cLine + ' [CRC]':U.
+                            /* Compilation options should also be checked */
+                            /* This is another story... */
+                        END.
+                   END.
                 END.
             END.
-	    END.
-	    /* Selective compile */
+        END.
+        /* Selective compile */
         IF (NOT NoComp) AND Recompile THEN DO:
             IF lXCode THEN
                 RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
@@ -417,6 +428,13 @@ PROCEDURE PCTCompileXref.
     ELSE
        ASSIGN debugListingFile = ?.
 
+    IF lTwoPass THEN DO:
+        IF pctVerbose THEN MESSAGE SUBSTITUTE("First pass - Generating preprocessed file for &1", pcInFile).
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) PREPROCESS VALUE(pcInDir + '/' + pcInFile + '.preprocess':U).
+        OS-RENAME VALUE(pcInDir + '/':U + pcInFile) VALUE(pcInDir + '/':U + pcInFile + '.backup':U).
+        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.preprocess':U) VALUE(pcInDir + '/':U + pcInFile).
+    END.
+
     IF (languages EQ ?) THEN 
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
@@ -424,7 +442,12 @@ PROCEDURE PCTCompileXref.
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
       ELSE
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
-    END.      
+    END.
+    IF lTwoPass THEN DO:
+        OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
+        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
+    END.
+
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
         RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
