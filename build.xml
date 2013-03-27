@@ -85,8 +85,8 @@
     <include name="ConsultingWerk/**/*.p" /> -->
   </fileset>
   <fileset id="fs.classDoc" dir="${src.progress}">
-    <include name="ConsultingWerk/**/*.cls" />
-    <include name="ConsultingWerk/**/*.p" />
+    <include name="Consultingwerk/**/*.cls" />
+    <include name="Consultingwerk/**/*.p" />
   </fileset>
 
   <!-- Classpath for PCT compilation -->
@@ -324,7 +324,7 @@ PCTBuild=${BUILD_NUMBER}
     </fileset>
     <zipfileset src="jcommander-1.30.jar" />
     <zipfileset src="proparse.jar" includes="**/*.class" />
-    <zipfileset dir="${src.progress}/ConsultingWerk/Studio/ClassDocumentation/Templates" prefix="templates" />
+    <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
     <zipfileset src="parser.jar" includes="**/*.class" />
     <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
