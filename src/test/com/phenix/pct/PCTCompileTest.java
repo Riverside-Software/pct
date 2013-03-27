@@ -538,7 +538,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups= {"all"})
     public void test31() {
         configureProject("PCTCompile/test31/build.xml");
-        executeTarget("build");
+        executeTarget("test");
         
         assertTrue(new File("PCTCompile/test31/build/test.r").exists());
         assertTrue(new File("PCTCompile/test31/build/eu/rssw/pct/A.r").exists());
