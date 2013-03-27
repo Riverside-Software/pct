@@ -381,6 +381,12 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
     DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
 
+    IF (NOT fileExists(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)) THEN DO:
+      MESSAGE SUBSTITUTE("File [&1]/[&2] not found", pcInDir, pcInFile).
+      ASSIGN plOK = FALSE.
+      RETURN.    
+    END.
+    
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
     ASSIGN plOK = createDir(pcOutDir, cBase).

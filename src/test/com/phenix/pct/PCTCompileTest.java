@@ -494,5 +494,19 @@ public class PCTCompileTest extends BuildFileTestNg {
         String test3Inc2 = getProject().getProperty("test3-inc2");
         assertEquals(test3Inc2.replace('\\', '/'), "inc/foo/bar.i");
     }
-    
+
+    @Test(groups= {"all"})
+    public void test30() {
+        configureProject("PCTCompile/test30/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test30/build/test1.r");
+        File f2 = new File("PCTCompile/test30/build/test2.r");
+        File f3 = new File("PCTCompile/test30/build/test3.r");
+        assertTrue(f1.exists());
+        assertFalse(f2.exists());
+        assertTrue(f3.exists());
+        
+        expectBuildException("test2", "ZipFileset not supported");
+    }
 }
