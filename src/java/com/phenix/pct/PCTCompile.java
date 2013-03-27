@@ -20,6 +20,9 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.BufferedWriter;
@@ -31,6 +34,7 @@ import java.io.OutputStreamWriter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,7 +43,7 @@ import java.util.List;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
@@ -301,12 +305,19 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Adds a set of files to archive.
-     * 
-     * @param set FileSet
+     * Legacy method. Use add(ResourceCollection)
      */
     public void addFileset(FileSet set) {
-        filesets.add(set);
+        add(set);
+    }
+
+    /**
+     * Adds a ResourceCollection to compile
+     * 
+     * @param rc ResourceCollection
+     */
+    public void add(ResourceCollection rc) {
+        resources.add(rc);
     }
 
     /**
@@ -336,32 +347,44 @@ public class PCTCompile extends PCTRun {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
                     fsList), getCharset()));
 
-            for (FileSet fs : filesets) {
-                if (relativePaths) {
-                    if (!isDirInPropath(fs.getDir()))
-                        log(MessageFormat.format(Messages.getString("PCTCompile.48"), fs.getDir()
-                                .getAbsolutePath()), Project.MSG_WARN);
-                    try {
-                        bw.write("FILESET="
-                                + FileUtils.getRelativePath(
-                                        (baseDir == null ? getProject().getBaseDir() : baseDir),
-                                        fs.getDir()).replace('/', File.separatorChar));
-                    } catch (Exception caught) {
-                        try {
-                            bw.close();
-                        } catch (IOException uncaught) {
+            for (ResourceCollection rc : resources) {
+                boolean firstFound = false;
+                Iterator<Resource> iter = rc.iterator();
+                while (iter.hasNext()) {
+                    // Find basedir on first element
+                    FileResource frs = (FileResource) iter.next();
+                    if (!firstFound) {
+                        if (relativePaths) {
+                            if (!isDirInPropath(frs.getBaseDir()))
+                                log(MessageFormat.format(Messages.getString("PCTCompile.48"), frs
+                                        .getBaseDir().getAbsolutePath()), Project.MSG_WARN);
+                            try {
+                                bw.write("FILESET="
+                                        + FileUtils.getRelativePath(
+                                                (baseDir == null
+                                                        ? getProject().getBaseDir()
+                                                        : baseDir), frs.getBaseDir()).replace('/',
+                                                File.separatorChar));
+                            } catch (Exception caught) {
+                                try {
+                                    bw.close();
+                                } catch (IOException uncaught) {
 
-                        }
-                        throw new BuildException(caught);
+                                }
+                                throw new BuildException(caught);
+                            }
+                        } else
+                            bw.write("FILESET=" + frs.getBaseDir().getAbsolutePath()); //$NON-NLS-1$
+                        bw.newLine();
+                        firstFound = true;
                     }
-                } else
-                    bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
-                bw.newLine();
 
-                // And get files from fileset
-                for (String str : fs.getDirectoryScanner(this.getProject()).getIncludedFiles()) {
-                    bw.write(str);
-                    bw.newLine();
+                    if (frs.isDirectory()) {
+                        log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
+                    } else {
+                        bw.write(frs.getName());
+                        bw.newLine();
+                    }
                 }
             }
 
@@ -501,6 +524,12 @@ public class PCTCompile extends PCTRun {
             log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$ // TODO Update this message
             this.listing = false; // Useless for now, but just in case...
             this.preprocess = false; // Useless for now, but just in case...
+        }
+
+        // Verify resource collections
+        for (ResourceCollection rc : resources) {
+            if (!rc.isFilesystemOnly())
+                throw new BuildException("PCTCompile only supports file-system resources collections");
         }
 
         checkDlcHome();
