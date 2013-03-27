@@ -533,6 +533,17 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test30/build8/test1.r").exists());
         assertTrue(new File("PCTCompile/test30/build8/test2.r").exists());
         assertTrue(new File("PCTCompile/test30/build8/test3.r").exists());
-
     }
+
+    @Test(groups= {"all"})
+    public void test31() {
+        configureProject("PCTCompile/test31/build.xml");
+        executeTarget("build");
+        
+        assertTrue(new File("PCTCompile/test31/build/test.r").exists());
+        assertTrue(new File("PCTCompile/test31/build/eu/rssw/pct/A.r").exists());
+        assertTrue(new File("PCTCompile/test31/build/eu/rssw/pct/Z.r").exists());
+        // Should test file content (mainly preprocessed output)
+    }
+
 }
