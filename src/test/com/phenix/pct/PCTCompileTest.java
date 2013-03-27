@@ -498,15 +498,41 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups= {"all"})
     public void test30() {
         configureProject("PCTCompile/test30/build.xml");
-        executeTarget("test");
 
-        File f1 = new File("PCTCompile/test30/build/test1.r");
-        File f2 = new File("PCTCompile/test30/build/test2.r");
-        File f3 = new File("PCTCompile/test30/build/test3.r");
-        assertTrue(f1.exists());
-        assertFalse(f2.exists());
-        assertTrue(f3.exists());
+        executeTarget("test");
+        assertTrue(new File("PCTCompile/test30/build/test1.r").exists());
+        assertFalse(new File("PCTCompile/test30/build/test2.r").exists());
+        assertTrue(new File("PCTCompile/test30/build/test3.r").exists());
         
         expectBuildException("test2", "ZipFileset not supported");
+        
+        executeTarget("test3");
+        assertFalse(new File("PCTCompile/test30/build3/test1.r").exists());
+        assertTrue(new File("PCTCompile/test30/build3/test2.r").exists());
+        assertFalse(new File("PCTCompile/test30/build3/test3.r").exists());
+        
+        executeTarget("test4");
+        assertEquals(new File("PCTCompile/test30/build4").list().length, 1); // Only .pct
+        
+        executeTarget("test5");
+        assertTrue(new File("PCTCompile/test30/build5/test1.r").exists());
+        assertTrue(new File("PCTCompile/test30/build5/test2.r").exists());
+        assertTrue(new File("PCTCompile/test30/build5/test3.r").exists());
+
+        executeTarget("test6");
+        assertTrue(new File("PCTCompile/test30/build6/test1.r").exists());
+        assertFalse(new File("PCTCompile/test30/build6/test2.r").exists());
+        assertFalse(new File("PCTCompile/test30/build6/test3.r").exists());
+        
+        executeTarget("test7");
+        assertTrue(new File("PCTCompile/test30/build7/test1.r").exists());
+        assertTrue(new File("PCTCompile/test30/build7/test2.r").exists());
+        assertTrue(new File("PCTCompile/test30/build7/test3.r").exists());
+
+        executeTarget("test8");
+        assertTrue(new File("PCTCompile/test30/build8/test1.r").exists());
+        assertTrue(new File("PCTCompile/test30/build8/test2.r").exists());
+        assertTrue(new File("PCTCompile/test30/build8/test3.r").exists());
+
     }
 }

@@ -4,8 +4,8 @@
   
   <target name="test">
   	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" debugPCT="true">
-      <filelist dir="src" files="test1.p,test3.p,test4.p" />
+  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <filelist dir="src" files="test1.p,test3.p" />
     </PCTCompile>
   </target>
 
@@ -17,23 +17,23 @@
   </target>
 
   <target name="test3">
-  	<mkdir dir="build" />
+  	<mkdir dir="build3" />
     <filelist id="foobar" dir="src" files="test2.p" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" debugPCT="true">
+  	<PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
       <filelist refid="foobar" />
     </PCTCompile>
   </target>
 
   <target name="test4">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" debugPCT="true" verbose="true">
+  	<mkdir dir="build4" />
+  	<PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}">
       <dirset dir="." includes="src" />
     </PCTCompile>
   </target>
 
   <target name="test5">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" debugPCT="true">
+  	<mkdir dir="build5" />
+  	<PCTCompile graphicalMode="false" destDir="build5" dlcHome="${DLC}">
       <filelist dir="src" files="test1.p" />
       <fileset dir="src" includes="*2.p" />
       <filelist dir="src" files="test3.p" />
@@ -42,7 +42,7 @@
 
   <target name="test6">
   	<mkdir dir="build6" />
-  	<PCTCompile graphicalMode="false" destDir="build6" dlcHome="${DLC}" debugPCT="true">
+  	<PCTCompile graphicalMode="false" destDir="build6" dlcHome="${DLC}">
       <first>
         <filelist dir="src" files="test1.p,test3.p,test4.p" />
       </first>
@@ -51,9 +51,9 @@
 
   <target name="test7">
   	<mkdir dir="build7" />
-  	<PCTCompile graphicalMode="false" destDir="build7" dlcHome="${DLC}" debugPCT="true">
+  	<PCTCompile graphicalMode="false" destDir="build7" dlcHome="${DLC}">
       <sort>
-        <filelist dir="src" files="test3.p,test4.p,test1.p" />
+        <filelist dir="src" files="test2.p,test3.p,test1.p" />
         <reverse xmlns="antlib:org.apache.tools.ant.types.resources.comparators" />
       </sort>
     </PCTCompile>
@@ -61,7 +61,7 @@
 
   <target name="test8">
   	<mkdir dir="build8" />
-  	<PCTCompile graphicalMode="false" destDir="build8" dlcHome="${DLC}" verbose="true">
+  	<PCTCompile graphicalMode="false" destDir="build8" dlcHome="${DLC}">
       <sort>
         <fileset dir="src" includes="*.p" />
         <natural xmlns="antlib:eu.rssw.pct" />
