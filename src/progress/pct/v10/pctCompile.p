@@ -392,11 +392,11 @@ PROCEDURE PCTCompileXref.
     DEFINE INPUT  PARAMETER pcPCTDir  AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
 
-    DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
-    DEFINE VARIABLE cBase AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cFile AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE i        AS INTEGER    NO-UNDO.
+    DEFINE VARIABLE cBase    AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE cFile    AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
+    DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
     DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
@@ -453,10 +453,6 @@ PROCEDURE PCTCompileXref.
       ELSE
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
     END.
-    IF lTwoPass THEN DO:
-        OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
-        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
-    END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
@@ -471,6 +467,10 @@ PROCEDURE PCTCompileXref.
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
         RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    END.
+    IF lTwoPass THEN DO:
+        OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
+        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
     END.
 
 END PROCEDURE.
