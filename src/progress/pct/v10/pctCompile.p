@@ -88,7 +88,8 @@ DEFINE STREAM sParams.
 DEFINE STREAM sFileset.
 DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
-/*DEFINE STREAM sPreProcess.*/
+DEFINE STREAM sDbgLst1.
+DEFINE STREAM sDbgLst2.
 
 /** Parameters from ANT call */
 DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
@@ -471,6 +472,19 @@ PROCEDURE PCTCompileXref.
     IF lTwoPass THEN DO:
         OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
         OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
+    END.
+    IF (debugListingFile NE ?) THEN DO:
+        DEFINE VARIABLE cLine AS CHARACTER NO-UNDO.
+        INPUT STREAM sDbgLst1 FROM VALUE(debugListingFile).
+        OUTPUT STREAM sDbgLst2 TO VALUE(debugListingFile + '.clean').
+        REPEAT:
+            IMPORT STREAM sDbgLst1 UNFORMATTED cLine.
+            PUT STREAM sDbgLst2 UNFORMATTED SUBSTRING(cLine, 13) '~n'.
+        END.
+        INPUT STREAM sDbgLst1 CLOSE.
+        OUTPUT STREAM sDbgLst2 CLOSE.
+        OS-DELETE VALUE(debugListingFile).
+        OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
     END.
 
 END PROCEDURE.
