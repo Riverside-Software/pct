@@ -326,6 +326,7 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
     DEFINE VARIABLE cCRC AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO INITIAL FALSE.
 
+    IF NOT fileExists(d + '/':U + f + '.crc':U) THEN RETURN TRUE.
     INPUT STREAM sCRC FROM VALUE(d + '/':U + f + '.crc':U).
     CRCList:
     REPEAT:
@@ -363,6 +364,7 @@ PROCEDURE PCTCompile.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+    IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
     COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
@@ -435,6 +437,7 @@ PROCEDURE PCTCompileXref.
         OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.preprocess':U) VALUE(pcInDir + '/':U + pcInFile).
     END.
 
+    IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 in directory &2 TO &3", pcInFile, pcInDir, cSaveDir).
     IF (languages EQ ?) THEN 
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
@@ -442,10 +445,6 @@ PROCEDURE PCTCompileXref.
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
       ELSE
         COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?)) MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE((IF StrXref THEN pcPCTDir + '/':U + cBase + '/':U + SUBSTRING(cFile, 1, R-INDEX(cFile, cFileExt) - 1) + '.strxref':U ELSE ?)) XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
-    END.
-    IF lTwoPass THEN DO:
-        OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
-        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
     END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
@@ -461,6 +460,10 @@ PROCEDURE PCTCompileXref.
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
         RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    END.
+    IF lTwoPass THEN DO:
+        OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
+        OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
     END.
 
 END PROCEDURE.
@@ -510,9 +513,9 @@ PROCEDURE PCTCompileXCode.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     IF (pcXCodeKey NE ?) THEN
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize STREAM-IO=streamIO GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
     ELSE
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) MIN-SIZE=MinSize STREAM-IO=streamIO GENERATE-MD5=MD5 NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF (NOT plOK) THEN DO:
         ASSIGN c = '':U.
@@ -547,14 +550,14 @@ PROCEDURE importXref.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN
+        IF FIRST-OF (ttXref.xObjID) THEN
             EXPORT ttXref.xObjID SEARCH(ttXref.xObjID).
     END.
     OUTPUT CLOSE.
     
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
     FOR EACH ttXref WHERE LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0 NO-LOCK BREAK BY ttXref.xObjID:
-    	IF FIRST-OF (ttXref.xObjID) THEN DO:
+        IF FIRST-OF (ttXref.xObjID) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXref.xObjID NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
                 EXPORT CRCList.
@@ -569,8 +572,8 @@ PROCEDURE importXref.
             IF FIRST-OF (ttXref.xObjID) THEN DO:
                 FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
                 IF (NOT AVAILABLE TimeStamps) THEN DO:
-                	ASSIGN cSearch = SEARCH(SUBSTRING(ttXref.xObjID, 1, R-INDEX(ttXref.xObjID, '.')) + 'r').
-                	IF (cSearch EQ ?) THEN
+                    ASSIGN cSearch = SEARCH(SUBSTRING(ttXref.xObjID, 1, R-INDEX(ttXref.xObjID, '.')) + 'r').
+                    IF (cSearch EQ ?) THEN
                         ASSIGN cSearch = SEARCH(ttXref.xObjID).
                     CREATE TimeStamps.
                     ASSIGN TimeStamps.ttFile = ttXref.xObjID
