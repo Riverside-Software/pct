@@ -450,7 +450,7 @@ public abstract class PCT extends Task {
      * @return 10.0B02 as of Dec 12 1998
      */
     protected String getFullVersion() {
-        return version.getFullVersion() + " as of " + version.getDate();
+        return version.getFullVersion();
     }
 
     /**
