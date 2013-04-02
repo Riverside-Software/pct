@@ -11,7 +11,10 @@
               <pathelement location="src" />
           </propath>
       </ClassDocumentation>
-      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" />
+      <mkdir dir="profiler" />
+      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html">
+          <Profiler enabled="true" coverage="true" outputDir="profiler" />  
+      </HTMLDocumentation>
   </target>
   
 </project>
