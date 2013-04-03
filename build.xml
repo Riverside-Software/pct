@@ -197,7 +197,7 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" debugListingDir="${debugDir}" preprocessDir="${preprocessDir}" md5="true" minSize="false" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
+    <bootstrapCompile destdir="${buildDir}" debugListingDir="${debugDir}" preprocessDir="${preprocessDir}" md5="true" minSize="false" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" twoPass="true">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -283,16 +283,16 @@ PCTBuild=${BUILD_NUMBER}
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="build-win" />
-    <bootstrapCompile destdir="build-win" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8">
+    <bootstrapCompile destdir="build-win" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8" twoPass="true" debugListing="true">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
-	<zip destFile="classDoc.zip">
-	  <fileset dir="build-win" includes="**/*.r" />
-	</zip>
+    <zip destFile="classDoc.zip">
+      <fileset dir="build-win" />
+    </zip>
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
