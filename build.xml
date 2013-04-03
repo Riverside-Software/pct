@@ -117,16 +117,6 @@
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${build-v11}" />
-    <mkdir dir="debug-v8" />
-    <mkdir dir="debug-v9" />
-    <mkdir dir="debug-v10" />
-    <mkdir dir="debug-v10-64" />
-    <mkdir dir="debug-v11" />
-    <mkdir dir="preprocess-v8" />
-    <mkdir dir="preprocess-v9" />
-    <mkdir dir="preprocess-v10" />
-    <mkdir dir="preprocess-v10-64" />
-    <mkdir dir="preprocess-v11" />
     <mkdir dir="${dist}" />
 
     <!-- Checking V8, v9 and v10 availability -->
@@ -197,7 +187,7 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" debugListingDir="${debugDir}" preprocessDir="${preprocessDir}" md5="true" minSize="false" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" twoPass="true">
+    <bootstrapCompile destdir="${buildDir}" debugListing="true" md5="true" minSize="false" failOnError="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" twoPass="${twoPass}">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -230,50 +220,45 @@ PCTBuild=${BUILD_NUMBER}
       <param name="build.this.version" value="dlc.v8.present" />
       <param name="dlcHome" value="${DLC8}" />
       <param name="buildDir" value="${build-v8}" />
-      <param name="debugDir" value="debug-v8" />
-      <param name="preprocessDir" value="preprocess-v8" />
       <param name="libName" value="pct8.pl" />
       <param name="fsid" value="fs.v8" />
+      <param name="twoPass" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v9.present" />
       <param name="dlcHome" value="${DLC9}" />
       <param name="buildDir" value="${build-v9}" />
-      <param name="debugDir" value="debug-v9" />
-      <param name="preprocessDir" value="preprocess-v9" />
       <param name="libName" value="pct9.pl" />
       <param name="fsid" value="fs.v9" />
+      <param name="twoPass" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10.present" />
       <param name="dlcHome" value="${DLC10}" />
       <param name="buildDir" value="${build-v10}" />
-      <param name="debugDir" value="debug-v10" />
-      <param name="preprocessDir" value="preprocess-v10" />
       <param name="libName" value="pct10.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="twoPass" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10-64.present" />
       <param name="dlcHome" value="${DLC10-64}" />
       <param name="buildDir" value="${build-v10-64}" />
-      <param name="debugDir" value="debug-v10-64" />
-      <param name="preprocessDir" value="preprocess-v10-64" />
       <param name="libName" value="pct10-64.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="twoPass" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v11.present" />
       <param name="dlcHome" value="${DLC11}" />
       <param name="buildDir" value="${build-v11}" />
-      <param name="debugDir" value="debug-v11" />
-      <param name="preprocessDir" value="preprocess-v11" />
       <param name="libName" value="pct11.pl" />
       <param name="fsid" value="fs.v11" />
+      <param name="twoPass" value="true" />
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
