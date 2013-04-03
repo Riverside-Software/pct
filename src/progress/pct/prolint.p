@@ -114,7 +114,7 @@ REPEAT:
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
         CREATE ttLintFiles.
-        ASSIGN ttLintFiles.SourceFile = CurrentFS + CHR(0x5C) + cLine.
+        ASSIGN ttLintFiles.SourceFile = CurrentFS + CHR(92) + cLine.
     END.
 END.
 

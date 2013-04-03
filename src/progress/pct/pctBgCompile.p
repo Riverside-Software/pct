@@ -395,12 +395,12 @@ PROCEDURE getCompileErrors PRIVATE:
     DEFINE VARIABLE c   AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
 
-    IF (REPLACE(pcInit, CHR(0x5C), '/') EQ REPLACE(pcFile, CHR(0x5C), '/')) THEN
+    IF (REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/')) THEN
         RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
     ELSE
         RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
-    INPUT STREAM sXref FROM VALUE((IF REPLACE(pcInit, CHR(0x5C), '/') EQ REPLACE(pcFile, CHR(0x5C), '/') THEN pcInit ELSE pcFile)).
+    INPUT STREAM sXref FROM VALUE((IF REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/') THEN pcInit ELSE pcFile)).
     DO i = 1 TO piRow - 1:
         IMPORT STREAM sXref UNFORMATTED tmp.
     END.
@@ -487,7 +487,7 @@ PROCEDURE importXref PRIVATE:
 
     IF RunList THEN DO:
         OUTPUT TO VALUE (pcdir + '.run':U).
-        FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*' + CHR(0x7E) + '.p') OR (ttXref.xObjID MATCHES '*' + CHR(0x7E) + '.w')) NO-LOCK BREAK BY ttXref.xObjID:
+        FOR EACH ttXref WHERE xRefType EQ 'RUN':U AND ((ttXref.xObjID MATCHES '*' + CHR(126) + '.p') OR (ttXref.xObjID MATCHES '*' + CHR(126) + '.w')) NO-LOCK BREAK BY ttXref.xObjID:
             IF FIRST-OF (ttXref.xObjID) THEN DO:
                 FIND TimeStamps WHERE TimeStamps.ttFile EQ ttXref.xObjID NO-LOCK NO-ERROR.
                 IF (NOT AVAILABLE TimeStamps) THEN DO:
@@ -537,7 +537,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     IF (AVAILABLE ttDirs) THEN
         RETURN TRUE.
 
-    ASSIGN d = REPLACE(d, CHR(0x5C), '/':U).
+    ASSIGN d = REPLACE(d, CHR(92), '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
         FIND ttDirs WHERE ttDirs.baseDir EQ base
