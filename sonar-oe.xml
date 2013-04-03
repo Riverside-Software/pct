@@ -24,6 +24,9 @@
       <zipfileset src="profiler-v11.1-linux64.zip" />
       <flattenmapper />
     </copy>
+    <copy todir="build-v11">
+      <zipfileset src="classDoc.zip" includes=".pct/**/*" />
+    </copy>
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
       <classpath path="sonar-ant-task-*.jar" />
     </taskdef>
