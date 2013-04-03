@@ -232,7 +232,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     IF (AVAILABLE ttDirs) THEN
         RETURN TRUE.
 
-    ASSIGN d = REPLACE(d, '~\':U, '/':U).
+    ASSIGN d = REPLACE(d, CHR(0x5C), '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
         
