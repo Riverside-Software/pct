@@ -344,6 +344,8 @@ public class PCTCompile extends PCTRun {
     }
 
     private boolean isDirInPropath(File dir) {
+        if (propath == null)
+            return false;
         for (String str : propath.list()) {
             if (new File(str).equals(dir))
                 return true;
