@@ -3,21 +3,22 @@ package eu.rssw.pct.oedoc;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import antlr.Token;
+import antlr.CommonHiddenStreamToken;
 
+import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
-import com.openedge.pdt.core.ast.CustomSimpleToken;
 import com.openedge.pdt.core.ast.EventDeclaration;
 import com.openedge.pdt.core.ast.MethodDeclaration;
-import com.openedge.pdt.core.ast.ProgressParser;
 import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
 import com.openedge.pdt.core.ast.ProgressTokenTypes;
 import com.openedge.pdt.core.ast.PropertyDeclaration;
 import com.openedge.pdt.core.ast.PropertyMethod;
+import com.openedge.pdt.core.ast.SimpleToken;
 import com.openedge.pdt.core.ast.TypeDeclaration;
 import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
@@ -25,17 +26,10 @@ import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.model.IParameter;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
-import eu.rssw.parser.OELexer;
-
 public class ClassDocumentationVisitor extends ASTVisitor {
-    private OELexer lexer;
-    private ProgressParser parser;
     private ClassCompilationUnit cu = new ClassCompilationUnit();
-
-    public ClassDocumentationVisitor(OELexer lexer, ProgressParser parser) {
-        this.lexer = lexer;
-        this.parser = parser;
-    }
+    private boolean firstTokenVisited = false;
+    private List<String> firstComments = new ArrayList<String>();
 
     public String getPackageName() {
         if (cu.packageName == null)
@@ -51,15 +45,28 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.classToXML(out);
     }
 
+    @Override
+    public boolean visit(SimpleToken node) {
+        if (!firstTokenVisited) {
+            CommonHiddenStreamToken token = node.getHiddenBefore();
+            while (token != null) {
+                firstComments.add(token.getText());
+                token = token.getHiddenBefore();
+            }
+            Collections.reverse(firstComments);
+            firstTokenVisited = true;
+        }
+
+        return true;
+    }
+
     public boolean visit(TypeDeclaration decl) {
         cu.packageName = decl.getPackageName();
         cu.className = decl.getClassName();
         cu.isInterface = decl.isInterface();
         cu.isAbstract = decl.isAbstract();
         cu.isFinal = decl.isFinal();
-        cu.classComment
-                .addAll(findFirstComments(((CustomSimpleToken) decl.getFirstChildRealToken())
-                        .getLexerToken()));
+        cu.classComment.addAll(firstComments);
 
         if (decl.getInherits() != null)
             cu.inherits = decl.getInherits().getQualifiedName();
@@ -82,8 +89,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
-        prop.propertyComment = findPreviousComment(((CustomSimpleToken) decl
-                .getFirstChildRealToken()).getLexerToken());
+        prop.propertyComment = findPreviousComment(decl);
         cu.properties.add(prop);
 
         return true;
@@ -119,8 +125,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             constr.modifier = AccessModifier.STATIC;
         else
             constr.modifier = AccessModifier.from(decl.getAccessModifier());
-        constr.constrComment = findPreviousComment(((CustomSimpleToken) decl
-                .getFirstChildRealToken()).getLexerToken());
+        constr.constrComment = findPreviousComment(decl);
 
         if (decl.getParameters() != null) {
             for (IParameter p : decl.getParameters()) {
@@ -147,8 +152,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.modifier = AccessModifier.from(decl.getAccessModifier());
         method.returnType = decl.getReturnType();
         method.isStatic = decl.isStatic();
-        method.methodComment = findPreviousComment(((CustomSimpleToken) decl
-                .getFirstChildRealToken()).getLexerToken());
+        method.methodComment = findPreviousComment(decl);
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
@@ -181,8 +185,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.isAbstract = decl.isAbstract();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
-        event.eventComment = findPreviousComment(((CustomSimpleToken) decl.getFirstChildRealToken())
-                .getLexerToken());
+        event.eventComment = findPreviousComment(decl);
         cu.events.add(event);
 
         if (decl.getParameters() != null) {
@@ -218,27 +221,12 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
-    private String findPreviousComment(Token t) {
-        Token prevToken = null;
-        for (Token token : lexer.getLexerBuffer()) {
-            if ((token == t) && (prevToken != null)
-                    && (prevToken.getType() == ProgressTokenTypes.ML__COMMENT))
-                return prevToken.getText();
-            prevToken = token;
+    private String findPreviousComment(ASTNode node) {
+        if ((node.getHiddenPrevious() != null)
+                && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
+            return node.getHiddenPrevious().getText();
         }
 
         return null;
-    }
-
-    private List<String> findFirstComments(Token t) {
-        List<String> comments = new ArrayList<String>();
-        for (Token token : lexer.getLexerBuffer()) {
-            if (token == t)
-                break;
-            if (token.getType() == ProgressTokenTypes.ML__COMMENT)
-                comments.add(token.getText());
-        }
-
-        return comments;
     }
 }
