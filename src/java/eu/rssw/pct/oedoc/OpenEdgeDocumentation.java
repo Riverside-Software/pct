@@ -193,7 +193,7 @@ public class OpenEdgeDocumentation extends PCT {
                     lexer.attachIncludes(factory, root);
 
                     if (isClass) {
-                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(lexer, parser);
+                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor();
                         root.accept(visitor);
                         if (visitor.getPackageName().length() == 0)
                             visitor.toXML(new File(destDir, visitor.getClassName() + ".xml"));
@@ -201,7 +201,7 @@ public class OpenEdgeDocumentation extends PCT {
                             visitor.toXML(new File(destDir, visitor.getPackageName() + "."
                                     + visitor.getClassName() + ".xml"));
                     } else {
-                        ProcedureDocumentationVisitor visitor = new ProcedureDocumentationVisitor(lexer, parser);
+                        ProcedureDocumentationVisitor visitor = new ProcedureDocumentationVisitor();
                         root.accept(visitor);
                         File destFile = new File(destDir, dsfiles[i] + ".xml");
                         destFile.getParentFile().mkdirs();
