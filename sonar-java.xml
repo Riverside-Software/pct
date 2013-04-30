@@ -20,7 +20,7 @@
   <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
   <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
   <property name="sonar.jdbc.username" value="sonar" />
-  <property name="sonar.jdbc.password" value="sonar" />
+  <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
