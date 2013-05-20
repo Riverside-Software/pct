@@ -59,6 +59,8 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class for testing RCodeSelector
@@ -101,8 +103,9 @@ public class RCodeSelectorTest extends BuildFileTestNg {
 
         File f8 = new File("RCodeSelector/test1/copy8");
         assertEquals(2, f8.list().length);
-        assertTrue(f8.list()[0].equals("test2.r"));
-        assertTrue(f8.list()[1].equals("test3.r"));
+        List<String> tmp =  Arrays.asList(f8.list());
+        assertTrue(tmp.contains("test2.r"));
+        assertTrue(tmp.contains("test3.r"));
 
         executeTarget("test2");
         f1 = new File("RCodeSelector/test1/copylib1");
@@ -132,8 +135,9 @@ public class RCodeSelectorTest extends BuildFileTestNg {
 
         f8 = new File("RCodeSelector/test1/copylib8");
         assertEquals(2, f8.list().length);
-        assertTrue(f8.list()[0].equals("test2.r"));
-        assertTrue(f8.list()[1].equals("test3.r"));
+        List<String> tmp2 =  Arrays.asList(f8.list());
+        assertTrue(tmp2.contains("test2.r"));
+        assertTrue(tmp2.contains("test3.r"));
     }
 
 }
