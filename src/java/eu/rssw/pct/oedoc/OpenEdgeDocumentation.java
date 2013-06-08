@@ -54,9 +54,7 @@
 package eu.rssw.pct.oedoc;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,15 +67,13 @@ import org.apache.tools.ant.types.Path;
 import antlr.ANTLRException;
 
 import com.openedge.pdt.core.ast.ASTNode;
-import com.openedge.pdt.core.ast.ASTNodeFactory;
 import com.openedge.pdt.core.ast.CompilationUnit;
-import com.openedge.pdt.core.ast.ProgressParser;
 import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.model.ICompilationUnit;
 import com.phenix.pct.Messages;
 import com.phenix.pct.PCT;
 
-import eu.rssw.parser.OELexer;
+import eu.rssw.parser.ParserUtils;
 import eu.rssw.parser.Propath;
 
 /**
@@ -86,6 +82,7 @@ import eu.rssw.parser.Propath;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class OpenEdgeDocumentation extends PCT {
+    private File buildDir = null;
     private File destDir = null;
     private String encoding = null;
     private List<FileSet> filesets = new ArrayList<FileSet>();
@@ -102,6 +99,15 @@ public class OpenEdgeDocumentation extends PCT {
      */
     public void addFileset(FileSet set) {
         filesets.add(set);
+    }
+
+    /**
+     * Build dir 
+     * 
+     * @param dir Directory
+     */
+    public void setBuildDir(File dir) {
+        
     }
 
     /**
@@ -178,20 +184,7 @@ public class OpenEdgeDocumentation extends PCT {
                     String ext = file.getName().substring(extPos);
                     boolean isClass = ".cls".equalsIgnoreCase(ext);
 
-                    OELexer lexer = new OELexer(propath);
-                    Reader inputReader = new FileReader(file);
-                    lexer.load(inputReader);
-
-                    ProgressParser parser = new ProgressParser(lexer.getTokenStream());
-                    ASTNodeFactory factory = new ASTNodeFactory(parser.getTokenTypeToASTClassMap());
-                    parser.setASTFactory(factory);
-                    parser.setASTNodeClass("com.openedge.pdt.core.ast.CustomSimpleToken");
-
-                    parser.openedge__unit();
-                    CompilationUnit root = (CompilationUnit) parser.getAST();
-                    setSourceRange(root);
-                    lexer.attachIncludes(factory, root);
-
+                    CompilationUnit root = ParserUtils.createCompilationUnit(file);
                     if (isClass) {
                         ClassDocumentationVisitor visitor = new ClassDocumentationVisitor();
                         root.accept(visitor);
@@ -207,7 +200,6 @@ public class OpenEdgeDocumentation extends PCT {
                         destFile.getParentFile().mkdirs();
                         visitor.toXML(destFile);
                     }
-                    inputReader.close();
                 }
             }
         } catch (IOException caught) {
