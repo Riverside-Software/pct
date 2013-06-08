@@ -975,24 +975,22 @@ public class PCTRun extends PCT {
                     verbose));
 
             // Defines aliases
-            if (dbConnList != null) {
-                int dbNum = 1;
-                for (PCTConnection dbc : dbConnList) {
-                    String connect = dbc.createConnectString();
-                    bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
-                            connect));
+            int dbNum = 1;
+            for (PCTConnection dbc : getDbConnections()) {
+                String connect = dbc.createConnectString();
+                bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
+                        connect));
 
-                    Collection<PCTAlias> aliases = dbc.getAliases();
-                    if (aliases != null) {
-                        for (PCTAlias alias : aliases) {
-                            bw.write(MessageFormat.format(this.getProgressProcedures()
-                                    .getAliasString(), alias.getName(), Integer.valueOf(dbNum),
-                                    alias.getNoError() ? "NO-ERROR" : ""));
-                            bw.newLine();
-                        }
+                Collection<PCTAlias> aliases = dbc.getAliases();
+                if (aliases != null) {
+                    for (PCTAlias alias : aliases) {
+                        bw.write(MessageFormat.format(this.getProgressProcedures()
+                                .getAliasString(), alias.getName(), Integer.valueOf(dbNum),
+                                alias.getNoError() ? "NO-ERROR" : ""));
+                        bw.newLine();
                     }
-                    dbNum++;
                 }
+                dbNum++;
             }
 
             // Defines internal propath
