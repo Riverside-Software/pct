@@ -147,7 +147,7 @@ PCTBuild=${BUILD_NUMBER}
       <classpath refid="pct.compil" />
     </javac>
     <copy todir="${build}">
-      <fileset dir="${src.java}" includes="**/*.properties,**/jaxb.index" />
+      <fileset dir="${src.java}" includes="**/*.properties" />
     </copy>
   </target>
 
@@ -294,7 +294,6 @@ PCTBuild=${BUILD_NUMBER}
       <fileset dir="${build}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
-        <include name="**/jaxb.index" />
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
@@ -310,7 +309,7 @@ PCTBuild=${BUILD_NUMBER}
     <zipfileset src="jcommander-1.30.jar" />
     <zipfileset src="proparse.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-    <zipfileset src="parser.jar" includes="**/*.class" />
+    <zipfileset src="parser.jar" includes="**/*.class,**/jaxb.index" />
     <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
