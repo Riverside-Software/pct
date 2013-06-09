@@ -83,6 +83,8 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f5.exists());
         File f6 = new File("ClassDocumentation/test1/doc/dir1/test.p.xml");
         assertTrue(f6.exists());
+        File f7 = new File("ClassDocumentation/test1/doc/eu.rssw.pct.TestClass.xml");
+        assertTrue(f7.exists());
     }
 
     @Test(groups= {"v11"})
