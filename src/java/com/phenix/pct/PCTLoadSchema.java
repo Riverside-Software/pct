@@ -19,6 +19,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 
@@ -159,9 +160,9 @@ public class PCTLoadSchema extends PCTRun {
             }
 
             for (ResourceCollection rc : rcs) {
-                Iterator<FileResource> iter = rc.iterator();
+                Iterator<Resource> iter = rc.iterator();
                 while (iter.hasNext()) {
-                    FileResource frs = iter.next();
+                    FileResource frs = (FileResource) iter.next();
                     if (frs.isDirectory()) {
                         log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
                     } else {
