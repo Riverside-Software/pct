@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<propath>
-<propathentry env="all" kind="src" path="@{ROOT}\src\progress"/>
-<propathentry env="gui" kind="con" name="Standard GUI Libraries" path="com.openedge.pdt.text.GUI_LIBRARIES"/>
-<propathentry env="tty" kind="con" name="Standard TTY Libraries" path="com.openedge.pdt.text.TTY_LIBRARIES"/>
-<propathentry env="all" kind="con" name="Standard DLC Paths" path="com.openedge.pdt.text.DLC_PATHS"/>
-<propathentry env="web" kind="con" name="Standard Web Libraries" path="com.openedge.pdt.text.WEB_LIBRARIES"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<propath version="11.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/propath.xsd">
+<propathentry env="all" kind="src" output="@{ROOT}\build-v11" path="@{ROOT}\src\progress" platform="All"/>
+<propathentry env="gui" kind="con" path="com.openedge.pdt.text.GUI_LIBRARIES" platform="All"/>
+<propathentry env="tty" kind="con" path="com.openedge.pdt.text.TTY_LIBRARIES" platform="All"/>
+<propathentry env="all" kind="con" path="com.openedge.pdt.text.DLC_PATHS" platform="All"/>
 </propath>
