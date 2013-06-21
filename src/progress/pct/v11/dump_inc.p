@@ -109,6 +109,7 @@ DEFINE VARIABLE df-file-name AS CHARACTER NO-UNDO.
 DEFINE VARIABLE code-page    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE index-mode   AS INTEGER   NO-UNDO.
 DEFINE VARIABLE debug-mode   AS INTEGER   NO-UNDO.
+DEFINE VARIABLE del-df-file  AS LOGICAL   NO-UNDO.
 
 DEFINE VARIABLE foo          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE setincrdmpSilent        AS LOGICAL   NO-UNDO INIT NO.
@@ -161,6 +162,11 @@ END.
 PROCEDURE setIndexMode:
     DEFINE INPUT PARAMETER inc_indexmode AS INTEGER  NO-UNDO.
     ASSIGN index-mode   =  inc_indexmode.
+END.
+
+PROCEDURE setRemoveEmptyDFfile:
+    DEFINE INPUT PARAMETER inc_deldffile AS LOGICAL NO-UNDO.
+    ASSIGN del-df-file = inc_deldffile.
 END.
 
 PROCEDURE setRenameFilename:
@@ -258,6 +264,14 @@ if not this-procedure:persistent then DO:
 END.
 
 RUN pct/v11/_dmpincr.p.
+
+IF     del-df-file
+   AND RETURN-VALUE MATCHES "*SEEK=*"
+   AND INT64(REPLACE(RETURN-VALUE,"SEEK=","")) EQ 0
+THEN DO:
+  MESSAGE "No difference found. Deleting " + df-file-name.
+  OS-DELETE VALUE(df-file-name).
+END.
 
 RETURN.
 END. /* end of doDumpIncr */

@@ -120,7 +120,7 @@ DEFINE            VARIABLE to-int64       AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE i-to-int64     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE numEntries     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE num-diff       AS INTEGER                 NO-UNDO.
-
+DEFINE            VARIABLE iSeek          AS INT64                   NO-UNDO.
 
 
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
@@ -1638,6 +1638,8 @@ DO ON STOP UNDO, LEAVE:
      PUT STREAM ddl UNFORMATTED SKIP(1).
   END.
 
+  /* store seek value to see if a change was detected */
+  ASSIGN  iSeek = SEEK(ddl).
 
   {prodict/dump/dmptrail10.i
     &entries      = " "
@@ -1670,7 +1672,8 @@ IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
 SESSION:IMMEDIATE-DISPLAY = no.
 IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
   run adecomm/_setcurs.p ("").
-RETURN.
+
+RETURN "SEEK=" + STRING(iSeek).
 
 FUNCTION CHECK_SA_FIELDS RETURNS LOGICAL (INPUT c1 AS CHAR, INPUT c2 AS CHAR) :
 

@@ -83,6 +83,7 @@ DEFINE VARIABLE df-file-name AS CHARACTER NO-UNDO.
 DEFINE VARIABLE code-page    AS CHARACTER NO-UNDO.
 DEFINE VARIABLE index-mode   AS INTEGER   NO-UNDO.
 DEFINE VARIABLE debug-mode   AS INTEGER   NO-UNDO.
+DEFINE VARIABLE del-df-file  AS LOGICAL   NO-UNDO.
 
 DEFINE VARIABLE foo          AS CHARACTER NO-UNDO.
 
@@ -128,6 +129,7 @@ END.  /* NOT SESSION:BATCH-MODE */
 ASSIGN debug-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DebugMode'))
        rename-file  = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'RenameFile')
        df-file-name = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DFFileName')
+       del-df-file  = (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'removeEmptyDFfile') EQ "true")
        code-page    = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'CodePage')
        index-mode   = INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'IndexMode')).
 
@@ -214,6 +216,14 @@ DELETE ALIAS "DICTDB2":U.
 CREATE ALIAS "DICTDB2":U FOR DATABASE VALUE(LDBNAME(2)).
 
 RUN pct/v102b/_dmpincr.p.
+
+IF     del-df-file
+   AND RETURN-VALUE MATCHES "*SEEK=*"
+   AND INT64(REPLACE(RETURN-VALUE,"SEEK=","")) EQ 0
+THEN DO:
+  MESSAGE "No difference found. Deleting " + df-file-name.
+  OS-DELETE VALUE(df-file-name).
+END.
 
 RETURN.
 

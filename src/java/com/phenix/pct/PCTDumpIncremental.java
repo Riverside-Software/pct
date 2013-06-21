@@ -35,6 +35,7 @@ public class PCTDumpIncremental extends PCTRun {
     private int activeIndexes = 0;
     private String codePage = null;
     private int debugLevel = 0;
+    private boolean removeEmptyDFfile = false;	
     private PCTConnection sourceDB, targetDB;
 
     /**
@@ -84,6 +85,15 @@ public class PCTDumpIncremental extends PCTRun {
         this.destFile = destFile;
     }
 
+    /**
+     * Set if DF file must be removed when no difference has occurred. Default = false.
+     * 
+     * @param removeEmptyDFfile boolean
+     */
+    public void setRemoveEmptyDFfile(boolean removeEmptyDFfile) {
+        this.removeEmptyDFfile = removeEmptyDFfile;
+    }
+    
     /**
      * The RenameFile parameter is used to identify tables, database fields and sequences that have
      * changed names. The format of the file is a comma seperated list that identifies the renamed
@@ -179,6 +189,7 @@ public class PCTDumpIncremental extends PCTRun {
                 : renameFile.getAbsolutePath())));
         addParameter(new RunParameter("IndexMode", Integer.toString(activeIndexes)));
         addParameter(new RunParameter("DebugMode", Integer.toString(debugLevel)));
+	    addParameter(new RunParameter("removeEmptyDFfile", Boolean.toString(removeEmptyDFfile)));
 
         super.execute();
     }

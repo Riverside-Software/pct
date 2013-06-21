@@ -108,6 +108,7 @@ DEFINE            VARIABLE j              AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE l              AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE stopped        AS LOGICAL   INITIAL TRUE  NO-UNDO.
 DEFINE            VARIABLE tmp_Field-name AS CHARACTER               NO-UNDO.
+DEFINE            VARIABLE iSeek          AS DECIMAL                 NO-UNDO.
 
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
 DEFINE VARIABLE new_lang AS CHARACTER EXTENT 31 NO-UNDO INITIAL [
@@ -1246,6 +1247,8 @@ DO ON STOP UNDO, LEAVE:
      PUT STREAM ddl UNFORMATTED SKIP(1).
   END.
 
+  /* store seek value to see if a change was detected */
+  ASSIGN  iSeek = SEEK(ddl).
 
   {prodict/dump/dmptrail9.i
     &entries      = " "
@@ -1274,4 +1277,6 @@ DELETE PROCEDURE h_dmputil NO-ERROR.
 HIDE FRAME seeking NO-PAUSE.
 SESSION:IMMEDIATE-DISPLAY = no.
 run adecomm/_setcurs.p ("").
-RETURN.
+
+RETURN "SEEK=" + STRING(iSeek).
+

@@ -135,6 +135,7 @@ DEFINE            VARIABLE to-int64       AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE i-to-int64     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE numEntries     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE num-diff       AS INTEGER                 NO-UNDO.
+DEFINE            VARIABLE iSeek          AS INT64                   NO-UNDO.
 DEFINE            VARIABLE dumpPol        AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE dumpAltBuf     AS LOGICAL                 NO-UNDO.
 
@@ -2222,6 +2223,7 @@ OUTPUT CLOSE.
       END.
   END.
 
+  ASSIGN  iSeek = SEEK(ddl).
   {prodict/dump/dmptrail10.i
     &entries      = "IF dumpPol THEN PUT STREAM ddl UNFORMATTED
                       ""encpolicy=yes"" SKIP.
@@ -2271,5 +2273,6 @@ FINALLY:
    IF VALID-OBJECT(myObjAttrs[2]) THEN
       DELETE OBJECT myObjAttrs[2].
    
+   RETURN "SEEK=" + STRING(iSeek).
 END FINALLY.
 
