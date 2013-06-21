@@ -81,7 +81,13 @@ DEFINE VARIABLE hFormat    AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hExtent    AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hInitial   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hLabel     AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hColLabel  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hCaseSens  AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hDecimals  AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hFieldDesc AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hValexp    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hValmsg    AS HANDLE     NO-UNDO.
+DEFINE VARIABLE hHelp      AS HANDLE     NO-UNDO.
 /* Handles for table _Index */
 DEFINE VARIABLE hIndex     AS HANDLE     NO-UNDO.
 DEFINE VARIABLE hBIndex    AS HANDLE     NO-UNDO.
@@ -193,7 +199,13 @@ ASSIGN hCodepage  = bDB:BUFFER-FIELD('_Db-xl-name')
        hExtent    = hBField:BUFFER-FIELD ('_Extent')
        hInitial   = hBField:BUFFER-FIELD ('_Initial')
        hLabel     = hBField:BUFFER-FIELD ('_Label')
+       hColLabel  = hBField:BUFFER-FIELD ('_Col-label')
        hFieldDesc = hBField:BUFFER-FIELD ('_Desc')
+       hCaseSens  = hBField:BUFFER-FIELD ('_Fld-case')
+       hDecimals  = hBField:BUFFER-FIELD ('_Decimals')
+       hValexp    = hBField:BUFFER-FIELD ('_Valexp')
+       hValmsg    = hBField:BUFFER-FIELD ('_Valmsg')
+       hHelp      = hBField:BUFFER-FIELD ('_Help')
        hEvent     = hBTrig:BUFFER-FIELD ('_Event')
        hProc      = hBTrig:BUFFER-FIELD ('_Proc-Name')
        hOverride  = hBTrig:BUFFER-FIELD ('_Override')
@@ -297,6 +309,12 @@ REPEAT:
         xField:SET-ATTRIBUTE('extent':U, STRING (hExtent:BUFFER-VALUE)).
         xField:SET-ATTRIBUTE('initialValue':U, (IF hInitial:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hInitial:BUFFER-VALUE))).
         xField:SET-ATTRIBUTE('label':U, (IF hLabel:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hLabel:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('columnLabel':U, (IF hColLabel:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hColLabel:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('caseSensitive':U, STRING (hCaseSens:BUFFER-VALUE)).
+        xField:SET-ATTRIBUTE('decimals':U, (IF hDecimals:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hDecimals:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('valExp':U, (IF hValexp:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hValexp:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('valMsg':U, (IF hValmsg:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hValmsg:BUFFER-VALUE))).
+        xField:SET-ATTRIBUTE('help':U, (IF hHelp:BUFFER-VALUE EQ ? THEN '?':U ELSE STRING (hHelp:BUFFER-VALUE))).
         IF (hFieldDesc:BUFFER-VALUE NE ?) THEN DO:
             xRoot:CREATE-NODE(xText, '':U, 'TEXT':U).
             xText:NODE-VALUE = hFieldDesc:BUFFER-VALUE.
@@ -395,7 +413,13 @@ DELETE OBJECT hFormat.
 DELETE OBJECT hExtent.
 DELETE OBJECT hInitial.
 DELETE OBJECT hLabel.
+DELETE OBJECT hColLabel.
+DELETE OBJECT hCaseSens.
+DELETE OBJECT hDecimals.
 DELETE OBJECT hFieldDesc.
+DELETE OBJECT hValexp.
+DELETE OBJECT hValmsg.
+DELETE OBJECT hHelp.
 DELETE OBJECT hEvent.
 DELETE OBJECT hProc.
 DELETE OBJECT hOverride.
