@@ -38,8 +38,10 @@ public class PCTDumpIncremental extends PCTRun {
     private PCTConnection sourceDB, targetDB;
 
     /**
-     * Specifies if new indexes are created Active (true) or Inactive (false). Defaults to Active.
-     * 
+     * Specifies if new indexes are added :
+     * 0 = active 
+     * 1 = unique indexes inactive
+     * 2 = inactive   
      * @param activeIndexes boolean
      */
     public void setActiveIndexes(int activeIndexes) {
