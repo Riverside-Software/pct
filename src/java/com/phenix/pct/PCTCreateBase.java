@@ -52,6 +52,8 @@ public class PCTCreateBase extends PCT {
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
     private int wordRule = -1;
     private List<SchemaHolder> holders = null;
+    private boolean failOnError = true;
+    private boolean multiTenant = false;
 
     /**
      * Structure file (.st)
@@ -179,6 +181,24 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Sets the failOnError parameter. Defaults to true.
+     * 
+     * @param failOnError
+     */
+    public void setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+    }
+
+    /**
+     * Sets the multiTenant parameter. Defaults to false.
+     * 
+     * @param multiTenant
+     */
+    public void setMultiTenant(boolean multiTenant) {
+        this.multiTenant = multiTenant;
+    }
+
+    /**
      * Adds an Oracle schema holder
      * 
      * @param holder Instance of OracleHolder
@@ -287,6 +307,12 @@ public class PCTCreateBase extends PCT {
             exec.execute();
         }
 
+        // Multi-Tenant database
+        if(multiTenant) {
+            exec = multiTenantCmdLine();
+            exec.execute();
+        }
+
         // Word rules are loaded before schema to avoid problems with newly created indexes
         if (wordRule != -1) {
             exec = wordRuleCmdLine();
@@ -308,6 +334,7 @@ public class PCTCreateBase extends PCT {
                     pls.setDlcBin(getDlcBin());
                     pls.addPropath(propath);
                     pls.setIncludedPL(getIncludedPL());
+                    pls.setFailOnError(failOnError);
                     for (Variable var : getEnvironmentVariables()) {
                         pls.addEnv(var);
                     }
@@ -460,4 +487,32 @@ public class PCTCreateBase extends PCT {
 
         return exec;
     }
+
+    private ExecTask multiTenantCmdLine() {
+        File executable = null;
+        ExecTask exec = new ExecTask(this);
+        
+        if (getDLCMajorVersion() >= 10)
+            executable = getExecPath("_dbutil"); //$NON-NLS-1$
+        else
+            executable = getExecPath("_proutil"); //$NON-NLS-1$
+        
+        exec.setExecutable(executable.toString());
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("ENABLEMULTITENANCY"); //$NON-NLS-1$
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }
+    
 }
