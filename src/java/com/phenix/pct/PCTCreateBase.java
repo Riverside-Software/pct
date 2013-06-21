@@ -52,6 +52,8 @@ public class PCTCreateBase extends PCT {
     private List<SchemaHolder> holders = null;
     private boolean failOnError = true;
     private boolean multiTenant = false;
+    private String collation = null;
+    private String cpInternal = null;
 
     /**
      * Structure file (.st)
@@ -187,6 +189,25 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Set the desired database collation (copy from $DLC/prolang or $DLC/prolang/codepage)
+     * 
+     * @param collation Collation name from prolang directory or codepage subdirectory
+     */
+    public void setCollation(String collation) {
+        if(!"".equals(collation))
+            this.collation = collation;
+    }
+
+    /**
+     * Internal code page (-cpinternal attribute)
+     * 
+     * @param cpInternal String
+     */
+    public void setCpInternal(String cpInternal) {
+        this.cpInternal = cpInternal;
+    }
+
+    /**
      * Adds an Oracle schema holder
      * 
      * @param holder Instance of OracleHolder
@@ -263,6 +284,23 @@ public class PCTCreateBase extends PCT {
             throw new BuildException(Messages.getString("PCTCreateBase.4")); //$NON-NLS-1$
         }
 
+        // Check collation
+        if (collation != null) {
+            File srcDir = getDlcHome();
+            srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
+            if (codepage != null) {
+                srcDir = new File(srcDir, codepage);
+            }
+            File collDF = new File(srcDir, collation + ".df"); //$NON-NLS-1$          
+            if (!collDF.exists())
+                throw new BuildException(MessageFormat.format(
+                        Messages.getString("PCTCreateBase.90"), collDF.getAbsolutePath()));
+            if (schema!=null) 
+                schema = schema + "," + collDF.getAbsolutePath();
+            else
+                schema = collDF.getAbsolutePath();
+        }
+
         // Checks if DB already exists
         File db = new File(destDir, dbName + ".db"); //$NON-NLS-1$
 
@@ -329,6 +367,12 @@ public class PCTCreateBase extends PCT {
             }
         }
 
+        // if a collation is loaded, indexes needs to be rebuilded
+        if (collation != null) {
+            exec = indexRebuildAllCmdLine();
+            exec.execute();
+        }
+        
         if (schemaResColl.size() > 0) {
             PCTLoadSchema pls = new PCTLoadSchema();
             pls.bindToOwner(this);
@@ -444,6 +488,7 @@ public class PCTCreateBase extends PCT {
     }
 
     private ExecTask wordRuleCmdLine() {
+        File executable = null;
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
@@ -483,5 +528,39 @@ public class PCTCreateBase extends PCT {
 
         return exec;
     }
+    
+    private ExecTask indexRebuildAllCmdLine() {
+        File executable = null;
+        ExecTask exec = new ExecTask(this);
+        
+        if (getDLCMajorVersion() >= 10)
+            executable = getExecPath("_dbutil"); //$NON-NLS-1$
+        else
+            executable = getExecPath("_proutil"); //$NON-NLS-1$
+
+        exec.setExecutable(executable.toString());
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("idxbuild"); //$NON-NLS-1$
+        exec.createArg().setValue("all"); //$NON-NLS-1$
+        if (cpInternal!=null) {
+          exec.createArg().setValue("-cpinternal"); //$NON-NLS-1$
+          exec.createArg().setValue(cpInternal);
+        }
+        exec.createArg().setValue("-cpcoll"); //$NON-NLS-1$
+        exec.createArg().setValue(collation);
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }    
 
 }
