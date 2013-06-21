@@ -9,6 +9,7 @@ RUN setCodePage IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT
 RUN setIndexMode IN h (INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'IndexMode'))).
 RUN setRenameFilename IN h(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'RenameFile')).
 RUN setDebugMode IN h (INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'DebugMode'))).
+RUN setRemoveEmptyDFfile IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'removeEmptyDFfile') EQ "true").
 RUN setSilent IN h(yes).
 RUN doDumpIncr IN h.
 DELETE PROCEDURE h. 
