@@ -878,6 +878,10 @@ public class PCTRun extends PCT {
             if (zz != null) {
                 if ("1252".equals(zz))
                     zz = "windows-1252";
+                if ("1251".equals(zz))
+                    zz = "windows-1251";
+                if ("1254".equals(zz))
+                    zz = "windows-1254";
                 if ("big-5".equalsIgnoreCase(zz))
                     zz = "Big5";
                 charset = Charset.forName(zz);
