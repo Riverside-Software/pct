@@ -58,6 +58,7 @@ public class PCTCompile extends PCTRun {
     private boolean multiCompile = false;
     private boolean streamIO = false;
     private boolean stringXref = false;
+    private boolean appendStringXref = false;
     private boolean saveR = true;
     private boolean twoPass = false;
     private String xcodeKey = null;
@@ -108,6 +109,17 @@ public class PCTCompile extends PCTRun {
      */
     public void setStringXref(boolean stringXref) {
         this.stringXref = stringXref;
+    }
+
+    /**
+     * Append Xref Strings in one file
+     *
+     * @param AppendStringXref "true|false|on|off|yes|no"
+     *
+     * @since 0.3b
+     */
+    public void setAppendStringXref(boolean appendStringXref) {
+        this.appendStringXref = appendStringXref;
     }
 
     /**
@@ -457,6 +469,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("STRINGXREF=" + (this.stringXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            bw.write("APPENDSTRINGXREF=" + (this.appendStringXref ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();			
             bw.write("MULTICOMPILE=" + (this.multiCompile ? 1 : 0));
             bw.newLine();
             bw.write("STREAM-IO=" + (this.streamIO ? 1 : 0));
@@ -554,6 +568,12 @@ public class PCTCompile extends PCTRun {
         for (ResourceCollection rc : resources) {
             if (!rc.isFilesystemOnly())
                 throw new BuildException("PCTCompile only supports file-system resources collections");
+        }
+        
+        // Ignore appendStringXref when stringXref is not enabled
+        if (!this.stringXref && this.appendStringXref) {
+            log(Messages.getString("PCTCompile.90"), Project.MSG_WARN); //$NON-NLS-1$
+            this.appendStringXref = false;
         }
 
         checkDlcHome();
