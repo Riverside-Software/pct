@@ -66,6 +66,7 @@ public class PCTCompile extends PCTRun {
     private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
+    private int progPerc = 0;	
     private File preprocessDir = null;
     private File debugListingDir = null;
 
@@ -318,6 +319,15 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
+     * Specifies progress percentage
+     * 
+     * @param progPerc int (a value from 0 until 100)
+     */
+    public void setProgPerc(int progPerc) {
+        this.progPerc = progPerc;
+    }
+
+    /**
      * Legacy method. Use add(ResourceCollection)
      */
     public void addFileset(FileSet set) {
@@ -495,6 +505,12 @@ public class PCTCompile extends PCTRun {
                 bw.write("TWOPASSID=" + Integer.toString(twoPassId));
                 bw.newLine();
             }
+
+            if (this.progPerc > 0) {
+                bw.write("PROGPERC=" + this.progPerc); //$NON-NLS-1$
+                bw.newLine();
+            }
+
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
@@ -572,6 +588,12 @@ public class PCTCompile extends PCTRun {
         if (!this.stringXref && this.appendStringXref) {
             log(Messages.getString("PCTCompile.90"), Project.MSG_WARN); //$NON-NLS-1$
             this.appendStringXref = false;
+        }
+
+        // Check valid value for ProgPerc
+        if (this.progPerc < 0 || this.progPerc > 100) {
+            log(MessageFormat.format(Messages.getString("PCTCompile.91"), new Object[]{new Integer(this.progPerc)}), Project.MSG_WARN); //$NON-NLS-1$          
+            this.progPerc = 0;
         }
 
         checkDlcHome();
