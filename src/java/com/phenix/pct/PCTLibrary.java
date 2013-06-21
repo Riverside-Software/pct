@@ -45,6 +45,9 @@ public class PCTLibrary extends PCT {
     private File tmpFile = null;
     private File destFile = null;
     private String encoding = null;
+    private String cpInternal = null;
+    private String cpStream = null;
+    private String cpColl = null;
     private boolean noCompress = false;
     private FileSet fileset = new FileSet();
     private List<FileSet> filesets = new ArrayList<FileSet>();
@@ -100,6 +103,36 @@ public class PCTLibrary extends PCT {
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    /**
+     * Internal codepage to use
+     * 
+     * @param cpInternal String
+     */
+    public void setCpInternal(String cpInternal) {
+        this.cpInternal = cpInternal;
+        // backward compatible with previous ILOS PCT version which did not have 'encoding' attribute
+        if(this.encoding==null)
+            this.encoding = cpInternal;
+    }
+
+    /**
+     * Stream codepage to use
+     * 
+     * @param cpStream String
+     */
+    public void setCpStream(String cpStream) {
+        this.cpStream = cpStream;
+    }
+
+    /**
+     * Collation table to use
+     * 
+     * @param cpColl String
+     */
+    public void setCpColl(String cpColl) {
+        this.cpColl = cpColl;
     }
 
     /**
@@ -270,6 +303,21 @@ public class PCTLibrary extends PCT {
         exec.createArg().setValue("-pf");
         exec.createArg().setValue(tmpFile.getAbsolutePath());
 
+        if (cpInternal != null) {
+            exec.createArg().setValue("-cpinternal");
+            exec.createArg().setValue(cpInternal);
+        }
+
+        if (cpStream != null) {
+            exec.createArg().setValue("-cpstream");
+            exec.createArg().setValue(cpStream);
+        }
+
+        if (cpColl != null) {
+            exec.createArg().setValue("-cpcoll");
+            exec.createArg().setValue(cpColl);
+        }
+        
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
         var.setValue(getDlcHome().toString());
@@ -360,6 +408,21 @@ public class PCTLibrary extends PCT {
         exec.createArg().setValue("-replace");
         exec.createArg().setValue(fileName);
         exec.createArg().setValue("-nowarn");
+
+        if (cpInternal != null) {
+            exec.createArg().setValue("-cpinternal");
+            exec.createArg().setValue(cpInternal);
+        }
+
+        if (cpStream != null) {
+            exec.createArg().setValue("-cpstream");
+            exec.createArg().setValue(cpStream);
+        }
+
+        if (cpColl != null) {
+            exec.createArg().setValue("-cpcoll");
+            exec.createArg().setValue(cpColl);
+        }
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
