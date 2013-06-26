@@ -108,6 +108,7 @@ DEFINE            VARIABLE j              AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE l              AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE stopped        AS LOGICAL   INITIAL TRUE  NO-UNDO.
 DEFINE            VARIABLE tmp_Field-name AS CHARACTER               NO-UNDO.
+DEFINE            VARIABLE p-index-mode   AS CHARACTER               NO-UNDO.
 DEFINE            VARIABLE iSeek          AS DECIMAL                 NO-UNDO.
 
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
@@ -219,6 +220,7 @@ FUNCTION inindex RETURNS LOGICAL (INPUT p_db1File AS RECID,
                                   IN h_dmputil.
 
 /* mainline code **********************************************************/
+  ASSIGN p-index-mode  = ENTRY(2,user_env[19]) NO-ERROR.
 
 IF  user_env[5] = "" 
  OR user_env[5] = ?  THEN assign user_env[5] = "<internal defaults apply>". 
