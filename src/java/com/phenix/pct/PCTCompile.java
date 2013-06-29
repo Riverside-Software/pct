@@ -76,6 +76,7 @@ public class PCTCompile extends PCTRun {
     private int paramsId = -1;
     private File params = null;
     private int twoPassId = -1;
+    private int numFiles = 0;
 
     /**
      * Creates a new PCTCompile object
@@ -417,6 +418,7 @@ public class PCTCompile extends PCTRun {
                     if (frs.isDirectory()) {
                         log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
                     } else {
+                        numFiles++;
                         bw.write(frs.getName());
                         bw.newLine();
                     }
@@ -509,6 +511,8 @@ public class PCTCompile extends PCTRun {
             if (this.progPerc > 0) {
                 bw.write("PROGPERC=" + this.progPerc); //$NON-NLS-1$
                 bw.newLine();
+                bw.write("NUMFILES=" + numFiles); //$NON-NLS-1$
+                bw.newLine();
             }
 
             bw.close();
@@ -591,8 +595,8 @@ public class PCTCompile extends PCTRun {
         }
 
         // Check valid value for ProgPerc
-        if (this.progPerc < 0 || this.progPerc > 100) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.91"), new Object[]{new Integer(this.progPerc)}), Project.MSG_WARN); //$NON-NLS-1$          
+        if ((this.progPerc < 0) || (this.progPerc > 100)) {
+            log(MessageFormat.format(Messages.getString("PCTCompile.91"), progPerc), Project.MSG_WARN); //$NON-NLS-1$          
             this.progPerc = 0;
         }
 
