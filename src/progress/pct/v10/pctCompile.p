@@ -219,6 +219,8 @@ REPEAT:
             ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'TWOPASSID':U THEN
             ASSIGN twoPassID = INTEGER(ENTRY(2, cLine, '=':U)).
+        WHEN 'NUMFILES':U THEN
+            ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -234,26 +236,19 @@ IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
 COMPILER:MULTI-COMPILE = multiComp.
 
-IF ProgPerc GT 0
-THEN DO:
+IF ProgPerc GT 0 THEN DO:
   ASSIGN iNrSteps = 100 / ProgPerc.
-  INPUT STREAM sFileset FROM VALUE(Filesets).
-  REPEAT:
-    IMPORT STREAM sFileset UNFORMATTED cLine.
-    IF NOT (cLine BEGINS 'FILESET=':U)
-    THEN ASSIGN iTotLines = iTotLines + 1.
-  END.
-  IF iNrSteps GT iTotLines
-  THEN DO:
+  IF iNrSteps GT iTotLines THEN DO:
     ASSIGN iNrSteps = iTotLines
            ProgPerc = 100 / iNrSteps.
-    MESSAGE "WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc,">>9%")).
+    /* MESSAGE "WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc,">>9%")). */
   END.  
   DO iStep = 1 TO iNrSteps:
     ASSIGN cDspSteps = cDspSteps
                      + (IF cDspSteps NE "" THEN "," ELSE "")
-                     + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)),iTotLines)).
+                     + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
   END.
+  
 END.
 
 /* Parsing file list to compile */
@@ -266,19 +261,17 @@ REPEAT:
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
         /* output progress */
-        IF ProgPerc GT 0
-        THEN DO:
+        IF ProgPerc GT 0 THEN DO:
           ASSIGN iLine = iLine + 1.
           IF LOOKUP(STRING(iLine),cDspSteps) GT 0
           THEN DO:
             ASSIGN iStepPerc = LOOKUP(STRING(iLine),cDspSteps) * ProgPerc.
-            IF iStepPerc LT 100
-            THEN MESSAGE TRIM(STRING(iStepPerc,">>9%")) STRING(TIME,"HH:MM:SS") "Compiling " + cLine + " ...".
-            ELSE MESSAGE STRING("100%") STRING(TIME,"HH:MM:SS").
+            IF iStepPerc LT 100 THEN
+              MESSAGE TRIM(STRING(iStepPerc,">>9%")) STRING(TIME,"HH:MM:SS") "Compiling " + cLine + " ...".
+            ELSE
+              MESSAGE STRING("100%") STRING(TIME,"HH:MM:SS").
           END.
-          IF     iLine GE iTotLines
-             AND iStepPerc LT 100
-          THEN DO:
+          IF (iLine GE iTotLines) AND (iStepPerc LT 100) THEN DO:
             ASSIGN iStepPerc = 100.
             MESSAGE "100%" STRING(TIME,"HH:MM:SS").
           END.
@@ -729,7 +722,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     IF (AVAILABLE ttDirs) THEN
         RETURN TRUE.
 
-    ASSIGN d = REPLACE(d, '~\':U, '/':U).
+    ASSIGN d = REPLACE(d, CHR(92), '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
         FIND ttDirs WHERE ttDirs.baseDir EQ base

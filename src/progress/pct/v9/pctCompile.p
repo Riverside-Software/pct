@@ -119,6 +119,13 @@ DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL -1.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lTwoPass  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE twoPassID AS INTEGER    NO-UNDO.
+DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
+DEFINE VARIABLE iLine     AS INTEGER    NO-UNDO.
+DEFINE VARIABLE iTotlines AS INTEGER    NO-UNDO.
+DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
+DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
+DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
+DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -205,10 +212,14 @@ REPEAT:
             ASSIGN streamIO = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'PROGPERC':U THEN
+            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).	    
         WHEN 'TWOPASS':U THEN
             ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'TWOPASSID':U THEN
             ASSIGN twoPassID = INTEGER(ENTRY(2, cLine, '=':U)).
+        WHEN 'NUMFILES':U THEN
+            ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -222,6 +233,20 @@ IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
 IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
+IF ProgPerc GT 0 THEN DO:
+  ASSIGN iNrSteps = 100 / ProgPerc.
+  IF iNrSteps GT iTotLines THEN DO:
+    ASSIGN iNrSteps = iTotLines
+           ProgPerc = 100 / iNrSteps.
+    /* MESSAGE "WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc,">>9%")). */
+  END.  
+  DO iStep = 1 TO iNrSteps:
+    ASSIGN cDspSteps = cDspSteps
+                     + (IF cDspSteps NE "" THEN "," ELSE "")
+                     + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
+  END.
+  
+END.
 
 /* Parsing file list to compile */
 INPUT STREAM sFileset FROM VALUE(Filesets).
@@ -232,6 +257,23 @@ REPEAT:
         /* This is a new fileset -- Changing base dir */
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
     ELSE DO:
+        /* output progress */
+        IF ProgPerc GT 0 THEN DO:
+          ASSIGN iLine = iLine + 1.
+          IF LOOKUP(STRING(iLine),cDspSteps) GT 0
+          THEN DO:
+            ASSIGN iStepPerc = LOOKUP(STRING(iLine),cDspSteps) * ProgPerc.
+            IF iStepPerc LT 100 THEN
+              MESSAGE TRIM(STRING(iStepPerc,">>9%")) STRING(TIME,"HH:MM:SS") "Compiling " + cLine + " ...".
+            ELSE
+              MESSAGE STRING("100%") STRING(TIME,"HH:MM:SS").
+          END.
+          IF (iLine GE iTotLines) AND (iStepPerc LT 100) THEN DO:
+            ASSIGN iStepPerc = 100.
+            MESSAGE "100%" STRING(TIME,"HH:MM:SS").
+          END.
+        END.
+      
         IF (noParse OR ForceComp OR lXCode) THEN DO:
             ASSIGN Recompile = TRUE.
             IF NoComp THEN
@@ -476,6 +518,19 @@ PROCEDURE PCTCompileXref.
         OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
         OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
     END.
+    IF (debugListingFile NE ?) THEN DO:
+        DEFINE VARIABLE cLine AS CHARACTER NO-UNDO.
+        INPUT STREAM sDbgLst1 FROM VALUE(debugListingFile).
+        OUTPUT STREAM sDbgLst2 TO VALUE(debugListingFile + '.clean').
+        REPEAT:
+            IMPORT STREAM sDbgLst1 UNFORMATTED cLine.
+            PUT STREAM sDbgLst2 UNFORMATTED SUBSTRING(cLine, 13) '~n'.
+        END.
+        INPUT STREAM sDbgLst1 CLOSE.
+        OUTPUT STREAM sDbgLst2 CLOSE.
+        OS-DELETE VALUE(debugListingFile).
+        OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
+    END.
 
 END PROCEDURE.
 
@@ -629,7 +684,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     IF (AVAILABLE ttDirs) THEN
         RETURN TRUE.
 
-    ASSIGN d = REPLACE(d, '~\':U, '/':U).
+    ASSIGN d = REPLACE(d, CHR(92), '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
         FIND ttDirs WHERE ttDirs.baseDir EQ base
