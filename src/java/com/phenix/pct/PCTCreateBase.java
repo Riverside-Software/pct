@@ -194,8 +194,7 @@ public class PCTCreateBase extends PCT {
      * @param collation Collation name from prolang directory or codepage subdirectory
      */
     public void setCollation(String collation) {
-        if(!"".equals(collation))
-            this.collation = collation;
+        this.collation = collation;
     }
 
     /**
@@ -285,7 +284,7 @@ public class PCTCreateBase extends PCT {
         }
 
         // Check collation
-        if (collation != null) {
+        if ((collation != null) && (collation.length() > 0)) {
             File srcDir = getDlcHome();
             srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
             if (codepage != null) {
@@ -295,7 +294,7 @@ public class PCTCreateBase extends PCT {
             if (!collDF.exists())
                 throw new BuildException(MessageFormat.format(
                         Messages.getString("PCTCreateBase.90"), collDF.getAbsolutePath()));
-            if (schema!=null) 
+            if (schema != null)
                 schema = schema + "," + collDF.getAbsolutePath();
             else
                 schema = collDF.getAbsolutePath();
@@ -335,7 +334,6 @@ public class PCTCreateBase extends PCT {
         }
 
         if (schema != null) {
-
             String[] v = schema.split(",");
             for (int i = 0; i < v.length; i++) {
                 String sc = v[i];
@@ -367,12 +365,6 @@ public class PCTCreateBase extends PCT {
             }
         }
 
-        // if a collation is loaded, indexes needs to be rebuilded
-        if (collation != null) {
-            exec = indexRebuildAllCmdLine();
-            exec.execute();
-        }
-        
         if (schemaResColl.size() > 0) {
             PCTLoadSchema pls = new PCTLoadSchema();
             pls.bindToOwner(this);
@@ -391,6 +383,12 @@ public class PCTCreateBase extends PCT {
             pc.setSingleUser(true);
             pls.addDBConnection(pc);
             pls.execute();
+        }
+
+        // If a collation is loaded, indexes needs to be rebuilded
+        if (collation != null) {
+            exec = indexRebuildAllCmdLine();
+            exec.execute();
         }
 
         if (holders != null) {
@@ -488,7 +486,6 @@ public class PCTCreateBase extends PCT {
     }
 
     private ExecTask wordRuleCmdLine() {
-        File executable = null;
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
@@ -528,25 +525,18 @@ public class PCTCreateBase extends PCT {
 
         return exec;
     }
-    
-    private ExecTask indexRebuildAllCmdLine() {
-        File executable = null;
-        ExecTask exec = new ExecTask(this);
-        
-        if (getDLCMajorVersion() >= 10)
-            executable = getExecPath("_dbutil"); //$NON-NLS-1$
-        else
-            executable = getExecPath("_proutil"); //$NON-NLS-1$
 
-        exec.setExecutable(executable.toString());
+    private ExecTask indexRebuildAllCmdLine() {
+        ExecTask exec = new ExecTask(this);
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("idxbuild"); //$NON-NLS-1$
         exec.createArg().setValue("all"); //$NON-NLS-1$
-        if (cpInternal!=null) {
-          exec.createArg().setValue("-cpinternal"); //$NON-NLS-1$
-          exec.createArg().setValue(cpInternal);
+        if (cpInternal != null) {
+            exec.createArg().setValue("-cpinternal"); //$NON-NLS-1$
+            exec.createArg().setValue(cpInternal);
         }
         exec.createArg().setValue("-cpcoll"); //$NON-NLS-1$
         exec.createArg().setValue(collation);
@@ -561,6 +551,6 @@ public class PCTCreateBase extends PCT {
         }
 
         return exec;
-    }    
+    }
 
 }
