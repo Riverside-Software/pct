@@ -18,7 +18,6 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
@@ -45,7 +44,6 @@ public class PCTCreateBase extends PCT {
     private File structFile = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
-    private boolean overwrite = false;
     private String schema = null;
     private List<ResourceCollection> schemaResColl = new ArrayList<ResourceCollection>();
     private Path propath = null;
@@ -107,16 +105,6 @@ public class PCTCreateBase extends PCT {
      */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
-    }
-
-    /**
-     * Overwrite database if existent
-     * 
-     * @param overwrite "true|false|on|off|yes|no"
-     */
-    public void setOverwrite(boolean overwrite) {
-        log(Messages.getString("PCTCreateBase.1")); //$NON-NLS-1$
-        this.overwrite = overwrite;
     }
 
     /**
@@ -190,7 +178,7 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
-     * Sets the multiTenant parameter. Defaults to false.
+     * Enable multiTenancy
      * 
      * @param multiTenant
      */
@@ -279,19 +267,8 @@ public class PCTCreateBase extends PCT {
         File db = new File(destDir, dbName + ".db"); //$NON-NLS-1$
 
         if (db.exists()) {
-            if (overwrite) {
-                // TODO : revoir l'effacement de l'ancienne base
-                Delete del = new Delete();
-                del.bindToOwner(this);
-                del.setOwningTarget(getOwningTarget());
-                del.setTaskName(getTaskName());
-                del.setDescription(getDescription());
-                del.setFile(db);
-                del.execute();
-            } else {
-                log("Database " + dbName + " already exists");
-                return;
-            }
+            log("Database " + dbName + " already exists");
+            return;
         }
 
         if (structFile != null) {
@@ -308,7 +285,7 @@ public class PCTCreateBase extends PCT {
         }
 
         // Multi-Tenant database
-        if(multiTenant) {
+        if ((getDLCMajorVersion() >= 10) && (multiTenant)) {
             exec = multiTenantCmdLine();
             exec.execute();
         }
@@ -445,7 +422,6 @@ public class PCTCreateBase extends PCT {
      */
     private ExecTask structCmdLine() {
         ExecTask exec = new ExecTask(this);
-
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
         exec.createArg().setValue("prostrct"); //$NON-NLS-1$
@@ -469,7 +445,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask wordRuleCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_proutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -489,19 +465,12 @@ public class PCTCreateBase extends PCT {
     }
 
     private ExecTask multiTenantCmdLine() {
-        File executable = null;
         ExecTask exec = new ExecTask(this);
-        
-        if (getDLCMajorVersion() >= 10)
-            executable = getExecPath("_dbutil"); //$NON-NLS-1$
-        else
-            executable = getExecPath("_proutil"); //$NON-NLS-1$
-        
-        exec.setExecutable(executable.toString());
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
-        exec.createArg().setValue("ENABLEMULTITENANCY"); //$NON-NLS-1$
+        exec.createArg().setValue("enablemultitenancy"); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
@@ -514,5 +483,5 @@ public class PCTCreateBase extends PCT {
 
         return exec;
     }
-    
+
 }
