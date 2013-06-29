@@ -112,8 +112,9 @@ public class PCTLibrary extends PCT {
      */
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
-        // backward compatible with previous ILOS PCT version which did not have 'encoding' attribute
-        if(this.encoding==null)
+        // backward compatible with previous ILOS PCT version which did not have 'encoding'
+        // attribute
+        if (this.encoding == null)
             this.encoding = cpInternal;
     }
 
@@ -317,7 +318,7 @@ public class PCTLibrary extends PCT {
             exec.createArg().setValue("-cpcoll");
             exec.createArg().setValue(cpColl);
         }
-        
+
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC");
         var.setValue(getDlcHome().toString());
