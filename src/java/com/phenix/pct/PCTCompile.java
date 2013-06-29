@@ -115,8 +115,6 @@ public class PCTCompile extends PCTRun {
      * Append Xref Strings in one file
      *
      * @param AppendStringXref "true|false|on|off|yes|no"
-     *
-     * @since 0.3b
      */
     public void setAppendStringXref(boolean appendStringXref) {
         this.appendStringXref = appendStringXref;
