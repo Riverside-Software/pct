@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -257,5 +258,18 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         executeTarget("test2");
         File f2 = new File("PCTDumpIncremental/test5/build/test.r");
         assertTrue(f2.exists());
+    }
+
+    @Test(groups = {"all"})
+    public void test6() {
+        configureProject("PCTDumpIncremental/test6/build.xml");
+        executeTarget("base");
+
+        executeTarget("test1");
+        File f1 = new File("PCTDumpIncremental/test6/incr/incremental.df");
+        assertFalse(f1.exists());
+
+        executeTarget("test2");
+        assertTrue(f1.exists());
     }
 }
