@@ -54,6 +54,8 @@ public class PCTRun extends PCT {
     protected String procedure = null;
     private String cpStream = null;
     private String cpInternal = null;
+    private String cpColl = null;
+    private String cpCase = null;
     private String parameter = null;
     private String numsep = null;
     private String numdec = null;
@@ -365,6 +367,24 @@ public class PCTRun extends PCT {
      */
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
+    }
+
+    /**
+     * Collation table (-cpcoll attribute)
+     * 
+     * @param cpColl String
+     */
+    public void setCpColl(String cpColl) {
+        this.cpColl = cpColl;
+    }
+
+    /**
+     * Case table (-cpcase attribute)
+     * 
+     * @param cpCase String
+     */
+    public void setCpCase(String cpCase) {
+        this.cpCase = cpCase;
     }
 
     /**
@@ -735,6 +755,18 @@ public class PCTRun extends PCT {
             list.add(this.cpInternal);
         }
 
+        // Collation table
+        if (cpColl != null) {
+            list.add("-cpcoll"); //$NON-NLS-1$
+            list.add(cpColl);
+        }
+
+        // Case table
+        if (cpCase != null) {
+            list.add("-cpcase"); //$NON-NLS-1$
+            list.add(cpCase);
+        }
+
         // Directory size
         if (this.dirSize != 0) {
             list.add("-D"); //$NON-NLS-1$
@@ -876,12 +908,33 @@ public class PCTRun extends PCT {
         String zz = readCharset();
         try {
             if (zz != null) {
-                if ("1252".equals(zz))
-                    zz = "windows-1252";
+                // Central Europe
+                if ("1250".equals(zz))
+                    zz = "windows-1250";
+                // Cyrillic
                 if ("1251".equals(zz))
                     zz = "windows-1251";
+                // Western Europe
+                if ("1252".equals(zz))
+                    zz = "windows-1252";
+                // Greek
+                if ("1253".equals(zz))
+                    zz = "windows-1253";
+                // Turkish
                 if ("1254".equals(zz))
                     zz = "windows-1254";
+                // Hebrew
+                if ("1255".equals(zz))
+                    zz = "windows-1255";
+                // Arabic
+                if ("1256".equals(zz))
+                    zz = "windows-1256";
+                // Baltic
+                if ("1257".equals(zz))
+                    zz = "windows-1257";
+                // Vietnamese
+                if ("1258".equals(zz))
+                    zz = "windows-1258";
                 if ("big-5".equalsIgnoreCase(zz))
                     zz = "Big5";
                 charset = Charset.forName(zz);
