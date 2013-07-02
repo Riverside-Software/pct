@@ -250,11 +250,10 @@ public class PCTLibraryTest extends BuildFileTestNg {
         File f1 = new File("PCTLibrary/test12/dist/test.pl");
         assertTrue(f1.exists());
         
-        expectLog("test1", "•½Ð");
-        expectLog("test2", "•¼Ğ");
-        expectLog("test3", "אג±");
-        expectLog("test4", "½Ð");
-        expectLog("test5", "éĞąÐ");
-
+        expectLog("test1", "14844066 49853 50064"); // •½Ð
+        expectLog("test2", "14844066 49852 50334"); // •¼Ğ
+        expectLog("test3", "55184 55186 49809"); // אג±
+        expectLog("test4", "49853 50064"); // ½Ð
+        expectLog("test5", "50089 50334 50309 50064"); // éĞąÐ
     }
 }
