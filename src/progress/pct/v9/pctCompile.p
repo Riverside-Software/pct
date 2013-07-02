@@ -83,12 +83,9 @@ FUNCTION FileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 
 /** Named streams */
-DEFINE STREAM sXref.
-DEFINE STREAM sParams.
-DEFINE STREAM sFileset.
-DEFINE STREAM sIncludes.
-DEFINE STREAM sCRC.
-/*DEFINE STREAM sPreProcess.*/
+DEFINE STREAM s1.
+DEFINE STREAM s2.
+DEFINE STREAM s3.
 
 /** Parameters from ANT call */
 DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
@@ -155,9 +152,9 @@ IF (SESSION:PARAMETER EQ ?) THEN
 IF NOT FileExists(SESSION:PARAMETER) THEN
     RETURN '2'.
 /* Reads config */
-INPUT STREAM sParams FROM VALUE(FILE-INFO:FULL-PATHNAME).
+INPUT STREAM s1 FROM VALUE(FILE-INFO:FULL-PATHNAME).
 REPEAT:
-    IMPORT STREAM sParams UNFORMATTED cLine.
+    IMPORT STREAM s1 UNFORMATTED cLine.
     IF (NUM-ENTRIES(cLine, '=':U) EQ 2) THEN
     CASE ENTRY(1, cLine, '=':U):
         WHEN 'FILESETS':U THEN
@@ -224,7 +221,7 @@ REPEAT:
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
 END.
-INPUT STREAM sParams CLOSE.
+INPUT STREAM s1 CLOSE.
 
 /* Checks if valid config */
 IF NOT FileExists(Filesets) THEN
@@ -249,10 +246,10 @@ IF ProgPerc GT 0 THEN DO:
 END.
 
 /* Parsing file list to compile */
-INPUT STREAM sFileset FROM VALUE(Filesets).
+INPUT STREAM s1 FROM VALUE(Filesets).
 CompLoop:
 REPEAT:
-    IMPORT STREAM sFileset UNFORMATTED cLine.
+    IMPORT STREAM s1 UNFORMATTED cLine.
     IF (cLine BEGINS 'FILESET=':U) THEN
         /* This is a new fileset -- Changing base dir */
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
@@ -334,7 +331,7 @@ REPEAT:
     END.
 END.
 OS-DELETE VALUE(SESSION:TEMP-DIRECTORY + '/PCTXREF':U).
-INPUT STREAM sFileset CLOSE.
+INPUT STREAM s1 CLOSE.
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN
     MESSAGE "Failed to compile " iCompFail " file(s)".
@@ -345,10 +342,10 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGE
     DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
 
-    INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
+    INPUT STREAM s2 FROM VALUE (d + '/':U + f + '.inc':U).
     FileList:
     REPEAT:
-        IMPORT STREAM sIncludes IncFile IncFullPath.
+        IMPORT STREAM s2 IncFile IncFullPath.
         FIND TimeStamps WHERE TimeStamps.ttFile EQ IncFile NO-LOCK NO-ERROR.
         IF (NOT AVAILABLE TimeStamps) THEN DO:
             CREATE TimeStamps.
@@ -361,7 +358,7 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS INTEGE
             LEAVE FileList.
         END.
     END.
-    INPUT STREAM sIncludes CLOSE.
+    INPUT STREAM s2 CLOSE.
     RETURN lReturn.
 
 END FUNCTION.
@@ -372,10 +369,10 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
     DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO INITIAL FALSE.
 
     IF NOT fileExists(d + '/':U + f + '.crc':U) THEN RETURN TRUE.
-    INPUT STREAM sCRC FROM VALUE(d + '/':U + f + '.crc':U).
+    INPUT STREAM s2 FROM VALUE(d + '/':U + f + '.crc':U).
     CRCList:
     REPEAT:
-        IMPORT STREAM sCRC cTab cCRC.
+        IMPORT STREAM s2 cTab cCRC.
         FIND CRCList WHERE CRCList.ttTable EQ cTab NO-LOCK NO-ERROR.
         IF (NOT AVAILABLE CRCList) THEN DO:
             ASSIGN lRet = TRUE.
@@ -386,7 +383,7 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
             LEAVE CRCList.
         END.
     END.
-    INPUT STREAM sCRC CLOSE.
+    INPUT STREAM s2 CLOSE.
     RETURN lRet.
 
 END FUNCTION.
@@ -520,14 +517,14 @@ PROCEDURE PCTCompileXref.
     END.
     IF (debugListingFile NE ?) THEN DO:
         DEFINE VARIABLE cLine AS CHARACTER NO-UNDO.
-        INPUT STREAM sDbgLst1 FROM VALUE(debugListingFile).
-        OUTPUT STREAM sDbgLst2 TO VALUE(debugListingFile + '.clean').
+        INPUT STREAM s2 FROM VALUE(debugListingFile).
+        OUTPUT STREAM s3 TO VALUE(debugListingFile + '.clean').
         REPEAT:
-            IMPORT STREAM sDbgLst1 UNFORMATTED cLine.
-            PUT STREAM sDbgLst2 UNFORMATTED SUBSTRING(cLine, 13) '~n'.
+            IMPORT STREAM s2 UNFORMATTED cLine.
+            PUT STREAM s3 UNFORMATTED SUBSTRING(cLine, 13) '~n'.
         END.
-        INPUT STREAM sDbgLst1 CLOSE.
-        OUTPUT STREAM sDbgLst2 CLOSE.
+        INPUT STREAM s2 CLOSE.
+        OUTPUT STREAM s3 CLOSE.
         OS-DELETE VALUE(debugListingFile).
         OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
     END.
@@ -548,18 +545,18 @@ PROCEDURE displayCompileErrors.
         MESSAGE "Error compiling file" pcInit "at line" STRING(piRow) "column" STRING(piColumn).
     ELSE
         MESSAGE "Error compiling file" pcInit "in included file" pcFile "at line" STRING(piRow) "column" STRING(piColumn).
-    INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
+    INPUT STREAM s2 FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO WHILE (i LT piRow):
-        IMPORT STREAM sXref UNFORMATTED c.
+        IMPORT STREAM s2 UNFORMATTED c.
         ASSIGN i = i + 1.
     END.
-    IMPORT STREAM sXref UNFORMATTED c.
+    IMPORT STREAM s2 UNFORMATTED c.
     MESSAGE c.
     MESSAGE FILL('-':U, piColumn - 2) + '-^':U.
     MESSAGE pcMsg.
     MESSAGE '':U.
     
-    INPUT STREAM sXref CLOSE.
+    INPUT STREAM s2 CLOSE.
     
 END PROCEDURE.
 
@@ -602,17 +599,17 @@ PROCEDURE importXref.
 
     EMPTY TEMP-TABLE ttXref.
 
-    INPUT STREAM sXREF FROM VALUE (pcXref).
+    INPUT STREAM s2 FROM VALUE (pcXref).
     REPEAT:
         CREATE ttXref.
-        IMPORT STREAM sXREF ttXref.
+        IMPORT STREAM s2 ttXref.
         IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
         ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */
-    INPUT STREAM sXREF CLOSE.
+    INPUT STREAM s2 CLOSE.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
     FOR EACH ttXref WHERE xRefType EQ 'INCLUDE':U NO-LOCK BREAK BY ttXref.xObjID:
