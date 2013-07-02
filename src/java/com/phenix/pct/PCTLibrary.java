@@ -48,6 +48,7 @@ public class PCTLibrary extends PCT {
     private String cpInternal = null;
     private String cpStream = null;
     private String cpColl = null;
+    private String cpCase = null;
     private boolean noCompress = false;
     private FileSet fileset = new FileSet();
     private List<FileSet> filesets = new ArrayList<FileSet>();
@@ -112,10 +113,6 @@ public class PCTLibrary extends PCT {
      */
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
-        // backward compatible with previous ILOS PCT version which did not have 'encoding'
-        // attribute
-        if (this.encoding == null)
-            this.encoding = cpInternal;
     }
 
     /**
@@ -134,6 +131,15 @@ public class PCTLibrary extends PCT {
      */
     public void setCpColl(String cpColl) {
         this.cpColl = cpColl;
+    }
+
+    /**
+     * Case table to use
+     * 
+     * @param cpColl String
+     */
+    public void setCpCase(String cpCase) {
+        this.cpCase = cpCase;
     }
 
     /**
@@ -308,15 +314,17 @@ public class PCTLibrary extends PCT {
             exec.createArg().setValue("-cpinternal");
             exec.createArg().setValue(cpInternal);
         }
-
         if (cpStream != null) {
             exec.createArg().setValue("-cpstream");
             exec.createArg().setValue(cpStream);
         }
-
         if (cpColl != null) {
             exec.createArg().setValue("-cpcoll");
             exec.createArg().setValue(cpColl);
+        }
+        if (cpCase != null) {
+            exec.createArg().setValue("-cpcase");
+            exec.createArg().setValue(cpCase);
         }
 
         Environment.Variable var = new Environment.Variable();
@@ -414,15 +422,17 @@ public class PCTLibrary extends PCT {
             exec.createArg().setValue("-cpinternal");
             exec.createArg().setValue(cpInternal);
         }
-
         if (cpStream != null) {
             exec.createArg().setValue("-cpstream");
             exec.createArg().setValue(cpStream);
         }
-
         if (cpColl != null) {
             exec.createArg().setValue("-cpcoll");
             exec.createArg().setValue(cpColl);
+        }
+        if (cpCase != null) {
+            exec.createArg().setValue("-cpcase");
+            exec.createArg().setValue(cpCase);
         }
 
         Environment.Variable var = new Environment.Variable();
