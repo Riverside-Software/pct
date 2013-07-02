@@ -10,14 +10,14 @@
   </target>
 
   <target name="test1">
-    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFiles="true" dlcHome="${DLC}">
+    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="true" dlcHome="${DLC}">
       <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
       <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
     </PCTDumpIncremental>
   </target>
 
   <target name="test2">
-    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFiles="false" dlcHome="${DLC}">
+    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="false" dlcHome="${DLC}">
       <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
       <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
     </PCTDumpIncremental>
