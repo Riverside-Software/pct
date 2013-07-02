@@ -546,4 +546,14 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Should test file content (mainly preprocessed output)
     }
 
+    @Test(groups= {"v10", "v11"})
+    public void test32() {
+        configureProject("PCTCompile/test32/build.xml");
+        executeTarget("test");
+        
+        assertTrue(new File("PCTCompile/test32/build1/.pct/test1.p.strxref").exists());
+        assertTrue(new File("PCTCompile/test32/build1/.pct/test2.p.strxref").exists());
+        assertTrue(new File("PCTCompile/test32/build2/.pct/strings.xref").exists());
+    }
+
 }
