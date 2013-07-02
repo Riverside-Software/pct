@@ -1,0 +1,2 @@
+MESSAGE "•¼Ð".
+RETURN "0".

@@ -242,4 +242,19 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(((FileEntry) v2.get(0)).getFileName().startsWith("Twenty"));
     }
 
+    @Test(groups= {"all"})
+    public void test12() {
+        configureProject("PCTLibrary/test12/build.xml");
+
+        executeTarget("build");
+        File f1 = new File("PCTLibrary/test12/dist/test.pl");
+        assertTrue(f1.exists());
+        
+        expectLog("test1", "•½Ð");
+        expectLog("test2", "•¼Ğ");
+        expectLog("test3", "אג±");
+        expectLog("test4", "½Ð");
+        expectLog("test5", "éĞąÐ");
+
+    }
 }

@@ -1,0 +1,2 @@
+MESSAGE "На".
+RETURN "0".

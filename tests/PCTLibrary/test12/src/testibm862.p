@@ -1,0 +1,2 @@
+MESSAGE "€‚ñ".
+RETURN "0".
