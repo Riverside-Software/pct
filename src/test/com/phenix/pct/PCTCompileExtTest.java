@@ -69,7 +69,7 @@ import java.nio.channels.FileChannel;
 /**
  * Class for testing PCTCompileExt task
  * 
- * @author <a href="mailto:justus_phenix@users.sourceforge.net">Gilles QUERRET</a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
 
@@ -493,6 +493,14 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f1.exists());
         assertTrue(f2.exists());
         assertTrue(f3.exists());
+        
+        long l1 = f1.lastModified();
+        long l2 = f2.lastModified();
+        long l3 = f3.lastModified();
+        executeTarget("test2");
+        assertEquals(f1.lastModified(), l1);
+        assertEquals(f2.lastModified(), l2);
+        assertEquals(f3.lastModified(), l3);
     }
 
     @Test(groups = { "v10", "v11" } )
