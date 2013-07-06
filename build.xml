@@ -277,14 +277,14 @@ PCTBuild=${BUILD_NUMBER}
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
     <zip destFile="${dist}/classDoc.zip">
-      <fileset dir="${build-win}" includes="**/*.r" />
+      <fileset dir="${build-win}" />
     </zip>
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <!--  Updating pct11.pl with rcode compiled on Windowss -->
     <copy todir="classDocTemp">
-      <zipfileset src="classDoc.zip" />
+      <zipfileset src="lib/classDoc.zip" />
     </copy>
     <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
       <fileset dir="classDocTemp" includes="**/*.r" />
