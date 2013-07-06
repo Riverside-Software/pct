@@ -4,6 +4,7 @@
 ^dist$
 ^sports2000$
 ^testbox$
+^test-output$
 ^website$
 ^src/java/com/phenix/pct/PCT\.properties$
 ^classDocTemp$
