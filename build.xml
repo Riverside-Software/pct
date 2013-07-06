@@ -292,16 +292,16 @@ PCTBuild=${BUILD_NUMBER}
     <delete dir="classDocTemp" />
 
     <jar jarfile="${dist}/PCT.jar">
-      <fileset dir="${build}">
+      <fileset dir="${build-java}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
+      </fileset>
+      <fileset dir="${build}">
         <include name="pct8.pl" />
         <include name="pct9.pl" />
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
         <include name="pct11.pl" />
-        <include name="pct-src.zip" />
-        <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
     <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
@@ -367,13 +367,11 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="testdist">
-    <jar jarfile="${dist}/PCT-Tests.jar">
-      <fileset dir="${build-test}" includes="**/*" />
-    </jar>
     <zip destfile="${dist}/testcases.zip" encoding="utf-8">
+      <zipfileset dir="${build-test}" includes="**/*" prefix="${build-test}" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="lib" includes="ant.jar,ant-apache-regexp.jar,ant-launcher.jar,ini4j-0.5.1.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar" prefix="lib" />
-      <zipfileset dir="${dist}" includes="PCT.jar,PCT-Tests.jar" prefix="lib" />
+      <zipfileset dir="${dist}" includes="PCT.jar" prefix="${dist}" />
     </zip>
   </target>
 
@@ -381,7 +379,7 @@ PCTBuild=${BUILD_NUMBER}
       <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
     </target>
 
-  <target name="dist" depends="srcdist,jar,pbuild,testdist" />
+  <target name="dist" depends="srcdist,jar,testdist" />
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build-java}" />
