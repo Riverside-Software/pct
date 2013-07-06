@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <propath version="11.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/propath.xsd">
-<propathentry env="all" kind="src" output="@{ROOT}\build-v11" path="@{ROOT}\src\progress" platform="All"/>
+<propathentry env="all" kind="src" output="@{ROOT}\build\build-v11" path="@{ROOT}\src\progress" platform="All"/>
 <propathentry env="gui" kind="con" path="com.openedge.pdt.text.GUI_LIBRARIES" platform="All"/>
 <propathentry env="tty" kind="con" path="com.openedge.pdt.text.TTY_LIBRARIES" platform="All"/>
 <propathentry env="all" kind="con" path="com.openedge.pdt.text.DLC_PATHS" platform="All"/>

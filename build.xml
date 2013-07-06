@@ -33,18 +33,19 @@
   <property name="src.java" location="src/java" />
   <property name="src.progress" location="src/progress" />
   <property name="src.test" location="src/test" />
-  <property name="build" location="build" />
-  <property name="build-test" location="build-test" />
-  <property name="build-v8" location="build-v8" />
-  <property name="build-v9" location="build-v9" />
-  <property name="build-v10" location="build-v10" />
-  <property name="build-v10-64" location="build-v10-64" />
-  <property name="build-v11" location="build-v11" />
-  <property name="dist" location="lib" />
-  <property name="dist-lite" location="bootstrap" />
-  <property name="doc" location="javadoc" />
 
-  <!-- Properties that control various build options -->
+  <property name="build" location="build" />
+  <property name="build-java" location="build/java" />
+  <property name="build-test" location="build/test" />
+  <property name="build-v8" location="build/build-v8" />
+  <property name="build-v9" location="build/build-v9" />
+  <property name="build-v10" location="build/build-v10" />
+  <property name="build-v10-64" location="build/build-v10-64" />
+  <property name="build-v11" location="build/build-v11" />
+  <property name="build-win" location="build/windows" />
+  <property name="dist" location="dist" />
+
+  <!-- Properties that control Java build options -->
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
@@ -52,7 +53,7 @@
   <property name="javac.target" value="1.5" />
 
   <!-- PCT Version -->
-  <property name="pct.version" value="0.19-pre" />
+  <property name="pct.version" value="1.1-pre" />
   <condition property="BUILD_NUMBER" value="${pct.version}">
     <not>
       <isset property="RELEASE" />
@@ -91,18 +92,18 @@
 
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
-    <pathelement location="ant.jar" />
-    <pathelement location="proparse.jar" />
-    <pathelement location="antlr-2.7.7.jar" />
-    <pathelement location="parser.jar" />
-    <pathelement location="oe_common_services.jar" />
-    <pathelement location="jcommander-1.30.jar" />
+    <pathelement location="lib/ant.jar" />
+    <pathelement location="lib/proparse.jar" />
+    <pathelement location="lib/antlr-2.7.7.jar" />
+    <pathelement location="lib/parser.jar" />
+    <pathelement location="lib/oe_common_services.jar" />
+    <pathelement location="lib/jcommander-1.30.jar" />
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
-    <pathelement location="${build}" />
-    <pathelement location="testng-6.3.1.jar" />
-    <pathelement location="ini4j-0.5.1.jar" />
+    <pathelement location="${build-java}" />
+    <pathelement location="lib/testng-6.3.1.jar" />
+    <pathelement location="lib/ini4j-0.5.1.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -110,7 +111,7 @@
       <format property="year" pattern="yyyy" />
     </tstamp>
 
-    <mkdir dir="${build}" />
+    <mkdir dir="${build-java}" />
     <mkdir dir="${build-test}" />
     <mkdir dir="${build-v8}" />
     <mkdir dir="${build-v9}" />
@@ -137,33 +138,33 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.compil" />
     </javac>
-    <javac srcdir="${src.java}" destdir="${build}" debug="${debug}" source="1.6" target="1.6" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="1.6" target="1.6" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="eu/rssw/pct/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
-    <copy todir="${build}">
+    <copy todir="${build-java}">
       <fileset dir="${src.java}" includes="**/*.properties" />
     </copy>
   </target>
 
   <target name="jar-lite" depends="build" description="Bootstrap JAR file">
     <jar jarfile="${dist}/bootstrap.jar">
-      <fileset dir="${build}">
+      <fileset dir="${build-java}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
-      <zipfileset src="proparse.jar" />
-      <zipfileset src="antlr-2.7.7.jar" />
+      <zipfileset src="lib/proparse.jar" />
+      <zipfileset src="lib/antlr-2.7.7.jar" />
     </jar>
     <jar jarfile="${dist}/prolib.jar">
-      <zipfileset src="jcommander-1.30.jar" />
-      <fileset dir="${build}">
+      <zipfileset src="lib/jcommander-1.30.jar" />
+      <fileset dir="${build-java}">
         <include name="eu/rssw/pct/standalone/**/*.class" />
         <include name="com/phenix/pct/PLReader.class" />
         <include name="com/phenix/pct/FileEntry.class" />
@@ -261,34 +262,34 @@ PCTBuild=${BUILD_NUMBER}
       <param name="twoPass" value="true" />
     </antcall>
 
-    <zip destfile="${build}/pct-src.zip">
+    <!-- <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" />
-    </zip>
+    </zip> -->
   </target>
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
-    <mkdir dir="build-win" />
-    <bootstrapCompile destdir="build-win" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8" twoPass="true" debugListing="true" listing="true">
+    <mkdir dir="${build-win}" />
+    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8" twoPass="true" debugListing="true" listing="true">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
-    <zip destFile="classDoc.zip">
-      <fileset dir="build-win" />
+    <zip destFile="${dist}/classDoc.zip">
+      <fileset dir="${build-win}" includes="**/*.r" />
     </zip>
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <!--  Updating pct11.pl with rcode compiled on Windowss -->
-    <mkdir dir="temp" />
     <copy todir="classDocTemp">
       <zipfileset src="classDoc.zip" />
     </copy>
     <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
       <fileset dir="classDocTemp" includes="**/*.r" />
     </bootstrapLibrary>
+    <delete dir="classDocTemp" />
 
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build}">
@@ -306,11 +307,11 @@ PCTBuild=${BUILD_NUMBER}
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
     </fileset>
-    <zipfileset src="jcommander-1.30.jar" />
-    <zipfileset src="proparse.jar" includes="**/*.class" />
+    <zipfileset src="lib/jcommander-1.30.jar" />
+    <zipfileset src="lib/proparse.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-    <zipfileset src="parser.jar" includes="**/*.class,**/jaxb.index" />
-    <zipfileset src="antlr-2.7.7.jar" includes="**/*.class" />
+    <zipfileset src="lib/parser.jar" includes="**/*.class,**/jaxb.index" />
+    <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
@@ -359,9 +360,7 @@ PCTBuild=${BUILD_NUMBER}
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**" />
         <include name="build.xml" />
-        <include name="doc/**" />
-        <include name="CHANGELOG" />
-        <include name="*.jar" />
+        <include name="lib/*.jar" />
         <include name="pct.build.properties" />
       </zipfileset>
     </zip>
@@ -380,13 +379,12 @@ PCTBuild=${BUILD_NUMBER}
 
   <target name="install" depends="jar" >
       <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
-      <copy file="${dist}/PCT.jar" todir="w:\tmp"/>
     </target>
 
   <target name="dist" depends="srcdist,jar,pbuild,testdist" />
 
   <target name="clean" description="Nettoyage">
-    <delete dir="${build}" />
+    <delete dir="${build-java}" />
     <delete dir="${build-test}" />
     <delete dir="${build-v8}" />
     <delete dir="${build-v9}" />
@@ -406,8 +404,8 @@ PCTBuild=${BUILD_NUMBER}
 
   <target name="upload">
     <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="lib/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="lib/prolib.jar" targetfilename="prolib-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="${dist}/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
+    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="${dist}/prolib.jar" targetfilename="prolib-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
   </target>
 
 </project>
