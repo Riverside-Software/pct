@@ -2,7 +2,7 @@
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
   <path id="lib.cp">
-    <filelist dir="." files="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar,parser.jar,testng-6.3.1.jar" />
+    <filelist dir="lib" files="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar,parser.jar,testng-6.3.1.jar" />
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
@@ -11,7 +11,7 @@
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="java" />
   <property name="sonar.sources" value="src/java" />
-  <property name="sonar.binaries" value="build" />
+  <property name="sonar.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPath" value="jacoco-v11.2-linux64.exec" />
   <!-- <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" /> -->
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
@@ -24,7 +24,7 @@
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-        <classpath path="sonar-ant-task-*.jar" />
+        <classpath path="lib/sonar-ant-task-*.jar" />
     </taskdef>
     <sonar:sonar />
   </target>
