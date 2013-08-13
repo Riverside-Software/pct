@@ -38,7 +38,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,8 +84,19 @@ public abstract class PCTBgRun extends PCT {
         initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
+    /**
+     * @deprecated
+     */
     public void addPCTConnection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
+    public void addDBConnection(PCTConnection dbConn) {
         options.addPCTConnection(dbConn);
+    }
+
+    public void addDBConnectionSet(DBConnectionSet set) {
+        options.addDBConnectionSet(set);
     }
 
     public void addOption(PCTRunOption option) {

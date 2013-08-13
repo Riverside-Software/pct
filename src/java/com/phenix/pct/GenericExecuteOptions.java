@@ -20,6 +20,7 @@ package com.phenix.pct;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -30,7 +31,8 @@ import org.apache.tools.ant.types.Path;
 public class GenericExecuteOptions {
     private Project project = null;
 
-    private List<PCTConnection> dbConnList = null;
+    private Collection<PCTConnection> dbConnList = null;
+    private Collection<DBConnectionSet> dbConnSet = null;
     private List<PCTRunOption> options = null;
     private List<RunParameter> runParameters = null;
     private List<OutputParameter> outputParameters = null;
@@ -81,12 +83,32 @@ public class GenericExecuteOptions {
     }
 
     /**
-     * Returns list of database connections.
+     * Returns list of database connections, from dbConnList and dbConnSet
      * 
      * @return List of PCTConnection objects. Empty list if no DB connections
      */
-    public List<PCTConnection> getDBConnections() {
-        return (dbConnList == null ? new ArrayList<PCTConnection>() : dbConnList);
+    public Collection<PCTConnection> getDBConnections() {
+        Collection<PCTConnection> dbs = new ArrayList<PCTConnection>();
+        if (dbConnList != null) {
+            dbs.addAll(dbConnList);
+        }
+        if (dbConnSet != null) {
+            for (DBConnectionSet set : dbConnSet) {
+                dbs.addAll(set.getDBConnections());
+            }
+        }
+        return dbs;
+    }
+
+    /**
+     * Adds a database connection set
+     * @param set Instance of DBConnectionSet
+     */
+    public void addDBConnectionSet(DBConnectionSet set) {
+        if (this.dbConnSet == null)
+            this.dbConnSet = new ArrayList<DBConnectionSet>();
+
+        dbConnSet.add(set);
     }
 
     /**
@@ -425,7 +447,7 @@ public class GenericExecuteOptions {
                 Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public List<PCTConnection> getDbConnList() {
+    public Collection<PCTConnection> getDbConnList() {
         return dbConnList;
     }
 
