@@ -556,4 +556,18 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test32/build2/.pct/strings.xref").exists());
     }
 
+    @Test(groups= {"all"})
+    public void test33() {
+        configureProject("PCTCompile/test33/build.xml");
+        executeTarget("test");
+
+        assertTrue(new File("PCTCompile/test33/build/test1.r").exists());
+        assertTrue(new File("PCTCompile/test33/build/test2.r").exists());
+
+        expectBuildException("test2", "Expected failure");
+        assertFalse(new File("PCTCompile/test33/build2/test1.r").exists());
+        assertFalse(new File("PCTCompile/test33/build2/test2.r").exists());
+        assertFalse(new File("PCTCompile/test33/build2/test3.r").exists());
+    }
+
 }

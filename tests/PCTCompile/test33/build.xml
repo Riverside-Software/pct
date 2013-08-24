@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test33">
+  <taskdef resource="PCT.properties" />
+
+  <fileset id="src1" dir="src/dir1" includes="*.p" />
+  <fileset id="src2" dir="src/dir2" includes="*.p" />
+  <fileset id="src3" dir="src/dir3" includes="*.p" />
+  <union id="union1">
+    <fileset refid="src1" />
+    <fileset refid="src2" />
+  </union>
+  <union id="union2">
+    <!-- Fileset order should be kept -->
+    <fileset refid="src3" />
+    <fileset refid="src1" />
+    <fileset refid="src2" />
+  </union>
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <resources refid="union1" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+      <resources refid="union2" />
+    </PCTCompile>
+  </target>
+
+</project>
