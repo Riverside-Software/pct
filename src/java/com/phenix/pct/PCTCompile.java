@@ -17,6 +17,19 @@
 
 package com.phenix.pct;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -24,18 +37,6 @@ import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.FileUtils;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Class for compiling Progress procedures
@@ -66,7 +67,7 @@ public class PCTCompile extends PCTRun {
     private int growthFactor = -1;
     private File destDir = null;
     private File xRefDir = null;
-    private int progPerc = 0;	
+    private int progPerc = 0;
     private File preprocessDir = null;
     private File debugListingDir = null;
 
@@ -115,7 +116,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Append Xref Strings in one file
-     *
+     * 
      * @param AppendStringXref "true|false|on|off|yes|no"
      */
     public void setAppendStringXref(boolean appendStringXref) {
@@ -356,7 +357,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Two-pass compilation: first pass preprocess source code, second pass compiles the result
-     *  
+     * 
      * @param twoPass Boolean
      * @since PCT 0.19
      */
@@ -379,55 +380,74 @@ public class PCTCompile extends PCTRun {
      * @throws BuildException
      */
     private void writeFileList() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                    fsList), getCharset()));
+        // Map to quickly retrieve files associated with a base dir
+        Map<String, List<String>> files = new HashMap<String, List<String>>();
+        // And a list to keep order
+        List<String> orderedBaseDirs = new ArrayList<String>();
 
-            for (ResourceCollection rc : resources) {
-                boolean firstFound = false;
-                Iterator<Resource> iter = rc.iterator();
-                while (iter.hasNext()) {
-                    // Find basedir on first element
-                    FileResource frs = (FileResource) iter.next();
-                    if (!firstFound) {
-                        if (relativePaths) {
-                            if (!isDirInPropath(frs.getBaseDir()))
-                                log(MessageFormat.format(Messages.getString("PCTCompile.48"), frs
-                                        .getBaseDir().getAbsolutePath()), Project.MSG_WARN);
-                            try {
-                                bw.write("FILESET="
-                                        + FileUtils.getRelativePath(
-                                                (baseDir == null
-                                                        ? getProject().getBaseDir()
-                                                        : baseDir), frs.getBaseDir()).replace('/',
-                                                File.separatorChar));
-                            } catch (Exception caught) {
-                                try {
-                                    bw.close();
-                                } catch (IOException uncaught) {
+        for (ResourceCollection rc : resources) {
+            Iterator<Resource> iter = rc.iterator();
+            while (iter.hasNext()) {
+                FileResource frs = (FileResource) iter.next();
 
-                                }
-                                throw new BuildException(caught);
-                            }
-                        } else
-                            bw.write("FILESET=" + frs.getBaseDir().getAbsolutePath()); //$NON-NLS-1$
-                        bw.newLine();
-                        firstFound = true;
+                // Each file is associated with its base directory
+                String resBaseDir = "";
+                if (relativePaths) {
+                    if (!isDirInPropath(frs.getBaseDir()))
+                        log(MessageFormat.format(Messages.getString("PCTCompile.48"), frs
+                                .getBaseDir().getAbsolutePath()), Project.MSG_WARN);
+                    try {
+                        resBaseDir = FileUtils.getRelativePath(
+                                (baseDir == null ? getProject().getBaseDir() : baseDir),
+                                frs.getBaseDir()).replace('/', File.separatorChar);
+                    } catch (Exception caught) {
+                        throw new BuildException(caught);
                     }
+                } else {
+                    resBaseDir = frs.getBaseDir().getAbsolutePath(); //$NON-NLS-1$
+                }
 
-                    if (frs.isDirectory()) {
-                        log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
-                    } else {
-                        numFiles++;
-                        bw.write(frs.getName());
-                        bw.newLine();
-                    }
+                // And stored in this set
+                List<String> set = files.get(resBaseDir);
+                if (set == null) {
+                    set = new ArrayList<String>();
+                    files.put(resBaseDir, set);
+                    orderedBaseDirs.add(resBaseDir);
+                }
+                if (frs.isDirectory()) {
+                    log("Skipping " + frs.getName() + " as it is a directory", Project.MSG_INFO);
+                } else {
+                    set.add(frs.getName());
+                    numFiles++;
                 }
             }
+        }
 
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.2"), ioe); //$NON-NLS-1$
+        // Then files list is written to temp file
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fsList),
+                    getCharset()));
+
+            for (String baseDir : orderedBaseDirs) {
+                bw.write("FILESET=" + baseDir);
+                bw.newLine();
+
+                for (String f : files.get(baseDir)) {
+                    bw.write(f);
+                    bw.newLine();
+                }
+            }
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException uncaught) {
+
+                }
+            }
         }
     }
 
@@ -480,7 +500,7 @@ public class PCTCompile extends PCTRun {
             bw.write("STRINGXREF=" + (this.stringXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("APPENDSTRINGXREF=" + (this.appendStringXref ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();			
+            bw.newLine();
             bw.write("MULTICOMPILE=" + (this.multiCompile ? 1 : 0));
             bw.newLine();
             bw.write("STREAM-IO=" + (this.streamIO ? 1 : 0));
@@ -585,9 +605,10 @@ public class PCTCompile extends PCTRun {
         // Verify resource collections
         for (ResourceCollection rc : resources) {
             if (!rc.isFilesystemOnly())
-                throw new BuildException("PCTCompile only supports file-system resources collections");
+                throw new BuildException(
+                        "PCTCompile only supports file-system resources collections");
         }
-        
+
         // Ignore appendStringXref when stringXref is not enabled
         if (!this.stringXref && this.appendStringXref) {
             log(Messages.getString("PCTCompile.90"), Project.MSG_WARN); //$NON-NLS-1$
