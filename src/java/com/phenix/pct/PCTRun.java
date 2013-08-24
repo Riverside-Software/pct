@@ -577,6 +577,9 @@ public class PCTRun extends PCT {
         BufferedReader br = null;
 
         checkDlcHome();
+        if ((procedure == null) || (procedure.length() == 0))
+            throw new BuildException("Procedure attribute not defined");
+
         if (!prepared) {
             prepareExecTask();
             if (profiler != null) {
