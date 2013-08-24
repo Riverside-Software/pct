@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PCTXCode-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="src/xcode" />
+    <PCTXCode dlcHome="${DLC}" destDir="src/xcode">
+      <fileset dir="src/ctx" />
+    </PCTXCode>
+  </target>
+
+</project>

@@ -17,18 +17,17 @@
 
 package com.phenix.pct;
 
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
-
-import java.io.File;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Procedure encryption task using xcode utility from Progress
@@ -112,7 +111,7 @@ public class PCTXCode extends PCT {
     private void createDirectories() throws BuildException {
         for (FileSet fs : filesets) {
             for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                int j = str.lastIndexOf('/');
+                int j = str.replace(File.separatorChar, '/').lastIndexOf('/');
 
                 if (j != -1) {
                     File f2 = new File(destDir, str.substring(0, j));
