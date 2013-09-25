@@ -30,6 +30,11 @@ import org.apache.tools.ant.types.DataType;
 public class DBConnectionSet extends DataType {
     private Collection<PCTConnection> connections = new ArrayList<PCTConnection>();
 
+    // Variation pour antlib
+    public void addDb_Connection(PCTConnection conn) {
+        addDbConnection(conn);
+    }
+
     public void addDbConnection(PCTConnection conn) {
         connections.add(conn);
     }

@@ -107,6 +107,11 @@ public class Prolint extends PCT {
         createPropath().append(propath);
     }
 
+    // Variation pour antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
     public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList<PCTConnection>();
