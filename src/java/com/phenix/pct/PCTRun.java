@@ -152,12 +152,22 @@ public class PCTRun extends PCT {
         addDBConnection(dbConn);
     }
 
+    // Variation pour antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
     public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList<PCTConnection>();
         }
 
         this.dbConnList.add(dbConn);
+    }
+
+    // Variation pour antlib
+    public void addDB_Connection_Set(DBConnectionSet set) {
+        addDBConnectionSet(set);
     }
 
     public void addDBConnectionSet(DBConnectionSet set) {

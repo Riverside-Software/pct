@@ -91,8 +91,18 @@ public abstract class PCTBgRun extends PCT {
         addDBConnection(dbConn);
     }
 
+    // Variation pour antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
     public void addDBConnection(PCTConnection dbConn) {
         options.addPCTConnection(dbConn);
+    }
+
+    // Variation pour antlib
+    public void addDB_Connection_Set(DBConnectionSet set) {
+        addDBConnectionSet(set);
     }
 
     public void addDBConnectionSet(DBConnectionSet set) {

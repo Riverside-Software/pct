@@ -99,6 +99,11 @@ public class PCTBinaryDump extends PCT {
         addDBConnection(dbConn);
     }
 
+    // Variation pour antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
     public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList<PCTConnection>();
