@@ -243,17 +243,14 @@ public abstract class PCTBgRun extends PCT {
 
     private ExecTask prepareExecTask() {
         ExecTask exec = new ExecTask(this);
-
-        File executable = this.getExecPath((options.isGraphMode() ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
-        exec.setExecutable(executable.toString());
+        exec.setExecutable(getAVMExecutable(options.isGraphMode()).toString());
 
         for (String str : options.getCmdLineParameters()) {
             exec.createArg().setValue(str);
         }
 
         // Check for base directory
-        if (options.getBaseDir() != null && options.getBaseDir().exists()
-                && options.getBaseDir().isDirectory()) {
+        if (options.getBaseDir() != null && options.getBaseDir().isDirectory()) {
             exec.setDir(options.getBaseDir());
         }
 
