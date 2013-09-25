@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<project name="PCTConnection-test1">
+<project name="PCTConnection-test1" xmlns:pct="antlib:eu/rssw/pct">
   <typedef resource="types.properties" />
+
 
   <DBConnection id="db1" dbName="foo" dbDir="db" />
   <DBConnection id="db2" refid="db1">
@@ -16,4 +17,16 @@
     <Alias name="alias1" />
   </DBConnection>
   
+  <!-- GC bug #30 -->
+  <pct:db_connection id="db5" dbName="foo" dbDir="db" />
+  <pct:db_connection_set id="set1">
+    <pct:dbConnection refid="db3" />
+    <pct:db_connection dbName="foo" dbDir="db" />
+    <pct:dbConnection dbName="foo2" dbDir="db" />
+  </pct:db_connection_set>
+  <pct:dbConnectionSet id="set2">
+    <pct:dbConnection refid="db3" />
+    <pct:db_connection dbName="foo" dbDir="db" />
+    <pct:dbConnection dbName="foo2" dbDir="db" />
+  </pct:dbConnectionSet>
 </project>

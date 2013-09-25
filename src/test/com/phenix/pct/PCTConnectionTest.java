@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.fail;
@@ -143,20 +144,31 @@ public class PCTConnectionTest extends BuildFileTestNg {
         Object o2 = getProject().getReference("db2");
         Object o3 = getProject().getReference("db3");
         Object o4 = getProject().getReference("db4");
+        Object o5 = getProject().getReference("db5");
+        Object o6 = getProject().getReference("set1");
+        Object o7 = getProject().getReference("set2");
 
         assertTrue(o1 instanceof PCTConnection);
         assertTrue(o2 instanceof PCTConnection);
         assertTrue(o3 instanceof PCTConnection);
         assertTrue(o4 instanceof PCTConnection);
+        assertTrue(o5 instanceof PCTConnection);
+        assertTrue(o6 instanceof DBConnectionSet);
+        assertTrue(o7 instanceof DBConnectionSet);
         
         PCTConnection c1 = (PCTConnection) o1;
         PCTConnection c2 = (PCTConnection) o2;
         PCTConnection c3 = (PCTConnection) o3;
         PCTConnection c4 = (PCTConnection) o4;
-        
+
         assertTrue(c1.getAliases().size() == 0);
         assertTrue(c2.getAliases().size() == 1);
         assertTrue(c3.getAliases().size() == 3);
         assertTrue(c4.getAliases().size() == 3);
+        
+        DBConnectionSet s1 = (DBConnectionSet) o6;
+        assertEquals(s1.getDBConnections().size(), 3);
+        DBConnectionSet s2 = (DBConnectionSet) o7;
+        assertEquals(s2.getDBConnections().size(), 3);
     }
 }
