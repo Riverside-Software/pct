@@ -884,17 +884,15 @@ public class PCTRun extends PCT {
     }
 
     protected void setExecTaskParams() {
-        File a = this.getExecPath((this.graphMode ? "prowin32" : "_progres")); //$NON-NLS-1$ //$NON-NLS-2$
-        exec.setExecutable(a.toString());
+        exec.setExecutable(getAVMExecutable(graphMode).toString());
 
         for (String str : getCmdLineParameters()) {
             exec.createArg().setValue(str);
         }
 
         // Check for base directory
-        // TODO Check previous TODO about redundancy :)
-        if (this.baseDir != null && this.baseDir.exists() && this.baseDir.isDirectory()) {
-            exec.setDir(this.baseDir);
+        if ((baseDir != null) && baseDir.isDirectory()) {
+            exec.setDir(baseDir);
         }
     }
 

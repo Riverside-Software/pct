@@ -241,6 +241,18 @@ public abstract class PCT extends Task {
         return (f1.exists() ? f1 : (f2.exists() ? f2 : (f3.exists() ? f3 : f1)));
     }
 
+    protected final File getAVMExecutable(boolean graphicalMode) {
+        if (!graphicalMode) {
+            return getExecPath("_progres");
+        } else {
+            // Starting from 11.3, 64 bits executable is available, and called prowin.exe 
+            if ((version.compareTo(new DLCVersion(11, 3, "0")) >= 0) && is64bits())
+                return getExecPath("prowin");
+            else
+                return getExecPath("prowin32");
+        }
+    }
+
     /**
      * Returns a fileset containing every JAR/ZIP files needed for proxygen task
      * 
