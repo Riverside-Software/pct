@@ -27,10 +27,12 @@
   <taskdef name="sports2000" classname="com.phenix.pct.Sports2000" />
   <taskdef name="dump_users" classname="com.phenix.pct.PCTDumpUsers" />
   <taskdef name="load_users" classname="com.phenix.pct.PCTLoadUsers" />
+  <taskdef name="dlc_home" classname="com.phenix.pct.DlcHome" />
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
   <typedef name="db_connection" classname="com.phenix.pct.PCTConnection" />
-  <typedef name="dlc_home" classname="com.phenix.pct.DlcHome" />
+  <typedef name="dbConnection" classname="com.phenix.pct.PCTConnection" />
   <typedef name="db_connection_set" classname="com.phenix.pct.DBConnectionSet" />
+  <typedef name="dbConnectionSet" classname="com.phenix.pct.DBConnectionSet" />
   <typedef name="natural" classname="com.phenix.pct.NaturalComparator" />
 </antlib>
