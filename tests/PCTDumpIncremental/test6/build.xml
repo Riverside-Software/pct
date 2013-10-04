@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project name="PCTDumpIncremental-test6">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <mkdir dir="incr" />
+    <sports2000 destDir="db" dbName="sports1" dlcHome="${DLC}" />
+    <sports2000 destDir="db" dbName="sports2" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test1">
+    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="true" dlcHome="${DLC}">
+      <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
+      <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
+    </PCTDumpIncremental>
+  </target>
+
+  <target name="test2">
+    <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="false" dlcHome="${DLC}">
+      <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
+      <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
+    </PCTDumpIncremental>
+  </target>
+
+</project>

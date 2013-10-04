@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTWSBroker-test1">
+  <taskdef resource="PCT.properties" />
+
+  <!-- Missing parameters #1 -->
+  <target name="test">
+    <PCTWSBroker name="test" file="ubroker.properties" dlcHome="${DLC}" />
+  </target>
+
+</project>

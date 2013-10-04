@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="ClassDocumentation-test1">
+  <taskdef resource="extras.properties" />
+    
+  <target name="test">
+      <mkdir dir="doc" />
+      <mkdir dir="html" />
+      <ClassDocumentation destDir="doc" dlcHome="${DLC}">
+          <fileset dir="src" includes="**/*.cls,**/*.p" />
+          <propath>
+              <pathelement location="src" />
+          </propath>
+      </ClassDocumentation>
+      <mkdir dir="profiler" />
+      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html">
+          <Profiler enabled="true" coverage="true" outputDir="profiler" />  
+      </HTMLDocumentation>
+  </target>
+  
+</project>
