@@ -245,11 +245,16 @@ public abstract class PCT extends Task {
         if (!graphicalMode) {
             return getExecPath("_progres");
         } else {
-            // Starting from 11.3, 64 bits executable is available, and called prowin.exe 
-            if ((version.compareTo(new DLCVersion(11, 3, "0")) >= 0) && is64bits())
-                return getExecPath("prowin");
-            else
+            // Starting from 11.3, 64 bits executable is available, and called prowin.exe
+            // Easiest way is to check for prowin.exe, and return this File if available
+            // Otherwise, fall back to prowin32
+            if (version.compareTo(new DLCVersion(11, 3, "0")) >= 0) {
+                File prowin = getExecPath("prowin");
+                File prowin32 = getExecPath("prowin32");
+                return (prowin.exists() ? prowin : prowin32);
+            } else {
                 return getExecPath("prowin32");
+            }
         }
     }
 
