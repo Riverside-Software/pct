@@ -164,6 +164,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.returnType = decl.getReturnType();
         method.isStatic = decl.isStatic();
         method.isFinal = decl.isFinal();
+        method.isAbstract = decl.isAbstract();
         method.methodComment = ParserUtils.findPreviousComment(decl);
         cu.methods.add(method);
 
