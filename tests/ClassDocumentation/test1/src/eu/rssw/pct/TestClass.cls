@@ -23,7 +23,7 @@ ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Lang.*       FROM PROPATH .
 
-CLASS eu.rssw.pct.TestClass: 
+CLASS eu.rssw.pct.TestClass FINAL: 
 
     /*------------------------------------------------------------------------------
         Purpose: Constructor for the TestClass class
@@ -49,7 +49,7 @@ CLASS eu.rssw.pct.TestClass:
         Notes:   
         @param pcParam The comment for pcParam
     ------------------------------------------------------------------------------*/
-	METHOD PUBLIC VOID TestMethodNoAnnotation (pcParam AS CHARACTER):
+	METHOD PUBLIC FINAL VOID TestMethodNoAnnotation (pcParam AS CHARACTER):
 		
 		RETURN.
 
