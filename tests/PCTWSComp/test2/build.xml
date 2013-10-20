@@ -3,7 +3,11 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-    <PCTWSComp destDir="build" dlcHome="${DLC}" />
+    <PCTWSComp destDir="build" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="${DLC}/src" />
+      </propath>
+    </PCTWSComp>
   </target>
 
 </project>
