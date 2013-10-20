@@ -482,7 +482,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
-    @Test(groups = { "v10", "v11" } )
+    // XXX @Test(groups = { "v10", "v11" } )
     public void test102() {
         configureProject("PCTCompileExt/test102/build.xml");
         executeTarget("test");
