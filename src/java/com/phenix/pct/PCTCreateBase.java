@@ -17,17 +17,17 @@
 
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Environment.Variable;
-import org.apache.tools.ant.types.ResourceCollection;
-import org.apache.tools.ant.types.Path;
-
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.ResourceCollection;
 
 /**
  * Class for creating Progress databases
@@ -37,6 +37,7 @@ import java.util.List;
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
+    private static final String NEW_INSTANCE = "-newinstance";
 
     private String dbName = null;
     private String codepage = null;
@@ -54,6 +55,7 @@ public class PCTCreateBase extends PCT {
     private boolean multiTenant = false;
     private String collation = null;
     private String cpInternal = null;
+    private boolean isNewInstance = false;
 
     /**
      * Structure file (.st)
@@ -204,6 +206,15 @@ public class PCTCreateBase extends PCT {
      */
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
+    }
+    
+    /**
+     * Enable new instance of the database
+     * 
+     * @param isNewInstance
+     */
+    public void setIsNewInstance(boolean isNewInstance) {
+        this.isNewInstance = isNewInstance;
     }
 
     /**
@@ -444,6 +455,8 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(dbName);
+        if ( isNewInstance )
+            exec.createArg().setValue(NEW_INSTANCE);
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
