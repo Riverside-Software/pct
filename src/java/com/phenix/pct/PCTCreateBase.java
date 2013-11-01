@@ -55,7 +55,7 @@ public class PCTCreateBase extends PCT {
     private boolean multiTenant = false;
     private String collation = null;
     private String cpInternal = null;
-    private boolean isNewInstance = false;
+    private boolean newInstance = false;
 
     /**
      * Structure file (.st)
@@ -213,8 +213,8 @@ public class PCTCreateBase extends PCT {
      * 
      * @param isNewInstance
      */
-    public void setIsNewInstance(boolean isNewInstance) {
-        this.isNewInstance = isNewInstance;
+    public void setNewInstance(boolean isNewInstance) {
+        this.newInstance = isNewInstance;
     }
 
     /**
@@ -455,7 +455,7 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(dbName);
-        if ( isNewInstance )
+        if (newInstance)
             exec.createArg().setValue(NEW_INSTANCE);
 
         Environment.Variable var = new Environment.Variable();
