@@ -50,6 +50,7 @@ public class PCTLibrary extends PCT {
     private String cpColl = null;
     private String cpCase = null;
     private boolean noCompress = false;
+    private boolean debugPCT = false;
     private FileSet fileset = new FileSet();
     private List<FileSet> filesets = new ArrayList<FileSet>();
     private File baseDir = null;
@@ -206,6 +207,15 @@ public class PCTLibrary extends PCT {
      */
     public void setDefaultexcludes(boolean useDefaultExcludes) {
         fileset.setDefaultexcludes(useDefaultExcludes);
+    }
+
+    /**
+     * Turns on/off debugging mode (keeps temp files on disk)
+     * 
+     * @param debugPCT boolean
+     */
+    public void setDebugPCT(boolean debugPCT) {
+        this.debugPCT = debugPCT;
     }
 
     /**
@@ -447,9 +457,11 @@ public class PCTLibrary extends PCT {
      * Delete temporary files if debug not activated
      */
     protected void cleanup() {
-        if (tmpFile.exists() && !tmpFile.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTLibrary.5"), tmpFile.getAbsolutePath()),
-                    Project.MSG_VERBOSE);
+        if (!debugPCT) {
+            if ((tmpFile != null) && tmpFile.exists() && !tmpFile.delete()) {
+                log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
+                        tmpFile.getAbsolutePath()), Project.MSG_VERBOSE);
+            }
         }
     }
 
