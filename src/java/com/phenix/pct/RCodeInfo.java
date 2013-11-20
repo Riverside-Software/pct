@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 /**
  * Gathers informations from r-code, as the RCODE-INFO system handle could provide. This class is
@@ -47,14 +49,15 @@ public class RCodeInfo {
     private InputStream input;
     private int segmentTableSize;
     private long signatureSize;
+    private String debugListingFile;
 
     public RCodeInfo(File file) throws InvalidRCodeException, IOException {
         this(new BufferedInputStream(new FileInputStream(file), 65536));
     }
 
     /**
-     * Input stream has to support mark()/reset(). Buffer should be large enough, otherwise
-     * this method may throw an IOException. Large enough depends on number of methods and signatures.
+     * Input stream has to support mark()/reset(). Buffer should be large enough, otherwise this
+     * method may throw an IOException. Large enough depends on number of methods and signatures.
      * This will be fixed in later releases.
      * 
      * @param input
@@ -65,6 +68,7 @@ public class RCodeInfo {
         this.input = input;
         this.input.mark(0);
         processFile();
+        readDebugListing();
         input.close();
     }
 
@@ -103,6 +107,35 @@ public class RCodeInfo {
         return sixty_four_bits;
     }
 
+    public String getDebugListingFile() {
+        return debugListingFile;
+    }
+
+    private void readDebugListing() throws IOException {
+        byte[] buf1 = new byte[1024], buf2 = new byte[2048];
+        input.reset();
+        // Make sure we have at least 1024 bytes in buf2
+        while (input.read(buf1) == 1024) {
+            buf2 = Arrays.copyOf(buf1, buf1.length * 2);
+            Arrays.fill(buf1, (byte) 0); 
+        }
+        for (int zz = 0; zz < buf1.length; zz++) {
+            buf2[1024 + zz] = buf1[zz];
+        }
+        int last00 = -1, first02 = -1;
+        // Search backwards for last 0x00 and first 0x02
+        for (int zz = 2047; zz >= 0; zz--) {
+            if ((first02 == -1) && (buf2[zz] == 0x00)) {
+                last00 = zz;
+            }
+            if ((first02 == -1) && (buf2[zz] == 0x02)) {
+                first02 = zz;
+                break;
+            }
+        }
+        debugListingFile = new String(Arrays.copyOfRange(buf2, first02 + 1, last00));
+    }
+
     private void processFile() throws InvalidRCodeException, IOException {
         long magic = readUnsignedInt(input, 0, false);
         if (magic == MAGIC1) {
@@ -113,7 +146,7 @@ public class RCodeInfo {
             input.close();
             throw new InvalidRCodeException("Can't find magic number");
         }
-        
+
         this.version = readUnsignedShort(input, 14, swapped);
         this.sixty_four_bits = ((version & 0x4000) != 0);
 
@@ -167,7 +200,7 @@ public class RCodeInfo {
         input.reset();
         input.skip(pos);
         input.read(buf);
-        
+
         if (swapped)
             return (((int) buf[1] & 0xFF) << 8) + ((int) buf[0] & 0xFF);
         else
@@ -180,7 +213,7 @@ public class RCodeInfo {
         input.reset();
         input.skip(pos);
         input.read(buf);
-        
+
         if (swapped)
             return (((int) buf[3] & 0xFF) << 24) + (((int) buf[2] & 0xFF) << 16)
                     + (((int) buf[1] & 0xFF) << 8) + ((int) buf[0] & 0xFF);
@@ -224,7 +257,7 @@ public class RCodeInfo {
             super(s);
         }
     }
-    
+
     public static void main(String[] args) throws Exception {
         RCodeInfo rci = new RCodeInfo(new File("C:\\Users\\gquerret\\Downloads\\catalogue.r"));
         System.out.println("CRC : " + rci.getCRC());
