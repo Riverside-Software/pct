@@ -90,6 +90,7 @@ public class OpenEdgeDocumentation extends PCT {
 
     public OpenEdgeDocumentation() {
         super();
+        createPropath();
     }
 
     /**
