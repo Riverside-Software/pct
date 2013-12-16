@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -26,12 +26,24 @@
 
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
+USING Consultingwerk.*                           FROM PROPATH . 
 USING Consultingwerk.Studio.ClassDocumentation.* FROM PROPATH .
+
+{Consultingwerk/products.i}
 
 CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper: 
 
     { Consultingwerk/Studio/ClassDocumentation/eUsing.i &ACCESS=STATIC }
     { Consultingwerk/Studio/ClassDocumentation/eParameterComment.i &ACCESS=STATIC }
+
+    /*------------------------------------------------------------------------------
+        Purpose: Gets and sets the procedure handle to the PCT Library procedure
+                 that contains the getParameter function 
+        Notes:   
+    ------------------------------------------------------------------------------*/
+	DEFINE PUBLIC STATIC PROPERTY PctLibrary AS HANDLE NO-UNDO 
+	GET.
+	SET. 
 
     /*------------------------------------------------------------------------------
         Purpose: Disallow instance creation                                                                        
@@ -43,10 +55,82 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
     END CONSTRUCTOR.
 
     /*------------------------------------------------------------------------------
+        Purpose: Analyse the comment of weblinks and create an link tag
+        Notes:   
+        @param pcComment The comment string 
+        @return A Longchar 
+    ------------------------------------------------------------------------------*/
+	METHOD PUBLIC STATIC LONGCHAR GenerateCommentLinks (pcComment AS LONGCHAR):
+	    DEFINE VARIABLE iPos      AS INTEGER   NO-UNDO INIT 1.
+	    DEFINE VARIABLE iLinkEnd  AS INTEGER   NO-UNDO.
+	    DEFINE VARIABLE cLink     AS CHARACTER NO-UNDO.
+	    DEFINE VARIABLE cTagLink  AS CHARACTER NO-UNDO.
+	    
+	    REPEAT:
+	        IF INDEX (pcComment, "http://":U, iPos) = 0 THEN 
+	            LEAVE.
+
+	        ASSIGN iPos      = INDEX (pcComment, "http://":U, iPos)
+	               iLinkEnd  = INDEX (pcComment, " ":U, iPos) - iPos
+	               . 
+           
+            IF iLinkEnd <= 0 THEN 
+                LEAVE.
+           	       
+            ASSIGN cLink     = SUBSTRING (pcComment, ipos, iLinkEnd)
+                   cTagLink  = SUBSTITUTE ("<a href='&1' target='_blank'>&1</a>":U, cLink)
+                   pcComment = REPLACE (pcComment, cLink, cTagLink)
+                   iPos      = iPos + LENGTH (cTagLink).
+                   .
+	    END. 
+	    
+        RETURN pcComment.
+	END METHOD .
+
+	/*------------------------------------------------------------------------------
+		Purpose: Get the generic type reference list																	  
+		Notes:
+		@param pcReturnType THE CHARACTER value set the ReturnTyp in the signature
+		@param poParameter The parameter object 
+		@return a generic type html reference list  																	  
+	------------------------------------------------------------------------------*/
+	METHOD PUBLIC STATIC LONGCHAR GenericTypesParser (pcReturnType AS CHARACTER,
+	                                                  poParameter AS IDocumentWriterParameter):
+		
+		DEFINE VARIABLE iIndex          AS INTEGER  NO-UNDO.
+		DEFINE VARIABLE GenericTypeList AS LONGCHAR NO-UNDO.
+		DEFINE VARIABLE iEntries        AS INTEGER  NO-UNDO.
+		DEFINE VARIABLE iCount          AS INTEGER  NO-UNDO.
+		
+		FIX-CODEPAGE (GenericTypeList) = "utf-8":U.
+		
+		ASSIGN iIndex = INDEX (pcReturnType, "<":U) . 
+
+        IF iIndex > 0 THEN DO:
+            ASSIGN pcReturnType = SUBSTRING (pcReturnType, iIndex)
+                   pcReturnType = TRIM (pcReturnType, "<>":U)
+                   iEntries     = NUM-ENTRIES (pcReturnType)
+                   .
+            
+            DO iCount = 1 TO iEntries:
+                ASSIGN GenericTypeList = SUBSTITUTE ("&1,":U, 
+                                                     GetClassReferenceHyperlink (ENTRY (iCount, pcReturnType), poParameter)).
+            END. 
+            
+            ASSIGN GenericTypeList = TRIM (GenericTypeList, ",":U)
+                   GenericTypeList =  "&lt":U + GenericTypeList + "&gt":U
+                   .
+            
+        END.
+
+        RETURN GenericTypeList.
+	END METHOD.
+
+    /*------------------------------------------------------------------------------
         Purpose:                                                                        
         Notes:                                                                        
         @param pcTypeName The type name to be located
-        @param ttUsing TABLE The ttUsing containing the USING Statements of the current compile unit
+        @param eUsing TABLE The ttUsing containing the USING Statements of the current compile unit
         @return The full type name                                                                     
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC CHARACTER GetFullTypeName (pcTypeName AS CHARACTER,
@@ -54,14 +138,20 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         
         DEFINE VARIABLE cLookup AS CHARACTER           NO-UNDO .
         DEFINE VARIABLE oClass  AS Progress.Lang.Class NO-UNDO .     
+&IF DEFINED (DotNetAccessible) NE 0 &THEN
         DEFINE VARIABLE oType   AS System.Type         NO-UNDO .
-           
+&ENDIF           
+          
+        IF Consultingwerk.Util.DataTypeHelper:IsAblDataType (pcTypeName) THEN 
+            RETURN pcTypeName .    
+         
         DO ON ERROR UNDO, THROW: 
             
             IF NUM-ENTRIES (pcTypeName, ".":U) > 1 THEN 
                 RETURN pcTypeName . 
                 
-            FOR EACH eUsing:
+            FOR EACH eUsing ON ERROR UNDO, THROW:
+                
                 /* propath ? */
                 IF eUsing.Type <> "ASSEMBLY":U THEN DO:
              
@@ -69,10 +159,8 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                         ASSIGN cLookup = eUsing.Name
                                ENTRY (NUM-ENTRIES (cLookup, ".":U), cLookup, ".":U) = pcTypeName .                     
                         
-                        
                             ASSIGN oClass = Progress.Lang.Class:GetClass (cLookup) NO-ERROR . 
-                        
-                            
+
                         IF VALID-OBJECT (oClass) THEN 
                             RETURN cLookup .                     
                     END.
@@ -81,6 +169,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                             RETURN eUsing.Name .
                 END.
     
+&IF DEFINED (DotNetAccessible) NE 0 &THEN    
                 /* .NET type */
                 IF eUsing.Type <> "PROPATH":U THEN DO:            
                             
@@ -88,7 +177,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                         ASSIGN cLookup = eUsing.Name 
                                ENTRY (NUM-ENTRIES (cLookup, ".":U), cLookup, ".":U) = pcTypeName .                     
                         
-                        ASSIGN oType = Progress.Util.TypeHelper:GetType (cLookup) NO-ERROR . 
+                        ASSIGN oType = Progress.Util.TypeHelper:GetType (cLookup) . 
                         
                         IF VALID-OBJECT (oType) THEN 
                             RETURN cLookup .                     
@@ -97,48 +186,136 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                         IF ENTRY (NUM-ENTRIES (eUsing.Name, ".":U), eUsing.Name, ".":U) = pcTypeName THEN 
                             RETURN eUsing.Name .
                 END.
+&ENDIF                
             END.     
                     
-        CATCH ple AS Progress.Lang.Error :
-            MESSAGE ple:GetMessage (1)
-                VIEW-AS ALERT-BOX.
-        END CATCH.
+            CATCH ple AS Progress.Lang.Error :
+                MESSAGE ple:GetMessage (1)
+                    VIEW-AS ALERT-BOX.
+            END CATCH.
         END.
+        
         /* We should only get here, when we didn't succeed finding an 
            ABL or .NET type */
         RETURN pcTypeName . 
 
     END METHOD.
-    
+	
+	/*------------------------------------------------------------------------------
+        Purpose: Generates parent hyperlinks in a html div constainer
+        Notes:   
+        @param plcClasses The comma seperate parent class list
+        @param poParameter The paramter object 
+        @return A LONGCHAR with a formated ClassesHyperlinks 
+    ------------------------------------------------------------------------------*/
+    METHOD PUBLIC STATIC LONGCHAR GenerateParentClassesHyperlinks (plcClasses  AS CHARACTER,
+                                                                   poParameter AS IDocumentWriterParameter):
+        
+        DEFINE VARIABLE iCount         AS INTEGER                                            NO-UNDO.
+        DEFINE VARIABLE iEnd           AS INTEGER                                            NO-UNDO.
+        DEFINE VARIABLE cReturn        AS LONGCHAR                                           NO-UNDO.
+        DEFINE VARIABLE cClassType     AS CHARACTER                                          NO-UNDO.
+        DEFINE VARIABLE cClassLink     AS CHARACTER                                          NO-UNDO.
+        DEFINE VARIABLE cClass         AS CHARACTER                                          NO-UNDO.
+        DEFINE VARIABLE oCharacterList AS Consultingwerk.Framework.Collections.CharacterList NO-UNDO.
+        DEFINE VARIABLE iLeftValue     AS INTEGER                                            NO-UNDO.
+
+        FIX-CODEPAGE (cReturn) = "utf-8":U.
+        
+        ASSIGN oCharacterList = Consultingwerk.Studio.ClassDocumentation.BaseClassListProvider:GetBaseClassList (plcClasses, poParameter:SourceDir) 
+               iEnd = oCharacterList:COUNT.
+        
+        DO iCount = 0 TO oCharacterList:COUNT - 1:
+            IF iCount = 0 THEN
+                ASSIGN cClassType =  "parentclassnode_first":U.
+            ELSE
+                ASSIGN cClassType =  "parentclassnode":U.
+                            
+            IF iCount > 1 THEN 
+                ASSIGN iLeftValue = iCount * 2.
+            ELSE
+                ASSIGN iLeftValue = iCount.
+            
+            IF iCount > 0 THEN
+                ASSIGN
+                       cClass     = oCharacterList:GetValue (iEnd - iCount)
+                       cClassLink = GetClassReferenceHyperlink (cClass, poParameter)
+                       cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class='&2'></div>
+                                                                    </td>
+                                                                    <td>
+                                                                    &3
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                       </div>":U,
+                                                       iLeftValue,
+                                                       cClassType,
+                                                       cClassLink)
+                   .
+            ELSE
+                ASSIGN
+                       cClass     = oCharacterList:GetValue (iEnd - iCount)
+                       cClassLink = GetClassReferenceHyperlink (cClass, poParameter)
+                       cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:12px' class='parentclassesitem'>
+                                                            <table style='border-spacing:0px'>
+                                                                <tr>
+                                                                    <td>
+                                                                    &2
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                       </div>":U,
+                                                       iLeftValue,
+                                                       cClassLink)
+                   .
+        END.
+        
+        /* Sebastian Düngel, Consultingwerk Ltd. 10.04.2013
+           Added the caller class*/
+        ASSIGN cClassLink = GetClassReferenceHyperlink (plcClasses, poParameter)
+               cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
+                                                                <table>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class='parentclassnode'></div>
+                                                                        </td>
+                                                                        <td>
+                                                                        &2
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                           </div>":U,
+                                                           iLeftValue + 2,
+                                                           cClassLink)
+               .     
+        
+        ASSIGN cReturn = SUBSTITUTE ("<div class='parentclasses'>&1</div><br>":U, cReturn).
+
+        RETURN cReturn.
+    END METHOD .
+
     /*------------------------------------------------------------------------------
-        Purpose: Return the pupose from the comment. 
+        Purpose: Returns a comment for the summary overview. 
         Notes:   
         @param plcComment Comment String 
-        @return 
+        @return Get the display summary comment
     ------------------------------------------------------------------------------*/
-    METHOD PUBLIC STATIC LONGCHAR GetPurpose (plcComment AS LONGCHAR):
+    METHOD PUBLIC STATIC LONGCHAR GetSummaryComment (plcComment AS LONGCHAR):
         
-        DEFINE VARIABLE cResult     AS LONGCHAR NO-UNDO.
-        DEFINE VARIABLE iCount      AS INTEGER  NO-UNDO.
-        DEFINE VARIABLE lcLine      AS LONGCHAR NO-UNDO.
-        DEFINE VARIABLE lTrigger    AS LOGICAL  NO-UNDO INIT FALSE.
-                
-        DO iCount = 1 TO NUM-ENTRIES (plcComment, CHR (10)) ON ERROR UNDO, THROW:
-            
-            ASSIGN lcLine = TRIM (ENTRY (iCount, plcComment, CHR (10))).
-            
-            IF lcLine BEGINS "Purpose:":U THEN DO:
-                ASSIGN lTrigger = TRUE
-                       cResult  = TRIM (REPLACE (lcLine, "Purpose:":U, "":U))
-                       .
-            END.
-            ELSE  
-                IF lTrigger = TRUE AND lcLine BEGINS "Notes:":U THEN 
-                    RETURN cResult.
-                ELSE 
-                    ASSIGN cResult = SUBSTITUTE ("&1&2&3":U, cResult, CHR (10), lcLine).
-            
-        END.
+        DEFINE VARIABLE oCommentParser AS ICommentBuilder NO-UNDO.
+        
+        ASSIGN plcComment = ReplaceSpecialCharacters(plcComment).
+        
+        oCommentParser = {Consultingwerk/get-service.i 
+                            Consultingwerk.Studio.ClassDocumentation.ICommentBuilder 
+                            "NEW Consultingwerk.Studio.ClassDocumentation.CommentBuilder ()"} .  
+        
+        IF VALID-OBJECT (oCommentParser) THEN
+            RETURN oCommentParser:SummaryComment (plcComment).
         
         RETURN "":U.
 
@@ -168,31 +345,148 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
     END METHOD .
 
     /*------------------------------------------------------------------------------
+        Purpose: Get the class reference hyperlink 
+        Notes:   
+        @param cClass The fulltypename from the reference
+        @param poParameter The parameter object
+        @return A valid HTML a tag 
+    ------------------------------------------------------------------------------*/
+	METHOD PUBLIC STATIC CHARACTER GetClassReferenceHyperlink (cClass      AS CHARACTER, 
+	                                                           poParameter AS IDocumentWriterParameter):
+	                                                               
+        DEFINE VARIABLE oLinkProvider AS IClassReferenceLinkProvider NO-UNDO.
+        DEFINE VARIABLE cLink         AS CHARACTER                   NO-UNDO.
+        
+        oLinkProvider = {Consultingwerk/get-service.i Consultingwerk.Studio.ClassDocumentation.IClassReferenceLinkProvider "NEW Consultingwerk.Studio.ClassDocumentation.ClassReferenceLinkProvider()"} .
+        
+        ASSIGN cLink = oLinkProvider:GetClassReferenceLink (cClass).
+        
+        IF cLink = ? THEN DO:
+            ASSIGN FILE-INFO:FILENAME = SUBSTITUTE ("&1\&2.xml":U, poParameter:SourceDir, cClass).
+                        
+            IF FILE-INFO:FULL-PATHNAME = ? THEN
+                RETURN cClass.
+            ELSE 
+                RETURN SUBSTITUTE ("<a href='&1.html'>&1</a>":U, cClass).
+        END.
+        ELSE
+            RETURN SUBSTITUTE ("<a href='&1' target='_blank'>&2</a>":U, cLink, cClass).
+    
+	END METHOD .
+	
+	/*------------------------------------------------------------------------------
+        Purpose: Build the Method / Property / Events reference hyperlink 
+        Notes:   
+        @param cClass The fulltypename from the reference
+        @param cMethod The Method / Property / Events signature or name
+        @param poParameter The parameter object
+        @return A valid HTML a tag 
+    ------------------------------------------------------------------------------*/
+    METHOD PUBLIC STATIC CHARACTER GetClassReferenceHyperlink (cClass      AS CHARACTER,
+                                                               cMethod     AS CHARACTER,
+                                                               poParameter AS IDocumentWriterParameter):
+                                                                   
+        DEFINE VARIABLE oLinkProvider AS IClassReferenceLinkProvider NO-UNDO.
+        DEFINE VARIABLE cLink         AS CHARACTER                   NO-UNDO.
+        
+        oLinkProvider = {Consultingwerk/get-service.i Consultingwerk.Studio.ClassDocumentation.IClassReferenceLinkProvider "NEW Consultingwerk.Studio.ClassDocumentation.ClassReferenceLinkProvider()"} .
+        
+        ASSIGN cLink = oLinkProvider:GetClassReferenceLink (cClass).
+        
+        IF cLink = ? THEN DO:
+            ASSIGN FILE-INFO:FILENAME = SUBSTITUTE ("&1\&2.xml":U, poParameter:SourceDir, cClass).
+                        
+            IF FILE-INFO:FULL-PATHNAME = ? THEN
+                RETURN SUBSTITUTE ("&1:&2":U, cClass, cMethod).
+            ELSE 
+                RETURN SUBSTITUTE ("<a href='&1.html#&2'>&1:&2</a>":U, cClass, cMethod).
+        END.
+        ELSE
+            RETURN SUBSTITUTE ("<a href='&1' target='_blank'>&2</a>":U, cLink, cClass).
+    
+    END METHOD .
+
+	/*------------------------------------------------------------------------------
+		Purpose: Get the purpose comment form the unit   																	  
+		Notes:
+		@param pcComment A longcharvalue with the purpose comment.
+		@return A longchar value																  
+	------------------------------------------------------------------------------*/
+	METHOD PUBLIC STATIC LONGCHAR GetUnitPurpose (pcComment AS LONGCHAR):
+		
+		DEFINE VARIABLE lcContent AS LONGCHAR NO-UNDO.
+        DEFINE VARIABLE oCommentParser AS ICommentBuilder NO-UNDO.
+                
+        FIX-CODEPAGE (lcContent) = "utf-8":U . 
+        
+        oCommentParser = {Consultingwerk/get-service.i 
+                          Consultingwerk.Studio.ClassDocumentation.ICommentBuilder 
+                          "NEW Consultingwerk.Studio.ClassDocumentation.CommentBuilder ()"} . 
+        
+        IF VALID-OBJECT (oCommentParser) THEN DO:
+            ASSIGN lcContent = oCommentParser:GetUnitPurpose (pcComment).
+        END.  
+        
+        RETURN lcContent.
+                
+	END METHOD.
+
+    /*------------------------------------------------------------------------------
+        Purpose: Custom Right-Trim Method that does also trim TAB  
+        Notes:   
+        @param plcString The LONGCHAR value to right-trim 
+        @return The right-trimed LONGCHAR value
+    ------------------------------------------------------------------------------*/
+	METHOD PRIVATE STATIC LONGCHAR RightTrim (plcString AS LONGCHAR):
+		
+		DEFINE VARIABLE cChar AS CHARACTER NO-UNDO.
+		
+		REPEAT ON ERROR UNDO, THROW:
+		    IF LENGTH (plcString) > 1 THEN . 
+		    ELSE LEAVE . 
+		    
+		    ASSIGN cChar = SUBSTRING (plcString, LENGTH (plcString), 1) .
+		    
+		    IF cChar = CHR(32) OR cChar = CHR(9) THEN 
+		        ASSIGN plcString = SUBSTRING (plcString, 1, LENGTH (plcString) - 1) . 
+		    ELSE 
+		        LEAVE . 
+		END.
+		
+		RETURN plcString.
+
+	END METHOD .
+
+    /*------------------------------------------------------------------------------
         Purpose: Parse a longchar and replace values.
         Notes:   
-        @param pcSignature The CHARCATER value which do you want to parse.
-        @param pcModifiere THE CHARACTER value set the modifiere in the signature
-        @param pcReturnType THE CHARACTER value set the ReturnTyp in the signature
+        @param pcSignature The CHARACTER value which do you want to parse.
+        @param pcModifier The CHARACTER value set the modifiere in the signature
+        @param pcReturnType The CHARACTER value set the ReturnTyp in the signature
+        @param poParameter The parameter object
         @return Return the manipulated signature
     ------------------------------------------------------------------------------*/
-    METHOD PUBLIC STATIC CHARACTER SignatureParser (pcSignature AS CHARACTER, 
-                                                    pcModifiere AS CHARACTER, 
-                                                    pcReturnType AS CHARACTER):
+    METHOD PUBLIC STATIC CHARACTER SignatureParser (pcSignature  AS CHARACTER, 
+                                                    pcModifier  AS CHARACTER, 
+                                                    pcReturnType AS CHARACTER,
+                                                    poParameter  AS IDocumentWriterParameter):
         
-        DEFINE VARIABLE cResult AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE iCount  AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE iIndex  AS INTEGER   NO-UNDO.
-        
-        ASSIGN cResult = REPLACE (pcSignature, "(":U, " (":U)
-               cResult = REPLACE (cResult, ",":U, ", ":U)
-               iIndex  = INDEX (cResult, ")":U)
-               .
-        
-        IF iIndex > 0 THEN     
+        DEFINE VARIABLE cResult      AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE iIndex       AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE cTempReturn  AS CHARACTER NO-UNDO .
+                                                                                
+        IF iIndex > 0 THEN
             ASSIGN  cResult = SUBSTRING (cResult, 1, iIndex).
-       
-        ASSIGN cResult = SUBSTITUTE ("&1 &2 &3":U, pcModifiere, pcReturnType, cResult).
-               
+
+        IF INDEX (pcReturnType, "<":U) > 0 THEN
+             ASSIGN cTempReturn = SUBSTRING (pcReturnType, 1 , INDEX (pcReturnType, "<":U))
+                    cTempReturn = TRIM (cTempReturn, "<>":U)
+                    .
+         ELSE
+            ASSIGN cTempReturn = pcReturnType.
+            
+        ASSIGN cResult = SUBSTITUTE ("&1 &2 <a href='#@ANCHOR@'>&3 &4</a>":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, poParameter), GenericTypesParser (pcReturnType, poParameter), ShortSignatureParser (pcSignature, pcReturnType)).
+
         RETURN cResult.
 
     END METHOD.
@@ -204,16 +498,42 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         @param pcReturnType THE CHARACTER value set the ReturnTyp in the signature
         @return Return the manipulated signature
     ------------------------------------------------------------------------------*/
-    METHOD PUBLIC STATIC CHARACTER ShortSignatureParser (pcSignature AS CHARACTER, 
+    METHOD PUBLIC STATIC CHARACTER ShortSignatureParser (pcSignature  AS CHARACTER, 
                                                          pcReturnType AS CHARACTER):
         
-        DEFINE VARIABLE cResult AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE iCount  AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE iIndex  AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE iParamStart  AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE cParamTemp   AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE cParam       AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE cSingleParam AS CHARACTER NO-UNDO.
+        DEFINE VARIABLE cResult      AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE iCount       AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE iIndex       AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE iParamStart  AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE cParamTemp   AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cParam       AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cSingleParam AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cTypes       AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cParameter   AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cEntry       AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE i            AS INTEGER   NO-UNDO .
+
+        ASSIGN iIndex = INDEX (pcSignature, "(":U) . 
+
+        IF iIndex > 0 THEN DO:
+            
+            ASSIGN cTypes     = Consultingwerk.Const:ABL_DATA_TYPES + ",DATASET,TABLE":U
+                   cParameter = SUBSTRING (pcSignature, iIndex) .
+            
+            DO i = 1 TO NUM-ENTRIES (cTypes):
+                    
+                ASSIGN cParameter = REPLACE (cParameter, 
+                                             ":":U + ENTRY (i, cTypes) + ",":U,
+                                             ":":U + ENTRY (i, cTypes) + ",":U).
+                                             
+                ASSIGN cParameter = REPLACE (cParameter, 
+                                             ":":U + ENTRY (i, cTypes) + ")":U,
+                                             ":":U + ENTRY (i, cTypes) + ")":U).
+            END . 
+            
+            ASSIGN SUBSTRING (pcSignature, iIndex) = cParameter . 
+
+        END.        
         
         ASSIGN cResult = REPLACE (pcSignature, "(":U, " (":U)
                cResult = REPLACE (cResult, ",":U, ", ":U)
@@ -240,92 +560,146 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
               
                 ASSIGN cSingleParam = ENTRY (iCount, cParamTemp, ",":U).
                 
-                IF cParam = "System.Object" THEN          
-                    ASSIGN cParam = SUBSTITUTE ("&1, &2":U, cParam, cSingleParam).
+                IF cParam = "System.Object":U THEN          
+                    ASSIGN cParam = SUBSTITUTE ("&1, &2":U, TRIM (cParam), TRIM (cSingleParam)).
                 ELSE 
-                    ASSIGN cParam = SUBSTITUTE ("&1, &2":U, cParam, ENTRY (NUM-ENTRIES (cSingleParam, "."), cSingleParam, ".")).
+                    /* Mike Fechner, Consultingwerk Ltd. 06.02.2013
+                       SMARTDOX-49: Nesting ENTRY in SUBSTITUTE may fail on 10.2B 
+                       http://knowledgebase.progress.com/articles/Article/P138807
+                       http://knowledgebase.progress.com/articles/Article/000035493 */
+                    ASSIGN cEntry = ENTRY (NUM-ENTRIES (cSingleParam, ".":U), cSingleParam, ".":U)
+                           cParam = SUBSTITUTE ("&1, &2":U, TRIM(cParam), TRIM (cEntry)).
                           
             END.
             
             ASSIGN cParam = SUBSTRING (cParam, 2). 
-                  
+            
             ASSIGN cResult = SUBSTRING (cResult, 1, iParamStart)
                    cResult = SUBSTITUTE ("&1&2)":U, cResult, TRIM (cParam))
                    .
-
         END. 
-   
+        
         RETURN cResult.
 
     END METHOD.
     
     /*------------------------------------------------------------------------------
-        Purpose: Parse a longchar and replace values. 
+        Purpose: Format the comment. 
+        Notes:   
+        @param pcComment A longchar value which formated from the GetFormateComment.
+        @return The formated longchar value
+    ------------------------------------------------------------------------------*/
+    METHOD PUBLIC STATIC LONGCHAR CommentFormater (pcComment AS LONGCHAR):
+        
+        DEFINE VARIABLE lcContent AS LONGCHAR NO-UNDO.
+        DEFINE VARIABLE oCommentParser AS ICommentBuilder NO-UNDO.
+                
+        FIX-CODEPAGE (lcContent) = "utf-8":U . 
+        
+        oCommentParser = {Consultingwerk/get-service.i 
+                          Consultingwerk.Studio.ClassDocumentation.ICommentBuilder 
+                          "NEW Consultingwerk.Studio.ClassDocumentation.CommentBuilder ()"} . 
+        
+        IF VALID-OBJECT (oCommentParser) THEN DO:
+            ASSIGN lcContent = oCommentParser:CommentFormater (pcComment).
+        END.
+        
+        ASSIGN lcContent = GenerateCommentLinks (lcContent).  
+        
+        RETURN lcContent.             
+            
+    END.
+    
+    /*------------------------------------------------------------------------------
+        Purpose: Format the Unit comment. 
+        Notes:   
+        @param pcComment A longchar value which formated from the GetFormateComment.
+        @return The formated longchar value
+    ------------------------------------------------------------------------------*/
+    METHOD PUBLIC STATIC LONGCHAR UnitCommentFormater (pcComment AS LONGCHAR):
+        
+        DEFINE VARIABLE lcContent AS LONGCHAR NO-UNDO.
+        DEFINE VARIABLE oCommentParser AS ICommentBuilder NO-UNDO.
+                
+        FIX-CODEPAGE (lcContent) = "utf-8":U . 
+        
+        oCommentParser = {Consultingwerk/get-service.i 
+                          Consultingwerk.Studio.ClassDocumentation.ICommentBuilder 
+                          "NEW Consultingwerk.Studio.ClassDocumentation.CommentBuilder ()"} . 
+        
+        IF VALID-OBJECT (oCommentParser) THEN DO:
+            ASSIGN lcContent = oCommentParser:UnitCommentFormater (pcComment).
+        END.
+        
+        ASSIGN lcContent = GenerateCommentLinks (lcContent).  
+        
+        RETURN lcContent.
+    END.
+    
+     /*------------------------------------------------------------------------------
+        Purpose: Removes all special characters by replacing them with proper XML markup
+        Notes:   
+        @param plcString A longchar value in which to remove/replaced special characters
+        @return The longchar without the removed/replaced special characters
+    ------------------------------------------------------------------------------*/
+    METHOD PUBLIC STATIC LONGCHAR ReplaceSpecialCharacters (plcString AS LONGCHAR):
+        
+        DEFINE VARIABLE cString AS LONGCHAR NO-UNDO.
+        DEFINE VARIABLE iLength AS INTEGER NO-UNDO.
+        DEFINE VARIABLE i       AS INTEGER NO-UNDO INIT 1.
+        DEFINE VARIABLE iValue  AS INTEGER NO-UNDO.
+        
+        FIX-CODEPAGE (cString) = "utf-8":U . 
+        
+        ASSIGN cString = STRING (plcString).
+        
+        DO WHILE i < LENGTH (plcString):
+            
+            i = i + 1 .
+
+            iValue = ASC (STRING (SUBSTRING (cString, i, 1))) .  
+            
+            IF iValue > 128 THEN 
+                cString = REPLACE (cString, CHR (iValue), SUBSTITUTE ("&&#&1;":U, STRING (iValue, "9999":U)) ) .
+        END.
+        
+        ASSIGN cString = REPLACE (cString, "<":U, "&lt;":U)
+               cString = REPLACE (cString, ">":U, "&gt;":U)
+               .
+        
+        RETURN cString.
+        
+    END METHOD .
+    
+    /*------------------------------------------------------------------------------
+        Purpose: Build the comment. 
         Notes:   
         @param pcComment A longchar value which formated from the commentparser.
+        @param eParameterComment The Temptable with the generated Input and return paramters.
         @return The formated longchar value
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC LONGCHAR CommentParser (pcComment AS LONGCHAR, 
                                                  TABLE eParameterComment):
         
-        DEFINE VARIABLE cResult     AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE cResultTemp AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE iCount      AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE lcLine      AS LONGCHAR  NO-UNDO.
-        DEFINE VARIABLE cName       AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE iIndex      AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE cComment    AS LONGCHAR  NO-UNDO.
+        DEFINE VARIABLE lcResult       AS LONGCHAR        NO-UNDO.
+        DEFINE VARIABLE oCommentParser AS ICommentBuilder NO-UNDO.
+        
+        FIX-CODEPAGE (lcResult) = "utf-8":U . 
 
         EMPTY TEMP-TABLE eParameterComment.
-        
-        ParamLoop: 
-        DO iCount = 1 TO NUM-ENTRIES (pcComment, CHR (10)) ON ERROR UNDO, THROW:
 
-            ASSIGN lcLine = TRIM (ENTRY (iCount, pcComment, CHR (10))).
-              
-            IF NOT lcLine BEGINS "@param":U AND 
-               NOT lcLine BEGINS "@return":U AND
-               NOT lcLine BEGINS "/*-":U AND
-               NOT lcLine BEGINS "---":U THEN 
-             
-                ASSIGN cResultTemp = cResultTemp + SUBSTITUTE ("&1&2":U, RIGHT-TRIM (ENTRY (iCount, pcComment, CHR (10))), CHR (10)).
-          
-            ELSE DO:
-                IF lcLine BEGINS "@param":U THEN DO:
+        ASSIGN pcComment = ReplaceSpecialCharacters (pcComment).
         
-                    IF NUM-ENTRIES (lcLine, " ":U) > 1 THEN 
-                        ASSIGN cName = TRIM (STRING (ENTRY (2, lcLine, " ":U))).
-                    ELSE
-                        NEXT ParamLoop.  
-                  
-                    IF Consultingwerk.CharacterType:IsNullOrEmpty (cName) THEN 
-                        NEXT ParamLoop.
-                      
-                    IF CAN-FIND (eParameterComment WHERE eParameterComment.Name = cName) THEN
-                        NEXT ParamLoop.
-    
-                    CREATE eParameterComment.    
-                    ASSIGN iIndex                    = INDEX (lcLine, cName)
-                           cComment                  = TRIM (SUBSTRING (STRING (lcLine), iIndex + LENGTH (cName)))
-                           eParameterComment.Name    = cName
-                           eParameterComment.Comment = cComment
-                           .
-                END.
-                ELSE IF lcLine BEGINS "@return":U THEN DO:
-                    CREATE eParameterComment.
-                    ASSIGN /* Sebastian Düngel, Consultingwerk Ltd. 12.10.2012
-                              @RETURN is not a valid identifier */
-                           eParameterComment.Name = "RETURN":U
-                           iIndex   = INDEX (lcLine, "@return":U)
-                           eParameterComment.Comment = TRIM (SUBSTRING (STRING (lcLine), iIndex + LENGTH ("@return":U)))
-                               .
-                END.
-            END.  
+        oCommentParser = {Consultingwerk/get-service.i 
+                            Consultingwerk.Studio.ClassDocumentation.ICommentBuilder 
+                            "NEW Consultingwerk.Studio.ClassDocumentation.CommentBuilder ()"} .  
+        
+        IF VALID-OBJECT (oCommentParser) THEN DO:
+            oCommentParser:FillDetailParameterTemptable (pcComment, TABLE eParameterComment BY-REFERENCE).
+            ASSIGN lcResult = oCommentParser:ParseComment (pcComment).
         END.
-            
-        ASSIGN cResult = REPLACE (cResultTemp, CHR (10), "<br>":U).
         
-        RETURN cResult.
+        RETURN lcResult.
         
     END METHOD .
     

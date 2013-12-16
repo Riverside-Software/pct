@@ -25,9 +25,10 @@ DEFINE VARIABLE oParamter AS Consultingwerk.Studio.ClassDocumentation.IDocumentW
 /* ***************************  Main Block  *************************** */
 
 oParamter = NEW Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter ().
-ASSIGN oParamter:DocumentationTitle  = "Demo SmartDox":U
+ASSIGN oParamter:DocumentationTitle  = "Demo SmartDox"
        oParamter:TargetDir           = "C:\Work\SmartComponents4NET\Trunk\SmartDoxOSS\Documentation":U
        oParamter:SourceDir           = "C:\Work\SmartComponents4NET\Trunk\SmartDoxOSS\classdoc":U
+/*       oParamter:ResourceDir         = "C:\work\SmartComponents4NET\Trunk\ABL\Consultingwerk\Templates\ClassReference\Resources"*/
        oParamter:TemplateSourceDir   = "C:\Work\SmartComponents4NET\Trunk\SmartDoxOSS\Consultingwerk\Studio\ClassDocumentation\Templates":U
        .
 

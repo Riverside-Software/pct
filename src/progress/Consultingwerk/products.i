@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -59,9 +59,9 @@
    Currently we do expect that in OE11 the test 
    for "{&WINDOW-SYSTEM} would not be sufficient 
    to know if .NET assemblies are accesible. */
-/*&IF "{&WINDOW-SYSTEM}":U BEGINS "MS-WIN":U &THEN*/   
+&IF "{&WINDOW-SYSTEM}":U BEGINS "MS-WIN":U &THEN   
 &GLOBAL-DEFINE DotNetAccessible 
-/*&ENDIF*/
+&ENDIF
 
 /* Include conditional compilation for Infragistics Controls */
 &GLOBAL-DEFINE Infragistics

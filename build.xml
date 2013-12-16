@@ -304,7 +304,7 @@ PCTBuild=${BUILD_NUMBER}
     </fileset>
     <zipfileset src="lib/jcommander-1.30.jar" />
     <zipfileset src="lib/proparse.jar" includes="**/*.class" />
-    <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
+    <zipfileset dir="${src.progress}/Consultingwerk/Templates/ClassReference" prefix="templates" />
     <zipfileset src="lib/parser.jar" includes="**/*.class,**/jaxb.index" />
     <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>

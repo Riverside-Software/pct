@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -33,7 +33,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter
     IMPLEMENTS IDocumentWriterParameter:
         
     /*------------------------------------------------------------------------------
-        Purpose: Proprty flags set the Documenttitle to the HTML-Files.
+        Purpose: Proprty flags set the document title of the HTML-Files.
         Notes:   
     ------------------------------------------------------------------------------*/
     DEFINE PUBLIC PROPERTY DocumentationTitle AS CHARACTER NO-UNDO 
@@ -41,7 +41,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter
     SET. 
 
     /*------------------------------------------------------------------------------
-        Purpose: Property flags set the sourcedirectory, where the HTML-Files are generated.
+        Purpose: Property flags set the source directory, where the HTML-Files are generated.
         Notes:   
     ------------------------------------------------------------------------------*/
     DEFINE PUBLIC PROPERTY SourceDir AS CHARACTER NO-UNDO 
@@ -61,6 +61,22 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter
         Notes:   Detail.template, Index.template, Menu.template
     ------------------------------------------------------------------------------*/
     DEFINE PUBLIC PROPERTY TemplateSourceDir AS CHARACTER NO-UNDO 
+    GET.
+    SET.
+
+    /*------------------------------------------------------------------------------
+        Purpose: Gets and sets the name of the resource directory, which contains image- and js-files.  
+        Notes:
+    ------------------------------------------------------------------------------*/
+    DEFINE PUBLIC PROPERTY ResourceDir AS CHARACTER NO-UNDO 
+    GET.
+    SET.
+    
+    /*------------------------------------------------------------------------------
+        Purpose: Property flag sets and gets how generate the documentlist.
+        Notes:
+    ------------------------------------------------------------------------------*/
+    DEFINE PUBLIC PROPERTY GenerateTreeViewOverview AS LOGICAL NO-UNDO 
     GET.
     SET.
 

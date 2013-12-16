@@ -4,12 +4,19 @@
     
   <target name="test">
       <mkdir dir="doc" />
+      <mkdir dir="doc2" />
       <mkdir dir="html" />
       <ClassDocumentation destDir="doc" dlcHome="${DLC}">
           <fileset dir="src" includes="**/*.cls,**/*.p" />
           <propath>
               <pathelement location="src" />
           </propath>
+      </ClassDocumentation>
+      <ClassDocumentation destDir="doc2" dlcHome="${DLC}">
+        <fileset dir="src" includes="**/*.p" />
+        <propath>
+          <pathelement location="src" />
+        </propath>
       </ClassDocumentation>
       <mkdir dir="profiler" />
       <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html">
