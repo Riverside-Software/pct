@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -38,8 +38,9 @@ DEFINE {&ACCESS} TEMP-TABLE eProperty NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE ePr
     FIELD IsAbstract         AS LOGICAL INIT FALSE 
     FIELD Name               AS CHARACTER 
     FIELD DataType           AS CHARACTER 
-    FIELD PropertyComment    AS CLOB 
+    FIELD PropertyComment    AS CLOB COLUMN-CODEPAGE "UTF-8":U
+    FIELD Inheritance        AS CHARACTER
     FIELD Extent             AS INTEGER 
     INDEX GUID IS UNIQUE GUID
-    INDEX Name Name
+    INDEX Name IS PRIMARY Name
     .

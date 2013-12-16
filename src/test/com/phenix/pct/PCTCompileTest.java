@@ -60,7 +60,10 @@ import static org.testng.Assert.assertFalse;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Class for testing PCTCompile task
@@ -570,4 +573,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(new File("PCTCompile/test33/build2/test3.r").exists());
     }
 
+    // Waiting for you Arno !
+//    @Test(groups= {"all"})
+    public void test34() throws IOException, InvalidRCodeException {
+        configureProject("PCTCompile/test34/build.xml");
+        executeTarget("test");
+        
+        File dbg1 = new File("PCTCompile/test34/debugListing/test1.p.dbg");
+        File dbg2 = new File("PCTCompile/test34/debugListing/foo/bar/test2.p.dbg");
+        File rcode1 = new File("PCTCompile/test34/build/test1.r");
+        File rcode2 = new File("PCTCompile/test34/build/foo/bar/test2.r");
+        assertTrue(dbg1.exists());
+        assertTrue(dbg2.exists());
+        assertTrue(rcode1.exists());
+        assertTrue(rcode2.exists());
+        RCodeInfo r1 = new RCodeInfo(rcode1);
+        RCodeInfo r2 = new RCodeInfo(rcode2);
+        assertEquals(r1.getDebugListingFile(), "debugListing/test1.p.dbg");
+        assertEquals(r2.getDebugListingFile(), "debugListing/foo/bar/test2.p.dbg");
+    }
 }

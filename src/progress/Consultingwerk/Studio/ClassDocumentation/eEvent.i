@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -37,7 +37,8 @@ DEFINE {&ACCESS} TEMP-TABLE eEvent NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eEvent
     FIELD IsAbstract         AS LOGICAL INIT FALSE 
     FIELD EventName          AS CHARACTER 
     FIELD DelegateName       AS CHARACTER 
-    FIELD EventComment       AS CLOB 
+    FIELD EventComment       AS CLOB COLUMN-CODEPAGE "UTF-8":U
+    FIELD Inheritance        AS CHARACTER 
     INDEX GUID IS UNIQUE GUID
     INDEX Signature IS PRIMARY Signature
     INDEX EventName EventName

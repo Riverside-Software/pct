@@ -19,7 +19,12 @@ package eu.rssw.pct.oedoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.apache.tools.ant.BuildException;
 
@@ -83,18 +88,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             int tempDirNum = PCT.nextRandomInt();
             templateDir = new File(System.getProperty("java.io.tmpdir"), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
             templateDir.mkdirs();
+            new File(templateDir, "Resources").mkdir();
             try {
-                copyStreamFromJar("/templates/Document.template", new File(templateDir, "Document.template"));
-                copyStreamFromJar("/templates/DocumentDetails.template", new File(templateDir,
-                        "DocumentDetails.template"));
-                copyStreamFromJar("/templates/DocumentDetailsParameter.template", new File(templateDir,
-                        "DocumentDetailsParameter.template"));
-                copyStreamFromJar("/templates/DocumentList.template", new File(templateDir, "DocumentList.template"));
-                copyStreamFromJar("/templates/DocumentListItem.template", new File(templateDir,
-                        "DocumentListItem.template"));
-                copyStreamFromJar("/templates/DocumentOverview.template", new File(templateDir,
-                        "DocumentOverview.template"));
-                copyStreamFromJar("/templates/Index.template", new File(templateDir, "Index.template"));
+                extractTemplateDirectory(templateDir);
             } catch (IOException caught) {
                 throw new BuildException(caught);
             }
@@ -112,5 +108,24 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             cleanup();
             throw be;
         }
+    }
+
+    private void extractTemplateDirectory(File outDir) throws IOException {
+        URL url = getClass().getClassLoader().getResource(
+                getClass().getName().replace(".", "/") + ".class");
+        String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
+        JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+
+        Enumeration<JarEntry> entries = jar.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            if (entry.isDirectory())
+                continue;
+            if (entry.getName().startsWith("templates/")) {
+                copyStreamFromJar("/" + entry.getName(), new File(outDir, entry.getName()
+                        .substring(10)));
+            }
+        }
+        jar.close();
     }
 }

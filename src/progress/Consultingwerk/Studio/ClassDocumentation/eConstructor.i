@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -33,9 +33,8 @@ DEFINE {&ACCESS} TEMP-TABLE eConstructor NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE 
     FIELD GUID               AS CHARACTER
     FIELD Signature          AS CHARACTER 
     FIELD Modifier           AS CHARACTER 
-    FIELD IsStatic           AS LOGICAL INIT FALSE 
-    FIELD ConstructorComment AS CLOB 
-    INDEX GUID IS UNIQUE PRIMARY GUID
-    
+    FIELD ConstructorComment AS CLOB COLUMN-CODEPAGE "UTF-8":U 
+    INDEX GUID IS UNIQUE GUID
+    INDEX Signature IS PRIMARY Signature 
     .
     

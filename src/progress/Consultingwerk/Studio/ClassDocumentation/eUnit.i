@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2012 Consultingwerk Ltd.                                 *
+ * Copyright 2013 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -37,6 +37,6 @@ DEFINE {&ACCESS} TEMP-TABLE eUnit NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eUnitBe
     FIELD IsAbstract   AS LOGICAL INIT FALSE 
     FIELD IsFinal      AS LOGICAL INIT FALSE 
     FIELD IsInterface  AS LOGICAL INIT FALSE 
-    FIELD ClassComment AS CLOB 
+    FIELD ClassComment AS CLOB COLUMN-CODEPAGE "UTF-8":U
     INDEX GUID IS UNIQUE PRIMARY GUID
     .
