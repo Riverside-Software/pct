@@ -1,9 +1,9 @@
 <tr>
     <td class="document_detail_parameter">
-        <i>@PARAMETERNAME@</i>
+        <i><b>@PARAMETERNAME@</b></i>
     </td>
     <td>
-       @PARAMETERFULLDATATYPE@
+      @PARAMETERFULLDATATYPE@
     </td>
     <td>
     </td>
