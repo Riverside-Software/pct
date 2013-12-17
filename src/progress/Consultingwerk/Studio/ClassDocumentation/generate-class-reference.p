@@ -53,6 +53,7 @@ DEFINE VARIABLE cSourceDir                   AS CHARACTER                       
 DEFINE VARIABLE cTemplateSourceDir           AS CHARACTER                                                         NO-UNDO .
 DEFINE VARIABLE cResourceDir                 AS CHARACTER                                                         NO-UNDO.
 DEFINE VARIABLE cServices                    AS CHARACTER                                                         NO-UNDO .
+DEFINE VARIABLE cTitle                       AS CHARACTER                                                         NO-UNDO .
 DEFINE VARIABLE lPreloadClasses              AS LOGICAL                                                           NO-UNDO .
 DEFINE VARIABLE lGenerateTreeViewOverview    AS LOGICAL                                                           NO-UNDO .
 
@@ -68,6 +69,7 @@ ASSIGN cTargetDir                = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-P
        cResourceDir              = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, INPUT "ResourceDir":U)
        cServices                 = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, INPUT "Services":U)
        lGenerateTreeViewOverview = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, INPUT "GenerateTreeViewOverview":U)
+       cTitle                    = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, INPUT "Title":U)
        lPreloadClasses           = DataTypeHelper:ToLogical (DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, INPUT "PreloadClasses":U))
        
        ClassDocumentationHelper:PctLibrary = SOURCE-PROCEDURE 
@@ -89,7 +91,7 @@ IF cServices > "":U THEN DO ON ERROR UNDO, THROW:
     DELETE OBJECT oServiceLoader .     
 END.
 
-ASSIGN oParameter:DocumentationTitle       = "SmartComponent Library":U
+ASSIGN oParameter:DocumentationTitle       = cTitle
        oParameter:GenerateTreeViewOverview = lGenerateTreeViewOverview 
        .
 
