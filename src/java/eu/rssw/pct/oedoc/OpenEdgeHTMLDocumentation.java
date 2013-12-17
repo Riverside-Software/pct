@@ -103,7 +103,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             int tempDirNum = PCT.nextRandomInt();
             templateDir = new File(System.getProperty("java.io.tmpdir"), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
             templateDir.mkdirs();
-            new File(destDir, "Resources").mkdir();
+            new File(destDir, "resources").mkdir();
             try {
                 extractTemplateDirectory(templateDir, destDir);
             } catch (IOException caught) {
@@ -146,7 +146,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
                 copyStreamFromJar("/" + entry.getName(), new File(templateDir, entry.getName()
                         .substring(10)));
             }
-            if (entry.getName().startsWith("templates/Resources")) {
+            if (entry.getName().startsWith("templates/resources")) {
                 System.out.println("Copie resource " + entry.getName());
                 copyStreamFromJar("/" + entry.getName(), new File(outputDir, entry.getName()
                         .substring(10)));
