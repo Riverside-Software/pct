@@ -35,6 +35,6 @@
     </HEAD>
     <frameset cols="400,*">
     <frame src="DocumentList.html" name="DocumentList">
-    <frame src="resources/Start.html" name="DocumentDetails" onload="CheckFrame(); return true;">
+    <frame src="resources/start.htm" name="DocumentDetails" onload="CheckFrame(); return true;">
     </frameset> 
 </HTML>
