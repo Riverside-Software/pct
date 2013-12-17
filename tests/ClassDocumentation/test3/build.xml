@@ -5,6 +5,7 @@
   <target name="test">
       <mkdir dir="doc" />
       <mkdir dir="html" />
+      <mkdir dir="html/resources" />
       <ClassDocumentation destDir="doc" dlcHome="${DLC}">
           <fileset dir="src" includes="**/*.cls" />
           <propath>
@@ -12,7 +13,9 @@
           </propath>
       </ClassDocumentation>
       <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" title="Data Administration reference" templateDir="templates" />
-      <copy dir="templates/resources" todir="html" /> 
+      <copy todir="html/resources">
+        <fileset dir="templates/resources" />
+      </copy> 
   </target>
   
 </project>
