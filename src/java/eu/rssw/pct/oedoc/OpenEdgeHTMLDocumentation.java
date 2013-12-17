@@ -43,6 +43,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
     private File sourceDir = null;
     private File templateDir = null;
     private File services = null;
+    private String title = "Class reference";
     private boolean treeViewOverview = true;
     private boolean preloadClasses = true;
 
@@ -77,6 +78,10 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
     public void setPreloadClasses(boolean preloadClasses) {
         this.preloadClasses = preloadClasses;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -117,6 +122,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             addParameter(new RunParameter("TargetDir", destDir.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("SourceDir", sourceDir.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("TemplateSourceDir", templateDir.getAbsolutePath())); //$NON-NLS-1$
+            addParameter(new RunParameter("Title", title)); //$NON-NLS-1$
             addParameter(new RunParameter(
                     "GenerateTreeViewOverview", Boolean.toString(treeViewOverview))); //$NON-NLS-1$
             addParameter(new RunParameter("PreloadClasses", Boolean.toString(preloadClasses))); //$NON-NLS-1$
