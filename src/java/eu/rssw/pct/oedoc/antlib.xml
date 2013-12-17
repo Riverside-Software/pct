@@ -2,4 +2,5 @@
 <antlib>
   <typedef name="classdocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeDocumentation" />
   <typedef name="htmldocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeHTMLDocumentation" />
+  <typedef name="xmldocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeXMLDocumentation" />
 </antlib>

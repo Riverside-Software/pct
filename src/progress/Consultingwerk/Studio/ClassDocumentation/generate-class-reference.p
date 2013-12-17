@@ -71,12 +71,12 @@ ASSIGN cTargetDir                = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-P
        ClassDocumentationHelper:PctLibrary = SOURCE-PROCEDURE 
        .
 
-MESSAGE "Source Directory:":U cSourceDir .
-MESSAGE "Target Directory:":U cTargetDir .
-MESSAGE "Template Source: ":U cTemplateSourceDir . 
-MESSAGE "Resource Source: ":U cResourceDir . 
-MESSAGE "Custom Services: ":U cServices . 
-MESSAGE "GenerateTreeViewOverview: ":U lGenerateTreeViewOverview . 
+IF pctVerbose THEN MESSAGE "Source Directory:":U cSourceDir.
+IF pctVerbose THEN MESSAGE "Target Directory:":U cTargetDir.
+IF pctVerbose THEN MESSAGE "Template Source: ":U cTemplateSourceDir. 
+IF pctVerbose THEN MESSAGE "Resource Source: ":U cResourceDir. 
+IF pctVerbose THEN MESSAGE "Custom Services: ":U cServices. 
+IF pctVerbose THEN MESSAGE "GenerateTreeViewOverview: ":U lGenerateTreeViewOverview. 
 
 oParameter = NEW Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter ().
 

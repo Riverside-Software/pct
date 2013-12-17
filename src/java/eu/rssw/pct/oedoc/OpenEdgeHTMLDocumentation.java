@@ -42,6 +42,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
     private File destDir = null;
     private File sourceDir = null;
     private File templateDir = null;
+    private File services = null;
+    private boolean treeViewOverview = true;
+    private boolean preloadClasses = true;
 
     public OpenEdgeHTMLDocumentation() {
         super();
@@ -62,6 +65,18 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
     public void setTemplateDir(File templateDir) {
         this.templateDir = templateDir;
+    }
+
+    public void setServices(File services) {
+        this.services = services;
+    }
+
+    public void setTreeViewOverview(boolean treeViewOverview) {
+        this.treeViewOverview = treeViewOverview;
+    }
+
+    public void setPreloadClasses(boolean preloadClasses) {
+        this.preloadClasses = preloadClasses;
     }
 
     /**
@@ -88,9 +103,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             int tempDirNum = PCT.nextRandomInt();
             templateDir = new File(System.getProperty("java.io.tmpdir"), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
             templateDir.mkdirs();
-            new File(templateDir, "Resources").mkdir();
+            new File(destDir, "Resources").mkdir();
             try {
-                extractTemplateDirectory(templateDir);
+                extractTemplateDirectory(templateDir, destDir);
             } catch (IOException caught) {
                 throw new BuildException(caught);
             }
@@ -98,10 +113,16 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
         log("Generating HTML documentation for " + sourceDir.getAbsolutePath());
         try {
-            setProcedure("ConsultingWerk/studio/generate-class-reference.p"); //$NON-NLS-1$
-            addParameter(new RunParameter("TargetDir", destDir.getAbsolutePath()));
-            addParameter(new RunParameter("SourceDir", sourceDir.getAbsolutePath()));
-            addParameter(new RunParameter("TemplateSourceDir", templateDir.getAbsolutePath()));
+            setProcedure("ConsultingWerk/Studio/ClassDocumentation/generate-class-reference.p"); //$NON-NLS-1$
+            addParameter(new RunParameter("TargetDir", destDir.getAbsolutePath())); //$NON-NLS-1$
+            addParameter(new RunParameter("SourceDir", sourceDir.getAbsolutePath())); //$NON-NLS-1$
+            addParameter(new RunParameter("TemplateSourceDir", templateDir.getAbsolutePath())); //$NON-NLS-1$
+            addParameter(new RunParameter(
+                    "GenerateTreeViewOverview", Boolean.toString(treeViewOverview))); //$NON-NLS-1$
+            addParameter(new RunParameter("PreloadClasses", Boolean.toString(preloadClasses))); //$NON-NLS-1$
+            if (services != null) {
+                addParameter(new RunParameter("Services", services.getAbsolutePath())); //$NON-NLS-1$
+            }
             super.execute();
             cleanup();
         } catch (BuildException be) {
@@ -110,7 +131,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         }
     }
 
-    private void extractTemplateDirectory(File outDir) throws IOException {
+    private void extractTemplateDirectory(File templateDir, File outputDir) throws IOException {
         URL url = getClass().getClassLoader().getResource(
                 getClass().getName().replace(".", "/") + ".class");
         String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
@@ -121,8 +142,13 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             JarEntry entry = entries.nextElement();
             if (entry.isDirectory())
                 continue;
-            if (entry.getName().startsWith("templates/")) {
-                copyStreamFromJar("/" + entry.getName(), new File(outDir, entry.getName()
+            if (entry.getName().startsWith("templates/") && entry.getName().endsWith(".template")) {
+                copyStreamFromJar("/" + entry.getName(), new File(templateDir, entry.getName()
+                        .substring(10)));
+            }
+            if (entry.getName().startsWith("templates/Resources")) {
+                System.out.println("Copie resource " + entry.getName());
+                copyStreamFromJar("/" + entry.getName(), new File(outputDir, entry.getName()
                         .substring(10)));
             }
         }

@@ -46,16 +46,17 @@ DEFINE VARIABLE lVerbose           AS LOGICAL                                   
 
 DEFINE VARIABLE i                  AS INTEGER                                             NO-UNDO.
 
+DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO
+.
 /* ***************************  Main Block  *************************** */
 
 SESSION:ERROR-STACK-TRACE = TRUE . 
 
 ASSIGN cTargetFile        = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, "TargetFile":U)
-       cSourceDir         = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, "SourceDir":U)
-       lVerbose           = (DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, "Verbose":U) = "yes":U).
+       cSourceDir         = DYNAMIC-FUNCTION("getParameter":U IN SOURCE-PROCEDURE, "SourceDir":U).
 
-MESSAGE "Source Directory:":U cSourceDir .
-MESSAGE "Target File:     ":U cTargetFile .
+IF pctVerbose THEN MESSAGE "Source Directory:":U cSourceDir .
+IF pctVerbose THEN MESSAGE "Target File:     ":U cTargetFile .
 
 oParameter = NEW Consultingwerk.Studio.SmartDox.SmartDoxParameter ().
 oParameter:TargetFile = cTargetFile .
@@ -69,7 +70,7 @@ ELSE
                                                                               "Consultingwerk.Studio.ClassDocumentation.DocumentWriterParameter":U) .
 
 oDoc = NEW Consultingwerk.Studio.SmartDox.ClassReferenceWriter ().
-oDoc:Verbose = lVerbose . 
+oDoc:Verbose = pctVerbose . 
 oDoc:GenerateClassReference (oParameter).
 
 RETURN "0":U . 
