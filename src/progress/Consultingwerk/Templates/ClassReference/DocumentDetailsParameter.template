@@ -1,0 +1,17 @@
+<tr>
+    <td class="document_detail_parameter">
+        <i>@PARAMETERNAME@</i>
+    </td>
+    <td>
+       @PARAMETERFULLDATATYPE@
+    </td>
+    <td>
+    </td>
+</tr>
+<tr>
+    <td class="document_detail_parameter">
+    </td>
+    <td>
+        @PARAMETERCOMMENT@
+    </td>
+</tr>

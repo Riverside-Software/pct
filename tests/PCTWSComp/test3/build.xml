@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTWSComp-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTWSComp destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.html" />
+      <propath>
+        <pathelement location="${DLC}/src" />
+      </propath>
+    </PCTWSComp>
+  </target>
+
+  <target name="test2">
+    <PCTWSComp destDir="build" dlcHome="${DLC}" webObject="false">
+      <fileset dir="src" includes="*.html" />
+      <propath>
+        <pathelement location="${DLC}/src" />
+      </propath>
+    </PCTWSComp>
+  </target>
+
+</project>

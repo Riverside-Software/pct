@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+/**********************************************************************
+ * Copyright (C) 2006-2013 by Consultingwerk Ltd. ("CW") -            *
+ * www.consultingwerk.de and other contributors as listed             *
+ * below.  All Rights Reserved.                                       *
+ *                                                                    *
+ *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
+ *   KIND, either express or implied.                                 *
+ *                                                                    *
+ *  Contributors:                                                     *
+ *  Generated   : @TIMESTAMP@                                                                   *
+ **********************************************************************/
+-->
+<HTML>
+    <HEAD>
+        <meta http-equiv="expires" content="86400">
+        <TITLE>@PAGETITLE@</TITLE>
+        <link rel="stylesheet" type="text/css" href="resources/stylesheet.css" title="Style">
+        <SCRIPT src="resources/jquery.js"></SCRIPT>
+        <SCRIPT src="resources/functions.js"></SCRIPT>
+        <SCRIPT src="resources/frameload.js"></SCRIPT>
+        <!-- Browser Switch -->
+        <!--[if lt IE 8]>
+            <!-- Smaller than IE 8 -->
+            <style type="text/css">
+                .HeightFixIE { 
+                    height: 23px !important;
+                }
+            </style>
+        <![endif]-->
+        <!--[if IE 8]>
+            <!-- Equal IE 8 -->
+            <style type="text/css">
+                .HeightFixIE { 
+                    height: 20px !important;
+                }
+            </style>
+        <![endif]-->
+    </HEAD>
+<BODY onload="onLoad()">
+    <table class="header_table">
+        <tbody>
+        <tr>
+            <td>
+            	<div style="float:left">
+            	    <table border="0">
+            	       <tbody style="vertical-align: top">
+                	        <tr>
+                	            <td>
+                	                <span class="span_namespace">Namespace:</span>   
+                	            </td>
+                	            <td>
+                	                <span class="span_packagename"><a href="@PACKAGENAME@.package.html">@PACKAGENAME@<a></span>
+                	            </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="span_pagetype">@PAGETYPE@&nbsp;</span>
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <span class="span_classname">@CLASSNAME@</span>
+                                            </td>
+                                            <td>
+                                                <span class="span_class_final">(Final)</span> 
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="span_parentclass">Parent classes:</span>   
+                                </td>
+                                <td class="span_parentclass">
+                                    @PARENTCLASSES@
+                                </td>
+                            </tr>
+                            @INHERITSTAGOPEN@
+                            <tr>
+                                <td>
+                                    <span class="span_inherits">Inherits:</span>
+                                </td>
+                                <td  style="width: 1000px">
+                                    <span class="span_inherits">@INHERITS@</span>
+                                </td>
+                            </tr>
+                            @INHERITSTAGCLOSE@
+                            @INTERFACECOMMENTTAGOPEN@
+                            <tr>
+                                <td>
+                                    <span class="span_implements">Implements:</span> 
+                                </td>
+                                <td style="width: 1000px">
+                                    <span class="span_implements">@INTERFACELINKS@</span> 
+                                </td>
+                            </tr>
+                            @INTERFACECOMMENTTAGCLOSE@
+                        </tbody>
+                    </table>
+                	<br>
+                	<span style="color:green">
+                	@UNITHEADER@
+                	</span>
+                	<br>
+                </div>
+            </td>
+            <td>
+                <div style="float:right">
+                	<div>
+                		<a href="http://www.consultingwerk.de/" target="_blank">
+                			<img src="resources/logo.jpg" alt="" height="60" width="300">
+                		</a>
+                	</div>
+                	<div>
+                		<!--<script src="//www.gmodules.com/ig/ifr?url=http://www.google.com/cse/api/006321548785457822536/cse/-ly1h5ba_uu/gadget&amp;synd=open&amp;w=300&amp;h=75&amp;title=Consultingwerk+Class+Reference+Search&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"></script><style>table.gadget{background-position:0%;background:transparent none;border-collapse:collapse;border:0;clear:none;float:none;font-family:arial,sans-serif;font-style:normal;font-variant:normal;height:auto;letter-spacing:normal;line-height:normal;margin:0;padding:0;text-indent:0;text-transform:none;top:auto;vertical-align:middle;white-space:normal;width:auto;word-spacing:normal;}table.gadget span.title a:hover,table.gadget span.title a:visited,table.gadget span.title a:active,table.gadget span.title{font-size:12px;color:#0000cc}table.gadget span.powered a:hover,table.gadget span.powered a:visited,table.gadget span.powered a:active,table.gadget span.powered{font-size:10px;color:#0000cc}</style>-->
+                		<table class="gadget" cellspacing="0" cellpadding="0" width="300">
+                			<tbody>
+                				<tr>
+                					<td colspan="2" style="vertical-align:middle;text-align:center;width:100%;height:28px">
+                						<span class="title">
+                							<a href="http://www.google.com/cse/home?cx=006321548785457822536%3A-ly1h5ba_uu" target="_top">Consultingwerk Class Reference Search</a>
+                						</span>
+                					</td>
+                				</tr>
+                				<tr>
+                					<td colspan="2">
+                					</td>
+                				</tr>
+                				<tr>
+            	    				<td colspan="2"><div style="background:white;padding:3px; border:1px solid #999999;">
+            	    					<iframe id="1484431868" name="1484431868" src="http://www-open-opensocial.googleusercontent.com/gadgets/ifr?url=http%3A%2F%2Fwww.google.com%2Fcse%2Fapi%2F006321548785457822536%2Fcse%2F-ly1h5ba_uu%2Fgadget&amp;container=open&amp;view=home&amp;lang=all&amp;country=ALL&amp;debug=0&amp;nocache=0&amp;sanitize=0&amp;v=c85b4059ba47df0a&amp;source=http%3A%2F%2Fwww.consultingwerk.de%2Freference%2Fsmartcomponent_library%2FConsultingwerk%2FCancelableEventArgs.cls.html&amp;parent=http%3A%2F%2Fwww.consultingwerk.de%2Freference%2Fsmartcomponent_library%2FConsultingwerk%2FCancelableEventArgs.cls.html&amp;libs=core%3Acore.io%3Arpc#st=%25st%25&amp;rpctoken=1484431868" width="300" height="75" style="display: block; height: 68px;" frameborder="0" scrolling="no"></iframe>
+            	    					</div>
+            	    				</td>
+                				</tr>
+                				<tr>
+            	    				<td style="text-align:left;vertical-align:middle;height:28px;">
+            	    					<a href="http://fusion.google.com/ig/add?synd=open&amp;source=ggyp&amp;moduleurl=http://www.google.com/cse/api/006321548785457822536/cse/-ly1h5ba_uu/gadget" target="_top">
+            	    					<img style="border:0;" src="http://www.gmodules.com/ig/images/plus_google.gif"></a></td><td style="text-align:right;vertical-align:middle;height:28px;"><span class="powered"><a href="http://www.google.com/webmasters/gadgets.html" target="_top">Gadgets</a> powered by Google</span>
+            	    				</td>
+                				</tr>
+                			</tbody>
+                		</table>
+                		<br>
+                		<br>
+                	</div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    @METHODCOMMENTTAGOPEN@
+    <br>
+    <br>
+    <div class="TableHeadingColor">
+        <span id="method_summary" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Method Summary</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_summary method_summary">
+        <tbody style="vertical-align: top">
+            <tr class="TableSubHeadingColor">
+                <th align="left"></th>
+                <th align="left">Options</th>
+                <th align="left">Name</th>
+                <th align="left">Purpose</th>
+            </tr>
+            @OVERVIEWMETHODS@    
+        </tbody>
+    </table>
+    @METHODCOMMENTTAGCLOSE@
+    @CONSTRUCTORCOMMENTTAGOPEN@
+    <br>
+    <div class="TableHeadingColor">
+        <span id="constructor_summary" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Constructor Summary</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_summary constructor_summary">
+        <tbody style="vertical-align: top">
+            <tr class="TableSubHeadingColor">
+                <th align="left"></th>
+                <th align="left">Options</th>
+                <th align="left">Name</th>
+                <th align="left">Purpose</th>
+            </tr>
+            @OVERVIEWCONSTRUCTORS@    
+        </tbody>
+    </table>
+    @CONSTRUCTORCOMMENTTAGCLOSE@
+    @EVENTCOMMENTTAGOPEN@
+    <br>
+    <div class="TableHeadingColor">
+        <span id="event_summary" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Event Summary</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_summary event_summary">
+        <tbody style="vertical-align: top">
+            <tr class="TableSubHeadingColor">
+                <th align="left"></th>
+                <th align="left">Options</th>
+                <th align="left">Name</th>
+                <th align="left">Purpose</th>
+            </tr>
+            @OVERVIEWEVENTS@    
+        </tbody>
+    </table>
+    @EVENTCOMMENTTAGCLOSE@
+    @PROPERTYCOMMENTTAGOPEN@
+    <br>
+    <div class="TableHeadingColor">
+        <span id="property_summary" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Property Summary</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_summary property_summary">
+        <tbody style="vertical-align: top">
+            <tr class="TableSubHeadingColor">
+                <th align="left"></th>
+                <th align="left">Options</th>
+                <th align="left">Name</th>
+                <th align="left">Purpose</th>
+            </tr>
+            @OVERVIEWPROPERTIES@    
+        </tbody>
+    </table>
+    @PROPERTYCOMMENTTAGCLOSE@
+    <br>
+    <br>
+    @DETAILMETHODCOMMENTTAGOPEN@
+    <div class="TableHeadingColor cell">
+        <span id="method_detail" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Method Detail</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_details method_detail">
+        <tbody style="vertical-align: top">
+            @DETAILMETHODS@
+        </tbody>
+    </table>
+    <br>
+    <br>
+    @DETAILMETHODCOMMENTTAGCLOSE@
+    @DETAILCONSTRUCTORCOMMENTTAGOPEN@
+    <div class="TableHeadingColor cell">
+        <span id="constructor_detail" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Constructor Detail</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_details constructor_detail">
+        <tbody style="vertical-align: top">
+            @DETAILCONSTRUCTORS@
+        </tbody>
+    </table>
+    <br>
+    <br>
+    @DETAILCONSTRUCTORCOMMENTTAGCLOSE@
+    @DETAILEVENTCOMMENTTAGOPEN@
+    <div class="TableHeadingColor cell">
+        <span id="event_detail" class="expand_arrow expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Event Detail</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content table_content_details event_detail">
+        <tbody style="vertical-align: top">
+            @DETAILEVENTS@
+        </tbody>
+    </table>
+    <br>
+    <br>
+    @DETAILEVENTCOMMENTTAGCLOSE@
+    @DETAILPROPERTYCOMMENTTAGOPEN@
+    <div class="TableHeadingColor cell">
+        <span id="property_detail" class="expand_arrow table_content_details expandButtonShow HeightFixIE">
+        </span>
+        <span>
+            <font size="+2">
+                <b>Property Detail</b>
+            </font>
+        </span>
+    </div>
+    <table border="0" class="table_content property_detail">
+        <tbody style="vertical-align: top">
+            @DETAILPROPERTIES@
+        </tbody>
+    </table>
+    <br>
+    <br>
+    @DETAILPROPERTYCOMMENTTAGCLOSE@
+    
+    <font class="footer">&copy;2006-2013 Consultingwerk Ltd.</font>
+	&nbsp; &nbsp; &nbsp; &nbsp; 
+	<a href="mailto:info@consultingwerk.de" class="footer_link">info@consultingwerk.de</a>
+	&nbsp;
+	<font color="#B8B088"> &nbsp; &nbsp; &nbsp; <a href="http://www.consultingwerk.de" class="footer_link" target="blank">http://www.consultingwerk.de &nbsp; &nbsp;</a></font>
+    &nbsp;
+    <font class="footer_timestamp">@TIMESTAMP@</font>
+    </BODY>
+</HTML>

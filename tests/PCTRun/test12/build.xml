@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test12">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" numsep="44" numdec="46" cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" numsep="46" numdec="44" cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" numsep="." numdec="," cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+  <target name="test4">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" numsep="," numdec="." cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+
+</project>

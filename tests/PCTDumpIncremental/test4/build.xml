@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="PCTDumpIncremental-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <PCTCreateBase dbName="test1" destDir="." dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateBase dbName="test2" destDir="." dlcHome="${DLC}" schemaFile="schema2.df" />
+  </target>
+
+  <target name="test">
+    <mkdir dir="incr" />
+    <mkdir dir="profiler" />
+    <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}">
+  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <PCTConnection dbName="test1" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </PCTDumpIncremental>
+    <PCTDumpIncremental destFile="incr/incremental2.df" dlcHome="${DLC}" renameFile="rename.txt">
+  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <PCTConnection dbName="test1" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </PCTDumpIncremental>
+  </target>
+
+</project>

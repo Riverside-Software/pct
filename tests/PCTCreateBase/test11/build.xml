@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test11">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="dir with spaces" />
+    <PCTCreateBase dbName="test" destDir="dir with spaces" dlcHome="${DLC}" schemaFile="schema1.df" />
+  </target>
+
+  <target name="test2">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <PCTConnection dbName="test" dbDir="dir with spaces" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>

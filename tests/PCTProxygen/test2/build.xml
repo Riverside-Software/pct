@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="PCTProxygen-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="prepare">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="test.p" />
+    </PCTCompile>
+  </target>
+
+  <target name="test1">
+    <mkdir dir="pxg" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" keepFiles="false" workingDirectory="." />
+  </target>
+
+  <target name="test2">
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" keepFiles="true" workingDirectory="." />
+  </target>
+</project>

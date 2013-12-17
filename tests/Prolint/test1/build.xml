@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="Prolint-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <Prolint dlcHome="${DLC}" />
+  </target>
+
+</project>

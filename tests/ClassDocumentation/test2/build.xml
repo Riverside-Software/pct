@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="ClassDocumentation-test2" xmlns:extra="antlib:eu/rssw/pct/oedoc" >
+
+  <target name="test">
+      <mkdir dir="doc" />
+      <extra:classdocumentation destDir="doc" dlcHome="${DLC}">
+          <fileset dir="src" includes="**/*.cls,**/*.p" />
+          <propath>
+              <pathelement location="src" />
+          </propath>
+      </extra:classdocumentation>
+  </target>
+  
+</project>

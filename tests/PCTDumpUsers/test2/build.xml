@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTDumpUsers-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTDumpUsers dlcHome="${DLC}" destFile="foo/_user.d" />
+  </target>
+
+</project>

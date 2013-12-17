@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test13">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test3" destDir="db" dlcHome="${DLC}" newInstance="true" />
+    <PCTCreateBase dbName="test4" destDir="db" dlcHome="${DLC}" newInstance="true" />
+  </target>
+
+  <target name="verify">
+    <PCTRun procedure="src/verify.p" dlcHome="${DLC}">
+      <DBConnection dbName="test1" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test2" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test3" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test4" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+  
+</project>

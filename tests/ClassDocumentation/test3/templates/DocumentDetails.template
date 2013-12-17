@@ -1,0 +1,36 @@
+<tr>
+    <td>
+        <div style="border: solid 1px gray">
+            <table border="0" style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="background-color:gray">
+                        <span style="font-weight:bold"> @NAME@ </span>
+                    </td>
+                     <td style="background-color:gray; width: 40px">
+                        <a name="@GUID@" href="#Top">Top</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @COMMENT@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width:100%">
+                        @PARAMETERCOMMENTTAGOPEN@
+                            <tr>
+                                <td colspan="2">
+                                    <b>Parameters</b>
+                                </td>
+                            </tr>
+                         @PARAMETERCOMMENTTAGCLOSED@
+                            @PARAMETERS@
+                        </table>
+                    </td>
+                <tr>
+            </table>
+        </div>
+        <br>
+    </td>
+</tr>

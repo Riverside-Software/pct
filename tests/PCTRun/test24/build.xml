@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test24">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <propath>
+        <pathelement location="dir~name" />
+      </propath>
+    </PCTRun>
+  </target>
+
+</project>

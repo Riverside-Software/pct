@@ -1,0 +1,2 @@
+FIND FIRST Tab2.
+DISP Tab2.Fld1.
