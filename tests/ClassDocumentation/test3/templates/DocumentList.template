@@ -1,13 +1,38 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+/**********************************************************************
+ * Copyright (C) 2006-2013 by Consultingwerk Ltd. ("CW") -            *
+ * www.consultingwerk.de and other contributors as listed             *
+ * below.  All Rights Reserved.                                       *
+ *                                                                    *
+ *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
+ *   KIND, either express or implied.                                 *
+ *                                                                    *
+ *  Contributors:                                                     *
+ *  Generated   : @TIMESTAMP@                                                                  *
+ **********************************************************************/
+-->
 <HTML>
     <HEAD>
-        <meta http-equiv="expires" content="0">
+        <meta http-equiv="expires" content="86400">
         <TITLE>@PAGETITLE@</TITLE>
+        <link rel="stylesheet" type="text/css" href="resources/stylesheet.css" title="Style">
+        <SCRIPT src="resources/jquery.js"></SCRIPT>
+        <SCRIPT src="resources/functions.js"></SCRIPT>
     </HEAD>
-<BODY>
-    <table border="0" style="width:100%; border-collapse:collapse;">
-        <caption style="font-size:22pt; font-weight: bold; text-align:left; background-color:#C6E2FF; border: solid 1px gray">Index</caption>
-        @CONTENT@
-    </table>
-</BODY>
+	<BODY onload="onLoad()">
+    	<table border="0">
+        	<tbody>
+				<tr>
+            		<td>
+                		<p>Search: <input id="treesearch" type="text" size="30" maxlength="100"></p>
+            		</td>
+            		<td align="center" valign="middle">
+                		<div id="treesearchclear" style="background-color: transparent;"></div>
+            		</td>
+            	</tr>
+    		</tbody>
+		</table>
+		@CONTENT@
+	</BODY>
 </HTML>

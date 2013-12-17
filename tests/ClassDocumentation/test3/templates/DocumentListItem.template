@@ -1,5 +1,5 @@
 <tr>
-    <td style="border:solid 1px gray;">
-        <a href="@HREF@" target="DocumentDetails">@CLASSNAME@</a>
+    <td class="list_item">
+        <a href="@HREF@" class="@PAGETYPE@" target="DocumentDetails">@CLASSNAME@</a>
     </td>
 </tr>

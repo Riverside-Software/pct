@@ -1,11 +1,15 @@
-<tr>
-    <td style="border:solid 1px gray; width:10px">
-        @SHORTMODIFIER@
-    </td>
-    <td style="border:solid 1px gray; width:30%">
-        <a href="@GUID@">@SHORTSIGNATURE@</a>
-    </td>
-    <td style="border:solid 1px gray;">
-        @PURPOSE@
-    </td>
+<tr class="table_content overview_row">
+  <td align="left" valign="top" class="img_col cell cellleft @STATIC@">
+  </td>
+  <td align="left" valign="top" class="option_col cell">
+    <font>@SHORTMODIFIER@</font>
+  </td>
+  <td class="signature_col cell">
+    <font>
+        @SHORTSIGNATURE@
+    </font>
+  </td>
+  <td class="cell">
+     @PURPOSE@ <br> <i> @INHERITANCE@ </i>
+  </td>
 </tr>

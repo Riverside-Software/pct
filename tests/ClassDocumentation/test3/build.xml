@@ -11,7 +11,8 @@
               <pathelement location="src" />
           </propath>
       </ClassDocumentation>
-      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" templateDir="templates" />
+      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" title="Data Administration reference" templateDir="templates" />
+      <copy dir="templates/resources" todir="html" /> 
   </target>
   
 </project>
