@@ -56,6 +56,8 @@ DEFINE VARIABLE cServices                    AS CHARACTER                       
 DEFINE VARIABLE lPreloadClasses              AS LOGICAL                                                           NO-UNDO .
 DEFINE VARIABLE lGenerateTreeViewOverview    AS LOGICAL                                                           NO-UNDO .
 
+DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
+
 /* ***************************  Main Block  *************************** */
 
 SESSION:ERROR-STACK-TRACE = TRUE . 

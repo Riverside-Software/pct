@@ -46,8 +46,8 @@ DEFINE VARIABLE lVerbose           AS LOGICAL                                   
 
 DEFINE VARIABLE i                  AS INTEGER                                             NO-UNDO.
 
-DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO
-.
+DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
+
 /* ***************************  Main Block  *************************** */
 
 SESSION:ERROR-STACK-TRACE = TRUE . 
