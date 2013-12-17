@@ -147,7 +147,6 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
                         .substring(10)));
             }
             if (entry.getName().startsWith("templates/resources")) {
-                System.out.println("Copie resource " + entry.getName());
                 copyStreamFromJar("/" + entry.getName(), new File(outputDir, entry.getName()
                         .substring(10)));
             }
