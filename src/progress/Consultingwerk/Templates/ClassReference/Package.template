@@ -34,7 +34,7 @@
                                     @PARENTPACKAGENAMEOPEN@
                                     <tr>
                                          <td class = "parentpackagelabel">
-                                            <span class="span_namespace">Parentpacke:</span>   
+                                            <span class="span_namespace">Parent package:</span>   
                                         </td>
                                         <td>
                                             <span class="span_packagename"><a href="@PARENTPACKAGENAME@.package.html">@PARENTPACKAGENAME@<a></span>
@@ -56,61 +56,11 @@
                             </table>
                         </div>
                     </td>
-                    <td>
-                        <div style="float:right">
-                            <div>
-                                <a href="http://www.consultingwerk.de/" target="_blank">
-                                    <img src="resources/logo.jpg" alt="" height="60" width="300">
-                                </a>
-                            </div>
-                            <div>
-                                <!--<script src="//www.gmodules.com/ig/ifr?url=http://www.google.com/cse/api/006321548785457822536/cse/-ly1h5ba_uu/gadget&amp;synd=open&amp;w=300&amp;h=75&amp;title=Consultingwerk+Class+Reference+Search&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"></script><style>table.gadget{background-position:0%;background:transparent none;border-collapse:collapse;border:0;clear:none;float:none;font-family:arial,sans-serif;font-style:normal;font-variant:normal;height:auto;letter-spacing:normal;line-height:normal;margin:0;padding:0;text-indent:0;text-transform:none;top:auto;vertical-align:middle;white-space:normal;width:auto;word-spacing:normal;}table.gadget span.title a:hover,table.gadget span.title a:visited,table.gadget span.title a:active,table.gadget span.title{font-size:12px;color:#0000cc}table.gadget span.powered a:hover,table.gadget span.powered a:visited,table.gadget span.powered a:active,table.gadget span.powered{font-size:10px;color:#0000cc}</style>-->
-                                <table class="gadget" cellspacing="0" cellpadding="0" width="300">
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="2" style="vertical-align:middle;text-align:center;width:100%;height:28px">
-                                                <span class="title">
-                                                    <a href="http://www.google.com/cse/home?cx=006321548785457822536%3A-ly1h5ba_uu" target="_top">Consultingwerk Class Reference Search</a>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2"><div style="background:white;padding:3px; border:1px solid #999999;">
-                                                <iframe id="1484431868" name="1484431868" src="http://www-open-opensocial.googleusercontent.com/gadgets/ifr?url=http%3A%2F%2Fwww.google.com%2Fcse%2Fapi%2F006321548785457822536%2Fcse%2F-ly1h5ba_uu%2Fgadget&amp;container=open&amp;view=home&amp;lang=all&amp;country=ALL&amp;debug=0&amp;nocache=0&amp;sanitize=0&amp;v=c85b4059ba47df0a&amp;source=http%3A%2F%2Fwww.consultingwerk.de%2Freference%2Fsmartcomponent_library%2FConsultingwerk%2FCancelableEventArgs.cls.html&amp;parent=http%3A%2F%2Fwww.consultingwerk.de%2Freference%2Fsmartcomponent_library%2FConsultingwerk%2FCancelableEventArgs.cls.html&amp;libs=core%3Acore.io%3Arpc#st=%25st%25&amp;rpctoken=1484431868" width="300" height="75" style="display: block; height: 68px;" frameborder="0" scrolling="no"></iframe>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left;vertical-align:middle;height:28px;">
-                                                <a href="http://fusion.google.com/ig/add?synd=open&amp;source=ggyp&amp;moduleurl=http://www.google.com/cse/api/006321548785457822536/cse/-ly1h5ba_uu/gadget" target="_top">
-                                                <img style="border:0;" src="http://www.gmodules.com/ig/images/plus_google.gif"></a></td><td style="text-align:right;vertical-align:middle;height:28px;"><span class="powered"><a href="http://www.google.com/webmasters/gadgets.html" target="_top">Gadgets</a> powered by Google</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <br>
-                                <br>
-                            </div>
-                        </div>
-                    </td>
                 </tr>
                 </tbody>
             </table>
             @PACKAGEGROUPS@
         </div>
-    </div>
-    <div id="packagefooter">
-        <font class="footer">&copy;2006-2013 Consultingwerk Ltd.</font>
-        &nbsp; &nbsp; &nbsp; &nbsp; 
-        <a href="mailto:info@consultingwerk.de" class="footer_link">info@consultingwerk.de</a>
-        &nbsp;
-        <font color="#B8B088"> &nbsp; &nbsp; &nbsp; <a href="http://www.consultingwerk.de" class="footer_link" target="blank">http://www.consultingwerk.de &nbsp; &nbsp;</a></font>
-        &nbsp;
-        <font class="footer_timestamp">@TIMESTAMP@</font>
     </div>
 </BODY>
 </HTML>
