@@ -1089,12 +1089,13 @@ public class PCTRun extends PCT {
                                                     '/', File.separatorChar))
                                             + File.pathSeparatorChar));
                         } catch (Exception caught) {
+                            throw new BuildException(caught);
+                        } finally {
                             try {
                                 bw.close();
                             } catch (IOException uncaught) {
 
                             }
-                            throw new BuildException(caught);
                         }
                     } else {
                         bw.write(MessageFormat.format(this.getProgressProcedures()

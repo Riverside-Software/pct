@@ -74,7 +74,6 @@ import com.phenix.pct.Messages;
 import com.phenix.pct.PCT;
 
 import eu.rssw.parser.ParserUtils;
-import eu.rssw.parser.Propath;
 
 /**
  * Class for generating XML documentation from OpenEdge classes
@@ -82,7 +81,6 @@ import eu.rssw.parser.Propath;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class OpenEdgeDocumentation extends PCT {
-    private File buildDir = null;
     private File destDir = null;
     private String encoding = null;
     private List<FileSet> filesets = new ArrayList<FileSet>();
@@ -172,7 +170,6 @@ public class OpenEdgeDocumentation extends PCT {
         for (int zz = 0; zz < propath.list().length; zz++) {
             dirs[zz] = new File(propath.list()[zz]);
         }
-        Propath propath = new Propath(dirs);
 
         try {
             for (FileSet fs : filesets) {

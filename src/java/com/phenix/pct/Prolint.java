@@ -179,8 +179,10 @@ public class Prolint extends PCT {
             String value = props.getProperty(entry);
 
             try {
+                @SuppressWarnings("rawtypes")
                 Class clz = Class.forName(value);
                 if (ILintRule.class.isAssignableFrom(clz)) {
+                    @SuppressWarnings("unchecked")
                     Constructor<ILintRule> constructor = clz.getConstructor(new Class[]{});
                     ILintRule o = constructor.newInstance();
                     rules.add(o);
