@@ -167,7 +167,6 @@ public abstract class PCT extends Task {
     /**
      * Convenience method to retrieve a typed collection
      */
-    @SuppressWarnings("unchecked")
     protected final Collection<Variable> getEnvironmentVariables() {
         return env.getVariablesVector();
     }
