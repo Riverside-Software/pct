@@ -509,8 +509,8 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         DEFINE VARIABLE cParam       AS CHARACTER NO-UNDO .
         DEFINE VARIABLE cSingleParam AS CHARACTER NO-UNDO .
         DEFINE VARIABLE cTypes       AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cType        AS CHARACTER NO-UNDO .
         DEFINE VARIABLE cParameter   AS CHARACTER NO-UNDO .
-        DEFINE VARIABLE cEntry       AS CHARACTER NO-UNDO .
         DEFINE VARIABLE i            AS INTEGER   NO-UNDO .
 
         ASSIGN iIndex = INDEX (pcSignature, "(":U) . 
@@ -521,39 +521,45 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                    cParameter = SUBSTRING (pcSignature, iIndex) .
             
             DO i = 1 TO NUM-ENTRIES (cTypes):
-                    
-                ASSIGN cParameter = REPLACE (cParameter, 
-                                             ":":U + ENTRY (i, cTypes) + ",":U,
-                                             ":":U + ENTRY (i, cTypes) + ",":U).
-                                             
-                ASSIGN cParameter = REPLACE (cParameter, 
-                                             ":":U + ENTRY (i, cTypes) + ")":U,
-                                             ":":U + ENTRY (i, cTypes) + ")":U).
+                ASSIGN cType = ENTRY (i, cTypes) .
+                
+                IF INDEX (cParameter, cType) = 0 THEN     
+                    ASSIGN cParameter = REPLACE (REPLACE (cParameter, 
+                                                          ":":U + ENTRY (i, cTypes) + ",":U,
+                                                          ":":U + ENTRY (i, cTypes) + ",":U), 
+                                                 ":":U + ENTRY (i, cTypes) + ")":U,
+                                                 ":":U + ENTRY (i, cTypes) + ")":U).
             END . 
             
             ASSIGN SUBSTRING (pcSignature, iIndex) = cParameter . 
 
         END.        
         
-        ASSIGN cResult = REPLACE (pcSignature, "(":U, " (":U)
-               cResult = REPLACE (cResult, ",":U, ", ":U)
+        ASSIGN cResult = REPLACE (REPLACE (pcSignature, "(":U, " (":U), 
+                                  ",":U, 
+                                  ", ":U)
                iIndex  = INDEX (cResult, ")":U)
                .
         
         IF iIndex > 0 THEN        
             ASSIGN cResult = SUBSTRING (cResult, 1, iIndex).
                
-        ASSIGN cResult = REPLACE (cResult, "INPUT:":U, "":U)
-               cResult = REPLACE (cResult, "INPUT-":U, "":U)
-               cResult = REPLACE (cResult, "OUTPUT:":U, "":U)
-               cResult = REPLACE (cResult, "INPUT-OUTPUT:":U, "":U)
-               .
+        ASSIGN cResult = REPLACE (REPLACE (REPLACE (REPLACE (cResult, 
+                                                             "INPUT:":U, 
+                                                             "":U), 
+                                                    "INPUT-":U, 
+                                                    "":U), 
+                                           "OUTPUT:":U, 
+                                           "":U), 
+                                 "INPUT-OUTPUT:":U, 
+                                 "":U) .
 
         IF INDEX (cResult, "(":U) > 0 THEN DO: 
             
             ASSIGN iParamStart = INDEX (cResult, "(":U) 
-                   cParamTemp  = SUBSTRING (cResult, iParamStart + 1)
-                   cParamTemp  = REPLACE (cParamTemp, ")":U, "":U)
+                   cParamTemp  = REPLACE (SUBSTRING (cResult, iParamStart + 1), 
+                                          ")":U, 
+                                          "":U)
                    .
             
             DO iCount = 1 TO NUM-ENTRIES (cParamTemp, ",":U):
@@ -567,16 +573,16 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                        SMARTDOX-49: Nesting ENTRY in SUBSTITUTE may fail on 10.2B 
                        http://knowledgebase.progress.com/articles/Article/P138807
                        http://knowledgebase.progress.com/articles/Article/000035493 */
-                    ASSIGN cEntry = ENTRY (NUM-ENTRIES (cSingleParam, ".":U), cSingleParam, ".":U)
-                           cParam = SUBSTITUTE ("&1, &2":U, TRIM(cParam), TRIM (cEntry)).
-                          
+                    ASSIGN cParam = SUBSTITUTE ("&1, &2":U, 
+                                                TRIM(cParam), 
+                                                TRIM (ENTRY (NUM-ENTRIES (cSingleParam, ".":U), 
+                                                             cSingleParam, 
+                                                             ".":U))).
             END.
             
             ASSIGN cParam = SUBSTRING (cParam, 2). 
             
-            ASSIGN cResult = SUBSTRING (cResult, 1, iParamStart)
-                   cResult = SUBSTITUTE ("&1&2)":U, cResult, TRIM (cParam))
-                   .
+            ASSIGN cResult = SUBSTRING (cResult, 1, iParamStart) + TRIM (cParam) + ")":U . 
         END. 
         
         RETURN cResult.

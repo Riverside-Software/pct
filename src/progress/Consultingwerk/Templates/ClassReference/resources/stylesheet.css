@@ -460,10 +460,76 @@ margin: -40px auto 0;
     background-image: url(final.png);
 }
 
-.span_class_final
+.Signature_Font
 {
-    font-size: 2em;
-    margin-top: 9px;
-    display: block;
-    color: #707070;
+    height: 5px;
+}
+
+.tree_search_clear
+{
+	background-color: transparent;
+}
+
+.package_name_div
+{
+	float: left;
+}
+
+.package_name_div tbody
+{
+    vertical-align: top;
+}
+
+.google_search
+{
+    float: right;
+}
+
+.unit_header
+{
+    float: left;
+}
+
+.unit_header tbody
+{
+    vertical-align: top;
+}
+
+.unit_inherits
+{
+    width: 1000px;
+}
+
+.unit_interface
+{
+    width: 1000px;
+}
+
+.unit_comment
+{
+    color: green;
+}
+
+.container_logo_google
+{
+	float: right;
+}
+
+.table_content tbody
+{
+	vertical-align: top;
+}
+
+.unit_commment_table
+{
+	vertical-align: top;
+}
+
+.commment_formater_table
+{
+    vertical-align: top;
+}
+
+.tree_node{
+	font-weight: normal;
 }

@@ -28,13 +28,13 @@
                 <tbody>
                 <tr>
                     <td>
-                        <div style="float:left">
+                        <div class="package_name_div">
                             <table border="0">
-                               <tbody style="vertical-align: top">
+                               <tbody>
                                     @PARENTPACKAGENAMEOPEN@
                                     <tr>
                                          <td class = "parentpackagelabel">
-                                            <span class="span_namespace">Parent package:</span>   
+                                            <span class="span_namespace">Parentpacke:</span>   
                                         </td>
                                         <td>
                                             <span class="span_packagename"><a href="@PARENTPACKAGENAME@.package.html">@PARENTPACKAGENAME@<a></span>
