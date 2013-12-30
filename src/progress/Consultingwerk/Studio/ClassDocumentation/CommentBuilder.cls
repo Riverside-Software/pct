@@ -217,7 +217,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.CommentBuilder
         FIX-CODEPAGE (lcTempLine) = "utf-8":U . 
         FIX-CODEPAGE (lcEntry) = "utf-8":U .
         
-        ASSIGN lcHeader  = "<table><tbody style='vertical-align: top'>":U
+        ASSIGN lcHeader  = "<table><tbody class='unit_commment_table'>":U
                lcFooter  = "</tbody></table>":U
                pcComment = REPLACE (pcComment, CHR(10), CHR(1)).
         
@@ -302,7 +302,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.CommentBuilder
         FIX-CODEPAGE (lcLine) = "utf-8":U . 
         FIX-CODEPAGE (lcEntry) = "utf-8":U . 
         
-        ASSIGN lcHeader  = "<table><tbody style='vertical-align: top'>":U
+        ASSIGN lcHeader  = "<table><tbody class='commment_formater_table'>":U
                lcFooter  = "</tbody></table>":U
                pcComment = REPLACE (pcComment, CHR (10), CHR(1)).
         

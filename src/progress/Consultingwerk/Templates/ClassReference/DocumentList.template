@@ -28,7 +28,7 @@
                 		<p>Search: <input id="treesearch" type="text" size="30" maxlength="100"></p>
             		</td>
             		<td align="center" valign="middle">
-                		<div id="treesearchclear" style="background-color: transparent;"></div>
+                		<div id="treesearchclear" class="tree_search_clear"></div>
             		</td>
             	</tr>
     		</tbody>

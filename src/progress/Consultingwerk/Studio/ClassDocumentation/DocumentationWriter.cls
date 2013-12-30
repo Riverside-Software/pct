@@ -431,7 +431,9 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@TIMESTAMP@":U, STRING (NOW, "99.99.9999 hh:mm:ss":U))
             .
         
-        IF eUnit.IsFinal = TRUE THEN 
+        IF eUnit.IsFinal = FALSE THEN 
+            ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITFINAL@":U, "":U).
+        ELSE 
             ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITFINAL@":U, "FINAL":U).
                 
         IF eUnit.IsInterface = TRUE THEN 
@@ -1204,7 +1206,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                                                           "<div class='node_imgroot'></div>":U +
                                                       "</td>":U +
                                                       "<td>":U +
-                                                          "<a name='":U + eTreeNode.NodeName + "' href='":U + eTreeNode.NodeName + ".package.html' target='DocumentDetails' class='' style='font-weight: normal;'>":U + eTreeNode.NodeName + "</a>":U +
+                                                          "<a name='":U + eTreeNode.NodeName + "' href='":U + eTreeNode.NodeName + ".package.html' target='DocumentDetails' class='tree_node'>":U + eTreeNode.NodeName + "</a>":U +
                                                       "</td>":U +
                                                   "</tr>":U + 
                                               "</table>":U +
@@ -1299,7 +1301,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                                                                       "<div class='":U + cImgClass  + "'></div>":U +
                                                                   "</td>":U +
                                                                   "<td>":U +
-                                                                      "<a name='":U + REPLACE (bTreeNode.NodeParent, ".":U, "":U) + bTreeNode.NodeName + "' href='":U + cLink + "' target='DocumentDetails' class='' style='font-weight: normal;'>":U + bTreeNode.NodeName + "</a>":U +
+                                                                      "<a name='":U + REPLACE (bTreeNode.NodeParent, ".":U, "":U) + bTreeNode.NodeName + "' href='":U + cLink + "' target='DocumentDetails' class='tree_node'>":U + bTreeNode.NodeName + "</a>":U +
                                                                   "</td>":U +
                                                               "</tr>":U +
                                                           "</table>":U +

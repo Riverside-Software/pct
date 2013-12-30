@@ -9,7 +9,7 @@
  *   KIND, either express or implied.                                 *
  *                                                                    *
  *  Contributors:                                                     *
- *  Generated   : @TIMESTAMP@                                         *
+ *  Generated   : @TIMESTAMP@                                                                   *
  **********************************************************************/
 -->
 <HTML>
@@ -43,9 +43,9 @@
         <tbody>
         <tr>
             <td>
-            	<div style="float:left">
+            	<div class="unit_header">
             	    <table border="0">
-            	       <tbody style="vertical-align: top">
+            	       <tbody>
                 	        <tr>
                 	            <td>
                 	                <span class="span_namespace">Namespace:</span>   
@@ -64,9 +64,6 @@
                                             <td>
                                                 <span class="span_classname">@CLASSNAME@</span>
                                             </td>
-                                            <td>
-                                                <span class="span_class_final">(Final)</span> 
-                                            </td>
                                         </tr>
                                     </table>
                                 </td>
@@ -84,7 +81,7 @@
                                 <td>
                                     <span class="span_inherits">Inherits:</span>
                                 </td>
-                                <td  style="width: 1000px">
+                                <td class="unit_inherits">
                                     <span class="span_inherits">@INHERITS@</span>
                                 </td>
                             </tr>
@@ -94,15 +91,22 @@
                                 <td>
                                     <span class="span_implements">Implements:</span> 
                                 </td>
-                                <td style="width: 1000px">
+                                <td class="unit_interface">
                                     <span class="span_implements">@INTERFACELINKS@</span> 
                                 </td>
                             </tr>
                             @INTERFACECOMMENTTAGCLOSE@
+                            <tr>
+                                <td>
+                                    <span class="span_inherits">@UNITFINAL@</span>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 	<br>
-                	<span style="color:green">
+                	<span class="unit_comment">
                 	@UNITHEADER@
                 	</span>
                 	<br>
@@ -125,7 +129,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_summary method_summary">
-        <tbody style="vertical-align: top">
+        <tbody>
             <tr class="TableSubHeadingColor">
                 <th align="left"></th>
                 <th align="left">Options</th>
@@ -148,7 +152,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_summary constructor_summary">
-        <tbody style="vertical-align: top">
+        <tbody>
             <tr class="TableSubHeadingColor">
                 <th align="left"></th>
                 <th align="left">Options</th>
@@ -171,7 +175,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_summary event_summary">
-        <tbody style="vertical-align: top">
+        <tbody>
             <tr class="TableSubHeadingColor">
                 <th align="left"></th>
                 <th align="left">Options</th>
@@ -194,7 +198,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_summary property_summary">
-        <tbody style="vertical-align: top">
+        <tbody>
             <tr class="TableSubHeadingColor">
                 <th align="left"></th>
                 <th align="left">Options</th>
@@ -218,7 +222,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_details method_detail">
-        <tbody style="vertical-align: top">
+        <tbody>
             @DETAILMETHODS@
         </tbody>
     </table>
@@ -236,7 +240,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_details constructor_detail">
-        <tbody style="vertical-align: top">
+        <tbody>
             @DETAILCONSTRUCTORS@
         </tbody>
     </table>
@@ -254,7 +258,7 @@
         </span>
     </div>
     <table border="0" class="table_content table_content_details event_detail">
-        <tbody style="vertical-align: top">
+        <tbody>
             @DETAILEVENTS@
         </tbody>
     </table>
@@ -272,7 +276,7 @@
         </span>
     </div>
     <table border="0" class="table_content property_detail">
-        <tbody style="vertical-align: top">
+        <tbody>
             @DETAILPROPERTIES@
         </tbody>
     </table>
