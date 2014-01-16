@@ -12,6 +12,7 @@
         <fileset dir="." includes="*.df" excludes="full.df"/>
         <natural xmlns="antlib:eu.rssw.pct" />
       </sort>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

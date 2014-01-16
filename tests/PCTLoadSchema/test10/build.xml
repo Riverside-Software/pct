@@ -8,6 +8,7 @@
     <PCTLoadSchema dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
 	  <fileset dir="." includes="*.df" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
@@ -17,6 +18,7 @@
     <PCTLoadSchema dlcHome="${DLC}" commitWhenErrors="true">
       <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
 	  <fileset dir="." includes="*.df" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

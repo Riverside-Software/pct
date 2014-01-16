@@ -1,72 +1,80 @@
 <?xml version="1.0"?>
 <project name="PCTCompile-test30">
   <taskdef resource="PCT.properties" />
-  
+
   <target name="test">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <filelist dir="src" files="test1.p,test3.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test2">
     <mkdir dir="build2" />
-    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" >
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
       <zipfileset src="tests.zip" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test3">
-  	<mkdir dir="build3" />
+    <mkdir dir="build3" />
     <filelist id="foobar" dir="src" files="test2.p" />
-  	<PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
       <filelist refid="foobar" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test4">
-  	<mkdir dir="build4" />
-  	<PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}">
+    <mkdir dir="build4" />
+    <PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}">
       <dirset dir="." includes="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test5">
-  	<mkdir dir="build5" />
-  	<PCTCompile graphicalMode="false" destDir="build5" dlcHome="${DLC}">
+    <mkdir dir="build5" />
+    <PCTCompile graphicalMode="false" destDir="build5" dlcHome="${DLC}">
       <filelist dir="src" files="test1.p" />
       <fileset dir="src" includes="*2.p" />
       <filelist dir="src" files="test3.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test6">
-  	<mkdir dir="build6" />
-  	<PCTCompile graphicalMode="false" destDir="build6" dlcHome="${DLC}">
+    <mkdir dir="build6" />
+    <PCTCompile graphicalMode="false" destDir="build6" dlcHome="${DLC}">
       <first>
         <filelist dir="src" files="test1.p,test3.p,test4.p" />
       </first>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test7">
-  	<mkdir dir="build7" />
-  	<PCTCompile graphicalMode="false" destDir="build7" dlcHome="${DLC}">
+    <mkdir dir="build7" />
+    <PCTCompile graphicalMode="false" destDir="build7" dlcHome="${DLC}">
       <sort>
         <filelist dir="src" files="test2.p,test3.p,test1.p" />
         <reverse xmlns="antlib:org.apache.tools.ant.types.resources.comparators" />
       </sort>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test8">
-  	<mkdir dir="build8" />
-  	<PCTCompile graphicalMode="false" destDir="build8" dlcHome="${DLC}">
+    <mkdir dir="build8" />
+    <PCTCompile graphicalMode="false" destDir="build8" dlcHome="${DLC}">
       <sort>
         <fileset dir="src" includes="*.p" />
         <natural xmlns="antlib:eu.rssw.pct" />
       </sort>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
-	
+
 </project>

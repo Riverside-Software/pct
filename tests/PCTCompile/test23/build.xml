@@ -8,6 +8,7 @@
       <fileset dir="src">
         <include name="*.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -16,6 +17,7 @@
       <fileset dir="src">
         <include name="*.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

@@ -16,6 +16,7 @@
       <PCTConnection dbName="test2" dbDir="." singleUser="true">
         <PCTAlias name="dictdb2" />
       </PCTConnection>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
     <PCTDumpIncremental destFile="incr/incremental2.df" dlcHome="${DLC}" activeIndexes="1">
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
@@ -24,6 +25,7 @@
       <PCTConnection dbName="test2" dbDir="." singleUser="true">
         <PCTAlias name="dictdb2" />
       </PCTConnection>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
     <PCTDumpIncremental destFile="incr/incremental3.df" dlcHome="${DLC}" activeIndexes="2">
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
@@ -32,6 +34,7 @@
       <PCTConnection dbName="test2" dbDir="." singleUser="true">
         <PCTAlias name="dictdb2" />
       </PCTConnection>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
   </target>
 

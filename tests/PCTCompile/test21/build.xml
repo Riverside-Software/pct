@@ -8,6 +8,7 @@
       <fileset dir="src">
         <include name="**/*.cls" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

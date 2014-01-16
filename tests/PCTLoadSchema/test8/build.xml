@@ -7,6 +7,7 @@
     <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" commitWhenErrors="false">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
@@ -15,6 +16,7 @@
     <PCTCreateBase dbName="test" destDir="db2" dlcHome="${DLC}" />
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" commitWhenErrors="true">
       <PCTConnection dbName="test" dbDir="db2" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
@@ -23,6 +25,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" />
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -31,6 +34,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" />
       <DBConnection dbName="test" dbDir="db2" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 </project>

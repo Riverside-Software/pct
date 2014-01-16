@@ -3,43 +3,47 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="true">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="true">
       <fileset dir="src">
-        <include name="test1.p" />	
+        <include name="test1.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="test2.p" />	
-      </fileset>	
+        <include name="test2.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test2">
-  	<mkdir dir="build2" />
-  	<PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" failOnError="false">
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" failOnError="false">
       <fileset dir="src">
-        <include name="test1.p" />	
+        <include name="test1.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
-  	<PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="test2.p" />	
-      </fileset>	
+        <include name="test2.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test3">
-  	<mkdir dir="build3" />
-  	<PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}" failOnError="false">
+    <mkdir dir="build3" />
+    <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}" failOnError="false">
       <filelist dir="src" files="test0.p,test1.p,test2.p" />
     </PCTCompile>
   </target>
 
   <target name="test4">
-  	<mkdir dir="build4" />
-  	<PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}" failOnError="true">
+    <mkdir dir="build4" />
+    <PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}" failOnError="true">
       <filelist dir="src" files="test0.p,test1.p,test2.p" />
     </PCTCompile>
   </target>

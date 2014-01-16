@@ -3,20 +3,22 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="test.p" />	
+        <include name="test.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
   <target name="test2">
     <sleep seconds="3" />
     <touch file="src/test2.i" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="test.p" />	
+        <include name="test.p" />
       </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
