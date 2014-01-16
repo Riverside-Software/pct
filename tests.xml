@@ -20,14 +20,14 @@
   </target>
 
   <target name="test">
-    <!-- -DGROUPS=all,v10 -DEXCLUDES=unix -DTESTENV=ANT -->
+    <!-- -DGROUPS=all,v10 -DEXCLUDES=unix -DTESTENV=ANT -DPROFILER=false -->
     <mkdir dir="test-output" />
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
     <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
-        <classfileset dir="build/test" includes="**/ClassDocumentationTest.class" />
+        <classfileset dir="build/test" includes="**/*Test.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER}" />
       </testng>
