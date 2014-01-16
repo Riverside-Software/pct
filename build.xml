@@ -336,6 +336,10 @@ PCTBuild=${BUILD_NUMBER}
     <copy todir="testbox">
       <fileset dir="tests" />
     </copy>
+    <mkdir dir="testbox/ClassDocumentation/test3/src" />
+    <copy todir="testbox/ClassDocumentation/test3/src">
+      <fileset dir="${src.progress}" includes="Consultingwerk/**/*" />
+    </copy>
   </target>
   
   <target name="javadoc" depends="build" description="API documentation creation">
@@ -365,6 +369,7 @@ PCTBuild=${BUILD_NUMBER}
     <zip destfile="${dist}/testcases.zip" encoding="utf-8">
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
+      <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
       <zipfileset dir="lib" includes="ant.jar,ant-apache-regexp.jar,ant-launcher.jar,ini4j-0.5.1.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar" prefix="lib" />
       <zipfileset dir="${dist}" includes="PCT.jar" prefix="dist" />
     </zip>
