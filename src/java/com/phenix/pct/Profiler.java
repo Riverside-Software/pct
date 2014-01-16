@@ -122,12 +122,14 @@ public class Profiler {
         if (!enabled)
             return;
         if ((outputDir == null) && (outputFile == null))
-            throw new BuildException("Either outputDir or outputFile must be defined");
+            throw new BuildException("Either outputDir or outputFile must be defined in Profiler node");
         if ((outputDir != null) && (outputFile != null))
-            throw new BuildException("Only one of outputDir or outputFile must be defined");
+            throw new BuildException("Only one of outputDir or outputFile must be defined in Profiler node");
         if (outputDir != null) {
-            if (!outputDir.exists() || !outputDir.isDirectory())
-                throw new BuildException("Output dir doesn't exist or is not a directory");
+            if (outputDir.exists() && !outputDir.isDirectory())
+                throw new BuildException("Profiler output dir is not a directory");
+            if (!outputDir.exists() && !outputDir.mkdirs())
+                throw new BuildException("Unable to create profiler output directory");
         }
         if (backgroundTask && (outputFile != null))
             throw new BuildException("Only outputDir can be set for multi-threaded tasks");
