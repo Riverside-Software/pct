@@ -1,21 +1,23 @@
 <?xml version="1.0"?>
 <project name="ClassDocumentation-test1">
   <taskdef resource="extras.properties" />
-    
+
   <target name="test">
-      <mkdir dir="doc" />
-      <mkdir dir="html" />
-      <mkdir dir="html/resources" />
-      <ClassDocumentation destDir="doc" dlcHome="${DLC}">
-          <fileset dir="src" includes="**/*.cls" />
-          <propath>
-              <pathelement location="src" />
-          </propath>
-      </ClassDocumentation>
-      <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" title="Data Administration reference" templateDir="templates" />
-      <copy todir="html/resources">
-        <fileset dir="templates/resources" />
-      </copy> 
+    <mkdir dir="doc" />
+    <mkdir dir="html" />
+    <mkdir dir="html/resources" />
+    <ClassDocumentation destDir="doc" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </ClassDocumentation>
+    <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" title="ClassDocumentation reference" templateDir="templates">
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </HTMLDocumentation>
+    <copy todir="html/resources">
+      <fileset dir="templates/resources" />
+    </copy>
   </target>
-  
+
 </project>
