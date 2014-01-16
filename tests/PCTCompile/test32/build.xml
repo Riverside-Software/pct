@@ -1,24 +1,26 @@
 <?xml version="1.0"?>
 <project name="PCTCompile-test32">
   <taskdef resource="PCT.properties" />
-  
+
   <target name="test">
-  	<mkdir dir="build1" />
+    <mkdir dir="build1" />
     <mkdir dir="build2" />
 
-  	<PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}" stringXref="true">
+    <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}" stringXref="true">
       <fileset dir="src" includes="*.p" />
       <propath>
         <pathelement location="src" />
       </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
 
-  	<PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" stringXref="true" appendStringXref="true">
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" stringXref="true" appendStringXref="true">
       <fileset dir="src" includes="*.p" />
       <propath>
         <pathelement location="src" />
       </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
-	
+
 </project>

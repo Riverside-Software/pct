@@ -10,6 +10,7 @@
   	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
 	  <fileset dir="." includes="*.df" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

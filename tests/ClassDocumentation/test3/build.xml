@@ -4,6 +4,7 @@
 
   <target name="test">
     <mkdir dir="doc" />
+    <mkdir dir="profiler" />
     <mkdir dir="html" />
     <mkdir dir="html/resources" />
     <ClassDocumentation destDir="doc" dlcHome="${DLC}">

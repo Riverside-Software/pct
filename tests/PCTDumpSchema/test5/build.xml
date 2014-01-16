@@ -12,6 +12,7 @@
     <PCTDumpSchema destFile="foo/sch.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <table name="_File" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpSchema>
   </target>
 

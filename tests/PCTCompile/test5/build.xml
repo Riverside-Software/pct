@@ -3,12 +3,13 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-  	<mkdir dir="build" />
-  	<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" >
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="wizz~~'~.p"/>	
-      </fileset>	
+        <include name="wizz~~'~.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
-	
+
 </project>

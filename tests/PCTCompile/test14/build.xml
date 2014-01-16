@@ -5,7 +5,7 @@
   <target name="base">
     <PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema.df" />
   </target>
-  
+
   <target name="test1">
     <mkdir dir="build" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
@@ -13,21 +13,24 @@
         <include name="*.p" />
       </fileset>
       <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="update">
-    <PCTLoadSchema graphicalMode="false" srcFile="update.df" dlcHome="${DLC}" >
-      <PCTConnection dbName="test" dbDir="." singleUser="true"/>
+    <PCTLoadSchema graphicalMode="false" srcFile="update.df" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
   <target name="test2">
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" >
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
-        <include name="*.p"/>
+        <include name="*.p" />
       </fileset>
       <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
