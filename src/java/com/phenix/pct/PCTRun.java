@@ -1027,8 +1027,9 @@ public class PCTRun extends PCT {
     }
 
     private void createInitProcedure() throws BuildException {
+        BufferedWriter bw = null;
         try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
                     initProc), getCharset()));
 
             // Progress v8 is unable to write to standard output, so output is redirected in a file,
@@ -1089,14 +1090,8 @@ public class PCTRun extends PCT {
                                                     '/', File.separatorChar))
                                             + File.pathSeparatorChar));
                         } catch (Exception caught) {
-                            throw new BuildException(caught);
-                        } finally {
-                            try {
-                                bw.close();
-                            } catch (IOException uncaught) {
-
-                            }
-                        }
+                            throw new IOException(caught);
+                        } 
                     } else {
                         bw.write(MessageFormat.format(this.getProgressProcedures()
                                 .getPropathString(), escapeString(lst[k]) + File.pathSeparatorChar));
@@ -1170,6 +1165,14 @@ public class PCTRun extends PCT {
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException uncaught) {
+                    
+                }
+            }
         }
     }
 
