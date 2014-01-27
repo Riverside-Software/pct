@@ -625,6 +625,10 @@ PROCEDURE importXref.
 
         /* Sorry, this is crude... */
         IMPORT STREAM sXREF2 UNFORMATTED cTmp.
+        /* GC Bug #47 - Lines longer than 2000 characters are truncated. This IMPORT is there to synchronize both streams. */
+        IF LENGTH (cTmp) >= 2000 THEN
+          IMPORT STREAM sXREF UNFORMATTED cTmp2.
+
         ASSIGN cTmp2 = ttXref.xLineNumber + ' ' + ttXref.xRefType + ' '.
         ASSIGN ttXref.xObjID = SUBSTRING(cTmp, INDEX(cTmp, cTmp2) + LENGTH(cTmp2)).
 
