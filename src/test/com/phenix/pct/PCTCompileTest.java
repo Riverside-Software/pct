@@ -60,10 +60,12 @@ import static org.testng.Assert.assertFalse;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
+import com.google.common.io.Files;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Class for testing PCTCompile task
@@ -591,5 +593,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         RCodeInfo r2 = new RCodeInfo(rcode2);
         assertEquals(r1.getDebugListingFile(), "debugListing/test1.p.dbg");
         assertEquals(r2.getDebugListingFile(), "debugListing/foo/bar/test2.p.dbg");
+    }
+
+    @Test(groups = {"all"})
+    public void test35() throws IOException {
+        configureProject("PCTCompile/test35/build.xml");
+        executeTarget("test");
+
+        File crc = new File("PCTCompile/test35/build/.pct/test.p.crc");
+        assertTrue(crc.exists());
+        String line = Files.readFirstLine(crc, Charset.defaultCharset());
+        assertTrue(line.startsWith("\"sports2000.Item\""));
     }
 }
