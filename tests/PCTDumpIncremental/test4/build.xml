@@ -11,7 +11,6 @@
     <mkdir dir="incr" />
     <mkdir dir="profiler" />
     <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}">
-  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
@@ -21,7 +20,6 @@
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
     <PCTDumpIncremental destFile="incr/incremental2.df" dlcHome="${DLC}" renameFile="rename.txt">
-  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
       <PCTConnection dbName="test1" dbDir="." singleUser="true">
         <PCTAlias name="dictdb" />
       </PCTConnection>
