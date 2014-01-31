@@ -17,6 +17,7 @@
   <taskdef name="crc" classname="com.phenix.pct.PCTCRC" />
   <taskdef name="xcode" classname="com.phenix.pct.PCTXCode" />
   <taskdef name="prounit" classname="net.cordova.prounit.ProUnit" />
+  <taskdef name="ablunit" classname="com.phenix.pct.ABLUnit" />
   <taskdef name="asbroker" classname="com.phenix.pct.PCTASBroker" />
   <taskdef name="wsbroker" classname="com.phenix.pct.PCTWSBroker" />
   <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
