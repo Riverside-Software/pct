@@ -1,10 +1,13 @@
 package com.phenix.pct;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.tools.ant.BuildException;
 
+import com.google.gson.stream.JsonWriter;
 import com.phenix.pct.PCTRun;
 
 /**
@@ -17,7 +20,7 @@ import com.phenix.pct.PCTRun;
 public class ABLUnit extends PCTRun {
     private Collection<BatchTestParameter> testList = null;
 
-    //We get the batchtests list
+    // We get the batchtests list
     public void addConfiguredBatchTest(BatchTestParameter batchtest) {
         if (this.testList == null) {
             testList = new ArrayList<BatchTestParameter>();
@@ -30,25 +33,38 @@ public class ABLUnit extends PCTRun {
     }
 
     public void execute() throws BuildException {
-        StringBuffer sb = new StringBuffer("");
         String proc = "pct/v11/PCTABLUnitRunner.p";
+        JsonWriter writer;
+        String loc = this.getLocation().toString();
+        loc = loc.substring(0, loc.lastIndexOf("\\"));
 
         if (testList != null) {
-            for (BatchTestParameter rn : testList) {
-                if (sb.length() > 0)
-                    sb.append(',');
-                sb.append(rn.getName());
-                String test = rn.getTest();
-                if (test != null ) {
-                   
-                        sb.append("#" + test);
+            try {
+                writer = new JsonWriter(new FileWriter(loc+"\\tests.json"));
+                writer.beginObject(); // {
+                writer.name("tests"); // "tests" :
+                writer.beginArray(); // [
+                for (BatchTestParameter rn : testList) {
+                    String value = rn.getName();
+                    if (rn.getTest() != null)
+                        value += value + "#" + rn.getTest();
+
+                    writer.beginObject(); // {
+                    writer.name("test").value(value);
+                    writer.endObject(); // }
                 }
+                writer.endArray(); // ]
+                writer.endObject(); // }
+                writer.close();
+
+            } catch (IOException e) {
+                throw new BuildException(e);
             }
-        }else
+        } else
             throw new BuildException("Task 'ABLUnit' requires, at least, one 'batchtest' bode.");
 
         this.setProcedure(proc);
-        this.setParameter(sb.toString());
+        this.setParameter("CFG=\""+loc+"\\tests.json\"");
 
         super.execute();
 
