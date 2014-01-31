@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/oe_common_services.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

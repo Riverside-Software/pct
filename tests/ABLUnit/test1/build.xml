@@ -5,7 +5,6 @@
 	<target name="test">
 		<ABLUnit>
 			<batchtest name="src/ABLUnitTest.p" />
-			<batchtest name="src/ABLUnitTest.cls" />
 			<propath>
 				<pathelement path="src" />
 				<path location="C:\Users\Bastien\ProjetsRiverside\ablunit.pl" />
