@@ -9,9 +9,9 @@ import com.phenix.pct.Messages;
 import com.phenix.pct.PCTRun;
 
 /**
- * Ant task for ProUnit tests. For more details about ProUnit, see
- * <a href="http://sourceforge.net/projects/prounit/">the SourceForge project's page</a>
- * or <a href="http://www.mycgiserver.com/~flaviocordova/prounit/index.htm">ProUnit's website</a>.
+ * Ant task for ProUnit tests. For more details about ProUnit, see <a
+ * href="http://sourceforge.net/projects/prounit/">the SourceForge project's page</a> or <a
+ * href="http://prounit.sourceforge.net/">ProUnit's website</a>.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
@@ -20,7 +20,7 @@ public class ProUnit extends PCTRun {
     private File project = null;
     private File result = null;
     private String template = null;
-    private boolean verbose = false;
+    private boolean compatibility = false;
 
     /**
      * Path to the XML file saved using ProUnit GUI version.
@@ -50,12 +50,12 @@ public class ProUnit extends PCTRun {
     }
 
     /**
-     * Configures execution to be silent or to show execution progress and results
+     * Configures compatibility mode for older version of prounit
      * 
      * @param verbose Optional, defaults to false
      */
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+    public void setCompatibility(boolean compatibility) {
+        this.compatibility = compatibility;
     }
 
     public ProUnit() {
@@ -65,8 +65,9 @@ public class ProUnit extends PCTRun {
     public void execute() throws BuildException {
         // This parameter is mandatory (to get a return-value)
         StringBuffer sb = new StringBuffer("-runningAnt=true");
+        String proc = "startProUnitBatch.p";
 
-        // 
+        //
         if ((this.project == null) || !this.project.isFile()) {
             this.cleanup();
             throw new BuildException(MessageFormat.format(
@@ -83,12 +84,11 @@ public class ProUnit extends PCTRun {
             sb.append(" -resultTemplate=").append(this.template);
         }
 
-        if (this.verbose) {
-            // Doesn't seem to change anything in batch mode...
-            sb.append(" -verbose=true");
-        }
+        // Use a different procedure for older versions of prounit
+        if (this.compatibility)
+            proc = "batchRunner.p";
 
-        this.setProcedure("batchRunner.p"); //$NON-NLS-1$
+        this.setProcedure(proc); //$NON-NLS-1$
         this.setParameter(sb.toString());
 
         super.execute();
