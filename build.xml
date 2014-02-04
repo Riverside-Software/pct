@@ -106,7 +106,6 @@
     <pathelement location="lib/testng-6.3.1.jar" />
     <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
-  	<pathelement location="lib/gson-2.2.4.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
