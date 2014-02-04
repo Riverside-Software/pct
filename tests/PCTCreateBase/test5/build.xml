@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="test">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>

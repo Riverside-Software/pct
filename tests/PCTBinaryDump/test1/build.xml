@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTBinaryDump-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+  	<PCTBinaryDump dlcHome="${DLC}" dest="." />
+  </target>
+
+</project>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test35">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <mkdir dir="db" />
+	<sports2000 destDir="db" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
+      <fileset dir="src" includes="**/*.p" />
+	  <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

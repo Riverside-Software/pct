@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test102">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="**/*.p" />
+        <include name="**/*.t" />
+      </fileset>
+      <compositemapper>
+        <regexpmapper from="^(.*)\.p$$" to="\1renamed.r" />
+        <regexpmapper from="^(.*)\.t$$" to="triggers/\1.r" />
+      </compositemapper>
+    </PCTCompileExt>
+  </target>
+
+  <target name="test2">
+    <sleep seconds="3" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="**/*.p" />
+        <include name="**/*.t" />
+      </fileset>
+      <compositemapper>
+        <regexpmapper from="^(.*)\.p$$" to="\1renamed.r" />
+        <regexpmapper from="^(.*)\.t$$" to="triggers/\1.r" />
+      </compositemapper>
+    </PCTCompileExt>
+  </target>
+
+</project>
