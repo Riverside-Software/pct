@@ -32,7 +32,7 @@ public class ABLUnit extends PCTRun {
         super();
     }
 
-    public void execute() throws BuildException {
+    public void execute() throws BuildException {    
         String proc = "pct/v11/PCTABLUnitRunner.p";
         JsonWriter writer;
         String loc = this.getLocation().toString();
@@ -61,12 +61,11 @@ public class ABLUnit extends PCTRun {
                 throw new BuildException(e);
             }
         } else
-            throw new BuildException("Task 'ABLUnit' requires, at least, one 'batchtest' bode.");
-
+            throw new BuildException("Task 'ABLUnit' requires, at least, one 'batchtest' node.");
+        
         this.setProcedure(proc);
-        this.setParameter("CFG=\""+loc+"\\tests.json\"");
+        this.setParameter("\"CFG="+loc+"\\tests.json\"");
 
         super.execute();
-
     }
 }
