@@ -6,8 +6,8 @@
 		<ABLUnit>
 			<propath>
 				<pathelement path="src" />
-				<path location="C:\Users\Bastien\ProjetsRiverside\ablunit.pl" />
-				<path location="C:\Users\Bastien\ProjetsRiverside\OpenEdge.Core.pl" />
+				<path location="${TESTLIBS}/ablunit.pl" />
+				<path location="${TESTLIBS}/OpenEdge.Core.pl" />
 			</propath>
 		</ABLUnit>
 	</target>

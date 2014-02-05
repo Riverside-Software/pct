@@ -8,8 +8,8 @@
 			<batchtest name="src/ABLUnitTest2.p" />
 			<propath>
 				<pathelement location="src" />
-				<pathelement location="C:\Users\Bastien\ProjetsRiverside\ablunit.pl" />
-				<pathelement location="C:\Users\Bastien\ProjetsRiverside\OpenEdge.Core.pl" />
+				<pathelement location="${TESTLIBS}/ablunit.pl" />
+				<pathelement location="${TESTLIBS}/OpenEdge.Core.pl" />
 			</propath>
 		</ABLUnit>
 	</target>

@@ -29,7 +29,7 @@
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
         <classfileset dir="build/test" includes="**/*Test.class" />
         <classpath refid="test.run.cp" />
-        <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER}" />
+        <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS}" />
       </testng>
     </jacoco:coverage>
   </target>
