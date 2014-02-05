@@ -74,6 +74,7 @@ public class PCTRun extends PCT {
     private int debugReady = -1;
     private boolean graphMode = false;
     private boolean debugPCT = false;
+    private boolean noErrorOnQuit = false;
     private boolean compileUnderscore = false;
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
@@ -275,6 +276,16 @@ public class PCTRun extends PCT {
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
     }
+    
+    /**
+     * Turns on/off onQuit mode (no error on expected QUIT)
+     * 
+     * @param noErrorOnQuit boolean
+     */
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        this.noErrorOnQuit = noErrorOnQuit;
+    }
+    
 
     /**
      * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
@@ -1041,7 +1052,7 @@ public class PCTRun extends PCT {
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
-                    verbose));
+                    verbose,noErrorOnQuit));
 
             // Defines aliases
             int dbNum = 1;
