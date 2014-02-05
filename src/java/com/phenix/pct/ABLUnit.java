@@ -20,6 +20,8 @@ import com.phenix.pct.PCTRun;
  */
 public class ABLUnit extends PCTRun {
     private Collection<BatchTestParameter> testList = null;
+    private String JSONFILENAME = "tests.json";
+    private String ABLCOREPROC = "ablunitcore.p";
 
     // We get the batchtests list
     public void addConfiguredBatchTest(BatchTestParameter batchtest) {
@@ -33,15 +35,16 @@ public class ABLUnit extends PCTRun {
         super();
     }
 
-    public void execute() throws BuildException {    
-        String proc = "ablunitcore.p";
+    public void execute() throws BuildException {
         JsonWriter writer;
-        String loc = this.getLocation().toString();
-        loc = loc.substring(0, loc.lastIndexOf("\\"));
+
+        String loc = System.getProperty("java.io.tmpdir");
+
+        // loc = loc.substring(0, loc.lastIndexOf("\\"));
 
         if (testList != null) {
             try {
-                writer = new JsonWriter(new FileWriter(loc+"\\tests.json"));
+                writer = new JsonWriter(new FileWriter(loc + JSONFILENAME));
                 writer.beginObject(); // {
                 writer.name("tests"); // "tests" :
                 writer.beginArray(); // [
@@ -63,16 +66,26 @@ public class ABLUnit extends PCTRun {
             }
         } else
             throw new BuildException("Task 'ABLUnit' requires, at least, one 'batchtest' node.");
-        
-        this.setProcedure(proc);
-        this.setParameter("\"CFG="+loc+"\\tests.json\"");
-        //QUIT expected in 'ABLUnitCore.p'
+
+        File json = new File(loc + JSONFILENAME);
+        if (!json.exists())
+            throw new BuildException("Pas de fichier JSON.");
+
+        this.setProcedure(ABLCOREPROC);
+        this.setParameter("\"CFG=" + json + "\"");
+        // QUIT expected in 'ABLUnitCore.p'
         this.setNoErrorOnQuit(true);
-        
+        // Run PCTRun
         super.execute();
-        
-        File results = new File(loc+"\\results.xml");
-        if(!results.exists())
-            throw new BuildException("No results.xml file ("+loc+") ! Must be an error in a ABL Procedure/Classe.");
+        // Clean JSON File
+        json.delete();
+        // Check result file to detect potential error on the ABL side
+        String buildPath = new File(this.getLocation().getFileName()).getParent();
+
+        File results = new File(buildPath + "/results.xml");
+        if (!results.exists())
+            throw new BuildException("No results.xml file (" + loc
+                    + ") ! Must be an error in a ABL Procedure/Classe.");
+
     }
 }
