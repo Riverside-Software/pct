@@ -1,5 +1,6 @@
 package com.phenix.pct;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import com.phenix.pct.PCTRun;
  * Ant task for ABLunit tests. For more details about ABLUnit, see the progress documentation.
  * ABLUnit is officially available for version greater than 11.4.
  * 
- * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
+ * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL</a>
  * @version $Revision$
  */
 public class ABLUnit extends PCTRun {
@@ -33,7 +34,7 @@ public class ABLUnit extends PCTRun {
     }
 
     public void execute() throws BuildException {    
-        String proc = "pct/v11/PCTABLUnitRunner.p";
+        String proc = "ablunitcore.p";
         JsonWriter writer;
         String loc = this.getLocation().toString();
         loc = loc.substring(0, loc.lastIndexOf("\\"));
@@ -65,7 +66,13 @@ public class ABLUnit extends PCTRun {
         
         this.setProcedure(proc);
         this.setParameter("\"CFG="+loc+"\\tests.json\"");
-
+        //QUIT expected in 'ABLUnitCore.p'
+        this.setNoErrorOnQuit(true);
+        
         super.execute();
+        
+        File results = new File(loc+"\\results.xml");
+        if(!results.exists())
+            throw new BuildException("No results.xml file ("+loc+") ! Must be an error in a ABL Procedure/Classe.");
     }
 }

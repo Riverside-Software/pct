@@ -53,10 +53,6 @@
  */
 package com.phenix.pct;
 
-import static org.testng.Assert.assertTrue;
-
-import java.io.File;
-
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
@@ -86,8 +82,6 @@ public class ABLUnitTest extends BuildFileTestNg {
     public void test3() {
         configureProject("ABLUnit/test3/build.xml");
         executeTarget("test");
-        File result = new File("ABLUnit/test3/result.xml");
-        assertTrue(result.exists());
     }
 
 }

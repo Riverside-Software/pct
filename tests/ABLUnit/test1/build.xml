@@ -3,7 +3,7 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test">
-		<ABLUnit debugpct="true">
+		<ABLUnit>
 			<batchtest name="src/ABLUnitTest.p" />
 			<batchtest name="src/ABLUnitTest2.p" />
 			<propath>
