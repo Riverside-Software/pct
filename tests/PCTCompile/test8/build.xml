@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+  <target name="test2">
+    <sleep seconds="3" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" forceCompile="true">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

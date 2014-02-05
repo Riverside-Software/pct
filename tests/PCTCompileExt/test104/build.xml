@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test104">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema1.df" />
+    <PCTCreateBase dbName="test2" destDir="." dlcHome="${DLC}" schemaFile="schema2.df" />
+  </target>
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <fileset dir="src">
+        <include name="proc.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <target name="test2">
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <fileset dir="src">
+        <include name="proc.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <target name="test3">
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <fileset dir="src">
+        <include name="proc2.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+  <target name="test4">
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <fileset dir="src">
+        <include name="proc3.p" />
+      </fileset>
+    </PCTCompileExt>
+  </target>
+</project>
