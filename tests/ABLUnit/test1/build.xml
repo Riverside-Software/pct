@@ -3,14 +3,15 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test">
-		<ABLUnit>
+		<ABLUnit debugpct="true">
 			<batchtest name="src/ABLUnitTest.p" />
+			<batchtest name="src/ABLUnitTest2.p" />
 			<propath>
-				<pathelement path="src" />
-				<path location="C:\Users\Bastien\ProjetsRiverside\ablunit.pl" />
-				<path location="C:\Users\Bastien\ProjetsRiverside\OpenEdge.Core.pl" />
+				<pathelement location="src" />
+				<pathelement location="C:\Users\Bastien\ProjetsRiverside\ablunit.pl" />
+				<pathelement location="C:\Users\Bastien\ProjetsRiverside\OpenEdge.Core.pl" />
 			</propath>
 		</ABLUnit>
 	</target>
-
+	
 </project>

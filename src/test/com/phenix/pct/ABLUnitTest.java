@@ -67,21 +67,21 @@ import org.testng.annotations.Test;
  */
 public class ABLUnitTest extends BuildFileTestNg {
 
-    //Regular run of tests
+    //Regular run of 2 test procedures
     @Test(groups= {"all"})
     public void test1() {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
     }
     
-    //No tests to run
+   //Build error, No tests to run
     @Test(groups= {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
     
-  //Only one test must be runned
+  //Test runned with classe
     @Test(groups= {"all"})
     public void test3() {
         configureProject("ABLUnit/test3/build.xml");
