@@ -11,7 +11,7 @@ CLASS src.ABLUnitTest:
    
    @Test. 
    METHOD PUBLIC VOID StringTest():
-     Assert:AssertTrue("EQ" EQ "NEQ").
+     Assert:AssertTrue("EQ" EQ "EQ").
    END METHOD.
  
    @Test. 
