@@ -389,4 +389,10 @@ public class PCTRunTest extends BuildFileTestNg {
         configureProject("PCTRun/test41/build.xml");
         executeTarget("test");
     }
+    
+    @Test(groups = { "all" })
+    public void test42() {
+        configureProject("PCTRun/test42/build.xml");
+        executeTarget("test");
+    }
 }
