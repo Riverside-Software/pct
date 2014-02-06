@@ -4,6 +4,7 @@
 
 	<target name="test">
 		<ABLUnit>
+			<batchtest />
 			<propath>
 				<pathelement path="src" />
 				<path location="${TESTLIBS}/ablunit.pl" />
