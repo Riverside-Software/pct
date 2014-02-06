@@ -26,7 +26,7 @@ package com.phenix.pct;
 public class BatchTestParameter {
     private String name = null;
     private String test = null;
-
+    
     /**
      * Default constructor
      */
@@ -48,9 +48,9 @@ public class BatchTestParameter {
     }
 
     /**
-     * Parameter value
+     * Parameter test
      * 
-     * @param value String
+     * @param test String
      */
     public void setTest(String test) {
         this.test = test;
@@ -66,9 +66,9 @@ public class BatchTestParameter {
     }
 
     /**
-     * Returns parameter value
+     * Returns test value
      * 
-     * @return Parameter value
+     * @return test value
      */
     public String getTest() {
         return this.test;
