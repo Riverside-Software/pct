@@ -63,24 +63,30 @@ import org.testng.annotations.Test;
  */
 public class ABLUnitTest extends BuildFileTestNg {
 
-    //Regular run of 2 test procedures
-    @Test(groups= {"all"})
+    // Regular run of 2 test procedures
+    @Test(groups = {"all"})
     public void test1() {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
     }
-    
-   //Build error, No tests to run
-    @Test(groups= {"all"}, expectedExceptions = BuildException.class)
+
+    // Build error, No tests to run
+    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
-    
-  //Test runned with classe
-    @Test(groups= {"all"})
+
+    // Test runned with classe
+    @Test(groups = {"all"})
     public void test3() {
         configureProject("ABLUnit/test3/build.xml");
+        executeTarget("test");
+    }
+    // Test with a fileset
+    @Test(groups = {"all"})
+    public void test4() {
+        configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
     }
 
