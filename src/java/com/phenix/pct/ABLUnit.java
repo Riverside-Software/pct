@@ -15,15 +15,14 @@ import com.phenix.pct.PCTRun;
 
 /**
  * Ant task for ABLunit tests. For more details about ABLUnit, see the progress documentation.
- * ABLUnit is officially available for version greater than 11.4.
+ * ABLUnit is available for versions greater than 11.4.
  * 
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL</a>
- * @version $Revision$
  */
 public class ABLUnit extends PCTRun {
     private Collection<BatchTestParameter> testList = null;
     private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
-    private String ABLCOREPROC = "ablunitcore.p";
+    private String ABLCOREPROC = "ABLUnitCore.p";
     private Collection<FileSet> testFilesets = null;
     private boolean voidFlag = true;
 
@@ -52,8 +51,7 @@ public class ABLUnit extends PCTRun {
     }
 
     private void writeJson(String value, JsonWriter writer) throws IOException {
-        writer.beginObject();
-        writer.name("test").value(value);
+        writer.beginObject().name("test").value(value);
         writer.endObject();
         // At least one test was written
         voidFlag = false;
@@ -72,8 +70,7 @@ public class ABLUnit extends PCTRun {
         try {
             log("Creating json file : " + json, Project.MSG_VERBOSE);
             writer = new JsonWriter(new FileWriter(json));
-            writer.beginObject();
-            writer.name("tests");
+            writer.beginObject().name("tests");
             writer.beginArray();
             if (testList != null && !testList.isEmpty()) {
                 // Check batchtest element
@@ -118,19 +115,18 @@ public class ABLUnit extends PCTRun {
                 throw new BuildException(e);
             }
         }
-        if (!json.exists())
-            throw new BuildException("No JSON file.");
 
-        this.setProcedure(ABLCOREPROC);
-        this.setParameter("\"CFG=" + json + "\"");
+        setProcedure(ABLCOREPROC);
+        setParameter("CFG=" + json);
         // QUIT expected in 'ABLUnitCore.p'
-        this.setNoErrorOnQuit(true);
+        setNoErrorOnQuit(true);
         // Run PCTRun
         super.execute();
         // Clean JSON File
+        //TODO Surcharger le cleanup() de PCTRun (cf PCTCompile.java par exemple)
         json.delete();
         // Check result file to detect potential error on the ABL side
-        String buildPath = new File(this.getLocation().getFileName()).getParent();
+        String buildPath =getProject().getBaseDir().toString();
 
         File results = new File(buildPath, "results.xml");
         if (!results.exists())
