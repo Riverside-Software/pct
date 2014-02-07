@@ -53,8 +53,14 @@
  */
 package com.phenix.pct;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.tools.ant.BuildException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xml.sax.InputSource;
 
 /**
  * Class for testing ABLUnit task
@@ -62,12 +68,17 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL </a>
  */
 public class ABLUnitTest extends BuildFileTestNg {
+    private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Regular run of 2 test procedures
     @Test(groups = {"all"})
-    public void test1() {
+    public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
+        
+        InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "4");
     }
 
     // Build error, No tests to run
@@ -79,15 +90,25 @@ public class ABLUnitTest extends BuildFileTestNg {
 
     // Test runned with classe
     @Test(groups = {"all"})
-    public void test3() {
+    public void test3() throws XPathExpressionException {
         configureProject("ABLUnit/test3/build.xml");
         executeTarget("test");
+
+        InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
     }
+
     // Test with a fileset
     @Test(groups = {"all"})
-    public void test4() {
+    public void test4() throws XPathExpressionException {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
+
+        InputSource inputSource = new InputSource("ABLUnit/test4/results.xml");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "4");
+
     }
 
 }
