@@ -44,7 +44,7 @@ public class ABLUnit extends PCTRun {
         JsonWriter writer = null;
 
         if (testFilesets == null || testFilesets.isEmpty())
-            throw new BuildException("No files found or no fileset at all.");
+            throw new BuildException("No fileset found.");
 
         try {
             json = new File(System.getProperty("java.io.tmpdir"), JSONFILENAME);
@@ -62,18 +62,18 @@ public class ABLUnit extends PCTRun {
                     writer.endObject();
                 }
             }
+            writer.endArray();
+            writer.endObject();
         } catch (IOException e) {
             throw new BuildException(e);
         } finally {
             try {
-                writer.endArray();
-                writer.endObject();
                 writer.close();
             } catch (IOException e) {
                 throw new BuildException(e);
             }
         }
-        //Setting PCTRun parameters
+        // Setting PCTRun parameters
         setProcedure("ABLUnitCore.p");
         setParameter("CFG=" + json);
         // QUIT expected in 'ABLUnitCore.p'
@@ -89,7 +89,7 @@ public class ABLUnit extends PCTRun {
             throw new BuildException("No results.xml file (" + buildPath
                     + ") ! It must be an error in a ABL Procedure/Classe.");
     }
-    
+
     /**
      * Delete temporary files if debug not activated
      * 
