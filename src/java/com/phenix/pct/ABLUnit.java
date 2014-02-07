@@ -16,24 +16,13 @@ import com.phenix.pct.PCTRun;
 
 /**
  * Ant task for ABLunit tests. For more details about ABLUnit, see the progress documentation.
- * ABLUnit is available for versions greater than 11.4.
  * 
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL</a>
  */
 public class ABLUnit extends PCTRun {
-    private Collection<BatchTestParameter> testList = null;
     private Collection<FileSet> testFilesets = null;
-    private boolean voidFlag = true;
     private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
     private File json = null;
-
-    // We get the batchtests list
-    public void addConfiguredBatchTest(BatchTestParameter batchtest) {
-        if (this.testList == null) {
-            testList = new ArrayList<BatchTestParameter>();
-        }
-        testList.add(batchtest);
-    }
 
     /**
      * Adds a set of files to load
@@ -51,59 +40,28 @@ public class ABLUnit extends PCTRun {
         super();
     }
 
-    private void writeJson(String value, JsonWriter writer) throws IOException {
-        writer.beginObject().name("test").value(value);
-        writer.endObject();
-        // At least one test was written
-        voidFlag = false;
-    }
-
     public void execute() throws BuildException {
         JsonWriter writer = null;
 
-        if (testList == null && testFilesets == null)
-            throw new BuildException(
-                    "Task 'ABLUnit' requires one 'batchtest' node or a valid fileset.");
-
-        json = new File(System.getProperty("java.io.tmpdir"), JSONFILENAME);
+        if (testFilesets == null || testFilesets.isEmpty())
+            throw new BuildException("No files found or no fileset at all.");
 
         try {
-            log("Creating json file : " + json, Project.MSG_VERBOSE);
+            json = new File(System.getProperty("java.io.tmpdir"), JSONFILENAME);
+            log("Json file created : " + json, Project.MSG_VERBOSE);
             writer = new JsonWriter(new FileWriter(json));
             writer.beginObject().name("tests");
             writer.beginArray();
-            if (testList != null && !testList.isEmpty()) {
-                // Check batchtest element
-                for (BatchTestParameter rn : testList) {
-                    String value = rn.getName();
-                    if (!value.isEmpty()) {
-                        log("Batchtest : " + value, Project.MSG_VERBOSE);
-                        if (value.endsWith(".p") || value.endsWith(".cls")) {
-                            log("Adding '" + value + "' to JSon.", Project.MSG_VERBOSE);
-                            /*
-                             * if (rn.getTest() != null) value += value + "#" + rn.getTest();
-                             */
-                            writeJson(value, writer);
-                        } else
-                            log("Ignore invalid name: " + value, Project.MSG_INFO);
-                    } else
-                        log("We expect a 'name' attribut.", Project.MSG_ERR);
+            // Check fileset element
+            for (FileSet fs : testFilesets) {
+                for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+
+                    File f = new File(fs.getDir(), file);
+                    log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
+                    writer.beginObject().name("test").value(f.toString());
+                    writer.endObject();
                 }
             }
-            if (testFilesets != null && !testFilesets.isEmpty()) {
-                // Check fileset element
-                for (FileSet fs : testFilesets) {
-                    for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                        if (file.endsWith(".p") || file.endsWith(".cls")) {
-                            File f = new File(fs.getDir(), file);
-                            log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
-                            writeJson(f.toString(), writer);
-                        }
-                    }
-                }
-            }
-            if (voidFlag)
-                throw new BuildException("Nothing to test !");
         } catch (IOException e) {
             throw new BuildException(e);
         } finally {
@@ -115,7 +73,7 @@ public class ABLUnit extends PCTRun {
                 throw new BuildException(e);
             }
         }
-
+        //Setting PCTRun parameters
         setProcedure("ABLUnitCore.p");
         setParameter("CFG=" + json);
         // QUIT expected in 'ABLUnitCore.p'
@@ -131,6 +89,7 @@ public class ABLUnit extends PCTRun {
             throw new BuildException("No results.xml file (" + buildPath
                     + ") ! It must be an error in a ABL Procedure/Classe.");
     }
+    
     /**
      * Delete temporary files if debug not activated
      * 
