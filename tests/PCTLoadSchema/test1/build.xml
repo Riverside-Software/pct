@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTLoadSchema dlcHome="${DLC}" />
+  </target>
+
+</project>

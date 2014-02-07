@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test20">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="false" listing="false" preprocess="false" debugListing="false">
+      <fileset dir="src" includes="**/*.p" />
+    </PCTCompileExt>
+  </target>
+
+  <target name="test2">
+    <sleep seconds="3" />
+    <touch file="src/test.p" />
+	<touch file="src/dir1/dir2/test.p" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true">
+      <fileset dir="src" includes="**/*.p" />
+    </PCTCompileExt>
+  </target>
+
+  <target name="test3">
+    <sleep seconds="3" />
+    <touch file="src/test.p" />
+	<touch file="src/dir1/dir2/test.p" />
+    <mkdir dir="debug" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true" debugListingDir="debug">
+      <fileset dir="src" includes="**/*.p" />
+    </PCTCompileExt>
+  </target>
+
+</project>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test22">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTRunOption name="-param" value="Message with spaces" />
+    </PCTRun>
+  </target>
+
+</project>

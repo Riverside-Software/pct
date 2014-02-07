@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="ABLUnit-test1">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test">
+		<ABLUnit>
+			<batchtest name="src/ABLUnitTest.p" />
+			<batchtest name="src/ABLUnitTest2.p" />
+			<propath>
+				<pathelement location="src" />
+				<pathelement location="${TESTLIBS}/ablunit.pl" />
+				<pathelement location="${TESTLIBS}/OpenEdge.Core.pl" />
+			</propath>
+		</ABLUnit>
+	</target>
+	
+</project>

@@ -1,0 +1,253 @@
+/*
+ * Copyright  2000-2004 The Apache Software Foundation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+package com.phenix.pct;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.MessageFormat;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
+
+/**
+ * Class managing name servers tasks
+ * 
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
+ * @version $Revision$
+ */
+public class PCTNSBroker extends PCTBroker {
+    private final static String DEFAULT_NS = "NS1";
+
+    private String nameServer = DEFAULT_NS;
+    private boolean autoStart = false;
+    private int brokerKeepAliveTimeout = -1;
+    private boolean logAppend = true;
+    private File workDir = null;
+    private File serverLogFile = null;
+    private int portNumber = -1;
+    private int serverLogLevel = -1;
+
+    private int tmpFileID = -1;
+    private File tmpFile = null;
+
+    /**
+     * Creates a new PCTNSBroker object. Temp files initialization.
+     */
+    public PCTNSBroker() {
+        super();
+
+        tmpFileID = PCT.nextRandomInt();
+        tmpFile = new File(System.getProperty("java.io.tmpdir"), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    /**
+     * AutoStart property. Default value is false.
+     * 
+     * @param autoStart Boolean
+     */
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
+    }
+
+    /**
+     * brokerKeepAliveTimeout property. Default value is 30.
+     * 
+     * @param brokerKeepAliveTimeout int
+     */
+    public void setBrokerKeepAliveTimeout(int brokerKeepAliveTimeout) {
+        this.brokerKeepAliveTimeout = brokerKeepAliveTimeout;
+    }
+
+    /**
+     * LogAppend property. Default value is true.
+     * 
+     * @param logAppend Boolean
+     */
+    public void setLogAppend(boolean logAppend) {
+        this.logAppend = logAppend;
+    }
+
+    /**
+     * Port number (or name).
+     * 
+     * @param portNumber String
+     */
+    public void setPortNumber(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
+    /**
+     * Server log file property. No default value.
+     * 
+     * @param serverLogFile File
+     */
+    public void setServerLogFile(File serverLogFile) {
+        this.serverLogFile = serverLogFile;
+    }
+
+    /**
+     * Server logging level property. No default value. Should be between 1 and 5.
+     * 
+     * @param serverLogLevel
+     */
+    public void setServerLogLevel(int serverLogLevel) {
+        this.serverLogLevel = serverLogLevel;
+    }
+
+    /**
+     * Working directory of servers. No default value.
+     * 
+     * @param workDir File
+     */
+    public void setWorkDir(File workDir) {
+        this.workDir = workDir;
+    }
+
+    /**
+     * Controlling name server. Default value is NS1
+     * 
+     * @param ns String
+     */
+    public void setNameServer(String ns) {
+        this.nameServer = ns;
+    }
+
+    /**
+     * Do the work
+     * 
+     * @throws BuildException Something went wrong
+     */
+    public void execute() throws BuildException {
+        File propFile = null;
+
+        try {
+            this.checkAttributes();
+            // Choosing right properties file
+            if (this.file == null) {
+                propFile = new File(this.getDlcHome(), "properties/" + UBROKER_PROPERTIES);
+            } else {
+                propFile = new File(this.file);
+            }
+            if (!propFile.exists())
+                throw new BuildException("Unable to find properties file "
+                        + propFile.getAbsolutePath());
+            // And do the work
+            writeDeltaFile();
+            Task task = getCmdLineMergeTask(propFile, tmpFile);
+            task.execute();
+        } catch (BuildException be) {
+            throw be;
+        } finally {
+            this.cleanup();
+        }
+    }
+
+    /**
+     * Write files to be used as a parameter for the MergeProp shell script.
+     * 
+     * @throws BuildException Something went wrong during write.
+     * 
+     */
+    private void writeDeltaFile() {
+        try {
+            PrintWriter bw = new PrintWriter(new FileWriter(tmpFile));
+            bw.println("[NameServer." + this.nameServer + "]");
+            if (!this.action.equalsIgnoreCase("delete")) {
+                bw.println("environment=" + this.name);
+                bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
+                bw.println("brokerKeepAliveTimeout=" + this.brokerKeepAliveTimeout);
+                bw.println("logAppend=" + (this.logAppend ? "1" : "0"));
+                if (this.portNumber != -1)
+                    bw.println("portNumber=" + this.portNumber);
+                if (this.serverLogFile != null)
+                    bw.println("srvrLogFile=" + this.serverLogFile);
+                if (this.serverLogLevel != -1)
+                    bw.println("srvrLoggingLevel=" + this.serverLogLevel);
+                if (this.workDir != null)
+                    bw.println("workDir=" + this.workDir);
+
+            }
+            bw.close();
+        } catch (IOException ioe) {
+            throw new BuildException("Unable to create temp file");
+        }
+    }
+
+    /**
+     * Creates an Exec task, calling mergeprop shell script.
+     */
+    private Task getCmdLineMergeTask(File propFile, File deltaFile) {
+        ExecTask task = new ExecTask(this);
+        task.setDir(this.getProject().getBaseDir());
+        task.setExecutable(this.getExecPath("mergeprop").getAbsolutePath());
+        task.setFailonerror(true);
+
+        Environment.Variable var4 = new Environment.Variable();
+        var4.setKey("DLC"); //$NON-NLS-1$
+        var4.setValue(this.getDlcHome().toString());
+        task.addEnv(var4);
+
+        task.createArg().setValue("-type");
+        task.createArg().setValue("ubroker");
+        task.createArg().setValue("-action");
+        task.createArg().setValue(this.action);
+        task.createArg().setValue("-target");
+        task.createArg().setValue(propFile.getAbsolutePath());
+        task.createArg().setValue("-delta");
+        task.createArg().setValue(deltaFile.getAbsolutePath());
+
+        return task;
+    }
+
+    /**
+     * Cross-attributes check
+     * 
+     * @throws BuildException Attributes are wrong...
+     */
+    private void checkAttributes() throws BuildException {
+        if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
+                && (!action.equalsIgnoreCase(DELETE))) {
+            throw new BuildException("Unknown action : " + action);
+        }
+
+        if ((serverLogLevel != -1) && ((serverLogLevel < 1) || (serverLogLevel > 5)))
+            throw new BuildException("Log level should be between 1 and 5");
+
+        if (this.name == null) {
+            throw new BuildException("Name attribute is missing");
+        }
+        if (this.action == null) {
+            throw new BuildException("Action attribute is missing");
+        }
+    }
+
+    private void cleanup() {
+        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
+            log(
+                    MessageFormat
+                            .format(
+                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmpFile.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
+        }
+    }
+
+}

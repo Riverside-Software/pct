@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test6">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" commitWhenErrors="false">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="base2">
+    <mkdir dir="db2" />
+    <PCTCreateBase dbName="test" destDir="db2" dlcHome="${DLC}" />
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" commitWhenErrors="true">
+      <PCTConnection dbName="test" dbDir="db2" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" />
+      <DBConnection dbName="test" dbDir="db2" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+</project>

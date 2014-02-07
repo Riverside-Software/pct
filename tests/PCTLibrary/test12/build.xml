@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="PCTLibrary-test12">
+  <taskdef resource="PCT.properties" />
+
+  <target name="build">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" cpinternal="1252" cpstream="1252" cpcoll="basic" dlcHome="${DLC}">
+      <fileset dir="src" includes="test1252.p" />
+    </PCTCompile>
+    <PCTCompile destDir="build" cpinternal="1254" cpstream="1254" cpcoll="turkish" dlcHome="${DLC}">
+      <fileset dir="src" includes="test1254.p" />
+    </PCTCompile>
+    <PCTCompile destDir="build" cpinternal="ibm862" cpstream="ibm862" cpcoll="hebrew" dlcHome="${DLC}">
+      <fileset dir="src" includes="testibm862.p" />
+    </PCTCompile>
+    <PCTCompile destDir="build" cpinternal="iso8859-1" cpstream="iso8859-1" cpcoll="basic" dlcHome="${DLC}">
+      <fileset dir="src" includes="test8859.p" />
+    </PCTCompile>
+    <PCTCompile destDir="build" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" dlcHome="${DLC}">
+      <fileset dir="src" includes="testutf8.p" />
+    </PCTCompile>
+    <mkdir dir="dist" />
+    <PCTLibrary destfile="dist/test.pl" dlcHome="${DLC}" encoding="iso8859-1">
+      <fileset dir="build" includes="*.r" />
+    </PCTLibrary>
+  </target>
+
+  <path id="propath">
+    <pathelement location="dist/test.pl" />
+  </path>
+  
+  <target name="test1">
+    <PCTRun dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" cpcase="basic" procedure="test1252.p">
+      <propath refid="propath" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" cpcase="basic" procedure="test1254.p">
+      <propath refid="propath" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" cpcase="basic" procedure="testibm862.p">
+      <propath refid="propath" />
+    </PCTRun>
+  </target>
+
+  <target name="test4">
+    <PCTRun dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" cpcase="basic" procedure="test8859.p">
+      <propath refid="propath" />
+    </PCTRun>
+  </target>
+  
+  <target name="test5">
+    <PCTRun dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" cpcase="basic" procedure="testutf8.p">
+      <propath refid="propath" />
+    </PCTRun>
+  </target>
+
+</project>
