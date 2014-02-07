@@ -71,7 +71,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Regular run of 2 test procedures
-    @Test(groups = {"all"})
+    @Test(groups = {"v11"})
     public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
@@ -82,14 +82,14 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Build error, No tests to run
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
 
     // Test runned with classe
-    @Test(groups = {"all"})
+    @Test(groups = {"v11"})
     public void test3() throws XPathExpressionException {
         configureProject("ABLUnit/test3/build.xml");
         executeTarget("test");
