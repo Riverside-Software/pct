@@ -11,7 +11,7 @@
     Created     : Tue Jan 28 14:49:48 CET 2014
     Notes       :
   ----------------------------------------------------------------------*/
-
+ROUTINE-LEVEL ON ERROR UNDO, THROW.
 /* ***************************  Definitions  ************************** */
 USING OpenEdge.ABLUnit.Assertions.Assert.
 
