@@ -1270,7 +1270,7 @@ public class PCTRun extends PCT {
             }
             if ((profilerParamFile != null) && profilerParamFile.exists()
                     && !profilerParamFile.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTRun.5"), status.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+                log(MessageFormat.format(Messages.getString("PCTRun.5"), profilerParamFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
             if (outputParameters != null) {
                 for (OutputParameter param : outputParameters) {
