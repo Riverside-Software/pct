@@ -3,6 +3,7 @@ package com.phenix.pct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,10 +22,10 @@ import com.phenix.pct.PCTRun;
  */
 public class ABLUnit extends PCTRun {
     private Collection<BatchTestParameter> testList = null;
-    private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
-    private String ABLCOREPROC = "ABLUnitCore.p";
     private Collection<FileSet> testFilesets = null;
     private boolean voidFlag = true;
+    private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
+    private File json = null;
 
     // We get the batchtests list
     public void addConfiguredBatchTest(BatchTestParameter batchtest) {
@@ -59,7 +60,6 @@ public class ABLUnit extends PCTRun {
 
     public void execute() throws BuildException {
         JsonWriter writer = null;
-        File json;
 
         if (testList == null && testFilesets == null)
             throw new BuildException(
@@ -116,21 +116,34 @@ public class ABLUnit extends PCTRun {
             }
         }
 
-        setProcedure(ABLCOREPROC);
+        setProcedure("ABLUnitCore.p");
         setParameter("CFG=" + json);
         // QUIT expected in 'ABLUnitCore.p'
         setNoErrorOnQuit(true);
         // Run PCTRun
         super.execute();
-        // Clean JSON File
-        //TODO Surcharger le cleanup() de PCTRun (cf PCTCompile.java par exemple)
-        json.delete();
+
         // Check result file to detect potential error on the ABL side
-        String buildPath =getProject().getBaseDir().toString();
+        File buildPath = getProject().getBaseDir();
 
         File results = new File(buildPath, "results.xml");
         if (!results.exists())
             throw new BuildException("No results.xml file (" + buildPath
-                    + ") ! Must be an error in a ABL Procedure/Classe.");
+                    + ") ! It must be an error in a ABL Procedure/Classe.");
+    }
+    /**
+     * Delete temporary files if debug not activated
+     * 
+     * @see PCTRun#cleanup
+     */
+    protected void cleanup() {
+        super.cleanup();
+        // Clean JSON File
+        if (!getDebugPCT()) {
+            if (json.exists() && !json.delete()) {
+                log(MessageFormat.format(
+                        Messages.getString("PCTCompile.42"), json.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+            }
+        }
     }
 }
