@@ -99,16 +99,4 @@ public class ABLUnitTest extends BuildFileTestNg {
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
     }
 
-    // Test with a fileset
-    @Test(groups = {"all"})
-    public void test4() throws XPathExpressionException {
-        configureProject("ABLUnit/test4/build.xml");
-        executeTarget("test");
-
-        InputSource inputSource = new InputSource("ABLUnit/test4/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "4");
-
-    }
-
 }
