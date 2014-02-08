@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" 
+       xmlns:prgrs="http://www.progress.com/caf/camel/component/prgrs" 
+       xmlns:cafBinding="http://www.progress.com/caf/binding/strategy"
+       xmlns:AppServer="urn:schemas-progress-com:bpm:appserverbean:0001"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd 
+       http://www.progress.com/caf/camel/component/prgrs http://www.progress.com/caf/camel/component/prgrs/schemas/prgrs.xsd 
+       http://www.progress.com/caf/binding/strategy http://www.progress.com/caf/binding/cafBinding.xsd
+       http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd 
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       urn:schemas-progress-com:bpm:appserverbean:0001 http://www.progress.com/appserverbean0001.xsd">
+ 
+ 	 <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+ 	 
+     <import resource="resourceModel.xml"/>
+     <import resource="mapping.xml"/>
+     
+     <import resource="../../runtime.props"/>
+    
+    
+    
+    <!-- Specifying bindingId here is mandatory -->
+    <prgrs:prgRsServer id="rsServer" address="/RestProjectService" 
+        bindingId="http://com.progress.caf.cxf.jaxrs" >
+        <prgrs:providers>
+	<bean id="CafExceptionMapper" class="com.progress.rest.adapters.oe.CafExceptionMapper"/>
+	<bean id="Open4GLExceptionMapper" class="com.progress.rest.adapters.oe.Open4GLExceptionMapper"/>
+ 	<bean id="RestRunTimeExceptionMapper" class="com.progress.rest.adapters.oe.RestRuntimeExceptionMapper"/>
+	</prgrs:providers>
+    
+        <prgrs:modelBeanRef ref="resourceModel">
+   		 </prgrs:modelBeanRef>
+   		 
+    </prgrs:prgRsServer>
+ 
+    <bean id="AppServerBindingStrategy" class="com.progress.adapters.v2.binding.strategy.impl.NestedBindingStrategy"> 
+	 <property name="childBindingStrategySet">
+		 <set>
+			 <ref bean="IDLBindingStrategy"/>
+				<ref bean="restMappingBindingStrategy"/>
+			<ref bean="RestBindingStrategy"/>
+			</set> 
+	 </property> 
+	 <property name="responseFlowStyle" value="REVERSE"></property>
+	   </bean>
+	    <bean id="RestBindingStrategy" class="com.progress.caf.camel.component.oe.rest.RestBindingStrategy"/>
+	  <bean id="IDLBindingStrategy" class="com.progress.adapters.rest.binding.strategy.IDLBindingStrategy"/>
+    
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from
+                uri="prgrs://bean://rsServer?bindingStrategy=#AppServerBindingStrategy" />
+            <to uri="AppServer:AppServerEndpoint" />
+        </route>
+    </camelContext>
+    
+  <bean id="restMappingBindingStrategy"
+     class="com.progress.adapters.rest.binding.strategy.RestMappingBindingStrategy">
+     <property name="mappingBean">
+           <ref bean="mapping" />
+     </property>
+  </bean>
+
+</beans>
