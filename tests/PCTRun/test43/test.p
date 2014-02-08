@@ -1,0 +1,2 @@
+MESSAGE "Hello".
+QUIT.
