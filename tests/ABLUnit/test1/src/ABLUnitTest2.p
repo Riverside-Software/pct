@@ -15,5 +15,5 @@ END.
 @Test.
 PROCEDURE test3:
   /* Should be an error, but successful for now */
-  RUN test.p.
+  Assert:AssertEquals(INTEGER("A"), 1).
 END.
