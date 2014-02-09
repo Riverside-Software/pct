@@ -3,7 +3,7 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test1">
-		<PCTRun graphicalMode="false" procedure="src/utf8.p" dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8" debugPCT="true">
+		<PCTRun graphicalMode="false" procedure="src/utf8.p" dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8">
 			<OutputParameter name="ABC" />
 			<PCTRunOption name="-cpcoll" value="Basic" />
 			<PCTRunOption name="-cpcase" value="Basic" />
