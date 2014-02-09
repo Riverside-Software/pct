@@ -97,10 +97,9 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
-        // Should be 1/1/1
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "1");
     }
 
 }
