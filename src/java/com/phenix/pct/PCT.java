@@ -79,10 +79,6 @@ public abstract class PCT extends Task {
             this.setDlcBin(new File(dlcHome, "bin")); //$NON-NLS-1$
         }
 
-        if (pdsHome == null) {
-            setPdsHome(new File(dlcHome, "oeide"));
-        }
-
         // Tries to guess java directory
         if (this.dlcJava == null) {
             try {
@@ -218,6 +214,9 @@ public abstract class PCT extends Task {
     }
 
     protected final File getPdsHome() {
+        if (pdsHome == null)
+            return new File(dlcHome, "oeide");
+
         return pdsHome;
     }
 
@@ -310,7 +309,7 @@ public abstract class PCT extends Task {
         fs1.setIncludes("progress.jar");
 
         FileSet fs2 = new FileSet();
-        fs2.setDir(new File(pdsHome, "eclipse/plugins"));
+        fs2.setDir(new File(getPdsHome(), "eclipse/plugins"));
         fs2.createPatternSet().setIncludes(
                 "com.progress.openedge.pdt.oemobile.designer_*/mobdesigner.jar");
         fs2.createPatternSet().setIncludes("com.progress.openedge.pdt.rest_*/rest.jar");
@@ -334,7 +333,7 @@ public abstract class PCT extends Task {
         fs3.setIncludes("1padapters-idl.jar");
 
         FileSet fs4 = new FileSet();
-        fs4.setDir(new File(pdsHome, "eclipse/plugins"));
+        fs4.setDir(new File(getPdsHome(), "eclipse/plugins"));
         fs4.setIncludes("com.progress.tools.caf.runtime_*/lib/rest/expose/1padapters-restExpose.jar");
         fs4.createPatternSet().setIncludes("com.progress.tools.common.ui.mapper.el_*.jar");
         fs4.createPatternSet().setIncludes("com.progress.tools.common.ui.mapper_*.jar");
