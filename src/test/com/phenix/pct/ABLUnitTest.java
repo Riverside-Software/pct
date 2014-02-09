@@ -71,32 +71,36 @@ public class ABLUnitTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Regular run of 2 test procedures
-    @Test(groups = {"all"})
+    @Test(groups = {"v11"})
     public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
         
         InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "4");
+        // Should be 2/2/2
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "4");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
     }
 
     // Build error, No tests to run
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
 
     // Test runned with classe
-    @Test(groups = {"all"})
+    @Test(groups = {"v11"})
     public void test3() throws XPathExpressionException {
         configureProject("ABLUnit/test3/build.xml");
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+        // Should be 1/1/1
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "1");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
     }
 
 }
