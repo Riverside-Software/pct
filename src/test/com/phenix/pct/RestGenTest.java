@@ -55,20 +55,18 @@ package com.phenix.pct;
 
 import java.io.File;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * Class for testing ABLUnit task
  * 
- * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class RestGenTest extends BuildFileTestNg {
 
-    @Test(groups = {"v11"})
-    public void test1() throws XPathExpressionException {
+    @Test(groups = {"v11", "win"})
+    public void test1() {
         configureProject("RestGen/test1/build.xml");
         executeTarget("test");
 
