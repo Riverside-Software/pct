@@ -8,3 +8,4 @@
 ^website$
 ^src/java/com/phenix/pct/PCT\.properties$
 ^classDocTemp$
+^profiler$
