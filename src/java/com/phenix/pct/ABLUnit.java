@@ -28,6 +28,7 @@ public class ABLUnit extends PCTRun {
     private String format = "xml";
     private String[] cases;
     private boolean writeLog = false;
+    private boolean quitOnEnd = false;
 
     /**
      * Set the path of the results file.
@@ -50,16 +51,25 @@ public class ABLUnit extends PCTRun {
     /**
      * Log attribute.
      * 
-     * @param format
+     * @param writelog
      */
     public void setWriteLog(boolean writelog) {
         this.writeLog = writelog;
     }
 
     /**
+     * QuitOnEnd attribute.
+     * 
+     * @param quitOnEnd
+     */
+    public void setQuitOnEnd(boolean quitOnEnd) {
+        this.quitOnEnd = quitOnEnd;
+    }
+
+    /**
      * Select case(s).
      * 
-     * @param format
+     * @param cases
      */
     public void setCases(String cases) {
         this.cases = cases.split(",");
@@ -115,6 +125,10 @@ public class ABLUnit extends PCTRun {
             // Log
             if (writeLog)
                 writer.name("writeLog").value(writeLog);
+            // QuitOnEnd
+            if (quitOnEnd)
+                writer.name("quitOnEnd").value(quitOnEnd);
+
             // End "Options" object
             writer.endObject();
 
