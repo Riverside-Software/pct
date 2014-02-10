@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faceted-project>
+  <fixed facet="openedge.project"/>
+  <installed facet="caf.adapters" version="1.0"/>
+  <installed facet="openedge.project" version="11"/>
+  <installed facet="openedge.appserver" version="11"/>
+  <installed facet="openedge.rest" version="11"/>
+</faceted-project>

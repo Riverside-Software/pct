@@ -1,22 +1,23 @@
+ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW. 
 USING OpenEdge.ABLUnit.Assertions.Assert. 
 
-CLASS src.ABLUnitTest: 
-  
+CLASS ABLUnitTest:
+
    @Test. 
-   METHOD PUBLIC VOID IntegerTest():
-     Assert:AssertEquals(10,10).
+   METHOD PUBLIC VOID test1():
+      Assert:AssertTrue(TRUE).
    END METHOD.
-   
+
    @Test. 
-   METHOD PUBLIC VOID StringTest():
-     Assert:AssertTrue("EQ" EQ "EQ").
+   METHOD PUBLIC VOID test2():
+     Assert:AssertTrue(FALSE).
    END METHOD.
- 
+
    @Test. 
-   METHOD PUBLIC VOID StringContainTest():
-     Assert:AssertTrue("Assure" MATCHES "*R*").
+   METHOD PUBLIC VOID test3():
+      /* Should be an error, but successful for now */
+      Assert:AssertEquals(INTEGER("A"), 1).
    END METHOD.
-  
+
 END CLASS.
