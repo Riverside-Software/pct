@@ -23,6 +23,47 @@ public class ABLUnit extends PCTRun {
     private Collection<FileSet> testFilesets = null;
     private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
     private File json = null;
+    private File buildPath;
+    private String location;
+    private String format = "xml";
+    private String[] cases;
+    private boolean writeLog = false;
+
+    /**
+     * Set the path of the results file.
+     * 
+     * @param location
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /**
+     * Set the format of the results file.
+     * 
+     * @param format
+     */
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    /**
+     * Log attribute.
+     * 
+     * @param format
+     */
+    public void setWriteLog(boolean writelog) {
+        this.writeLog = writelog;
+    }
+
+    /**
+     * Select case(s).
+     * 
+     * @param format
+     */
+    public void setCases(String cases) {
+        this.cases = cases.split(",");
+    }
 
     /**
      * Adds a set of files to load
@@ -46,23 +87,58 @@ public class ABLUnit extends PCTRun {
         if (testFilesets == null || testFilesets.isEmpty())
             throw new BuildException("No fileset found.");
 
+        // Creating config file (json)
         try {
             json = new File(System.getProperty("java.io.tmpdir"), JSONFILENAME);
-            log("Json file created : " + json, Project.MSG_VERBOSE);
             writer = new JsonWriter(new FileWriter(json));
-            writer.beginObject().name("tests");
-            writer.beginArray();
-            // Check fileset element
+            log("Json file created : " + json, Project.MSG_VERBOSE);
+            writer.beginObject();
+
+            // Options
+            writer.name("options").beginObject();
+            // Result file
+            if (location != null) {
+                buildPath = new File(location);
+                if (!buildPath.isDirectory())
+                    throw new BuildException("Invalid directory :" + location);
+
+                log("Adding location'" + buildPath + "' to JSon.", Project.MSG_VERBOSE);
+
+                writer.name("output").beginObject();
+                writer.name("location").value(location);
+                writer.name("format").value(format);
+
+                writer.endObject();
+            } else
+                buildPath = getProject().getBaseDir();
+
+            // Log
+            if (writeLog)
+                writer.name("writeLog").value(writeLog);
+            // End "Options" object
+            writer.endObject();
+
+            // Tests
+            writer.name("tests").beginArray();
             for (FileSet fs : testFilesets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
 
                     File f = new File(fs.getDir(), file);
                     log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
                     writer.beginObject().name("test").value(f.toString());
+                    // If we want to execute a psecific test
+                    if (cases != null) {
+                        writer.name("cases").beginArray();
+                        for (String cs : cases) {
+                            writer.value(cs);
+                        }
+                        writer.endArray();
+                    }
                     writer.endObject();
                 }
             }
             writer.endArray();
+            // Root object
             writer.endObject();
         } catch (IOException e) {
             throw new BuildException(e);
@@ -81,10 +157,7 @@ public class ABLUnit extends PCTRun {
         // Run PCTRun
         super.execute();
 
-        // Check result file to detect potential error on the ABL side
-        File buildPath = getProject().getBaseDir();
-
-        File results = new File(buildPath, "results.xml");
+        File results = new File(buildPath, "results." + format);
         if (!results.exists())
             throw new BuildException("No results.xml file (" + buildPath
                     + ") ! It must be an error in a ABL Procedure/Classe.");
@@ -100,8 +173,8 @@ public class ABLUnit extends PCTRun {
         // Clean JSON File
         if (!getDebugPCT()) {
             if (json.exists() && !json.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), json.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+                log(MessageFormat.format(Messages.getString("PCTCompile.42"),
+                        json.getAbsolutePath()), Project.MSG_INFO);
             }
         }
     }

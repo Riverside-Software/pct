@@ -53,6 +53,10 @@
  */
 package com.phenix.pct;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -75,7 +79,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
-        
+
         InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
         Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "4");
@@ -96,6 +100,40 @@ public class ABLUnitTest extends BuildFileTestNg {
 
         InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
         Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+    }
+
+    // Test with different path to resultset
+    @Test(groups = {"v11"})
+    public void test4() throws XPathExpressionException, FileNotFoundException {
+        configureProject("ABLUnit/test4/build.xml");
+        executeTarget("test");
+        File result = new File(System.getProperty("java.io.tmpdir"), "results.xml");
+        InputSource inputSource = new InputSource(new FileInputStream(result));
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
+        // TODO Why is the inpustream closed after the first xpath.avaluate ?
+        // Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+    }
+
+    // Test with log file
+    @Test(groups = {"v11"})
+    public void test5() throws XPathExpressionException {
+        configureProject("ABLUnit/test5/build.xml");
+        executeTarget("test");
+
+        InputSource inputSource = new InputSource("ABLUnit/test5/results.xml");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
+        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+    }
+
+    // Test with 1 file, 1 case
+    @Test(groups = {"v11"})
+    public void test6() throws XPathExpressionException {
+        configureProject("ABLUnit/test6/build.xml");
+        executeTarget("test");
+
+        InputSource inputSource = new InputSource("ABLUnit/test6/results.xml");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
     }
 

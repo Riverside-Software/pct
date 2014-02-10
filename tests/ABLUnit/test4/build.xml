@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="ABLUnit-test4">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test">
+		<ABLUnit location="${java.io.tmpdir}" format="xml">
+			<fileset dir="src" includes="**/*.cls" />
+			<propath>
+				<pathelement path="src" />
+				<path location="${TESTLIBS}/ablunit.pl" />
+				<path location="${TESTLIBS}/OpenEdge.Core.pl" />
+			</propath>
+		</ABLUnit>
+	</target>
+
+</project>
