@@ -3,7 +3,7 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test">
-		<ABLUnit writelog="true" cases="StringTest,StringTest2">
+		<ABLUnit cases="StringTest,StringTest2">
 			<fileset file="src/ABLUnitTest.cls" />
 			<propath>
 				<pathelement path="src" />
