@@ -173,7 +173,7 @@ public class ABLUnit extends PCTRun {
 
         File results = new File(buildPath, "results." + format);
         if (!results.exists())
-            throw new BuildException("No results.xml file (" + buildPath
+            throw new BuildException("No results file (" + results
                     + ") ! It must be an error in a ABL Procedure/Classe.");
     }
 
