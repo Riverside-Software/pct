@@ -20,7 +20,7 @@
   </target>
 
   <target name="test">
-    <!-- -DGROUPS=all,v10 -DEXCLUDES=unix -DTESTENV=ANT -DPROFILER=false -->
+    <!-- -DGROUPS=all,v10 -DEXCLUDES=unix -DTESTENV=ANT -DPROFILER=false -DTESTLIBS=/path/to/testlibs -->
     <mkdir dir="test-output" />
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
