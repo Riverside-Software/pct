@@ -1,0 +1,535 @@
+/* Javadoc style sheet */
+
+/* Define colors, fonts and other style attributes here to override the defaults */
+
+/* Page background color */
+body {
+	font-family: 'Segoe UI',Verdana,Arial;
+	font-size: .813em;
+	color: #2a2a2a;
+	font-style: normal;
+	padding-right: 0;
+	padding-left: 0;
+	word-wrap: break-word;
+}
+
+a:link, a:visited, a:hover {
+	color: #1364C4;
+	text-decoration: none;
+	outline: none;
+}
+
+a img{
+	border: 0;
+}
+
+a:hover{
+	color: #FF3300;
+	text-decoration: underline;
+}
+
+.table_content tr{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #BBB;
+	font-size: 1em;
+}
+
+code{
+	font-size: 1em;
+}
+
+.TableSubHeadingColor th{
+	background-color: #E5E5E5;
+	padding-right: 4px;
+	padding-left: 4px;
+	padding-bottom: 4px;
+	padding-top: 4px;
+	text-align: left;
+	height: 21px;
+	font-family: Arial;
+	font-size: 0.88em;
+	color: black;
+	font-style: normal;
+	font-weight: bold;
+}
+
+.TableHeadingColor{
+	font-family: 'Segoe UI Light',Verdana,Arial;
+	font-size: 18px;
+	color: black;
+	font-style: Normal;
+	font-weight: Normal;
+	word-break: break-all;
+	word-wrap: break-word;
+	padding-left: 6px;
+	display: table-row;
+}
+
+.method_img{
+	float:left;
+	background-image: url(methode.PNG);
+	width: 20px;
+	height: 19px;
+	outline: none;
+	border: none;
+	position:relative;
+}
+
+.method_img_static{
+    background-image: url(methode-static.png);
+    width: 33px;
+    height: 20px;
+    outline: none;
+    border: none;
+    position:relative;
+}
+
+.property_img{
+	float:left;
+	background-image: url(property.PNG);
+	width: 20px;
+	height: 19px;
+	outline: none;
+	border: none;
+	position:relative;
+}
+
+.property_img_static{
+    background-image: url(property-static.png);
+    width: 33px;
+    height: 20px;
+    outline: none;
+    border: none;
+    position:relative;
+}
+
+.field_img{
+	float:left;
+	background-image: url(field.PNG);
+	width: 30px;
+	height: 25px;
+	outline: none;
+	border: none;
+	position:relative;
+}
+
+.event_img{
+	float:left;
+    background-image: url(event.PNG);
+    width: 20px;
+    height: 19px;
+    outline: none;
+    border: none;
+    position:relative;
+}
+
+.event_img_static{
+    background-image: url(event-static.png);
+    width: 33px;
+    height: 20px;
+    outline: none;
+    border: none;
+    position:relative;
+}
+
+.expandButtonShow{
+	background: url(expand.PNG) -0px -5px;
+    display: inline-block;
+	width: 19px;
+	height: 19px;
+	outline: none;
+	border: none;
+	position:relative;
+	cursor:pointer;
+}
+
+.expandButtonHidden{
+	background: url(collapse.PNG) -0px -5px;
+	display: inline-block;
+	width: 19px;
+	height: 19px;
+	outline: none;
+	border: none;
+	position:relative;
+	cursor:pointer;
+}
+
+.tree_link_visit{
+	color:#E66A38;
+}
+
+.node_root{
+	background-image: url(root.png);
+	width: 19px;
+	height: 19px;
+}
+.node{
+	background-image: url(node.PNG);
+	width: 19px;
+	height: 19px;
+}
+.footer {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #225085;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.footer_timestamp {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    color: #B8B088;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.footer_link {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #225085;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: underline;
+}
+#treesearchclear{
+	background-image: url(searchclear.png);
+	background-color: red;
+	height: 21px;
+	width: 21px;
+	cursor: pointer;
+}
+
+.cell{
+  border-top: solid #BBB 1px;
+}
+
+.cellleft{
+  border-left:solid #BBB 1px;
+}
+
+.cellright{
+  border-right:solid #BBB 1px;
+}
+
+.paramname{
+  width: 90px;
+  font-weight: bold;
+}
+
+.node_imgroot{
+  background-image: url(box_software.png);
+  height: 16px;
+  width: 16px;
+}
+
+.node_imgpackage{
+  background-image: url(package.png);
+  height: 16px;
+  width: 16px;
+}
+
+.node_imgclass{
+  background-image: url(objects.png);
+  height: 16px;
+  width: 16px;
+}
+
+.node_imginterface{
+  background-image: url(handshake.png);
+  height: 16px;
+  width: 16px;
+}
+
+.parentclassnode{
+  background-image: url(node.PNG);
+  width: 19px;
+  height: 19px;
+}
+
+/* Document template styles */
+.header_table
+{
+    width: 100%;
+}
+
+.header_table tbody{
+    vertical-align: top;
+}
+
+.span_namespace, .span_packagename, .span_parentclass, .span_inherits, .span_implements{
+    font-size: 13px;
+    color: #5d5d5d;
+}
+
+.span_pagetype, .span_classname{
+    font-size: 3em; 
+    color: #707070;
+}
+
+.table_content_summary
+{
+	border-collapse: collapse;
+}
+
+.table_content
+{
+	width: 100%;
+}
+
+.table_content th, .table_content td{
+    padding: 0;
+}
+
+/* Document detail template styles */
+.table_detail_row
+{
+	display: table-row;
+}
+
+.table_detail_comment_div
+{
+	float:right;
+}
+
+.detail_comment
+{
+	font-weight:normal;
+}
+.parameter_table
+{
+	width: 100%;
+}
+
+/* Document details parameter template styles */
+.document_detail_parameter
+{
+	width: 90px;
+}
+
+/* Document list item template styles */
+.list_item
+{
+	border:solid 1px gray;
+}
+
+/* Document overview  template style*/
+.overview_row
+{
+	display: table-row;
+}
+
+.img_col
+{
+	min-width: 50px; 
+	max-width:50px; 
+	width:50px;
+}
+
+.option_col
+{
+	min-width: 50px; 
+	max-width:50px; 
+	width:50px;
+}
+
+.signature_col
+{
+	min-width: 400px; 
+	max-width:400px; 
+	width:400px;
+}
+
+/* package site */
+
+.package
+{
+	width: 100%;
+}
+
+.package, .package th, .package td 
+{
+    border: 1px solid #bbb;
+    border-collapse: collapse;
+}
+
+
+.packagetableheader th 
+{
+    background-color: #ededed;
+    color: #707070;
+    text-align: left;
+}
+
+.package th, .package td
+{
+    border-bottom: 1px solid #dbdbdb;
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+#packagebody 
+{
+    height:100%;
+}
+
+#packagehtml
+{
+    height:100%;
+}
+
+#packagewrapper 
+{
+position: relative;
+min-height: 100%;
+height: auto !important;
+height: 100%;
+margin: 0 auto;
+}
+ 
+#packagefooter 
+{
+position: relative;
+height: 40px;
+line-height: 40px;
+margin: -40px auto 0;
+}
+
+#packagemiddle 
+{
+    padding:1px 1px 40px 1px;
+}
+
+.packagegroup
+{
+	width: 100%;
+}
+
+.packageitemicon
+{
+	width: 16px;
+}
+
+.packageitem
+{
+    width: 500px;
+}
+
+.packagegroup th
+{
+    font-size: 1.2em;
+    text-align: left;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.parentpackagelabel
+{
+    width: 30px;
+}
+
+.img_STATIC
+{
+    min-width: 20px; 
+    max-width: 20px; 
+    width: 20px;
+    height: 20px;
+    background-image: url(static.png);
+}
+
+.img_ABSTRACT
+{
+    min-width: 20px; 
+    max-width: 20px; 
+    width: 20px;
+    height: 20px;
+    background-image: url(abstract.png);
+}
+
+.img_FINAL
+{
+    min-width: 20px; 
+    max-width: 20px; 
+    width: 20px;
+    height: 20px;
+    background-image: url(final.png);
+}
+
+.Signature_Font
+{
+    height: 5px;
+}
+
+.tree_search_clear
+{
+	background-color: transparent;
+}
+
+.package_name_div
+{
+	float: left;
+}
+
+.package_name_div tbody
+{
+    vertical-align: top;
+}
+
+.google_search
+{
+    float: right;
+}
+
+.unit_header
+{
+    float: left;
+}
+
+.unit_header tbody
+{
+    vertical-align: top;
+}
+
+.unit_inherits
+{
+    width: 1000px;
+}
+
+.unit_interface
+{
+    width: 1000px;
+}
+
+.unit_comment
+{
+    color: green;
+}
+
+.container_logo_google
+{
+	float: right;
+}
+
+.table_content tbody
+{
+	vertical-align: top;
+}
+
+.unit_commment_table
+{
+	vertical-align: top;
+}
+
+.commment_formater_table
+{
+    vertical-align: top;
+}
+
+.tree_node{
+	font-weight: normal;
+}
