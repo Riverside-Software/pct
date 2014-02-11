@@ -58,6 +58,7 @@ public class PCTCompile extends PCTRun {
     private boolean noParse = false;
     private boolean multiCompile = false;
     private boolean streamIO = false;
+	private boolean v6Frame = false;
     private boolean stringXref = false;
     private boolean appendStringXref = false;
     private boolean saveR = true;
@@ -225,6 +226,15 @@ public class PCTCompile extends PCTRun {
      */
     public void setStreamIO(boolean streamIO) {
         this.streamIO = streamIO;
+    }
+
+    /**
+     * Enables v6Frame attribute in COMPILE statement
+     * 
+     * @param v6Frame "true|false|on|off|yes|no"
+     */
+    public void setv6Frame(boolean v6Frame) {
+        this.v6Frame = v6Frame;
     }
 
     /**
@@ -505,6 +515,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("STREAM-IO=" + (this.streamIO ? 1 : 0));
             bw.newLine();
+            if (v6Frame) {
+                bw.write("V6FRAME=1");
+                bw.newLine();
+            }
             bw.write("SAVER=" + (this.saveR ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("RELATIVE=" + (relativePaths ? 1 : 0));
