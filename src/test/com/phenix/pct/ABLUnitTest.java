@@ -127,6 +127,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         InputSource inputSource = new InputSource("ABLUnit/test5/results.xml");
         Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "3");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
     }
 
     // Test with 1 file, 1 case
@@ -138,6 +139,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         InputSource inputSource = new InputSource("ABLUnit/test6/results.xml");
         Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
     }
 
 }
