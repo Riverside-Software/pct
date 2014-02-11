@@ -113,6 +113,7 @@ DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lV6Frame  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
@@ -211,6 +212,8 @@ REPEAT:
             ASSIGN multiComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'STREAM-IO':U THEN
             ASSIGN streamIO = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'V6FRAME':U THEN
+            ASSIGN lV6Frame = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PROGPERC':U THEN
@@ -419,7 +422,7 @@ PROCEDURE PCTCompile.
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
-    COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
         ASSIGN c = '':U.
@@ -501,12 +504,12 @@ PROCEDURE PCTCompileXref.
 
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 in directory &2 TO &3", pcInFile, pcInDir, cSaveDir).
     IF (languages EQ ?) THEN 
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
     ELSE DO:
       IF (gwtFact GE 0) THEN
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
       ELSE
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
     END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
@@ -591,9 +594,9 @@ PROCEDURE PCTCompileXCode.
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
     IF (pcXCodeKey NE ?) THEN
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE pcXCodeKey NO-ERROR.
     ELSE
-        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+        COMPILE VALUE(pcInDir + '/':U + pcInFile) SAVE INTO VALUE(pcOutDir + '/':U + cBase) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF (NOT plOK) THEN DO:
         ASSIGN c = '':U.

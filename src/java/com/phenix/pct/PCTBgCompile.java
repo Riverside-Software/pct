@@ -55,6 +55,7 @@ public class PCTBgCompile extends PCTBgRun {
     private boolean keepXref = false;
     private boolean multiCompile = false;
     private boolean streamIO = false;
+    private boolean v6Frame = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -87,6 +88,15 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setStreamIO(boolean streamIO) {
         this.streamIO = streamIO;
+    }
+    
+    /**
+     * Enables v6Frame attribute in COMPILE statement
+     * 
+     * @param v6Frame "true|false|on|off|yes|no"
+     */
+    public void setv6Frame(boolean v6Frame) {
+        this.v6Frame = v6Frame;
     }
 
     /**
@@ -570,6 +580,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
             sb.append(Boolean.toString(multiCompile)).append(';');
             sb.append(Boolean.toString(streamIO)).append(';');
+            sb.append(Boolean.toString(v6Frame)).append(';');
             sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths()));
 
             return sb.toString();
