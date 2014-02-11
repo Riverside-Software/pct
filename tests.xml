@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT-Tests" xmlns:jacoco="antlib:org.jacoco.ant">
+
+  <path id="test.run.cp">
+    <pathelement location="build/test" />
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="*.jar" />
+  </path>
+
+  <path id="testng.cp">
+    <fileset dir="lib" includes="testng-6.3.1.jar" />
+  </path>
+  <path id="jacoco.cp">
+    <fileset dir="lib" includes="jacocoant.jar" />
+  </path>
+
+  <target name="init">
+    <unzip src="testcases.zip" dest="." />
+  </target>
+
+  <target name="test">
+    <!-- -DGROUPS=all,v10 -DEXCLUDES=unix -DTESTENV=ANT -->
+    <mkdir dir="test-output" />
+    <mkdir dir="profiler" />
+    <taskdef resource="testngtasks" classpathref="testng.cp" />
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
+    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
+      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
+        <classfileset dir="build/test" includes="**/*Test.class" />
+        <classpath refid="test.run.cp" />
+        <jvmarg line="-DDLC=&quot;${DLC}&quot;" />
+      </testng>
+    </jacoco:coverage>
+  </target>
+
+  <target name="dist" depends="test">
+    <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
+    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
+    <zip destFile="profiler/profiler-${TESTENV}.zip">
+      <fileset dir="testbox" includes="**/profiler*.out" />
+    </zip>
+
+    <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
+      <fileset dir="." includes="emailable-report-${TESTENV}.html" />
+    </ftp>
+  </target>
+
+
+</project>

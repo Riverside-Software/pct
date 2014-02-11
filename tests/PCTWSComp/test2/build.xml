@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTWSComp-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTWSComp destDir="build" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="${DLC}/src" />
+      </propath>
+    </PCTWSComp>
+  </target>
+
+</project>

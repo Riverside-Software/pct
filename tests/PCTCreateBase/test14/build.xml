@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test14">
+    <taskdef resource="PCT.properties" />
+    <typedef resource="types.properties" />
+<property name="DLC" location="c:\progress\oe113"/>
+
+  <target name="test">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="testrel" destDir="db" dlcHome="${DLC}" relative="true" />
+    <PCTCreateBase dbName="testlarge" destDir="db" dlcHome="${DLC}" enableLargeFiles="true" />
+  </target>
+
+  <target name="verify">
+    <PCTRun procedure="src/verify.p" dlcHome="${DLC}">
+      <DBConnection dbName="testrel" dbDir="db" singleUser="true" />
+      <DBConnection dbName="testlarge" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+  
+</project>
