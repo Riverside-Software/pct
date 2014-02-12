@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
 import com.google.gson.stream.JsonWriter;
 import com.phenix.pct.PCTRun;
 
@@ -23,20 +23,19 @@ public class ABLUnit extends PCTRun {
     private Collection<FileSet> testFilesets = null;
     private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
     private File json = null;
-    private File buildPath;
-    private String location;
+    private File destDir;
     private String format = "xml";
-    private String[] cases;
+    private static ArrayList<String> goodFormat = Lists.newArrayList("xml");
+    private String[] testCase;
     private boolean writeLog = false;
-    private boolean quitOnEnd = false;
 
     /**
      * Set the path of the results file.
      * 
      * @param location
      */
-    public void setLocation(String location) {
-        this.location = location;
+    public void setDestDir(File destDir) {
+        this.destDir = destDir;
     }
 
     /**
@@ -58,21 +57,12 @@ public class ABLUnit extends PCTRun {
     }
 
     /**
-     * QuitOnEnd attribute.
-     * 
-     * @param quitOnEnd
-     */
-    public void setQuitOnEnd(boolean quitOnEnd) {
-        this.quitOnEnd = quitOnEnd;
-    }
-
-    /**
      * Select case(s).
      * 
      * @param cases
      */
-    public void setCases(String cases) {
-        this.cases = cases.split(",");
+    public void setTestCase(String testCase) {
+        this.testCase = testCase.split(",");
     }
 
     /**
@@ -107,27 +97,27 @@ public class ABLUnit extends PCTRun {
             // Options
             writer.name("options").beginObject();
             // Result file
-            if (location != null) {
-                buildPath = new File(location);
-                if (!buildPath.isDirectory())
-                    throw new BuildException("Invalid directory :" + location);
+            if (destDir != null) {
 
-                log("Adding location'" + buildPath + "' to JSon.", Project.MSG_VERBOSE);
+                if (!destDir.isDirectory() || (format != null && !goodFormat.contains(format))) {
+                    writer.endObject().endObject();
+                    throw new BuildException("Invalid destDir (" + destDir + ") or format(s) ("
+                            + format + "). Valid format: " + goodFormat);
+                }
+
+                log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
 
                 writer.name("output").beginObject();
-                writer.name("location").value(location);
+                writer.name("location").value(destDir.toString());
                 writer.name("format").value(format);
 
                 writer.endObject();
             } else
-                buildPath = getProject().getBaseDir();
+                destDir = getProject().getBaseDir();
 
             // Log
             if (writeLog)
                 writer.name("writeLog").value(writeLog);
-            // QuitOnEnd
-            if (quitOnEnd)
-                writer.name("quitOnEnd").value(quitOnEnd);
 
             // End "Options" object
             writer.endObject();
@@ -140,10 +130,11 @@ public class ABLUnit extends PCTRun {
                     File f = new File(fs.getDir(), file);
                     log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
                     writer.beginObject().name("test").value(f.toString());
-                    // If we want to execute a psecific test
-                    if (cases != null) {
+                    // If we want to execute a specific test
+                    // XXX For now only support 1 case but keep possibility to have many
+                    if (testCase != null) {
                         writer.name("cases").beginArray();
-                        for (String cs : cases) {
+                        for (String cs : testCase) {
                             writer.value(cs);
                         }
                         writer.endArray();
@@ -171,7 +162,7 @@ public class ABLUnit extends PCTRun {
         // Run PCTRun
         super.execute();
 
-        File results = new File(buildPath, "results." + format);
+        File results = new File(destDir, "results." + format);
         if (!results.exists())
             throw new BuildException("No results file (" + results
                     + ") ! It must be an error in a ABL Procedure/Classe.");
