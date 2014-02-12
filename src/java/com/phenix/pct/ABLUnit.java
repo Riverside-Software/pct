@@ -5,7 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -25,7 +27,7 @@ public class ABLUnit extends PCTRun {
     private File json = null;
     private File destDir;
     private String format = "xml";
-    private static ArrayList<String> goodFormat = Lists.newArrayList("xml");
+    private static ArrayList<String> goodFormat =new ArrayList<String>(Arrays.asList("xml"));
     private String[] testCase;
     private boolean writeLog = false;
 
