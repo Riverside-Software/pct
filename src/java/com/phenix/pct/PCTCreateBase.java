@@ -39,7 +39,7 @@ public class PCTCreateBase extends PCT {
     private static final int DB_NAME_MAX_LENGTH = 11;
     private static final String NEW_INSTANCE = "-newinstance";
     private static final String RELATIVE = "-relative";
-    
+
     private String dbName = null;
     private String codepage = null;
     private File destDir = null;
@@ -184,11 +184,6 @@ public class PCTCreateBase extends PCT {
         this.failOnError = failOnError;
     }
 
-    /*
-     * private boolean relative = false;
-    private boolean enableLargeFiles = false;
-     */
-    
     /**
      * Set relative option
      * 
@@ -203,10 +198,15 @@ public class PCTCreateBase extends PCT {
      * 
      * @param enableLargeFiles
      */
-    public void setEnableLargeFiles(boolean enableLargeFiles) {
+    public void setLargeFiles(boolean enableLargeFiles) {
         this.enableLargeFiles = enableLargeFiles;
     }
-    
+
+    @Deprecated
+    public void setEnableLargeFiles(boolean enableLargeFiles) {
+        setLargeFiles(enableLargeFiles);
+    }
+
     /**
      * Enable multiTenancy
      * 
@@ -233,7 +233,7 @@ public class PCTCreateBase extends PCT {
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
     }
-    
+
     /**
      * Enable new instance of the database
      * 
@@ -359,7 +359,7 @@ public class PCTCreateBase extends PCT {
         }
 
         // Enable large files
-        if ((getDLCMajorVersion() >= 10) && (enableLargeFiles)) {
+        if (enableLargeFiles) {
             exec = enableLargeFilesCmdLine();
             exec.execute();
         }
@@ -592,7 +592,7 @@ public class PCTCreateBase extends PCT {
 
         return exec;
     }
-    
+
     private ExecTask indexRebuildAllCmdLine() {
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
