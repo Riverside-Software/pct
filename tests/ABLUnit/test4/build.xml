@@ -3,7 +3,8 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test">
-		<ABLUnit location="${java.io.tmpdir}" format="xml">
+		<mkdir dir="tempDir"/>
+		<ABLUnit destDir="tempDir">
 			<fileset dir="src" includes="**/*.cls" />
 			<propath>
 				<pathelement path="src" />
