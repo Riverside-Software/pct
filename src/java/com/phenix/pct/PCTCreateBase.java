@@ -365,7 +365,7 @@ public class PCTCreateBase extends PCT {
         }
 
         // Multi-Tenant database
-        if ((getDLCMajorVersion() >= 10) && (multiTenant)) {
+        if ((getDLCMajorVersion() >= 11) && (multiTenant)) {
             exec = multiTenantCmdLine();
             exec.execute();
         }
