@@ -12,7 +12,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 
-import com.google.common.collect.Lists;
 import com.google.gson.stream.JsonWriter;
 import com.phenix.pct.PCTRun;
 
