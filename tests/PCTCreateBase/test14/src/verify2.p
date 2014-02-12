@@ -3,6 +3,6 @@ find _Database-Feature
       and _Database-Feature._DBFeature_Active = "1"
       and _Database-Feature._DBFeature_Enabled = "1"
     no-error.
-if not avail _Database-Feature then return "100".
+if avail _Database-Feature then return "100".
 
 RETURN '0'.
