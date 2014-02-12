@@ -38,6 +38,7 @@ public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
     private static final String NEW_INSTANCE = "-newinstance";
+    private static final String RELATIVE = "-relative";
 
     private String dbName = null;
     private String codepage = null;
@@ -52,6 +53,8 @@ public class PCTCreateBase extends PCT {
     private int wordRule = -1;
     private List<SchemaHolder> holders = null;
     private boolean failOnError = true;
+    private boolean relative = false;
+    private boolean enableLargeFiles = false;
     private boolean multiTenant = false;
     private String collation = null;
     private String cpInternal = null;
@@ -182,6 +185,29 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Set relative option
+     * 
+     * @param relative
+     */
+    public void setRelative(boolean relative) {
+        this.relative = relative;
+    }
+
+    /**
+     * Enable LargeFiles
+     * 
+     * @param enableLargeFiles
+     */
+    public void setLargeFiles(boolean enableLargeFiles) {
+        this.enableLargeFiles = enableLargeFiles;
+    }
+
+    @Deprecated
+    public void setEnableLargeFiles(boolean enableLargeFiles) {
+        setLargeFiles(enableLargeFiles);
+    }
+
+    /**
      * Enable multiTenancy
      * 
      * @param multiTenant
@@ -207,7 +233,7 @@ public class PCTCreateBase extends PCT {
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
     }
-    
+
     /**
      * Enable new instance of the database
      * 
@@ -329,6 +355,12 @@ public class PCTCreateBase extends PCT {
 
         if (!noInit) {
             exec = initCmdLine();
+            exec.execute();
+        }
+
+        // Enable large files
+        if (enableLargeFiles) {
+            exec = enableLargeFilesCmdLine();
             exec.execute();
         }
 
@@ -457,6 +489,8 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(dbName);
         if (newInstance)
             exec.createArg().setValue(NEW_INSTANCE);
+        if (relative)
+            exec.createArg().setValue(RELATIVE);
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
@@ -526,6 +560,26 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("enablemultitenancy"); //$NON-NLS-1$
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }
+
+    private ExecTask enableLargeFilesCmdLine() {
+        ExecTask exec = new ExecTask(this);
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("enablelargefiles"); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
