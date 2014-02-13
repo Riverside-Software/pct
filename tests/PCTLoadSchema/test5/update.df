@@ -1,0 +1,7 @@
+  UPDATE DATABASE "?"
+  
+  ADD INDEX "Tab1-Idx1" ON "Tab1"
+    AREA "Schema Area"
+    UNIQUE
+    DESCRIPTION "Index number 1"
+    INDEX-FIELD "Fld1" DESCENDING

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTDumpUsers-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="prepare">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTDumpUsers destFile="foo/_user.d" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDumpUsers>
+  </target>
+
+</project>

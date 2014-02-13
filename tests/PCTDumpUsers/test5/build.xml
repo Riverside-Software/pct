@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="PCTDumpUsers-test5">
+  <property environment="env" />
+  <taskdef resource="PCT.properties" />
+  
+  <target name="prepare">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+    <fixcrlf file="basic_user.d" />
+    <PCTLoadUsers srcFile="basic_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadUsers>
+  </target>
+
+  <target name="assert">
+    <PCTRun procedure="src/assertThreeUsers.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>      
+  </target>
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTDumpUsers destFile="foo/_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDumpUsers>
+  </target>
+
+</project>
