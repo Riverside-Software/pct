@@ -97,7 +97,9 @@ public abstract class PCT extends Task {
             throw new BuildException(caught);
         }
 
-        if (version.compareTo(new DLCVersion(11, 0, "0")) >= 0)
+        if (version.compareTo(new DLCVersion(11, 3, "0")) >= 0)
+            this.pp = new ProgressV113();
+        else if (version.compareTo(new DLCVersion(11, 0, "0")) >= 0)
             this.pp = new ProgressV11();
         else if (version.compareTo(new DLCVersion(10, 2, "B")) >= 0)
             this.pp = new ProgressV102B();
