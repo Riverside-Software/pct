@@ -26,5 +26,5 @@ if (!top.FrameAvailable){
 	var url = window.location.pathname;
 	var filename = url.substring(url.lastIndexOf('/')+1);
 	
-    top.location.href = "http://help.consultingwerkcloud.com/smartcomponent_library/trunk/index.html?" + filename; 
+    top.location.href = "index.html?" + filename; 
 }  
