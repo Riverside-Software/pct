@@ -55,9 +55,12 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.testng.annotations.Test;
 
-import java.io.File;
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PLFileSet
@@ -68,6 +71,18 @@ public class PLFileSetTest extends BuildFileTestNg {
 
     @Test(groups = { "v10" })
     public void test1() {
+        // Really crude, but we rely on prodict.pl in $DLC/tty
+        // Number of files is different in every release
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMajorVersion() != 10)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+        
         configureProject("PLFileSet/test1/build.xml");
 
         executeTarget("test1");
@@ -85,6 +100,18 @@ public class PLFileSetTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"})
     public void test2() {
+        // Really crude, but we rely on prodict.pl in $DLC/tty
+        // Number of files is different in every release
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMajorVersion() != 11)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject("PLFileSet/test2/build.xml");
 
         executeTarget("test1");
