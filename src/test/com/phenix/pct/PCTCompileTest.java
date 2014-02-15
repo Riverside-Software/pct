@@ -74,19 +74,19 @@ import java.nio.charset.Charset;
  */
 public class PCTCompileTest extends BuildFileTestNg {
 
-    @Test(groups= {"v9+"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTCompile/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test2() {
         configureProject("PCTCompile/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test3() {
         configureProject("PCTCompile/test3/build.xml");
         executeTarget("test");
@@ -95,7 +95,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test3bis() {
         configureProject("PCTCompile/test3bis/build.xml");
         expectBuildException("test", "Compilation should fail");
@@ -104,7 +104,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test4() {
         configureProject("PCTCompile/test4/build.xml");
         executeTarget("test");
@@ -116,7 +116,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.length() < f1.length());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test5() {
         configureProject("PCTCompile/test5/build.xml");
         executeTarget("test");
@@ -125,7 +125,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test6() {
         configureProject("PCTCompile/test6/build.xml");
         executeTarget("test1");
@@ -136,7 +136,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod == f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test7() {
         configureProject("PCTCompile/test7/build.xml");
         executeTarget("test1");
@@ -147,7 +147,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test8() {
         configureProject("PCTCompile/test8/build.xml");
         executeTarget("test1");
@@ -158,7 +158,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test9() {
         configureProject("PCTCompile/test9/build.xml");
         executeTarget("test1");
@@ -169,7 +169,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test10() {
         configureProject("PCTCompile/test10/build.xml");
         executeTarget("test1");
@@ -180,7 +180,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test11() {
         configureProject("PCTCompile/test11/build.xml");
 
@@ -203,7 +203,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(new File("PCTCompile/test11/build4/test2.r").exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test12() {
         configureProject("PCTCompile/test12/build.xml");
         expectBuildException("test1", "File with underscore");
@@ -213,7 +213,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test13() {
         configureProject("PCTCompile/test13/build.xml");
         executeTarget("test1");
@@ -224,7 +224,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod < f.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test14() {
         configureProject("PCTCompile/test14/build.xml");
         executeTarget("base");
@@ -243,7 +243,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod2 < f2.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test15() {
         configureProject("PCTCompile/test15/build.xml");
         executeTarget("base");
@@ -257,7 +257,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod == f.lastModified());
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test16() {
         configureProject("PCTCompile/test16/build.xml");
         executeTarget("xcode");
@@ -271,7 +271,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test17() {
         configureProject("PCTCompile/test17/build.xml");
         executeTarget("xcode");
@@ -303,7 +303,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     // assertTrue(mod2 < f2.lastModified());
     // }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test19() {
         configureProject("PCTCompile/test19/build.xml");
         executeTarget("test1");
@@ -319,7 +319,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(mod2 < f2.lastModified());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test20() {
         configureProject("PCTCompile/test20/build.xml");
         executeTarget("test1");
@@ -349,7 +349,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.exists(), "Unable to find debug-listing file");
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test21() {
         configureProject("PCTCompile/test21/build.xml");
         executeTarget("test");
@@ -358,7 +358,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test22() {
         configureProject("PCTCompile/test22/build.xml");
         executeTarget("test");
@@ -379,7 +379,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.exists());
     }
 
-    @Test(groups= {"v9+", "win"})
+    @Test(groups= {"v9", "win"})
     public void test23() {
         configureProject("PCTCompile/test23/build.xml");
         expectBuildException("test1", "Should fail - No stream-io");
@@ -390,7 +390,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test24() {
         configureProject("PCTCompile/test24/build.xml");
 
@@ -403,7 +403,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test25() {
         configureProject("PCTCompile/test25/build.xml");
         executeTarget("test");
@@ -422,7 +422,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test27() {
         configureProject("PCTCompile/test27/build.xml");
         executeTarget("test");
@@ -442,7 +442,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.length() > 0);
     }
 
-    @Test(groups= {"win", "v10+"})
+    @Test(groups= {"win", "v10"})
     public void test28() {
         configureProject("PCTCompile/test28/build.xml");
         executeTarget("build");
@@ -465,7 +465,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(str2.startsWith("MS-WIN"));
     }
 
-    @Test(groups = {"v9+"})
+    @Test(groups = {"v9"})
     public void test29() {
         configureProject("PCTCompile/test29/build.xml");
         executeTarget("build");
@@ -500,7 +500,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertEquals(test3Inc2.replace('\\', '/'), "inc/foo/bar.i");
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test30() {
         configureProject("PCTCompile/test30/build.xml");
 
@@ -540,7 +540,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test30/build8/test3.r").exists());
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test31() {
         configureProject("PCTCompile/test31/build.xml");
         executeTarget("test");
@@ -551,7 +551,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Should test file content (mainly preprocessed output)
     }
 
-    @Test(groups= {"v10+"})
+    @Test(groups= {"v10"})
     public void test32() {
         configureProject("PCTCompile/test32/build.xml");
         executeTarget("test");
@@ -561,7 +561,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test32/build2/.pct/strings.xref").exists());
     }
 
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test33() {
         configureProject("PCTCompile/test33/build.xml");
         executeTarget("test");
@@ -576,7 +576,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     // Waiting for you Arno !
-//    @Test(groups= {"v9+"})
+//    @Test(groups= {"v9"})
     public void test34() throws IOException, InvalidRCodeException {
         configureProject("PCTCompile/test34/build.xml");
         executeTarget("test");
@@ -595,7 +595,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertEquals(r2.getDebugListingFile(), "debugListing/foo/bar/test2.p.dbg");
     }
 
-    @Test(groups = {"v9+"})
+    @Test(groups = {"v9"})
     public void test35() throws IOException {
         configureProject("PCTCompile/test35/build.xml");
         executeTarget("test");

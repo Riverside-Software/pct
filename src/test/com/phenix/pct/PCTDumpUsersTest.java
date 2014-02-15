@@ -75,7 +75,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no destFile and no connection
      */
-    @Test(groups= {"v9+"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTDumpUsers/test1/build.xml");
         executeTarget("test");
@@ -84,7 +84,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(groups= {"v9+"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTDumpUsers/test2/build.xml");
         executeTarget("test");
@@ -93,7 +93,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : more than one connection defined
      */
-    @Test(groups= {"v9+"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTDumpUsers/test3/build.xml");
         executeTarget("test");
@@ -102,7 +102,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
     /**
      * No users in database, so no dump file
      */
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test4() {
         configureProject("PCTDumpUsers/test4/build.xml");
         executeTarget("prepare");
@@ -115,7 +115,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
     /**
      * Should load 3 records in _User, and then dump 3 records
      */
-    @Test(groups= {"v9+"})
+    @Test(groups= {"v9"})
     public void test5() {
         configureProject("PCTDumpUsers/test5/build.xml");
         executeTarget("prepare");
