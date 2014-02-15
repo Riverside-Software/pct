@@ -74,7 +74,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Regular run of 2 test procedures
-    @Test(groups = {"v11"})
+    @Test(groups = {"v11+"})
     public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
         executeTarget("test");
@@ -87,14 +87,14 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Build error, No tests to run
-    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11+"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
 
     // Test runned with classe
-    @Test(groups = {"v11"})
+    @Test(groups = {"v11+"})
     public void test3() throws XPathExpressionException {
         configureProject("ABLUnit/test3/build.xml");
         executeTarget("test");
@@ -106,7 +106,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Test with different path to resultset
-    @Test(groups = {"v11"})
+    @Test(groups = {"v11+"})
     public void test4() throws XPathExpressionException, FileNotFoundException {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
@@ -116,7 +116,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Test with 1 file, 1 case
-    @Test(groups = {"v11"})
+    @Test(groups = {"v11+"})
     public void test6() throws XPathExpressionException {
         configureProject("ABLUnit/test6/build.xml");
         executeTarget("test");

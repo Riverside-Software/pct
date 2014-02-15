@@ -20,7 +20,7 @@
 
 DEFINE {1} SHARED VARIABLE user_dbname   AS CHARACTER           NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_dbtype   AS CHARACTER           NO-UNDO.
-DEFINE {1} SHARED VARIABLE user_env      AS CHARACTER EXTENT 41 NO-UNDO.
+DEFINE {1} SHARED VARIABLE user_env      AS CHARACTER EXTENT 42 NO-UNDO.
 /* NOTE: this variable-definition has to be in sync with adedict/dictvar.i */
 DEFINE {1} SHARED VARIABLE user_filename AS CHARACTER           NO-UNDO.
 DEFINE {1} SHARED VARIABLE user_hdr      AS CHARACTER           NO-UNDO.
