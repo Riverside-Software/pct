@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002 The Apache Software Foundation.  All rights
+ * Copyright (c) 2002 The Apache Software Foundation.  v9+ rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,21 +21,21 @@
  *       "This product includes software developed by the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ *    if and wherever such third-party acknowlegements normv9+y appear.
  *
  * 4. The names "Ant" and "Apache Software
  *    Foundation" must not be used to endorse or promote products derived
  *    from this software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache"
+ * 5. Products derived from this software may not be cv9+ed "Apache"
  *    nor may "Apache" appear in their names without prior written
  *    permission of the Apache Group.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * DISCLAIMED.  IN NO EVENT SHv9+ THE APACHE SOFTWARE FOUNDATION OR
  * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
@@ -75,19 +75,19 @@ import java.io.IOException;
  */
 public class PCTASBrokerTest extends BuildFileTestNg {
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testFailure1() {
         configureProject("PCTASBroker/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testFailure2() {
         configureProject("PCTASBroker/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testSimplestTest() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test3/build.xml");
         executeTarget("test");
@@ -96,7 +96,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertNotNull(ini.get("UBroker.AS.Test"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testUidNone() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test4/build.xml");
         executeTarget("test");
@@ -107,7 +107,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertFalse(section.containsKey("uuid"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testUidAuto() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test5/build.xml");
         executeTarget("test");
@@ -120,7 +120,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertTrue((section.get("uuid", String.class).length() < 30), "Weird UUID pattern...");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testUid() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test6/build.xml");
         executeTarget("test");
@@ -135,7 +135,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
                         "3fb5744ad58ca1b0:239137:10a178402e4:-8000"), "Wrong UUID");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testLogging() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test7/build.xml");
         executeTarget("test");
@@ -148,7 +148,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertNotNull(section.get("srvrLogFile"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testApsvDelete() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test8/build.xml");
         executeTarget("test");
@@ -157,7 +157,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertNull(ini.get("UBroker.AS.Test"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testApsvUpdate() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test9/build.xml");
         executeTarget("test1");
@@ -175,7 +175,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertTrue("12346".equals(section.get("portNumber")));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testAttributes1() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test10/build.xml");
         executeTarget("test");
@@ -196,7 +196,7 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testAttributes2() throws InvalidFileFormatException, IOException {
         configureProject("PCTASBroker/test11/build.xml");
         executeTarget("test");
@@ -225,31 +225,31 @@ public class PCTASBrokerTest extends BuildFileTestNg {
         assertTrue((startup.indexOf("-db myDB2") != -1), "Unable to find myDB2 connection");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes1() {
         configureProject("PCTASBroker/test12/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes2() {
         configureProject("PCTASBroker/test13/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes3() {
         configureProject("PCTASBroker/test14/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testForbiddenAttributes4() {
         configureProject("PCTASBroker/test15/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testDoubleCreate() {
         configureProject("PCTASBroker/test16/build.xml");
         executeTarget("test1");

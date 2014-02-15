@@ -82,13 +82,13 @@ public class PCTConnectionTest extends BuildFileTestNg {
         exec.setProject(project);
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void testDbNameRequired() {
         PCTConnection conn = new PCTConnection();
         conn.createArguments(exec);
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testAliases() {
         PCTConnection conn = new PCTConnection();
 
@@ -122,7 +122,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
         }
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testNamedAlias() {
         PCTConnection conn = new PCTConnection();
         PCTAlias alias1 = new PCTAlias();
@@ -137,7 +137,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
         assertFalse(conn.hasNamedAlias("alias2"));
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void testReference() {
         configureProject("PCTConnection/test1/build.xml");
         Object o1 = getProject().getReference("db1");

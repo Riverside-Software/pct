@@ -66,7 +66,7 @@ import org.testng.annotations.Test;
  */
 public class ClassDocumentationTest extends BuildFileTestNg {
 
-    @Test(groups= {"win", "v11"})
+    @Test(groups= {"win", "v11+"})
     public void test1() {
         configureProject("ClassDocumentation/test1/build.xml");
         executeTarget("test");
@@ -87,7 +87,7 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f7.exists());
     }
 
-    @Test(groups= {"v11"})
+    @Test(groups= {"v11+"})
     public void test2() {
         configureProject("ClassDocumentation/test2/build.xml");
         executeTarget("test");
@@ -106,7 +106,7 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f6.exists());
     }
 
-    @Test(groups= {"win", "v11"})
+    @Test(groups= {"win", "v11+"})
     public void test3() {
         configureProject("ClassDocumentation/test3/build.xml");
         executeTarget("test");
