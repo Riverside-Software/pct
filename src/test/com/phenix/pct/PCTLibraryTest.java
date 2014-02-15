@@ -242,7 +242,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(((FileEntry) v2.get(0)).getFileName().startsWith("Twenty"));
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test12() {
         configureProject("PCTLibrary/test12/build.xml");
 

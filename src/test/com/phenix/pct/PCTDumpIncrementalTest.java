@@ -96,7 +96,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     /**
      * Test activeIndexes attribute
      */
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test2() {
         configureProject("PCTDumpIncremental/test2/build.xml");
         executeTarget("base");
