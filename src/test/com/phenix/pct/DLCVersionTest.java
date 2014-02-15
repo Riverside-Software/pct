@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002-2003 The Apache Software Foundation.  All rights
+ * Copyright (c) 2002-2003 The Apache Software Foundation.  v9+ rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,21 +21,21 @@
  *       "This product includes software developed by the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ *    if and wherever such third-party acknowlegements normv9+y appear.
  *
  * 4. The names "Ant" and "Apache Software
  *    Foundation" must not be used to endorse or promote products derived
  *    from this software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache"
+ * 5. Products derived from this software may not be cv9+ed "Apache"
  *    nor may "Apache" appear in their names without prior written
  *    permission of the Apache Group.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * DISCLAIMED.  IN NO EVENT SHv9+ THE APACHE SOFTWARE FOUNDATION OR
  * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
@@ -64,7 +64,7 @@ import org.testng.annotations.Test;
  */
 public class DLCVersionTest {
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test1() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 10.2B as of Fri Nov 13 19:02:09 EST 2009");
@@ -74,7 +74,7 @@ public class DLCVersionTest {
         assertEquals("", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test2() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 10.2B01 as of Fri Nov 13 19:02:09 EST 2009");
@@ -84,7 +84,7 @@ public class DLCVersionTest {
         assertEquals("01", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test3() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 10.2B0102 as of Fri Nov 13 19:02:09 EST 2009");
@@ -94,7 +94,7 @@ public class DLCVersionTest {
         assertEquals("0102", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test4() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 10.2B1P as of Fri Nov 13 19:02:09 EST 2009");
@@ -104,7 +104,7 @@ public class DLCVersionTest {
         assertEquals("1P", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test5() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.0.0 as of Fri Nov 13 19:02:09 EST 2009");
@@ -114,7 +114,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test6() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.0 as of Fri Nov 13 19:02:09 EST 2009");
@@ -124,7 +124,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test7() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11 as of Fri Nov 13 19:02:09 EST 2009");
@@ -134,7 +134,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test8() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.1.0 as of Fri Nov 13 19:02:09 EST 2009");
@@ -144,7 +144,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test9() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.1 as of Fri Nov 13 19:02:09 EST 2009");
@@ -154,7 +154,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test10() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.1.1 as of Fri Nov 13 19:02:09 EST 2009");
@@ -164,7 +164,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test11() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.0.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
@@ -174,7 +174,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test12() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.0.0BETA as of Fri Nov 13 19:02:09 EST 2009");
@@ -184,7 +184,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test13() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11.0BETA as of Fri Nov 13 19:02:09 EST 2009");
@@ -194,7 +194,7 @@ public class DLCVersionTest {
         assertEquals("0", version.getPatchVersion());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test14() {
         DLCVersion version = DLCVersion
                 .getObject("OpenEdge Release 11BETA as of Fri Nov 13 19:02:09 EST 2009");

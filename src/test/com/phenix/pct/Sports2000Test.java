@@ -66,7 +66,7 @@ import java.io.File;
  */
 public class Sports2000Test extends BuildFileTestNg {
 
-    @Test(groups= {"all"})
+    @Test(groups= {"v9+"})
     public void test1() {
         configureProject("Sports2000/test1/build.xml");
         

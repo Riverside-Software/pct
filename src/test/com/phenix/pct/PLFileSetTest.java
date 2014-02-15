@@ -83,7 +83,7 @@ public class PLFileSetTest extends BuildFileTestNg {
         assertEquals(f3.list().length, 3);
     }
 
-    @Test(groups = {"v11"})
+    @Test(groups = {"v11+"})
     public void test2() {
         configureProject("PLFileSet/test2/build.xml");
 
