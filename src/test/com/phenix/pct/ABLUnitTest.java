@@ -106,7 +106,8 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Test with different path to resultset
-    @Test(groups = {"v11"})
+    // TODO Doesn't work on Linux for now (due to ablunit.pl)
+    @Test(groups = {"v11", "win"})
     public void test4() throws XPathExpressionException, FileNotFoundException {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
