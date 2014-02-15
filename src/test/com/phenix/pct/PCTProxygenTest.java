@@ -91,7 +91,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = { "v10", "win" })
+    @Test(groups = { "v10", "unix" })
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
