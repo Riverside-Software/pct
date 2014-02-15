@@ -1,7 +1,7 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2002-2003 The Apache Software Foundation.  All rights
+ * Copyright (c) 2002-2003 The Apache Software Foundation.  v9+ rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,21 +21,21 @@
  *       "This product includes software developed by the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
+ *    if and wherever such third-party acknowlegements normv9+y appear.
  *
  * 4. The names "Ant" and "Apache Software
  *    Foundation" must not be used to endorse or promote products derived
  *    from this software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
- * 5. Products derived from this software may not be called "Apache"
+ * 5. Products derived from this software may not be cv9+ed "Apache"
  *    nor may "Apache" appear in their names without prior written
  *    permission of the Apache Group.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * DISCLAIMED.  IN NO EVENT SHv9+ THE APACHE SOFTWARE FOUNDATION OR
  * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
@@ -68,25 +68,25 @@ import java.io.File;
  */
 public class PCTBinaryDumpTest extends BuildFileTestNg {
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTBinaryDump/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTBinaryDump/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v9+"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTBinaryDump/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test4() {
         configureProject("PCTBinaryDump/test4/build.xml");
         executeTarget("test");
@@ -97,7 +97,7 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test5() {
         configureProject("PCTBinaryDump/test5/build.xml");
         executeTarget("test");
@@ -108,7 +108,7 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertFalse(f2.exists());
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9+"})
     public void test6() {
         configureProject("PCTBinaryDump/test6/build.xml");
         executeTarget("test");
