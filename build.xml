@@ -259,9 +259,9 @@ PCTBuild=${BUILD_NUMBER}
       <param name="fsid" value="fs.v11" />
     </antcall>
 
-    <!-- <zip destfile="${build}/pct-src.zip">
+    <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" />
-    </zip> -->
+    </zip>
   </target>
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
@@ -299,6 +299,7 @@ PCTBuild=${BUILD_NUMBER}
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
         <include name="pct11.pl" />
+        <include name="pct-src.zip" />
       </fileset>
     <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
