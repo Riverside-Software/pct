@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test29">
+  <taskdef resource="PCT.properties" />
+
+  <path id="propath">
+    <pathelement path="inc" />
+    <pathelement path="src" />
+  </path>
+
+  <target name="build">
+  	<mkdir dir="build1" />
+	<mkdir dir="build2" />
+  	<PCTCompileExt graphicalMode="false" destDir="build1" dlcHome="${DLC}" numThreads="1">
+      <fileset dir="src" includes="**/*.p" />
+	  <propath refid="propath" />
+    </PCTCompileExt>
+  	<PCTCompileExt graphicalMode="false" destDir="build2" dlcHome="${DLC}" numThreads="1" relativePaths="true">
+      <fileset dir="src" includes="**/*.p" />
+	  <propath refid="propath" />
+    </PCTCompileExt>
+  </target>
+
+  <target name="test1">
+    <PCTRun dlcHome="${DLC}" procedure="build1/test.r" cpStream="iso8859-1">
+	  <OutputParameter name="test1-inc" />
+	  <OutputParameter name="test1-main" />
+	</PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun dlcHome="${DLC}" procedure="build2/test.r" cpStream="iso8859-1">
+	  <OutputParameter name="test2-inc" />
+	  <OutputParameter name="test2-main" />
+	</PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun dlcHome="${DLC}" procedure="build2/foo/bar/test.r" cpStream="iso8859-1">
+	  <OutputParameter name="test3-main" />
+	  <OutputParameter name="test3-inc1" />
+	  <OutputParameter name="test3-inc2" />
+	</PCTRun>
+  </target>
+
+</project>

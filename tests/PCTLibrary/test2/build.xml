@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="lib" />
+    <PCTLibrary destFile="lib/test.pl" dlcHome="${DLC}" />
+  </target>
+
+</project>

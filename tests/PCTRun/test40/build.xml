@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test40">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test1">
+		<mkdir dir="profiler1" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="false" outputFile="profiler1/profiler.out" />
+		</PCTRun>
+	</target>
+
+	<target name="test2">
+		<mkdir dir="profiler2" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="true" outputFile="profiler2/profiler.out" />
+		</PCTRun>
+	</target>
+
+	<target name="test3">
+		<mkdir dir="profiler3" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="true" outputDir="profiler3" />
+		</PCTRun>
+	</target>
+
+	<target name="test4">
+		<mkdir dir="profiler4" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="true" outputDir="profiler4" outputFile="profiler4/profiler.out" />
+		</PCTRun>
+	</target>
+
+	<target name="test5">
+		<mkdir dir="profiler5" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="true" outputFile="profiler5/profiler.out" coverage="true" />
+		</PCTRun>
+	</target>
+
+	<target name="test6">
+		<mkdir dir="profiler6" />
+		<PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+			<profiler enabled="true" outputFile="profiler6/profiler.out" coverage="true" listings="profiler6" />
+		</PCTRun>
+	</target>
+
+</project>

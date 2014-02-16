@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test27">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" cpstream="utf-8">
+      <fileset dir="src" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompileExt>
+  </target>
+
+</project>
