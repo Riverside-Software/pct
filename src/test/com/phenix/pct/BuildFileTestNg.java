@@ -1,14 +1,15 @@
 package com.phenix.pct;
 import java.io.File;
-import java.io.PrintStream;
 import java.net.URL;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
 
 public class BuildFileTestNg {
@@ -16,8 +17,6 @@ public class BuildFileTestNg {
 
     private StringBuffer logBuffer;
     private StringBuffer fullLogBuffer;
-    private StringBuffer outBuffer;
-    private StringBuffer errBuffer;
     private BuildException buildException;
 
     public BuildFileTestNg() {
@@ -38,26 +37,10 @@ public class BuildFileTestNg {
      * @param targetName target to run
      */
     public void executeTarget(String targetName) {
-        PrintStream sysOut = System.out;
-        PrintStream sysErr = System.err;
-        try {
-            sysOut.flush();
-            sysErr.flush();
-            outBuffer = new StringBuffer();
-            PrintStream out = new PrintStream(new AntOutputStream(outBuffer));
-            System.setOut(out);
-            errBuffer = new StringBuffer();
-            PrintStream err = new PrintStream(new AntOutputStream(errBuffer));
-            System.setErr(err);
-            logBuffer = new StringBuffer();
-            fullLogBuffer = new StringBuffer();
-            buildException = null;
-            project.executeTarget(targetName);
-        } finally {
-            System.setOut(sysOut);
-            System.setErr(sysErr);
-        }
-
+        logBuffer = new StringBuffer();
+        fullLogBuffer = new StringBuffer();
+        buildException = null;
+        project.executeTarget(targetName);
     }
 
     /**
@@ -160,13 +143,6 @@ public class BuildFileTestNg {
         Assert.assertEquals(realLog, log);
     }
 
-    public String getOutput() {
-        return cleanBuffer(outBuffer);
-    }
-
-    public String getError() {
-        return cleanBuffer(errBuffer);
-    }
     /**
      * Retrieve a resource from the caller classloader to avoid assuming a vm working directory. The
      * resource path must be relative to the package name or absolute from the root path.
@@ -185,24 +161,6 @@ public class BuildFileTestNg {
     }
     public String getLog() {
         return logBuffer.toString();
-    }
-    private String cleanBuffer(StringBuffer buffer) {
-        StringBuffer cleanedBuffer = new StringBuffer();
-        boolean cr = false;
-        for (int i = 0; i < buffer.length(); i++) {
-            char ch = buffer.charAt(i);
-            if (ch == '\r') {
-                cr = true;
-                continue;
-            }
-
-            if (!cr) {
-                cleanedBuffer.append(ch);
-            } else {
-                cleanedBuffer.append(ch);
-            }
-        }
-        return cleanedBuffer.toString();
     }
 
     /**
@@ -226,24 +184,12 @@ public class BuildFileTestNg {
         project.init();
         File antFile = new File(System.getProperty("root"), filename);
         project.setUserProperty("ant.file", antFile.getAbsolutePath());
+
         project.addBuildListener(new AntTestListener(logLevel));
         ProjectHelper.configureProject(project, antFile);
+
     }
 
-    /**
-     * an output stream which saves stuff to our buffer.
-     */
-    private static class AntOutputStream extends java.io.OutputStream {
-        private StringBuffer buffer;
-
-        public AntOutputStream(StringBuffer buffer) {
-            this.buffer = buffer;
-        }
-
-        public void write(int b) {
-            buffer.append((char) b);
-        }
-    }
     /**
      * Our own personal build listener.
      */
@@ -325,6 +271,8 @@ public class BuildFileTestNg {
             if (event.getPriority() == Project.MSG_INFO || event.getPriority() == Project.MSG_WARN
                     || event.getPriority() == Project.MSG_ERR) {
                 logBuffer.append(event.getMessage());
+                // Add message to TestNG reporting system
+                Reporter.log(event.getMessage());
             }
             fullLogBuffer.append(event.getMessage());
         }
