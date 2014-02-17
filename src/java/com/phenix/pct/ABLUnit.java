@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -22,11 +23,11 @@ import com.phenix.pct.PCTRun;
  */
 public class ABLUnit extends PCTRun {
     private Collection<FileSet> testFilesets = null;
-    private String JSONFILENAME = "PCTests" + PCT.nextRandomInt() + ".json";
+    private String jsonFileName = "PCTests" + PCT.nextRandomInt() + ".json";
     private File json = null;
     private File destDir;
     private String format = "xml";
-    private static ArrayList<String> goodFormat =new ArrayList<String>(Arrays.asList("xml"));
+    final static List<String> goodFormat = Arrays.asList("xml");
     private String[] testCase;
     private boolean writeLog = false;
 
@@ -85,36 +86,34 @@ public class ABLUnit extends PCTRun {
     public void execute() throws BuildException {
         JsonWriter writer = null;
 
+        // Validation
+        if (destDir == null)
+            destDir = getProject().getBaseDir();
+        else if (!destDir.isDirectory())
+            throw new BuildException("Invalid destDir (" + destDir + ")");
+
         if (testFilesets == null || testFilesets.isEmpty())
             throw new BuildException("No fileset found.");
+        if (format != null && !goodFormat.contains(format))
+            throw new BuildException("Invalid format (" + format + "). Valid formats: "
+                    + goodFormat);
 
         // Creating config file (json)
         try {
-            json = new File(System.getProperty("java.io.tmpdir"), JSONFILENAME);
+            json = new File(System.getProperty("java.io.tmpdir"), jsonFileName);
             writer = new JsonWriter(new FileWriter(json));
             log("Json file created : " + json, Project.MSG_VERBOSE);
             writer.beginObject();
 
             // Options
             writer.name("options").beginObject();
-            // Result file
-            if (destDir != null) {
 
-                if (!destDir.isDirectory() || (format != null && !goodFormat.contains(format))) {
-                    writer.endObject().endObject();
-                    throw new BuildException("Invalid destDir (" + destDir + ") or format(s) ("
-                            + format + "). Valid format: " + goodFormat);
-                }
+            log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
+            writer.name("output").beginObject();
+            writer.name("location").value(destDir.toString());
+            writer.name("format").value(format);
 
-                log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
-
-                writer.name("output").beginObject();
-                writer.name("location").value(destDir.toString());
-                writer.name("format").value(format);
-
-                writer.endObject();
-            } else
-                destDir = getProject().getBaseDir();
+            writer.endObject();
 
             // Log
             if (writeLog)
@@ -166,7 +165,7 @@ public class ABLUnit extends PCTRun {
         File results = new File(destDir, "results." + format);
         if (!results.exists())
             throw new BuildException("No results file (" + results
-                    + ") ! It must be an error in a ABL Procedure/Classe.");
+                    + ") ! It could be an error in the ABL Procedure/Class.");
     }
 
     /**
