@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module-content version="11.3">
+<module id="7203e017-acb8-4a88-b45c-ee2f30385e56" name="RestProject">
+<resource path="src\AppServer" publish="true"/>
+</module>
+</module-content>

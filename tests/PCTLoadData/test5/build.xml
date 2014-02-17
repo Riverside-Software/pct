@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="load1">
+    <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Table name="Tab1" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadData>
+  </target>
+
+  <target name="load2">
+    <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Table name="Tab2" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadData>
+  </target>
+
+  <target name="test1">
+    <PCTRun procedure="src/testTab1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="src/testTab2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>
