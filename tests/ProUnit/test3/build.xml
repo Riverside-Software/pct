@@ -3,7 +3,7 @@
 	<taskdef resource="PCT.properties" />
 
 	<target name="test">
-		<ProUnit dlcHome="${DLC}" project="src/prounit.xml" result="testProUnit.xml">
+		<ProUnit project="prounit.xml" result="testProUnit.xml">
 			<propath>
 				<path location="${TESTLIBS}/${PROULIB}" />
 			</propath>

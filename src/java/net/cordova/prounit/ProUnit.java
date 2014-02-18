@@ -17,9 +17,9 @@ import com.phenix.pct.PCTRun;
  * @version $Revision$
  */
 public class ProUnit extends PCTRun {
-    private File project = null;
-    private File result = null;
-    private String template = null;
+    private File project;
+    private File result;
+    private String template;
     private boolean compatibility = false;
 
     /**
@@ -67,32 +67,28 @@ public class ProUnit extends PCTRun {
         StringBuffer sb = new StringBuffer("-runningAnt=true");
         String proc = "startProUnitBatch.p";
 
-        //
-        if ((this.project == null) || !this.project.isFile()) {
-            this.cleanup();
+        if ((project == null) || !project.isFile()) {
             throw new BuildException(MessageFormat.format(
                     Messages.getString("ProUnit.0"), new Object[]{"project"})); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
-            sb.append(" -projectFile=").append(this.project.getAbsolutePath());
+            sb.append(" -projectFile=").append(project);
         }
 
-        if (this.result != null) {
-            sb.append(" -resultFile=").append(this.result.getAbsolutePath());
+        if (result != null) {
+            sb.append(" -resultFile=").append(result);
         }
 
-        if (this.template != null) {
-            sb.append(" -resultTemplate=").append(this.template);
+        if (template != null) {
+            sb.append(" -resultTemplate=").append(template);
         }
 
         // Use a different procedure for older versions of prounit
-        if (this.compatibility)
+        if (compatibility)
             proc = "batchRunner.p";
 
         this.setProcedure(proc); //$NON-NLS-1$
         this.setParameter(sb.toString());
 
         super.execute();
-
     }
-
 }
