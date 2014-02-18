@@ -155,7 +155,7 @@ public class ABLUnit extends PCTRun {
             }
         }
         // Setting PCTRun parameters
-        setProcedure("ablunit.pl");
+        setProcedure("ABLUnitCore.p");
         setParameter("CFG=" + json);
         // QUIT expected in 'ABLUnitCore.p'
         setNoErrorOnQuit(true);
