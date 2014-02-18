@@ -3,7 +3,7 @@
 	<plugins />
 	<TestSet name="RSSW Tests" seq="1">
 		<TestCase
-			name="Tests.p"
+			name="src/Tests.p"
 			seq="2" />
 	</TestSet>
 </ProUnitTestSuite>

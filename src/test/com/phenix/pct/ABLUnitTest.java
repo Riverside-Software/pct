@@ -111,7 +111,6 @@ public class ABLUnitTest extends BuildFileTestNg {
     public void test4() throws XPathExpressionException, FileNotFoundException {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
-        // XXX Non, on n'écrit pas /tmp parce qu'à la prochaine exécution le fichier sera  toujours là
 
         File result = new File("ABLUnit/test4/tempDir", "results.xml");
         Assert.assertTrue(result.exists());
