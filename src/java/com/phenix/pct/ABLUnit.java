@@ -87,9 +87,7 @@ public class ABLUnit extends PCTRun {
         JsonWriter writer = null;
 
         // Validation
-        if (destDir == null)
-            destDir = getProject().getBaseDir();
-        else if (!destDir.isDirectory())
+        if ((destDir != null) && !destDir.isDirectory())
             throw new BuildException("Invalid destDir (" + destDir + ")");
 
         if (testFilesets == null || testFilesets.isEmpty())
@@ -108,9 +106,11 @@ public class ABLUnit extends PCTRun {
             // Options
             writer.name("options").beginObject();
 
-            log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
             writer.name("output").beginObject();
-            writer.name("location").value(destDir.toString());
+            if (destDir != null) {
+                log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
+                writer.name("location").value(destDir.toString());
+            }
             writer.name("format").value(format);
 
             writer.endObject();
