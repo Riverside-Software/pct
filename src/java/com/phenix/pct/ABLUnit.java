@@ -87,12 +87,12 @@ public class ABLUnit extends PCTRun {
         JsonWriter writer = null;
 
         // Validation
-
         if (destDir != null && !destDir.isDirectory())
             throw new BuildException("Invalid destDir (" + destDir + ")");
 
         if (testFilesets == null || testFilesets.isEmpty())
             throw new BuildException("No fileset found.");
+
         if (format != null && !GOODFORMAT.contains(format))
             throw new BuildException("Invalid format (" + format + "). Valid formats: "
                     + GOODFORMAT);
@@ -107,21 +107,15 @@ public class ABLUnit extends PCTRun {
             // Options
             writer.name("options").beginObject();
 
-            if (destDir == null)
-                destDir = getProject().getBaseDir();
-
-            writer.name("output").beginObject();
             if (destDir != null) {
                 log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
+                writer.name("output").beginObject();
                 writer.name("location").value(destDir.toString());
+                writer.name("format").value(format);
+                writer.endObject();
             }
-            writer.name("format").value(format);
-
-            writer.endObject();
-
             // Log
-            if (writeLog)
-                writer.name("writeLog").value(writeLog);
+            writer.name("writeLog").value(writeLog);
 
             // End "Options" object
             writer.endObject();
@@ -165,6 +159,9 @@ public class ABLUnit extends PCTRun {
         setNoErrorOnQuit(true);
         // Run PCTRun
         super.execute();
+        
+        if(destDir==null)
+            destDir=getProject().getBaseDir();
 
         File results = new File(destDir, "results." + format);
         if (!results.exists())
