@@ -1,0 +1,5 @@
+<table class="packagegroup">
+    <th colspan="3">@GROUPTITLE@</th>
+    @PACKAGEITEMS@
+</table>
+<br/>

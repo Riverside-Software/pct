@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="lib" />
+    <PCTLibrary destFile="lib/test.pl" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test" />
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+  <target name="test2">
+    <touch file="src/test" />
+    <sleep seconds="2" />
+    <PCTLibrary destFile="lib/test.pl" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test" />
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+</project>

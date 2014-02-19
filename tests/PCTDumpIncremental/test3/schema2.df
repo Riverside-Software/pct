@@ -1,0 +1,10 @@
+  UPDATE DATABASE "?"
+  
+  ADD FIELD "Fld2" OF "tab1" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    POSITION 3
+    SQL-WIDTH 4
+    COLUMN-LABEL ""
+    ORDER 20
