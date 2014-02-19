@@ -22,7 +22,7 @@
 <mapEntry key="com.phenix.pct.ProUnitTest" value=""/>
 </mapAttribute>
 <listAttribute key="org.testng.eclipse.CLASS_TEST_LIST">
-<listEntry value="com.phenix.pct.ProUnitTest"/>
+<listEntry value="com.phenix.pct.ABLUnitTest"/>
 </listAttribute>
 <listAttribute key="org.testng.eclipse.GROUP_LIST"/>
 <listAttribute key="org.testng.eclipse.GROUP_LIST_CLASS"/>
