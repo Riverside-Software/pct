@@ -3,33 +3,31 @@
   <taskdef resource="PCT.properties" />
 
   <target name="base">
-    <PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema.df" />
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
   </target>
 
   <target name="test1">
     <mkdir dir="build" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
-      <fileset dir="src">
-        <include name="*.p" />
-      </fileset>
-      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="update">
     <PCTLoadSchema graphicalMode="false" srcFile="update.df" dlcHome="${DLC}">
-      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
   <target name="test2">
+    <sleep seconds="2" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
-      <fileset dir="src">
-        <include name="*.p" />
-      </fileset>
-      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <fileset dir="src" includes="*.p" />
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>

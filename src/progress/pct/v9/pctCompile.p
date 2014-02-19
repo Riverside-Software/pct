@@ -608,7 +608,12 @@ PROCEDURE importXref.
         IMPORT STREAM s2 ttXref.
         IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
             ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
-        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) EQ 0) THEN
+        ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0) THEN DO:
+            /* xObjID may contain DB.Table followed by IndexName or FieldName. We extract table name */
+            IF (INDEX(ttXref.xObjID, ' ') GT 0) THEN
+                ASSIGN ttXref.xObjID = SUBSTRING(ttXref.xObjID, 1, INDEX(ttXref.xObjID, ' ') - 1).
+        END.
+        ELSE
             DELETE ttXref.
     END.
     DELETE ttXref. /* ttXref is non-undo'able */

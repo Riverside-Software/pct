@@ -232,15 +232,19 @@ public class PCTCompileTest extends BuildFileTestNg {
 
         File f1 = new File("PCTCompile/test14/build/test.r");
         File f2 = new File("PCTCompile/test14/build/test2.r");
+        File f3 = new File("PCTCompile/test14/build/test3.r");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
+        assertTrue(f3.exists());
 
         long mod1 = f1.lastModified();
         long mod2 = f2.lastModified();
+        long mod3 = f3.lastModified();
         executeTarget("update");
         executeTarget("test2");
         assertTrue(mod1 < f1.lastModified());
         assertTrue(mod2 < f2.lastModified());
+        assertTrue(mod3 < f3.lastModified());
     }
 
     @Test(groups= {"v9"})
