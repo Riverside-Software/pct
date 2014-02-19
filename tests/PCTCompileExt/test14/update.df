@@ -1,6 +1,1 @@
-  ADD FIELD "Fld2" OF "tab1" AS integer 
-    FORMAT "9"
-    INITIAL "0"
-    LABEL "Fld2"
-    COLUMN-LABEL "Fld2"
-    ORDER 20
+DROP FIELD "Fld2" OF "Tab1"
