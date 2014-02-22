@@ -81,9 +81,9 @@ public class ABLUnitTest extends BuildFileTestNg {
 
         InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
         // Should be 2/2/2
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "4");
+        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "0");
+        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "2");
     }
 
     // Build error, No tests to run
@@ -106,8 +106,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     }
 
     // Test with different path to resultset
-    // TODO Doesn't work on Linux for now (due to ablunit.pl)
-    @Test(groups = {"v11", "win"})
+    @Test(groups = {"v11"})
     public void test4() throws XPathExpressionException, FileNotFoundException {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");

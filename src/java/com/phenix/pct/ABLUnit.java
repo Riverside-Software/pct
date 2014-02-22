@@ -22,12 +22,13 @@ import com.phenix.pct.PCTRun;
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL</a>
  */
 public class ABLUnit extends PCTRun {
+    private final static List<String> GOODFORMAT = Arrays.asList("xml");
+
     private Collection<FileSet> testFilesets = null;
     private String jsonFileName = "PCTests" + PCT.nextRandomInt() + ".json";
     private File json = null;
     private File destDir;
     private String format = "xml";
-    final static List<String> GOODFORMAT = Arrays.asList("xml");
     private String[] testCase;
     private boolean writeLog = false;
 

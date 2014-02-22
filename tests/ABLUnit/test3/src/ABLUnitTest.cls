@@ -1,23 +1,23 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-USING OpenEdge.ABLUnit.Assertions.Assert. 
+USING OpenEdge.Core.Assert. 
 
 CLASS ABLUnitTest:
 
    @Test. 
    METHOD PUBLIC VOID test1():
-      Assert:AssertTrue(TRUE).
+      Assert:isTrue(TRUE).
    END METHOD.
 
    @Test. 
    METHOD PUBLIC VOID test2():
-     Assert:AssertTrue(FALSE).
+     Assert:isTrue(FALSE).
    END METHOD.
 
    @Test. 
    METHOD PUBLIC VOID test3():
       /* Should be an error, but successful for now */
-      Assert:AssertEquals(INTEGER("A"), 1).
+      Assert:equals(INTEGER("A"), 1).
    END METHOD.
 
 END CLASS.

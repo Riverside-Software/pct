@@ -1,19 +1,19 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-USING OpenEdge.ABLUnit.Assertions.Assert.
+USING OpenEdge.Core.Assert.
 
 @Test.
 PROCEDURE test1:
-  Assert:AssertTrue(TRUE).
+  Assert:isTrue(TRUE).
 END.
 
 @Test.
 PROCEDURE test2:
-  Assert:AssertTrue(FALSE).
+  Assert:isTrue(FALSE).
 END.
 
 @Test.
 PROCEDURE test3:
   /* Should be an error, but successful for now */
-  Assert:AssertEquals(INTEGER("A"), 1).
+  Assert:equals(INTEGER("A"), 1).
 END.
