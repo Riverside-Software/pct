@@ -5,8 +5,8 @@
   <target name="test">
     <ABLUnit dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.p" />
-	  <propath>
-	    <pathelement location="src" />
+      <propath>
+        <pathelement location="src" />
         <pathelement location="${TESTLIBS}/ablunit.pl" />
         <pathelement location="${TESTLIBS}/OpenEdge.Core.pl" />
       </propath>
