@@ -321,6 +321,10 @@ public class PCTRun extends PCT {
      * @param iniFile File
      */
     public void setIniFile(File iniFile) {
+        if ((iniFile != null) && !iniFile.exists()) {
+            log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            return;
+        }
         this.iniFile = iniFile;
     }
 
