@@ -609,4 +609,19 @@ public class PCTCompileTest extends BuildFileTestNg {
         String line = Files.readFirstLine(crc, Charset.defaultCharset());
         assertTrue(line.startsWith("\"sports2000.Item\""));
     }
+
+    @Test(groups = {"v9"})
+    public void test36() throws IOException {
+        configureProject("PCTCompile/test36/build.xml");
+        executeTarget("test");
+
+        assertTrue(new File("PCTCompile/test36/build/bar/test1.r").exists());
+        assertTrue(new File("PCTCompile/test36/build/bar/test2.r").exists());
+        assertTrue(new File("PCTCompile/test36/build/bar/test3.r").exists());
+        assertFalse(new File("PCTCompile/test36/build/bar/test4.r").exists());
+        assertTrue(new File("PCTCompile/test36/build/foo/test.r").exists());
+        assertTrue(new File("PCTCompile/test36/build/foo/subdir/subdir2/test.r").exists());
+        assertFalse(new File("PCTCompile/test36/build/baz/test.r").exists());
+    }
+
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test36">
+  <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <OEFileSet basedir="src" subdirs="foo,bar" />
+      <propath>
+    	<pathelement location="src" />
+      </propath>
+    </PCTCompile>
+  </target>
+
+</project>
