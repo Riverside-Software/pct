@@ -610,7 +610,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(line.startsWith("\"sports2000.Item\""));
     }
 
-    @Test(groups = {"v9"})
+    @Test(groups = {"v10"})
     public void test36() throws IOException {
         configureProject("PCTCompile/test36/build.xml");
         executeTarget("test");
