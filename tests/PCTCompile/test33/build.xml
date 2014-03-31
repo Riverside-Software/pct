@@ -26,7 +26,7 @@
 
   <target name="test2">
     <mkdir dir="build2" />
-    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" stopOnError="true">
       <resources refid="union2" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
