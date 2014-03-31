@@ -100,6 +100,7 @@ DEFINE VARIABLE dbgListDir AS CHARACTER NO-UNDO.
 DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE StopOnErr AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoComp    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoParse   AS LOGICAL    NO-UNDO.
@@ -174,6 +175,8 @@ REPEAT:
             ASSIGN MD5 = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'FAILONERROR':U THEN
             ASSIGN FailOnErr = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'STOPONERROR':U THEN
+            ASSIGN StopOnErr = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'FORCECOMPILE':U THEN
             ASSIGN ForceComp = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'XCODE':U THEN
@@ -259,9 +262,11 @@ INPUT STREAM sFileset FROM VALUE(Filesets).
 CompLoop:
 REPEAT:
     IMPORT STREAM sFileset UNFORMATTED cLine.
-    IF (cLine BEGINS 'FILESET=':U) THEN
+    IF (cLine BEGINS 'FILESET=':U) THEN DO:
         /* This is a new fileset -- Changing base dir */
         ASSIGN CurrentFS = ENTRY(2, cLine, '=':U).
+        IF pctVerbose THEN MESSAGE SUBSTITUTE("Switching to fileset &1", currentFS).
+    END.
     ELSE DO:
         /* output progress */
         IF ProgPerc GT 0 THEN DO:
@@ -334,7 +339,7 @@ REPEAT:
             ELSE DO:
                 ASSIGN BuildExc  = TRUE
                        iCompFail = iCompFail + 1.
-                IF FailOnErr THEN LEAVE CompLoop.
+                IF StopOnErr THEN LEAVE CompLoop.
             END.
         END.
     END.
@@ -344,7 +349,7 @@ INPUT STREAM sFileset CLOSE.
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN
     MESSAGE "Failed to compile " iCompFail " file(s)".
-RETURN (IF BuildExc THEN '10' ELSE '0').
+RETURN (IF BuildExc AND failOnErr THEN '10' ELSE '0').
 
 FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER).
     DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.

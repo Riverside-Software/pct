@@ -197,7 +197,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(new File("PCTCompile/test11/build3/test1.r").exists());
         assertTrue(new File("PCTCompile/test11/build3/test2.r").exists());
         
-        expectBuildException("test4", "failOnError set to true");
+        executeTarget("test4");
         assertTrue(new File("PCTCompile/test11/build4/test0.r").exists());
         assertFalse(new File("PCTCompile/test11/build4/test1.r").exists());
         assertFalse(new File("PCTCompile/test11/build4/test2.r").exists());

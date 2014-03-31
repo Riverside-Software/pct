@@ -63,6 +63,7 @@ public class PCTCompile extends PCTRun {
     private boolean appendStringXref = false;
     private boolean saveR = true;
     private boolean twoPass = false;
+    private boolean stopOnError = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -379,6 +380,16 @@ public class PCTCompile extends PCTRun {
         this.twoPass = twoPass;
     }
 
+    /**
+     * Immediately stop compiling when a compilation error occurs
+     * 
+     * @param stopOnError Boolean
+     * @sinc PCT build #185
+     */
+    public void setStopOnError(boolean stopOnError) {
+        this.stopOnError = stopOnError;
+    }
+
     private boolean isDirInPropath(File dir) {
         if (propath == null)
             return false;
@@ -486,6 +497,8 @@ public class PCTCompile extends PCTRun {
             bw.write("FORCECOMPILE=" + (this.forceCompile ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("FAILONERROR=" + (failOnError ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("STOPONERROR=" + (stopOnError ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XCODE=" + (this.xcode ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
