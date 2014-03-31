@@ -622,6 +622,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test36/build/foo/test.r").exists());
         assertTrue(new File("PCTCompile/test36/build/foo/subdir/subdir2/test.r").exists());
         assertFalse(new File("PCTCompile/test36/build/baz/test.r").exists());
+
+        executeTarget("test2");
+
+        assertTrue(new File("PCTCompile/test36/build2/bar/test1.r").exists());
+        assertTrue(new File("PCTCompile/test36/build2/bar/test2.r").exists());
+        assertTrue(new File("PCTCompile/test36/build2/bar/test3.r").exists());
+        assertFalse(new File("PCTCompile/test36/build2/bar/test4.r").exists());
+        assertTrue(new File("PCTCompile/test36/build2/foo/test.r").exists());
+        assertTrue(new File("PCTCompile/test36/build2/foo/subdir/subdir2/test.r").exists());
+        assertFalse(new File("PCTCompile/test36/build2/baz/test.r").exists());
     }
 
 }
