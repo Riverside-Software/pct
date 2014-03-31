@@ -45,7 +45,6 @@ import org.apache.tools.ant.util.FileUtils;
  */
 public class PCTCompile extends PCTRun {
     private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
-    private List<OpenEdgeFileSet> oeFilesets = new ArrayList<OpenEdgeFileSet>();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
