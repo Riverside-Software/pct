@@ -634,4 +634,21 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(new File("PCTCompile/test36/build2/baz/test.r").exists());
     }
 
+    @Test(groups = {"v10"})
+    public void test37() throws IOException {
+        configureProject("PCTCompile/test37/build.xml");
+        executeTarget("init");
+
+        assertTrue(new File("PCTCompile/test37/build1/package/bar.r").exists());
+        assertTrue(new File("PCTCompile/test37/build1/package/Foo.r").exists());
+        assertTrue(new File("PCTCompile/test37/build2/package/bar.r").exists());
+        assertTrue(new File("PCTCompile/test37/build2/package/foo.r").exists());
+        assertTrue(new File("PCTCompile/test37/build3/package/bAr.r").exists());
+        assertTrue(new File("PCTCompile/test37/build3/package/fOO.r").exists());
+
+        executeTarget("test1");
+        executeTarget("test2");
+        executeTarget("test3");
+    }
+
 }
