@@ -56,6 +56,9 @@ public class PCTCreateBase extends PCT {
     private boolean relative = false;
     private boolean enableLargeFiles = false;
     private boolean multiTenant = false;
+    private boolean auditing = false;
+    private String auditArea = null;
+    private String auditIndexArea = null;
     private String collation = null;
     private String cpInternal = null;
     private boolean newInstance = false;
@@ -205,6 +208,23 @@ public class PCTCreateBase extends PCT {
     @Deprecated
     public void setEnableLargeFiles(boolean enableLargeFiles) {
         setLargeFiles(enableLargeFiles);
+    }
+
+    /**
+     * Enable auditing
+     * 
+     * @param auditing
+     */
+    public void setAuditing(boolean auditing) {
+        this.auditing = auditing;
+    }
+
+    public void setAuditArea(String area) {
+        this.auditArea = area;
+    }
+
+    public void setAuditIndexArea(String area) {
+        this.auditIndexArea = area;
     }
 
     /**
@@ -367,6 +387,12 @@ public class PCTCreateBase extends PCT {
         // Multi-Tenant database
         if ((getDLCMajorVersion() >= 11) && (multiTenant)) {
             exec = multiTenantCmdLine();
+            exec.execute();
+        }
+
+        // Enable auditing
+        if ((getDLCMajorVersion() >= 10) && (auditing)) {
+            exec = enableAuditingCmdLine();
             exec.execute();
         }
 
@@ -580,6 +606,32 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("enablelargefiles"); //$NON-NLS-1$
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }
+
+    private ExecTask enableAuditingCmdLine() {
+        ExecTask exec = new ExecTask(this);
+        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("enableauditing"); //$NON-NLS-1$
+        exec.createArg().setValue("area"); //$NON-NLS-1$
+        exec.createArg().setValue(auditArea); //$NON-NLS-1$
+        if (auditIndexArea != null) {
+            exec.createArg().setValue("indexarea"); //$NON-NLS-1$
+            exec.createArg().setValue(auditIndexArea); //$NON-NLS-1$
+        }
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
