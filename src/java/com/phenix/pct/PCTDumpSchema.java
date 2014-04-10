@@ -18,6 +18,7 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,8 +99,9 @@ public class PCTDumpSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTDumpSchema.2")); //$NON-NLS-1$
         }
 
-        String param = destFile.toString() + ";" + getTableList();
+        log("Dumping schema to " + destFile.toString(), Project.MSG_INFO); //$NON-NLS-1$
 
+        String param = destFile.toString() + ";" + getTableList();
         setProcedure("pct/dmpSch.p"); //$NON-NLS-1$
         setParameter(param);
         super.execute();
