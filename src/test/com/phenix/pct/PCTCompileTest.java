@@ -650,5 +650,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test2");
         executeTarget("test3");
     }
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
+    public void test39() {
+        configureProject("PCTCompile/test39/build.xml");
+        executeTarget("test");
+    }
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
+    public void test38() {
+        configureProject("PCTCompile/test38/build.xml");
+        executeTarget("test");
+    }
+    
 
 }
