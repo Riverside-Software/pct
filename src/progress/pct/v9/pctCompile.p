@@ -548,36 +548,24 @@ PROCEDURE displayCompileErrors.
     
     DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE bit AS INTEGER NO-UNDO.
-    DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
     
-    /* Checking if file is xcoded */
-    COPY-LOB FROM FILE (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) FOR 1 TO memvar.
-    bit = GET-BYTE (memvar,1).
-    SET-SIZE(memvar)= 0.
-
     IF (pcInit EQ pcFile) THEN    
         MESSAGE "Error compiling file" pcInit "at line" STRING(piRow) "column" STRING(piColumn).
     ELSE
         MESSAGE "Error compiling file" pcInit "in included file" pcFile "at line" STRING(piRow) "column" STRING(piColumn).
-  
-    IF (bit NE 17) AND (bit NE 19) THEN DO:
-        INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
-        DO WHILE (i LT piRow):
-             IMPORT STREAM sXref UNFORMATTED c.
-             ASSIGN i = i + 1.
-        END.
-        IMPORT STREAM sXref UNFORMATTED c.
-        MESSAGE c.
-        MESSAGE FILL('-':U, piColumn - 2) + '-^':U.
-        MESSAGE pcMsg.
-        MESSAGE '':U.
-    
-        INPUT STREAM sXref CLOSE.
-   END.
-   ELSE
-        MESSAGE ">> Can't display source, " (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) " is xcoded.".
-  
+
+    INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
+    DO WHILE (i LT piRow):
+         IMPORT STREAM sXref UNFORMATTED c.
+         ASSIGN i = i + 1.
+    END.
+    IMPORT STREAM sXref UNFORMATTED c.
+    MESSAGE c.
+    MESSAGE FILL('-':U, piColumn - 2) + '-^':U.
+    MESSAGE pcMsg.
+    MESSAGE '':U.
+
+    INPUT STREAM sXref CLOSE.
 END PROCEDURE.
 
 PROCEDURE PCTCompileXCode.
