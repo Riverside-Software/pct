@@ -576,7 +576,7 @@ PROCEDURE displayCompileErrors.
         INPUT STREAM sXref CLOSE.
    END.
    ELSE
-        MESSAGE ">> Can't read, file is xcoded.".
+        MESSAGE ">> Can't display source, file is xcoded.".
   
 END PROCEDURE.
 
