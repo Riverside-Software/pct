@@ -663,4 +663,14 @@ public class PCTCompileTest extends BuildFileTestNg {
         configureProject("PCTCompile/test39/build.xml");
         expectBuildException("test", "Should fail - Progress syntax error");
     }
+    
+    @Test(groups = {"v10","v11"})
+    public void test40() {
+        // Test keepXref attribut
+        configureProject("PCTCompile/test40/build.xml");
+        executeTarget("test");
+        
+        assertFalse(new File("PCTCompile/test40/build1/.pct/test.p.xref").exists());
+        assertTrue(new File("PCTCompile/test40/build2/.pct/test.p.xref").exists());
+    }
 }
