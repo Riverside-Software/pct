@@ -548,24 +548,23 @@ PROCEDURE displayCompileErrors.
     
     DEFINE VARIABLE i AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
-    
+
     IF (pcInit EQ pcFile) THEN    
         MESSAGE "Error compiling file" pcInit "at line" STRING(piRow) "column" STRING(piColumn).
     ELSE
         MESSAGE "Error compiling file" pcInit "in included file" pcFile "at line" STRING(piRow) "column" STRING(piColumn).
-
-    INPUT STREAM sXref FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
+    INPUT STREAM s2 FROM VALUE((IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
     DO WHILE (i LT piRow):
-         IMPORT STREAM sXref UNFORMATTED c.
-         ASSIGN i = i + 1.
+        IMPORT STREAM s2 UNFORMATTED c.
+        ASSIGN i = i + 1.
     END.
-    IMPORT STREAM sXref UNFORMATTED c.
+    IMPORT STREAM s2 UNFORMATTED c.
     MESSAGE c.
     MESSAGE FILL('-':U, piColumn - 2) + '-^':U.
     MESSAGE pcMsg.
     MESSAGE '':U.
-
-    INPUT STREAM sXref CLOSE.
+    
+    INPUT STREAM s2 CLOSE.
 END PROCEDURE.
 
 PROCEDURE PCTCompileXCode.
