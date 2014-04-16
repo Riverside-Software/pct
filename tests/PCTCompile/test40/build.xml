@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test40">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test">
+		<mkdir dir="build1" />
+		<mkdir dir="build2" />
+
+		<PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
+			<fileset dir="src" includes="*.p" />
+			<propath>
+				<pathelement location="src" />
+			</propath>
+		</PCTCompile>
+
+		<PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true">
+			<fileset dir="src" includes="*.p" />
+			<propath>
+				<pathelement location="src" />
+			</propath>
+		</PCTCompile>
+	</target>
+
+</project>

@@ -220,7 +220,7 @@ REPEAT:
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PROGPERC':U THEN
-            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).	    
+            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).      
         WHEN 'TWOPASS':U THEN
             ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'TWOPASSID':U THEN
@@ -344,7 +344,7 @@ REPEAT:
         END.
     END.
 END.
-OS-DELETE VALUE(SESSION:TEMP-DIRECTORY + '/PCTXREF':U).
+
 INPUT STREAM sFileset CLOSE.
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN
@@ -453,6 +453,7 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
     DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
@@ -471,6 +472,7 @@ PROCEDURE PCTCompileXref.
     IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
     
+    ASSIGN cXrefFile = pcPCTDir + '/':U + pcInFile + '.xref':U.
     ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
                            THEN pcPCTDir + '/strings.xref':U
                            ELSE (IF StrXref
@@ -509,20 +511,20 @@ PROCEDURE PCTCompileXref.
 
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 in directory &2 TO &3", pcInFile, pcInDir, cSaveDir).
     IF (languages EQ ?) THEN 
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.
     ELSE DO:
       IF (gwtFact GE 0) THEN
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.
       ELSE
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") APPEND=FALSE NO-ERROR.      
+        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.      
     END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
-        RUN ImportXref (INPUT SESSION:TEMP-DIRECTORY + "/PCTXREF", INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
+        RUN ImportXref ( INPUT cXrefFile, INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
         /* Il faut verifier le code de retour */
-        IF keepXref THEN
-          OS-COPY VALUE(SESSION:TEMP-DIRECTORY + "/PCTXREF") VALUE(pcPCTDir + '/':U + pcInFile + '.xref':U).
+        IF NOT keepXref THEN
+          OS-DELETE VALUE(cXrefFile).
     END.
     ELSE DO:
         ASSIGN c = '':U.
@@ -591,7 +593,7 @@ PROCEDURE displayCompileErrors.
         INPUT STREAM sXref CLOSE.
    END.
    ELSE
-        MESSAGE ">> Can't read, file is xcoded.".
+        MESSAGE ">> Can't display source, file is xcoded.".
   
 END PROCEDURE.
 
