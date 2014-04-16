@@ -306,7 +306,7 @@ PROCEDURE pctCompile2 PRIVATE:
         IF COMPILER:ERROR THEN DO:
             ASSIGN opOK = FALSE.
 
-            RUN getCompileErrors(INPUT ipSrcProc, fsRootDir + '/' + fsDir + '/' + fsFile, SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
+            RUN getCompileErrors(INPUT ipSrcProc, SEARCH(fsRootDir + '/' + fsDir + '/' + fsFile), SEARCH(COMPILER:FILE-NAME), COMPILER:ERROR-ROW, COMPILER:ERROR-COLUMN).
             DO zz = 1 TO ERROR-STATUS:NUM-MESSAGES:
                 RUN logError IN ipSrcProc (ERROR-STATUS:GET-MESSAGE(zz)).
             END.
@@ -396,23 +396,36 @@ PROCEDURE getCompileErrors PRIVATE:
     DEFINE VARIABLE i   AS INTEGER    NO-UNDO INITIAL 1.
     DEFINE VARIABLE c   AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE tmp AS CHARACTER   NO-UNDO.
-
-    IF (REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/')) THEN
+    DEFINE VARIABLE bit AS INTEGER NO-UNDO.
+    DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
+    DEFINE VARIABLE include AS LOGICAL NO-UNDO.
+    
+    ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
+    /* Checking if file is xcoded */
+    COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+    bit = GET-BYTE (memvar,1).
+    SET-SIZE(memvar)= 0.
+    
+    IF (include) THEN
         RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
     ELSE
         RUN logError IN ipSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
-
-    INPUT STREAM sXref FROM VALUE((IF REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/') THEN pcInit ELSE pcFile)).
-    DO i = 1 TO piRow - 1:
+   
+    IF (bit NE 17) AND (bit NE 19) THEN DO:
+        INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
+        DO i = 1 TO piRow - 1:
+            IMPORT STREAM sXref UNFORMATTED tmp.
+        END.
         IMPORT STREAM sXref UNFORMATTED tmp.
+        RUN logError IN ipSrcProc (INPUT tmp).
+        RUN logError IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    
+        INPUT STREAM sXref CLOSE.
     END.
-    IMPORT STREAM sXref UNFORMATTED tmp.
-    RUN logError IN ipSrcProc (INPUT tmp).
-    RUN logError IN ipSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
-
-    INPUT STREAM sXref CLOSE.
+    ELSE
+        RUN logError IN ipSrcProc (SUBSTITUTE(">> Can't display source, &1 is xcoded.",(IF include THEN pcInit ELSE pcFile))).
+    
     RETURN c.
-
 END PROCEDURE.
 
 PROCEDURE importXref PRIVATE:
