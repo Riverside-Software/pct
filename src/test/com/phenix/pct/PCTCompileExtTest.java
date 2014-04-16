@@ -566,6 +566,20 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // 2 profiler files generated
         assertEquals(f1.list().length, 2);
     }
+    
+    @Test(groups = {"all"})
+    public void test38() {
+        // Compile error with xcode
+        configureProject("PCTCompileExt/test38/build.xml");
+        expectBuildException("test", "Should fail - Progress syntax error");
+    }
+
+    @Test(groups = {"all"})
+    public void test39() {
+        // Compile error, no xcode
+        configureProject("PCTCompileExt/test39/build.xml");
+        expectBuildException("test", "Should fail - Progress syntax error");
+    }
 
     private static void copy(File src, File dst) throws IOException {
         // Create channel on the source
