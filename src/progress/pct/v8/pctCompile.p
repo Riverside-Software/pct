@@ -311,7 +311,7 @@ PROCEDURE PCTCompile.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
-        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+        RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
 END PROCEDURE.
@@ -363,7 +363,7 @@ PROCEDURE displayCompileErrors.
     DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
     
     /* Checking if file is xcoded */
-    COPY-LOB FROM FILE (IF pcInit NE ? THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+    COPY-LOB FROM FILE (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) FOR 1 TO memvar.
     bit = GET-BYTE (memvar,1).
     SET-SIZE(memvar)= 0.
 
@@ -387,7 +387,7 @@ PROCEDURE displayCompileErrors.
         INPUT STREAM sXref CLOSE.
    END.
    ELSE
-        MESSAGE ">> Can't display source, file is xcoded.".
+        MESSAGE ">> Can't display source, " (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) " is xcoded.".
   
 END PROCEDURE.
 
@@ -416,7 +416,7 @@ PROCEDURE PCTCompileXCode.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
-        RUN displayCompileErrors(SEARCH(pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+        RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT COMPILER:FILE-NAME, INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
 
 END PROCEDURE.
