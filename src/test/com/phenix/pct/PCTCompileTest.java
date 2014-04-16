@@ -652,14 +652,14 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"all"})
     public void test38() {
-        // Compile error, no xcode
+        // Compile error with xcode
         configureProject("PCTCompile/test38/build.xml");
         expectBuildException("test", "Should fail - Progress syntax error");
     }
 
     @Test(groups = {"all"})
     public void test39() {
-        // Compile error with xcode
+        // Compile error, no xcode
         configureProject("PCTCompile/test39/build.xml");
         expectBuildException("test", "Should fail - Progress syntax error");
     }
