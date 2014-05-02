@@ -4,8 +4,15 @@
 
   <target name="test">
     <mkdir dir="build" />
+    <mkdir dir="build2" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true" xmlXref="true">
+      <fileset dir="src" includes="test.p" />
       <propath>
         <pathelement location="src" />
       </propath>
@@ -14,9 +21,15 @@
 
   <target name="test2">
     <sleep seconds="3" />
-    <touch file="src/include.i" />
+    <touch file="src/include2.i" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true" xmlXref="true">
+      <fileset dir="src" includes="test.p" />
       <propath>
         <pathelement location="src" />
       </propath>

@@ -111,6 +111,7 @@ DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lV6Frame  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lXmlXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
@@ -216,13 +217,15 @@ REPEAT:
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PROGPERC':U THEN
-            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).	    
+            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'TWOPASS':U THEN
             ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'TWOPASSID':U THEN
             ASSIGN twoPassID = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'NUMFILES':U THEN
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
+        WHEN 'XMLXREF':U THEN
+            ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.

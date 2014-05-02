@@ -679,18 +679,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         configureProject("PCTCompile/test42/build.xml");
         executeTarget("test");
 
-        File f1 = new File("PCTCompile/test42/build/test1.r");
-        File f2 = new File("PCTCompile/test42/build/test2.r");
-        File f3 = new File("PCTCompile/test42/build/test3.r");
+        File f1 = new File("PCTCompile/test42/build/test.r");
+        File f2 = new File("PCTCompile/test42/build2/test.r");
         long mod1 = f1.lastModified();
         long mod2 = f2.lastModified();
-        long mod3 = f3.lastModified();
 
         executeTarget("test2");
-        assertTrue(mod1 > f1.lastModified());
-        assertTrue(mod2 > f2.lastModified());
-        assertTrue(mod3 > f3.lastModified());
+        /* Bug is still there with standard XREF */
+        assertTrue(mod1 == f1.lastModified());
+        /* But fixed with XML-XREF */
+        assertTrue(f2.lastModified() > mod2);
     }
-
 
 }
