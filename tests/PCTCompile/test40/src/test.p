@@ -1,2 +1,2 @@
-MESSAGE "Fist line".
+MESSAGE "First line".
 MESSAGE "Second line".
