@@ -1,2 +1,1 @@
-MESSAGE "Good line".
-MESAGE "Bad line".
+MESAGE "Syntax error".
