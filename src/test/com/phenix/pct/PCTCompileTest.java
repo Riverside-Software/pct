@@ -651,7 +651,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test3");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9"})
     public void test38() {
         // Compile error with xcode
         configureProject("PCTCompile/test38/build.xml");
@@ -659,14 +659,14 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectBuildException("test", "Should fail - Progress syntax error");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v9"})
     public void test39() {
         // Compile error, no xcode
         configureProject("PCTCompile/test39/build.xml");
         expectBuildException("test", "Should fail - Progress syntax error");
     }
 
-    @Test(groups = {"v10", "v11"})
+    @Test(groups = {"v10"})
     public void test40() {
         // Test keepXref attribute
         configureProject("PCTCompile/test40/build.xml");
@@ -676,7 +676,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File("PCTCompile/test40/build2/.pct/test.p.xref").exists());
     }
 
-    @Test(groups = {"v9"})
+    @Test(groups = {"v10"})
     public void test42() {
         configureProject("PCTCompile/test42/build.xml");
         executeTarget("test");
