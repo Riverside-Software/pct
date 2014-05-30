@@ -686,7 +686,7 @@ PROCEDURE displayCompileErrors.
         INPUT STREAM sXref CLOSE.
    END.
    ELSE
-        MESSAGE ">> Can't display source, " (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) " is xcoded.".
+        MESSAGE SUBSTITUTE(">> Can't display xcoded source &1", (IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
   
 END PROCEDURE.
 
