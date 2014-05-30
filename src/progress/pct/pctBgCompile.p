@@ -423,7 +423,7 @@ PROCEDURE getCompileErrors PRIVATE:
         INPUT STREAM sXref CLOSE.
     END.
     ELSE
-        RUN logError IN ipSrcProc (SUBSTITUTE(">> Can't display source, &1 is xcoded.",(IF include THEN pcInit ELSE pcFile))).
+        RUN logError IN ipSrcProc (SUBSTITUTE(">> Can't display xcoded source &1", (IF pcInit EQ pcFile THEN pcInit ELSE pcFile))).
     
     RETURN c.
 END PROCEDURE.
