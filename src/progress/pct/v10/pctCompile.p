@@ -738,7 +738,7 @@ PROCEDURE importXmlXref.
     EMPTY TEMP-TABLE ttXrefClasses.
 
     CREATE DATASET hDS.
-    hDS:READ-XML("FILE", pcXref, "EMPTY", OS-GETENV("DLC") + "/properties/schemas/xrefd0004.xsd", ?, ?).
+    hDS:READ-XML("FILE", pcXref, "EMPTY", OS-GETENV("DLC") + "/properties/schemas/xrefd0003.xsd", ?, ?).
 
     /* Shortcuts */
     ASSIGN bRef = hDS:GET-BUFFER-HANDLE('Reference')
@@ -818,8 +818,6 @@ PROCEDURE importXmlXref.
     END.
     OUTPUT CLOSE.
 
-    DELETE OBJECT hDS.
-    
 END PROCEDURE.
 
 PROCEDURE importXref.

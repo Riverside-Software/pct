@@ -818,8 +818,6 @@ PROCEDURE importXmlXref.
     END.
     OUTPUT CLOSE.
 
-    DELETE OBJECT hDS.
-    
 END PROCEDURE.
 
 PROCEDURE importXref.
