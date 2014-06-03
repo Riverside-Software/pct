@@ -77,6 +77,8 @@ DEFINE TEMP-TABLE ttXrefCRC NO-UNDO
     FIELD ttTblName AS CHARACTER.
 DEFINE TEMP-TABLE ttXrefClasses NO-UNDO
     FIELD ttClsName AS CHARACTER.
+{ pct/v11/xrefd0004.i}
+
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
@@ -725,11 +727,6 @@ PROCEDURE importXmlXref.
     DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
 
-    DEFINE VARIABLE hDS       AS HANDLE NO-UNDO.
-    DEFINE VARIABLE hQuery    AS HANDLE NO-UNDO.
-    DEFINE VARIABLE hQuery2   AS HANDLE NO-UNDO.
-    DEFINE VARIABLE bRef      AS HANDLE NO-UNDO.
-    DEFINE VARIABLE bClassRef AS HANDLE NO-UNDO.
     DEFINE VARIABLE cTmp      AS CHARACTER NO-UNDO.
     DEFINE VARIABLE zz        AS INTEGER NO-UNDO.
     
@@ -737,79 +734,53 @@ PROCEDURE importXmlXref.
     EMPTY TEMP-TABLE ttXrefCRC.
     EMPTY TEMP-TABLE ttXrefClasses.
 
-    CREATE DATASET hDS.
-    hDS:READ-XML("FILE", pcXref, "EMPTY", OS-GETENV("DLC") + "/properties/schemas/xrefd0004.xsd", ?, ?).
+    DATASET Cross-reference:READ-XML("FILE", pcXref, "EMPTY", ?, ?).
 
-    /* Shortcuts */
-    ASSIGN bRef = hDS:GET-BUFFER-HANDLE('Reference')
-           bClassRef = hDS:GET-BUFFER-HANDLE('Class-Ref').
-           
-    CREATE QUERY hQuery.
-    hQuery:SET-BUFFERS(bRef).
-    hQuery:QUERY-PREPARE("FOR EACH Reference WHERE LOOKUP(Reference-Type, 'INCLUDE,CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) NE 0").
-    hQuery:QUERY-OPEN().
-    IF hQuery:IS-OPEN THEN REPEAT:
-        hQuery:GET-NEXT().
-        IF hQuery:QUERY-OFF-END THEN LEAVE.
-        IF bRef:AVAILABLE THEN DO:
-            ASSIGN bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE = TRIM(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE).
-            IF (bRef:BUFFER-FIELD('Reference-Type'):BUFFER-VALUE EQ 'INCLUDE') THEN DO:
-                /* Extract include file name from field (which contains include parameters */
-                CREATE ttXrefInc.
-                ASSIGN ttXrefInc.ttIncName = SUBSTRING(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE, 1, INDEX(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE, ' ') - 1).
-            END.
-            ELSE IF (bRef:BUFFER-FIELD('Reference-Type'):BUFFER-VALUE EQ 'CLASS') THEN DO:
-                /* Extract inherits and implements */
-                CREATE QUERY hQuery2.
-                hQuery2:SET-BUFFERS(bClassRef).
-                hQuery2:QUERY-PREPARE("FOR EACH Class-Ref OF Reference").
-                hQuery2:QUERY-OPEN().
-                IF hQuery2:IS-OPEN THEN REPEAT:
-                    hQuery2:GET-NEXT().
-                    IF hQuery2:QUERY-OFF-END THEN LEAVE.
-                    IF bClassRef:AVAILABLE THEN DO:
-                        DO zz = 1 TO NUM-ENTRIES(bRef:BUFFER-FIELD('Inherited-list'):BUFFER-VALUE, ' '):
-                            CREATE ttXrefClasses.
-                            ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, bRef:BUFFER-FIELD('Inherited-list'):BUFFER-VALUE, ' ').
-                        END.
-                        DO zz = 1 TO NUM-ENTRIES(bRef:BUFFER-FIELD('Implements-list'):BUFFER-VALUE, ' '):
-                            CREATE ttXrefClasses.
-                            ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, bRef:BUFFER-FIELD('Implements-list'):BUFFER-VALUE, ' ').
-                        END.
-                    END.
-                END.
-                DELETE OBJECT hQuery2.
-            END.
-			ELSE DO:
-			    /* Find CRC of each table */
-				CREATE ttXrefCRC.
-				IF (INDEX(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE, ' ') GT 0) THEN
-                	ASSIGN ttXrefCRC.ttTblName = SUBSTRING(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE, 1, INDEX(bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE, ' ') - 1).
-                ELSE
-                    ASSIGN ttXrefCRC.ttTblName = bRef:BUFFER-FIELD('Object-identifier'):BUFFER-VALUE.
-			END.
+    FOR EACH Reference WHERE LOOKUP(Reference-Type, 'INCLUDE,CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) NE 0:
+      ASSIGN Reference.Object-identifier = TRIM(Reference.Object-identifier).
+      IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
+        /* Extract include file name from field (which contains include parameters */
+        CREATE ttXrefInc.
+        ASSIGN ttXrefInc.ttIncName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+      END.
+      ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
+        FOR EACH Class-Ref OF Reference:
+          DO zz = 1 TO NUM-ENTRIES(Class-Ref.Inherited-list, ' '):
+              CREATE ttXrefClasses.
+              ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Inherited-list, ' ').
+          END.
+          DO zz = 1 TO NUM-ENTRIES(Class-Ref.Implements-list, ' '):
+              CREATE ttXrefClasses.
+              ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Implements-list, ' ').
+          END.
         END.
+      END.
+      ELSE DO:
+        /* Find CRC of each table */
+        CREATE ttXrefCRC.
+        IF (INDEX(Reference.Object-identifier, ' ') GT 0) THEN
+          ASSIGN ttXrefCRC.ttTblName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ELSE
+          ASSIGN ttXrefCRC.ttTblName = Reference.Object-identifier.
+      END.
     END.
-    hQuery:QUERY-CLOSE().
-    DELETE OBJECT hQuery.
-	DELETE OBJECT hDS.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
-	FOR EACH ttXrefInc BREAK BY ttIncName:
+    FOR EACH ttXrefInc BREAK BY ttIncName:
 	    IF FIRST-OF(ttXrefInc.ttIncName) THEN
 	        EXPORT ttXrefInc.ttIncName SEARCH(ttXrefInc.ttIncName).
-	END.
+    END.
     OUTPUT CLOSE.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
-	FOR EACH ttXrefCRC BREAK BY ttTblName:
+    FOR EACH ttXrefCRC BREAK BY ttTblName:
 	    IF FIRST-OF(ttXrefCRC.ttTblName) THEN DO:
             FIND CRCList WHERE CRCList.ttTable EQ ttXrefCRC.ttTblName NO-LOCK NO-ERROR.
             IF (AVAILABLE CRCList) THEN DO:
                 EXPORT CRCList.
             END.
 	    END.
-	END.
+    END.
     OUTPUT CLOSE.
 
     OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.hierarchy':U).
