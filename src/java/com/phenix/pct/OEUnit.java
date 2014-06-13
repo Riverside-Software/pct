@@ -60,14 +60,13 @@ public class OEUnit extends PCTRun {
             throw new BuildException("Invalid srcDir (" + srcDir + ")");
         
         // Setting PCTRun parameters
-        setProcedure("RunFromCommandLine.p");
+        setProcedure("OEUnit/Automation/Pct/RunFromCommandLine.p");
         setParameter(destDir+","+srcDir);
         // Run PCTRun
         super.execute();
         
-       /* File results = new File(destDir, "results." + format);
-        if (!results.exists())
-            throw new BuildException("No results file (" + results
-                    + ") ! It could be an error in an ABL Procedure/Class.");*/
+        if (destDir.listFiles().length<1)
+            throw new BuildException("No results file (" + destDir
+                    + ") ! It could be an error in an ABL Procedure/Class.");
     }
 }
