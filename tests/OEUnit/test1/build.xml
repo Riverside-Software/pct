@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="OEUnit-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+  	<mkdir dir="test-reports" />
+    <OEUnit dlcHome="${DLC}" srcDir="." destDir="test-reports">
+      <propath>
+        <pathelement location="src" />
+        <pathelement location="${TESTLIBS}/OEUnit_${VERSION}.pl" />
+      </propath>
+    </OEUnit>
+  </target>
+
+</project>
