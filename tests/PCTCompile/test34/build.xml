@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test34">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <mkdir dir="debugListing" />
+    <PCTCompile graphicalMode="false" destDir="build" debugListingDir="debugListing" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

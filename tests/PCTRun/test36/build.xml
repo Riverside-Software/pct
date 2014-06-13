@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test36">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <PCTCreateBase dbName="test" destDir="." dlcHome="${DLC}" schemaFile="schema1.df" />
+    <PCTCreateBase dbName="test2" destDir="." dlcHome="${DLC}" schemaFile="schema2.df" />
+  </target>
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+    </PCTRun>
+  </target>
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+  <target name="test4">
+    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias" />
+      </PCTConnection>
+      <PCTConnection dbName="test2" dbDir="." singleUser="true">
+        <PCTAlias name="MyAlias2" />
+      </PCTConnection>
+    </PCTRun>
+  </target>
+
+</project>

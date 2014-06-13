@@ -1,0 +1,16 @@
+UPDATE DATABASE "?"
+      
+  ADD TABLE "Tab1"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab1"
+
+  ADD TABLE "Tab2"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab2"
+
+  ADD TABLE "Tab3"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab3"

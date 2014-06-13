@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prgs:model xmlns:prgs="http://www.progress.com/caf/camel/component/prgrs" id="resourceModel">
+  <prgs:resource consumes="application/json" name="_foo" path="/foo" produces="application/json">
+    <prgs:operation consumes="application/json" idls="RestProject/.services/src/AppServer/rest.pidl::com.progress.openedge.pdt.bpmbindings" name="rest" produces="application/json" verb="GET">
+      <prgs:param name="in" type="QUERY"/>
+    </prgs:operation>
+  </prgs:resource>
+</prgs:model>

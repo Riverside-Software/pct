@@ -1,0 +1,10 @@
+  UPDATE DATABASE "?"
+
+  ADD FIELD "Fld2" OF "tab2" AS character 
+    FORMAT "x(8)"
+    INITIAL "0"
+    LABEL "Fld3"
+    SQL-WIDTH 16
+    COLUMN-LABEL "Fld3"
+    ORDER 30
+  

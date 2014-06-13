@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<ProUnitTestSuite>
+	<plugins />
+	<TestSet name="RSSW Tests" seq="1">
+		<TestCase
+			name="src/Tests.p"
+			seq="2" />
+	</TestSet>
+</ProUnitTestSuite>

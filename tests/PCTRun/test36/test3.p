@@ -1,0 +1,2 @@
+  FIND FIRST MyAlias2.Tab2 NO-LOCK NO-ERROR.
+  RETURN '0'.
