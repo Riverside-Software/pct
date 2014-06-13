@@ -71,6 +71,13 @@ DEFINE TEMP-TABLE ttXref NO-UNDO
 DEFINE TEMP-TABLE ttDirs NO-UNDO
     FIELD baseDir AS CHARACTER
     FIELD dirName AS CHARACTER.
+DEFINE TEMP-TABLE ttXrefInc NO-UNDO
+    FIELD ttIncName AS CHARACTER.
+DEFINE TEMP-TABLE ttXrefCRC NO-UNDO
+    FIELD ttTblName AS CHARACTER.
+DEFINE TEMP-TABLE ttXrefClasses NO-UNDO
+    FIELD ttClsName AS CHARACTER.
+{ pct/v11/xrefd0004.i}
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
@@ -115,6 +122,7 @@ DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lV6Frame  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lXmlXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
@@ -220,13 +228,15 @@ REPEAT:
         WHEN 'RELATIVE':U THEN
             ASSIGN lRelative = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PROGPERC':U THEN
-            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).	    
+            ASSIGN ProgPerc = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'TWOPASS':U THEN
             ASSIGN lTwoPass = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'TWOPASSID':U THEN
             ASSIGN twoPassID = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'NUMFILES':U THEN
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
+        WHEN 'XMLXREF':U THEN
+            ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -510,18 +520,103 @@ PROCEDURE PCTCompileXref.
     END.
 
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 in directory &2 TO &3", pcInFile, pcInDir, cSaveDir).
-    IF (languages EQ ?) THEN 
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.
-    ELSE DO:
-      IF (gwtFact GE 0) THEN
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.
+    IF (languages EQ ?) THEN DO:
+      IF lXmlXref THEN
+        COMPILE
+          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+          SAVE = SaveR INTO VALUE(cSaveDir)
+          STREAM-IO=streamIO
+          V6FRAME=lV6Frame
+          DEBUG-LIST VALUE(debugListingFile)
+          PREPROCESS VALUE(preprocessFile) 
+          MIN-SIZE=MinSize
+          GENERATE-MD5=MD5
+          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+          XREF-XML VALUE(cXrefFile)
+          NO-ERROR.
       ELSE
-        COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(pcOutDir) LANGUAGES (VALUE(languages)) STREAM-IO=streamIO V6FRAME=lV6Frame DEBUG-LIST VALUE(debugListingFile) PREPROCESS VALUE(preprocessFile) /*LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))*/ MIN-SIZE=MinSize GENERATE-MD5=MD5 STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf XREF VALUE(cXrefFile) APPEND=FALSE NO-ERROR.      
+        COMPILE
+          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+          SAVE = SaveR INTO VALUE(cSaveDir)
+          STREAM-IO=streamIO
+          V6FRAME=lV6Frame
+          DEBUG-LIST VALUE(debugListingFile)
+          PREPROCESS VALUE(preprocessFile) 
+          MIN-SIZE=MinSize
+          GENERATE-MD5=MD5
+          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+          XREF VALUE(cXrefFile) APPEND=FALSE
+          NO-ERROR.
+    END.
+    ELSE DO:
+      IF (gwtFact GE 0) THEN DO:
+        IF lXmlXref THEN
+	        COMPILE
+	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+	          SAVE = SaveR INTO VALUE(pcOutDir)
+	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+	          STREAM-IO=streamIO
+	          V6FRAME=lV6Frame
+	          DEBUG-LIST VALUE(debugListingFile)
+	          PREPROCESS VALUE(preprocessFile)
+	          MIN-SIZE=MinSize
+	          GENERATE-MD5=MD5
+	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+	          XREF-XML VALUE(cXrefFile)
+	          NO-ERROR.
+	    ELSE
+	        COMPILE
+	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+	          SAVE = SaveR INTO VALUE(pcOutDir)
+	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+	          STREAM-IO=streamIO
+	          V6FRAME=lV6Frame
+	          DEBUG-LIST VALUE(debugListingFile)
+	          PREPROCESS VALUE(preprocessFile)
+	          MIN-SIZE=MinSize
+	          GENERATE-MD5=MD5
+	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+	          XREF VALUE(cXrefFile) APPEND=FALSE
+	          NO-ERROR.
+      END.
+      ELSE DO:
+        IF lXmlXref THEN
+	        COMPILE
+	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+	          SAVE = SaveR INTO VALUE(pcOutDir)
+	          LANGUAGES (VALUE(languages))
+	          STREAM-IO=streamIO
+	          V6FRAME=lV6Frame
+	          DEBUG-LIST VALUE(debugListingFile)
+	          PREPROCESS VALUE(preprocessFile)
+	          MIN-SIZE=MinSize
+	          GENERATE-MD5=MD5
+	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+	          XREF-XML VALUE(cXrefFile)
+	          NO-ERROR.
+        ELSE
+	        COMPILE
+	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+	          SAVE = SaveR INTO VALUE(pcOutDir)
+	          LANGUAGES (VALUE(languages))
+	          STREAM-IO=streamIO
+	          V6FRAME=lV6Frame
+	          DEBUG-LIST VALUE(debugListingFile)
+	          PREPROCESS VALUE(preprocessFile)
+	          MIN-SIZE=MinSize
+	          GENERATE-MD5=MD5
+	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+	          XREF VALUE(cXrefFile) APPEND=FALSE
+	          NO-ERROR.
+      END.      
     END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF plOK THEN DO:
-        RUN ImportXref ( INPUT cXrefFile, INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
+        IF lXmlXref THEN
+        	RUN ImportXmlXref (INPUT cXrefFile, INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
+        ELSE
+        	RUN ImportXref (INPUT cXrefFile, INPUT pcPCTDir, INPUT pcInFile) NO-ERROR.
         /* Il faut verifier le code de retour */
         IF NOT keepXref THEN
           OS-DELETE VALUE(cXrefFile).
@@ -593,7 +688,7 @@ PROCEDURE displayCompileErrors.
         INPUT STREAM sXref CLOSE.
    END.
    ELSE
-        MESSAGE ">> Can't display source, " (IF pcInit EQ pcFile THEN pcInit ELSE pcFile) " is xcoded.".
+        MESSAGE SUBSTITUTE(">> Can't display xcoded source &1", (IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
   
 END PROCEDURE.
 
@@ -624,6 +719,75 @@ PROCEDURE PCTCompileXCode.
         END.
         RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
+
+END PROCEDURE.
+
+PROCEDURE importXmlXref.
+    DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
+    DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
+
+    DEFINE VARIABLE cTmp      AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE zz        AS INTEGER NO-UNDO.
+    
+    EMPTY TEMP-TABLE ttXrefInc.
+    EMPTY TEMP-TABLE ttXrefCRC.
+    EMPTY TEMP-TABLE ttXrefClasses.
+
+    DATASET Cross-reference:READ-XML("FILE", pcXref, "EMPTY", ?, ?).
+
+    FOR EACH Reference WHERE LOOKUP(Reference-Type, 'INCLUDE,CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) NE 0:
+      ASSIGN Reference.Object-identifier = TRIM(Reference.Object-identifier).
+      IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
+        /* Extract include file name from field (which contains include parameters */
+        CREATE ttXrefInc.
+        ASSIGN ttXrefInc.ttIncName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+      END.
+      ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
+        FOR EACH Class-Ref OF Reference:
+          DO zz = 1 TO NUM-ENTRIES(Class-Ref.Inherited-list, ' '):
+              CREATE ttXrefClasses.
+              ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Inherited-list, ' ').
+          END.
+          DO zz = 1 TO NUM-ENTRIES(Class-Ref.Implements-list, ' '):
+              CREATE ttXrefClasses.
+              ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Implements-list, ' ').
+          END.
+        END.
+      END.
+      ELSE DO:
+        /* Find CRC of each table */
+        CREATE ttXrefCRC.
+        IF (INDEX(Reference.Object-identifier, ' ') GT 0) THEN
+          ASSIGN ttXrefCRC.ttTblName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ELSE
+          ASSIGN ttXrefCRC.ttTblName = Reference.Object-identifier.
+      END.
+    END.
+
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.inc':U).
+    FOR EACH ttXrefInc BREAK BY ttIncName:
+	    IF FIRST-OF(ttXrefInc.ttIncName) THEN
+	        EXPORT ttXrefInc.ttIncName SEARCH(ttXrefInc.ttIncName).
+    END.
+    OUTPUT CLOSE.
+
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.crc':U).
+    FOR EACH ttXrefCRC BREAK BY ttTblName:
+	    IF FIRST-OF(ttXrefCRC.ttTblName) THEN DO:
+            FIND CRCList WHERE CRCList.ttTable EQ ttXrefCRC.ttTblName NO-LOCK NO-ERROR.
+            IF (AVAILABLE CRCList) THEN DO:
+                EXPORT CRCList.
+            END.
+	    END.
+    END.
+    OUTPUT CLOSE.
+
+    OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.hierarchy':U).
+    FOR EACH ttXrefClasses NO-LOCK:
+    	EXPORT ttXrefClasses.ttClsName SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls').
+    END.
+    OUTPUT CLOSE.
 
 END PROCEDURE.
 

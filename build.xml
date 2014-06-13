@@ -404,10 +404,4 @@ PCTBuild=${BUILD_NUMBER}
     </delete>
   </target>
 
-  <target name="upload">
-    <taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask" name="gcupload"/>
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="${dist}/PCT.jar" targetfilename="PCT-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
-    <gcupload username="${GCUSER}" password="${GCPASSWORD}" projectname="pct" filename="${dist}/prolib.jar" targetfilename="prolib-${BUILD_NUMBER}.jar" summary="Jenkins build #${BUILD_NUMBER}" labels="Featured, Type-Package, OpSys-All, CI" />
-  </target>
-
 </project>
