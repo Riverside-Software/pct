@@ -1,0 +1,5 @@
+class rssw:
+    method public integer a (a as int):
+		return ?.
+	end method.
+end class.

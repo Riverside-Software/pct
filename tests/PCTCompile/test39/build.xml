@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 <project name="PCTCompile-test39">
-	<taskdef resource="PCT.properties" />
+  <taskdef resource="PCT.properties" />
 
-	<target name="test">
-		<PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
-			<fileset dir="src">
-				<include name="test.p" />
-			</fileset>
-		</PCTCompile>
-	</target>
+  <target name="test">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" />
+    </PCTCompile>
+  </target>
 
 </project>

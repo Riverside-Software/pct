@@ -64,6 +64,7 @@ public class PCTCompile extends PCTRun {
     private boolean saveR = true;
     private boolean twoPass = false;
     private boolean stopOnError = false;
+    private boolean xmlXref = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -245,6 +246,13 @@ public class PCTCompile extends PCTRun {
      */
     public void setKeepXref(boolean keepXref) {
         this.keepXref = keepXref;
+    }
+
+    /**
+     * Use XML-XREF instead of standard XREF ?
+     */
+    public void setXmlXref(boolean xmlXref) {
+        this.xmlXref = xmlXref;
     }
 
     /**
@@ -521,6 +529,8 @@ public class PCTCompile extends PCTRun {
                 bw.newLine();
             }
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
+            bw.write("XMLXREF=" + (this.xmlXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("NOPARSE=" + (this.noParse ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();

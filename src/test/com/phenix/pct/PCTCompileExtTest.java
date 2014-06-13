@@ -571,6 +571,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     public void test38() {
         // Compile error with xcode
         configureProject("PCTCompileExt/test38/build.xml");
+        executeTarget("init");
         expectBuildException("test", "Should fail - Progress syntax error");
     }
 
