@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test29">
+  <taskdef resource="PCT.properties" />
+
+  <path id="propath">
+    <pathelement path="inc" />
+    <pathelement path="src" />
+  </path>
+
+  <target name="build">
+    <mkdir dir="build1" />
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <propath refid="propath" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" relativePaths="true">
+      <fileset dir="src" includes="**/*.p" />
+      <propath refid="propath" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test1">
+    <PCTRun dlcHome="${DLC}" procedure="build1/test.r" cpStream="iso8859-1">
+      <OutputParameter name="test1-inc" />
+      <OutputParameter name="test1-main" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun dlcHome="${DLC}" procedure="build2/test.r" cpStream="iso8859-1">
+      <OutputParameter name="test2-inc" />
+      <OutputParameter name="test2-main" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun dlcHome="${DLC}" procedure="build2/foo/bar/test.r" cpStream="iso8859-1">
+      <OutputParameter name="test3-main" />
+      <OutputParameter name="test3-inc1" />
+      <OutputParameter name="test3-inc2" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+</project>

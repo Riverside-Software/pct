@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test12">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+    <PCTLoadSchema dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <filelist dir="." files="full.df" />
+      <sort>
+        <fileset dir="." includes="*.df" excludes="full.df"/>
+        <natural xmlns="antlib:eu.rssw.pct" />
+      </sort>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="base2">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}">
+      <filelist dir="." files="full.df" />
+      <sort>
+        <fileset dir="." includes="*.df" excludes="full.df"/>
+        <natural xmlns="antlib:eu.rssw.pct" />
+      </sort>
+    </PCTCreateBase>
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>

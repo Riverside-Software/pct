@@ -1,0 +1,3 @@
+INTERFACE package.bar:
+
+END INTERFACE.

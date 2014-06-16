@@ -1,0 +1,2 @@
+MESSAGE "יטא".
+RETURN '0'.
