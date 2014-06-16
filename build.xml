@@ -190,7 +190,7 @@ PCTBuild=${BUILD_NUMBER}
       <env key="DLC" value="${dlcHome}" />
     </exec>
 
-    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
+    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
       <fileset refid="${fsid}" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -225,6 +225,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v8}" />
       <param name="libName" value="pct8.pl" />
       <param name="fsid" value="fs.v8" />
+      <param name="xmlxref=" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -233,6 +234,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v9}" />
       <param name="libName" value="pct9.pl" />
       <param name="fsid" value="fs.v9" />
+      <param name="xmlxref=" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -241,6 +243,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v10}" />
       <param name="libName" value="pct10.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="xmlxref=" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -249,6 +252,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v10-64}" />
       <param name="libName" value="pct10-64.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="xmlxref=" value="false" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -257,6 +261,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v11}" />
       <param name="libName" value="pct11.pl" />
       <param name="fsid" value="fs.v11" />
+      <param name="xmlxref=" value="true" />
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
