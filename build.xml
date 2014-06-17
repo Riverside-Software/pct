@@ -89,6 +89,26 @@
     <include name="Consultingwerk/**/*.cls" />
     <include name="Consultingwerk/**/*.p" />
   </fileset>
+  
+  <!-- Different propath depending on version -->
+  <path id="pp.v8">
+        <pathelement location="${src.progress}" />
+  </path>
+  <path id="pp.v9">
+        <pathelement location="${src.progress}" />
+  </path>
+  <path id="pp.v10">
+        <pathelement location="${src.progress}" />
+        <pathelement location="lib/OEUnit_dlc10.pl" />
+  </path>
+  <path id="pp.v10-64">
+        <pathelement location="${src.progress}" />
+        <pathelement location="lib/OEUnit_dlc10-64.pl" />
+  </path>
+  <path id="pp.v11">
+        <pathelement location="${src.progress}" />
+        <pathelement location="lib/OEUnit_dlc11.pl" />
+  </path>
 
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
@@ -189,12 +209,9 @@ PCTBuild=${BUILD_NUMBER}
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-
     <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
       <fileset refid="${fsid}" />
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
+      <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
       <PCTConnection dbName="empty" singleUser="true">
         <PCTAlias name="dictdb" />
@@ -225,6 +242,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v8}" />
       <param name="libName" value="pct8.pl" />
       <param name="fsid" value="fs.v8" />
+      <param name="propid" value="pp.v8" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -233,6 +251,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v9}" />
       <param name="libName" value="pct9.pl" />
       <param name="fsid" value="fs.v9" />
+      <param name="propid" value="pp.v9" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -241,6 +260,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v10}" />
       <param name="libName" value="pct10.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="propid" value="pp.v10" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -249,6 +269,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v10-64}" />
       <param name="libName" value="pct10-64.pl" />
       <param name="fsid" value="fs.v10" />
+      <param name="propid" value="pp.v10-64" />
     </antcall>
 
     <antcall target="cond.pbuild">
@@ -257,6 +278,7 @@ PCTBuild=${BUILD_NUMBER}
       <param name="buildDir" value="${build-v11}" />
       <param name="libName" value="pct11.pl" />
       <param name="fsid" value="fs.v11" />
+      <param name="propid" value="pp.v11" />
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
