@@ -113,10 +113,6 @@ public class OEUnit extends PCTRun {
 
         // Run PCTRun
         super.execute();
-
-        if (destDir.listFiles().length < 1)
-            throw new BuildException("No results file (" + destDir
-                    + ") ! It could be an error in an ABL Procedure/Class.");
     }
 
     /**
