@@ -66,12 +66,14 @@
     <!-- This may or may not work -->
     <include name="pct/*.p" />
     <include name="pct/v8/*.p" />
+    <exclude name="pct/pctOEUnitRunner.p" />
   </fileset>
   <fileset id="fs.v9" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="pct/v9/*.p" />
     <exclude name="pct/_server.p" />
     <exclude name="pct/pctBgCompile.p" />
+    <exclude name="pct/pctOEUnitRunner.p" />
     <exclude name="pct/dump_seq.p" />
   </fileset>
   <fileset id="fs.v10" dir="${src.progress}">
