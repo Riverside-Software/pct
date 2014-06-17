@@ -67,7 +67,7 @@ USING Progress.Lang.Object.
 USING OEUnit.Automation.*.
 USING OEUnit.Runner.TestResult.
 USING OEUnit.Runners.OEUnitRunner.
-USING OEUnit.Util.Instance.
+USING OEUnit.Util.*.
 
 /* Named streams */
 DEFINE STREAM sParams.
@@ -105,7 +105,7 @@ PROCEDURE RunClassAsTest PRIVATE:
   DEFINE INPUT PARAMETER classFile AS CHARACTER NO-UNDO.
       
   DEFINE VARIABLE test AS Object NO-UNDO.
-  DEFINE VARIABLE errors AS OEUnit.Util.List NO-UNDO.
+  DEFINE VARIABLE errors AS List NO-UNDO.
   DEFINE VARIABLE err AS Progress.Lang.Error NO-UNDO.
   
   test = Instance:FromFile(classFile).
