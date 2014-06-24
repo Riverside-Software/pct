@@ -64,10 +64,15 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Lang.Object.
-USING OEUnit.Automation.*.
+USING OEUnit.Automation.BaseReporter.
+USING OEUnit.Automation.CSVReporter.
+USING OEUnit.Automation.JUnitReporter.
+USING OEUnit.Automation.SureFireReporter.
+USING OEUnit.Automation.TextReporter.
 USING OEUnit.Runner.TestResult.
 USING OEUnit.Runners.OEUnitRunner.
-USING OEUnit.Util.*.
+USING OEUnit.Util.List.
+USING OEUnit.Util.Instance.
 
 /* Named streams */
 DEFINE STREAM sParams.
