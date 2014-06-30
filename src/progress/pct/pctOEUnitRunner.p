@@ -51,16 +51,6 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
- 
- /*------------------------------------------------------------------------------
-  File        :   RunTests.p
-  Package     :   OEUnit.Automation.Pct
-  Description :   Run test classes in the given testLocation. If testLocation 
-                  value contains a class file, that file will be executed as a 
-                  test case. If testLocation contains a directory, it will be
-                  searched for test classes to execute. 
-  ------------------------------------------------------------------------------*/
-
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Lang.Object.
@@ -77,6 +67,7 @@ USING OEUnit.Util.Instance.
 /* Named streams */
 DEFINE STREAM sParams.
 
+DEFINE VARIABLE reportFormat AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE hasErrors AS LOGICAL NO-UNDO INITIAL FALSE. 
 DEFINE VARIABLE i AS INTEGER NO-UNDO.
@@ -89,6 +80,8 @@ IF (NUM-ENTRIES(SESSION:PARAMETER) NE 3) THEN
     RETURN '30'.
 
 MESSAGE "Out directory : " + ENTRY(2,SESSION:PARAMETER).
+
+reportFormat = ENTRY(3,SESSION:PARAMETER).
 
 /* Read file */  
 INPUT STREAM sParams FROM VALUE(ENTRY(1,SESSION:PARAMETER)).
@@ -120,16 +113,8 @@ PROCEDURE RunClassAsTest PRIVATE:
 
   /* Run your test case or suite */
   runner:RunTest(test).
-  IF runner:Results:GetStatus() <> TestResult:StatusPassed AND runner:Results:GetStatus() <> TestResult:StatusFailed THEN DO:
-    IF runner:Results:GetStatus() EQ TestResult:StatusError THEN DO:
-        hasErrors = TRUE.
-        MESSAGE "  > Error Message : " + runner:Results:GetMessage().
-    END.
-    ELSE
-          MESSAGE "  > Specific status : " + runner:Results:GetStatusAsString().
-  END.
-  ELSE DO:
-      IF runner:Results:GetStatus() EQ TestResult:StatusFailed THEN
+  IF runner:Results:GetStatus() EQ TestResult:StatusPassed OR runner:Results:GetStatus() EQ TestResult:StatusFailed THEN DO:
+     IF runner:Results:GetStatus() EQ TestResult:StatusFailed THEN
         MESSAGE "  > At least one failure.".
         
       /* If OK, log the results */
@@ -140,7 +125,7 @@ PROCEDURE RunClassAsTest PRIVATE:
       ELSE 
         className = "/" + className.
         
-      CASE ENTRY(3,SESSION:PARAMETER):
+      CASE reportFormat:
           WHEN 'SUREFIRE':U THEN DO: 
               reporter = NEW SureFireReporter(ENTRY(2,SESSION:PARAMETER)).
           END.
@@ -155,10 +140,18 @@ PROCEDURE RunClassAsTest PRIVATE:
           END.
           OTHERWISE DO:
               hasErrors = TRUE.
-              MESSAGE "Unknown reporter format : " + ENTRY(3,SESSION:PARAMETER).
+              MESSAGE "Unknown reporter format : " + reportFormat.
           END.
       END.
       reporter:Report(runner:Results).
+  END.
+  ELSE DO:
+    IF runner:Results:GetStatus() EQ TestResult:StatusError THEN DO:
+        hasErrors = TRUE.
+        MESSAGE "  > Error Message : " + runner:Results:GetMessage().
+    END.
+    ELSE
+          MESSAGE "  > Specific status : " + runner:Results:GetStatusAsString().
   END.
 
   FINALLY:
