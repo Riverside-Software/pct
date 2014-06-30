@@ -69,17 +69,13 @@ public class OEUnit extends PCTRun {
         if (testFilesets == null)
             throw new BuildException("You must set a fileset (testFilesets).");
 
-        if (testFilesets != null && testFilesets.isEmpty())
-            throw new BuildException("Fileset is empty.");
-
         if (destDir != null && !destDir.isDirectory())
             throw new BuildException("Invalid destDir (" + destDir + ")");
 
         if (destDir == null)
             destDir = getProject().getBaseDir();
 
-        // Build temporary class file if needed
-
+        // Create a temp file which list test class to be executed
         testFilesList = new File(System.getProperty("java.io.tmpdir"), testFileName);
         BufferedWriter bw = null;
         try {
@@ -90,11 +86,12 @@ public class OEUnit extends PCTRun {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     File f = new File(fs.getDir(), file);
                     log("Adding '" + f + "' to list.", Project.MSG_VERBOSE);
+                    // Add a line like this :
+                    // MyClassName=C:\Path\To\Class\MyClassName.cls
                     bw.write(f.getName().split("\\.")[0] + "=" + f.toString());
                     bw.newLine();
                 }
             }
-
         } catch (Exception e) {
             throw new BuildException(e);
         } finally {
@@ -102,7 +99,6 @@ public class OEUnit extends PCTRun {
                 try {
                     bw.close();
                 } catch (IOException uncaught) {
-
                 }
             }
         }
@@ -122,7 +118,7 @@ public class OEUnit extends PCTRun {
      */
     protected void cleanup() {
         super.cleanup();
-        // Clean JSON File
+        // Clean Test list file
         if (!getDebugPCT()) {
             if (testFilesList.exists() && !testFilesList.delete()) {
                 log(MessageFormat.format(Messages.getString("PCTCompile.42"),
