@@ -66,7 +66,7 @@ import org.testng.annotations.Test;
 import org.xml.sax.InputSource;
 
 /**
- * Class for testing ABLUnit task
+ * Class for testing OEUnit task
  * 
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL </a>
  */
