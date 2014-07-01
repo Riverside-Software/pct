@@ -693,4 +693,25 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.lastModified() > mod2);
     }
 
+    @Test(groups = {"v10"})
+    public void test43() {
+        configureProject("PCTCompile/test43/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test43/build/test.r");
+        File f2 = new File("PCTCompile/test43/build2/test.r");
+        long mod1 = f1.lastModified();
+        long mod2 = f2.lastModified();
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.xref").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.inc").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.crc").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.dbg").exists());
+        assertTrue(new File("PCTCompile/test43/build2/.pct/test.p.dbg").exists());
+        assertTrue(new File("PCTCompile/test43/build2/.pct/test.p.preprocess").exists());
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+        assertTrue(f2.lastModified() > mod2);
+    }
+
 }

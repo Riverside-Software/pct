@@ -340,7 +340,7 @@ REPEAT:
             IF lXCode THEN
                 RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
             ELSE IF noParse THEN
-                RUN PCTCompile(CurrentFS, cLine, OutputDir, OUTPUT lComp).
+                RUN PCTCompile(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             ELSE
                 RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             IF (lComp) THEN DO:
@@ -422,6 +422,7 @@ PROCEDURE PCTCompile.
     DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcOutDir  AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcPCTDir  AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
 
     DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
@@ -430,14 +431,58 @@ PROCEDURE PCTCompile.
     DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
 
+    IF (NOT fileExists(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)) THEN DO:
+      MESSAGE SUBSTITUTE("File [&1]/[&2] not found", pcInDir, pcInFile).
+      ASSIGN plOK = FALSE.
+      RETURN.    
+    END.
+    
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
+    ASSIGN plOK = createDir(pcPCTDir, cBase).
+    IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+
+    IF PrePro THEN DO:
+        IF preprocessDir = '' THEN
+            ASSIGN preprocessFile = pcPCTDir + '/':U + pcInFile + '.preprocess':U.
+        ELSE DO:
+            ASSIGN preprocessFile = preprocessDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(preprocessDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
+    END.
+    ELSE
+        ASSIGN preprocessFile = ?.
+    IF debugLst THEN DO:
+        IF dbgListDir = '' THEN
+            ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
+        ELSE DO:
+            ASSIGN debugListingFile = dbgListDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(dbgListDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
+    END.
+    ELSE
+       ASSIGN debugListingFile = ?.
+
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
-    COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    COMPILE
+      VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+      SAVE = SaveR INTO VALUE(cSaveDir)
+      LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+      STREAM-IO=streamIO
+      V6FRAME=lV6Frame
+      MIN-SIZE=MinSize
+      GENERATE-MD5=MD5
+      DEBUG-LIST VALUE(debugListingFile)
+      PREPROCESS VALUE(preprocessFile) 
+      NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
         ASSIGN c = '':U.

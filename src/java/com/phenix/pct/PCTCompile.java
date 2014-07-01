@@ -203,8 +203,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Disables completely XREF generation and parsing. This means there's no generated file in .pct
-     * subdirectory. This attribute is not public right now, still being tested. This is used just
-     * to bypass a bug when compiling classes.
+     * subdirectory.
      * 
      * @param noParse "true|false|on|off|yes|no"
      */
