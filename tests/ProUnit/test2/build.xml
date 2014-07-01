@@ -5,7 +5,7 @@
 	<target name="test">
 		<ProUnit dlcHome="${DLC}" project="src/BADprounit.xml">
 			<propath>
-				<path location="${TESTLIBS}/${PROULIB}" />
+				<path location="${TESTLIBS}/prounit_${VERSION}.pl" />
 			</propath>
 		</ProUnit>
 	</target>

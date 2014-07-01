@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="OEUnit-test4">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test">
+		<OEUnit dlcHome="${DLC}" format="csv">
+			<fileset dir="src" includes="**/FirstOEUnitTest.cls" />
+			<propath>
+				<pathelement location="src" />
+				<pathelement location="${TESTLIBS}/OEUnit_${VERSION}.pl" />
+			</propath>
+		</OEUnit>
+		<OEUnit dlcHome="${DLC}" format="text">
+			<fileset dir="src" includes="**/FirstOEUnitTest.cls" />
+			<propath>
+				<pathelement location="src" />
+				<pathelement location="${TESTLIBS}/OEUnit_${VERSION}.pl" />
+			</propath>
+		</OEUnit>
+		<mkdir dir="SureFire-report" /> 
+		<OEUnit dlcHome="${DLC}" destDir="SureFire-report" format="surefire">
+			<fileset dir="src" includes="**/FirstOEUnitTest.cls" />
+			<propath>
+				<pathelement location="src" />
+				<pathelement location="${TESTLIBS}/OEUnit_${VERSION}.pl" />
+			</propath>
+		</OEUnit>
+		<OEUnit dlcHome="${DLC}" format="junit">
+			<fileset dir="src" includes="**/FirstOEUnitTest.cls" />
+			<propath>
+				<pathelement location="src" />
+				<pathelement location="${TESTLIBS}/OEUnit_${VERSION}.pl" />
+			</propath>
+		</OEUnit>
+	</target>
+
+</project>

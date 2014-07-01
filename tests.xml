@@ -20,7 +20,7 @@
   </target>
 
   <target name="test">
-    <!-- ant -file tests.xml -DDLC=/path/to/dlc -DGROUPS=v9,v10,v11 -DEXCLUDES=unix -DTESTENV=ANT -DPROFILER=false -DTESTLIBS=/path/to/testlibs -DPROULIB=prounit_dlc11.pl -->
+    <!-- ant -file tests.xml -DDLC=/path/to/dlc -DGROUPS=v9,v10,v11 -DEXCLUDES=unix -DTESTENV=ANT -DPROFILER=false -DTESTLIBS=/path/to/testlibs -DVERSION=dlc11 -->
     <mkdir dir="test-output" />
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
@@ -29,7 +29,7 @@
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
         <classfileset dir="build/test" includes="**/*Test.class" />
         <classpath refid="test.run.cp" />
-        <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DPROULIB=${PROULIB}" />
+        <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
       </testng>
     </jacoco:coverage>
   </target>
