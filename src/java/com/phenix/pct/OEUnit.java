@@ -13,8 +13,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 
-import com.google.common.io.Files;
-
 /**
  * Ant task for OEUnit tests. For more details about OEUnit, see
  * https://github.com/CameronWills/OEUnit.
@@ -88,7 +86,7 @@ public class OEUnit extends PCTRun {
                     log("Adding '" + f + "' to list.", Project.MSG_VERBOSE);
                     // Add a line like this :
                     // MyClassName=C:\Path\To\Class\MyClassName.cls
-                    bw.write(Files.getNameWithoutExtension(f.getName()) + "=" + f.getAbsolutePath());
+                    bw.write(f.getName().substring(0, f.getName().lastIndexOf('.')) + "=" + f.getAbsolutePath());
                     bw.newLine();
                 }
             }
