@@ -7,7 +7,7 @@
     <mkdir dir="html" />
     <mkdir dir="profiler" />
 
-	<mkdir dir="build" />
+    <mkdir dir="build" />
     <ClassDocumentation destDir="doc" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.cls" />
       <propath>
