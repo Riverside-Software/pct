@@ -650,10 +650,11 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC LONGCHAR ReplaceSpecialCharacters (plcString AS LONGCHAR):
         
-        DEFINE VARIABLE cString AS LONGCHAR NO-UNDO.
-        DEFINE VARIABLE iLength AS INTEGER NO-UNDO.
-        DEFINE VARIABLE i       AS INTEGER NO-UNDO INIT 1.
-        DEFINE VARIABLE iValue  AS INTEGER NO-UNDO.
+        DEFINE VARIABLE cString AS LONGCHAR  NO-UNDO .
+        DEFINE VARIABLE iLength AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE i       AS INTEGER   NO-UNDO INIT 1.
+        DEFINE VARIABLE iValue  AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE cChar   AS CHARACTER NO-UNDO .
         
         FIX-CODEPAGE (cString) = "utf-8":U . 
         
@@ -663,10 +664,17 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             
             i = i + 1 .
 
-            iValue = ASC (STRING (SUBSTRING (cString, i, 1))) .  
+            ASSIGN cChar  = STRING (SUBSTRING (cString, i, 1))
+                   iValue = ASC (cChar) .  
             
-            IF iValue > 128 THEN 
-                cString = REPLACE (cString, CHR (iValue), SUBSTITUTE ("&&#&1;":U, STRING (iValue, "9999":U)) ) .
+            IF iValue > 128 THEN DO:
+                IF iValue < 256 THEN  
+                    cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#&1;":U, 
+                                                                   STRING (iValue, "999":U)) ) .
+                ELSE 
+                    cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#x&1;":U, 
+                                                                   Consultingwerk.Util.MathHelper:Int2Hex (iValue))) . 
+            END.
         END.
         
         ASSIGN cString = REPLACE (cString, "<":U, "&lt;":U)
