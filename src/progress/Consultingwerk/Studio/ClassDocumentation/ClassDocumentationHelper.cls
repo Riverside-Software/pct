@@ -274,7 +274,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                    .
         END.
         
-        /* Sebastian Düngel, Consultingwerk Ltd. 10.04.2013
+        /* Sebastian DÃ¼ngel, Consultingwerk Ltd. 10.04.2013
            Added the caller class*/
         ASSIGN cClassLink = GetClassReferenceHyperlink (plcClasses, poParameter)
                cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
@@ -665,21 +665,14 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             i = i + 1 .
 
             ASSIGN cChar  = STRING (SUBSTRING (cString, i, 1))
-                   iValue = ASC (cChar) .  
+                   iValue = ASC (cChar, "UTF-16":U) .  
             
-            IF iValue > 128 THEN DO:
-                IF iValue < 256 THEN  
-                    cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#&1;":U, 
-                                                                   STRING (iValue, "999":U)) ) .
-                ELSE 
-                    cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#x&1;":U, 
-                                                                   Consultingwerk.Util.MathHelper:Int2Hex (iValue))) . 
-            END.
+            IF iValue > 128 THEN 
+                cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#&1;":U, iValue)) .
         END.
         
         ASSIGN cString = REPLACE (cString, "<":U, "&lt;":U)
-               cString = REPLACE (cString, ">":U, "&gt;":U)
-               .
+               cString = REPLACE (cString, ">":U, "&gt;":U) .
         
         RETURN cString.
         
