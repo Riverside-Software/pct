@@ -459,7 +459,7 @@ PROCEDURE PCTCompile.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
-    IF debugLst THEN DO:
+    IF debugLst AND NOT (cFile BEGINS '_')THEN DO:
         IF dbgListDir = '' THEN
             ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
         ELSE DO:
@@ -545,7 +545,7 @@ PROCEDURE PCTCompileXref.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
-    IF debugLst THEN DO:
+    IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
         IF dbgListDir = '' THEN
             ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
         ELSE DO:
