@@ -1,0 +1,5 @@
+<tr>
+    <td class="list_item">
+        <a href="@HREF@" class="@PAGETYPE@" target="DocumentDetails">@CLASSNAME@</a>
+    </td>
+</tr>

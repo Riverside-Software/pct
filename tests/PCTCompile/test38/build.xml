@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test38">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="xrc" />
+    <PCTXCode destDir="xrc" dlcHome="${DLC}">
+      <fileset dir="src" />
+    </PCTXCode>
+  </target>
+
+  <target name="test">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" xcode="true">
+      <fileset dir="xrc" />
+    </PCTCompile>
+  </target>
+
+</project>

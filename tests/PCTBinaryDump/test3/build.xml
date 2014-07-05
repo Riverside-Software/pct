@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTBinaryDump-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTBinaryDump dlcHome="${DLC}" >
+      <DBConnection dbName="test1" dbDir="." singleUser="true" />
+  	</PCTBinaryDump>
+  </target>
+
+</project>

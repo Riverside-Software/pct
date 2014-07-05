@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test12">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+  	<mkdir dir="build" />
+  	<PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="true">
+      <fileset dir="src">
+        <include name="test.p" />	
+      </fileset>
+    </PCTCompileExt>
+  </target>
+  <target name="test2">
+  	<PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="true" compileUnderscore="true">
+      <fileset dir="src">
+        <include name="test.p" />	
+      </fileset>
+    </PCTCompileExt>
+  </target>
+
+</project>

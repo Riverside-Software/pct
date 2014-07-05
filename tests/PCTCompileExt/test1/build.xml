@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTCompileExt graphicalMode="false" dlcHome="${DLC}" />
+  </target>
+
+</project>

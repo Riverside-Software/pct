@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test39">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test1">
+		<PCTRun graphicalMode="false" procedure="src/utf8.p" dlcHome="${DLC}" cpinternal="utf-8" cpstream="utf-8">
+			<OutputParameter name="ABC" />
+			<PCTRunOption name="-cpcoll" value="Basic" />
+			<PCTRunOption name="-cpcase" value="Basic" />
+		</PCTRun>
+		<echo message="Result : ${ABC}" />
+	</target>
+
+	<target name="test2">
+		<PCTRun graphicalMode="false" procedure="src/8859-1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+			<OutputParameter name="DEF" />
+			<PCTRunOption name="-cpcoll" value="Basic" />
+			<PCTRunOption name="-cpcase" value="Basic" />
+		</PCTRun>
+		<echo message="Result : ${DEF}" />
+	</target>
+
+	<target name="test3">
+		<PCTRun graphicalMode="false" procedure="src/big5.p" dlcHome="${DLC}" cpinternal="utf-8" cpstream="Big-5">
+			<OutputParameter name="GHI" />
+			<PCTRunOption name="-cpcoll" value="Basic" />
+			<PCTRunOption name="-cpcase" value="Basic" />
+		</PCTRun>
+		<echo message="Result : ${GHI}" />
+	</target>
+
+	<target name="test4">
+		<PCTRun graphicalMode="false" procedure="src/win1252.p" dlcHome="${DLC}" cpinternal="utf-8" cpstream="1252">
+			<OutputParameter name="JKL" />
+			<PCTRunOption name="-cpcoll" value="Basic" />
+			<PCTRunOption name="-cpcase" value="Basic" />
+		</PCTRun>
+		<echo message="Result : ${JKL}" />
+	</target>
+
+	<target name="test5">
+		<PCTRun graphicalMode="false" procedure="src/utf8.p" dlcHome="${DLC}" paramFile="utf8.pf">
+			<OutputParameter name="MNO" />
+		</PCTRun>
+		<echo message="Result : ${MNO}" />
+	</target>
+
+</project>

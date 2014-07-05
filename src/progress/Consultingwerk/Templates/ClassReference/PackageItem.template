@@ -1,0 +1,12 @@
+<tr>
+    <td class="packageitemicon">
+        <div class="@CLASSTYPE@">
+        </div>
+    </td>
+    <td class="packageitem">
+        <a href="@CLASSLINK@">@CLASSNAME@</a>
+    </td>
+    <td>
+        @CLASSPURPOSE@
+    </td>
+<tr>
