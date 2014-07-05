@@ -274,7 +274,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                    .
         END.
         
-        /* Sebastian Düngel, Consultingwerk Ltd. 10.04.2013
+        /* Sebastian DÃ¼ngel, Consultingwerk Ltd. 10.04.2013
            Added the caller class*/
         ASSIGN cClassLink = GetClassReferenceHyperlink (plcClasses, poParameter)
                cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
@@ -650,10 +650,11 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC LONGCHAR ReplaceSpecialCharacters (plcString AS LONGCHAR):
         
-        DEFINE VARIABLE cString AS LONGCHAR NO-UNDO.
-        DEFINE VARIABLE iLength AS INTEGER NO-UNDO.
-        DEFINE VARIABLE i       AS INTEGER NO-UNDO INIT 1.
-        DEFINE VARIABLE iValue  AS INTEGER NO-UNDO.
+        DEFINE VARIABLE cString AS LONGCHAR  NO-UNDO .
+        DEFINE VARIABLE iLength AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE i       AS INTEGER   NO-UNDO INIT 1.
+        DEFINE VARIABLE iValue  AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE cChar   AS CHARACTER NO-UNDO .
         
         FIX-CODEPAGE (cString) = "utf-8":U . 
         
@@ -663,15 +664,15 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             
             i = i + 1 .
 
-            iValue = ASC (STRING (SUBSTRING (cString, i, 1))) .  
+            ASSIGN cChar  = STRING (SUBSTRING (cString, i, 1))
+                   iValue = ASC (cChar, "UTF-16":U) .  
             
             IF iValue > 128 THEN 
-                cString = REPLACE (cString, CHR (iValue), SUBSTITUTE ("&&#&1;":U, STRING (iValue, "9999":U)) ) .
+                cString = REPLACE (cString, cChar, SUBSTITUTE ("&&#&1;":U, iValue)) .
         END.
         
         ASSIGN cString = REPLACE (cString, "<":U, "&lt;":U)
-               cString = REPLACE (cString, ">":U, "&gt;":U)
-               .
+               cString = REPLACE (cString, ">":U, "&gt;":U) .
         
         RETURN cString.
         
