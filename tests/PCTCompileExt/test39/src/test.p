@@ -1,0 +1,1 @@
+MESAGE "Syntax error".

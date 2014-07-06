@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pidl:description targetNamespace="urn:schemas-progress-com:bpm:appserverbinding:0001" serviceType="wsad:OEAppServerInvoke" xmlns:pidl="http://www.progress.com/caf/idl1.0" xmlns:java="http://www.progress.com/adapters/idl1.0/javatype" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsad="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<pidl:types>
+</pidl:types>
+  <pidl:interface name="com.progress.openedge.pdt.bpminterfaces">
+    <pidl:operation name="rest" pattern="http://www.progress.com/caf/idl1.0/request-response">
+      <pidl:input messageLabel="ipChar" req="false" type="java:String">
+    </pidl:input>
+      <pidl:output messageLabel="opChar" req="false" type="java:String">
+    </pidl:output>
+    </pidl:operation>
+  </pidl:interface>
+  <pidl:binding name="com.progress.openedge.pdt.bpmbindings" interface="wsad:com.progress.openedge.pdt.bpminterfaces" type="urn:schemas-progress-com:bpm:appserverbinding:0001">
+<wsad:Operation isPersistent="false" useFullName="false">
+  <wsad:Name>rest</wsad:Name>
+  <wsad:ProcPath/>
+  <wsad:ProPath/>
+  <wsad:ProcExt>p</wsad:ProcExt>
+  <wsad:ProcDetail isCustomized="false" usesUnknownDefault="true" useRetVal="false" usesTTMappingDefault="true" IsTTResultSet="true" usesBeforeImageDefault="true" IsMappedToSubmit="false">
+    <wsad:Name>rest</wsad:Name>
+    <wsad:HelpString></wsad:HelpString>
+    <wsad:Parameter allowUnknown="true" ordinal="1" writeXmlBeforeImage="false">
+      <wsad:Name>ipChar</wsad:Name>
+      <wsad:OrigName>ipChar</wsad:OrigName>
+      <wsad:Type>1</wsad:Type>
+      <wsad:Mode>1</wsad:Mode>
+    </wsad:Parameter>
+    <wsad:Parameter allowUnknown="true" ordinal="2" writeXmlBeforeImage="false">
+      <wsad:Name>opChar</wsad:Name>
+      <wsad:OrigName>opChar</wsad:OrigName>
+      <wsad:Type>1</wsad:Type>
+      <wsad:Mode>2</wsad:Mode>
+    </wsad:Parameter>
+  </wsad:ProcDetail>
+</wsad:Operation>
+  </pidl:binding>
+</pidl:description>

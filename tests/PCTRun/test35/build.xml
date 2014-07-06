@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test35">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="path1" />
+      </propath>
+      <propath>
+        <pathelement location="path2" />
+        <pathelement location="path3" />
+      </propath>
+    </PCTRun>
+    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="path1" />
+      </propath>
+      <propath>
+        <pathelement location="path2" />
+        <pathelement location="path3" />
+      </propath>
+    </PCTRun>
+  </target>
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test3.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="path1" />
+      </propath>
+      <propath>
+        <pathelement location="path2" />
+      </propath>
+    </PCTRun>
+  </target>
+</project>
