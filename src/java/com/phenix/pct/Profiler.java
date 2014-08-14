@@ -30,6 +30,7 @@ import org.apache.tools.ant.BuildException;
 public class Profiler {
     private boolean enabled = false;
     private boolean coverage = false;
+    private boolean statistics = false;
     private String description = "Default description";
     private File outputFile = null, outputDir = null;
     private File listings = null;
@@ -58,6 +59,19 @@ public class Profiler {
 
     public boolean hasCoverage() {
         return coverage;
+    }
+
+    /**
+     * Enables or disables code statistics for this session
+     * 
+     * @param statistics Boolean
+     */
+    public void setStatistics(boolean statistics) {
+        this.statistics = statistics;
+    }
+
+    public boolean hasStatistics() {
+        return statistics;
     }
 
     /**

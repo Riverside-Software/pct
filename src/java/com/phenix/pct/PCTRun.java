@@ -1023,6 +1023,10 @@ public class PCTRun extends PCT {
                     bw.write("-COVERAGE");
                     bw.newLine();
                 }
+                if (profiler.hasStatistics()) {
+                    bw.write("-STATISTICS");
+                    bw.newLine();
+                }
                 if (profiler.getListings() != null) {
                     bw.write("-LISTINGS \"" + profiler.getListings().getAbsolutePath() + "\"");
                     bw.newLine();
