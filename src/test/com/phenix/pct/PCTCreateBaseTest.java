@@ -217,4 +217,12 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("verify");
     }
 
+    @Test(groups = {"v9"})
+    public void test16() {
+        configureProject("PCTCreateBase/test16/build.xml");
+        
+        executeTarget("test");
+        executeTarget("verify");
+    }
+
 }

@@ -658,7 +658,10 @@ public class PCTCreateBase extends PCT {
             exec.createArg().setValue(cpInternal);
         }
         exec.createArg().setValue("-cpcoll"); //$NON-NLS-1$
-        exec.createArg().setValue(collation);
+        if ("_tran".equalsIgnoreCase(collation))
+            exec.createArg().setValue("BASIC");
+        else
+            exec.createArg().setValue(collation);
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
