@@ -42,10 +42,8 @@ CLASS Consultingwerk.Studio.ClassDocumentation.CommentBuilder
             
         DEFINE VARIABLE lcLine      AS LONGCHAR  NO-UNDO.
         DEFINE VARIABLE iCount      AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE cEntry      AS CHARACTER NO-UNDO.            
         DEFINE VARIABLE lcResult    AS LONGCHAR  NO-UNDO.
         DEFINE VARIABLE iIndex      AS INTEGER   NO-UNDO.
-        DEFINE VARIABLE cName       AS CHARACTER NO-UNDO.
         DEFINE VARIABLE cComment    AS LONGCHAR  NO-UNDO.     
                 
         FIX-CODEPAGE (lcLine) = "utf-8":U .
@@ -73,7 +71,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.CommentBuilder
                 IF lcLine BEGINS "/**":U THEN 
                     ASSIGN lcLine = REPLACE (lcLine, "/**":U, "Purpose:":U).
                 
-                ASSIGN lcResult = SUBSTITUTE ("&1&2&3":U, lcResult, lcLine, CHR (10)).
+                ASSIGN lcResult = lcResult + lcLine + CHR (10) . 
             END.
         END.
         
@@ -268,7 +266,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.CommentBuilder
             ASSIGN lFirstOutputted = FALSE.
         END.
         
-        ASSIGN lcContent = SUBSTITUTE ("&1&2&3":U, lcHeader, lcContent, lcFooter).
+        ASSIGN lcContent = lcHeader + lcContent + lcFooter .
         
         RETURN lcContent.
             
