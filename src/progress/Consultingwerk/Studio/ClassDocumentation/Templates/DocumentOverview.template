@@ -3,10 +3,12 @@
   </td>
   <td align="left" valign="top" class="option_col cell">
     <font>@SHORTMODIFIER@</font>
+    <font>@SHORTABSTRACT@</font>
+    <font>@SHORTFINAL@</font>
   </td>
   <td class="signature_col cell">
     <font>
-        @SHORTSIGNATURE@
+        @SHORTSIGNATUREWITHOUTRETURNLINK@
     </font>
   </td>
   <td class="cell">
