@@ -347,6 +347,10 @@ public class PCTRun extends PCT {
     }
 
     public void setAssemblies(File assemblies) {
+        if ((assemblies != null) && !assemblies.exists()) {
+            log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            return;
+        }
         this.assemblies = assemblies;
     }
 
