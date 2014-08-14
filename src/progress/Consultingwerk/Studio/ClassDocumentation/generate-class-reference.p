@@ -46,6 +46,8 @@ USING Consultingwerk.Util.*                      FROM PROPATH .
 DEFINE VARIABLE oDoc                         AS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter      NO-UNDO .
 DEFINE VARIABLE oParameter                   AS Consultingwerk.Studio.ClassDocumentation.IDocumentWriterParameter NO-UNDO .
 
+DEFINE VARIABLE oRelationProvider            AS Consultingwerk.Studio.ClassDocumentation.IClassRelationProvider   NO-UNDO . 
+
 DEFINE VARIABLE oServiceLoader               AS ServiceLoader                                                     NO-UNDO .
 
 DEFINE VARIABLE cTargetDir                   AS CHARACTER                                                         NO-UNDO .
@@ -133,6 +135,9 @@ END.
    Prevent AVM crash during documentation generation */
 IF lPreloadClasses THEN 
     Consultingwerk.Studio.ClassDocumentation.BaseClassListProvider:PreloadClasses (".":U).
+
+oRelationProvider = {Consultingwerk/get-service.i Consultingwerk.Studio.ClassDocumentation.IClassRelationProvider
+                                                  "NEW Consultingwerk.Studio.ClassDocumentation.ClassRelationProvider (oParameter)"} .
 
 oDoc = NEW Consultingwerk.Studio.ClassDocumentation.DocumentationWriter ().
 oDoc:GenerateDocumentation (oParameter).

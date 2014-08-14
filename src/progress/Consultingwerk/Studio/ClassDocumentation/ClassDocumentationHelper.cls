@@ -65,23 +65,31 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
 	    DEFINE VARIABLE iLinkEnd  AS INTEGER   NO-UNDO.
 	    DEFINE VARIABLE cLink     AS CHARACTER NO-UNDO.
 	    DEFINE VARIABLE cTagLink  AS CHARACTER NO-UNDO.
+	    DEFINE VARIABLE cQuotes   AS CHARACTER NO-UNDO.
 	    
-	    REPEAT:
-	        IF INDEX (pcComment, "http://":U, iPos) = 0 THEN 
-	            LEAVE.
+	    REPEAT ON ERROR UNDO, THROW:
+            ASSIGN iPos = INDEX (pcComment, "http://":U, iPos).
+            
+            IF iPos = 0 THEN LEAVE.
 
-	        ASSIGN iPos      = INDEX (pcComment, "http://":U, iPos)
-	               iLinkEnd  = INDEX (pcComment, " ":U, iPos) - iPos
+            ASSIGN iLinkEnd  = INDEX (pcComment, " ":U, iPos) - iPos
+                   cQuotes   = SUBSTRING (pcComment, iLinkEnd + iPos - 1, 1)
 	               . 
            
+            IF cQuotes = "'":U OR cQuotes = '"':U THEN DO:
+                iPos = iPos + iLinkEnd.
+                NEXT. 
+            END. 
+            
             IF iLinkEnd <= 0 THEN 
                 LEAVE.
            	       
             ASSIGN cLink     = SUBSTRING (pcComment, ipos, iLinkEnd)
                    cTagLink  = SUBSTITUTE ("<a href='&1' target='_blank'>&1</a>":U, cLink)
-                   pcComment = REPLACE (pcComment, cLink, cTagLink)
+                   pcComment = SUBSTITUTE ("&1&2&3":U, SUBSTRING (pcComment, 1, iPos - 1), cTagLink, SUBSTRING (pcComment, iPos + iLinkEnd))
                    iPos      = iPos + LENGTH (cTagLink).
                    .
+
 	    END. 
 	    
         RETURN pcComment.
@@ -114,7 +122,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             
             DO iCount = 1 TO iEntries:
                 ASSIGN GenericTypeList = SUBSTITUTE ("&1,":U, 
-                                                     GetClassReferenceHyperlink (ENTRY (iCount, pcReturnType), poParameter)).
+                                                     GetClassReferenceHyperlink (ENTRY (iCount, pcReturnType), TRUE, poParameter)).
             END. 
             
             ASSIGN GenericTypeList = TRIM (GenericTypeList, ",":U)
@@ -239,7 +247,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             IF iCount > 0 THEN
                 ASSIGN
                        cClass     = oCharacterList:GetValue (iEnd - iCount)
-                       cClassLink = GetClassReferenceHyperlink (cClass, poParameter)
+                       cClassLink = GetClassReferenceHyperlink (cClass, TRUE, poParameter)
                        cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
                                                             <table>
                                                                 <tr>
@@ -259,7 +267,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
             ELSE
                 ASSIGN
                        cClass     = oCharacterList:GetValue (iEnd - iCount)
-                       cClassLink = GetClassReferenceHyperlink (cClass, poParameter)
+                       cClassLink = GetClassReferenceHyperlink (cClass, TRUE, poParameter)
                        cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:12px' class='parentclassesitem'>
                                                             <table style='border-spacing:0px'>
                                                                 <tr>
@@ -274,9 +282,9 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
                    .
         END.
         
-        /* Sebastian DÃ¼ngel, Consultingwerk Ltd. 10.04.2013
+        /* Sebastian Düngel, Consultingwerk Ltd. 10.04.2013
            Added the caller class*/
-        ASSIGN cClassLink = GetClassReferenceHyperlink (plcClasses, poParameter)
+        ASSIGN cClassLink = GetClassReferenceHyperlink (plcClasses, TRUE, poParameter)
                cReturn    = cReturn + SUBSTITUTE ("<div style='padding-left:&1em; height:16px' class='parentclassesitem'>
                                                                 <table>
                                                                     <tr>
@@ -348,10 +356,12 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         Purpose: Get the class reference hyperlink 
         Notes:   
         @param cClass The fulltypename from the reference
+        @param lWithLink returns the returnvalue with or without link
         @param poParameter The parameter object
         @return A valid HTML a tag 
     ------------------------------------------------------------------------------*/
 	METHOD PUBLIC STATIC CHARACTER GetClassReferenceHyperlink (cClass      AS CHARACTER, 
+	                                                           lWithLink   AS LOGICAL,
 	                                                           poParameter AS IDocumentWriterParameter):
 	                                                               
         DEFINE VARIABLE oLinkProvider AS IClassReferenceLinkProvider NO-UNDO.
@@ -360,6 +370,9 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         oLinkProvider = {Consultingwerk/get-service.i Consultingwerk.Studio.ClassDocumentation.IClassReferenceLinkProvider "NEW Consultingwerk.Studio.ClassDocumentation.ClassReferenceLinkProvider()"} .
         
         ASSIGN cLink = oLinkProvider:GetClassReferenceLink (cClass).
+        
+        IF NOT lWithLink THEN
+            RETURN cClass. 
         
         IF cLink = ? THEN DO:
             ASSIGN FILE-INFO:FILENAME = SUBSTITUTE ("&1\&2.xml":U, poParameter:SourceDir, cClass).
@@ -372,6 +385,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         ELSE
             RETURN SUBSTITUTE ("<a href='&1' target='_blank'>&2</a>":U, cLink, cClass).
     
+
 	END METHOD .
 	
 	/*------------------------------------------------------------------------------
@@ -379,11 +393,13 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         Notes:   
         @param cClass The fulltypename from the reference
         @param cMethod The Method / Property / Events signature or name
+        @param lWithLink returns the returnvalue with or without link
         @param poParameter The parameter object
         @return A valid HTML a tag 
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC CHARACTER GetClassReferenceHyperlink (cClass      AS CHARACTER,
                                                                cMethod     AS CHARACTER,
+                                                               lWithLink   AS LOGICAL,
                                                                poParameter AS IDocumentWriterParameter):
                                                                    
         DEFINE VARIABLE oLinkProvider AS IClassReferenceLinkProvider NO-UNDO.
@@ -392,6 +408,11 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         oLinkProvider = {Consultingwerk/get-service.i Consultingwerk.Studio.ClassDocumentation.IClassReferenceLinkProvider "NEW Consultingwerk.Studio.ClassDocumentation.ClassReferenceLinkProvider()"} .
         
         ASSIGN cLink = oLinkProvider:GetClassReferenceLink (cClass).
+        
+        
+        
+        IF NOT lWithLink THEN
+            RETURN cClass.
         
         IF cLink = ? THEN DO:
             ASSIGN FILE-INFO:FILENAME = SUBSTITUTE ("&1\&2.xml":U, poParameter:SourceDir, cClass).
@@ -463,17 +484,24 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         @param pcSignature The CHARACTER value which do you want to parse.
         @param pcModifier The CHARACTER value set the modifiere in the signature
         @param pcReturnType The CHARACTER value set the ReturnTyp in the signature
+        @param pcDelegateType The CHARACTER value set the DelegateType
+        @param plWithLink generated the the signature with an Anchor Link
+        @param plWithReturnLink generate the signature with or without return type link
         @param poParameter The parameter object
         @return Return the manipulated signature
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC CHARACTER SignatureParser (pcSignature  AS CHARACTER, 
                                                     pcModifier  AS CHARACTER, 
                                                     pcReturnType AS CHARACTER,
+                                                    pcDelegateType   AS CHARACTER,
+                                                    plWithLink       AS LOGICAL,
+                                                    plWithReturnLink AS LOGICAL,
                                                     poParameter  AS IDocumentWriterParameter):
         
         DEFINE VARIABLE cResult      AS CHARACTER NO-UNDO .
         DEFINE VARIABLE iIndex       AS INTEGER   NO-UNDO .
         DEFINE VARIABLE cTempReturn  AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cSignature   AS CHARACTER NO-UNDO .
                                                                                 
         IF iIndex > 0 THEN
             ASSIGN  cResult = SUBSTRING (cResult, 1, iIndex).
@@ -485,7 +513,22 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
          ELSE
             ASSIGN cTempReturn = pcReturnType.
             
-        ASSIGN cResult = SUBSTITUTE ("&1 &2 <a href='#@ANCHOR@'>&3 &4</a>":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, poParameter), GenericTypesParser (pcReturnType, poParameter), ShortSignatureParser (pcSignature, pcReturnType)).
+        IF pcDelegateType = "":U THEN DO:
+            IF plWithLink = TRUE THEN
+                ASSIGN cResult = SUBSTITUTE ("&1 &2 <a href='#@ANCHOR@'>&3 &4</a>":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, plWithReturnLink, poParameter), GenericTypesParser (pcReturnType, poParameter), ShortSignatureParser (pcSignature, pcReturnType)).
+            ELSE 
+                ASSIGN cResult = SUBSTITUTE ("&1 &2 &3 &4":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, plWithReturnLink, poParameter), GenericTypesParser (pcReturnType, poParameter), ShortSignatureParser (pcSignature, pcReturnType)).
+        END.
+        ELSE DO:
+            ASSIGN cSignature = ShortSignatureParser (pcSignature, pcReturnType)
+                   cSignature = TRIM (pcSignature, "()":U)
+                   .
+                    
+            IF plWithLink = TRUE THEN
+                ASSIGN cResult = SUBSTITUTE ("&1 &2 <a href='#@ANCHOR@'>&3 &4</a> DELEGATE &5":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, plWithReturnLink, poParameter), GenericTypesParser (pcReturnType, poParameter), cSignature, GetClassReferenceHyperlink (pcDelegateType, plWithReturnLink, poParameter)).
+            ELSE 
+                ASSIGN cResult = SUBSTITUTE ("&1 &2 &3 &4 DELEGATE &5":U, pcModifier, GetClassReferenceHyperlink (cTempReturn, plWithReturnLink, poParameter), GenericTypesParser (pcReturnType, poParameter), cSignature, GetClassReferenceHyperlink (pcDelegateType, plWithReturnLink, poParameter)). 
+        END. 
 
         RETURN cResult.
 
@@ -650,15 +693,15 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
     ------------------------------------------------------------------------------*/
     METHOD PUBLIC STATIC LONGCHAR ReplaceSpecialCharacters (plcString AS LONGCHAR):
         
-        DEFINE VARIABLE cString AS LONGCHAR  NO-UNDO .
-        DEFINE VARIABLE iLength AS INTEGER   NO-UNDO .
-        DEFINE VARIABLE i       AS INTEGER   NO-UNDO INIT 1.
-        DEFINE VARIABLE iValue  AS INTEGER   NO-UNDO .
+        DEFINE VARIABLE cString AS LONGCHAR NO-UNDO.
+        DEFINE VARIABLE iLength AS INTEGER NO-UNDO.
+        DEFINE VARIABLE i       AS INTEGER NO-UNDO INIT 1.
+        DEFINE VARIABLE iValue  AS INTEGER NO-UNDO.
         DEFINE VARIABLE cChar   AS CHARACTER NO-UNDO .
         
         FIX-CODEPAGE (cString) = "utf-8":U . 
         
-        ASSIGN cString = STRING (plcString).
+        ASSIGN cString = plcString.
         
         DO WHILE i < LENGTH (plcString):
             
