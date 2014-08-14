@@ -573,6 +573,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
+          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -586,6 +587,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
+          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -603,6 +605,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -617,6 +620,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -633,6 +637,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -647,6 +652,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -690,9 +696,6 @@ PROCEDURE PCTCompileXref.
         OUTPUT STREAM sDbgLst2 CLOSE.
         OS-DELETE VALUE(debugListingFile).
         OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
-    END.
-    IF (plOK AND lst AND (debugListingFile NE ?)) THEN DO:
-        COMPILE VALUE(debugListingFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
     END.
 
 END PROCEDURE.
