@@ -1,17 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!--
-/**********************************************************************
- * Copyright (C) 2006-2013 by Consultingwerk Ltd. ("CW") -            *
- * www.consultingwerk.de and other contributors as listed             *
- * below.  All Rights Reserved.                                       *
- *                                                                    *
- *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
- *   KIND, either express or implied.                                 *
- *                                                                    *
- *  Contributors:                                                     *
- *                                                                    *
- **********************************************************************/
--->
 <HTML>
     <HEAD>
         <meta http-equiv="expires" content="86400">
@@ -35,6 +22,6 @@
     </HEAD>
     <frameset cols="400,*">
     <frame src="DocumentList.html" name="DocumentList">
-    <frame src="resources/start.htm" name="DocumentDetails" onload="CheckFrame(); return true;">
+    <frame src="resources/Start.html" name="DocumentDetails" onload="CheckFrame(); return true;">
     </frameset> 
 </HTML>

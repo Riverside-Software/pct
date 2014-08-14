@@ -1,17 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!--
-/**********************************************************************
- * Copyright (C) 2006-2013 by Consultingwerk Ltd. ("CW") -            *
- * www.consultingwerk.de and other contributors as listed             *
- * below.  All Rights Reserved.                                       *
- *                                                                    *
- *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
- *   KIND, either express or implied.                                 *
- *                                                                    *
- *  Contributors:                                                     *
- *  Generated   : @TIMESTAMP@                                                                   *
- **********************************************************************/
--->
 <HTML>
     <HEAD>
         <meta http-equiv="expires" content="86400">
@@ -103,6 +90,13 @@
                                 <td>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>
+                                    <span class="span_inherits">@UNITABSTRACT@</span>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 	<br>
@@ -110,6 +104,10 @@
                 	@UNITHEADER@
                 	</span>
                 	<br>
+                </div>
+            </td>
+            <td>
+                <div class="container_logo_google">
                 </div>
             </td>
         </tr>
@@ -283,7 +281,6 @@
     <br>
     <br>
     @DETAILPROPERTYCOMMENTTAGCLOSE@
-    
     <font class="footer_timestamp">@TIMESTAMP@</font>
     </BODY>
 </HTML>
