@@ -62,6 +62,8 @@ public class PCTCreateBase extends PCT {
     private String collation = null;
     private String cpInternal = null;
     private boolean newInstance = false;
+    private String numsep = null;
+    private String numdec = null;
 
     /**
      * Structure file (.st)
@@ -264,6 +266,25 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Thousands separator (-numsep attribute)
+     * 
+     * @param numsep String
+     */
+    public void setNumSep(String numsep) {
+        this.numsep = numsep;
+    }
+
+    /**
+     * Decimal separator (-numdec attribute)
+     * 
+     * @param numdec String
+     */
+    public void setNumDec(String numdec) {
+        this.numdec = numdec;
+    }
+
+
+    /**
      * Adds an Oracle schema holder
      * 
      * @param holder Instance of OracleHolder
@@ -417,6 +438,8 @@ public class PCTCreateBase extends PCT {
                     pls.addPropath(propath);
                     pls.setIncludedPL(getIncludedPL());
                     pls.setFailOnError(failOnError);
+                    pls.setNumDec(numdec);
+                    pls.setNumSep(numsep);
                     for (Variable var : getEnvironmentVariables()) {
                         pls.addEnv(var);
                     }
@@ -438,8 +461,12 @@ public class PCTCreateBase extends PCT {
             PCTLoadSchema pls = new PCTLoadSchema();
             pls.bindToOwner(this);
             pls.setDlcHome(getDlcHome());
+            pls.setDlcBin(getDlcBin());
             pls.addPropath(propath);
             pls.setIncludedPL(getIncludedPL());
+            pls.setFailOnError(failOnError);
+            pls.setNumDec(numdec);
+            pls.setNumSep(numsep);
             for (Variable var : getEnvironmentVariables()) {
                 pls.addEnv(var);
             }
