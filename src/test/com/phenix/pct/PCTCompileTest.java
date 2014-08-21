@@ -744,7 +744,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f4.exists());
         try {
             // Preprocessed source code removes many lines of unreachable code
-            assertTrue(Files.readLines(f2, Charsets.UTF_8).size() > Files.readLines(f4,Charsets.UTF_8).size() + 10);
+            assertTrue(Files.readLines(f2, Charsets.UTF_8).size() + 10 < Files.readLines(f4,Charsets.UTF_8).size() );
         } catch (IOException caught) {
             Assert.fail("Unable to open file", caught);
         }
