@@ -117,6 +117,7 @@ DEFINE VARIABLE AppStrXrf AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE SaveR     AS LOGICAL    NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE LstPrepro AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -198,6 +199,8 @@ REPEAT:
             ASSIGN RunList = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'LISTING':U THEN
             ASSIGN Lst = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'LISTINGSOURCE':U THEN
+            ASSIGN LstPrepro = (ENTRY(2, cLine, '=':U) EQ 'PREPROCESSOR':U).
         WHEN 'PREPROCESS':U THEN
             ASSIGN PrePro = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PREPROCESSDIR':U THEN
@@ -481,6 +484,7 @@ PROCEDURE PCTCompile.
       V6FRAME=lV6Frame
       MIN-SIZE=MinSize
       GENERATE-MD5=MD5
+      LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
       DEBUG-LIST VALUE(debugListingFile)
       PREPROCESS VALUE(preprocessFile) 
       NO-ERROR.
@@ -573,7 +577,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
-          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -587,7 +591,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
-          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -605,7 +609,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -620,7 +624,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -637,7 +641,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -652,7 +656,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -696,6 +700,12 @@ PROCEDURE PCTCompileXref.
         OUTPUT STREAM sDbgLst2 CLOSE.
         OS-DELETE VALUE(debugListingFile).
         OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
+    END.
+    IF (plOK AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
+        COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
+        IF ERROR-STATUS:ERROR THEN DO:
+            OS-DELETE VALUE(pcPCTDir + '/':U + pcInFile).
+        END.
     END.
 
 END PROCEDURE.

@@ -211,7 +211,7 @@ PCTBuild=${BUILD_NUMBER}
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
+    <bootstrapCompile destdir="${buildDir}" preprocess="true" debugListing="true" listing="true" listingSource="preprocessor" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />

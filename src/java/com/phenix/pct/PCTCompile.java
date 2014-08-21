@@ -52,6 +52,7 @@ public class PCTCompile extends PCTRun {
     private boolean noCompile = false;
     private boolean runList = false;
     private boolean listing = false;
+    private String listingSource = null;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
@@ -157,6 +158,13 @@ public class PCTCompile extends PCTRun {
      */
     public void setListing(boolean listing) {
         this.listing = listing;
+    }
+
+    public void setListingSource(String source) {
+        if ((source == null) || (source.trim().length() == 0) || ("preprocessor".equalsIgnoreCase(source.trim())))
+            this.listingSource = source;
+        else
+            throw new BuildException("Invalid listingSource attribute : " + source);
     }
 
     /**
@@ -515,6 +523,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("LISTING=" + (this.listing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            if (listingSource != null) {
+                bw.write("LISTINGSOURCE=" + listingSource); //$NON-NLS-1$
+                bw.newLine();
+            }
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (preprocess && (preprocessDir != null)) {
