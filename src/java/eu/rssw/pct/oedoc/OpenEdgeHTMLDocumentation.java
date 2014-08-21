@@ -118,7 +118,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
         log("Generating HTML documentation for " + sourceDir.getAbsolutePath());
         try {
-            setProcedure("ConsultingWerk/Studio/ClassDocumentation/generate-class-reference.p"); //$NON-NLS-1$
+            setProcedure("Consultingwerk/Studio/ClassDocumentation/generate-class-reference.p"); //$NON-NLS-1$
             addParameter(new RunParameter("TargetDir", destDir.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("SourceDir", sourceDir.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("TemplateSourceDir", templateDir.getAbsolutePath())); //$NON-NLS-1$
