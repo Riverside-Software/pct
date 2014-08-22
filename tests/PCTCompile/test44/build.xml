@@ -9,6 +9,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
