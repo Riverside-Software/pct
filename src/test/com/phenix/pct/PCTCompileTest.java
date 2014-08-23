@@ -58,7 +58,10 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
 import org.apache.tools.ant.BuildException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
@@ -693,4 +696,57 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.lastModified() > mod2);
     }
 
+    @Test(groups = {"v10"})
+    public void test43() {
+        configureProject("PCTCompile/test43/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test43/build/test.r");
+        File f2 = new File("PCTCompile/test43/build2/test.r");
+        long mod1 = f1.lastModified();
+        long mod2 = f2.lastModified();
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.xref").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.inc").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.crc").exists());
+        assertFalse(new File("PCTCompile/test43/build/.pct/test.p.dbg").exists());
+        assertTrue(new File("PCTCompile/test43/build2/.pct/test.p.dbg").exists());
+        assertTrue(new File("PCTCompile/test43/build2/.pct/test.p.preprocess").exists());
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+        assertTrue(f2.lastModified() > mod2);
+    }
+
+    @Test(groups = {"v9"})
+    public void test45() {
+        configureProject("PCTCompile/test45/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test45/build/test.r");
+        File f2 = new File("PCTCompile/test45/build/.pct/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f2.length() > 650);
+    }
+
+    @Test(groups = {"v10"})
+    public void test46() {
+        configureProject("PCTCompile/test46/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompile/test46/build/test.r");
+        File f2 = new File("PCTCompile/test46/build/.pct/test.p");
+        File f3 = new File("PCTCompile/test46/build2/test.r");
+        File f4 = new File("PCTCompile/test46/build2/.pct/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f3.exists());
+        assertTrue(f4.exists());
+        try {
+            // Preprocessed source code removes many lines of unreachable code
+            assertTrue(Files.readLines(f2, Charsets.UTF_8).size() + 10 < Files.readLines(f4,Charsets.UTF_8).size() );
+        } catch (IOException caught) {
+            Assert.fail("Unable to open file", caught);
+        }
+    }
 }

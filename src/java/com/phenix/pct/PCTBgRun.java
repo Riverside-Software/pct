@@ -469,6 +469,10 @@ public abstract class PCTBgRun extends PCT {
                 bw.write("-COVERAGE");
                 bw.newLine();
             }
+            if (options.getProfiler().hasStatistics()) {
+                bw.write("-STATISTICS");
+                bw.newLine();
+            }
             if (options.getProfiler().getListings() != null) {
                 bw.write("-LISTINGS \"" + options.getProfiler().getListings().getAbsolutePath()
                         + "\"");

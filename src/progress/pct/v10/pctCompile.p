@@ -70,7 +70,8 @@ DEFINE TEMP-TABLE ttXref NO-UNDO
     INDEX typ IS PRIMARY xRefType.
 DEFINE TEMP-TABLE ttDirs NO-UNDO
     FIELD baseDir AS CHARACTER
-    FIELD dirName AS CHARACTER.
+    FIELD dirName AS CHARACTER
+    INDEX ttDirs-PK IS PRIMARY baseDir dirName.
 DEFINE TEMP-TABLE ttXrefInc NO-UNDO
     FIELD ttIncName AS CHARACTER.
 DEFINE TEMP-TABLE ttXrefCRC NO-UNDO
@@ -116,6 +117,7 @@ DEFINE VARIABLE AppStrXrf AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE SaveR     AS LOGICAL    NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE LstPrepro AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -197,6 +199,8 @@ REPEAT:
             ASSIGN RunList = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'LISTING':U THEN
             ASSIGN Lst = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'LISTINGSOURCE':U THEN
+            ASSIGN LstPrepro = (ENTRY(2, cLine, '=':U) EQ 'PREPROCESSOR':U).
         WHEN 'PREPROCESS':U THEN
             ASSIGN PrePro = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'PREPROCESSDIR':U THEN
@@ -340,7 +344,7 @@ REPEAT:
             IF lXCode THEN
                 RUN PCTCompileXCode(CurrentFS, cLine, OutputDir, XCodeKey, OUTPUT lComp).
             ELSE IF noParse THEN
-                RUN PCTCompile(CurrentFS, cLine, OutputDir, OUTPUT lComp).
+                RUN PCTCompile(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             ELSE
                 RUN PCTCompileXREF(CurrentFS, cLine, OutputDir, PCTDir, OUTPUT lComp).
             IF (lComp) THEN DO:
@@ -422,6 +426,7 @@ PROCEDURE PCTCompile.
     DEFINE INPUT  PARAMETER pcInDir   AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcInFile  AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcOutDir  AS CHARACTER  NO-UNDO.
+    DEFINE INPUT  PARAMETER pcPCTDir  AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
 
     DEFINE VARIABLE i     AS INTEGER    NO-UNDO.
@@ -430,14 +435,59 @@ PROCEDURE PCTCompile.
     DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE c     AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
 
+    IF (NOT fileExists(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)) THEN DO:
+      MESSAGE SUBSTITUTE("File [&1]/[&2] not found", pcInDir, pcInFile).
+      ASSIGN plOK = FALSE.
+      RETURN.    
+    END.
+    
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
+    ASSIGN plOK = createDir(pcPCTDir, cBase).
+    IF (NOT plOK) THEN RETURN.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
+
+    IF PrePro THEN DO:
+        IF preprocessDir = '' THEN
+            ASSIGN preprocessFile = pcPCTDir + '/':U + pcInFile + '.preprocess':U.
+        ELSE DO:
+            ASSIGN preprocessFile = preprocessDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(preprocessDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
+    END.
+    ELSE
+        ASSIGN preprocessFile = ?.
+    IF debugLst AND NOT (cFile BEGINS '_')THEN DO:
+        IF dbgListDir = '' THEN
+            ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
+        ELSE DO:
+            ASSIGN debugListingFile = dbgListDir + '/':U + pcInFile.
+            ASSIGN plOK = createDir(dbgListDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
+    END.
+    ELSE
+       ASSIGN debugListingFile = ?.
+
     IF pctVerbose THEN MESSAGE SUBSTITUTE("Compiling &1 IN DIRECTORY &2 TO &3", pcInFile, pcInDir, cSaveDir).
-    COMPILE VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile) SAVE = SaveR INTO VALUE(cSaveDir) LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+    COMPILE
+      VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+      SAVE = SaveR INTO VALUE(cSaveDir)
+      LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+      STREAM-IO=streamIO
+      V6FRAME=lV6Frame
+      MIN-SIZE=MinSize
+      GENERATE-MD5=MD5
+      LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+      DEBUG-LIST VALUE(debugListingFile)
+      PREPROCESS VALUE(preprocessFile) 
+      NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
         ASSIGN c = '':U.
@@ -500,7 +550,7 @@ PROCEDURE PCTCompileXref.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
-    IF debugLst THEN DO:
+    IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
         IF dbgListDir = '' THEN
             ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
         ELSE DO:
@@ -527,6 +577,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
+          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -540,6 +591,7 @@ PROCEDURE PCTCompileXref.
           SAVE = SaveR INTO VALUE(cSaveDir)
           STREAM-IO=streamIO
           V6FRAME=lV6Frame
+          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
           DEBUG-LIST VALUE(debugListingFile)
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
@@ -557,6 +609,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -571,6 +624,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -587,6 +641,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -601,6 +656,7 @@ PROCEDURE PCTCompileXref.
 	          LANGUAGES (VALUE(languages))
 	          STREAM-IO=streamIO
 	          V6FRAME=lV6Frame
+	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
 	          DEBUG-LIST VALUE(debugListingFile)
 	          PREPROCESS VALUE(preprocessFile)
 	          MIN-SIZE=MinSize
@@ -645,8 +701,11 @@ PROCEDURE PCTCompileXref.
         OS-DELETE VALUE(debugListingFile).
         OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
     END.
-    IF (plOK AND lst AND (debugListingFile NE ?)) THEN DO:
-        COMPILE VALUE(debugListingFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
+    IF (plOK AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
+        COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
+        IF ERROR-STATUS:ERROR THEN DO:
+            OS-DELETE VALUE(pcPCTDir + '/':U + pcInFile).
+        END.
     END.
 
 END PROCEDURE.
