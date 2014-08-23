@@ -3,7 +3,9 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-    <PCTCompile graphicalMode="false" dlcHome="${DLC}" />
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}">
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
   </target>
 
 </project>

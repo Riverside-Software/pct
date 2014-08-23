@@ -122,16 +122,16 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                 ASSIGN lAddProcedure = TRUE.
                 
                 IF TableName = "eMethod":U THEN
-                    ASSIGN cSrcSignature = ClassDocumentationHelper:SignatureParser (hSourceBuffer::Signature, hSourceBuffer::Modifier, hSourceBuffer::Returntype, poParameter).
+                    ASSIGN cSrcSignature = ClassDocumentationHelper:SignatureParser (hSourceBuffer::Signature, hSourceBuffer::Modifier, hSourceBuffer::Returntype, "":U, TRUE, TRUE, poParameter).
                 ELSE 
-                    ASSIGN cSrcSignature = ClassDocumentationHelper:SignatureParser (hSourceBuffer::Signature, hSourceBuffer::Modifier, "":U, poParameter).
+                    ASSIGN cSrcSignature = ClassDocumentationHelper:SignatureParser (hSourceBuffer::Signature, hSourceBuffer::Modifier, "":U, "":U, TRUE, FALSE, poParameter).
                 
                 DO WHILE NOT hDestQuery:QUERY-OFF-END:
                     
                     IF TableName = "eMethod":U THEN 
-                        ASSIGN cDestSignature = ClassDocumentationHelper:SignatureParser (hDestBuffer::Signature, hDestBuffer::Modifier, hDestBuffer::Returntype, poParameter).
+                        ASSIGN cDestSignature = ClassDocumentationHelper:SignatureParser (hDestBuffer::Signature, hDestBuffer::Modifier, hDestBuffer::Returntype, "":U, TRUE, TRUE, poParameter).
                     ELSE 
-                        ASSIGN cDestSignature = ClassDocumentationHelper:SignatureParser (hDestBuffer::Signature, hDestBuffer::Modifier, "":U, poParameter).
+                        ASSIGN cDestSignature = ClassDocumentationHelper:SignatureParser (hDestBuffer::Signature, hDestBuffer::Modifier, "":U, "":U, TRUE, TRUE, poParameter).
 
                     IF cDestSignature = cSrcSignature THEN DO:
                         ASSIGN lAddProcedure = FALSE.
@@ -145,12 +145,13 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                 IF lAddProcedure = FALSE THEN DO:
                     hDestbuffer::Inheritance = SUBSTITUTE ("Overrides &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName,
                                                                                                                                  ClassDocumentationHelper:ShortSignatureParser (hDestbuffer::Signature, hDestbuffer::ReturnType), 
+                                                                                                                                 TRUE,
                                                                                                                                  poParameter)).
                 END. 
                 ELSE DO:
                     hDestBuffer:BUFFER-CREATE ().
                     hDestBuffer:BUFFER-COPY (hSourceBuffer).
-                    hDestbuffer::Inheritance = SUBSTITUTE ("Inherited from &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName, poParameter)).
+                    hDestbuffer::Inheritance = SUBSTITUTE ("Inherited from &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName, TRUE, poParameter)).
                 END. 
 
                 FINALLY:
@@ -164,12 +165,13 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                 IF hDestbuffer:AVAILABLE THEN DO:              
                    hDestbuffer::Inheritance = SUBSTITUTE ("Overrides &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName,
                                                                                                                                 ClassDocumentationHelper:ShortSignatureParser (hDestbuffer::Name, hDestbuffer::DataType), 
+                                                                                                                                TRUE,
                                                                                                                                 poParameter)).
                 END.
                 ELSE DO:
                     hDestBuffer:BUFFER-CREATE ().
                     hDestBuffer:BUFFER-COPY (hSourceBuffer).
-                    hDestbuffer::Inheritance = SUBSTITUTE ("Inherited from &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName, poParameter)).
+                    hDestbuffer::Inheritance = SUBSTITUTE ("Inherited from &1":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcClassName, TRUE, poParameter)).
                 END.
                 
             END.
@@ -408,21 +410,30 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
         DEFINE VARIABLE cFullClassName AS CHARACTER            NO-UNDO.
         DEFINE VARIABLE plcParents     AS LONGCHAR             NO-UNDO.
           
+        DEFINE VARIABLE lcUnitHeader   AS LONGCHAR             NO-UNDO.          
+        DEFINE VARIABLE lcComment      AS LONGCHAR             NO-UNDO.
+          
         DEFINE VARIABLE cInherits AS CHARACTER NO-UNDO.
           
         FIX-CODEPAGE (lcClassComment) = "utf-8":U . 
         FIX-CODEPAGE (plcParents)     = "utf-8":U . 
+        FIX-CODEPAGE (lcUnitHeader)   = "utf-8":U . 
+        FIX-CODEPAGE (lcComment)      = "utf-8":U . 
           
         FIND FIRST eUnit.
         
         COPY-LOB eUnit.ClassComment TO lcClassComment.
         
         IF eUnit.Inherits > "":U THEN 
-            ASSIGN cInherits = ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eUnit.Inherits), poParameter) .
+            ASSIGN cInherits = ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eUnit.Inherits), TRUE, poParameter) .
         
-        ASSIGN
+        
+        ASSIGN 
+            lcComment           = ClassDocumentationHelper:CommentParser (lcClassComment, TABLE eParameterComment BY-REFERENCE) 
+            lcUnitHeader        = ClassDocumentationHelper:UnitCommentFormater (lcComment) 
+        
 			cFullClassName      = TRIM (SUBSTITUTE ("&1.&2":U, eUnit.PackageName, eUnit.ClassName))
-            plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITHEADER@":U, ClassDocumentationHelper:UnitCommentFormater (ClassDocumentationHelper:CommentParser (lcClassComment, TABLE eParameterComment BY-REFERENCE)))
+            plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITHEADER@":U, lcUnitHeader)
             plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@PAGETITLE@":U, poParameter:DocumentationTitle) 
             plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@PACKAGENAME@":U, eUnit.PackageName)
             plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@CLASSNAME@":U, eUnit.ClassName)
@@ -435,6 +446,11 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITFINAL@":U, "":U).
         ELSE 
             ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITFINAL@":U, "FINAL":U).
+        
+        IF eUnit.IsAbstract = FALSE THEN 
+            ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITABSTRACT@":U, "":U).
+        ELSE 
+            ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@UNITABSTRACT@":U, "ABSTRACT":U).
                 
         IF eUnit.IsInterface = TRUE THEN 
             ASSIGN plcDocumentTemplate = REPLACE (plcDocumentTemplate, "@PAGETYPE@":U, "Interface":U)
@@ -668,6 +684,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
 	    DEFINE VARIABLE lcPackageGroup       AS LONGCHAR  NO-UNDO.
 	    DEFINE VARIABLE lGroupExist          AS LOGICAL   NO-UNDO INIT FALSE.
 	    DEFINE VARIABLE lcClassPurpose       AS LONGCHAR  NO-UNDO.
+	    DEFINE VARIABLE cTempClassName       AS CHARACTER NO-UNDO.
 	    
 	    DEFINE BUFFER bTreeNode   FOR eTreeNode.
 	    DEFINE BUFFER bTreeNode2  FOR eTreeNode.
@@ -715,7 +732,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                    lcPackage        = REPLACE (lcPackage, "@TIMESTAMP@":U, STRING (NOW, "99.99.9999 hh:mm:ss":U))
                    lcPackage        = REPLACE (lcPackage, "@PACKAGENAME@":U, cPackagename)
                    lcPackage        = REPLACE (lcPackage, "@PARENTPACKAGENAME@":U, bTreeNode.NodeParent)
-                   cFileName        = SUBSTITUTE ("&1/&2.package.html":U, poParameter:TargetDir, cPackagename)
+                   cFileName        = SUBSTITUTE ("&1/&2.package.html":U, poParameter:TargetDir, cPackageFullName)
                    cPackageLink     = SUBSTITUTE ("&1.package.html":U, cPackagename)
                    lcPackageGroups  = "":U
                    .
@@ -731,7 +748,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                    
             DO iCount = 1 TO 3:
                 
-                ASSIGN lGroupExist    = FALSE
+                ASSIGN lGroupExist      = FALSE
                        lcPackageClasses = "":U
                        .
                 
@@ -774,7 +791,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                         WHEN "Class":U THEN DO:
                             ASSIGN lcPackageClassesFile = REPLACE (lcPackageClassesFile, "@CLASSTYPE@":U, "node_imgclass":U)
                                    cClassFullNameLink   = SUBSTITUTE ("&1.&2.html":U, bTreeNode2.NodeParentFullname, bTreeNode2.NodeName)
-                                   cClassName           = SUBSTITUTE ("&1.&2":U, bTreeNode2.NodeParentFullname, bTreeNode2.NodeName)
+                                   cClassName           = bTreeNode2.NodeName
                                    .
                         END.
                         WHEN "Interface":U THEN DO:
@@ -785,8 +802,11 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                         END.
                         WHEN "Package":U THEN DO:
                             ASSIGN lcPackageClassesFile = REPLACE (lcPackageClassesFile, "@CLASSTYPE@":U, "node_imgpackage":U)
-                                   cClassFullNameLink   = SUBSTITUTE ("&1.package.html":U, bTreeNode2.NodeParentFullname)
+                                   cClassFullNameLink   = SUBSTITUTE ("&1.&2.package.html":U, bTreeNode2.NodeParent, bTreeNode2.NodeName)
                                    cClassName           = bTreeNode2.NodeParentFullname
+                                   cTempClassName  = REPLACE (cClassName, cPackageFullName, "":U)
+                                   cTempClassName  = SUBSTRING (cTempClassName, 2)
+                                   cClassName      = SUBSTITUTE ("&1.&2":U, cPackageFullName, ENTRY (1, cTempClassName, ".":U))
                                    .
                         END.
                     END CASE.
@@ -935,7 +955,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                 .  
 
         FOR EACH eInterfaces ON ERROR UNDO, THROW:
-            ASSIGN lcInterfaceLinks = SUBSTITUTE ("&1, &2":U, lcInterfaceLinks, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eInterfaces.InterfaceName), poParameter))
+            ASSIGN lcInterfaceLinks = SUBSTITUTE ("&1, &2":U, lcInterfaceLinks, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eInterfaces.InterfaceName), true, poParameter))
                    lcResult = lcResult + THIS-OBJECT:ReplacePlaceholder (eInterfaces.InterfaceName,                                             /*Name            CHARACTER*/
                                                                          "":U,                                                                  /*Comment         LONGCHAR*/
                                                                          eInterfaces.InterfaceName,                                             /*Signatur        CHARACTER*/
@@ -1188,12 +1208,12 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
 		DEFINE VARIABLE lcResult       AS LONGCHAR  NO-UNDO.
         
 		FIX-CODEPAGE (lcResult) = "utf-8":U . 
-
-		FOR EACH eTreeNode WHERE eTreeNode.NodeParent = "":U ON ERROR UNDO, THROW:
+        
+		FOR EACH eTreeNode WHERE eTreeNode.NodeParent = "":U ON ERROR UNDO, THROW:            
             /* Sebastian Düngel, Consultingwerk Ltd. 17.04.2013
                Create string without Substitute method then the
                Substitute function get a Stackoverflow error */   
-            ASSIGN lcResult = "<table class='parent_node'>":U + 
+            ASSIGN lcResult = lcResult + "<table class='parent_node'>":U +
                                   "<tr>":U +
                                       "<td valign='top'>":U +
                                           "<div class='node_root'></div>":U +
@@ -1208,17 +1228,16 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                                                       "<td>":U +
                                                           "<a name='":U + eTreeNode.NodeName + "' href='":U + eTreeNode.NodeName + ".package.html' target='DocumentDetails' class='tree_node'>":U + eTreeNode.NodeName + "</a>":U +
                                                       "</td>":U +
-                                                  "</tr>":U + 
+                                                  "</tr>":U +
                                               "</table>":U +
                                           "</div>":U +
-                                          THIS-OBJECT:GenerateTreeviewOverviewNodes (eTreeNode.NodeName, eTreeNode.NodeParent, INPUT-OUTPUT lcResult) +            
+                                          THIS-OBJECT:GenerateTreeviewOverviewNodes (eTreeNode.NodeName, eTreeNode.NodeParent, INPUT-OUTPUT lcResult) +
                                       "</td>":U +
                                   "</tr>":U +
                               "</table>":U
                               .
-            
-            RETURN lcResult.
 		END.
+		RETURN lcResult.
 	END METHOD.
 	
 	/*------------------------------------------------------------------------------
@@ -1254,7 +1273,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             ASSIGN cNodeParent = NodeName.
          ELSE
             ASSIGN cNodeParent = SUBSTITUTE ("&1.&2":U, NodeParent, NodeName). 
-            
+    
         OPEN QUERY qTreeNodes FOR EACH bTreeNode WHERE bTreeNode.NodeParent = cNodeParent 
             BY bTreeNode.Order BY bTreeNode.NodeName.
          
@@ -1267,7 +1286,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             CASE bTreeNode.NodeType:
                 WHEN "Package":U THEN DO:
                     ASSIGN cImgClass = "node_imgpackage":U
-                           cLink     = SUBSTITUTE ("&1.package.html":U, bTreeNode.NodeParentFullname)
+                           cLink     = SUBSTITUTE ("&1.&2.package.html":U, bTreeNode.NodeParent, bTreeNode.NodeName)
                            cImgNode  = "node_root":U.
                            .
                 END.
@@ -1317,7 +1336,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             GET NEXT qTreeNodes NO-LOCK.            
         END.
         
-        RETURN lcResult + lcNodes.
+        RETURN lcNodes.
         
     END METHOD.
 	
@@ -1506,7 +1525,8 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                                   pcTemplateName) TO lcDocumentTemplate.
 
         ASSIGN cResult = REPLACE (lcDocumentTemplate, "@NAME@":U, pcName)      
-               cResult = REPLACE (cResult, "@SIGNATURE@":U, ClassDocumentationHelper:SignatureParser (pcSignature, pcModifier, pcDataType, poParameter))
+               cResult = REPLACE (cResult, "@SIGNATURE@":U, ClassDocumentationHelper:SignatureParser (pcSignature, pcModifier, pcDataType, pcDelegateName, TRUE, TRUE, poParameter))
+               cResult = REPLACE (cResult, "@SIGNATUREWITHOUTLINK@":U, ClassDocumentationHelper:SignatureParser (pcSignature, pcModifier, pcDataType, pcDelegateName, FALSE, TRUE, poParameter))
                cResult = REPLACE (cResult, "@PURPOSE@":U, ClassDocumentationHelper:GetSummaryComment (plcComment))
                cResult = REPLACE (cResult, "@COMMENT@":U, ClassDocumentationHelper:CommentFormater (ClassDocumentationHelper:CommentParser (plcComment, TABLE eParameterComment BY-REFERENCE)))
                cResult = REPLACE (cResult, "@MODIFIER@":U, pcModifier)
@@ -1515,19 +1535,27 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                cResult = REPLACE (cResult, "@STATIC@":U, IF plIsStatic = YES THEN "STATIC":U ELSE "":U)
                cResult = REPLACE (cResult, "@ISABSTRACT@":U, STRING (plIsAbstract))
                cResult = REPLACE (cResult, "@ABSTRACT@":U, IF plIsAbstract = YES THEN "ABSTRACT":U ELSE "":U)
+               cResult = REPLACE (cResult, "@SHORTABSTRACT@":U, IF plIsAbstract = YES THEN "A":U ELSE "":U)
                cResult = REPLACE (cResult, "@ISFINAL@":U, STRING (plIsFinal))
                cResult = REPLACE (cResult, "@FINAL@":U, IF plIsFinal = YES THEN "FINAL":U ELSE "":U)
-               cResult = REPLACE (cResult, "@DELEGATENAME@":U, pcDelegateName)
+               cResult = REPLACE (cResult, "@SHORTFINAL@":U, IF plIsFinal = YES THEN "F":U ELSE "":U)
+               cResult = REPLACE (cResult, "@DELEGATENAME@":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcDelegateName, TRUE, poParameter))
+               cResult = REPLACE (cResult, "@DELEGATENAMEWITHOUTLINK@":U, pcDelegateName)
                cResult = REPLACE (cResult, "@SETMODIFIER@":U, pcSetModifier)
                cResult = REPLACE (cResult, "@GETMODIFIER@":U, pcGetModifier)
                cResult = REPLACE (cResult, "@DATATYPE@":U, pcDataType)
-               cResult = REPLACE (cResult, "@SHORTSIGNATURE@":U, ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, poParameter))
-               cResult = REPLACE (cResult, "@LINKDATATYPE@":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcDataType, poParameter))
-               cAnchor = STRING (MD5-DIGEST (ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, poParameter)))
+               cResult = REPLACE (cResult, "@SHORTSIGNATURE@":U, ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, pcDelegateName, TRUE, TRUE, poParameter))
+               cResult = REPLACE (cResult, "@SHORTSIGNATUREWITHOUTLINK@":U, ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, pcDelegateName, FALSE, TRUE, poParameter))
+               cResult = REPLACE (cResult, "@SHORTSIGNATUREWITHOUTRETURNLINK@":U, ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, pcDelegateName, TRUE, FALSE, poParameter))
+               cResult = REPLACE (cResult, "@LINKDATATYPE@":U, ClassDocumentationHelper:GetClassReferenceHyperlink (pcDataType, TRUE, poParameter))
+               cAnchor = STRING (MD5-DIGEST (ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, pcDelegateName, FALSE, TRUE , poParameter)))
                cResult = REPLACE (cResult, "@ANCHOR@":U, cAnchor)
                cResult = REPLACE (cResult, "@GUID@":U, pcGuid)
                cResult = REPLACE (cResult, "@INHERITANCE@":U, pcInheritance)
                .
+        
+        
+        ASSIGN cResult = REPLACE (cResult, "@SHORTSIGNATUREWITHOUTRETURNLINK@":U, ClassDocumentationHelper:SignatureParser (pcSignature, "":U, pcDataType, pcDelegateName, TRUE, FALSE, poParameter)).
                 
         FOR EACH eParameter WHERE eParameter.ParentGUID = pcGuid ON ERROR UNDO, THROW:
             
@@ -1541,7 +1569,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
                    cParameterResult = REPLACE (cParameterResult, "@PARAMETERMODE@":U, STRING (eParameter.Mode))
                    .
             
-            ASSIGN cParameterResult = REPLACE (cParameterResult, "@PARAMETERFULLDATATYPE@":U, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eParameter.DataType), poParameter))
+            ASSIGN cParameterResult = REPLACE (cParameterResult, "@PARAMETERFULLDATATYPE@":U, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (eParameter.DataType), TRUE, poParameter))
                    cParameterResult = REPLACE (cParameterResult, "@GENERICTYPES@":U, ClassDocumentationHelper:GenericTypesParser (THIS-OBJECT:GetFullTypeName (eParameter.DataType), poParameter)).
             
             FIND eParameterComment WHERE eParameterComment.Name = eParameter.Name NO-ERROR.
@@ -1557,6 +1585,19 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             
             ASSIGN  cParameter = cParameter + cParameterResult.
         END.
+        
+        IF pcDelegateName = "":U THEN DO:
+            ASSIGN 
+                cResult = REPLACE (cResult, "@DELEGATETYPEOPEN@":U, "<!--":U) 
+                cResult = REPLACE (cResult, "@DELEGATETYPECLOSE@":U, "-->":U)
+                .  
+        END.
+        ELSE DO:
+            ASSIGN 
+                cResult = REPLACE (cResult, "@DELEGATETYPEOPEN@":U, "":U) 
+                cResult = REPLACE (cResult, "@DELEGATETYPECLOSE@":U, "":U)
+                .  
+        END.  
         
         IF Consultingwerk.CharacterType:IsNullOrEmpty (cParameter) THEN DO:
             ASSIGN 
@@ -1578,7 +1619,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.DocumentationWriter
             
             ASSIGN cParameter = cParameter + REPLACE (cParameterResult, "@PARAMETERMODE@":U, "RETURN":U)
                    cParameter = REPLACE (cParameter, "@PARAMETERNAME@":U, "Returns":U)
-                   cParameter = REPLACE (cParameter, "@PARAMETERFULLDATATYPE@":U, SUBSTITUTE ("&1 &2":U, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (pcDataType), poParameter), ClassDocumentationHelper:GenericTypesParser (pcDataType, poParameter)))
+                   cParameter = REPLACE (cParameter, "@PARAMETERFULLDATATYPE@":U, SUBSTITUTE ("&1 &2":U, ClassDocumentationHelper:GetClassReferenceHyperlink (THIS-OBJECT:GetFullTypeName (pcDataType), TRUE, poParameter), ClassDocumentationHelper:GenericTypesParser (pcDataType, poParameter)))
                    cParameter = REPLACE (cParameter, "@GENERICTYPES@":U, ClassDocumentationHelper:GenericTypesParser (THIS-OBJECT:GetFullTypeName (pcDataType), poParameter)).
                    .
 

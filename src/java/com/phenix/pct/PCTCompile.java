@@ -52,6 +52,7 @@ public class PCTCompile extends PCTRun {
     private boolean noCompile = false;
     private boolean runList = false;
     private boolean listing = false;
+    private String listingSource = null;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
@@ -159,6 +160,13 @@ public class PCTCompile extends PCTRun {
         this.listing = listing;
     }
 
+    public void setListingSource(String source) {
+        if ((source == null) || (source.trim().length() == 0) || ("preprocessor".equalsIgnoreCase(source.trim())))
+            this.listingSource = source;
+        else
+            throw new BuildException("Invalid listingSource attribute : " + source);
+    }
+
     /**
      * Create preprocessing files during compilation
      * 
@@ -203,8 +211,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Disables completely XREF generation and parsing. This means there's no generated file in .pct
-     * subdirectory. This attribute is not public right now, still being tested. This is used just
-     * to bypass a bug when compiling classes.
+     * subdirectory.
      * 
      * @param noParse "true|false|on|off|yes|no"
      */
@@ -516,6 +523,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("LISTING=" + (this.listing ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            if (listingSource != null) {
+                bw.write("LISTINGSOURCE=" + listingSource); //$NON-NLS-1$
+                bw.newLine();
+            }
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (preprocess && (preprocessDir != null)) {

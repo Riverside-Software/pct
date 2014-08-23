@@ -112,4 +112,25 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
+    @Test(groups= {"win", "v11"})
+    public void test4() {
+        configureProject("ClassDocumentation/test4/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("ClassDocumentation/test4/doc/TestClass.xml");
+        assertTrue(f1.exists());
+        File f2 = new File("ClassDocumentation/test4/html/TestClass.html");
+        assertTrue(f2.exists());
+    }
+
+    @Test(groups= {"win", "v11"})
+    public void test5() {
+        configureProject("ClassDocumentation/test5/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("ClassDocumentation/test5/doc/OpenEdge.Core.InjectABL.InjectionRequest.xml");
+        assertTrue(f1.exists());
+        File f2 = new File("ClassDocumentation/test5/html/OpenEdge.Core.InjectABL.InjectionRequest.html");
+        assertTrue(f2.exists());
+    }
 }

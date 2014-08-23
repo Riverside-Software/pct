@@ -73,7 +73,7 @@ public class OpenEdgeXMLDocumentation extends PCTRun {
 
         log("Generating XML documentation for " + sourceDir.getAbsolutePath() + " to " + destFile.getAbsolutePath());
         try {
-            setProcedure("ConsultingWerk/Studio/SmartDox/generate-class-documentation.p"); //$NON-NLS-1$
+            setProcedure("Consultingwerk/Studio/SmartDox/generate-class-documentation.p"); //$NON-NLS-1$
             addParameter(new RunParameter("TargetFile", destFile.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("SourceDir", sourceDir.getAbsolutePath())); //$NON-NLS-1$
             super.execute();
