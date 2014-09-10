@@ -1,0 +1,3 @@
+INTERFACE package.Foo:
+
+END INTERFACE.

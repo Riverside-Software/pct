@@ -1,0 +1,2 @@
+MESSAGE "{1}" VIEW-AS ALERT-BOX.
+

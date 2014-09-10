@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test11">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="lib" />
+    <mkdir dir="src1" />
+    <mkdir dir="src1/Twenty__Characters" />
+    <echo file="src1/Twenty__Characters/ThisIsAVeryLongFileNameInAVeryLongDirectoryNameButANotSoLongExtensionBecauseIDontReallyCareAboutItOhByTheWayThisIsACompletelyEmptyFile.txt" />
+    <PCTLibrary destfile="lib/test1.pl" dlcHome="${DLC}" encoding="iso8859-1">
+      <fileset dir="src1" includes="**/*" />
+    </PCTLibrary>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="lib" />
+    <mkdir dir="src2" />
+    <mkdir dir="src2/Twenty__Characters" />
+    <echo file="src2/Twenty__Characters/ThisIsAVeryLongFileNameWithOne SpaceInAVeryLongDirectoryNameButANotSoLongExtensionBecauseIDontReallyCareAboutItOhByTheWayThisIsACompletelyEmptyFile.txt" />
+    <PCTLibrary destfile="lib/test2.pl" dlcHome="${DLC}" encoding="iso8859-1">
+        <fileset dir="src2" includes="**/*" />
+    </PCTLibrary>
+  </target>
+
+</project>

@@ -1,0 +1,43 @@
+  UPDATE DATABASE "?"
+  
+  ADD TABLE "aa"
+    AREA "Schema Area"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "aa"
+
+  ADD FIELD "Fld1" OF "aa" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    POSITION 2
+    COLUMN-LABEL "Fld1"
+    ORDER 10
+
+  ADD TABLE "aab"
+    AREA "Schema Area"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "aab"
+  
+  ADD FIELD "Fld1" OF "aab" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    POSITION 2
+    COLUMN-LABEL "Fld1"
+    ORDER 10
+    	
+  ADD TABLE "aabc"
+    AREA "Schema Area"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "aabc"
+      
+  ADD FIELD "Fld1" OF "aabc" AS integer 
+      FORMAT "9"
+      INITIAL "0"
+      LABEL "Fld1"
+      POSITION 2
+      COLUMN-LABEL "Fld1"
+      ORDER 10

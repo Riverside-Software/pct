@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test17">
+  <taskdef resource="PCT.properties" />
+
+  <target name="xcode">
+    <mkdir dir="src/xcode" />
+    <PCTXCode destDir="src/xcode" dlcHome="${DLC}" key="PCT">
+      <fileset dir="src/std">
+        <include name="test.p" />
+      </fileset>
+    </PCTXCode>
+  </target>
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" xcode="true">
+      <fileset dir="src">
+        <include name="xcode/*.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" xcode="true" xcodekey="PCT">
+      <fileset dir="src">
+        <include name="xcode/*.p" />
+      </fileset>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+</project>

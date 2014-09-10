@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test46">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" listing="true" preprocess="true" listingSource="preprocessor">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" listing="true" preprocess="true">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

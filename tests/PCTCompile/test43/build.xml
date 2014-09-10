@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test43">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" noparse="true">
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" noparse="true" debugListing="true" preprocess="true">
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <sleep seconds="3" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" noparse="true">
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" noparse="true" debugListing="true" preprocess="true">
+      <fileset dir="src" includes="test.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

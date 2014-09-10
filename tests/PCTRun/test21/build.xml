@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test21">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+  	<mkdir dir="sandbox" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
+      <PCTRunOption name="-zprofile" value="profiler.pf" />
+    </PCTRun>
+  </target>
+
+</project>

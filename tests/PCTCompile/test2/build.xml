@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

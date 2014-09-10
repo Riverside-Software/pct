@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="ProUnit-test1">
+	<taskdef resource="PCT.properties" />
+
+	<target name="test">
+		<ProUnit dlcHome="${DLC}">
+			<propath>
+				<path location="${TESTLIBS}/prounit_${VERSION}.pl" />
+			</propath>
+		</ProUnit>
+	</target>
+
+</project>
