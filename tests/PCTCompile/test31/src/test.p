@@ -13,3 +13,6 @@ MESSAGE "BEFOREINC1 {&LINE-NUMBER}" VIEW-AS ALERT-BOX. { inc/file1.i } MESSAGE "
 
 &ENDIF
 
+DEFINE VARIABLE zzz AS eu.rssw.pct.Z no-undo.
+zzz = NEW eu.rssw.pct.Z().
+zzz:method1().
