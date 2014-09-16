@@ -194,6 +194,7 @@ public class PCTDumpIncremental extends PCTRun {
         addParameter(new RunParameter("DebugMode", Integer.toString(debugLevel)));
 	    addParameter(new RunParameter("removeEmptyDFfile", Boolean.toString(removeEmptyDFfile)));
 
+	    log("Creating incremental DF from " + sourceDB.getDbName() + " to " + targetDB.getDbName());
         super.execute();
     }
 
