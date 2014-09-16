@@ -254,6 +254,10 @@ IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
 IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
+IF debugLst AND (dbgListDir EQ '') THEN DO:
+    ASSIGN dbgListDir = OutputDir + '/.dbg':U.
+    createDir(outputDir, '.dbg':U).
+END.
 COMPILER:MULTI-COMPILE = multiComp.
 
 IF ProgPerc GT 0 THEN DO:
@@ -463,14 +467,8 @@ PROCEDURE PCTCompile.
     END.
     ELSE
         ASSIGN preprocessFile = ?.
-    IF debugLst AND NOT (cFile BEGINS '_')THEN DO:
-        IF dbgListDir = '' THEN
-            ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
-        ELSE DO:
-            ASSIGN debugListingFile = dbgListDir + '/':U + pcInFile.
-            ASSIGN plOK = createDir(dbgListDir, cBase).
-            IF (NOT plOK) THEN RETURN.
-        END.
+    IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
+        ASSIGN debugListingFile = REPLACE(REPLACE(pcInFile, '/', '_'), '~\', '_').
     END.
     ELSE
        ASSIGN debugListingFile = ?.
@@ -486,7 +484,7 @@ PROCEDURE PCTCompile.
       GENERATE-MD5=MD5
       LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
       DEBUG-LIST VALUE(debugListingFile)
-      PREPROCESS VALUE(preprocessFile) 
+      PREPROCESS VALUE(preprocessFile)
       NO-ERROR.
     ASSIGN plOK = NOT COMPILER:ERROR.
     IF NOT plOK THEN DO:
@@ -495,6 +493,10 @@ PROCEDURE PCTCompile.
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
         RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    END.
+    IF (debugListingFile NE ?) THEN DO:
+        OS-COPY VALUE(debugListingFile) VALUE(dbgListDir + '/':U + debugListingFile).
+        OS-DELETE VALUE(debugListingFile).
     END.
 
 END PROCEDURE.
@@ -551,13 +553,7 @@ PROCEDURE PCTCompileXref.
     ELSE
         ASSIGN preprocessFile = ?.
     IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
-        IF dbgListDir = '' THEN
-            ASSIGN debugListingFile = pcPCTDir + '/':U + pcInFile + '.dbg':U.
-        ELSE DO:
-            ASSIGN debugListingFile = dbgListDir + '/':U + pcInFile.
-            ASSIGN plOK = createDir(dbgListDir, cBase).
-            IF (NOT plOK) THEN RETURN.
-        END.
+        ASSIGN debugListingFile = REPLACE(REPLACE(pcInFile, '/', '_'), '~\', '_').
     END.
     ELSE
        ASSIGN debugListingFile = ?.
@@ -603,68 +599,68 @@ PROCEDURE PCTCompileXref.
     ELSE DO:
       IF (gwtFact GE 0) THEN DO:
         IF lXmlXref THEN
-	        COMPILE
-	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
-	          SAVE = SaveR INTO VALUE(pcOutDir)
-	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
-	          STREAM-IO=streamIO
-	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
-	          DEBUG-LIST VALUE(debugListingFile)
-	          PREPROCESS VALUE(preprocessFile)
-	          MIN-SIZE=MinSize
-	          GENERATE-MD5=MD5
-	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-	          XREF-XML VALUE(cXrefFile)
-	          NO-ERROR.
-	    ELSE
-	        COMPILE
-	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
-	          SAVE = SaveR INTO VALUE(pcOutDir)
-	          LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
-	          STREAM-IO=streamIO
-	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
-	          DEBUG-LIST VALUE(debugListingFile)
-	          PREPROCESS VALUE(preprocessFile)
-	          MIN-SIZE=MinSize
-	          GENERATE-MD5=MD5
-	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-	          XREF VALUE(cXrefFile) APPEND=FALSE
-	          NO-ERROR.
+          COMPILE
+            VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+            SAVE = SaveR INTO VALUE(pcOutDir)
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF-XML VALUE(cXrefFile)
+            NO-ERROR.
+        ELSE
+          COMPILE
+            VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+            SAVE = SaveR INTO VALUE(pcOutDir)
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF VALUE(cXrefFile) APPEND=FALSE
+            NO-ERROR.
       END.
       ELSE DO:
         IF lXmlXref THEN
-	        COMPILE
-	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
-	          SAVE = SaveR INTO VALUE(pcOutDir)
-	          LANGUAGES (VALUE(languages))
-	          STREAM-IO=streamIO
-	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
-	          DEBUG-LIST VALUE(debugListingFile)
-	          PREPROCESS VALUE(preprocessFile)
-	          MIN-SIZE=MinSize
-	          GENERATE-MD5=MD5
-	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-	          XREF-XML VALUE(cXrefFile)
-	          NO-ERROR.
+          COMPILE
+            VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+            SAVE = SaveR INTO VALUE(pcOutDir)
+            LANGUAGES (VALUE(languages))
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF-XML VALUE(cXrefFile)
+            NO-ERROR.
         ELSE
-	        COMPILE
-	          VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
-	          SAVE = SaveR INTO VALUE(pcOutDir)
-	          LANGUAGES (VALUE(languages))
-	          STREAM-IO=streamIO
-	          V6FRAME=lV6Frame
-	          LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
-	          DEBUG-LIST VALUE(debugListingFile)
-	          PREPROCESS VALUE(preprocessFile)
-	          MIN-SIZE=MinSize
-	          GENERATE-MD5=MD5
-	          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-	          XREF VALUE(cXrefFile) APPEND=FALSE
-	          NO-ERROR.
-      END.      
+          COMPILE
+            VALUE(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)
+            SAVE = SaveR INTO VALUE(pcOutDir)
+            LANGUAGES (VALUE(languages))
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN pcPCTDir + '/':U + pcInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF VALUE(cXrefFile) APPEND=FALSE
+            NO-ERROR.
+      END.
     END.
 
     ASSIGN plOK = NOT COMPILER:ERROR.
@@ -689,17 +685,8 @@ PROCEDURE PCTCompileXref.
         OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
     END.
     IF (debugListingFile NE ?) THEN DO:
-        DEFINE VARIABLE cLine AS CHARACTER NO-UNDO.
-        INPUT STREAM sDbgLst1 FROM VALUE(debugListingFile).
-        OUTPUT STREAM sDbgLst2 TO VALUE(debugListingFile + '.clean').
-        REPEAT:
-            IMPORT STREAM sDbgLst1 UNFORMATTED cLine.
-            PUT STREAM sDbgLst2 UNFORMATTED SUBSTRING(cLine, 13) '~n'.
-        END.
-        INPUT STREAM sDbgLst1 CLOSE.
-        OUTPUT STREAM sDbgLst2 CLOSE.
+        OS-COPY VALUE(debugListingFile) VALUE(dbgListDir + '/':U + debugListingFile).
         OS-DELETE VALUE(debugListingFile).
-        OS-RENAME VALUE(debugListingFile + '.clean') VALUE(debugListingFile).
     END.
     IF (plOK AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
         COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
