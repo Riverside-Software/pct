@@ -192,9 +192,12 @@ public class PCTDumpIncremental extends PCTRun {
                 : renameFile.getAbsolutePath())));
         addParameter(new RunParameter("IndexMode", Integer.toString(activeIndexes)));
         addParameter(new RunParameter("DebugMode", Integer.toString(debugLevel)));
-	    addParameter(new RunParameter("removeEmptyDFfile", Boolean.toString(removeEmptyDFfile)));
+        addParameter(new RunParameter("removeEmptyDFfile", Boolean.toString(removeEmptyDFfile)));
 
-	    log("Creating incremental DF from " + sourceDB.getDbName() + " to " + targetDB.getDbName());
+        if ((sourceDB != null) && (targetDB != null)) {
+            // Legacy behavior : sourceDb and TargetDb are not set when using PCTConnection
+            log("Creating incremental DF from " + sourceDB.getDbName() + " to " + targetDB.getDbName());
+        }
         super.execute();
     }
 
