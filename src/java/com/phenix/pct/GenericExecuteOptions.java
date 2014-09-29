@@ -65,6 +65,7 @@ public class GenericExecuteOptions {
     private boolean verbose = false;
     private boolean relativePaths = false;
     private Profiler profiler = null;
+    private File assemblies = null;
 
     public GenericExecuteOptions(Project p) {
         project = p;
@@ -447,6 +448,10 @@ public class GenericExecuteOptions {
                 Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    public void setAssemblies(File assemblies) {
+        this.assemblies = assemblies;
+    }
+
     public Collection<PCTConnection> getDbConnList() {
         return dbConnList;
     }
@@ -549,6 +554,10 @@ public class GenericExecuteOptions {
 
     public String getProcedure() {
         return procedure;
+    }
+
+    public File getAssemblies() {
+        return assemblies;
     }
 
     public boolean isVerbose() {
@@ -695,6 +704,11 @@ public class GenericExecuteOptions {
             }
             list.add("-T");
             list.add(tempDir.getAbsolutePath());
+        }
+
+        if (assemblies != null) {
+            list.add("-assemblies");
+            list.add(assemblies.getAbsolutePath());
         }
 
         // Additional command line options
