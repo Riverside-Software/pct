@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test36">
+  <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <OEFileSet basedir="src" modules="foo,bar" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+      <OEFileSet basedir="src">
+        <module name="foo" />
+        <module name="bar" />
+      </OEFileSet>
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

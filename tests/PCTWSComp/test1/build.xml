@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTWSComp-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTWSComp dlcHome="${DLC}" />
+  </target>
+
+</project>

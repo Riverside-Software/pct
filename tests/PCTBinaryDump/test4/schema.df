@@ -1,0 +1,29 @@
+  UPDATE DATABASE "?"
+  
+  ADD TABLE "Tab1"
+    AREA "Schema Area"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab1"
+
+  ADD FIELD "Fld1" OF "Tab1" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    POSITION 2
+    COLUMN-LABEL "Fld1"
+    ORDER 10
+
+  ADD TABLE "Tab2"
+    AREA "Schema Area"
+    LABEL ""
+    DESCRIPTION ""
+    DUMP-NAME "Tab2"
+
+  ADD FIELD "Fld1" OF "Tab2" AS integer 
+    FORMAT "9"
+    INITIAL "0"
+    LABEL "Fld1"
+    POSITION 2
+    COLUMN-LABEL "Fld1"
+    ORDER 10
