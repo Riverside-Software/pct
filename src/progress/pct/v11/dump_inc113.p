@@ -399,6 +399,15 @@ END.
 
 RUN pct/v11/_dmpincr113.p.
 
+IF     del-df-file THEN DO:
+  DEF VAR firstChar AS LONGCHAR NO-UNDO.
+  COPY-LOB FROM FILE df-file-name FOR 1 TO firstChar.
+  IF (firstChar EQ '.') THEN DO: 
+    MESSAGE "No difference found. Deleting " + df-file-name.
+    OS-DELETE VALUE(df-file-name).
+  END.
+END.
+
 RETURN.
 END. /* end of doDumpIncr */
 

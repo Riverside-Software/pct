@@ -2074,7 +2074,7 @@ DO ON STOP UNDO, LEAVE
         RUN "prodict/user/_usrdbox.p" (INPUT-OUTPUT iact,?,?,new_lang[2]).
       END.
       ELSE
-        iact = p-index-mode NE "active":U.
+        iact = p-index-mode NE "0":U.
 
       IF iact THEN DO:
         ASSIGN s_errorsLogged = TRUE.         
@@ -2153,7 +2153,7 @@ DO ON STOP UNDO, LEAVE
         IF NOT (DICTDB._Index._Active AND (IF iact = ? THEN TRUE ELSE iact)) THEN
         PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
       END.
-      ELSE IF NOT DICTDB._Index._Active AND NOT DICTDB._Index._Unique THEN
+      ELSE IF (NOT DICTDB._Index._Active AND NOT DICTDB._Index._Unique) OR p-index-mode EQ "2":U THEN
           PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
       
       IF DICTDB._Index._Wordidx = 1 THEN 
