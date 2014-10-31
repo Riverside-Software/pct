@@ -274,10 +274,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
     }
 
     /**
-     * Test renameFile attribute : 1/ Creates Tab1 table in test DB with Fld1 and Fld2 2/ Creates
-     * Tab1 table in test2 DB with Fld1 and Fld3 3/ Generate rename file 4/ Generates incremental
-     * dump file between test and test2 DBs with and without rename file 5/ Compares differences
-     * between both output files
+     * Test renameFile attribute on tables
      */
     @Test(groups= {"v10"})
     public void test7() {
