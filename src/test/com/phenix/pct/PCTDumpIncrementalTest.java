@@ -272,4 +272,24 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         executeTarget("test2");
         assertTrue(f1.exists());
     }
+
+    /**
+     * Test renameFile attribute : 1/ Creates Tab1 table in test DB with Fld1 and Fld2 2/ Creates
+     * Tab1 table in test2 DB with Fld1 and Fld3 3/ Generate rename file 4/ Generates incremental
+     * dump file between test and test2 DBs with and without rename file 5/ Compares differences
+     * between both output files
+     */
+    @Test(groups= {"v10"})
+    public void test7() {
+        configureProject("PCTDumpIncremental/test7/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpIncremental/test7/incr/incremental1.df");
+        File f2 = new File("PCTDumpIncremental/test7/incr/incremental2.df");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f1.length() > f2.length());
+    }
+
 }
