@@ -225,6 +225,14 @@ public abstract class PCTBgRun extends PCT {
         options.setBaseDir(baseDir);
     }
 
+    public void setAssemblies(File assemblies) {
+        if ((assemblies != null) && !assemblies.exists()) {
+            log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            return;
+        }
+        options.setAssemblies(assemblies);
+    }
+
     public void setResultProperty(String resultProperty) {
         options.setResultProperty(resultProperty);
     }
