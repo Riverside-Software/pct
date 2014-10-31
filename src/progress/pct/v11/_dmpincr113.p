@@ -1,3 +1,4 @@
+
 /*********************************************************************
 * Copyright (C) 2005-2009,2011 by Progress Software Corporation. All *
 * rights  reserved.  Prior versions of this work may contain portions*
@@ -146,7 +147,6 @@ DEFINE            VARIABLE to-int64       AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE i-to-int64     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE numEntries     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE num-diff       AS INTEGER                 NO-UNDO.
-DEFINE            VARIABLE iSeek          AS INT64                   NO-UNDO.
 DEFINE            VARIABLE dumpPol        AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE dumpAltBuf     AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE p-silentincrd  AS LOGICAL                 NO-UNDO.
@@ -156,6 +156,7 @@ DEFINE            VARIABLE Constr         AS CHARACTER               NO-UNDO.
 DEFINE            VARIABLE Constr1        AS CHARACTER               NO-UNDO.
 DEFINE            VARIABLE isIndexDel           AS LOGICAL           NO-UNDO.
 DEFINE            VARIABLE indxRecid            AS RECID             NO-UNDO.
+DEFINE            VARIABLE l_sys-obj      AS CHARACTER               NO-UNDO.
 
 DEFINE NEW SHARED VARIABLE df-con AS CHARACTER EXTENT 7    NO-UNDO.
 DEFINE NEW SHARED VARIABLE dfseq  AS INTEGER INITIAL 1 NO-UNDO.
@@ -232,6 +233,14 @@ new_lang[2] = "The incremental definitions file will contain at least "
             + "idxbuild~" will eliminate this problem.  Do you want to "
             + "create definitions for unique indexes as inactive?"
 .
+
+/* s_DbRecId is not unknown when the logical database
+   of a DataServer schema image is used as the database to be changed */
+IF s_DbType1 = "MSS" OR s_DbType2 = "MSS" THEN
+  assign l_sys-obj = {prodict/mss/mss_sys.i}. 
+ELSE
+  IF s_DbType1 = "ORACLE" OR s_DbType2 = "ORACLE" THEN 
+      assign l_sys-obj = {prodict/ora/ora_sys.i}.
 
 /* LANGUAGE DEPENDENCIES END */ /*-------------------------------------------*/
 
@@ -582,7 +591,12 @@ SESSION:IMMEDIATE-DISPLAY = yes.
 FIND FIRST DICTDB._Db WHERE RECID(DICTDB._Db) = drec_db NO-LOCK.
 IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   DISPLAY LDBNAME("DICTDB") @ db WITH FRAME seeking.
-FIND FIRST DICTDB2._Db WHERE RECID(DICTDB2._Db) = RECID(database2) NO-LOCK.
+
+IF s_DbType2 = "PROGRESS" THEN
+  FIND FIRST DICTDB2._Db WHERE RECID(DICTDB2._Db) = RECID(database2) NO-LOCK.
+ELSE
+  FIND FIRST DICTDB2._Db WHERE RECID(DICTDB2._Db) = s_DbRecId.
+
 IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   DISPLAY LDBNAME("DICTDB2") @ db2 WITH FRAME seeking.
 
@@ -594,9 +608,17 @@ END.  /* batchmode */
 ASSIGN isDictdbMultiTenant  = can-find(first dictdb._tenant)
        isDictdb2MultiTenant = can-find(first dictdb2._tenant).
 
-RUN checkEPolicy.
+/* If either db is non-progress, it means one or both of the comparisons is with a 
+ * "foreign" schema image.  As there are no real objects, just schema definitions 
+ * in the schema image, skip the database encryption comparisons.  By avoiding setup 
+ * of both "myEPolicy" and "myObjAttrs" arrays here, we avoid future comparisons 
+ * during delta.df processing.
+ */
+IF s_DbType1 = "PROGRESS" AND s_DbType2 = "PROGRESS" THEN
+  RUN checkEPolicy.
 
-RUN checkObjectAttributes.
+IF s_DbType1 = "PROGRESS" AND s_DbType2 = "PROGRESS" THEN
+  RUN checkObjectAttributes.
 
 DO ON STOP UNDO, LEAVE
    ON ERROR UNDO, LEAVE:
@@ -604,21 +626,35 @@ DO ON STOP UNDO, LEAVE
   /* build missing file list for rename/delete determination */
   
   FOR EACH DICTDB2._File
-    WHERE DICTDB2._File._Db-recid = RECID(database2)
-      AND (DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN")
+    WHERE (IF s_DbType2 = "PROGRESS" 
+           THEN DICTDB2._File._Db-recid = RECID(database2)
+           ELSE DICTDB2._File._Db-recid = s_DbRecId)
+      AND (IF s_DbType2 = "PROGRESS" 
+           THEN DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN"
+           ELSE DICTDB2._File._Owner = "_FOREIGN")
+      AND (IF s_DbType2 <> "PROGRESS"
+           THEN LOOKUP(DICTDB2._File._File-name, l_sys-obj) = 0
+           ELSE yes)
       AND DICTDB2._File._tbl-type = "T":
     FIND FIRST DICTDB._File
       WHERE DICTDB._File._Db-recid = drec_db
         AND DICTDB._File._File-name = DICTDB2._File._File-name
-      AND (DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN")
+      AND (IF s_DbType1 = "PROGRESS" 
+           THEN DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN"
+           ELSE DICTDB._File._Owner = "_FOREIGN")
+      AND (IF s_DbType1 <> "PROGRESS"
+           THEN LOOKUP(DICTDB._File._File-name, l_sys-obj) = 0
+           ELSE yes)
       AND DICTDB._File._Tbl-type = "T" NO-ERROR.
     IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB2._File._File-name @ fil WITH FRAME seeking.
+    /* Skip File Area check for a DataServer Schema holder (s_DbType(s) <> "PROGRESS") */
     IF AVAILABLE DICTDB._File THEN DO:
       IF NOT fileAreaMatch(INPUT DICTDB._File._File-number,
                            INPUT DICTDB2._File._File-Number,
                            INPUT DICTDB._File._Db-recid,
-                           INPUT DICTDB2._File._Db-recid) THEN DO:
+                           INPUT DICTDB2._File._Db-recid) 
+         AND s_DbType1 = "PROGRESS" AND s_DbType2 = "PROGRESS" THEN DO:
                                
         s_errorsLogged = TRUE.
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
@@ -639,15 +675,25 @@ DO ON STOP UNDO, LEAVE
 
   /* build list of new or renamed files */
   FOR EACH DICTDB._File WHERE DICTDB._File._Db-recid = drec_db
-                          AND (DICTDB._File._Owner = "PUB" OR 
-                               DICTDB._File._Owner = "_FOREIGN")      
+                          AND (IF s_DbType1 = "PROGRESS" 
+                               THEN DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN"
+                               ELSE DICTDB._File._Owner = "_FOREIGN")
+                          AND (IF s_DbType1 <> "PROGRESS"
+                               THEN LOOKUP(DICTDB._File._File-name, l_sys-obj) = 0
+                               ELSE yes)      
                           AND DICTDB._File._Tbl-type = "T":
      
-    FIND FIRST DICTDB2._File WHERE DICTDB2._File._Db-recid = RECID(database2)
+    FIND FIRST DICTDB2._File WHERE (IF s_DbType2 = "PROGRESS"
+                                    THEN DICTDB2._File._Db-recid = RECID(database2)
+                                    ELSE DICTDB2._File._Db-recid = s_DbRecId)
                                AND DICTDB2._File._File-name = 
                                    DICTDB._File._File-name
-                               AND (DICTDB2._File._Owner = "PUB" OR 
-                                    DICTDB2._File._Owner = "_FOREIGN")
+                               AND (IF s_DbType2 = "PROGRESS"
+                                    THEN DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN"
+                                    ELSE DICTDB2._File._Owner = "_FOREIGN")
+                               AND (IF s_DbType2 <> "PROGRESS"
+                                    THEN LOOKUP(DICTDB._File._File-name, l_sys-obj) = 0 
+                                    ELSE yes)
                                     NO-ERROR.
     IF NOT p-batchmode and not p-silentincrd THEN /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._File._File-name @ fil WITH FRAME seeking.
@@ -889,10 +935,22 @@ DO ON STOP UNDO, LEAVE
     END.
     FIND DICTDB._File WHERE DICTDB._File._Db-recid = drec_db
       AND DICTDB._File._File-name = table-list.t1-name
-      AND (DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN").
-    FIND DICTDB2._File WHERE DICTDB2._File._Db-recid = RECID(database2)
+      AND (IF s_DbType1 = "PROGRESS" 
+           THEN DICTDB._File._Owner = "PUB" OR DICTDB._File._Owner = "_FOREIGN"
+           ELSE DICTDB._File._Owner = "_FOREIGN")
+      AND (IF s_DbType1 <> "PROGRESS"
+           THEN LOOKUP(DICTDB._File._File-name, l_sys-obj) = 0
+           ELSE yes).
+    FIND DICTDB2._File WHERE (IF s_DbType2 = "PROGRESS"  
+                              THEN DICTDB2._File._Db-recid = RECID(database2)
+                              ELSE DICTDB2._File._Db-recid = s_DbRecId)
       AND DICTDB2._File._File-name = table-list.t2-name
-      AND (DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN").
+      AND (IF s_DbType2 = "PROGRESS"
+           THEN DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN"
+           ELSE DICTDB2._File._Owner = "_FOREIGN")
+      AND (IF s_DbType2 <> "PROGRESS"
+           THEN LOOKUP(DICTDB2._File._File-name, l_sys-obj) =  0
+           ELSE yes).
   
     /* clean out working storage */
     FOR EACH field-list:
@@ -2016,7 +2074,7 @@ DO ON STOP UNDO, LEAVE
         RUN "prodict/user/_usrdbox.p" (INPUT-OUTPUT iact,?,?,new_lang[2]).
       END.
       ELSE
-        iact = p-index-mode NE "0":U.
+        iact = p-index-mode NE "active":U.
 
       IF iact THEN DO:
         ASSIGN s_errorsLogged = TRUE.         
@@ -2071,7 +2129,7 @@ DO ON STOP UNDO, LEAVE
            DICTDB._Area._Area-number = DICTDB._Index._idx-num NO-LOCK .
       IF AVAIL DICTDB._Area THEN   
       FIND DICTDB2._Area WHERE
-           DICTDB2._Area._Area-name = DICTDB._Area._Area-name .
+           DICTDB2._Area._Area-name = DICTDB._Area._Area-name no-error.
       IF NOT AVAIL DICTDB2._Area THEN DO:
         ASSIGN s_errorsLogged = TRUE.        
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
@@ -2095,7 +2153,7 @@ DO ON STOP UNDO, LEAVE
         IF NOT (DICTDB._Index._Active AND (IF iact = ? THEN TRUE ELSE iact)) THEN
         PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
       END.
-      ELSE IF NOT DICTDB._Index._Active OR p-index-mode EQ "2":U THEN
+      ELSE IF NOT DICTDB._Index._Active AND NOT DICTDB._Index._Unique THEN
           PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
       
       IF DICTDB._Index._Wordidx = 1 THEN 
@@ -2208,10 +2266,15 @@ DO ON STOP UNDO, LEAVE
 /************************************************************************************************/
 
     FOR EACH DICTDB._Constraint OF DICTDB._File WHERE DICTDB._constraint._con-Status <> "O"
-                          AND DICTDB._constraint._con-Status <> "D":
+                          AND DICTDB._constraint._con-Status <> "D"
+                          AND DICTDB._File._Db-recid = drec_db:
      Constr = "".
-     FIND FIRST DICTDB2._Constraint OF DICTDB2._File WHERE DICTDB2._constraint._con-Status <> "O" AND
-      DICTDB2._constraint._con-Status <> "D" AND DICTDB2._Constraint._Con-Name = DICTDB._Constraint._Con-Name NO-LOCK NO-ERROR.
+     FIND FIRST DICTDB2._Constraint OF DICTDB2._File WHERE DICTDB2._constraint._con-Status <> "O" 
+                              AND DICTDB2._constraint._con-Status <> "D" 
+                              AND DICTDB2._Constraint._Con-Name = DICTDB._Constraint._Con-Name
+                              AND (IF s_DbType2 = "PROGRESS" 
+                                   THEN DICTDB2._File._Db-recid = RECID(database2) 
+                                   ELSE DICTDB2._File._Db-recid = s_DbRecId) NO-LOCK NO-ERROR.
      IF NOT AVAILABLE (DICTDB2._Constraint)
       THEN DO:
           FIND FIRST DICTDB._Index WHERE RECID(DICTDB._Index) = DICTDB._Constraint._Index-Recid NO-LOCK NO-ERROR.
@@ -2266,7 +2329,7 @@ DO ON STOP UNDO, LEAVE
                  df-con[5] = '  PARENT-TABLE "' + confile2._File-Name + '"'.     
                  df-con[6] = '  PARENT-INDEX "' + Index2._Index-Name + '"'.         
                END.
-	             df-con[7] = '  CONSTRAINT-ACTION "' + DICTDB._Constraint._Con-Misc2[1] + '"'.               
+               df-con[7] = '  CONSTRAINT-ACTION "' + DICTDB._Constraint._Con-Misc2[1] + '"'.               
                IF df-con[1] <> ? THEN DO:
                DO i = 1 TO 7:
                   IF df-con[i] <> ? THEN DO:
@@ -2329,7 +2392,9 @@ DO ON STOP UNDO, LEAVE
   
   /* build missing sequence list for rename/delete determination */
   FOR EACH DICTDB2._Sequence
-    WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
+    WHERE (IF s_DbType2 = "PROGRESS"  
+           THEN DICTDB2._Sequence._Db-recid = RECID(database2)
+           ELSE DICTDB2._Sequence._Db-recid = s_DbRecId)
       AND NOT DICTDB2._Sequence._Seq-name BEGINS "$":
     FIND FIRST DICTDB._Sequence
       WHERE DICTDB._Sequence._Db-recid = drec_db
@@ -2346,7 +2411,9 @@ DO ON STOP UNDO, LEAVE
     WHERE DICTDB._Sequence._Db-recid = drec_db
       AND NOT DICTDB._Sequence._Seq-name BEGINS "$":
     FIND FIRST DICTDB2._Sequence
-      WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
+      WHERE (IF s_DbType2 = "PROGRESS" 
+             THEN DICTDB2._Sequence._Db-recid = RECID(database2)
+             ELSE DICTDB2._Sequence._Db-recid = s_DbRecId)
         AND DICTDB2._Sequence._Seq-name = DICTDB._Sequence._Seq-name NO-ERROR.
     IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._Sequence._Seq-name @ seq WITH FRAME seeking.
@@ -2442,7 +2509,9 @@ DO ON STOP UNDO, LEAVE
   
     FIND DICTDB._Sequence WHERE DICTDB._Sequence._Db-recid = drec_db
       AND DICTDB._Sequence._Seq-name = seq-list.s1-name.
-    FIND DICTDB2._Sequence WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
+    FIND DICTDB2._Sequence WHERE (IF s_DbType2 = "PROGRESS" 
+                                  THEN DICTDB2._Sequence._Db-recid = RECID(database2)
+                                  ELSE DICTDB2._Sequence._Db-recid = s_DbRecId)
       AND DICTDB2._Sequence._Seq-name = seq-list.s2-name NO-ERROR.
   
     IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
@@ -2615,8 +2684,6 @@ OUTPUT CLOSE.
       END.
   END.
 
-  ASSIGN  iSeek = SEEK(ddl).
-
   {prodict/dump/dmptrail11.i
     &entries      = "IF dumpPol THEN PUT STREAM ddl UNFORMATTED
                       ""encpolicy=yes"" SKIP.
@@ -2666,5 +2733,4 @@ FINALLY:
    IF VALID-OBJECT(myObjAttrs[2]) THEN
       DELETE OBJECT myObjAttrs[2].
    
-   RETURN "SEEK=" + STRING(iSeek).
 END FINALLY.
