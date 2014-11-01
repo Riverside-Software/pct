@@ -147,6 +147,7 @@ DEFINE            VARIABLE to-int64       AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE i-to-int64     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE numEntries     AS INTEGER                 NO-UNDO.
 DEFINE            VARIABLE num-diff       AS INTEGER                 NO-UNDO.
+DEFINE            VARIABLE iSeek          AS INT64                   NO-UNDO.
 DEFINE            VARIABLE dumpPol        AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE dumpAltBuf     AS LOGICAL                 NO-UNDO.
 DEFINE            VARIABLE p-silentincrd  AS LOGICAL                 NO-UNDO.
@@ -2684,6 +2685,8 @@ OUTPUT CLOSE.
       END.
   END.
 
+  ASSIGN  iSeek = SEEK(ddl).
+
   {prodict/dump/dmptrail11.i
     &entries      = "IF dumpPol THEN PUT STREAM ddl UNFORMATTED
                       ""encpolicy=yes"" SKIP.
@@ -2718,6 +2721,7 @@ IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
 SESSION:IMMEDIATE-DISPLAY = no.
 IF NOT p-batchmode and not p-silentincrd THEN  /* 02/01/29 vap (IZ# 1525) */
   run adecomm/_setcurs.p ("").
+RETURN "SEEK=" + STRING(iSeek).
 
 FINALLY:
    /* make sure we always delete these */
