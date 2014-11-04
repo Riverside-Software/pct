@@ -225,7 +225,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     public void test13() {
         configureProject("PCTLoadSchema/test13/build.xml");
         executeTarget("base");
-        executeTarget("test");
+        expectBuildException("test", "Failure expected");
         File f = new File("PCTLoadSchema/test13/myerrors.txt");
         assertTrue(f.exists());
         assertTrue(f.length() > 0);
