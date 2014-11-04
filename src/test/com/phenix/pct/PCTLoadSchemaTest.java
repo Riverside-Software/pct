@@ -221,4 +221,14 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
+    @Test(groups = { "v11" })
+    public void test13() {
+        configureProject("PCTLoadSchema/test13/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+        File f = new File("PCTLoadSchema/test13/myerrors.txt");
+        assertTrue(f.exists());
+        assertTrue(f.length() > 0);
+    }
+
  }

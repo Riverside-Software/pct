@@ -31,6 +31,7 @@ public abstract interface ProgressProcedures {
     String getIncrementalProcedure();
     String getDumpUsersProcedure();
     String getLoadUsersProcedure();
+    String getLoadSchemaProcedure();
     boolean needRedirector();
     String getInitString();
     String getConnectString();

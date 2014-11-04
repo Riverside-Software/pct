@@ -44,6 +44,7 @@ public class PCTLoadSchema extends PCTRun {
     private boolean unfreeze = false;
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
+    private String callbackClass = "";
 
     // Internal use
     private int fsListId = -1;
@@ -70,6 +71,15 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
+    }
+
+    /**
+     * Callback class
+     * 
+     * @param callbackClass
+     */
+    public void setCallbackClass(String callbackClass) {
+        this.callbackClass = callbackClass;
     }
 
     /**
@@ -136,10 +146,11 @@ public class PCTLoadSchema extends PCTRun {
 
         try {
             writeFileList();
-            setProcedure("pct/loadSch.p"); //$NON-NLS-1$
+            setProcedure(getProgressProcedures().getLoadSchemaProcedure());
             addParameter(new RunParameter("fileList", fsList.getAbsolutePath())); //$NON-NLS-1$
             addParameter(new RunParameter("online", Boolean.toString(onlineChanges))); //$NON-NLS-1$
             addParameter(new RunParameter("unfreeze", Boolean.toString(unfreeze))); //$NON-NLS-1$
+            addParameter(new RunParameter("callbackClass", callbackClass)); //$NON-NLS-1$
             addParameter(new RunParameter(
                     "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
             super.execute();

@@ -40,6 +40,10 @@ public class ProgressV8 implements ProgressProcedures {
         return "pct/v8/loadUsers.p";
     }
 
+    public String getLoadSchemaProcedure() {
+        return "pct/loadSch.p";
+    }
+
     public boolean needRedirector() {
         return true;
     }
