@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTCRC-test3">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="test">
+    <mkdir dir="foo" />
+    <PCTCRC destFile="foo/crc.txt" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTCRC>
+  </target>
+
+</project>

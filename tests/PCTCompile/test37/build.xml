@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test37">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="build1" />
+    <mkdir dir="build2" />
+    <mkdir dir="build3" />
+    <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
+      <fileset dir="src" includes="package/*.cls" />
+      <fileset dir="src" includes="*.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
+      <fileset dir="src" includes="myclass1.cls" />
+      <fileset dir="src" includes="myclass2.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
+      <fileset dir="src" includes="myclass2.cls" />
+      <fileset dir="src" includes="myclass1.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test1">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build1" />
+        <pathelement location="src2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build2" />
+        <pathelement location="src2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="build3" />
+        <pathelement location="src2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+</project>

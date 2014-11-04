@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test5">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="update">
+    <PCTLoadSchema srcFile="update.df" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="update-unfreeze">
+    <PCTLoadSchema srcFile="update.df" unfreeze="true" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test1">
+    <PCTRun procedure="src/test2.p" dlcHome="${DLC}" parameter="Tab1,Tab1-Idx1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="src/test2.p" dlcHome="${DLC}" parameter="Tab1,Tab1-Idx2">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+
+</project>

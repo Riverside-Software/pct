@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTWSBroker-test6">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTWSBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}">
+	  <server webLogError="false">
+	    <PCTConnection dbName="sp2k" />
+      </server>
+	</PCTWSBroker>
+  </target>
+
+</project>

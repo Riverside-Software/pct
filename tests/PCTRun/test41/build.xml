@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test41">
+  <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
+
+  <DBConnectionSet id="dbset">
+    <DBConnection dbName="db1" dbDir="db" singleUser="true" />  
+    <DBConnection dbName="db2" dbDir="db" singleUser="true" />  
+    <DBConnection dbName="db3" dbDir="db" singleUser="true" />  
+  </DBConnectionSet>
+
+  <target name="test">
+    <mkdir dir="db" />
+    <sports2000 dbName="db1" destDir="db" />
+    <sports2000 dbName="db2" destDir="db" />
+    <sports2000 dbName="db3" destDir="db" />
+    <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+      <DBConnectionSet refid="dbset" />
+    </PCTRun>
+  </target>
+
+</project>

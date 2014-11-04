@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test41">
+  <!-- Not a PCTCompile test case, but just a demo for internal use -->
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <filelist dir="src" files="foo.cls,rssw.cls" />
+      <propath>
+        <pathelement location="build" />
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <!-- Method definition update -->
+    <sleep seconds="3" />
+    <copy file="src/foo.cls2" tofile="src/foo.cls" />
+    <copy file="src/rssw.cls2" tofile="src/rssw.cls" />
+    <!-- Having 'build' in propath will fail, but works without build in propath -->
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <filelist dir="src" files="foo.cls,rssw.cls" />
+      <propath>
+        <pathelement location="build" />
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
