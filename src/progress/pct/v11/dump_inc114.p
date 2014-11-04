@@ -399,7 +399,7 @@ IF debug-mode GT 0 THEN DO:
   OUTPUT STREAM err-log CLOSE.
 END.
 
-RUN prodict/dump/_dmpincr114.p.
+RUN pct/v11/_dmpincr114.p.
 
 IF     del-df-file
    AND RETURN-VALUE MATCHES "*SEEK=*"
