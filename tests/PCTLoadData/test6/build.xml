@@ -21,6 +21,13 @@
     </PCTLoadDataCallback>
   </target>
 
+  <target name="load-error">
+    <PCTLoadDataCallback dlcHome="${DLC}" append="true" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadDataCallback>
+  </target>
+
   <target name="test1">
     <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
