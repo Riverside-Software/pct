@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test6">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="load-replace">
+    <PCTLoadDataCallback dlcHome="${DLC}" append="false" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadDataCallback>
+  </target>
+
+  <target name="load-append">
+    <PCTLoadDataCallback dlcHome="${DLC}" append="true" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadDataCallback>
+  </target>
+
+  <target name="test1">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <OutputParameter name="LoadData-val1" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <OutputParameter name="LoadData-val2" />
+    </PCTRun>
+  </target>
+
+</project>

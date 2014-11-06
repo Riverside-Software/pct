@@ -216,7 +216,7 @@ PCTBuild=${BUILD_NUMBER}
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
-      <PCTConnection dbName="empty" singleUser="true">
+      <PCTConnection dbName="empty" singleUser="true" logicalName="dictdb">
         <PCTAlias name="dictdb" />
         <PCTAlias name="dictdb2" />
       </PCTConnection>

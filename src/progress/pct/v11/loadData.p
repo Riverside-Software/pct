@@ -51,91 +51,67 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-package com.phenix.pct;
+using OpenEdge.DataAdmin.Binding.ITableDataMonitor from propath .
+using Progress.Lang.Class.
 
-import org.apache.tools.ant.BuildException;
-import org.testng.annotations.Test;
+{ prodict/dictvar11.i NEW }
+{ prodict/user/uservar113.i NEW }
 
-/**
- * Class for testing PCTLoadData task
- * 
- * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
- */
-public class PCTLoadDataTest extends BuildFileTestNg {
+define variable callbackCls as character no-undo.
+define variable callback as rssw.pct.ILoadDataCallback.
+define variable ctbl as character no-undo.
 
-    /**
-     * Should throw BuildException : no filesets and no connection
-     */
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
-    public void test1() {
-        configureProject("PCTLoadData/test1/build.xml");
-        executeTarget("test");
-    }
+assign ctbl = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName').
+assign callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass').
+if (callbackCls > "") then do:
+    callback = cast(Class:GetClass(callbackCls):new(), rssw.pct.ILoadDataCallback).
+end.
 
-    /**
-     * Should throw BuildException : no filesets (or srcDir) defined
-     */
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
-    public void test2() {
-        configureProject("PCTLoadData/test2/build.xml");
-        executeTarget("test");
-    }
+if dynamic-function('getParameter' IN SOURCE-PROCEDURE, INPUT 'append') = 'false' then do:
+  if valid-object(callback) then callback:beforePurge().
 
-    /**
-     * Should throw BuildException : no connection defined
-     */
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
-    public void test3() {
-        configureProject("PCTLoadData/test3/build.xml");
-        executeTarget("test");
-    }
+  define variable hFile as handle no-undo.  
+  define variable hQuery as handle no-undo.
+  
+  create buffer hFile for table ctbl.
+  create query hQuery.
+  hQuery:SET-BUFFERS(hFile).
+  hQuery:QUERY-PREPARE('FOR EACH ' + cTbl).
+  hQuery:QUERY-OPEN().
+  REPEAT TRANSACTION:
+      hQuery:GET-NEXT(EXCLUSIVE-LOCK).
+      IF hQuery:QUERY-OFF-END THEN LEAVE.
+      hFile:buffer-delete().
+  END.
+  hQuery:QUERY-CLOSE().
+  delete object hFile.
+  delete object hQuery.
+  
+  if valid-object(callback) then callback:afterPurge().  
+end.
 
-    /**
-     * Should load data into database, and expect first result in FOR EACH be 14
-     */
-    @Test(groups= {"v9"})
-    public void test4() {
-        configureProject("PCTLoadData/test4/build.xml");
-        executeTarget("base");
-        executeTarget("load");
-        expectLog("test", "16");
-    }
+define variable logger as rssw.pct.LoadDataLogger. 
+logger = new rssw.pct.LoadDataLogger().
+assign dictMonitor = logger. 
 
-    /**
-     * Should first load data into table Tab1, then in Tab2, using PCTTable attribute
-     */
-    @Test(groups= {"v9"})
-    public void test5() {
-        configureProject("PCTLoadData/test5/build.xml");
-        executeTarget("base");
-        expectLog("test1", "---");
-        expectLog("test2", "---");
+if valid-object(callback) then callback:beforeLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')).  
+assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName')
+       user_env[2] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcdir') + '~\' + DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')
+       user_env[3] = "NO-MAP"
+       user_env[4] = "100"
+       user_env[5] = ""
+       user_env[6] = "utf-8".
 
-        executeTarget("load1");
-        expectLog("test1", "16");
-        expectLog("test2", "---");
+/*message user_env[1] skip user_env[2] skip user_env[3].*/
+find first _db.
+      ASSIGN drec_db     = RECID(_Db)
+             user_dbname = (IF _Db._Db-name = ? THEN 
+                              LDBNAME("DICTDB") ELSE _Db._Db-Name)
+             user_dbtype = (IF _Db._Db-name = ? THEN 
+                              DBTYPE("DICTDB") ELSE _Db._Db-Type).
 
-        executeTarget("load2");
-        expectLog("test1", "16");
-        expectLog("test2", "15");
-    }
+run prodict/dump/_loddata.p no-error.
+if valid-object(callback) then callback:afterLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).  
 
-    /**
-     * Test procedure with callback
-     */
-    @Test(groups= {"v11"})
-    public void test6() {
-        configureProject("PCTLoadData/test6/build.xml");
-        executeTarget("base");
-        executeTarget("load-replace");
-        executeTarget("load-replace");
-        executeTarget("test1");
-        assertPropertyEquals("LoadData-val1", "2");
-        
-        executeTarget("load-append");
-        executeTarget("load-append");
-        executeTarget("test2");
-        assertPropertyEquals("LoadData-val2", "6");
-    }
 
-}
+return "0":U.
