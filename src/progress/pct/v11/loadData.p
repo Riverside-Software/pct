@@ -112,6 +112,6 @@ find first _db.
 
 run prodict/dump/_loddata.p no-error.
 if valid-object(callback) then callback:afterLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).  
-
+if (logger:anyError) then return '1'.
 
 return "0":U.
