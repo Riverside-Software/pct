@@ -53,6 +53,9 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertTrue;
+
+import java.io.File;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
@@ -136,6 +139,10 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("load-append");
         executeTarget("test2");
         assertPropertyEquals("LoadData-val2", "6");
+
+        expectBuildException("load-error", "Should fail");
+        File f = new File("PCTLoadData/test6/myerrors.txt");
+        assertTrue(f.exists());
     }
 
 }
