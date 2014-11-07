@@ -115,11 +115,6 @@ public class PCTLoadSchema extends PCTRun {
             throw new BuildException(Messages.getString("PCTLoadSchema.0")); //$NON-NLS-1$
         }
 
-        if (getDbConnections().size() > 1) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTLoadSchema.1")); //$NON-NLS-1$
-        }
-
         if ((srcFile == null) && (rcs.size() == 0)) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.2")); //$NON-NLS-1$
