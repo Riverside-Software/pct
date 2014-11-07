@@ -61,6 +61,11 @@ CLASS rssw.pct.LoadLogger IMPLEMENTS IDataDefinitionLoader:
     warnings = warnings + pcText + "~n".
   END METHOD.
  
+  /*  used by _lod to check if current parent need area */
+  method public logical extent  CurrentTableAttributes():
+  
+  end method.
+
   METHOD PUBLIC VOID AddTable(pcAction as char, h as handle,piArea as int):
 
   END METHOD.
@@ -72,7 +77,11 @@ CLASS rssw.pct.LoadLogger IMPLEMENTS IDataDefinitionLoader:
   METHOD PUBLIC VOID AddIndex(pcAction as char, pcTable as char, h as handle, piArea as int):
 
   END METHOD.
-     
+  
+  method public void AddIndex(pcAction as char, pcTable as char, h as handle, piArea as int,piPrimary as log):
+  
+  end method.
+  
   METHOD PUBLIC VOID AddField(pcAction as char, pcTable as char, h as handle, piArea as int):
 
   END METHOD.
