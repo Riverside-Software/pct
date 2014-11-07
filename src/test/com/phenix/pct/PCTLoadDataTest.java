@@ -56,8 +56,12 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
+
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTLoadData task
@@ -139,6 +143,17 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("load-append");
         executeTarget("test2");
         assertPropertyEquals("LoadData-val2", "6");
+
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
 
         expectBuildException("load-error", "Should fail");
         File f = new File("PCTLoadData/test6/myerrors.txt");
