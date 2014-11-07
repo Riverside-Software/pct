@@ -132,6 +132,17 @@ public class PCTLoadDataTest extends BuildFileTestNg {
      */
     @Test(groups= {"v11"})
     public void test6() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject("PCTLoadData/test6/build.xml");
         executeTarget("base");
         executeTarget("load-replace");
@@ -143,17 +154,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("load-append");
         executeTarget("test2");
         assertPropertyEquals("LoadData-val2", "6");
-
-        // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
-                return;
-        } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
-            return;
-        }
 
         expectBuildException("load-error", "Should fail");
         File f = new File("PCTLoadData/test6/myerrors.txt");
