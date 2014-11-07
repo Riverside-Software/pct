@@ -55,9 +55,12 @@ package com.phenix.pct;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
+
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
@@ -223,6 +226,17 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
 
     @Test(groups = { "v11" })
     public void test13() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject("PCTLoadSchema/test13/build.xml");
         executeTarget("base");
         expectBuildException("test", "Failure expected");
