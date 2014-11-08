@@ -76,6 +76,7 @@ public class PCTRun extends PCT {
     private boolean debugPCT = false;
     private boolean noErrorOnQuit = false;
     private boolean compileUnderscore = false;
+    private boolean superInit = true;
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
     private Collection<PCTRunOption> options = null;
@@ -295,6 +296,15 @@ public class PCTRun extends PCT {
      */
     public void setCompileUnderscore(boolean compUnderscore) {
         this.compileUnderscore = compUnderscore;
+    }
+
+    /**
+     * Add init procedure to the super procedures stack
+     * 
+     * @param superInit boolean
+     */
+    public void setSuperInit(boolean superInit) {
+        this.superInit = superInit;
     }
 
     /**
@@ -1157,6 +1167,11 @@ public class PCTRun extends PCT {
                     sb.append("OUTPUT ").append(param.getProgressVar());
                 }
                 sb.append(')');
+            }
+
+            // Add init procedure to the super procedures stack
+            if (superInit) {
+                bw.write(getProgressProcedures().getSuperInitString());
             }
 
             // Calls progress procedure

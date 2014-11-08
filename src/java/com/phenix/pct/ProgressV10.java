@@ -64,6 +64,11 @@ public class ProgressV10 implements ProgressProcedures {
         return getString("ProgressV10.3"); //$NON-NLS-1$
     }
 
+    @Override
+    public String getSuperInitString() {
+        return getString("ProgressV10.13");
+    }
+
     public String getRunString() {
         return getString("ProgressV10.4"); //$NON-NLS-1$
     }

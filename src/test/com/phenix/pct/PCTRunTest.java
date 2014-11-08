@@ -243,6 +243,8 @@ public class PCTRunTest extends BuildFileTestNg {
     public void test26() {
         configureProject("PCTRun/test26/build.xml");
         executeTarget("test");
+        executeTarget("test2");
+        expectBuildException("test3", "Should fail");
     }
 
     @Test(groups = {"v9"})
