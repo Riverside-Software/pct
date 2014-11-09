@@ -35,18 +35,29 @@ public class PCTLoadDataCallback extends PCTRun {
     public void setTable(String table) {
         this.table = table;
     }
+
+    @Deprecated
     public void setCallback(String callback) {
         this.callback = callback;
     }
-    
+
+    public void setCallbackClass(String callback) {
+        this.callback = callback;
+    }
+
+    /**
+     * Append or replace data
+     * 
+     * @param append
+     */
     public void setAppend(boolean append) {
         this.append = append;
     }
 
     /**
-     * Input directory
+     * Input file
      * 
-     * @param srcDir directory
+     * @param srcFile file
      */
     public void setSrcFile(File srcFile) {
         this.srcFile = srcFile;
@@ -58,16 +69,10 @@ public class PCTLoadDataCallback extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-
         if (getDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }
-
-        /*if (getDbConnections().size() > 1) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTLoadData.1")); //$NON-NLS-1$
-        }*/
 
         if (srcFile == null) {
             cleanup();
@@ -76,6 +81,10 @@ public class PCTLoadDataCallback extends PCTRun {
         if (!srcFile.isFile()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.2")); //$NON-NLS-1$
+        }
+        if ((table == null) || (table.trim().length() == 0)) {
+            cleanup();
+            throw new BuildException(Messages.getString("PCTLoadData.3")); //$NON-NLS-1$
         }
 
         addParameter(new RunParameter("srcdir", srcFile.getParentFile().getAbsolutePath()));
