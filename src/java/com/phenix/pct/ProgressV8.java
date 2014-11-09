@@ -114,4 +114,7 @@ public class ProgressV8 implements ProgressProcedures {
         return null;
     }
 
+    public String getCallbackString() {
+        return "";
+    }
 }

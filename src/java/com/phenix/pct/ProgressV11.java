@@ -108,4 +108,8 @@ public class ProgressV11 implements ProgressProcedures {
     public String getQuit() {
         return getString("ProgressV11.12"); //$NON-NLS-1$
     }
+
+    public String getCallbackString() {
+        return getString("ProgressV11.14");
+    }
 }
