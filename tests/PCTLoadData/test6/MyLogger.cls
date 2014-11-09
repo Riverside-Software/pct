@@ -1,6 +1,6 @@
 CLASS MyLogger INHERITS rssw.pct.AbstractLoadDataCallback:
 
-    METHOD PUBLIC OVERRIDE VOID afterPurge() :
+    METHOD PUBLIC OVERRIDE VOID afterPurge(delCount AS INTEGER) :
     
     END METHOD.
     
