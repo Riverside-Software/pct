@@ -109,4 +109,7 @@ public class ProgressV9 implements ProgressProcedures {
         return getString("ProgressV9.12"); //$NON-NLS-1$
     }
 
+    public String getCallbackString() {
+        return "";
+    }
 }

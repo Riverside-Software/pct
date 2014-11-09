@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test44">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" mainCallback="MyLogger1" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" mainCallback="MyLogger2" />
+  </target>
+
+</project>

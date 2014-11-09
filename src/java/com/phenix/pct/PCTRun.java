@@ -59,6 +59,7 @@ public class PCTRun extends PCT {
     private String parameter = null;
     private String numsep = null;
     private String numdec = null;
+    private String mainCallback = null;
     private File paramFile = null;
     private File iniFile = null;
     private File tempDir = null;
@@ -258,6 +259,14 @@ public class PCTRun extends PCT {
      */
     public void setNumDec(String numdec) {
         this.numdec = numdec;
+    }
+
+    /**
+     * Mail callback class
+     * @param mainCallback
+     */
+    public void setMainCallback(String mainCallback) {
+        this.mainCallback = mainCallback;
     }
 
     /**
@@ -1130,6 +1139,11 @@ public class PCTRun extends PCT {
                                 .getPropathString(), escapeString(lst[k]) + File.pathSeparatorChar));
                     }
                 }
+            }
+
+            // Callback
+            if ((mainCallback != null) && (mainCallback.trim().length() > 0)) {
+                bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), mainCallback));
             }
 
             // Defines parameters

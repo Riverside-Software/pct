@@ -34,6 +34,7 @@ public abstract interface ProgressProcedures {
     String getLoadSchemaProcedure();
     boolean needRedirector();
     String getInitString();
+    String getCallbackString();
     String getConnectString();
     String getAliasString();
     String getPropathString();

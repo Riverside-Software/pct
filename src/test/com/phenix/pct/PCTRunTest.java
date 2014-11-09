@@ -403,4 +403,22 @@ public class PCTRunTest extends BuildFileTestNg {
         configureProject("PCTRun/test43/build.xml");
         executeTarget("test");
     }
+
+    @Test(groups = {"v11"})
+    public void test44() {
+        configureProject("PCTRun/test44/build.xml");
+        executeTarget("test1");
+        assertTrue(new File("PCTRun/test44/Logger1.init.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger1.beforeRun.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger1.log.Log1.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger1.log.Log2.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger1.afterRun.0.txt").exists());
+
+        expectBuildException("test2", "Test has to fail");
+        assertTrue(new File("PCTRun/test44/Logger2.init.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger2.beforeRun.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger2.log.Log1.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger2.log.Log2.txt").exists());
+        assertTrue(new File("PCTRun/test44/Logger2.afterRun.1.txt").exists());
+    }
 }
