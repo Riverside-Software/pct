@@ -54,7 +54,7 @@ public class ProgressV11 implements ProgressProcedures {
 
     @Override
     public String getSuperInitString() {
-        return getString("ProgressV11.13");
+        return getString("ProgressV11.13"); //$NON-NLS-1$
     }
 
     public String getConnectString() {
