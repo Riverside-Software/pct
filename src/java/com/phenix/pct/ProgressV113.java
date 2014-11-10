@@ -17,16 +17,7 @@
 
 package com.phenix.pct;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-public class ProgressV113 implements ProgressProcedures {
-    private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV11"; //$NON-NLS-1$
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
-    public String getCompileProcedure() {
-        return "pct/v11/pctCompile.p";
-    }
+public class ProgressV113 extends ProgressV11 {
 
     public String getIncrementalProcedure() {
         return "pct/v11/silentIncDump113.p";
@@ -44,72 +35,4 @@ public class ProgressV113 implements ProgressProcedures {
         return "pct/v11/loadSch.p";
     }
 
-    public boolean needRedirector() {
-        return false;
-    }
-
-    public String getInitString() {
-        return getString("ProgressV11.0"); //$NON-NLS-1$
-    }
-
-    public String getConnectString() {
-        return getString("ProgressV11.1"); //$NON-NLS-1$
-    }
-
-    @Override
-    public String getSuperInitString() {
-        return getString("ProgressV11.13");
-    }
-
-    public String getAliasString() {
-        return getString("ProgressV11.2"); //$NON-NLS-1$
-    }
-
-    public String getPropathString() {
-        return getString("ProgressV11.3"); //$NON-NLS-1$
-    }
-
-    public String getRunString() {
-        return getString("ProgressV11.4"); //$NON-NLS-1$
-    }
-
-    public String getReturnProc() {
-        return getString("ProgressV11.5"); //$NON-NLS-1$
-    }
-
-    public String getParameterString() {
-        return getString("ProgressV11.6"); //$NON-NLS-1$
-    }
-
-    public String getString(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
-
-    public String getOutputParameterDeclaration() {
-        return getString("ProgressV11.8"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterProc() {
-        return getString("ProgressV11.9"); //$NON-NLS-1$
-    }
-
-    public String getAfterRun() {
-        return getString("ProgressV11.10"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterCall() {
-        return getString("ProgressV11.11"); //$NON-NLS-1$
-    }
-
-    public String getQuit() {
-        return getString("ProgressV11.12"); //$NON-NLS-1$
-    }
-
-    public String getCallbackString() {
-        return getString("ProgressV11.14");
-    }
 }
