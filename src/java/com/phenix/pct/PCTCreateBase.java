@@ -390,6 +390,7 @@ public class PCTCreateBase extends PCT {
             if (!structFile.exists())
                 throw new BuildException(MessageFormat.format(
                         Messages.getString("PCTCreateBase.6"), structFile.getAbsolutePath()));
+            log("Generating database structure");
             exec = structCmdLine();
             exec.execute();
         }
@@ -566,6 +567,7 @@ public class PCTCreateBase extends PCT {
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
+        exec.setOutput(new File(destDir, dbName + ".prostrct.log"));
         exec.createArg().setValue("prostrct"); //$NON-NLS-1$
         exec.createArg().setValue("create"); //$NON-NLS-1$
         exec.createArg().setValue(dbName);
