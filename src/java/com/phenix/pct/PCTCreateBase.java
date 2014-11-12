@@ -390,12 +390,13 @@ public class PCTCreateBase extends PCT {
             if (!structFile.exists())
                 throw new BuildException(MessageFormat.format(
                         Messages.getString("PCTCreateBase.6"), structFile.getAbsolutePath()));
-            log("Generating database structure");
+            log(MessageFormat.format("Generating {0} structure", dbName));
             exec = structCmdLine();
             exec.execute();
         }
 
         if (!noInit) {
+            log(MessageFormat.format("Copying empty DB to {0}", dbName));
             exec = initCmdLine();
             exec.execute();
         }
@@ -538,6 +539,7 @@ public class PCTCreateBase extends PCT {
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);
+        exec.setOutput(new File(destDir, dbName + ".procopy.log"));
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(dbName);
