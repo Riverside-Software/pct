@@ -81,6 +81,7 @@ public class PCTRun extends PCT {
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
     private Collection<PCTRunOption> options = null;
+    private Collection<DBAlias> aliases = null;
     protected Path propath = null;
     protected Path internalPropath = null;
     protected Collection<RunParameter> runParameters = null;
@@ -178,6 +179,13 @@ public class PCTRun extends PCT {
             this.dbConnSet = new ArrayList<DBConnectionSet>();
 
         dbConnSet.add(set);
+    }
+
+    public void addDBAlias(DBAlias alias) {
+        if (aliases == null) {
+            aliases = new ArrayList<DBAlias>();
+        }
+        aliases.add(alias);
     }
 
     /**
@@ -1085,7 +1093,7 @@ public class PCTRun extends PCT {
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
                     verbose,noErrorOnQuit));
 
-            // Defines aliases
+            // Defines database connections and aliases
             int dbNum = 1;
             for (PCTConnection dbc : getDbConnections()) {
                 String connect = dbc.createConnectString();
@@ -1102,6 +1110,12 @@ public class PCTRun extends PCT {
                     }
                 }
                 dbNum++;
+            }
+            if (aliases != null) {
+                for (DBAlias alias : aliases) {
+                    bw.write(MessageFormat.format(getProgressProcedures().getDBAliasString(),
+                            alias.getName(), alias.getValue(), alias.getNoError() ? "NO-ERROR" : ""));
+                }
             }
 
             // Defines internal propath

@@ -38,5 +38,19 @@
       </PCTConnection>
     </PCTRun>
   </target>
-
+  <target name="test5">
+    <PCTRun graphicalMode="false" procedure="test4.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <PCTConnection dbName="test2" dbDir="." singleUser="true" logicalName="foo" />
+    	<DBAlias name="MyAlias" value="test" />
+    	<DBAlias name="MyAlias2" value="foo" />
+    </PCTRun>
+	</target>
+  <target name="test6">
+    <PCTRun graphicalMode="false" procedure="test4.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test" dbDir="." singleUser="true" />
+      <PCTConnection dbName="test2" dbDir="." singleUser="true" logicalName="foo" />
+    </PCTRun>
+  </target>
+	
 </project>

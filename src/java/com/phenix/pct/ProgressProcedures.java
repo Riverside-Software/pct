@@ -37,6 +37,7 @@ public abstract interface ProgressProcedures {
     String getCallbackString();
     String getConnectString();
     String getAliasString();
+    String getDBAliasString();
     String getPropathString();
     String getSuperInitString();
     String getRunString();
