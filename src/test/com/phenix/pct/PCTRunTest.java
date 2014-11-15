@@ -332,6 +332,8 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test2");
         executeTarget("test3");
         executeTarget("test4");
+        executeTarget("test5");
+        expectBuildException("test6", "No alias defined");
     }
 
     @Test(groups = {"v9"})

@@ -65,6 +65,11 @@ public class ProgressV11 implements ProgressProcedures {
         return getString("ProgressV11.2"); //$NON-NLS-1$
     }
 
+    @Override
+    public String getDBAliasString() {
+        return getString("ProgressV11.15"); //$NON-NLS-1$
+    }
+
     public String getPropathString() {
         return getString("ProgressV11.3"); //$NON-NLS-1$
     }
