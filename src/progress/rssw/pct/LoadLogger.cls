@@ -10,7 +10,7 @@ CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
   DEFINE VARIABLE warnings AS LONGCHAR NO-UNDO.
 
   CONSTRUCTOR PUBLIC LoadLogger():
-    THIS-OBJECT:IsReader = TRUE.
+    THIS-OBJECT:IsReader = FALSE.
   END CONSTRUCTOR.
 
   METHOD PUBLIC LONGCHAR getErrors ():
