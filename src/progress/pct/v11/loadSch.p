@@ -63,6 +63,7 @@ DEFINE VARIABLE cFileList AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lUnfreeze AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lCommit   AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE lOnline   AS LOGICAL   NO-UNDO.
+DEFINE VARIABLE lInactIdx AS LOGICAL   NO-UNDO.
 
 DEFINE VARIABLE cFile       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE callbackCls AS CHARACTER NO-UNDO.
@@ -79,7 +80,8 @@ ASSIGN callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 
        cFileList = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileList')
        lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U
        lCommit   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'commitWhenErrors') EQ "true":U
-       lOnline   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'online') EQ "true":U.
+       lOnline   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'online') EQ "true":U
+       lInactIdx = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'inactiveIdx') EQ "true":U.
 
 IF (callbackCls > "") THEN DO:
     callback = CAST(Class:GetClass(callbackCls):new(), rssw.pct.ILoadCallback).
@@ -128,7 +130,8 @@ REPEAT:
   ASSIGN dictOpts = NEW rssw.pct.LoadOptions(logger).
   ASSIGN dictOpts:FileName = cFile
          dictOpts:ForceCommit = lCommit
-         dictOpts:SchemaChange = (IF lOnline THEN 'NEW OBJECTS' ELSE '').
+         dictOpts:SchemaChange = (IF lOnline THEN 'NEW OBJECTS' ELSE '')
+         dictOpts:ForceIndexDeactivate = lInactIdx.
 
   IF VALID-OBJECT(callback) THEN
     callback:beforeFile(cFile).

@@ -1,0 +1,6 @@
+CREATE Tab1.
+ASSIGN Tab1.Fld1 = 10.
+CREATE Tab1.
+ASSIGN Tab1.Fld1 = 10.
+
+RETURN '0'.

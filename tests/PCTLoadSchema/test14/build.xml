@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test14">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="load1">
+    <PCTLoadSchema dlcHome="${DLC}" srcFile="schema.df" inactiveIndexes="true">
+      <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="load2">
+    <PCTLoadSchema dlcHome="${DLC}" srcFile="schema.df">
+      <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test1">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+</project>
