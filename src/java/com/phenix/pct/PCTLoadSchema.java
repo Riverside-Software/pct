@@ -45,7 +45,7 @@ public class PCTLoadSchema extends PCTRun {
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
     private boolean inactiveIndexes = false;
-    private String callbackClass = "";
+    private String callbackClass = "", analyzerClass = "";
 
     // Internal use
     private int fsListId = -1;
@@ -81,6 +81,10 @@ public class PCTLoadSchema extends PCTRun {
      */
     public void setCallbackClass(String callbackClass) {
         this.callbackClass = callbackClass;
+    }
+
+    public void setAnalyzerClass(String analyzerClass) {
+        this.analyzerClass = analyzerClass;
     }
 
     /**
@@ -151,6 +155,7 @@ public class PCTLoadSchema extends PCTRun {
             addParameter(new RunParameter("online", Boolean.toString(onlineChanges))); //$NON-NLS-1$
             addParameter(new RunParameter("unfreeze", Boolean.toString(unfreeze))); //$NON-NLS-1$
             addParameter(new RunParameter("callbackClass", callbackClass)); //$NON-NLS-1$
+            addParameter(new RunParameter("analyzerClass", analyzerClass)); //$NON-NLS-1$
             addParameter(new RunParameter("inactiveIdx", Boolean.toString(inactiveIndexes))); //$NON-NLS-1$
             addParameter(new RunParameter(
                     "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$

@@ -67,16 +67,19 @@ DEFINE VARIABLE lInactIdx AS LOGICAL   NO-UNDO.
 
 DEFINE VARIABLE cFile       AS CHARACTER NO-UNDO.
 DEFINE VARIABLE callbackCls AS CHARACTER NO-UNDO.
+define variable analyzerCls as character no-undo.
 DEFINE VARIABLE callback    AS rssw.pct.ILoadCallback NO-UNDO.
+define variable analyzer    as OpenEdge.DataAdmin.Binding.IDataDefinitionLoader.
 DEFINE VARIABLE logger      AS rssw.pct.LoadLogger  NO-UNDO.
 DEFINE VARIABLE dictOpts    AS rssw.pct.LoadOptions NO-UNDO.
-/*DEFINE VARIABLE cLine     AS CHARACTER NO-UNDO.*/
+DEFINE VARIABLE dictOpts2   AS OpenEdge.DataAdmin.Binding.DataDefinitionOptions NO-UNDO.
 DEFINE VARIABLE cLogFile  AS CHARACTER NO-UNDO.
 DEFINE VARIABLE lErr      AS LOGICAL   NO-UNDO INITIAL FALSE.
 
 DEFINE STREAM sLogFile.
 
 ASSIGN callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass')
+       analyzerCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'analyzerClass')
        cFileList = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileList')
        lUnfreeze = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'unfreeze') EQ "true":U
        lCommit   = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'commitWhenErrors') EQ "true":U
@@ -86,6 +89,9 @@ ASSIGN callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 
 IF (callbackCls > "") THEN DO:
     callback = CAST(Class:GetClass(callbackCls):new(), rssw.pct.ILoadCallback).
 END.
+IF (analyzerCls > "") THEN DO:
+    analyzer = CAST(Class:GetClass(analyzerCls):new(), OpenEdge.DataAdmin.Binding.IDataDefinitionLoader).
+end.
 
 IF VALID-OBJECT(callback) THEN
   callback:beforeUnfreeze().
@@ -132,11 +138,20 @@ REPEAT:
          dictOpts:ForceCommit = lCommit
          dictOpts:SchemaChange = (IF lOnline THEN 'NEW OBJECTS' ELSE '')
          dictOpts:ForceIndexDeactivate = lInactIdx.
+  IF VALID-OBJECT(analyzer) THEN DO:
+    ASSIGN dictOpts2 = NEW rssw.pct.LoadOptions(analyzer).
+    ASSIGN dictOpts2:FileName = cFile
+           dictOpts2:ForceCommit = lCommit
+           dictOpts2:SchemaChange = (IF lOnline THEN 'NEW OBJECTS' ELSE '')
+           dictOpts2:ForceIndexDeactivate = lInactIdx.
+  END.
 
   IF VALID-OBJECT(callback) THEN
     callback:beforeFile(cFile).
   DO ON ERROR UNDO, LEAVE:
     RUN prodict/dump/_load_df.p (dictOpts).
+    IF VALID-OBJECT(dictOpts2) THEN
+      RUN prodict/dump/_load_df.p (dictOpts2).
 
     FINALLY:
       /* If file is present, then there are errors or warnings during load */

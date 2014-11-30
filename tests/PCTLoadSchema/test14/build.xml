@@ -6,6 +6,7 @@
     <mkdir dir="db" />
     <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" />
     <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test3" destDir="db" dlcHome="${DLC}" />
   </target>
 
   <target name="load1">
@@ -20,6 +21,12 @@
     </PCTLoadSchema>
   </target>
 
+  <target name="load3">
+    <PCTLoadSchema dlcHome="${DLC}" srcFile="schema.df" inactiveIndexes="true" analyzerClass="MyLogger2">
+      <PCTConnection dbName="test3" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+
   <target name="test1">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
@@ -30,6 +37,13 @@
   <target name="test2">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <PCTConnection dbName="test3" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
