@@ -251,8 +251,13 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("base");
         executeTarget("load1");
         executeTarget("load2");
+        executeTarget("load3");
         executeTarget("test1");
         expectBuildException("test2", "Failure expected");
+        executeTarget("test3");
+        File f = new File("PCTLoadSchema/test14/NewIndexes.txt");
+        assertTrue(f.exists());
+        assertTrue(f.length() > 10);
     }
 
  }
