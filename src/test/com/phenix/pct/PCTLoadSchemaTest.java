@@ -245,4 +245,14 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertTrue(f.length() > 0);
     }
 
+    @Test(groups = { "v10" })
+    public void test14() {
+        configureProject("PCTLoadSchema/test14/build.xml");
+        executeTarget("base");
+        executeTarget("load1");
+        executeTarget("load2");
+        executeTarget("test1");
+        expectBuildException("test2", "Failure expected");
+    }
+
  }
