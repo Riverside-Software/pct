@@ -44,6 +44,7 @@ public class PCTLoadSchema extends PCTRun {
     private boolean unfreeze = false;
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
+    private boolean inactiveIndexes = false;
     private String callbackClass = "";
 
     // Internal use
@@ -104,6 +105,10 @@ public class PCTLoadSchema extends PCTRun {
         this.onlineChanges = online;
     }
 
+    public void setInactiveIndexes(boolean inactive) {
+        this.inactiveIndexes = inactive;
+    }
+
     /**
      * Do the work
      * 
@@ -146,6 +151,7 @@ public class PCTLoadSchema extends PCTRun {
             addParameter(new RunParameter("online", Boolean.toString(onlineChanges))); //$NON-NLS-1$
             addParameter(new RunParameter("unfreeze", Boolean.toString(unfreeze))); //$NON-NLS-1$
             addParameter(new RunParameter("callbackClass", callbackClass)); //$NON-NLS-1$
+            addParameter(new RunParameter("inactiveIdx", Boolean.toString(inactiveIndexes))); //$NON-NLS-1$
             addParameter(new RunParameter(
                     "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
             super.execute();
