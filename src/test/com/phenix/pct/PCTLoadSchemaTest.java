@@ -245,7 +245,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertTrue(f.length() > 0);
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test14() {
         configureProject("PCTLoadSchema/test14/build.xml");
         executeTarget("base");
