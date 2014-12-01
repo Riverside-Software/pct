@@ -247,6 +247,17 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
 
     @Test(groups = { "v11" })
     public void test14() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject("PCTLoadSchema/test14/build.xml");
         executeTarget("base");
         executeTarget("load1");
