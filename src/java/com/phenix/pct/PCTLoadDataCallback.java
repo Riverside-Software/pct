@@ -30,7 +30,7 @@ public class PCTLoadDataCallback extends PCTRun {
     private File srcFile = null;
     private String table = null;
     private String callback = null;
-    private int errorPercentage = 100;
+    private int errorPercentage = 0;
     private boolean append = true;
 
     public void setTable(String table) {
