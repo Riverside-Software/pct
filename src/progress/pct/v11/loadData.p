@@ -132,14 +132,14 @@ if valid-object(callback) then callback:beforeLoad( DYNAMIC-FUNCTION('getParamet
 assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName')
        user_env[2] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcdir') + '/' + DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')
        user_env[3] = "NO-MAP"
-       user_env[4] = "100"
+       user_env[4] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'errorPercentage')
        user_env[5] = ""
        user_env[6] = "utf-8".
 
 
 run prodict/dump/_loddata.p no-error.
 if valid-object(callback) then callback:afterLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).  
-if (logger:anyError) then return '1'.
+if (logger:bailed) then return '1'.
 
 return "0":U.
 end.

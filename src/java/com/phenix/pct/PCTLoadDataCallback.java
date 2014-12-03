@@ -30,6 +30,7 @@ public class PCTLoadDataCallback extends PCTRun {
     private File srcFile = null;
     private String table = null;
     private String callback = null;
+    private int errorPercentage = 100;
     private boolean append = true;
 
     public void setTable(String table) {
@@ -43,6 +44,16 @@ public class PCTLoadDataCallback extends PCTRun {
 
     public void setCallbackClass(String callback) {
         this.callback = callback;
+    }
+
+    /**
+     * Acceptable error percentage. Should be in the 0-100 range.
+     * @param perc Error percentage
+     */
+    public void setErrorPercentage(int perc) {
+        if ((perc < 0) || (perc > 100))
+            throw new BuildException("Invalid errorPercentage value " + perc);
+        this.errorPercentage = perc;
     }
 
     /**
@@ -92,6 +103,7 @@ public class PCTLoadDataCallback extends PCTRun {
         addParameter(new RunParameter("tablename", table));
         addParameter(new RunParameter("append", Boolean.toString(append)));
         addParameter(new RunParameter("callbackClass", callback));
+        addParameter(new RunParameter("errorPercentage", Integer.toString(errorPercentage)));
         try {
             setProcedure("pct/v11/loadData.p"); //$NON-NLS-1$
             super.execute();

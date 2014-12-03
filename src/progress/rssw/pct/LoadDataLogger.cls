@@ -95,7 +95,7 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     define public property Slash as character no-undo 
         get. 
         set.    
-    
+
     method public void AddSharedTables(pcPath as char, table-handle htbl):
     
     end method.
@@ -117,19 +117,19 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
        dump logic may change slashes and possibly also differences with relative 
        name and full path (?)  so we pass both owner and file at start */ 
     method public void StartTable(ptable as char, ptype as character,powner as char,pfile as char):
-    
+
     end method.
     
     method public void EndTable(pname as character):
-    
+
     end method.
   
     method public void EndTable(pname as character,numrows as int64):
-    
+
     end method.
     
     method public logical CountRow(pname as character):
-    
+
     end method. 
 
     METHOD PUBLIC LONGCHAR getErrors ():
@@ -160,11 +160,10 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     /* set bailed so Endtable can decide whther to set isComplete true false
        when less than expected     */
     method public logical SetTableBailed(pname as character):
-    
+      this-object:bailed = true.
     end method. 
     
     method public void EndTask():
-    
     end method.
   
     method public void BindFiles(h as handle):

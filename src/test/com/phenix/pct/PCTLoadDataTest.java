@@ -160,4 +160,26 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
+    /**
+     * Test procedure with callback
+     */
+    @Test(groups= {"v11"})
+    public void test7() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject("PCTLoadData/test7/build.xml");
+        executeTarget("base");
+        executeTarget("load-noerror");
+        expectBuildException("load-error1", "Should fail");
+        executeTarget("load-error2");
+    }
 }
