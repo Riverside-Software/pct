@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <antlib>
+  <taskdef name="dlc_home" classname="com.phenix.pct.DlcHome" />
   <taskdef name="compile" classname="com.phenix.pct.PCTCompile" />
   <taskdef name="library" classname="com.phenix.pct.PCTLibrary" />
   <taskdef name="run" classname="com.phenix.pct.PCTRun" />
