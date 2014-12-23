@@ -73,7 +73,7 @@ import org.xml.sax.InputSource;
 public class ABLUnitTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    // Regular run of 2 test procedures
+    // Two test procedures
     @Test(groups = {"v11"})
     public void test1() throws XPathExpressionException {
         configureProject("ABLUnit/test1/build.xml");
@@ -86,14 +86,14 @@ public class ABLUnitTest extends BuildFileTestNg {
         Assert.assertEquals(xpath.evaluate("/testsuites/@errors", inputSource), "2");
     }
 
-    // Build error, No tests to run
+    // No test, should fail
     @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("ABLUnit/test2/build.xml");
         executeTarget("test");
     }
 
-    // Test runned with classe
+    // Test class
     @Test(groups = {"v11"})
     public void test3() throws XPathExpressionException {
         configureProject("ABLUnit/test3/build.xml");
@@ -121,7 +121,6 @@ public class ABLUnitTest extends BuildFileTestNg {
         configureProject("ABLUnit/test6/build.xml");
         executeTarget("test");
 
-        // XXX Ne correspond pas au jeu de test à mon avis
         InputSource inputSource = new InputSource("ABLUnit/test6/results.xml");
         Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "1");
         Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "0");
@@ -135,7 +134,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         expectBuildException("test2", "haltOnFailure is true");
     }
 
-    // Test haltOnFailure property
+    // Test writeLog property
     @Test(groups = {"v11"})
     public void test8() throws XPathExpressionException {
         configureProject("ABLUnit/test8/build.xml");
