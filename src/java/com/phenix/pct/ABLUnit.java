@@ -103,7 +103,7 @@ public class ABLUnit extends PCTRun {
             // Options
             writer.name("options").beginObject();
             writer.name("writeLog").value(writeLog);
-            writer.name("quitOnEnd").value(true);
+            writer.name("quitOnEnd").value(false);
 
             log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
             writer.name("output").beginObject();
