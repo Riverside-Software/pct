@@ -186,11 +186,12 @@ public class ABLUnit extends PCTRun {
                     + ") ! It could be an error in an ABL Procedure/Class.");
         try {
             InputSource inputSource = new InputSource(results.getAbsolutePath());
+            int numTests = Integer.parseInt(xpath.evaluate("/testsuites/@tests", inputSource));
             int numFailures = Integer
                     .parseInt(xpath.evaluate("/testsuites/@failures", inputSource));
             int numErrors = Integer.parseInt(xpath.evaluate("/testsuites/@errors", inputSource));
 
-            if (haltOnFailure && ((numFailures > 0) || (numErrors > 0)))
+            if (haltOnFailure && (numFailures + numErrors > 0))
                 throw new BuildException("Error or failure during tests");
         } catch (XPathExpressionException caught) {
             throw new BuildException("Unable to parse results file", caught);
