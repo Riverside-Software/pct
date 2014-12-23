@@ -7,8 +7,6 @@
       <fileset dir="src" includes="*.p" />
       <propath>
         <pathelement path="src" />
-        <path location="${TESTLIBS}/ablunit.pl" />
-        <path location="${TESTLIBS}/OpenEdge.Core.pl" />
       </propath>
     </ABLUnit>
   </target>
