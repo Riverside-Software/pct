@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="ABLUnit-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="temp" />
+    <ABLUnit dlcHome="${DLC}" tempDir="temp">
+      <fileset file="src/ABLUnitTest.cls" />
+      <propath>
+        <pathelement path="src" />
+        <path location="${TESTLIBS}/ablunit.pl" />
+        <path location="${TESTLIBS}/OpenEdge.Core.pl" />
+      </propath>
+    </ABLUnit>
+  </target>
+
+  <target name="test2">
+    <ABLUnit dlcHome="${DLC}" tempDir="temp" writeLog="true">
+      <fileset file="src/ABLUnitTest.cls" />
+      <propath>
+        <pathelement path="src" />
+        <path location="${TESTLIBS}/ablunit.pl" />
+        <path location="${TESTLIBS}/OpenEdge.Core.pl" />
+      </propath>
+    </ABLUnit>
+  </target>
+</project>
