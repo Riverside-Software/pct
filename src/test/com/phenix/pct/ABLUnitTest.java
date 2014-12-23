@@ -126,4 +126,12 @@ public class ABLUnitTest extends BuildFileTestNg {
         Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
         Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
     }
+
+    // Test haltOnFailure property
+    @Test(groups = {"v11"})
+    public void test7() throws XPathExpressionException {
+        configureProject("ABLUnit/test7/build.xml");
+        executeTarget("test1");
+        expectBuildException("test2", "haltOnFailure is true");
+    }
 }

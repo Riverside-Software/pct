@@ -9,9 +9,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+import org.xml.sax.InputSource;
 
 import com.google.gson.stream.JsonWriter;
 import com.phenix.pct.PCTRun;
@@ -23,6 +28,7 @@ import com.phenix.pct.PCTRun;
  */
 public class ABLUnit extends PCTRun {
     private final static List<String> GOODFORMAT = Arrays.asList("xml");
+    private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     private Collection<FileSet> testFilesets = null;
     private String jsonFileName = "PCTests" + PCT.nextRandomInt() + ".json";
@@ -31,6 +37,7 @@ public class ABLUnit extends PCTRun {
     private String format = "xml";
     private String[] testCase;
     private boolean writeLog = false;
+    private boolean haltOnFailure = false;
 
     /**
      * Set the path of the results file.
@@ -39,6 +46,15 @@ public class ABLUnit extends PCTRun {
      */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
+    }
+
+    /**
+     * Stop the build process if a test fails (errors are considered failures as well).
+     * 
+     * @param haltOnFailure Boolean
+     */
+    public void setHaltOnFailure(boolean haltOnFailure) {
+        this.haltOnFailure = haltOnFailure;
     }
 
     /**
@@ -161,13 +177,25 @@ public class ABLUnit extends PCTRun {
         // Run PCTRun
         super.execute();
         
-        if(destDir==null)
-            destDir=getProject().getBaseDir();
+        if (destDir == null)
+            destDir = getProject().getBaseDir();
 
         File results = new File(destDir, "results." + format);
         if (!results.exists())
             throw new BuildException("No results file (" + results
                     + ") ! It could be an error in an ABL Procedure/Class.");
+        try {
+            InputSource inputSource = new InputSource(results.getAbsolutePath());
+            int numFailures = Integer
+                    .parseInt(xpath.evaluate("/testsuites/@failures", inputSource));
+            int numErrors = Integer.parseInt(xpath.evaluate("/testsuites/@errors", inputSource));
+
+            if (haltOnFailure && ((numFailures > 0) || (numErrors > 0)))
+                throw new BuildException("Error or failure during tests");
+        } catch (XPathExpressionException caught) {
+            throw new BuildException("Unable to parse results file", caught);
+        }
+
     }
 
     /**
