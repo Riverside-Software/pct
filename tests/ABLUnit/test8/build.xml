@@ -5,7 +5,7 @@
   <target name="test1">
     <mkdir dir="temp" />
     <ABLUnit dlcHome="${DLC}" tempDir="temp">
-      <fileset file="src/ABLUnitTest.cls" />
+      <fileset dir="src" includes="*.cls" />
       <propath>
         <pathelement path="src" />
         <path location="${TESTLIBS}/ablunit.pl" />
@@ -16,7 +16,7 @@
 
   <target name="test2">
     <ABLUnit dlcHome="${DLC}" tempDir="temp" writeLog="true">
-      <fileset file="src/ABLUnitTest.cls" />
+      <fileset dir="src" includes="*.cls" />
       <propath>
         <pathelement path="src" />
         <path location="${TESTLIBS}/ablunit.pl" />

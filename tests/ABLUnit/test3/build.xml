@@ -4,7 +4,7 @@
 
   <target name="test">
     <ABLUnit>
-      <fileset dir="src" includes="**/*.cls" />
+      <fileset dir="src" includes="*.cls" />
       <propath>
         <pathelement path="src" />
         <path location="${TESTLIBS}/ablunit.pl" />

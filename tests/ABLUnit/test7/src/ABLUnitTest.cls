@@ -1,15 +1,15 @@
-ROUTINE-LEVEL ON ERROR UNDO, THROW. 
+ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-USING OpenEdge.Core.Assert. 
+USING OpenEdge.Core.Assert.
 
-CLASS src.ABLUnitTest: 
+CLASS ABLUnitTest: 
 
-   @Test. 
+   @Test.
    METHOD PUBLIC VOID test1():
      Assert:isTrue(TRUE).
    END METHOD.
 
-   @Test. 
+   @Test.
    METHOD PUBLIC VOID test2():
      Assert:isTrue(FALSE).
    END METHOD.

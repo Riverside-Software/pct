@@ -1,10 +1,10 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-USING OpenEdge.Core.Assert. 
+USING OpenEdge.Core.Assert.
 
-CLASS ABLUnitTest: 
+CLASS ABLUnitTest:
 
-   @Test. 
+   @Test.
    METHOD PUBLIC VOID test1():
      /* Syntax error here */
      Assert:isTue(TRUE).

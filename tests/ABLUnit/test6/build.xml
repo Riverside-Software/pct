@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <project name="ABLUnit-test6">
-	<taskdef resource="PCT.properties" />
+  <taskdef resource="PCT.properties" />
 
-	<target name="test">
-		<ABLUnit testCase="StringTest">
-			<fileset file="src/ABLUnitTest.cls" />
-			<propath>
-				<pathelement path="src" />
-				<path location="${TESTLIBS}/ablunit.pl" />
-				<path location="${TESTLIBS}/OpenEdge.Core.pl" />
-			</propath>
-		</ABLUnit>
-	</target>
+  <target name="test">
+    <ABLUnit testCase="StringTest">
+      <fileset dir="src" includes="*.cls" />
+      <propath>
+        <pathelement path="src" />
+        <path location="${TESTLIBS}/ablunit.pl" />
+        <path location="${TESTLIBS}/OpenEdge.Core.pl" />
+      </propath>
+    </ABLUnit>
+  </target>
 
 </project>
