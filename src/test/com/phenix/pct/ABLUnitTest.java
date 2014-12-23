@@ -80,10 +80,10 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
-        // Should be 2/2/2
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "2");
+        // Should be 6/2/2
+        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "6");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "2");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@errors", inputSource), "2");
     }
 
     // Build error, No tests to run
@@ -100,9 +100,9 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testrun/@errors", inputSource), "1");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "3");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "1");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@errors", inputSource), "1");
     }
 
     // Test with different path to resultset
@@ -123,8 +123,8 @@ public class ABLUnitTest extends BuildFileTestNg {
 
         // XXX Ne correspond pas au jeu de test à mon avis
         InputSource inputSource = new InputSource("ABLUnit/test6/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testrun/@success", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testrun/@failures", inputSource), "0");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "1");
+        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "0");
     }
 
     // Test haltOnFailure property
