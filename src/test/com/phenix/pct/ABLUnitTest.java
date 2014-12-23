@@ -134,4 +134,16 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test1");
         expectBuildException("test2", "haltOnFailure is true");
     }
+
+    // Test haltOnFailure property
+    @Test(groups = {"v11"})
+    public void test8() throws XPathExpressionException {
+        configureProject("ABLUnit/test8/build.xml");
+        File logFile = new File("ABLUnit/test8/temp/ablunit.log");
+        Assert.assertFalse(logFile.exists());
+        expectBuildException("test1", "Syntax error");
+        Assert.assertFalse(logFile.exists());
+        expectBuildException("test2", "Syntax error");
+        Assert.assertTrue(logFile.exists());
+    }
 }
