@@ -190,6 +190,8 @@ public class ABLUnit extends PCTRun {
                     .parseInt(xpath.evaluate("/testsuites/@failures", inputSource));
             int numErrors = Integer.parseInt(xpath.evaluate("/testsuites/@errors", inputSource));
 
+            log(MessageFormat.format(Messages.getString("ABLUnit.1"), numTests, numFailures, numErrors));
+
             if (haltOnFailure && (numFailures + numErrors > 0))
                 throw new BuildException("Error or failure during tests");
         } catch (XPathExpressionException caught) {
@@ -209,7 +211,7 @@ public class ABLUnit extends PCTRun {
         // Clean JSON File
         if (!getDebugPCT()) {
             if (json.exists() && !json.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTCompile.42"),
+                log(MessageFormat.format(Messages.getString("PCTRun.5"),
                         json.getAbsolutePath()), Project.MSG_INFO);
             }
         }
