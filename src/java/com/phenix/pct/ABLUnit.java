@@ -104,11 +104,13 @@ public class ABLUnit extends PCTRun {
             writer.name("options").beginObject();
             writer.name("writeLog").value(writeLog);
 
-            log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
-            writer.name("output").beginObject();
-            writer.name("location").value(destDir.getAbsolutePath());
-            writer.name("format").value(format);
-            writer.endObject();
+            if (destDir != null) {
+                log("Adding location'" + destDir + "' to JSon.", Project.MSG_VERBOSE);
+                writer.name("output").beginObject();
+                writer.name("location").value(destDir.getAbsolutePath());
+                writer.name("format").value(format);
+                writer.endObject();
+            }
 
             // End "Options" object
             writer.endObject();
@@ -158,14 +160,16 @@ public class ABLUnit extends PCTRun {
         if (testFilesets == null || testFilesets.isEmpty())
             throw new BuildException("No fileset found.");
 
-        if (destDir == null)
-            destDir = getProject().getBaseDir();
-
         try {
             writeJsonConfigFile();
         } catch (IOException e) {
             throw new BuildException(e);
         }
+
+        // Linux bug in OpenEdge.ABLUnit.Runner.TestConfig
+        // DestDir has to be set to null, as backslash is used to generate file name
+        if (destDir == null)
+            destDir = getProject().getBaseDir();
 
         // Setting PCTRun parameters
         setProcedure("ABLUnitCore.p");
