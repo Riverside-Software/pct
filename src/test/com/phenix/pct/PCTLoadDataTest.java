@@ -182,4 +182,29 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         expectBuildException("load-error1", "Should fail");
         executeTarget("load-error2");
     }
+
+    /**
+     * Format error during load should throw exception
+     */
+    @Test(groups= {"v11"})
+    public void test8() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject("PCTLoadData/test8/build.xml");
+        executeTarget("base");
+        // Should fail with PCTLoadDataCallback
+        expectBuildException("load1", "Should fail");
+        // Doesn't fail with PCTLoadData
+        executeTarget("load2");
+    }
+
 }

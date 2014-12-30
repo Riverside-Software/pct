@@ -6,6 +6,10 @@ USING OpenEdge.DataAdmin.Binding.ITableDataMonitor FROM PROPATH.
 CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor: 
   DEFINE VARIABLE errors AS LONGCHAR NO-UNDO.
 
+    define public property loadException as logical initial false no-undo
+        get.
+        set.
+
     define public property bailed as logical no-undo
         get.
         set.
@@ -148,7 +152,10 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
 
     /** called with any error logger may store all or just keep track of any  */
     method public void AddTableError(pname as character,msg as char):
-      this-object:anyError = true.    
+      this-object:anyError = true.
+      /* File is not even loaded, that should throw a BuildException */
+      if (msg EQ 'Numeric Format error') then this-object:loadException = TRUE.
+      if (msg EQ 'The file can not be found') then this-object:loadException = true.
       errors = errors + msg + "~n".
     end method.
     

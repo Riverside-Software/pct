@@ -139,6 +139,7 @@ assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 
 
 run prodict/dump/_loddata.p no-error.
 if valid-object(callback) then callback:afterLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).  
+if logger:loadException then return '1'.
 if (logger:bailed) then return '1'.
 
 return "0":U.
