@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="load1">
+    <PCTLoadDataCallback dlcHome="${DLC}" errorPercentage="0" srcFile="data/Tab1.d" table="tab1" numsep="46" numdec="44" centuryYearOffset="1920">
+      <DBConnection dbName="test1" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Option name="-d" value="dmy" />
+    </PCTLoadDataCallback>
+  </target>
+
+  <target name="load2">
+    <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="46" numdec="44" centuryYearOffset="1920">
+      <DBConnection dbName="test2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Option name="-d" value="dmy" />
+    </PCTLoadData>
+  </target>
+
+</project>
