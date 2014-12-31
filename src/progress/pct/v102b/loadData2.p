@@ -18,7 +18,7 @@
 define variable cTbl as character no-undo.
 
 { prodict/dictvar102b.i NEW }
-{ prodict/user/uservar102b.i NEW }
+{ prodict/user/uservar10.i NEW }
 
 assign cTbl = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName').
 if (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass') > "") then do:

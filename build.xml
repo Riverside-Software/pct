@@ -121,7 +121,7 @@
     <pathelement location="lib/parser.jar" />
     <pathelement location="lib/oe_common_services.jar" />
     <pathelement location="lib/jcommander-1.30.jar" />
-  	<pathelement location="lib/gson-2.2.4.jar" />
+    <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/guava.jar" />
   </path>
   <path id="pct.test.compil">
