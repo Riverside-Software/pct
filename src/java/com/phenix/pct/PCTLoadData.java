@@ -36,7 +36,7 @@ public class PCTLoadData extends PCTRun {
     private File srcDir = null, srcFile = null;
     private String table = null;
     private String callback = null;
-    private int errorPercentage = 0;
+    private int errorTolerance = 0;
     private Collection<PCTTable> tableList = null;
     private Collection<FileSet> tableFilesets = null;
     private Collection<String> tables = null;
@@ -81,10 +81,10 @@ public class PCTLoadData extends PCTRun {
      * 
      * @param perc Error percentage
      */
-    public void setErrorPercentage(int perc) {
+    public void setErrorTolerance(int perc) {
         if ((perc < 0) || (perc > 100))
             throw new BuildException("Invalid errorPercentage value " + perc);
-        this.errorPercentage = perc;
+        this.errorTolerance = perc;
     }
 
     public void addConfiguredTable(PCTTable table) {
@@ -171,7 +171,7 @@ public class PCTLoadData extends PCTRun {
             } else {
                 addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath()));
                 addParameter(new RunParameter("tableName", table));
-                addParameter(new RunParameter("errorPercentage", Integer.toString(errorPercentage)));
+                addParameter(new RunParameter("errorPercentage", Integer.toString(errorTolerance)));
                 setProcedure(getProgressProcedures().getLoadSingleTableDataProcedure());
             }
             addParameter(new RunParameter("callbackClass", callback));

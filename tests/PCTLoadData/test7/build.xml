@@ -16,7 +16,7 @@
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
-    <PCTLoadData dlcHome="${DLC}" errorPercentage="0" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" errorTolerance="0" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
       <DBConnection dbName="test2" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
@@ -24,7 +24,7 @@
   </target>
 
   <target name="load-error1">
-    <PCTLoadData dlcHome="${DLC}" errorPercentage="30" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" errorTolerance="30" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
       <DBConnection dbName="test3" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
@@ -32,7 +32,7 @@
   </target>
 
   <target name="load-error2">
-    <PCTLoadData dlcHome="${DLC}" errorPercentage="60" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" errorTolerance="60" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920">
       <DBConnection dbName="test4" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
