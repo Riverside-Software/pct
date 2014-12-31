@@ -26,12 +26,12 @@ package com.phenix.pct;
  */
 public abstract interface ProgressProcedures {
     String getCompileProcedure();
-    // Starting from 10.2B, there are specific classes defined in _dmpincr.p
-    // So post 10.2B use a different startup procedure
     String getIncrementalProcedure();
     String getDumpUsersProcedure();
     String getLoadUsersProcedure();
     String getLoadSchemaProcedure();
+    String getLoadSingleTableDataProcedure();
+    String getLoadMultipleTablesDataProcedure();
     boolean needRedirector();
     String getInitString();
     String getCallbackString();

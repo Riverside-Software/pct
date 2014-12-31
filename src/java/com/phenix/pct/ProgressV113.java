@@ -35,4 +35,12 @@ public class ProgressV113 extends ProgressV11 {
         return "pct/v11/loadSch.p";
     }
 
+    public String getLoadMultipleTablesDataProcedure() {
+        return "pct/v11/loadData1-113.p";
+    }
+
+    public String getLoadSingleTableDataProcedure() {
+        return "pct/v11/loadData2-113.p";
+    }
+
 }

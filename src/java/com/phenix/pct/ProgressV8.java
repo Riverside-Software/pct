@@ -44,6 +44,13 @@ public class ProgressV8 implements ProgressProcedures {
         return "pct/loadSch.p";
     }
 
+    public String getLoadMultipleTablesDataProcedure() {
+        return "pct/loadData1.p";
+    }
+
+    public String getLoadSingleTableDataProcedure() {
+        return "pct/loadData2.p";
+    }
     public boolean needRedirector() {
         return true;
     }

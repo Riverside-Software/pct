@@ -9,11 +9,11 @@
   </target>
 
   <target name="load1">
-    <PCTLoadDataCallback dlcHome="${DLC}" errorPercentage="0" srcFile="data/Tab1.d" table="tab1" numsep="46" numdec="44" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" errorPercentage="0" srcFile="data/Tab1.d" table="tab1" numsep="46" numdec="44" centuryYearOffset="1920">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
-    </PCTLoadDataCallback>
+    </PCTLoadData>
   </target>
 
   <target name="load2">

@@ -51,59 +51,33 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-function FileExists returns logical (input cFile as character) forward.
 
-define variable cLine as character no-undo.
-define variable i     as integer   no-undo.
+using Progress.Lang.Class.
 
-/*
- * Parameters from ANT call
- */
-define variable cSrcDir    as character no-undo.
-define variable cTableList as character no-undo.
+define variable srcDir    as character no-undo.
+define variable tableList as character no-undo.
+define variable h         as handle    no-undo.
+define variable logger    as rssw.pct.LoadDataLogger.
+define variable callback    as rssw.pct.ILoadDataCallback.
+define variable callbackCls as character no-undo.
 
-define stream sParams.
+assign srcDir    = dynamic-function('getParameter' in source-procedure, input 'srcDir')
+       tableList = dynamic-function('getParameter' in source-procedure, input 'tables').
 
-/*
- * Checks for valid parameters
- */
-if (session:parameter = ?) then
-   return '1'.
-
-if not FileExists(session:parameter) then
-   return '2'.
-
-/*
- * Reads config
- */
-input stream sParams from value(file-info:full-pathname).
-repeat:
-   import stream sParams unformatted cLine.
-   if (num-entries(cLine, '=':U) = 2) then
-   case entry(1, cLine, '=':U):
-      when 'TABLES':U then
-         assign cTableList = entry(2, cLine, '=':U).
-      when 'SRCDIR':U then
-         assign cSrcDir = entry(2, cLine, '=':U).
-      otherwise
-         message "Unknown parameter: " + cLine.
-   end case.
-end.
-input stream sParams close.
-
-if not FileExists(cSrcDir) then do:
-   message "Source Directory does not exist".
-   return "1":U.
+assign callbackCls = dynamic-function('getParameter' in source-procedure, input 'callbackClass').
+if (callbackCls > "") then do:
+    callback = cast(Class:GetClass(callbackCls):new(), rssw.pct.ILoadDataCallback).
+    callback:initialize(tableList).
 end.
 
-if cTableList = '':U then
-   run prodict/load_d.p ("ALL":U, cSrcDir + '/').
-else
-   run prodict/load_d.p (cTableList, cSrcDir). 
+if valid-object(callback) then callback:beforeLoad(srcDir).
+
+logger = new rssw.pct.LoadDataLogger().
+run prodict/load_d.p persistent set h (tableList, srcDir + '/').
+run setMonitor in h (logger).
+run doLoad in h.
+delete procedure h.
+
+if valid-object(callback) then callback:afterLoad(srcDir, logger).
 
 return "0":U.
-
-function FileExists returns logical (input cFile as character):
-   assign file-info:file-name = cFile.
-   return (file-info:full-pathname <> ?).
-end function.

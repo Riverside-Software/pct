@@ -44,6 +44,14 @@ public class ProgressV9 implements ProgressProcedures {
         return "pct/loadSch.p";
     }
 
+    public String getLoadMultipleTablesDataProcedure() {
+        return "pct/loadData1.p";
+    }
+
+    public String getLoadSingleTableDataProcedure() {
+        return "pct/v9/loadData2.p";
+    }
+
     public boolean needRedirector() {
         return false;
     }
