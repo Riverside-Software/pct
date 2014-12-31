@@ -33,7 +33,7 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
     define variable opDelCount as integer no-undo.
 
     if (ipFileName > '') then
-      output stream sBackup to value(ipFileName).
+      output stream sBackup to value(ipFileName) convert target 'utf-8'.
     create buffer hFile for table this-object:tblName.
     create query hQuery.
     hQuery:set-buffers(hFile).
