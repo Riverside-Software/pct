@@ -17,22 +17,10 @@
 
 package com.phenix.pct;
 
-public class ProgressV114 extends ProgressV11 {
+public class ProgressV114 extends ProgressV113 {
 
     public String getIncrementalProcedure() {
         return "pct/v11/silentIncDump114.p";
-    }
-
-    public String getDumpUsersProcedure() {
-        return "pct/v11/dmpUsers113.p";
-    }
-
-    public String getLoadUsersProcedure() {
-        return "pct/v11/loadUsers113.p";
-    }
-
-    public String getLoadSchemaProcedure() {
-        return "pct/v11/loadSch.p";
     }
 
 }

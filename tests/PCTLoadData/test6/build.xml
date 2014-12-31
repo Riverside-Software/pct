@@ -8,27 +8,27 @@
   </target>
 
   <target name="load-replace">
-    <PCTLoadDataCallback dlcHome="${DLC}" append="false" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callbackClass="rssw.pct.BackupDataCallback" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
-    </PCTLoadDataCallback>
+    </PCTLoadData>
   </target>
 
   <target name="load-append">
-    <PCTLoadDataCallback dlcHome="${DLC}" append="true" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callbackClass="MyLogger" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
-    </PCTLoadDataCallback>
+    </PCTLoadData>
   </target>
 
   <target name="load-error">
-    <PCTLoadDataCallback dlcHome="${DLC}" append="true" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" callback="MyLogger" centuryYearOffset="1920">
+    <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" callbackClass="MyLogger" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
-    </PCTLoadDataCallback>
+    </PCTLoadData>
   </target>
 
   <target name="test1">

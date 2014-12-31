@@ -207,4 +207,37 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("load2");
     }
 
+    /**
+     * Format error during load should throw exception
+     */
+    @Test(groups= {"v11"})
+    public void test9() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject("PCTLoadData/test9/build.xml");
+        // Configure database
+        executeTarget("base");
+        // Record '0' should be there
+        executeTarget("test");
+        
+        // Should fail (invalid numsep numdec)
+        expectBuildException("load1", "Should fail");
+        // But record '0' should still be there
+        executeTarget("test");
+        
+        // Should fail (invalid data >= tolerance)
+        expectBuildException("load2", "Should fail");
+        // But record '0' should still be there
+        executeTarget("test");
+    }
+
 }

@@ -17,16 +17,15 @@
 
 package com.phenix.pct;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 
 /**
  * Loads data into database
@@ -34,25 +33,13 @@ import org.apache.tools.ant.types.FileSet;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTLoadData extends PCTRun {
-    private File srcDir = null;
+    private File srcDir = null, srcFile = null;
+    private String table = null;
+    private String callback = null;
+    private int errorPercentage = 0;
     private Collection<PCTTable> tableList = null;
     private Collection<FileSet> tableFilesets = null;
-    private String tables = null;
-
-    // Internal use
-    private int paramsId = -1;
-    private File params = null;
-
-    /**
-     * Creates a new PCTLoadData object
-     */
-    public PCTLoadData() {
-        super();
-
-        paramsId = PCT.nextRandomInt();
-
-        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    }
+    private Collection<String> tables = null;
 
     /**
      * Input directory
@@ -64,12 +51,40 @@ public class PCTLoadData extends PCTRun {
     }
 
     /**
-     * Tables list to dump
+     * Input file
      * 
-     * @param tables the tables to dump
+     * @param srcFile file
+     */
+    public void setSrcFile(File srcFile) {
+        this.srcFile = srcFile;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
+    }
+
+    public void setCallbackClass(String callback) {
+        this.callback = callback;
+    }
+
+    /**
+     * Tables list to load
+     * 
+     * @param tables the tables to load
      */
     public void setTables(String tables) {
-        this.tables = tables;
+        this.tables = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(tables);
+    }
+
+    /**
+     * Acceptable error percentage. Should be in the 0-100 range.
+     * 
+     * @param perc Error percentage
+     */
+    public void setErrorPercentage(int perc) {
+        if ((perc < 0) || (perc > 100))
+            throw new BuildException("Invalid errorPercentage value " + perc);
+        this.errorPercentage = perc;
     }
 
     public void addConfiguredTable(PCTTable table) {
@@ -91,57 +106,48 @@ public class PCTLoadData extends PCTRun {
         tableFilesets.add(set);
     }
 
-    private String getTableList() {
-        StringBuffer sb = new StringBuffer();
+    private Collection<String> getTableList() {
+        Collection<String> list = new ArrayList<String>();
         if (tables != null)
-            sb.append(tables);
+            list.addAll(tables);
 
         if (tableList != null) {
             for (PCTTable tbl : tableList) {
-                if (sb.length() > 0)
-                    sb.append(',');
-                sb.append(tbl.getName());
+                list.add(tbl.getName());
             }
         }
+
         if (tableFilesets != null) {
             for (FileSet fs : tableFilesets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     if (file.endsWith(".d")) {
-                        if (sb.length() > 0) {
-                            sb.append(',');
-                        }
-                        sb.append(file.substring(0, file.lastIndexOf(".d")));
+                        list.add(file.substring(0, file.lastIndexOf(".d")));
                     }
                 }
             }
         }
 
-        if (sb.length() == 0) {
-            return "ALL";
-        } else {
-            return sb.toString();
-        }
+        if (list.size() == 0)
+            list.add("ALL");
+
+        return list;
     }
 
-    /**
-     * 
-     * @throws BuildException
-     */
-    private void writeParams() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
-            String tbl = getTableList();
-            log("Loading with TABLES=" + tbl, Project.MSG_VERBOSE);
-            if (tbl != null) {
-                bw.write("TABLES=");
-                bw.write(tbl);
-                bw.newLine();
-            }
-            bw.write("SRCDIR=" + srcDir.getAbsolutePath()); //$NON-NLS-1$
-            bw.newLine();
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTCompile.3")); //$NON-NLS-1$
+    private void checkAttributes() throws BuildException {
+        // Only one of srcDir / srcFile can be used
+        if ((srcDir == null) && (srcFile == null))
+            throw new BuildException(Messages.getString("PCTLoadData.4")); //$NON-NLS-1$
+        if ((srcDir != null) && (srcFile != null))
+            throw new BuildException(Messages.getString("PCTLoadData.4")); //$NON-NLS-1$
+
+        if (srcFile != null) {
+            if ((table == null) || (table.trim().length() == 0))
+                throw new BuildException(Messages.getString("PCTLoadData.5")); //$NON-NLS-1$
+            if (!srcFile.isFile())
+                throw new BuildException(Messages.getString("PCTLoadData.6")); //$NON-NLS-1$
+        } else {
+            if (!srcDir.isDirectory())
+                throw new BuildException(Messages.getString("PCTLoadData.7")); //$NON-NLS-1$
         }
     }
 
@@ -151,26 +157,25 @@ public class PCTLoadData extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-
         if (getDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }
-
-        if (getDbConnections().size() > 1) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTLoadData.1")); //$NON-NLS-1$
-        }
-
-        if (srcDir == null) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTLoadData.2")); //$NON-NLS-1$
-        }
+        checkAttributes();
 
         try {
-            writeParams();
-            setProcedure("pct/pctLoadData.p"); //$NON-NLS-1$
-            setParameter(params.getAbsolutePath());
+            if (srcDir != null) {
+                addParameter(new RunParameter("srcDir", srcDir.getAbsolutePath()));
+                addParameter(new RunParameter("tables", Joiner.on(',').join(getTableList())));
+                setProcedure(getProgressProcedures().getLoadMultipleTablesDataProcedure());
+            } else {
+                addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath()));
+                addParameter(new RunParameter("tableName", table));
+                addParameter(new RunParameter("errorPercentage", Integer.toString(errorPercentage)));
+                setProcedure(getProgressProcedures().getLoadSingleTableDataProcedure());
+            }
+            addParameter(new RunParameter("callbackClass", callback));
+
             super.execute();
             cleanup();
         } catch (BuildException be) {

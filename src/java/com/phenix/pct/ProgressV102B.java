@@ -23,4 +23,8 @@ public class ProgressV102B extends ProgressV10 {
         return "pct/v102b/dump_inc.p";
     }
 
+    public String getLoadSingleTableDataProcedure() {
+        return "pct/v102b/loadData2.p";
+    }
+
 }
