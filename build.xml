@@ -310,7 +310,7 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
-    <!--  Updating pct11.pl with rcode compiled on Windowss -->
+    <!--  Updating pct11.pl with rcode compiled on Windows -->
     <copy todir="classDocTemp">
       <zipfileset src="lib/classDoc.zip" />
     </copy>
@@ -339,7 +339,6 @@ PCTBuild=${BUILD_NUMBER}
     <zipfileset src="lib/jcommander-1.30.jar" />
    	<zipfileset src="lib/gson-2.2.4.jar" />
     <zipfileset src="lib/proparse.jar" includes="**/*.class" />
-    <zipfileset src="lib/guava.jar" includes="com/google/common/**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
     <zipfileset src="lib/parser.jar" includes="**/*.class,**/jaxb.index" />
     <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
