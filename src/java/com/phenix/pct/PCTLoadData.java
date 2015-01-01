@@ -23,9 +23,7 @@ import java.util.Collection;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileSet;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
+import org.apache.tools.ant.util.StringUtils;
 
 /**
  * Loads data into database
@@ -73,7 +71,7 @@ public class PCTLoadData extends PCTRun {
      * @param tables the tables to load
      */
     public void setTables(String tables) {
-        this.tables = Splitter.on(',').trimResults().omitEmptyStrings().splitToList(tables);
+        this.tables = StringUtils.split(tables, ',');
     }
 
     /**
@@ -166,7 +164,7 @@ public class PCTLoadData extends PCTRun {
         try {
             if (srcDir != null) {
                 addParameter(new RunParameter("srcDir", srcDir.getAbsolutePath()));
-                addParameter(new RunParameter("tables", Joiner.on(',').join(getTableList())));
+                addParameter(new RunParameter("tables", join(getTableList())));
                 setProcedure(getProgressProcedures().getLoadMultipleTablesDataProcedure());
             } else {
                 addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath()));
@@ -182,5 +180,18 @@ public class PCTLoadData extends PCTRun {
             cleanup();
             throw be;
         }
+    }
+
+    /**
+     * Dummy implementation
+     */
+    private static String join(Collection<String> strings) {
+        StringBuffer sb = new StringBuffer();
+        for (String str : strings) {
+            if (sb.length() > 0) sb.append(',');
+            sb.append(str);
+        }
+
+        return sb.toString();
     }
 }
