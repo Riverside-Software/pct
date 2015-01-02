@@ -105,7 +105,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         configureProject("PCTLoadData/test4/build.xml");
         executeTarget("base");
         executeTarget("load");
-        expectLog("test", "16");
+        expectLog("test", "16 20");
     }
 
     /**
@@ -226,17 +226,17 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         configureProject("PCTLoadData/test9/build.xml");
         // Configure database
         executeTarget("base");
-        // Record '0' should be there
+        // Record 'é' should be there
         executeTarget("test");
         
         // Should fail (invalid numsep numdec)
         expectBuildException("load1", "Should fail");
-        // But record '0' should still be there
+        // But record 'é' should still be there
         executeTarget("test");
         
         // Should fail (invalid data >= tolerance)
         expectBuildException("load2", "Should fail");
-        // But record '0' should still be there
+        // But record 'é' should still be there
         executeTarget("test");
     }
 

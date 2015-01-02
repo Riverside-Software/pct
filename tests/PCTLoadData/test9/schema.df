@@ -6,12 +6,12 @@
     DESCRIPTION ""
     DUMP-NAME "Tab1"
 
-  ADD FIELD "Fld1" OF "tab1" AS integer 
-    FORMAT "9"
+  ADD FIELD "Fld1" OF "tab1" AS character 
+    FORMAT "x(8)"
     INITIAL "0"
     LABEL "Fld1"
     POSITION 2
-    SQL-WIDTH 4
+    SQL-WIDTH 32
     COLUMN-LABEL "Fld1"
     ORDER 10
 
