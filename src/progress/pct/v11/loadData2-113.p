@@ -64,7 +64,7 @@ assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 
        user_env[3] = "NO-MAP"
        user_env[4] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'errorPercentage')
        user_env[5] = ""
-       user_env[6] = "utf-8".
+       user_env[6] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'silent').
 
 run prodict/dump/_loddata.p no-error.
 if valid-object(callback) then callback:afterLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).
