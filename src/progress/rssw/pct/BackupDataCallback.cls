@@ -14,13 +14,14 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
 
     this-object:bkupFile = session:temp-directory + '/' + this-object:tblName + '-' + string(year(now), "9999") + string(month(now),"99") + string(day(now),"99") + "-" + replace(substring(string(now),12, 8), ':', '') + '.backup.d'.
     delCount = backupTable (input bkupFile).
-    message substitute("&1 records backed up to &2", delCount, this-object:bkupFile).
+    message substitute("&1 records deleted and backed up to &2", delCount, this-object:bkupFile).
 
   end method.
 
   method public override void afterLoad(file as character, logger as rssw.pct.LoadDataLogger):
 
     if logger:loadException or logger:bailed then do:
+      message substitute("Restoring &1 content from &2", this-object:tblName, this-object:bkupFile).
       if not logger:loadException then backupTable (input ?).
       run pct/v11/restoreTableContent.p (this-object:tblName, this-object:bkupFile).
     end.
