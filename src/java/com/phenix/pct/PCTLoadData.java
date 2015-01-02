@@ -38,6 +38,7 @@ public class PCTLoadData extends PCTRun {
     private Collection<PCTTable> tableList = null;
     private Collection<FileSet> tableFilesets = null;
     private Collection<String> tables = null;
+    private boolean silent = false;
 
     /**
      * Input directory
@@ -104,6 +105,10 @@ public class PCTLoadData extends PCTRun {
         tableFilesets.add(set);
     }
 
+    public void setSilent(boolean silent) {
+        this.silent = silent;
+    }
+
     private Collection<String> getTableList() {
         Collection<String> list = new ArrayList<String>();
         if (tables != null)
@@ -165,11 +170,13 @@ public class PCTLoadData extends PCTRun {
             if (srcDir != null) {
                 addParameter(new RunParameter("srcDir", srcDir.getAbsolutePath()));
                 addParameter(new RunParameter("tables", join(getTableList())));
+                addParameter(new RunParameter("silent", (silent ? "1" : "")));
                 setProcedure(getProgressProcedures().getLoadMultipleTablesDataProcedure());
             } else {
                 addParameter(new RunParameter("srcFile", srcFile.getAbsolutePath()));
                 addParameter(new RunParameter("tableName", table));
                 addParameter(new RunParameter("errorPercentage", Integer.toString(errorTolerance)));
+                addParameter(new RunParameter("silent", (silent ? "load-silent" : "")));
                 setProcedure(getProgressProcedures().getLoadSingleTableDataProcedure());
             }
             addParameter(new RunParameter("callbackClass", callback));

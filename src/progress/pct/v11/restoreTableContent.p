@@ -15,5 +15,6 @@ assign user_env[1] = ipTable
        user_env[3] = "NO-MAP"
        user_env[4] = "100"
        user_env[5] = ""
-       user_env[6] = "utf-8".
+       user_env[6] = "load-silent"
+       user_env[10] = "utf-8".
 run prodict/dump/_loddata.p no-error.

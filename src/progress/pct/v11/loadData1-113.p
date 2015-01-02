@@ -75,6 +75,7 @@ if valid-object(callback) then callback:beforeLoad(srcDir).
 logger = new rssw.pct.LoadDataLogger().
 run prodict/load_d.p persistent set h (tableList, srcDir + '/').
 run setMonitor in h (logger).
+run setSilent in h (dynamic-function('getParameter' in source-procedure, input 'silent') EQ '1').
 run doLoad in h.
 delete procedure h.
 

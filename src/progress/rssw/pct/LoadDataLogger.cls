@@ -121,15 +121,19 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
        dump logic may change slashes and possibly also differences with relative 
        name and full path (?)  so we pass both owner and file at start */ 
     method public void StartTable(ptable as char, ptype as character,powner as char,pfile as char):
-
+      if dynamic-function('getParameter', 'silent') ne '' then
+        message substitute("Loading data from &2 to &1...", ptable, pfile).
     end method.
     
     method public void EndTable(pname as character):
-
+      if dynamic-function('getParameter', 'silent') ne '' then
+        message substitute("Loaded data in &1", pname).
     end method.
   
     method public void EndTable(pname as character,numrows as int64):
-
+      /* NumRows is not set in 11.4 */
+      if dynamic-function('getParameter', 'silent') ne '' then
+        message substitute("Loaded &2 records in &1", pname, numrows).
     end method.
     
     method public logical CountRow(pname as character):
@@ -154,14 +158,16 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     method public void AddTableError(pname as character,msg as char):
       this-object:anyError = true.
       /* File is not even loaded, that should throw a BuildException */
-      if (msg EQ 'Numeric Format error') then this-object:loadException = TRUE.
+      if (msg EQ 'Numeric Format error') then this-object:loadException = true.
       if (msg EQ 'The file can not be found') then this-object:loadException = true.
+      if dynamic-function('getParameter', 'silent') ne '' then
+        message msg.
       errors = errors + msg + "~n".
     end method.
     
     /** set expected num rows   */
     method public void SetTableExpectedNumRows(pname as character,pinum as int64 ):
-      this-object:expectedRecords = piNum.    
+      this-object:expectedRecords = piNum.
     end method.
     
     /* set bailed so Endtable can decide whther to set isComplete true false
@@ -171,6 +177,7 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     end method. 
     
     method public void EndTask():
+    
     end method.
   
     method public void BindFiles(h as handle):
