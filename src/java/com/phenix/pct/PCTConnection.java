@@ -329,10 +329,10 @@ public class PCTConnection extends DataType {
             list.add("-RO"); //$NON-NLS-1$
         }
 
-        if (userName != null) {
+        if ((userName != null) && (userName.trim().length() > 0)) {
             list.add("-U"); //$NON-NLS-1$
             list.add(userName);
-            if (password != null) {
+            if ((password != null) && (password.trim().length() > 0)) {
                 list.add("-P"); //$NON-NLS-1$
                 list.add(password);
             }
