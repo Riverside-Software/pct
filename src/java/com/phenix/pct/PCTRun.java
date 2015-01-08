@@ -59,6 +59,7 @@ public class PCTRun extends PCT {
     private String parameter = null;
     private String numsep = null;
     private String numdec = null;
+    private String dateFormat = null;
     private String mainCallback = null;
     private File paramFile = null;
     private File iniFile = null;
@@ -267,6 +268,15 @@ public class PCTRun extends PCT {
      */
     public void setNumDec(String numdec) {
         this.numdec = numdec;
+    }
+
+    /**
+     * Date format (-d attribute)
+     * 
+     * @param dateFormat
+     */
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
     }
 
     /**
@@ -894,6 +904,11 @@ public class PCTRun extends PCT {
             }
             list.add("-numdec"); //$NON-NLS-1$
             list.add(Integer.toString(tmpDec));
+        }
+
+        if ((dateFormat != null) && (dateFormat.trim().length() > 0)) {
+            list.add("-d");
+            list.add(dateFormat.trim());
         }
 
         // Parameter
