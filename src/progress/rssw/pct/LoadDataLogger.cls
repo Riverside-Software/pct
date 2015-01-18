@@ -174,6 +174,8 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
        when less than expected     */
     method public logical SetTableBailed(pname as character):
       this-object:bailed = true.
+      if dynamic-function('getParameter', 'silent') ne '' then
+        message substitute("Number of errors exceed error tolerance").
     end method. 
     
     method public void EndTask():
