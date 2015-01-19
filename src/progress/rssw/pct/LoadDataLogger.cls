@@ -4,6 +4,7 @@ USING Progress.Lang.*.
 USING OpenEdge.DataAdmin.Binding.ITableDataMonitor FROM PROPATH. 
 
 CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor: 
+  define stream sErr.
   DEFINE VARIABLE errors AS LONGCHAR NO-UNDO.
 
     define public property loadException as logical initial false no-undo
@@ -131,9 +132,27 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     end method.
   
     method public void EndTable(pname as character,numrows as int64):
+      def var zz as char no-undo.
+
       /* NumRows is not set in 11.4 */
-      if dynamic-function('getParameter', 'silent') ne '' then
-        message substitute("Loaded &2 records in &1", pname, numrows).
+      if dynamic-function('getParameter', 'silent') ne '' then do:
+        message substitute("Loaded &2 records from &1", pname, numrows).
+      end.
+
+      /* .e file location extracted from _loddata.p */
+      file-info:file-name = SUBSTRING(pname,1,LENGTH(pname,"character") - 1,"character") + "e". 
+      if file-info:full-pathname ne ? and file-info:file-size gt 0 then do:
+        message "Following errors were found during data load :".
+        input stream sErr from value(file-info:full-pathname).
+        repeat:
+          import stream sErr unformatted zz.
+          message zz.
+          errors = errors + zz + "~n".
+        end.
+        input stream sErr close.
+        message "End of file".
+      end.
+
     end method.
     
     method public logical CountRow(pname as character):
