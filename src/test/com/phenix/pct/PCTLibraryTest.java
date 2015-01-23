@@ -217,7 +217,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.contains(new String("éèà.txt")));
     }
 
-    @Test(groups= {"v9"})
+    // @Test(groups= {"v9"})
     public void test11() {
         configureProject("PCTLibrary/test11/build.xml");
 
