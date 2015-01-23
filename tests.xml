@@ -6,7 +6,7 @@
   <property environment="env" />
   <property name="DLC" value="${env.DLC}" />
   <property name="PROFILER" value="false" />
-  <property name="TESTLIBS" value="${basedir}/libs" />
+  <property name="TESTLIBS" value="${basedir}/lib" />
   <!-- Assume version 11 when in local development -->
   <condition property="GROUPS" value="v9,v10,v11">
     <not><isset property="env.OE_MAJOR_VERSION" /></not>
@@ -54,7 +54,6 @@
   </target>
 
   <target name="test">
-    <!-- On Linux   : ant -file tests.xml -DEXCLUDES=win test -->
     <!-- On Windows : ant -file tests.xml test -->
     <mkdir dir="test-output" />
     <mkdir dir="profiler" />
