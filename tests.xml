@@ -6,10 +6,35 @@
   <property environment="env" />
   <property name="DLC" value="${env.DLC}" />
   <property name="PROFILER" value="false" />
-  <property name="GROUPS" value="v9,v10,v11" />
-  <property name="EXCLUDES" value="unix" />
-  <property name="TESTENV" value="ANT" />
-  <property name="VERSION" value="dlc11" />
+  <property name="TESTLIBS" value="${basedir}/libs" />
+  <!-- Assume version 11 when in local development -->
+  <condition property="GROUPS" value="v9,v10,v11">
+    <not><isset property="OE_MAJOR_VERSION" /></not>
+  </condition>
+  <!-- Groups to be executed depending on OpenEdge major version -->
+  <condition property="GROUPS" value="v9">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="9" />
+  </condition>
+  <condition property="GROUPS" value="v9,v10">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="10" />
+  </condition>
+  <condition property="GROUPS" value="v9,v10,v11">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
+  </condition>
+  <!-- Excluded group depending on OS -->
+  <condition property="EXCLUDES" value="unix" else="win">
+    <os family="windows" />
+  </condition>
+  <!-- Only for ProUnit and OEUnit -->
+  <condition property="VERSION" value="dlc${OE_MAJOR_VERSION}" else="dlc11">
+    <isset property="OE_MAJOR_VERSION" />
+  </condition>
+  <condition property="TESTENV" value="${oeaxis}-${slave}" else="ANT">
+    <and>
+      <isset property="oeaxis" />
+      <isset property="slave" />
+    </and>
+  </condition>
 
   <path id="test.run.cp">
     <pathelement location="build/test" />
