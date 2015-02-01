@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test47">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" relativePaths="true">
+      <fileset dir="src" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <touch file="src/test.p" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" relativePaths="true">
+      <fileset dir="src" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
