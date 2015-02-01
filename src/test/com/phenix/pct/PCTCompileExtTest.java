@@ -566,7 +566,18 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // 2 profiler files generated
         assertEquals(f1.list().length, 2);
     }
-    
+
+    @Test(groups = { "v10" } )
+    public void test107() throws IOException {
+        configureProject("PCTCompileExt/test107/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTCompileExt/test107/build/test.r");
+        File f2 = new File("PCTCompileExt/test107/build/test2.r");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+    }
+
     @Test(groups = {"all"})
     public void test38() {
         // Compile error with xcode

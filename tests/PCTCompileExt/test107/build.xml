@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="PCTCompileExt-test107">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+  	<mkdir dir="profiler" />
+    <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*" />
+      <Profiler enabled="true" outputDir="profiler" coverage="true" />  
+    </PCTCompileExt>
+  </target>
+
+</project>
