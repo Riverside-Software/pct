@@ -674,8 +674,11 @@ public class PCTBgCompile extends PCTBgRun {
             if (sourceFileName == null)
                 return null;
             int extPos = sourceFileName.lastIndexOf('.');
-
-            return new String[]{sourceFileName.substring(0, extPos) + ".r"};
+            if (extPos == -1) {
+                return new String[]{sourceFileName + ".r"};
+            } else {
+                return new String[]{sourceFileName.substring(0, extPos) + ".r"};
+            }
         }
     }
 
