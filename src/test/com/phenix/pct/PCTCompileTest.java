@@ -749,4 +749,17 @@ public class PCTCompileTest extends BuildFileTestNg {
             Assert.fail("Unable to open file", caught);
         }
     }
+
+    @Test(groups = {"v10"})
+    public void test48() {
+        configureProject("PCTCompile/test48/build.xml");
+        executeTarget("test1");
+        
+        File f1 = new File("PCTCompile/test48/build/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+    }
 }
