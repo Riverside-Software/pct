@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test48">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" relativePaths="true" dlcHome="${DLC}">
+      <fileset dir="." includes="*.p" />
+      <propath>
+        <pathelement location="." />
+      </propath>
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <touch file="test.p" />
+    <PCTCompile destDir="build" relativePaths="true" dlcHome="${DLC}">
+      <fileset dir="." includes="*.p" />
+      <propath>
+        <pathelement location="." />
+      </propath>
+    </PCTCompile>
+  </target>
+
+</project>
