@@ -4,21 +4,23 @@
 
   <target name="test1">
     <mkdir dir="build" />
-    <PCTCompile destDir="build" relativePaths="true" dlcHome="${DLC}">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <fileset dir="." includes="*.p" />
       <propath>
         <pathelement location="." />
       </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="test2">
     <touch file="test.p" />
-    <PCTCompile destDir="build" relativePaths="true" dlcHome="${DLC}">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <fileset dir="." includes="*.p" />
       <propath>
         <pathelement location="." />
       </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

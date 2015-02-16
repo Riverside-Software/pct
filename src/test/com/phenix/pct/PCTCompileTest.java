@@ -751,10 +751,23 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test47() {
+        configureProject("PCTCompile/test47/build.xml");
+        executeTarget("test1");
+
+        File f1 = new File("PCTCompile/test47/build/dir1/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+    }
+
+    @Test(groups = {"v10"})
     public void test48() {
         configureProject("PCTCompile/test48/build.xml");
         executeTarget("test1");
-        
+
         File f1 = new File("PCTCompile/test48/build/test.r");
         assertTrue(f1.exists());
         long mod1 = f1.lastModified();

@@ -4,7 +4,7 @@
 
   <target name="test1">
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" relativePaths="true">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <fileset dir="src" includes="**/*.p" />
       <propath>
         <pathelement location="src" />
@@ -14,8 +14,8 @@
   </target>
 
   <target name="test2">
-    <touch file="src/test.p" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" relativePaths="true">
+    <touch file="src/dir1/test.p" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <fileset dir="src" includes="**/*.p" />
       <propath>
         <pathelement location="src" />
