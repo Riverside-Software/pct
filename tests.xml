@@ -26,7 +26,13 @@
     <os family="windows" />
   </condition>
   <!-- Only for ProUnit and OEUnit -->
-  <condition property="VERSION" value="dlc${env.OE_MAJOR_VERSION}" else="dlc11">
+  <condition property="SIXTYFOUR" value="-64" else="">
+    <and>
+      <equals arg1="${env.OE_MAJOR_VERSION}" arg2="10" />
+      <equals arg1="${env.OE_ARCH}" arg2="64" />
+    </and>
+  </condition>
+  <condition property="VERSION" value="dlc${env.OE_MAJOR_VERSION}${SIXTYFOUR}" else="dlc11">
     <isset property="env.OE_MAJOR_VERSION" />
   </condition>
   <condition property="TESTENV" value="${oeaxis}-${slave}" else="ANT">
