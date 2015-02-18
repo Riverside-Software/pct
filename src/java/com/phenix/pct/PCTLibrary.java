@@ -41,7 +41,9 @@ import java.util.Random;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTLibrary extends PCT {
+    private boolean deleteTempFile = false;
     private int tmpFileID = -1;
+    private int tmpLibraryID = -1;
     private File tmpFile = null;
     private File destFile = null;
     private String encoding = null;
@@ -66,7 +68,8 @@ public class PCTLibrary extends PCT {
      */
     public PCTLibrary() {
         super();
-        tmpFileID = new Random().nextInt() & 0xffff;
+        tmpFileID = nextRandomInt();
+        tmpLibraryID = nextRandomInt(); 
         tmpFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
@@ -228,13 +231,20 @@ public class PCTLibrary extends PCT {
 
         checkDlcHome();
         // Library name must be defined
-        if (destFile == null) {
+        if ((destFile == null) && (sharedFile == null)) {
             throw new BuildException(Messages.getString("PCTLibrary.1"));
         }
 
         // There must be at least one fileset
         if ((baseDir == null) && (filesets.size() == 0)) {
             throw new BuildException(Messages.getString("PCTLibrary.2"));
+        }
+
+        if ((destFile == null) && (sharedFile != null)) {
+            // Only interested in memory-mapped PL file
+            destFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpLibraryID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            deleteTempFile = true;
+            noCompress = true;
         }
 
         try {
@@ -280,6 +290,13 @@ public class PCTLibrary extends PCT {
 
                 exec = compressTask();
                 exec.execute();
+            }
+
+            if (deleteTempFile) {
+                if (!destFile.delete()) {
+                    log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
+                            destFile.getAbsolutePath()), Project.MSG_VERBOSE);
+                }
             }
         } catch (BuildException be) {
             cleanup();
