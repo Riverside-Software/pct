@@ -53,6 +53,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.BuildException;
@@ -255,5 +256,33 @@ public class PCTLibraryTest extends BuildFileTestNg {
         expectLog("test3", "55184 55186 49809"); // אג±
         expectLog("test4", "49853 50064"); // ½Ð
         expectLog("test5", "50089 50334 50309 50064"); // éĞąÐ
+    }
+
+    /**
+     * Checks that a file is added in the library
+     */
+    @Test(groups= {"v9"})
+    public void test13() {
+        configureProject("PCTLibrary/test13/build.xml");
+        executeTarget("test1");
+        File pl1 = new File("PCTLibrary/test13/lib1/test.pl");
+        assertTrue(pl1.exists());
+        File pl2 = new File("PCTLibrary/test13/lib1/shared.pl");
+        assertTrue(pl2.exists());
+
+        // Memory-mapped PL can't be read by PLReader
+        // PLReader r = new PLReader(pl2);
+        // List<FileEntry> v = r.getFileList();
+        // assertTrue(v != null);
+        // assertTrue(v.size() == 1);
+        // assertTrue(((FileEntry) v.get(0)).getFileName().startsWith("test"));
+
+        executeTarget("test2");
+        File dir = new File("PCTLibrary/test13/lib2");
+        assertEquals(dir.listFiles().length, 1);
+        File pl4 = new File("PCTLibrary/test13/lib2/shared.pl");
+        assertTrue(pl4.exists());
+
+        expectBuildException("test3", "No destFile or sharedFile");
     }
 }

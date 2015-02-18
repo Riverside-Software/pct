@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="PCTLibrary-test13">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="lib1" />
+    <PCTLibrary destFile="lib1/test.pl" sharedFile="lib1/shared.pl" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test" />
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="lib2" />
+    <PCTLibrary sharedFile="lib2/shared.pl" dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test" />
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+  <target name="test3">
+    <PCTLibrary dlcHome="${DLC}">
+      <fileset dir="src">
+        <include name="test" />
+      </fileset>
+    </PCTLibrary>
+  </target>
+
+</project>
