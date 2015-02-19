@@ -28,4 +28,14 @@
     </PCTLibrary>
   </target>
 
+  <target name="test4">
+    <mkdir dir="lib4" />
+    <PCTLibrary sharedFile="lib4/shared.pl" dlcHome="${DLC}">
+      <fileset dir="src" includes="test" />
+    </PCTLibrary>
+    <PCTLibrary sharedFile="lib4/shared.pl" dlcHome="${DLC}">
+      <fileset dir="src" includes="test" />
+    </PCTLibrary>
+  </target>
+
 </project>

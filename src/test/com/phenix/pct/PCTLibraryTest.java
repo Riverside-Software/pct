@@ -284,5 +284,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(pl4.exists());
 
         expectBuildException("test3", "No destFile or sharedFile");
+
+        executeTarget("test4");
     }
 }
