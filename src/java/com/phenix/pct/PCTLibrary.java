@@ -279,6 +279,15 @@ public class PCTLibrary extends PCT {
 
             // Creates shared library if name defined
             if (sharedFile != null) {
+                if (sharedFile.exists()) {
+                    if (!sharedFile.delete()) {
+                        log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
+                                destFile.getAbsolutePath()), Project.MSG_VERBOSE);
+                        throw new BuildException("Can't create memory-mapped library");
+                    }
+                }
+                log(MessageFormat
+                        .format(Messages.getString("PCTLibrary.8"), sharedFile.getAbsolutePath()));
                 exec = makeSharedTask();
                 exec.execute();
             }
