@@ -33,16 +33,19 @@ CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
 
   METHOD PUBLIC OVERRIDE VOID AddError( pcText as char ) :
     THIS-OBJECT:numErrors = THIS-OBJECT:numErrors + 1.
+    MESSAGE pcText.
     errors = errors + pcText + "~n".
   END METHOD.
     
   METHOD PUBLIC OVERRIDE VOID AddPhase2Error( pcText as char ) :
     THIS-OBJECT:numErrors = THIS-OBJECT:numErrors + 1.
+    MESSAGE pcText.
     errors = errors + pcText + "~n".
   END METHOD.
     
   METHOD PUBLIC OVERRIDE VOID AddWarning( pcText as char ) :
     THIS-OBJECT:numWarnings = THIS-OBJECT:numWarnings + 1.
+    MESSAGE pcText.
     warnings = warnings + pcText + "~n".
   END METHOD.
 
