@@ -148,6 +148,8 @@ public class PCTLoadSchema extends PCTRun {
             }
         }
 
+        checkDlcHome();
+
         try {
             writeFileList();
             setProcedure(getProgressProcedures().getLoadSchemaProcedure());
