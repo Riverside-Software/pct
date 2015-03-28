@@ -10,4 +10,4 @@ PCT was designed and written by Gilles QUERRET (g.querret at gmail.com), freelan
 
 ### Documentation ###
 
-Documentation is available [here](https://code.google.com/p/pct/wiki/Overview)
+Documentation is available [here](https://github.com/jakejustus/pct/wiki)
