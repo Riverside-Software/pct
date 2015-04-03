@@ -1,5 +1,7 @@
 # README #
 
+[ ![License] [license-image] ] [license]
+
 PCT (Progress Compilation Tools) is a set of ANT tasks, designed to automate work in OpenEdge environment.
 
 PCT is distributed under the Apache License.
