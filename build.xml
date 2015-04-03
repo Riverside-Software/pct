@@ -52,14 +52,6 @@
   <property name="javac.source" value="1.5" />
   <property name="javac.target" value="1.5" />
 
-  <!-- PCT Version -->
-  <property name="pct.version" value="1.1-pre" />
-  <condition property="BUILD_NUMBER" value="${pct.version}">
-    <not>
-      <isset property="RELEASE" />
-    </not>
-  </condition>
-
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
     <!-- I have absolutely no way to test compilation on v8... -->
