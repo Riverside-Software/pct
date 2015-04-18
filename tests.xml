@@ -87,6 +87,7 @@
     </taskdef>
     <GenericCoverage destFile="profiler-${TESTENV}.xml">
       <fileset dir="testbox" includes="**/profiler*.out" />
+      <propath location="src/progress" />
     </GenericCoverage>
 
     <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
