@@ -1,0 +1,8 @@
+/.sonar/
+/build/
+/dist/
+/testbox/
+/test-output/
+/classDocTemp/
+/profiler/
+src/java/com/phenix/pct/PCT\.properties$
