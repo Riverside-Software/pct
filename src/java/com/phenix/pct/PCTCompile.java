@@ -74,6 +74,7 @@ public class PCTCompile extends PCTRun {
     private int progPerc = 0;
     private File preprocessDir = null;
     private File debugListingDir = null;
+    private boolean flattenDbg = true;
 
     // Internal use
     private int fsListId = -1;
@@ -195,6 +196,10 @@ public class PCTCompile extends PCTRun {
 
     public void setDebugListingDir(File debugListingDir) {
         this.debugListingDir = debugListingDir;
+    }
+
+    public void setFlattenDebugListing(boolean flatten) {
+        this.flattenDbg = flatten;
     }
 
     /**
@@ -539,6 +544,8 @@ public class PCTCompile extends PCTRun {
                 bw.write("DEBUGLISTINGDIR=" + debugListingDir.getAbsolutePath());
                 bw.newLine();
             }
+            bw.write("FLATTENDBG=" + (this.flattenDbg ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
             bw.write("KEEPXREF=" + (this.keepXref ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XMLXREF=" + (this.xmlXref ? 1 : 0)); //$NON-NLS-1$
