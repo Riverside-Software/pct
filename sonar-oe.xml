@@ -18,13 +18,10 @@
   <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
   <property name="sonar.jdbc.username" value="sonar" />
   <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
+  <property name="sonar.genericcoverage.reportPaths" value="profiler-OE-11.5-EC2-EU1B.xml" />
 
   <target name="sonar">
     <mkdir dir="profiler" />
-    <copy todir="profiler">
-      <zipfileset src="profiler-v11.4-win64.zip" />
-      <flattenmapper />
-    </copy>
     <copy todir="build/build-v11">
       <zipfileset src="lib/classDoc.zip" includes=".pct/**/*" />
     </copy>

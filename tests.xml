@@ -54,6 +54,11 @@
   <path id="jacoco.cp">
     <fileset dir="lib" includes="jacocoant.jar" />
   </path>
+  <path id="coverage.cp">
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="guava.jar" />
+    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
+  </path>
 
   <target name="init">
     <unzip src="testcases.zip" dest="." />
@@ -77,7 +82,10 @@
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
-    <zip destFile="profiler/profiler-${TESTENV}.zip">
+    <taskdef name="GenericCoverage" classname="com.phenix.pct.GenericCoverage">
+      <classpath location="dist/PCT.jar" />
+    </taskdef>
+    <GenericCoverage destFile="profiler-${TESTENV}.xml">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
 
