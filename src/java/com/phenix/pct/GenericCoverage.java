@@ -50,6 +50,11 @@ public class GenericCoverage extends Task {
 
     @Override
     public void execute() throws BuildException {
+        if ((profilerFiles == null) || (profilerFiles.size() == 0)) {
+            log("No fileset defined, XML output will not be generated");
+            return;
+        }
+
         try {
             CoverageSession session = new CoverageSession();
             for (String str : profilerFiles.getDirectoryScanner(getProject()).getIncludedFiles()) {
