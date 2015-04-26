@@ -492,7 +492,7 @@ PROCEDURE PCTCompile.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
-        RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+        RUN displayCompileErrors(SEARCH(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
     IF (debugListingFile NE ?) THEN DO:
         OS-COPY VALUE(debugListingFile) VALUE(dbgListDir + '/':U + debugListingFile).
@@ -678,7 +678,7 @@ PROCEDURE PCTCompileXref.
         DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
             ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
         END.
-        RUN displayCompileErrors(SEARCH(pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+        RUN displayCompileErrors(SEARCH(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
     IF lTwoPass THEN DO:
         OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
