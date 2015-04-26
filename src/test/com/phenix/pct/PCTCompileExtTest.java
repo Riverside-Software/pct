@@ -513,17 +513,15 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File srcFile = new File("PCTCompileExt/test103/query-tester.w");
         for (int ii = 0; ii < 10; ii++) {
             for (int jj = 0; jj < 10; jj++) {
-                for (int kk = 0; kk < 10; kk++) {
-                    copy(srcFile, new File(inputDir, "test" + ii + jj + kk + ".p"));
-                }
+                copy(srcFile, new File(inputDir, "test" + ii + jj + ".p"));
             }
         }
         configureProject("PCTCompileExt/test103/build.xml");
         executeTarget("test");
 
-        File f = new File("PCTCompileExt/test103/build/test000.r");
+        File f = new File("PCTCompileExt/test103/build/test00.r");
         assertTrue(f.exists());
-        f = new File("PCTCompileExt/test103/build/test999.r");
+        f = new File("PCTCompileExt/test103/build/test99.r");
         assertTrue(f.exists());
     }
 
