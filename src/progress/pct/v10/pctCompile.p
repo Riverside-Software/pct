@@ -105,6 +105,7 @@ DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE PCTDir    AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE preprocessDir AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE dbgListDir AS CHARACTER NO-UNDO.
+DEFINE VARIABLE flattenDbg AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE FailOnErr AS LOGICAL    NO-UNDO.
@@ -209,6 +210,8 @@ REPEAT:
             ASSIGN DebugLst = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'DEBUGLISTINGDIR':U THEN
             ASSIGN dbgListDir = ENTRY(2, cLine, '=':U).
+        WHEN 'FLATTENDBG':U THEN
+            ASSIGN flattenDbg = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'STRINGXREF':U THEN
             ASSIGN StrXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'APPENDSTRINGXREF':U THEN
@@ -690,10 +693,6 @@ PROCEDURE PCTCompileXref.
     IF lTwoPass THEN DO:
         OS-DELETE VALUE(pcInDir + '/':U + pcInFile) .
         OS-RENAME VALUE(pcInDir + '/':U + pcInFile + '.backup':U) VALUE(pcInDir + '/':U + pcInFile) .
-    END.
-    IF (debugListingFile NE ?) THEN DO:
-        OS-COPY VALUE(debugListingFile) VALUE(dbgListDir + '/':U + debugListingFile).
-        OS-DELETE VALUE(debugListingFile).
     END.
     IF (plOK AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
         COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(pcPCTDir + '/':U + pcInFile) NO-ERROR.
