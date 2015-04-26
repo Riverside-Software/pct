@@ -553,7 +553,14 @@ PROCEDURE PCTCompileXref.
     ELSE
         ASSIGN preprocessFile = ?.
     IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
-        ASSIGN debugListingFile = REPLACE(REPLACE(pcInFile, '/', '_'), '~\', '_').
+        IF flattenDbg THEN
+            ASSIGN debugListingFile = dbgListDir + '/' + REPLACE(REPLACE(pcInFile, '/', '_'), '~\', '_').
+        ELSE DO:
+            ASSIGN debugListingFile = pcInFile.
+            ASSIGN debugListingFile = dbgListDir + '/' + debugListingFile.
+            ASSIGN plOK = createDir(dbgListDir, cBase).
+            IF (NOT plOK) THEN RETURN.
+        END.
     END.
     ELSE
        ASSIGN debugListingFile = ?.
