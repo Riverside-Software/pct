@@ -18,12 +18,17 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * Proxygen task
@@ -39,6 +44,15 @@ public class PCTProxygen extends PCT {
     private File workingDirectory = null;
 
     private Java pxg = null;
+
+    // Internal use
+    private int logID = -1;
+    protected File logFile = null;
+
+    public PCTProxygen() {
+        logID = PCT.nextRandomInt();
+        logFile = new File(System.getProperty("java.io.tmpdir"), "pxg" + logID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
 
     /**
      * Keep files
@@ -151,11 +165,52 @@ public class PCTProxygen extends PCT {
         var6.setValue(workingDirectory.getAbsolutePath());
         pxg.addSysproperty(var6);
 
-        // Don't use executeJava and get return code as Progress doesn't know what a return value is
         pxg.setFailonerror(true);
-        int retVal = pxg.executeJava();
-        if (retVal != 0) {
-            throw new BuildException("PCTProxygen failed - Return code " + retVal + " - Command line : " + pxg.getCommandLine().toString());
+        // Catch output in order to parse it
+        pxg.setOutput(logFile);
+        pxg.setLogError(false);
+
+        boolean fail = false;
+        try {
+            pxg.execute();
+        } catch (BuildException caught) {
+            fail = true;
+        }
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(logFile));
+            String str = null;
+            while ((str = reader.readLine()) != null) {
+                if (str.contains("Warnings")) {
+                    log(str, Project.MSG_WARN);
+                } else if (str.contains("Failed")) {
+                    log(str, Project.MSG_ERR);
+                    fail = true;
+                } else {
+                    log(str, Project.MSG_INFO);
+                }
+            }
+        } catch (IOException caught) {
+            cleanup();
+            throw new BuildException("Unable to parse output", caught);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException uncaught) {
+                }
+            }
+        }
+        cleanup();
+        if (fail) {
+            throw new BuildException("Proxy generation failed");
+        }
+    }
+
+    protected void cleanup() {
+        if ((logFile != null) && logFile.exists() && !logFile.delete()) {
+            log(MessageFormat.format(Messages.getString("PCTRun.5"), logFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
         }
     }
 }
