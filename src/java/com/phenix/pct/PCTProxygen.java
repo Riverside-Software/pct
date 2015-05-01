@@ -219,7 +219,9 @@ public class PCTProxygen extends PCT {
                         log(str.trim(), Project.MSG_WARN);
                     } else if (str.trim().startsWith(">>ERR")) {
                         log(str.trim(), Project.MSG_ERR);
-                    } 
+                    } else {
+                        log(str, Project.MSG_VERBOSE);
+                    }
                 }
             } catch (IOException caught) {
                 cleanup();
