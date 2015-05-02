@@ -61,6 +61,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 
@@ -178,6 +179,7 @@ public class OpenEdgeDocumentation extends PCT {
 
                 for (int i = 0; i < dsfiles.length; i++) {
                     File file = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                    log("Generating AST for " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                     int extPos = file.getName().lastIndexOf('.');
                     String ext = file.getName().substring(extPos);
                     boolean isClass = ".cls".equalsIgnoreCase(ext);
@@ -185,6 +187,7 @@ public class OpenEdgeDocumentation extends PCT {
                     CompilationUnit root = ParserUtils.createCompilationUnit(file);
                     if (isClass) {
                         ClassDocumentationVisitor visitor = new ClassDocumentationVisitor();
+                        log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                         root.accept(visitor);
                         if (visitor.getPackageName().length() == 0)
                             visitor.toXML(new File(destDir, visitor.getClassName() + ".xml"));
@@ -193,6 +196,7 @@ public class OpenEdgeDocumentation extends PCT {
                                     + visitor.getClassName() + ".xml"));
                     } else {
                         ProcedureDocumentationVisitor visitor = new ProcedureDocumentationVisitor();
+                        log("Executing AST ProcedureVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                         root.accept(visitor);
                         File destFile = new File(destDir, dsfiles[i] + ".xml");
                         destFile.getParentFile().mkdirs();
