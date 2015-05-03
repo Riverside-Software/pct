@@ -142,7 +142,7 @@
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
 
-    <echo file="${src.java}/com/phenix/pct/PCT.properties">${env.BUILD_TAG}</echo>
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${env.BUILD_TAG}</echo>
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">

@@ -29,8 +29,7 @@ public class Version extends Task {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public void execute() throws BuildException {
-        String str = "PCT Version " + RESOURCE_BUNDLE.getString("PCTVersion") + " - Build "
-                + RESOURCE_BUNDLE.getString("PCTBuild");
+        String str = "PCT Version : " + RESOURCE_BUNDLE.getString("PCTVersion");
         Echo echo = new Echo();
         echo.bindToOwner(this);
         echo.setMessage(str);
