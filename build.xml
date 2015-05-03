@@ -23,11 +23,7 @@
     <os family="unix" />
   </condition>
 
-  <condition property="BUILD_NUMBER" value="ANT">
-    <not>
-      <isset property="BUILD_NUMBER" />
-    </not>
-  </condition>
+  <property name="env.BUILD_TAG" value="LocalBuild" />
 
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
@@ -146,9 +142,7 @@
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
 
-    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version}
-PCTBuild=${BUILD_NUMBER}
-    </echo>
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">${env.BUILD_TAG}</echo>
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
@@ -343,7 +337,7 @@ PCTBuild=${BUILD_NUMBER}
           <attribute name="Specification-Version" value="${pct.version}" />
           <attribute name="Specification-Vendor" value="Riverside Software" />
           <attribute name="Implementation-Title" value="PCT" />
-          <attribute name="Implementation-Version" value="Build ${BUILD_NUMBER}" />
+          <attribute name="Implementation-Version" value="Build ${env.BUILD_TAG}" />
           <attribute name="Implementation-Vendor" value="Riverside Software" />
         </section>
       </manifest>
@@ -384,7 +378,7 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <zip destfile="${dist}/pct-src-${BUILD_NUMBER}.zip">
+    <zip destfile="${dist}/pct-src-${env.BUILD_TAG}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**" />
         <include name="build.xml" />
