@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+  <path id="coverage.cp">
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="guava.jar" />
+    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
+  </path>
+
+  <taskdef resource="PCT.properties">
+    <classpath refid="coverage.cp" />
+  </taskdef>
+
+  <property name="sonar.host.url" value="${SONAR_URL}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.oedbg:${JOB_NAME}" />
+  <property name="sonar.projectName" value="PCT - OpenEdge debug module" />
+  <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
+  <property name="sonar.language" value="oe" />
+  <property name="sonar.sources" value="src/progress-dbg" />
+  <property name="sonar.binaries" value="build/build-dbg" />
+  <property name="sonar.oe.pct_style" value="true" />
+  <property name="sonar.verbose" value="false" />
+  <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+  <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
+  <property name="sonar.jdbc.username" value="sonar" />
+  <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
+  <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
+
+  <target name="sonar">
+    <sports2000 dbName="sp2k" />
+    <mkdir dir="src/progress-dbg" />
+    <copy toDir="src/progress-dbg">
+      <fileset dir="build/build-v11/.dbg" />
+      <filterchain>
+        <filterreader classname="com.phenix.pct.DebugListingFilterReader">
+          <classpath>
+            <pathelement path="dist/PCT.jar" />
+          </classpath>
+        </filterreader>
+      </filterchain>
+    </copy>
+    <mkdir dir="build/build-dbg" />
+    <PCTCompile destDir="build/build-dbg" keepXref="true" xmlXref="true" graphicalMode="false" dlcHome="${DLC}" relativePaths="true">
+      <fileset dir="src/progress-dbg" />
+      <propath>
+        <pathelement location="src/progress-dbg" />
+        <pathelement location="lib/OEUnit_dlc11.pl" />
+      </propath>
+      <PCTConnection dbName="sp2k" singleUser="true" logicalName="dictdb">
+        <PCTAlias name="dictdb2" />
+      </PCTConnection>
+    </PCTCompile>
+
+    <mkdir dir="profiler" />
+    <unzip src="oe-profiler-data-OE-11.5-EC2-EU1B.zip" dest="profiler" />
+    <taskdef name="GenericCoverage" classname="com.phenix.pct.GenericCoverage">
+      <classpath refid="coverage.cp" />
+    </taskdef>
+    <GenericCoverage destFile="coverage-data.xml">
+      <fileset dir="profiler" includes="**/profiler*.out" />
+      <propath location="src/progress-dbg" />
+    </GenericCoverage>
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+      <classpath path="lib/sonar-ant-task-*.jar" />
+    </taskdef>
+    <sonar:sonar />
+  </target>
+
+</project>
