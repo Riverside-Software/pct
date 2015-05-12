@@ -18,10 +18,24 @@
   <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
   <property name="sonar.jdbc.username" value="sonar" />
   <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
-  <property name="sonar.genericcoverage.reportPaths" value="profiler-OE-11.5-EC2-EU1B.xml" />
+  <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
+
+  <path id="coverage.cp">
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="guava.jar" />
+    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
+  </path>
 
   <target name="sonar">
     <mkdir dir="profiler" />
+    <unzip src="oe-profiler-data-OE-11.5-EC2-EU1B.zip" dest="profiler" />
+    <taskdef name="GenericCoverage" classname="com.phenix.pct.GenericCoverage">
+      <classpath refid="coverage.cp" />
+    </taskdef>
+    <GenericCoverage destFile="coverage-data.xml">
+      <fileset dir="profiler" includes="**/profiler*.out" />
+      <propath location="src/progress" />
+    </GenericCoverage>
     <copy todir="build/build-v11">
       <zipfileset src="lib/classDoc.zip" includes=".pct/**/*" />
     </copy>
