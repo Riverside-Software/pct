@@ -27,7 +27,7 @@
   <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
 
   <target name="sonar">
-    <sports2000 dbName="sp2k" />
+    <sports2000 dbName="sp2k" dlcHome="${DLC}" />
     <mkdir dir="src/progress-dbg" />
     <copy toDir="src/progress-dbg">
       <fileset dir="build/build-v11/.dbg" />
