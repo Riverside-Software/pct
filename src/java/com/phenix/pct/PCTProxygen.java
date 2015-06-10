@@ -23,12 +23,18 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Proxygen task
@@ -40,6 +46,7 @@ public class PCTProxygen extends PCT {
     private static final String PROXYGEN_CLASS = "com.progress.open4gl.proxygen.Batch";
 
     private File srcFile = null;
+    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
     private boolean keepFiles = false;
     private File workingDirectory = null;
 
@@ -86,6 +93,15 @@ public class PCTProxygen extends PCT {
     }
 
     /**
+     * Adds a Proxygen ResourceCollection
+     * 
+     * @param rc ResourceCollection
+     */
+    public void add(ResourceCollection rc) {
+        resources.add(rc);
+    }
+
+    /**
      * For jvmarg nested elements
      */
     public Commandline.Argument createJvmarg() {
@@ -102,7 +118,14 @@ public class PCTProxygen extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (this.srcFile == null) {
+        // Verify resource collections
+        for (ResourceCollection rc : resources) {
+            if (!rc.isFilesystemOnly())
+                throw new BuildException(
+                        "PCTProxygen only supports file-system resource collections");
+        }
+
+        if ((this.srcFile == null) && (resources.isEmpty())) {
             throw new BuildException(Messages.getString("PCTProxygen.1")); //$NON-NLS-1$
         }
 
@@ -122,28 +145,11 @@ public class PCTProxygen extends PCT {
             pxg.setJvm(getJVM().getAbsolutePath());
         if (this.workingDirectory != null) {
             pxg.setDir(this.workingDirectory);
-        } else {
-            pxg.setDir(this.getProject().getBaseDir());
         }
 
         pxg.setClassname(PROXYGEN_CLASS);
         // Bug #1114731 : new way of handling JAR dependencies
         pxg.createClasspath().addFileset(this.getJavaFileset(this.getProject()));
-
-        // As Progress doesn't know command line parameters,
-        // arguments are given via environment variables
-        Environment.Variable var = new Environment.Variable();
-        // Bug #1311746 : mixed case extension are not handled correctly
-        // So, at first extract extension and then compare ignore case
-        int ext_pos = this.srcFile.toString().lastIndexOf('.');
-        String extension = (ext_pos == -1 ? "" : this.srcFile.toString().substring(ext_pos));
-        if (extension.equalsIgnoreCase(".xpxg")) //$NON-NLS-1$
-            var.setKey("XPXGFile"); //$NON-NLS-1$
-        else
-            var.setKey("PXGFile"); //$NON-NLS-1$
-
-        var.setValue(this.srcFile.toString());
-        pxg.addSysproperty(var);
 
         Environment.Variable var2 = new Environment.Variable();
         var2.setKey("Install.Dir"); //$NON-NLS-1$
@@ -160,20 +166,52 @@ public class PCTProxygen extends PCT {
         var4.setValue(this.getDlcHome().toString());
         pxg.addEnv(var4);
 
-        Environment.Variable var6 = new Environment.Variable();
-        var6.setKey("Proxygen.StartDir"); //$NON-NLS-1$
-        var6.setValue(workingDirectory.getAbsolutePath());
-        pxg.addSysproperty(var6);
-
         pxg.setFailonerror(true);
         // Catch output in order to parse it
         pxg.setOutput(logFile);
         pxg.setLogError(false);
 
+        if (srcFile != null) {
+            executeProxygen(srcFile);
+        }
+        for (ResourceCollection rc : resources) {
+            Iterator<Resource> iter = rc.iterator();
+            while (iter.hasNext()) {
+                FileResource frs = (FileResource) iter.next();
+                executeProxygen(frs.getFile());
+            }
+        }
+
+    }
+
+    private void executeProxygen(File pxgFile) throws BuildException {
+        Java pxgTask = null;
+        log(MessageFormat.format(Messages.getString("PCTProxygen.3"), pxgFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
+
+        try {
+            pxgTask = (Java) pxg.clone();
+        } catch (CloneNotSupportedException caught) {
+            throw new BuildException("Unable to clone Java task", caught);
+        }
+        
+        // As Progress doesn't know command line parameters,
+        // arguments are given via environment variables
+        Environment.Variable var = new Environment.Variable();
+        // Bug #1311746 : mixed case extension are not handled correctly
+        // So, at first extract extension and then compare ignore case
+        int ext_pos = pxgFile.toString().lastIndexOf('.');
+        String extension = (ext_pos == -1 ? "" : pxgFile.toString().substring(ext_pos));
+        if (extension.equalsIgnoreCase(".xpxg")) //$NON-NLS-1$
+            var.setKey("XPXGFile"); //$NON-NLS-1$
+        else
+            var.setKey("PXGFile"); //$NON-NLS-1$
+        var.setValue(pxgFile.toString());
+        pxgTask.addSysproperty(var);
+
         boolean fail = false;
         File pxgLogFile = null; // Generated by proxygen itself
         try {
-            pxg.execute();
+            pxgTask.execute();
         } catch (BuildException caught) {
             fail = true;
         }
@@ -210,7 +248,7 @@ public class PCTProxygen extends PCT {
         cleanup();
 
         // Parse log file of proxygen itself, if file is available
-        if (pxgLogFile.exists()) {
+        if ((pxgLogFile != null) && pxgLogFile.exists()) {
             try {
                 reader = new BufferedReader(new FileReader(pxgLogFile));
                 String str = null;

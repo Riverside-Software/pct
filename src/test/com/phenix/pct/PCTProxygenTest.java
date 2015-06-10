@@ -121,4 +121,20 @@ public class PCTProxygenTest extends BuildFileTestNg {
         executeTarget("test2");
         assertTrue(f3.exists());
     }
+
+    @Test(groups = { "v11", "win" })
+    public void test5() {
+        configureProject("PCTProxygen/test5/build.xml");
+        executeTarget("prepare");
+
+        executeTarget("test1");
+        File f1 = new File("PCTProxygen/test5/build-pxg1/Test.class");
+        File f2 = new File("PCTProxygen/test5/build-pxg1/TestImpl.class");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        File f3 = new File("PCTProxygen/test5/build-pxg2/Test.class");
+        File f4 = new File("PCTProxygen/test5/build-pxg2/TestImpl.class");
+        assertTrue(f3.exists());
+        assertTrue(f4.exists());
+    }
 }
