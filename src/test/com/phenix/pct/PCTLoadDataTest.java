@@ -240,4 +240,22 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("test");
     }
 
+    /**
+     * Should return error when loading data twice with errorTolerance zero
+     */
+    @Test(groups= {"v10"})
+    public void test10() {
+        configureProject("PCTLoadData/test10/build.xml");
+        // Build db and load initial data
+        executeTarget("base");
+        // Should fail, because errorTolerance is 0
+        expectBuildException("load1", "Should fail");
+        // Should run successful, because errorTolerance is 100
+        executeTarget("load2");
+        // Should fail, because errorTolerance is 0
+        expectBuildException("load3", "Should fail");
+        // Should run successful, because errorTolerance is 100
+        executeTarget("load4");
+    }    
+    
 }
