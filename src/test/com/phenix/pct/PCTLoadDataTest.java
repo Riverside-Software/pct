@@ -242,7 +242,7 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     /**
      * Should return error when loading data twice with errorTolerance zero
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test10() {
         configureProject("PCTLoadData/test10/build.xml");
         // Build db and load initial data
