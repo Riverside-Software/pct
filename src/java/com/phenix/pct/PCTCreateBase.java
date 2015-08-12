@@ -42,7 +42,7 @@ public class PCTCreateBase extends PCT {
 
     private String dbName = null;
     private String codepage = null;
-    private String sourceDb = null;
+    private File sourceDb = null;
     private File destDir = null;
     private File structFile = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
@@ -89,7 +89,7 @@ public class PCTCreateBase extends PCT {
      * 
      * @param sourceDb
      */
-    public void setSourceDb(String sourceDb) {
+    public void setSourceDb(File sourceDb) {
         this.sourceDb = sourceDb;
     }
 
@@ -549,7 +549,7 @@ public class PCTCreateBase extends PCT {
 
         File srcDB = null;
         if (sourceDb != null) {
-            srcDB = new File(sourceDb);
+            srcDB = sourceDb;
         } else {
             File srcDir = getDlcHome();
             if (codepage != null) {
