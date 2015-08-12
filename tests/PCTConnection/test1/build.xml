@@ -16,7 +16,7 @@
   <DBConnection id="db4" refid="db3">
     <Alias name="alias1" />
   </DBConnection>
-  
+
   <!-- GC bug #30 -->
   <pct:db_connection id="db5" dbName="foo" dbDir="db" />
   <pct:db_connection_set id="set1">
@@ -29,4 +29,10 @@
     <pct:db_connection dbName="foo" dbDir="db" />
     <pct:dbConnection dbName="foo2" dbDir="db" />
   </pct:dbConnectionSet>
+
+  <!-- Adding two attributes -->
+  <DBConnection id="db6" refid="db3" singleUser="true" dbPort="1234" />
+  <!-- Adding two attributes -->
+  <DBConnection id="db7" refid="db6" singleUser="false" />
+
 </project>
