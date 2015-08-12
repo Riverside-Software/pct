@@ -54,6 +54,11 @@
   <path id="jacoco.cp">
     <fileset dir="lib" includes="jacocoant.jar" />
   </path>
+  <path id="coverage.cp">
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="guava.jar" />
+    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
+  </path>
 
   <target name="init">
     <unzip src="testcases.zip" dest="." />
@@ -67,7 +72,7 @@
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
     <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
-        <classfileset dir="build/test" includes="**/*Test.class" />
+        <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
       </testng>
@@ -77,10 +82,9 @@
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
-    <zip destFile="profiler/profiler-${TESTENV}.zip">
+    <zip destFile="oe-profiler-data-${TESTENV}.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
-
     <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
       <fileset dir="." includes="emailable-report-${TESTENV}.html" />
     </ftp>

@@ -23,11 +23,7 @@
     <os family="unix" />
   </condition>
 
-  <condition property="BUILD_NUMBER" value="ANT">
-    <not>
-      <isset property="BUILD_NUMBER" />
-    </not>
-  </condition>
+  <property name="env.BUILD_TAG" value="LocalBuild" />
 
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
@@ -51,14 +47,6 @@
   <property name="optimize" value="false" />
   <property name="javac.source" value="1.5" />
   <property name="javac.target" value="1.5" />
-
-  <!-- PCT Version -->
-  <property name="pct.version" value="1.1-pre" />
-  <condition property="BUILD_NUMBER" value="${pct.version}">
-    <not>
-      <isset property="RELEASE" />
-    </not>
-  </condition>
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v8" dir="${src.progress}">
@@ -123,6 +111,7 @@
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/guava.jar" />
+    <pathelement location="lib/profiler-parser-1.2.jar" />
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
@@ -153,9 +142,7 @@
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
 
-    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version}
-PCTBuild=${BUILD_NUMBER}
-    </echo>
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${env.BUILD_TAG}</echo>
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
@@ -213,7 +200,7 @@ PCTBuild=${BUILD_NUMBER}
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-    <bootstrapCompile destdir="${buildDir}" preprocess="true" debugListing="true" listing="true" listingSource="preprocessor" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
+    <bootstrapCompile destdir="${buildDir}" preprocess="true" debugListing="true" flattenDebugListing="false" listing="true" listingSource="preprocessor" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8">
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
@@ -339,6 +326,7 @@ PCTBuild=${BUILD_NUMBER}
     <zipfileset src="lib/jcommander-1.30.jar" />
    	<zipfileset src="lib/gson-2.2.4.jar" />
     <zipfileset src="lib/proparse.jar" includes="**/*.class" />
+    <zipfileset src="lib/profiler-parser-1.2.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
     <zipfileset src="lib/parser.jar" includes="**/*.class,**/jaxb.index" />
     <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
@@ -349,7 +337,7 @@ PCTBuild=${BUILD_NUMBER}
           <attribute name="Specification-Version" value="${pct.version}" />
           <attribute name="Specification-Vendor" value="Riverside Software" />
           <attribute name="Implementation-Title" value="PCT" />
-          <attribute name="Implementation-Version" value="Build ${BUILD_NUMBER}" />
+          <attribute name="Implementation-Version" value="Build ${env.BUILD_TAG}" />
           <attribute name="Implementation-Vendor" value="Riverside Software" />
         </section>
       </manifest>
@@ -390,7 +378,7 @@ PCTBuild=${BUILD_NUMBER}
   </target>
 
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <zip destfile="${dist}/pct-src-${BUILD_NUMBER}.zip">
+    <zip destfile="${dist}/pct-src-${env.BUILD_TAG}.zip">
       <zipfileset prefix="pct" dir="." filemode="644">
         <include name="src/**" />
         <include name="build.xml" />
@@ -405,7 +393,7 @@ PCTBuild=${BUILD_NUMBER}
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
-      <zipfileset dir="lib" includes="ant.jar,ant-apache-regexp.jar,ant-launcher.jar,ini4j-0.5.1.jar,guava.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar,*.pl" prefix="lib" />
+      <zipfileset dir="lib" includes="ant.jar,ant-apache-regexp.jar,ant-launcher.jar,antlr4-runtime-4.5.jar,ini4j-0.5.1.jar,guava.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,oe_common_services.jar,jacocoant.jar,*.pl" prefix="lib" />
       <zipfileset dir="${dist}" includes="PCT.jar" prefix="dist" />
     </zip>
   </target>

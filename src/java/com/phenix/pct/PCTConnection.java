@@ -59,7 +59,7 @@ public class PCTConnection extends DataType {
      */
     public void setDbName(String dbName) {
         if (isReference())
-            throw tooManyAttributes();
+            throw new BuildException("You must not specify dbName attribute when using refid");
         this.dbName = dbName;
     }
 
@@ -70,7 +70,7 @@ public class PCTConnection extends DataType {
      */
     public void setDbDir(File dbDir) {
         if (isReference())
-            throw tooManyAttributes();
+            throw new BuildException("You must not specify dbDir attribute when using refid");
         this.dbDir = dbDir;
     }
 
@@ -80,8 +80,6 @@ public class PCTConnection extends DataType {
      * @param dbPort String
      */
     public void setDbPort(String dbPort) {
-        if (isReference())
-            throw tooManyAttributes();
         this.dbPort = dbPort;
     }
 
@@ -91,8 +89,6 @@ public class PCTConnection extends DataType {
      * @param protocol "AS400SNA|TCP"
      */
     public void setProtocol(String protocol) {
-        if (isReference())
-            throw tooManyAttributes();
         this.protocol = protocol;
     }
 
@@ -102,8 +98,6 @@ public class PCTConnection extends DataType {
      * @param logicalName String
      */
     public void setLogicalName(String logicalName) {
-        if (isReference())
-            throw tooManyAttributes();
         this.logicalName = logicalName;
     }
 
@@ -113,8 +107,6 @@ public class PCTConnection extends DataType {
      * @param cacheFile File
      */
     public void setCacheFile(File cacheFile) {
-        if (isReference())
-            throw tooManyAttributes();
         this.cacheFile = cacheFile;
     }
 
@@ -124,8 +116,6 @@ public class PCTConnection extends DataType {
      * @param dataService String
      */
     public void setDataService(String dataService) {
-        if (isReference())
-            throw tooManyAttributes();
         this.dataService = dataService;
     }
 
@@ -135,8 +125,6 @@ public class PCTConnection extends DataType {
      * @param dbType String
      */
     public void setDbType(String dbType) {
-        if (isReference())
-            throw tooManyAttributes();
         this.dbType = dbType;
     }
 
@@ -146,8 +134,6 @@ public class PCTConnection extends DataType {
      * @param hostName String
      */
     public void setHostName(String hostName) {
-        if (isReference())
-            throw tooManyAttributes();
         this.hostName = hostName;
     }
 
@@ -157,8 +143,6 @@ public class PCTConnection extends DataType {
      * @param userName String
      */
     public void setUserName(String userName) {
-        if (isReference())
-            throw tooManyAttributes();
         this.userName = userName;
     }
 
@@ -168,8 +152,6 @@ public class PCTConnection extends DataType {
      * @param password String
      */
     public void setPassword(String password) {
-        if (isReference())
-            throw tooManyAttributes();
         this.password = password;
     }
 
@@ -179,8 +161,6 @@ public class PCTConnection extends DataType {
      * @param paramFile File
      */
     public void setParamFile(File paramFile) {
-        if (isReference())
-            throw tooManyAttributes();
         this.paramFile = paramFile;
     }
 
@@ -190,8 +170,6 @@ public class PCTConnection extends DataType {
      * @param readOnly true|false|on|off|yes|no
      */
     public void setReadOnly(boolean readOnly) {
-        if (isReference())
-            throw tooManyAttributes();
         this.readOnly = readOnly;
     }
 
@@ -201,8 +179,6 @@ public class PCTConnection extends DataType {
      * @param singleUser true|false|on|off|yes|no
      */
     public void setSingleUser(boolean singleUser) {
-        if (isReference())
-            throw tooManyAttributes();
         this.singleUser = singleUser;
     }
 
@@ -262,15 +238,13 @@ public class PCTConnection extends DataType {
      * @throws BuildException Something went wrong (dbName or paramFile not defined)
      */
     public List<String> getConnectParametersList() {
+        List<String> list = new ArrayList<String>();
         if (isReference()) {
-            return getRef().getConnectParametersList();
-        }
-
-        if ((dbName == null) && (paramFile == null)) {
+            list = getRef().getConnectParametersList();
+        } else if ((dbName == null) && (paramFile == null)) {
             throw new BuildException(Messages.getString("PCTConnection.1")); //$NON-NLS-1$
         }
 
-        List<String> list = new ArrayList<String>();
         if (dbName != null) {
             list.add("-db"); //$NON-NLS-1$
 
@@ -303,6 +277,10 @@ public class PCTConnection extends DataType {
 
         if (singleUser) {
             list.add("-1"); //$NON-NLS-1$
+        } else {
+            // Remove '-1' in case object is a reference to another PCTConnection where singleUser="true"
+            if (isReference())
+                list.remove("-1");
         }
 
         if (cacheFile != null) {
@@ -327,6 +305,10 @@ public class PCTConnection extends DataType {
 
         if (readOnly) {
             list.add("-RO"); //$NON-NLS-1$
+        } else {
+            // Remove '-RO' in case object is a reference to another PCTConnection where readOnly="true"
+            if (isReference())
+                list.remove("-RO");
         }
 
         if ((userName != null) && (userName.trim().length() > 0)) {
@@ -424,4 +406,5 @@ public class PCTConnection extends DataType {
             return dbName;
         }
     }
+
 }

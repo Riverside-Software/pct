@@ -6,7 +6,7 @@
   	<mkdir dir="build" />
     <mkdir dir="profiler" />
   	<PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
-  	  <Profiler enabled="true" coverage="true" outputDir="profiler" />
+  	  <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <fileset dir="src">
         <include name="test.p"/>	
       </fileset>	

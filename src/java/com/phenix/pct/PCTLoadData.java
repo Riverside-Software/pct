@@ -170,6 +170,7 @@ public class PCTLoadData extends PCTRun {
             if (srcDir != null) {
                 addParameter(new RunParameter("srcDir", srcDir.getAbsolutePath()));
                 addParameter(new RunParameter("tables", join(getTableList())));
+                addParameter(new RunParameter("errorPercentage", Integer.toString(errorTolerance)));
                 addParameter(new RunParameter("silent", (silent ? "1" : "")));
                 setProcedure(getProgressProcedures().getLoadMultipleTablesDataProcedure());
             } else {

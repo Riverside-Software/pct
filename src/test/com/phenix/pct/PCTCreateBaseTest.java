@@ -225,4 +225,20 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("verify");
     }
 
+    @Test(groups= {"v9"})
+    public void test17() {
+        configureProject("PCTCreateBase/test17/build.xml");
+        executeTarget("base");
+        File f = new File("PCTCreateBase/test17/db/test.db");
+        assertTrue(f.exists());
+        File f2 = new File("PCTCreateBase/test17/db/test2.db");
+        assertTrue(f2.exists());
+
+        executeTarget("test");
+        File f3 = new File("PCTCreateBase/test17/build/test.r");
+        assertTrue(f3.exists());
+        executeTarget("test2");
+        File f4 = new File("PCTCreateBase/test17/build2/test.r");
+        assertTrue(f4.exists());
+    }
 }

@@ -386,6 +386,7 @@ public abstract class PCT extends Task {
      * @since 0.12
      */
     protected ProgressProcedures getProgressProcedures() {
+        checkDlcHome();
         return this.pp;
     }
 

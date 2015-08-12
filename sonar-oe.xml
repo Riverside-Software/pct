@@ -9,9 +9,6 @@
   <property name="sonar.language" value="oe" />
   <property name="sonar.sources" value="src/progress" />
   <property name="sonar.binaries" value="build/build-v11" />
-  <property name="sonar.oe.pct_style" value="true" />
-  <!--<property name="sonar.oe.databases" value="" />-->
-  <property name="sonar.oe.profiler" value="profiler" />
   <property name="sonar.oe.cpd.newparser" value="true" />
   <property name="sonar.verbose" value="false" />
   <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
@@ -19,15 +16,13 @@
   <property name="sonar.jdbc.username" value="sonar" />
   <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
 
+  <path id="coverage.cp">
+    <fileset dir="dist" includes="PCT.jar" />
+    <fileset dir="lib" includes="guava.jar" />
+    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
+  </path>
+
   <target name="sonar">
-    <mkdir dir="profiler" />
-    <copy todir="profiler">
-      <zipfileset src="profiler-v11.4-win64.zip" />
-      <flattenmapper />
-    </copy>
-    <copy todir="build/build-v11">
-      <zipfileset src="lib/classDoc.zip" includes=".pct/**/*" />
-    </copy>
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
       <classpath path="lib/sonar-ant-task-*.jar" />
     </taskdef>

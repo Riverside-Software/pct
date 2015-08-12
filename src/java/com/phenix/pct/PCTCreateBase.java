@@ -42,6 +42,7 @@ public class PCTCreateBase extends PCT {
 
     private String dbName = null;
     private String codepage = null;
+    private File sourceDb = null;
     private File destDir = null;
     private File structFile = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
@@ -81,6 +82,15 @@ public class PCTCreateBase extends PCT {
      */
     public void setDBName(String dbName) {
         this.dbName = dbName;
+    }
+
+    /**
+     * Source database name. Leave empty to use emptyX. Not compatible with noInit
+     * 
+     * @param sourceDb
+     */
+    public void setSourceDb(File sourceDb) {
+        this.sourceDb = sourceDb;
     }
 
     /**
@@ -329,7 +339,7 @@ public class PCTCreateBase extends PCT {
         ExecTask exec = null;
 
         checkDlcHome();
-        // TODO : rediriger la sortie standard
+
         // Checking there is at least an init or a structure creation
         if ((structFile == null) && noInit) {
             throw new BuildException(Messages.getString("PCTCreateBase.2")); //$NON-NLS-1$
@@ -378,9 +388,17 @@ public class PCTCreateBase extends PCT {
                 schema = collDF.getAbsolutePath();
         }
 
+        // NoInit and sourceDb are mutually exclusive
+        if (noInit && (sourceDb != null)) {
+            throw new BuildException(Messages.getString("PCTCreateBase.7"));
+        }
+        // Codepage and sourceDb are mutually exclusive
+        if ((codepage != null) && (sourceDb != null)) {
+            throw new BuildException(Messages.getString("PCTCreateBase.8"));
+        }
+
         // Checks if DB already exists
         File db = new File(destDir, dbName + ".db"); //$NON-NLS-1$
-
         if (db.exists()) {
             log("Database " + dbName + " already exists");
             return;
@@ -396,7 +414,6 @@ public class PCTCreateBase extends PCT {
         }
 
         if (!noInit) {
-            log(MessageFormat.format("Copying empty DB to {0}", dbName));
             exec = initCmdLine();
             exec.execute();
         }
@@ -530,12 +547,18 @@ public class PCTCreateBase extends PCT {
     private ExecTask initCmdLine() {
         ExecTask exec = new ExecTask(this);
 
-        File srcDir = getDlcHome();
-        if (codepage != null) {
-            srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
-            srcDir = new File(srcDir, codepage);
+        File srcDB = null;
+        if (sourceDb != null) {
+            srcDB = sourceDb;
+        } else {
+            File srcDir = getDlcHome();
+            if (codepage != null) {
+                srcDir = new File(srcDir, "prolang"); //$NON-NLS-1$
+                srcDir = new File(srcDir, codepage);
+            }
+            srcDB = new File(srcDir, "empty" + blockSize); //$NON-NLS-1$
         }
-        File srcDB = new File(srcDir, "empty" + blockSize); //$NON-NLS-1$
+        log(MessageFormat.format("Copying DB {1} to {0}", dbName, srcDB.getAbsolutePath()));
 
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.setDir(destDir);

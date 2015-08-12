@@ -140,35 +140,46 @@ public class PCTConnectionTest extends BuildFileTestNg {
     @Test(groups = {"v9"})
     public void testReference() {
         configureProject("PCTConnection/test1/build.xml");
-        Object o1 = getProject().getReference("db1");
-        Object o2 = getProject().getReference("db2");
-        Object o3 = getProject().getReference("db3");
-        Object o4 = getProject().getReference("db4");
-        Object o5 = getProject().getReference("db5");
-        Object o6 = getProject().getReference("set1");
-        Object o7 = getProject().getReference("set2");
+        Object db1 = getProject().getReference("db1");
+        Object db2 = getProject().getReference("db2");
+        Object db3 = getProject().getReference("db3");
+        Object db4 = getProject().getReference("db4");
+        Object db5 = getProject().getReference("db5");
+        Object db6 = getProject().getReference("db6");
+        Object db7 = getProject().getReference("db7");
+        Object set1 = getProject().getReference("set1");
+        Object set2 = getProject().getReference("set2");
 
-        assertTrue(o1 instanceof PCTConnection);
-        assertTrue(o2 instanceof PCTConnection);
-        assertTrue(o3 instanceof PCTConnection);
-        assertTrue(o4 instanceof PCTConnection);
-        assertTrue(o5 instanceof PCTConnection);
-        assertTrue(o6 instanceof DBConnectionSet);
-        assertTrue(o7 instanceof DBConnectionSet);
+        assertTrue(db1 instanceof PCTConnection);
+        assertTrue(db2 instanceof PCTConnection);
+        assertTrue(db3 instanceof PCTConnection);
+        assertTrue(db4 instanceof PCTConnection);
+        assertTrue(db5 instanceof PCTConnection);
+        assertTrue(db6 instanceof PCTConnection);
+        assertTrue(db7 instanceof PCTConnection);
+        assertTrue(set1 instanceof DBConnectionSet);
+        assertTrue(set2 instanceof DBConnectionSet);
         
-        PCTConnection c1 = (PCTConnection) o1;
-        PCTConnection c2 = (PCTConnection) o2;
-        PCTConnection c3 = (PCTConnection) o3;
-        PCTConnection c4 = (PCTConnection) o4;
+        PCTConnection c1 = (PCTConnection) db1;
+        PCTConnection c2 = (PCTConnection) db2;
+        PCTConnection c3 = (PCTConnection) db3;
+        PCTConnection c4 = (PCTConnection) db4;
+        PCTConnection c5 = (PCTConnection) db5;
+        PCTConnection c6 = (PCTConnection) db6;
+        PCTConnection c7 = (PCTConnection) db7;
 
         assertTrue(c1.getAliases().size() == 0);
         assertTrue(c2.getAliases().size() == 1);
         assertTrue(c3.getAliases().size() == 3);
         assertTrue(c4.getAliases().size() == 3);
+        assertTrue(c6.getConnectParametersList().contains("-1"));
+        assertTrue(c6.getConnectParametersList().contains("-S"));
+        assertTrue(c6.getConnectParametersList().contains("1234"));
+        assertFalse(c7.getConnectParametersList().contains("-1"));
         
-        DBConnectionSet s1 = (DBConnectionSet) o6;
+        DBConnectionSet s1 = (DBConnectionSet) set1;
         assertEquals(s1.getDBConnections().size(), 3);
-        DBConnectionSet s2 = (DBConnectionSet) o7;
+        DBConnectionSet s2 = (DBConnectionSet) set2;
         assertEquals(s2.getDBConnections().size(), 3);
     }
 }
