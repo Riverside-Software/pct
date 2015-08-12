@@ -1,0 +1,3 @@
+CREATE tab1.
+ASSIGN tab1.fld1 = 1.
+FIND FIRST Item NO-LOCK.
