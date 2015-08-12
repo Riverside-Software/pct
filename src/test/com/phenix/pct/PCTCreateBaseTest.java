@@ -237,6 +237,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("test");
         File f3 = new File("PCTCreateBase/test17/build/test.r");
         assertTrue(f3.exists());
+        executeTarget("test2");
         File f4 = new File("PCTCreateBase/test17/build2/test.r");
         assertTrue(f4.exists());
     }
