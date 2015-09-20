@@ -24,6 +24,7 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PatternSet;
 
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
@@ -314,68 +315,58 @@ public abstract class PCT extends Task {
 
         FileSet fs2 = new FileSet();
         fs2.setDir(new File(getPdsHome(), "eclipse/plugins"));
-        fs2.createPatternSet().setIncludes(
-                "com.progress.openedge.pdt.oemobile.designer_*/mobdesigner.jar");
-        fs2.createPatternSet().setIncludes("com.progress.openedge.pdt.rest_*/rest.jar");
-        fs2.createPatternSet().setIncludes("com.progress.openedge.pdt.oemobile_*/oemobile.jar");
-        fs2.createPatternSet().setIncludes("com.openedge.pdt.project_*/oeproject.jar");
-        fs2.createPatternSet().setIncludes("com.openedge.pdt.core_*/oe_common_services.jar");
-        fs2.createPatternSet().setIncludes("com.openedge.pdt.explorer_*/prgsexplorer.jar");
-        fs2.createPatternSet().setIncludes("com.openedge.pdt.platform_*/platform.jar");
-        fs2.createPatternSet().setIncludes("com.progress.openedge.pdt.rest_*/lib/jettison-1.2.jar");
-        fs2.createPatternSet().setIncludes("com.progress.openedge.pdt.pex_*/pex.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.adapter.rest.core_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.adapter.rest.mapper_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.archiver_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.core_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.adapter.rest.expose.ui_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.ui.mapper_*.jar");
-        fs2.createPatternSet().setIncludes("com.progress.tools.caf.adapter.rest.expose.core_*.jar");
-
-        FileSet fs3 = new FileSet();
-        fs3.setDir(dlcJava);
-        fs3.setIncludes("1padapters-idl.jar");
-
-        FileSet fs4 = new FileSet();
-        fs4.setDir(new File(getPdsHome(), "eclipse/plugins"));
-        fs4.setIncludes("com.progress.tools.caf.runtime_*/lib/rest/expose/1padapters-restExpose.jar");
-        fs4.createPatternSet().setIncludes("com.progress.tools.common.ui.mapper.el_*.jar");
-        fs4.createPatternSet().setIncludes("com.progress.tools.common.ui.mapper_*.jar");
-        fs4.createPatternSet().setIncludes("com.progress.tools.common.ui.el_*.jar");
-        fs4.createPatternSet().setIncludes("com.progress.tools.common.ui_*.jar");
-        fs4.createPatternSet().setIncludes("com.progress.tools.installinfo_*.jar");
-        fs4.createPatternSet()
-                .setIncludes("com.progress.tools.branding.iue_*/lib/velocity-1.7.jar");
-        fs4.createPatternSet().setIncludes(
-                "com.progress.tools.branding.iue_*/lib/velocity-1.7-dep.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.equinox.common_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.jface_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.swt.win32.win32.x86_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.swt_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.filesystem_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.emf.ecore.xmi_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.emf.ecore_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.equinox.preferences_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.text_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.debug.ui_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.debug.core_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.ui.workbench_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.runtime_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.osgi_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.resources_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.jobs_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.ui.ide_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.emf.common_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.databinding_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.emf.databinding_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.databinding.property_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.core.databinding.observable_*.jar");
-        fs4.createPatternSet().setIncludes("org.eclipse.wst.server.core_*.jar");
+        PatternSet ps2 = fs2.createPatternSet();
+        ps2.createInclude().setName("com.progress.openedge.pdt.oemobile.designer_*/mobdesigner.jar");
+        ps2.createInclude().setName("com.progress.openedge.pdt.rest_*/rest.jar");
+        ps2.createInclude().setName("com.progress.openedge.pdt.oemobile_*/oemobile.jar");
+        ps2.createInclude().setName("com.openedge.pdt.project_*/oeproject.jar");
+        ps2.createInclude().setName("com.openedge.pdt.core_*/oe_common_services.jar");
+        ps2.createInclude().setName("com.openedge.pdt.explorer_*/prgsexplorer.jar");
+        ps2.createInclude().setName("com.openedge.pdt.platform_*/platform.jar");
+        ps2.createInclude().setName("com.progress.openedge.pdt.rest_*/lib/jettison-1.2.jar");
+        ps2.createInclude().setName("com.progress.openedge.pdt.pex_*/pex.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.adapter.rest.core_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.adapter.rest.mapper_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.archiver_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.core_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.adapter.rest.expose.ui_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.ui.mapper_*.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.adapter.rest.expose.core_*.jar");
+        ps2.createInclude().setName("com.progress.openedge.pdt.restoe_*/lib/1padapters-idl.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.runtime_*/lib/rest/expose/1padapters-restExpose.jar");
+        ps2.createInclude().setName("com.progress.tools.common.ui.mapper.el_*.jar");
+        ps2.createInclude().setName("com.progress.tools.common.ui.mapper_*.jar");
+        ps2.createInclude().setName("com.progress.tools.common.ui.el_*.jar");
+        ps2.createInclude().setName("com.progress.tools.common.ui_*.jar");
+        ps2.createInclude().setName("com.progress.tools.installinfo_*.jar");
+        ps2.createInclude().setName("com.progress.tools.branding.iue_*/lib/velocity-1.7.jar");
+        ps2.createInclude().setName("com.progress.tools.branding.iue_*/lib/velocity-1.7-dep.jar");
+        ps2.createInclude().setName("org.eclipse.equinox.common_*.jar");
+        ps2.createInclude().setName("org.eclipse.jface_*.jar");
+        ps2.createInclude().setName("org.eclipse.swt.win32.win32.x86_*.jar");
+        ps2.createInclude().setName("org.eclipse.swt_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.filesystem_*.jar");
+        ps2.createInclude().setName("org.eclipse.emf.ecore.xmi_*.jar");
+        ps2.createInclude().setName("org.eclipse.emf.ecore_*.jar");
+        ps2.createInclude().setName("org.eclipse.equinox.preferences_*.jar");
+        ps2.createInclude().setName("org.eclipse.text_*.jar");
+        ps2.createInclude().setName("org.eclipse.debug.ui_*.jar");
+        ps2.createInclude().setName("org.eclipse.debug.core_*.jar");
+        ps2.createInclude().setName("org.eclipse.ui.workbench_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.runtime_*.jar");
+        ps2.createInclude().setName("org.eclipse.osgi_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.resources_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.jobs_*.jar");
+        ps2.createInclude().setName("org.eclipse.ui.ide_*.jar");
+        ps2.createInclude().setName("org.eclipse.emf.common_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.databinding_*.jar");
+        ps2.createInclude().setName("org.eclipse.emf.databinding_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.databinding.property_*.jar");
+        ps2.createInclude().setName("org.eclipse.core.databinding.observable_*.jar");
+        ps2.createInclude().setName("org.eclipse.wst.server.core_*.jar");
 
         path.addFileset(fs1);
         path.addFileset(fs2);
-        path.addFileset(fs3);
-        path.addFileset(fs4);
 
         return path;
     }
