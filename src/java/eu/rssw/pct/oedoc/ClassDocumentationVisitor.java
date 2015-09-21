@@ -10,10 +10,12 @@ import javax.xml.bind.JAXBException;
 
 import antlr.CommonHiddenStreamToken;
 
+import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
 import com.openedge.pdt.core.ast.EventDeclaration;
 import com.openedge.pdt.core.ast.MethodDeclaration;
 import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
+import com.openedge.pdt.core.ast.ProgressTokenTypes;
 import com.openedge.pdt.core.ast.PropertyDeclaration;
 import com.openedge.pdt.core.ast.PropertyMethod;
 import com.openedge.pdt.core.ast.SimpleToken;
@@ -24,7 +26,6 @@ import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.model.IParameter;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
-import eu.rssw.parser.ParserUtils;
 import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
@@ -100,7 +101,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         prop.dataType = decl.getDataType().getName();
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
-        prop.propertyComment = ParserUtils.findPreviousComment(decl);
+        prop.propertyComment = findPreviousComment(decl);
         cu.properties.add(prop);
 
         return true;
@@ -136,7 +137,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             constr.modifier = AccessModifier.STATIC;
         else
             constr.modifier = AccessModifier.from(decl.getAccessModifier());
-        constr.constrComment = ParserUtils.findPreviousComment(decl);
+        constr.constrComment = findPreviousComment(decl);
 
         if (decl.getParameters() != null) {
             for (IParameter p : decl.getParameters()) {
@@ -165,7 +166,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.isStatic = decl.isStatic();
         method.isFinal = decl.isFinal();
         method.isAbstract = decl.isAbstract();
-        method.methodComment = ParserUtils.findPreviousComment(decl);
+        method.methodComment = findPreviousComment(decl);
         cu.methods.add(method);
 
         if (decl.getParameters() != null) {
@@ -198,7 +199,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.isAbstract = decl.isAbstract();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
-        event.eventComment = ParserUtils.findPreviousComment(decl);
+        event.eventComment = findPreviousComment(decl);
         cu.events.add(event);
 
         if (decl.getParameters() != null) {
@@ -233,4 +234,24 @@ public class ClassDocumentationVisitor extends ASTVisitor {
 
         return true;
     }
+
+    /**
+     * Renvoie le *dernier* commentaire
+     * 
+     * @param node
+     * @return
+     */
+    public static String findPreviousComment(ASTNode node) {
+      if ((node.getHiddenPrevious() != null) && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
+        return node.getHiddenPrevious().getText();
+      }
+      IASTNode n = node.getPrevSibling();
+      while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
+        if ((n.getHiddenPrevious() != null) && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
+          return n.getHiddenPrevious().getText();
+        n = n.getPrevSibling();
+      }
+      return null;
+    }
+
 }
