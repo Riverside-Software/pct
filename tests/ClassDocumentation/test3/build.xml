@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="ClassDocumentation-test1">
-  <taskdef resource="extras.properties" />
+  <taskdef resource="extras115.properties" />
 
   <target name="test">
     <mkdir dir="doc" />
