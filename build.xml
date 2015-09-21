@@ -330,7 +330,7 @@
     <zipfileset src="lib/proparse.jar" includes="**/*.class" />
     <zipfileset src="lib/profiler-parser-1.2.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-    <zipfileset src="lib/parser.jar" includes="**/*.class,**/jaxb.index" />
+    <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
     <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
