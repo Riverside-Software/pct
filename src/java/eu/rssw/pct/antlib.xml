@@ -31,6 +31,7 @@
   <taskdef name="dump_users" classname="com.phenix.pct.PCTDumpUsers" />
   <taskdef name="load_users" classname="com.phenix.pct.PCTLoadUsers" />
   <taskdef name="dlc_home" classname="com.phenix.pct.DlcHome" />
+  <taskdef name="restgen" classname="com.phenix.pct.RestGen" />
   <typedef name="plfileset" classname="com.phenix.pct.PLFileSet" />
   <typedef name="rcodeselector" classname="com.phenix.pct.RCodeSelector" />
   <typedef name="db_connection" classname="com.phenix.pct.PCTConnection" />
