@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <antlib>
-  <typedef name="classdocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeDocumentation" />
+  <typedef name="classdocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeDocumentation115" />
   <typedef name="htmldocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeHTMLDocumentation" />
   <typedef name="xmldocumentation" classname="eu.rssw.pct.oedoc.OpenEdgeXMLDocumentation" />
 </antlib>

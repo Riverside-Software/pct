@@ -5,10 +5,13 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
+import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ProcedureDeclaration;
+import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
+import com.openedge.pdt.core.ast.ProgressTokenTypes;
+import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
-import eu.rssw.parser.ParserUtils;
 import eu.rssw.rcode.Parameter;
 import eu.rssw.rcode.ParameterMode;
 import eu.rssw.rcode.Procedure;
@@ -45,7 +48,7 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         Procedure method = new Procedure();
         method.procedureName = decl.getName();
         method.signature = decl.getSignature();
-        method.procedureComment = ParserUtils.findPreviousComment(decl);
+        method.procedureComment = findPreviousComment(decl);
         cu.procedures.add(method);
 
         if (decl.getParameters() != null) {
@@ -64,6 +67,25 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         }
 
         return true;
+    }
+
+    /**
+     * Renvoie le *dernier* commentaire
+     * 
+     * @param node
+     * @return
+     */
+    public static String findPreviousComment(ASTNode node) {
+      if ((node.getHiddenPrevious() != null) && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
+        return node.getHiddenPrevious().getText();
+      }
+      IASTNode n = node.getPrevSibling();
+      while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
+        if ((n.getHiddenPrevious() != null) && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
+          return n.getHiddenPrevious().getText();
+        n = n.getPrevSibling();
+      }
+      return null;
     }
 
 }

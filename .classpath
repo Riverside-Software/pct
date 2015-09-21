@@ -15,5 +15,7 @@
 	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/profiler-parser-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/ast.jar"/>
+	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
