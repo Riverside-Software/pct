@@ -775,4 +775,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test2");
         assertTrue(f1.lastModified() > mod1);
     }
+
+    @Test(groups = {"v10"})
+    public void test49() {
+        configureProject("PCTCompile/test49/build.xml");
+        executeTarget("test1");
+        File warns = new File("PCTCompile/test49/build/.pct/test.p.warnings");
+        assertTrue(warns.exists());
+        assertTrue(warns.length() > 0);
+    }
 }
