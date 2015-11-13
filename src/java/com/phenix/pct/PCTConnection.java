@@ -48,8 +48,8 @@ public class PCTConnection extends DataType {
     private File cacheFile = null;
     private File dbDir = null;
     private File paramFile = null;
-    private boolean singleUser = false;
-    private boolean readOnly = false;
+    private Boolean singleUser = null;
+    private Boolean readOnly = null;
     private Map<String, PCTAlias> aliases = null;
 
     /**
@@ -275,13 +275,15 @@ public class PCTConnection extends DataType {
             list.add(logicalName);
         }
 
-        if (singleUser) {
-            list.add("-1"); //$NON-NLS-1$
-        } else {
-            // Remove '-1' in case object is a reference to another PCTConnection where singleUser="true"
-            if (isReference())
+        if (singleUser != null) {
+            if (singleUser == true) {
+                list.add("-1"); //$NON-NLS-1$    
+            }
+            else {
                 list.remove("-1");
+         }
         }
+       
 
         if (cacheFile != null) {
             list.add("-cache"); //$NON-NLS-1$
@@ -303,13 +305,16 @@ public class PCTConnection extends DataType {
             list.add(hostName);
         }
 
-        if (readOnly) {
-            list.add("-RO"); //$NON-NLS-1$
-        } else {
-            // Remove '-RO' in case object is a reference to another PCTConnection where readOnly="true"
-            if (isReference())
+        if (readOnly != null ) {
+            if ( readOnly == true ) {
+                list.add("-RO");
+            }
+            else
+            {
                 list.remove("-RO");
+            }
         }
+
 
         if ((userName != null) && (userName.trim().length() > 0)) {
             list.add("-U"); //$NON-NLS-1$
