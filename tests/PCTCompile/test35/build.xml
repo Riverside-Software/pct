@@ -5,7 +5,7 @@
   <target name="test">
     <mkdir dir="build" />
     <mkdir dir="db" />
-	<sports2000 destDir="db" />
+	<sports2000 destDir="db" dlcHome="${DLC}" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
       <fileset dir="src" includes="**/*.p" />
 	  <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />

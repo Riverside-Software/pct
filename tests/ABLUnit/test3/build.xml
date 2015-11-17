@@ -3,7 +3,7 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test">
-    <ABLUnit>
+    <ABLUnit dlcHome="${DLC}">
       <fileset dir="src" includes="*.cls" />
       <propath>
         <pathelement path="src" />
