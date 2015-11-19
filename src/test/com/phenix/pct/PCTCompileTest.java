@@ -63,6 +63,7 @@ import org.testng.annotations.Test;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.google.common.io.LineProcessor;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 import java.io.File;
@@ -604,12 +605,51 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v9"})
     public void test35() throws IOException {
         configureProject("PCTCompile/test35/build.xml");
+        executeTarget("init");
         executeTarget("test");
+        executeTarget("test2");
 
         File crc = new File("PCTCompile/test35/build/.pct/test.p.crc");
         assertTrue(crc.exists());
         String line = Files.readFirstLine(crc, Charset.defaultCharset());
         assertTrue(line.startsWith("\"sports2000.Item\""));
+        File inc = new File("PCTCompile/test35/build/.pct/test.p.inc");
+        assertTrue(inc.exists());
+        LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
+        Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
+        assertTrue(lineProcessor.getResult());
+
+        File crc2 = new File("PCTCompile/test35/build2/.pct/test.p.crc");
+        assertTrue(crc2.exists());
+        String line2 = Files.readFirstLine(crc2, Charset.defaultCharset());
+        assertTrue(line2.startsWith("\"sports2000.Item\""));
+        File inc2 = new File("PCTCompile/test35/build2/.pct/test.p.inc");
+        assertTrue(inc2.exists());
+        LineProcessor<Boolean> lineProcessor2 = new Test35LineProcessor();
+        Files.readLines(inc2, Charset.defaultCharset(), lineProcessor2);
+        assertTrue(lineProcessor2.getResult());
+    }
+
+    private final static class Test35LineProcessor implements LineProcessor<Boolean> {
+        private boolean retVal = false;
+        private int zz = 0;
+
+        @Override
+        public Boolean getResult() {
+            return retVal;
+        }
+
+        @Override
+        public boolean processLine(String line) throws IOException {
+            if (zz == 0) {
+                retVal = line.startsWith("\"test.i\"");
+            } else if (zz == 1) {
+                retVal &= line.startsWith("\"test2.i\"");
+            }
+            zz++;
+
+            return true;
+        }
     }
 
     @Test(groups = {"v10"})

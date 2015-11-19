@@ -2,13 +2,27 @@
 <project name="PCTCompile-test35">
   <taskdef resource="PCT.properties" />
 
-  <target name="test">
+  <target name="init">
     <mkdir dir="build" />
+    <mkdir dir="build2" />
     <mkdir dir="db" />
-	<sports2000 destDir="db" dlcHome="${DLC}" />
+    <sports2000 destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test">
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
       <fileset dir="src" includes="**/*.p" />
-	  <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
+      <propath location="src" />
+      <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true" xmlXref="true">
+      <fileset dir="src" includes="**/*.p" />
+      <propath location="src" />
+      <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
