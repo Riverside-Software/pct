@@ -34,5 +34,7 @@
   <DBConnection id="db6" refid="db3" singleUser="true" dbPort="1234" />
   <!-- Adding two attributes -->
   <DBConnection id="db7" refid="db6" singleUser="false" />
+	
+  <DBConnection id="db8" refid="db6"  />
 
 </project>
