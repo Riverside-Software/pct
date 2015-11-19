@@ -147,6 +147,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
         Object db5 = getProject().getReference("db5");
         Object db6 = getProject().getReference("db6");
         Object db7 = getProject().getReference("db7");
+        Object db8 = getProject().getReference("db8");
         Object set1 = getProject().getReference("set1");
         Object set2 = getProject().getReference("set2");
 
@@ -157,6 +158,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
         assertTrue(db5 instanceof PCTConnection);
         assertTrue(db6 instanceof PCTConnection);
         assertTrue(db7 instanceof PCTConnection);
+        assertTrue(db8 instanceof PCTConnection);
         assertTrue(set1 instanceof DBConnectionSet);
         assertTrue(set2 instanceof DBConnectionSet);
         
@@ -167,6 +169,8 @@ public class PCTConnectionTest extends BuildFileTestNg {
         PCTConnection c5 = (PCTConnection) db5;
         PCTConnection c6 = (PCTConnection) db6;
         PCTConnection c7 = (PCTConnection) db7;
+        PCTConnection c8 = (PCTConnection) db8;
+        
 
         assertTrue(c1.getAliases().size() == 0);
         assertTrue(c2.getAliases().size() == 1);
@@ -176,7 +180,7 @@ public class PCTConnectionTest extends BuildFileTestNg {
         assertTrue(c6.getConnectParametersList().contains("-S"));
         assertTrue(c6.getConnectParametersList().contains("1234"));
         assertFalse(c7.getConnectParametersList().contains("-1"));
-        
+        assertTrue(c8.getConnectParametersList().contains("-1"));
         DBConnectionSet s1 = (DBConnectionSet) set1;
         assertEquals(s1.getDBConnections().size(), 3);
         DBConnectionSet s2 = (DBConnectionSet) set2;
