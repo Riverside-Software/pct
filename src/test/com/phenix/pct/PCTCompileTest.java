@@ -602,7 +602,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         // assertEquals(r2.getDebugListingFile(), "foo_bar_test2.p");
     }
 
-    @Test(groups = {"v9"})
+    @Test(groups = {"v10"})
     public void test35() throws IOException {
         configureProject("PCTCompile/test35/build.xml");
         executeTarget("init");
