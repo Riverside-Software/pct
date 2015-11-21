@@ -805,7 +805,7 @@ PROCEDURE importXmlXref.
       IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
         /* Extract include file name from field (which contains include parameters */
         CREATE ttXrefInc.
-        ASSIGN ttXrefInc.ttIncName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ASSIGN ttXrefInc.ttIncName = TRIM(SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1)).
       END.
       ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
         FOR EACH Class-Ref OF Reference:
