@@ -38,6 +38,7 @@ import java.util.List;
 public class PLReader {
     private static final int MAGIC = 0xd707;
     private static final int MAGIC_V11 = 0xd70b;
+    private static final int MAGIC_V11_MM = 0xd70c;
 //    private static final int MAGIC_SIZE = 2;
     private static final int ENCODING_OFFSET = 0x02;
     private static final int ENCODING_SIZE = 20;
@@ -87,9 +88,10 @@ public class PLReader {
             int version = 0;
             ByteBuffer magic = ByteBuffer.allocate(2);
             fc.read(magic);
-            if ((magic.getShort(0) & 0xffff) == MAGIC)
+            int magicVal = magic.getShort(0) & 0xffff;
+            if ((magicVal) == MAGIC)
                 version = 1;
-            else if ((magic.getShort(0) & 0xffff) == MAGIC_V11)
+            else if ((magicVal == MAGIC_V11) || (magicVal == MAGIC_V11_MM))
                 version = 2;
             else
                 // if (!checkMagic(fc))
