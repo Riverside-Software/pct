@@ -2,6 +2,8 @@ package eu.rssw.pct.standalone;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +59,16 @@ public class Prolib {
     }
 
     public void executeExtract() {
-        throw new RuntimeException("Not supported for now");
+        PLReader reader = new PLReader(extract.lib);
+        for (FileEntry entry : reader.getFileList()) {
+            File file = new File(entry.getFileName());
+            try (InputStream input = reader.getInputStream(entry)) {
+                file.getParentFile().mkdirs();
+                Files.copy(input, file.toPath());
+            } catch (IOException e) {
+                System.out.printf("Unable to extract file %s%n", entry.getFileName());
+            }
+        }
     }
 
     public void executeCompare() throws IOException {
@@ -108,8 +119,6 @@ public class Prolib {
         @Parameter(names = "-lib", description = "PL file", required = true)
         private File lib;
 
-        // @Parameter(description = "File patterns to list")
-        // private List<String> patterns;
     }
 
     @Parameters(commandDescription = "Compare two PL")
