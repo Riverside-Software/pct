@@ -63,7 +63,8 @@ public class Prolib {
         for (FileEntry entry : reader.getFileList()) {
             File file = new File(entry.getFileName());
             try (InputStream input = reader.getInputStream(entry)) {
-                file.getParentFile().mkdirs();
+                if (file.getParentFile() != null)
+                    file.getParentFile().mkdirs();
                 Files.copy(input, file.toPath());
             } catch (IOException e) {
                 System.out.printf("Unable to extract file %s%n", entry.getFileName());
