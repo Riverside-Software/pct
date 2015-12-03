@@ -98,6 +98,7 @@ DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
 DEFINE STREAM sDbgLst1.
 DEFINE STREAM sDbgLst2.
+DEFINE STREAM sWarnings.
 
 /** Parameters from ANT call */
 DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
@@ -522,6 +523,7 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
     DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
 
     IF (NOT fileExists(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)) THEN DO:
       MESSAGE SUBSTITUTE("File [&1]/[&2] not found", pcInDir, pcInFile).
@@ -538,6 +540,7 @@ PROCEDURE PCTCompileXref.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
     
     ASSIGN cXrefFile = pcPCTDir + '/':U + pcInFile + '.xref':U.
+    ASSIGN warningsFile = pcPCTDir + '/':U + pcInFile + '.warnings':U.
     ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
                            THEN pcPCTDir + '/strings.xref':U
                            ELSE (IF StrXref
@@ -682,11 +685,20 @@ PROCEDURE PCTCompileXref.
         /* Il faut verifier le code de retour */
         IF NOT keepXref THEN
           OS-DELETE VALUE(cXrefFile).
+        IF COMPILER:WARNING THEN DO:
+          OUTPUT STREAM sWarnings TO VALUE(warningsFile).
+          DO i = 1 TO COMPILER:NUM-MESSAGES:
+            IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) THEN DO:
+              PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
+            END.
+          END.
+          OUTPUT STREAM sWarnings CLOSE.
+        END.
     END.
     ELSE DO:
         ASSIGN c = '':U.
-        DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-            ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
+        DO i = 1 TO COMPILER:NUM-MESSAGES:
+            ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
         END.
         RUN displayCompileErrors(SEARCH(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
@@ -793,7 +805,7 @@ PROCEDURE importXmlXref.
       IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
         /* Extract include file name from field (which contains include parameters */
         CREATE ttXrefInc.
-        ASSIGN ttXrefInc.ttIncName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ASSIGN ttXrefInc.ttIncName = TRIM(SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1)).
       END.
       ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
         FOR EACH Class-Ref OF Reference:

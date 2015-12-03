@@ -44,16 +44,16 @@
     </PCTCompile>
 
     <mkdir dir="libs" />
-    <PCTLibrary destFile="libs/lib1.pl">
+    <PCTLibrary destFile="libs/lib1.pl" dlcHome="${DLC}">
       <fileset dir="build1" includes="**/*.r" />
     </PCTLibrary>
-    <PCTLibrary destFile="libs/lib2.pl">
+    <PCTLibrary destFile="libs/lib2.pl" dlcHome="${DLC}">
       <fileset dir="build2" includes="**/*.r" />
     </PCTLibrary>
-    <PCTLibrary destFile="libs/lib3.pl">
+    <PCTLibrary destFile="libs/lib3.pl" dlcHome="${DLC}">
       <fileset dir="build3" includes="**/*.r" />
     </PCTLibrary>
-    <PCTLibrary destFile="libs/lib4.pl">
+    <PCTLibrary destFile="libs/lib4.pl" dlcHome="${DLC}">
       <fileset dir="build4" includes="**/*.r" />
     </PCTLibrary>
   </target>

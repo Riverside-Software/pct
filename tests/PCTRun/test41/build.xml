@@ -11,9 +11,9 @@
 
   <target name="test">
     <mkdir dir="db" />
-    <sports2000 dbName="db1" destDir="db" />
-    <sports2000 dbName="db2" destDir="db" />
-    <sports2000 dbName="db3" destDir="db" />
+    <sports2000 dbName="db1" destDir="db" dlcHome="${DLC}" />
+    <sports2000 dbName="db2" destDir="db" dlcHome="${DLC}" />
+    <sports2000 dbName="db3" destDir="db" dlcHome="${DLC}" />
     <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
       <DBConnectionSet refid="dbset" />
     </PCTRun>
