@@ -91,7 +91,6 @@ public class PCTRun extends PCT {
     protected boolean failOnError = true;
     private String resultProperty = null;
     private File assemblies = null;
-    private boolean verbose = false;
     // Defined here, but setter only defined in PCTCompile
     protected boolean relativePaths = false;
     private Profiler profiler = null;
@@ -550,11 +549,11 @@ public class PCTRun extends PCT {
      * @since 0.19
      */
     public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+        log("verbose attribute is not used anymore, please use the standard -v switch");
     }
 
     public boolean isVerbose() {
-        return verbose;
+        return (getAntLoggerLever() > 2);
     }
 
     /**
@@ -1106,7 +1105,7 @@ public class PCTRun extends PCT {
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
-                    verbose,noErrorOnQuit));
+                    isVerbose(), noErrorOnQuit));
 
             // Defines database connections and aliases
             int dbNum = 1;

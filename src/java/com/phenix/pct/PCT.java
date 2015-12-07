@@ -18,6 +18,8 @@
 package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Environment;
@@ -34,8 +36,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -578,6 +582,29 @@ public abstract class PCT extends Task {
      */
     protected long getRCodeVersion() {
         return version.getrCodeVersion();
+    }
+
+    /**
+     * 
+     * @param project
+     * @return
+     */
+    public int getAntLoggerLever() {
+        try {
+            List<BuildListener> listeners = getProject().getBuildListeners();
+            for (BuildListener listener : listeners) {
+                if (listener instanceof DefaultLogger) {
+                    DefaultLogger logger = (DefaultLogger) listener;
+                    Field field = DefaultLogger.class.getDeclaredField("msgOutputLevel");
+                    field.setAccessible(true);
+                    return (Integer) field.get(logger);
+                }
+            }
+            return 2;
+        } catch (Exception e) {
+            // if unable to determine level - just return default value
+            return 2;
+        }
     }
 
     /**
