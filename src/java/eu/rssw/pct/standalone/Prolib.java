@@ -61,7 +61,7 @@ public class Prolib {
     public void executeExtract() {
         PLReader reader = new PLReader(extract.lib);
         for (FileEntry entry : reader.getFileList()) {
-            File file = new File(entry.getFileName());
+            File file = new File(entry.getFileName().replace('\\', '/'));
             try (InputStream input = reader.getInputStream(entry)) {
                 if (file.getParentFile() != null)
                     file.getParentFile().mkdirs();
