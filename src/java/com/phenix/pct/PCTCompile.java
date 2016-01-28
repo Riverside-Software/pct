@@ -600,6 +600,16 @@ public class PCTCompile extends PCTRun {
         }
     }
 
+    private boolean createDir(File dir) {
+        if (dir.exists() && !dir.isDirectory()) {
+            return false;
+        } 
+        if (!dir.exists() && !dir.mkdirs()) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Do the work
      * 
@@ -608,46 +618,41 @@ public class PCTCompile extends PCTRun {
     public void execute() throws BuildException {
         // File xRefDir = null; // Where to store XREF files
 
-        if (this.destDir == null) {
-            this.cleanup();
+        // Create dest directory if necessary
+        if (destDir == null) {
+            cleanup();
             throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
         }
-
-        // Test output directory
-        if (this.destDir.exists()) {
-            if (!this.destDir.isDirectory()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.35")); //$NON-NLS-1$
-            }
-        } else {
-            if (!this.destDir.mkdir()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.36")); //$NON-NLS-1$
-            }
+        if (!createDir(destDir)) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "destDir")); //$NON-NLS-1$
         }
 
         // Test xRef directory
         if (this.xRefDir == null) {
             this.xRefDir = new File(this.destDir, ".pct"); //$NON-NLS-1$
         }
-
-        if (this.xRefDir.exists()) {
-            if (!this.xRefDir.isDirectory()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.38")); //$NON-NLS-1$
-            }
-        } else {
-            if (!this.xRefDir.mkdir()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.39")); //$NON-NLS-1$
+        if (!createDir(xRefDir)) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "xrefDir")); //$NON-NLS-1$
+        }
+        
+        // If preprocessDir is set, then preprocess is always set to true
+        if (preprocessDir != null) {
+            preprocess = true;
+            if (!createDir(preprocessDir)) {
+                cleanup();
+                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "preprocessDir")); //$NON-NLS-1$
             }
         }
-
-        // If preprocessDir is set, then preprocess is always set to true
-        if (preprocessDir != null)
-            preprocess = true;
-        if (debugListingDir != null)
+        if (debugListingDir != null) {
             debugListing = true;
+            if (!createDir(debugListingDir)) {
+                cleanup();
+                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
+            }
+        }
+        
         if (twoPass) {
             log("Two pass compilation activated", Project.MSG_VERBOSE);
         }

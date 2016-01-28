@@ -827,4 +827,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns.exists());
         assertTrue(warns.length() > 0);
     }
+
+    @Test(groups = {"v10"})
+    public void test50() {
+        configureProject("PCTCompile/test50/build.xml");
+        executeTarget("test1");
+        File rcode = new File("PCTCompile/test50/build/test.r");
+        assertTrue(rcode.exists());
+        assertTrue(rcode.length() > 0);
+    }
 }
