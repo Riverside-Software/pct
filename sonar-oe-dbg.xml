@@ -17,6 +17,7 @@
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
   <property name="sonar.sources" value="src/progress-dbg" />
+  <property nmae="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.binaries" value="build/build-dbg" />
   <property name="sonar.oe.pct_style" value="true" />
   <property name="sonar.oe.databases" value="dictdb.df" />
