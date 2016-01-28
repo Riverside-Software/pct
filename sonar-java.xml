@@ -11,7 +11,7 @@
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="java" />
   <property name="sonar.sources" value="src/java" />
-  <property nmae="sonar.sourceEncoding" value="iso8859-1" />
+  <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.java.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPath" value="jacoco-v11.4-win64.exec" />
   <!-- <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" /> -->
