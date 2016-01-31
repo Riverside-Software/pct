@@ -75,6 +75,7 @@ public class PCTCompile extends PCTRun {
     private File preprocessDir = null;
     private File debugListingDir = null;
     private boolean flattenDbg = true;
+    private String ignoreIncludes = null;
 
     // Internal use
     private int fsListId = -1;
@@ -166,6 +167,17 @@ public class PCTCompile extends PCTRun {
             this.listingSource = source;
         else
             throw new BuildException("Invalid listingSource attribute : " + source);
+    }
+
+    /**
+     * Ignore Includes matching this pattern
+     * 
+     * @param pattern "can-do pattern for includefile"
+     * 
+     * @since 2.x
+     */
+    public void setignoreIncludes(String pattern) {
+        this.ignoreIncludes = pattern;
     }
 
     /**
@@ -532,6 +544,10 @@ public class PCTCompile extends PCTRun {
                 bw.write("LISTINGSOURCE=" + listingSource); //$NON-NLS-1$
                 bw.newLine();
             }
+            if (ignoreIncludes != null) {
+				bw.write("IGNOREINCLUDES=" + this.ignoreIncludes); //$NON-NLS-1$
+				bw.newLine();
+			}
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             if (preprocess && (preprocessDir != null)) {

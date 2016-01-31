@@ -60,7 +60,8 @@ DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
   FIELD ttMod      AS DATETIME
-  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
+  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
+  INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
@@ -141,6 +142,8 @@ DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cignoreIncludes AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lignoreIncludes AS LOGICAL     NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -245,6 +248,9 @@ REPEAT:
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'XMLXREF':U THEN
             ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'ignoreIncludes':U THEN
+            ASSIGN cignoreIncludes = TRIM(ENTRY(2, cLine, '=':U))
+                   lignoreIncludes = (LENGTH(cignoreIncludes) > 0).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -394,6 +400,12 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+            IF lignoreIncludes AND CAN-DO(cignoreIncludes, IncFile) THEN /* fake older date, to be not relevant */
+            DO:
+                MESSAGE 'ignoring changes in: ' IncFile.
+                ASSIGN TimeStamps.ttMod = DATETIME(1, 1, 1984, 0, 0, 0, 0).
+            END.
+                
         END.
         IF (TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod) THEN DO:
             ASSIGN lReturn = TRUE.
