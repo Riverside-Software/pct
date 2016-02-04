@@ -59,6 +59,7 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
+  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
   FIELD ttMod      AS DATETIME
   INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
   INDEX TimeStamps-ttFile ttFile.
@@ -400,14 +401,13 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
-            IF lignoreIncludes AND CAN-DO(cignoreIncludes, IncFile) THEN /* fake older date, to be not relevant */
+            IF lignoreIncludes AND CAN-DO(cignoreIncludes, IncFile) THEN /* include is not relevant for recompile */
             DO:
                 MESSAGE 'ignoring changes in: ' IncFile.
-                ASSIGN TimeStamps.ttMod = DATETIME(1, 1, 1984, 0, 0, 0, 0).
+                ASSIGN TimeStamps.ttExcept = TRUE.
             END.
-                
         END.
-        IF (TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod) THEN DO:
+        IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
             ASSIGN lReturn = TRUE.
             LEAVE FileList.
         END.

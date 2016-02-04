@@ -6,3 +6,4 @@
 /classDocTemp/
 /profiler/
 src/java/com/phenix/pct/PCT.properties
+/tests/**/*.r
