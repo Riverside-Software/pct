@@ -143,8 +143,8 @@ DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE cignoreIncludes AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE lignoreIncludes AS LOGICAL     NO-UNDO.
+DEFINE VARIABLE cignoredIncludes AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lignoredIncludes AS LOGICAL     NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -249,9 +249,9 @@ REPEAT:
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'XMLXREF':U THEN
             ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
-        WHEN 'ignoreIncludes':U THEN
-            ASSIGN cignoreIncludes = TRIM(ENTRY(2, cLine, '=':U))
-                   lignoreIncludes = (LENGTH(cignoreIncludes) > 0).
+        WHEN 'ignoredIncludes':U THEN
+            ASSIGN cignoredIncludes = TRIM(ENTRY(2, cLine, '=':U))
+                   lignoredIncludes = (LENGTH(cignoredIncludes) > 0).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -401,7 +401,7 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
-            IF lignoreIncludes AND CAN-DO(cignoreIncludes, IncFile) THEN /* include is not relevant for recompile */
+            IF lignoredIncludes AND CAN-DO(cignoredIncludes, IncFile) THEN /* include is not relevant for recompile */
             DO:
                 MESSAGE 'ignoring changes in: ' IncFile.
                 ASSIGN TimeStamps.ttExcept = TRUE.

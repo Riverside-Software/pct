@@ -75,7 +75,7 @@ public class PCTCompile extends PCTRun {
     private File preprocessDir = null;
     private File debugListingDir = null;
     private boolean flattenDbg = true;
-    private String ignoreIncludes = null;
+    private String ignoredIncludes = null;
 
     // Internal use
     private int fsListId = -1;
@@ -176,8 +176,8 @@ public class PCTCompile extends PCTRun {
      * 
      * @since 2.x
      */
-    public void setignoreIncludes(String pattern) {
-        this.ignoreIncludes = pattern;
+    public void setignoredIncludes(String pattern) {
+        this.ignoredIncludes = pattern;
     }
 
     /**
@@ -544,8 +544,8 @@ public class PCTCompile extends PCTRun {
                 bw.write("LISTINGSOURCE=" + listingSource); //$NON-NLS-1$
                 bw.newLine();
             }
-            if (ignoreIncludes != null) {
-				bw.write("IGNOREINCLUDES=" + this.ignoreIncludes); //$NON-NLS-1$
+            if (ignoredIncludes != null) {
+				bw.write("IGNOREDINCLUDES=" + this.ignoredIncludes); //$NON-NLS-1$
 				bw.newLine();
 			}
             bw.write("PREPROCESS=" + (this.preprocess ? 1 : 0)); //$NON-NLS-1$
