@@ -827,4 +827,21 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns.exists());
         assertTrue(warns.length() > 0);
     }
+    @Test(groups = {"v10"})
+/* Testaufbau 
+	Erster Druchlauf compiliert alle Programme
+	Ändern von Include test1.i
+	zweiter Durchlauf darf dann keine neuen R-Codes erstellen
+	dritter Druchlauf ohne ignoreinclude muss alle neu compilieren
+
+*/
+	
+    public void test50() {
+        configureProject("PCTCompile/test50/build.xml");
+        executeTarget("test1"); /* compile all programms */
+        File f1 = new File("PCTCompile/test50/build/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+        assertTrue(f1.lastModified() > mod1);
+    }
 }
