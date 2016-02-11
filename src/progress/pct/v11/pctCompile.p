@@ -751,9 +751,12 @@ PROCEDURE displayCompileErrors.
     
         INPUT STREAM sXref CLOSE.
    END.
-   ELSE
+   ELSE DO:
+        MESSAGE pcMsg.
         MESSAGE SUBSTITUTE(">> Can't display xcoded source &1", (IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
-  
+        MESSAGE '':U.
+   END.
+
 END PROCEDURE.
 
 PROCEDURE PCTCompileXCode.
