@@ -827,21 +827,46 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns.exists());
         assertTrue(warns.length() > 0);
     }
-    @Test(groups = {"v10"})
-/* Testaufbau 
-	Erster Druchlauf compiliert alle Programme
-	Ändern von Include test1.i
-	zweiter Durchlauf darf dann keine neuen R-Codes erstellen
-	dritter Druchlauf ohne ignoreinclude muss alle neu compilieren
 
-*/
-	
+    @Test(groups = {"v10"})
     public void test50() {
         configureProject("PCTCompile/test50/build.xml");
         executeTarget("test1"); /* compile all programms */
         File f1 = new File("PCTCompile/test50/build/test.r");
         assertTrue(f1.exists());
         long mod1 = f1.lastModified();
-        assertTrue(f1.lastModified() > mod1);
+        File f2 = new File("PCTCompile/test50/build/test2.r");
+        assertTrue(f2.exists());
+        long mod2 = f2.lastModified();
+		
+        executeTarget("test2"); /* nothing should compile */
+        File f3 = new File("PCTCompile/test50/build/test.r");
+        assertTrue(f3.exists());
+		assertFalse(f3.lastModified() > mod1);
+        long mod1 = f1.lastModified();
+        
+        File f4 = new File("PCTCompile/test50/build/test2.r");
+        assertTrue(f4.exists());
+		assertFalse(f4.lastModified() > mod2);
+
+        executeTarget("test3"); /* all programms should be compiled */
+        File f5 = new File("PCTCompile/test50/build/test.r");
+        long mod5 = f5.lastModified();
+        assertTrue(f5.exists());
+		assertTrue(mod5 > mod1);
+        
+        File f6 = new File("PCTCompile/test50/build/test2.r");
+        long mod6 = f6.lastModified();
+        assertTrue(f6.exists());
+		assertTrue(mod6 > mod2);
+
+        executeTarget("test4"); /* all programms should be compiled */
+        File f7 = new File("PCTCompile/test50/build/test.r");
+        assertTrue(f7.exists());
+		assertTrue(f7.lastModified() > mod5);
+        
+        File f8 = new File("PCTCompile/test50/build/test2.r");
+        assertTrue(f8.exists());
+		assertTrue(f8.lastModified() > mod6);
     }
 }

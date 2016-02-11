@@ -7,3 +7,8 @@
 /profiler/
 src/java/com/phenix/pct/PCT.properties
 /tests/**/*.r
+tests/**/*.hierarchy
+tests/**/*.inc
+tests/**/*.crc
+tests/**/*.cmd
+/*.cmd
