@@ -252,6 +252,7 @@ REPEAT:
             ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
         WHEN 'ignoredIncludes':U THEN
             ASSIGN cignoredIncludes = TRIM(ENTRY(2, cLine, '=':U))
+                   cignoredIncludes = REPLACE(cignoredIncludes, '~\':U, '/':U) /* for Unix */
                    lignoredIncludes = (LENGTH(cignoredIncludes) > 0).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
@@ -402,7 +403,7 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
-            IF lignoredIncludes AND CAN-DO(cignoredIncludes, IncFile) THEN /* include is not relevant for recompile */
+            IF lignoredIncludes AND CAN-DO(cignoredIncludes, REPLACE(IncFile, '~\':U, '/':U)) THEN /* include is not relevant for recompile */
             DO:
                 MESSAGE 'ignoring changes in: ' IncFile.
                 ASSIGN TimeStamps.ttExcept = TRUE.

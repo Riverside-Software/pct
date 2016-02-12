@@ -12,8 +12,8 @@
   </target>
 
   <target name="test2">
-    <touch file="src\test1.i" />
-    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" ignoredIncludes="src\test1.i" >
+    <touch file="src/test1.i" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" ignoredIncludes="src/test1.i" >
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
@@ -22,8 +22,8 @@
   
   <target name="test3">
     <sleep seconds="2" />
-	<touch file="src\test2.i" />
-    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" ignoredIncludes="src\test1.i" >
+	<touch file="src/test2.i" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" ignoredIncludes="src/test1.i" >
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
@@ -32,7 +32,7 @@
 
   <target name="test4">
 	<sleep seconds="2" />
-	<touch file="src\test1.i" />
+	<touch file="src/test1.i" />
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" >
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
