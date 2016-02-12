@@ -79,21 +79,6 @@
     </jacoco:coverage>
   </target>
 
-  <target name="testEA">
-    <!-- On Windows : ant -file tests.xml test -->
-    <mkdir dir="test-output" />
-    <mkdir dir="profiler" />
-    <taskdef resource="testngtasks" classpathref="testng.cp" />
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
-    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
-      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
-        <classfileset dir="build/test" includes="**/PCTCompileTest.class" excludes="**/*BrokerTest.class" />
-        <classpath refid="test.run.cp" />
-        <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
-      </testng>
-    </jacoco:coverage>
-  </target>
-
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
