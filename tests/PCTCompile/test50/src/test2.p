@@ -1,5 +1,5 @@
-{src\test3.i}
-{src\test2.i}
+{src/test3.i}
+{src/test2.i}
 
 DEFINE VARIABLE iC AS INTEGER     NO-UNDO.
 DO iC = 1 TO 100: 
