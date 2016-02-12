@@ -843,7 +843,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f3 = new File("PCTCompile/test50/build/test.r");
         assertTrue(f3.exists());
 		assertFalse(f3.lastModified() > mod1);
-        long mod1 = f1.lastModified();
+        mod1 = f1.lastModified();
         
         File f4 = new File("PCTCompile/test50/build/test2.r");
         assertTrue(f4.exists());
