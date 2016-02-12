@@ -59,8 +59,10 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
+  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
   FIELD ttMod      AS DATETIME
-  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
+  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
+  INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
@@ -141,6 +143,8 @@ DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cignoredIncludes AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lignoredIncludes AS LOGICAL     NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -245,6 +249,10 @@ REPEAT:
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'XMLXREF':U THEN
             ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'ignoredIncludes':U THEN
+            ASSIGN cignoredIncludes = TRIM(ENTRY(2, cLine, '=':U))
+                   cignoredIncludes = REPLACE(cignoredIncludes, '~\':U, '/':U) /* for Unix */
+                   lignoredIncludes = (LENGTH(cignoredIncludes) > 0).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -394,8 +402,13 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+            IF lignoredIncludes AND CAN-DO(cignoredIncludes, REPLACE(IncFile, '~\':U, '/':U)) THEN /* include is not relevant for recompile */
+            DO:
+                MESSAGE 'ignoring changes in: ' IncFile.
+                ASSIGN TimeStamps.ttExcept = TRUE.
+            END.
         END.
-        IF (TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod) THEN DO:
+        IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
             ASSIGN lReturn = TRUE.
             LEAVE FileList.
         END.
