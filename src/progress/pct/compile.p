@@ -173,9 +173,7 @@ PROCEDURE initModule.
     ASSIGN dbgListDir = OutputDir + '/.dbg':U.
     createDir(outputDir, '.dbg':U).
   END.
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
   COMPILER:MULTI-COMPILE = multiComp.
-&ENDIF
 
 END PROCEDURE.
 
@@ -313,13 +311,8 @@ PROCEDURE compileXref.
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
           GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile)
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
-            APPEND = AppStrXrf
+          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
           XREF-XML VALUE(cXrefFile)
-&ELSE
-          XREF VALUE(cXrefFile) APPEND=FALSE
-&ENDIF
           NO-ERROR.
     ELSE
         COMPILE
@@ -332,10 +325,7 @@ PROCEDURE compileXref.
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
           GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile)
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
-            APPEND = AppStrXrf
-&ENDIF
+          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
           XREF VALUE(cXrefFile) APPEND=FALSE
           NO-ERROR.
   END.
@@ -353,13 +343,8 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile)
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
-            APPEND = AppStrXrf
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
             XREF-XML VALUE(cXrefFile)
-&ELSE
-            XREF VALUE(cXrefFile) APPEND=FALSE
-&ENDIF
             NO-ERROR.
       ELSE
           COMPILE
@@ -373,10 +358,7 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile)
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
-              APPEND = AppStrXrf
-&ENDIF
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
             XREF VALUE(cXrefFile) APPEND=FALSE
             NO-ERROR.
     END.
@@ -393,13 +375,8 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile)
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
-              APPEND = AppStrXrf
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
             XREF-XML VALUE(cXrefFile)
-&ELSE
-            XREF VALUE(cXrefFile) APPEND=FALSE
-&ENDIF
             NO-ERROR.
       ELSE
           COMPILE
@@ -426,17 +403,14 @@ PROCEDURE compileXref.
       OS-DELETE VALUE(crenamefrom).
     END.
     IF (NOT noParse) THEN DO:
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
       IF lXmlXref THEN
         RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
       ELSE
-&ENDIF
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
     /* Il faut verifier le code de retour */
     IF NOT keepXref THEN
       OS-DELETE VALUE(cXrefFile).
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
     IF COMPILER:WARNING THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
@@ -446,7 +420,6 @@ PROCEDURE compileXref.
       END.
       OUTPUT STREAM sWarnings CLOSE.
     END.
-&ENDIF
   END.
   ELSE DO:
     ASSIGN c = '':U.
@@ -515,7 +488,6 @@ PROCEDURE displayCompileErrors PRIVATE:
 
 END PROCEDURE.
 
-&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
 PROCEDURE importXmlXref.
     DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.
     DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
@@ -584,7 +556,6 @@ PROCEDURE importXmlXref.
     OUTPUT CLOSE.
 
 END PROCEDURE.
-&ENDIF
 
 PROCEDURE importXref PRIVATE.
     DEFINE INPUT  PARAMETER pcXref AS CHARACTER NO-UNDO.

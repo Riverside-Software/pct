@@ -60,6 +60,8 @@
     <include name="pct/*.p" />
     <include name="pct/v9/*.p" />
     <exclude name="pct/_server.p" />
+    <exclude name="pct/compile.p" />
+    <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctBgCompile.p" />
     <exclude name="pct/pctOEUnitRunner.p" />
     <exclude name="pct/dump_seq.p" />
