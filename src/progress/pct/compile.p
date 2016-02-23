@@ -173,7 +173,9 @@ PROCEDURE initModule.
     ASSIGN dbgListDir = OutputDir + '/.dbg':U.
     createDir(outputDir, '.dbg':U).
   END.
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
   COMPILER:MULTI-COMPILE = multiComp.
+&ENDIF
 
 END PROCEDURE.
 
@@ -311,7 +313,10 @@ PROCEDURE compileXref.
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
           GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+          STRING-XREF VALUE(cStrXrefFile)
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+            APPEND = AppStrXrf
+&ENDIF
           XREF-XML VALUE(cXrefFile)
           NO-ERROR.
     ELSE
@@ -325,7 +330,10 @@ PROCEDURE compileXref.
           PREPROCESS VALUE(preprocessFile) 
           MIN-SIZE=MinSize
           GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+          STRING-XREF VALUE(cStrXrefFile)
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+            APPEND = AppStrXrf
+&ENDIF
           XREF VALUE(cXrefFile) APPEND=FALSE
           NO-ERROR.
   END.
@@ -343,7 +351,10 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            STRING-XREF VALUE(cStrXrefFile)
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+            APPEND = AppStrXrf
+&ENDIF
             XREF-XML VALUE(cXrefFile)
             NO-ERROR.
       ELSE
@@ -358,7 +369,10 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            STRING-XREF VALUE(cStrXrefFile)
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+              APPEND = AppStrXrf
+&ENDIF
             XREF VALUE(cXrefFile) APPEND=FALSE
             NO-ERROR.
     END.
@@ -375,7 +389,10 @@ PROCEDURE compileXref.
             PREPROCESS VALUE(preprocessFile)
             MIN-SIZE=MinSize
             GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            STRING-XREF VALUE(cStrXrefFile)
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
+              APPEND = AppStrXrf
+&ENDIF
             XREF-XML VALUE(cXrefFile)
             NO-ERROR.
       ELSE
