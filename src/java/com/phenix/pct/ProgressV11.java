@@ -25,7 +25,7 @@ public class ProgressV11 implements ProgressProcedures {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     public String getCompileProcedure() {
-        return "pct/v11/pctCompile.p";
+        return "pct/pctCompile.p";
     }
 
     public String getIncrementalProcedure() {

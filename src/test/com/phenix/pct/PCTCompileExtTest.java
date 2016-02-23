@@ -320,7 +320,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File dotR = new File("PCTCompileExt/test20/build/test.r");
         File f1 = new File("PCTCompileExt/test20/build/.pct/test.p");
         File f2 = new File("PCTCompileExt/test20/build/.pct/test.p.preprocess");
-        File f3 = new File("PCTCompileExt/test20/build/.pct/test.p.dbg");
+        File f3 = new File("PCTCompileExt/test20/build/.dbg/test.p");
         File f4 = new File("PCTCompileExt/test20/build/.pct/test.p.xref");
         File f5 = new File("PCTCompileExt/test20/debug/test.p");
         File f6 = new File("PCTCompileExt/test20/debug/dir1/dir2/test.p");
@@ -486,7 +486,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
-    // XXX @Test(groups = { "v10" } )
+    @Test(groups = { "v10" } )
     public void test102() {
         configureProject("PCTCompileExt/test102/build.xml");
         executeTarget("test");

@@ -65,12 +65,8 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
 /** Named streams */
 DEFINE STREAM sXref.
 DEFINE STREAM sXref2.
-DEFINE STREAM sParams.
-DEFINE STREAM sFileset.
 DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
-DEFINE STREAM sDbgLst1.
-DEFINE STREAM sDbgLst2.
 DEFINE STREAM sWarnings.
 
 /* PCTCompile attributes */
@@ -114,13 +110,13 @@ DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
 
-DEFINE VARIABLE hSrcProc  AS HANDLE NO-UNDO.
+/* Handle to calling procedure in order to log messages */
+DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
 PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipName  AS CHARACTER NO-UNDO.
   DEFINE INPUT PARAMETER ipValue AS CHARACTER NO-UNDO.
-
 
   CASE ipName:
     WHEN 'OUTPUTDIR':U        THEN ASSIGN OutputDir = ipValue.
@@ -151,15 +147,13 @@ PROCEDURE setOption.
     WHEN 'V6FRAME':U          THEN ASSIGN lV6Frame = (ipValue EQ '1':U).
     WHEN 'RELATIVE':U         THEN ASSIGN lRelative = (ipValue EQ '1':U).
     WHEN 'PROGPERC':U         THEN ASSIGN ProgPerc = INTEGER(ipValue).
-    /*WHEN 'NUMFILES':U         THEN ASSIGN iTotLines = INTEGER(ipValue).*/
     WHEN 'XMLXREF':U          THEN ASSIGN lXmlXref = (ipValue EQ '1':U).
-    OTHERWISE RUN logError IN hSrcProc (substitute("Unknown parameter &1" ,ipName)).
+    OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
-/*message substitute ("option " + ipname + " : " + ipvalue).*/
+
 END PROCEDURE.
 
 PROCEDURE initModule.
-
   /* Gets CRC list */
   DEFINE VARIABLE h AS HANDLE NO-UNDO.
   h = TEMP-TABLE CRCList:HANDLE.
@@ -167,152 +161,143 @@ PROCEDURE initModule.
   IF (RETURN-VALUE NE '0') THEN
     RETURN RETURN-VALUE.
 
-
-/* Checks if valid config */
-IF NOT FileExists(OutputDir) THEN
+  /* Checks if valid config */
+  IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
-IF NOT FileExists(PCTDir) THEN
+  IF NOT FileExists(PCTDir) THEN
     ASSIGN PCTDir = OutputDir + '/.pct':U.
-IF debugLst AND (dbgListDir EQ '') THEN DO:
+  IF debugLst AND (dbgListDir EQ '') THEN DO:
     ASSIGN dbgListDir = OutputDir + '/.dbg':U.
     createDir(outputDir, '.dbg':U).
-END.
-COMPILER:MULTI-COMPILE = multiComp.
-
-RUN logError IN hSrcProc ("Initialized "  + outputDir).
+  END.
+  COMPILER:MULTI-COMPILE = multiComp.
 
 END PROCEDURE.
 
 
 PROCEDURE compileXref.
-    DEFINE INPUT  PARAMETER ipInDir   AS CHARACTER  NO-UNDO. /* Fileset. Never null */
-    DEFINE INPUT  PARAMETER ipInFile  AS CHARACTER  NO-UNDO. /* Path relative to fileset. Never null */
-    DEFINE INPUT  PARAMETER ipOutFile AS CHARACTER  NO-UNDO. /* Path relative to pcOutDir. Can be null, in this case, the default rcode name */
-    DEFINE OUTPUT PARAMETER opError   AS LOGICAL    NO-UNDO INITIAL FALSE.
-    DEFINE OUTPUT PARAMETER opComp    AS INTEGER    NO-UNDO. /* 0 -> Not compiled, >0  recompiled */
+  DEFINE INPUT  PARAMETER ipInDir   AS CHARACTER  NO-UNDO. /* Fileset. Never null */
+  DEFINE INPUT  PARAMETER ipInFile  AS CHARACTER  NO-UNDO. /* Path relative to fileset. Never null */
+  DEFINE INPUT  PARAMETER ipOutFile AS CHARACTER  NO-UNDO. /* Path relative to pcOutDir. Can be null, in this case, the default rcode name */
+  DEFINE OUTPUT PARAMETER opError   AS LOGICAL    NO-UNDO INITIAL FALSE.
+  DEFINE OUTPUT PARAMETER opComp    AS INTEGER    NO-UNDO. /* 0 -> Not compiled, >0  recompiled */
 
-    DEFINE VARIABLE i        AS INTEGER    NO-UNDO.
-    DEFINE VARIABLE cBase    AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cBase2    AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cFile    AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cFile2    AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cFileExt2 AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
-    DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE i        AS INTEGER    NO-UNDO.
+  DEFINE VARIABLE cBase    AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cBase2    AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cFile    AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cFile2    AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cFileExt2 AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
+  DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE RCodeTS   AS DATETIME   NO-UNDO.
   DEFINE VARIABLE ProcTS    AS DATETIME   NO-UNDO.
   DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO initial ''.
 
-    IF (NOT fileExists(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)) THEN DO:
-      RUN logError IN hSrcProc (SUBSTITUTE("File [&1]/[&2] not found", ipInDir, ipInFile)).
-      ASSIGN opError = TRUE.
-      ASSIGN opComp = 0.
-      RETURN.    
-    END.
+  IF (NOT fileExists(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)) THEN DO:
+    RUN logError IN hSrcProc (SUBSTITUTE("File [&1]/[&2] not found", ipInDir, ipInFile)).
+    ASSIGN opError = TRUE.
+    ASSIGN opComp = 0.
+    RETURN.    
+  END.
 
+  RUN adecomm/_osprefx.p(INPUT ipInFile, OUTPUT cBase, OUTPUT cFile).
+  RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
+  ASSIGN opError = NOT createDir(outputDir, cBase).
+  IF (opError) THEN RETURN.
+  ASSIGN opError = NOT createDir(PCTDir, cBase).
+  IF (opError) THEN RETURN.
+  cSaveDir = IF cFileExt = ".cls" OR lRelative THEN outputDir ELSE outputDir + '/':U + cBase.
 
-    /* */
-    RUN adecomm/_osprefx.p(INPUT ipInFile, OUTPUT cBase, OUTPUT cFile).
-    RUN adecomm/_osfext.p(INPUT cFile, OUTPUT cFileExt).
-    ASSIGN opError = NOT createDir(outputDir, cBase).
+  IF (ipOutFile EQ ?) or (ipOutFile EQ '') THEN DO:
+    ASSIGN ipOutFile = SUBSTRING(ipInFile, 1, R-INDEX(ipInFile, cFileExt) - 1) + '.r':U.
+  END.
+  ELSE DO:
+    RUN adecomm/_osprefx.p(INPUT ipOutFile, OUTPUT cBase2, OUTPUT cFile2).
+    RUN adecomm/_osfext.p(INPUT cFile2, OUTPUT cFileExt2).
+    ASSIGN opError = NOT createDir(outputDir, cBase2).
     IF (opError) THEN RETURN.
-    ASSIGN opError = NOT createDir(PCTDir, cBase).
+    ASSIGN opError = NOT createDir(PCTDir, cBase2).
     IF (opError) THEN RETURN.
-    cSaveDir = IF cFileExt = ".cls" OR lRelative THEN outputDir ELSE outputDir + '/':U + cBase.
+    ASSIGN cRenameFrom = cBase + (if cbase eq '' then '' else '/') + substring(cfile, 1, r-index(cfile, '.') - 1) + '.r'.
+  END.
 
-    IF (ipOutFile EQ ?) THEN DO:
-      ASSIGN ipOutFile = SUBSTRING(ipInFile, 1, R-INDEX(ipInFile, cFileExt) - 1) + '.r':U.
+  IF (noParse OR ForceComp OR lXCode) THEN DO:
+    ASSIGN opComp = 5.
+  END.
+  ELSE DO:
+    /* Does .r file exists ? */
+    ASSIGN RCodeTS = getTimeStampDF(OutputDir, ipOutFile).
+    IF (RCodeTS EQ ?) THEN DO:
+      opComp = 1.
     END.
     ELSE DO:
-	    RUN adecomm/_osprefx.p(INPUT ipOutFile, OUTPUT cBase2, OUTPUT cFile2).
-	    RUN adecomm/_osfext.p(INPUT cFile2, OUTPUT cFileExt2).
-
-	    ASSIGN opError = NOT createDir(outputDir, cBase2).
-	    IF (opError) THEN RETURN.
-	    ASSIGN opError = NOT createDir(PCTDir, cBase2).
-	    IF (opError) THEN RETURN.
-    
-		
-        assign cRenameFrom = cBase + (if cbase eq '' then '' else '/') + substring(cfile, 1, r-index(cfile, '.') - 1) + '.r'.
-        run logerror in hsrcproc ("rename from  : " + crenamefrom). 
-    END.
-
-    IF (noParse OR ForceComp OR lXCode) THEN DO:
-      ASSIGN opComp = 5.
-    END.
-    ELSE DO:
-      /* Does .r file exists ? */
-      ASSIGN RCodeTS = getTimeStampDF(OutputDir, ipOutFile).
-      IF (RCodeTS EQ ?) THEN DO:
-        opComp = 1.
+      /* Checking if .r timestamp is prior to procedure timestamp */
+      ASSIGN ProcTS = getTimeStampDF(ipInDir, ipInFile).
+      IF (ProcTS GT RCodeTS) THEN DO:
+        opComp = 2.
       END.
       ELSE DO:
-        /* Checking if .r timestamp is prior to procedure timestamp */
-        ASSIGN ProcTS = getTimeStampDF(ipInDir, ipInFile).
-    	IF (ProcTS GT RCodeTS) THEN DO:
-    	  opComp = 2.
-    	END.
-    	ELSE DO:
-          IF CheckIncludes(ipInFile, RCodeTS, PCTDir) THEN DO:
-            opComp = 3.
-          END.
-          ELSE DO:
-            IF CheckCRC(ipInFile, PCTDir) THEN DO:
-              opComp = 4.
-            END.
+        IF CheckIncludes(ipInFile, RCodeTS, PCTDir) THEN DO:
+          opComp = 3.
+        END.
+        ELSE DO:
+          IF CheckCRC(ipInFile, PCTDir) THEN DO:
+            opComp = 4.
           END.
         END.
       END.
     END.
+  END.
 
-    IF opComp EQ 0 THEN RETURN.
-    
-    ASSIGN cXrefFile = PCTDir + '/':U + ipInFile + '.xref':U.
-    ASSIGN warningsFile = PCTDir + '/':U + ipInFile + '.warnings':U.
-    ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
+  IF opComp EQ 0 THEN RETURN.
+
+  ASSIGN cXrefFile = PCTDir + '/':U + ipInFile + '.xref':U.
+  ASSIGN warningsFile = PCTDir + '/':U + ipInFile + '.warnings':U.
+  ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
                            THEN PCTDir + '/strings.xref':U
                            ELSE (IF StrXref
                                  THEN PCTDir + '/':U + ipInFile + '.strxref'
-                                 ELSE ?)).    
-    
-    IF PrePro THEN DO:
-        IF preprocessDir = '' THEN
-            ASSIGN preprocessFile = PCTDir + '/':U + ipInFile + '.preprocess':U.
-        ELSE DO:
-            ASSIGN preprocessFile = preprocessDir + '/':U + ipInFile.
-            ASSIGN opError = NOT createDir(preprocessDir, cBase).
-            IF (opError) THEN RETURN.
-        END.
-    END.
-    ELSE
-        ASSIGN preprocessFile = ?.
-    IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
-        IF flattenDbg THEN
-            ASSIGN debugListingFile = dbgListDir + '/' + REPLACE(REPLACE(ipInFile, '/', '_'), '~\', '_').
-        ELSE DO:
-            ASSIGN debugListingFile = ipInFile.
-            ASSIGN debugListingFile = dbgListDir + '/' + debugListingFile.
-            ASSIGN opError = NOT createDir(dbgListDir, cBase).
-            IF (opError) THEN RETURN.
-        END.
-    END.
-    ELSE
-       ASSIGN debugListingFile = ?.
+                                 ELSE ?)).
 
-   
-    RUN /* XXX */ logError IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
-    IF (lXCode AND XCodeKey NE ?) THEN
-        COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
-    ELSE IF (lXCode) THEN
-        COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
-    ELSE IF (languages EQ ?) THEN DO:
-      IF lXmlXref THEN
+  IF PrePro THEN DO:
+    IF preprocessDir = '' THEN
+      ASSIGN preprocessFile = PCTDir + '/':U + ipInFile + '.preprocess':U.
+    ELSE DO:
+      ASSIGN preprocessFile = preprocessDir + '/':U + ipInFile.
+      ASSIGN opError = NOT createDir(preprocessDir, cBase).
+      IF (opError) THEN RETURN.
+    END.
+  END.
+  ELSE
+    ASSIGN preprocessFile = ?.
+
+  IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
+    IF flattenDbg THEN
+      ASSIGN debugListingFile = dbgListDir + '/' + REPLACE(REPLACE(ipInFile, '/', '_'), '~\', '_').
+    ELSE DO:
+      ASSIGN debugListingFile = ipInFile.
+      ASSIGN debugListingFile = dbgListDir + '/' + debugListingFile.
+      ASSIGN opError = NOT createDir(dbgListDir, cBase).
+      IF (opError) THEN RETURN.
+    END.
+  END.
+  ELSE
+    ASSIGN debugListingFile = ?.
+
+  RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
+  IF (lXCode AND XCodeKey NE ?) THEN
+    COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 XCODE XCodeKey NO-ERROR.
+  ELSE IF (lXCode) THEN
+    COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE = SaveR INTO VALUE(cSaveDir) STREAM-IO=streamIO V6FRAME=lV6Frame MIN-SIZE=MinSize GENERATE-MD5=MD5 NO-ERROR.
+  ELSE IF (languages EQ ?) THEN DO:
+    IF lXmlXref THEN
         COMPILE
           VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
           SAVE = SaveR INTO VALUE(cSaveDir)
@@ -326,7 +311,7 @@ PROCEDURE compileXref.
           STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
           XREF-XML VALUE(cXrefFile)
           NO-ERROR.
-      ELSE
+    ELSE
         COMPILE
           VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
           SAVE = SaveR INTO VALUE(cSaveDir)
@@ -340,42 +325,42 @@ PROCEDURE compileXref.
           STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
           XREF VALUE(cXrefFile) APPEND=FALSE
           NO-ERROR.
+  END.
+  ELSE DO:
+    IF (gwtFact GE 0) THEN DO:
+      IF lXmlXref THEN
+          COMPILE
+            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
+            SAVE = SaveR INTO VALUE(cSaveDir)
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF-XML VALUE(cXrefFile)
+            NO-ERROR.
+      ELSE
+          COMPILE
+            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
+            SAVE = SaveR INTO VALUE(cSaveDir)
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            STREAM-IO=streamIO
+            V6FRAME=lV6Frame
+            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
+            DEBUG-LIST VALUE(debugListingFile)
+            PREPROCESS VALUE(preprocessFile)
+            MIN-SIZE=MinSize
+            GENERATE-MD5=MD5
+            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
+            XREF VALUE(cXrefFile) APPEND=FALSE
+            NO-ERROR.
     END.
     ELSE DO:
-      IF (gwtFact GE 0) THEN DO:
-        IF lXmlXref THEN
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF-XML VALUE(cXrefFile)
-            NO-ERROR.
-        ELSE
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF VALUE(cXrefFile) APPEND=FALSE
-            NO-ERROR.
-      END.
-      ELSE DO:
-        IF lXmlXref THEN
+      IF lXmlXref THEN
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
@@ -390,7 +375,7 @@ PROCEDURE compileXref.
             STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
             XREF-XML VALUE(cXrefFile)
             NO-ERROR.
-        ELSE
+      ELSE
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
@@ -405,105 +390,98 @@ PROCEDURE compileXref.
             STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
             XREF VALUE(cXrefFile) APPEND=FALSE
             NO-ERROR.
-      END.
     END.
+  END.
 
-    ASSIGN opError = COMPILER:ERROR.
-    IF not opError THEN DO:
-    
-      if crenamefrom ne '' then do:
-        /*run logerror in hsrcproc ("renaming : " + crenamefrom  + " to " + ipoutfile).*/ 
-        os-copy value(outputdir + '/' + crenamefrom) value(outputdir + '/' + ipOutFile).
-        os-delete value(crenamefrom).
-      end.	
-      IF (NOT noParse) THEN DO:
-        IF lXmlXref THEN
-        	RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
-        ELSE
-        	RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+  ASSIGN opError = COMPILER:ERROR.
+  IF NOT opError THEN DO:
+    IF crenamefrom NE '' THEN DO:
+      OS-COPY VALUE(outputdir + '/' + crenamefrom) VALUE(outputdir + '/' + ipOutFile).
+      OS-DELETE VALUE(crenamefrom).
+    END.
+    IF (NOT noParse) THEN DO:
+      IF lXmlXref THEN
+        RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+      ELSE
+        RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+    END.
+    /* Il faut verifier le code de retour */
+    IF NOT keepXref THEN
+      OS-DELETE VALUE(cXrefFile).
+    IF COMPILER:WARNING THEN DO:
+      OUTPUT STREAM sWarnings TO VALUE(warningsFile).
+      DO i = 1 TO COMPILER:NUM-MESSAGES:
+        IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) THEN DO:
+          PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
+        END.
       END.
-        /* Il faut verifier le code de retour */
-        IF NOT keepXref THEN
-          OS-DELETE VALUE(cXrefFile).
-        IF COMPILER:WARNING THEN DO:
-          OUTPUT STREAM sWarnings TO VALUE(warningsFile).
-          DO i = 1 TO COMPILER:NUM-MESSAGES:
-            IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) THEN DO:
-              PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
-            END.
-          END.
-          OUTPUT STREAM sWarnings CLOSE.
-        END.
+      OUTPUT STREAM sWarnings CLOSE.
     END.
-    ELSE DO:
-        ASSIGN c = '':U.
-        DO i = 1 TO COMPILER:NUM-MESSAGES:
-            ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
-        END.
-        RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+  END.
+  ELSE DO:
+    ASSIGN c = '':U.
+    DO i = 1 TO COMPILER:NUM-MESSAGES:
+      ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
     END.
-    IF lTwoPass THEN DO:
-        OS-DELETE VALUE(ipInDir + '/':U + ipInFile) .
-        OS-RENAME VALUE(ipInDir + '/':U + ipInFile + '.backup':U) VALUE(ipInDir + '/':U + ipInFile) .
+    RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+  END.
+
+  IF lTwoPass THEN DO:
+    OS-DELETE VALUE(ipInDir + '/':U + ipInFile) .
+    OS-RENAME VALUE(ipInDir + '/':U + ipInFile + '.backup':U) VALUE(ipInDir + '/':U + ipInFile) .
+  END.
+  IF (NOT opError AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
+    COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(PCTDir + '/':U + ipInFile) NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN DO:
+      OS-DELETE VALUE(PCTDir + '/':U + ipInFile).
     END.
-    IF (NOT opError AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
-        COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(PCTDir + '/':U + ipInFile) NO-ERROR.
-        IF ERROR-STATUS:ERROR THEN DO:
-            OS-DELETE VALUE(PCTDir + '/':U + ipInFile).
-        END.
-    END.
+  END.
 
 END PROCEDURE.
 
 PROCEDURE displayCompileErrors PRIVATE:
-    DEFINE INPUT  PARAMETER pcInit    AS CHARACTER  NO-UNDO.
-    DEFINE INPUT  PARAMETER pcFile    AS CHARACTER  NO-UNDO.
-    DEFINE INPUT  PARAMETER piRow     AS INTEGER    NO-UNDO.
-    DEFINE INPUT  PARAMETER piColumn  AS INTEGER    NO-UNDO.
-    DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
-    
-    DEFINE VARIABLE i AS INTEGER    NO-UNDO .
-    DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
-    DEFINE VARIABLE bit AS INTEGER NO-UNDO.
-    DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
-    DEFINE VARIABLE include AS LOGICAL NO-UNDO.
-    
-    ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
-    
-    /* Checking if file is xcoded */
-    COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
-    bit = GET-BYTE (memvar, 1).
-    SET-SIZE(memvar) = 0.
+  DEFINE INPUT  PARAMETER pcInit    AS CHARACTER  NO-UNDO.
+  DEFINE INPUT  PARAMETER pcFile    AS CHARACTER  NO-UNDO.
+  DEFINE INPUT  PARAMETER piRow     AS INTEGER    NO-UNDO.
+  DEFINE INPUT  PARAMETER piColumn  AS INTEGER    NO-UNDO.
+  DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
 
-    IF (include) THEN
-      RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
-        /*MESSAGE "Error compiling file" pcInit "at line" STRING(piRow) "column" STRING(piColumn).*/
-    ELSE
-        /*MESSAGE "Error compiling file" pcInit "in included file" pcFile "at line" STRING(piRow) "column" STRING(piColumn).*/
-        RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
-  
-    IF (bit NE 17) AND (bit NE 19) THEN DO:
-        INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
-        DO i = 1 TO piRow - 1:
-             IMPORT STREAM sXref UNFORMATTED ^.
-             /*ASSIGN i = i + 1.*/
-        END.
-        IMPORT STREAM sXref UNFORMATTED c.
-        RUN logError IN hSrcProc (INPUT c).
-        RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
-        RUN logError IN hSrcProc (INPUT pcMsg).
-        RUN logError IN hSrcProc (INPUT '').
-    
-        INPUT STREAM sXref CLOSE.
-   END.
-   ELSE DO:
-        RUN logError IN hSrcProc (INPUT pcMsg).
-        RUN logError IN hSrcProc (INPUT SUBSTITUTE(">> Can't display xcoded source &1", (IF include THEN pcInit ELSE pcFile))).
-        RUN logError IN hSrcProc (INPUT '').
-        /*MESSAGE pcMsg.
-        MESSAGE SUBSTITUTE(">> Can't display xcoded source &1", (IF pcInit EQ pcFile THEN pcInit ELSE pcFile)).
-        MESSAGE '':U.*/
-   END.
+  DEFINE VARIABLE i AS INTEGER    NO-UNDO .
+  DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE bit AS INTEGER NO-UNDO.
+  DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
+  DEFINE VARIABLE include AS LOGICAL NO-UNDO.
+
+  ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
+
+  /* Checking if file is xcoded */
+  COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+  bit = GET-BYTE (memvar, 1).
+  SET-SIZE(memvar) = 0.
+
+  IF (include) THEN
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
+  ELSE
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+
+  IF (bit NE 17) AND (bit NE 19) THEN DO:
+    INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
+    DO i = 1 TO piRow - 1:
+      IMPORT STREAM sXref UNFORMATTED ^.
+    END.
+    IMPORT STREAM sXref UNFORMATTED c.
+    RUN logError IN hSrcProc (INPUT c).
+    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logError IN hSrcProc (INPUT pcMsg).
+    RUN logError IN hSrcProc (INPUT '').
+
+    INPUT STREAM sXref CLOSE.
+  END.
+  ELSE DO:
+    RUN logError IN hSrcProc (INPUT pcMsg).
+    RUN logError IN hSrcProc (INPUT SUBSTITUTE(">> Can't display xcoded source &1", (IF include THEN pcInit ELSE pcFile))).
+    RUN logError IN hSrcProc (INPUT '').
+  END.
 
 END PROCEDURE.
 

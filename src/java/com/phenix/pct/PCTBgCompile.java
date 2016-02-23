@@ -66,7 +66,8 @@ public class PCTBgCompile extends PCTBgRun {
     private Mapper mapperElement = null;
 
     private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
-    private int compOk = 0, compNotOk = 0;
+    private int compOk = 0;
+    private int compNotOk = 0;
 
     public void setRelativePaths(boolean rel) {
         getOptions().setRelativePaths(rel);
@@ -166,6 +167,7 @@ public class PCTBgCompile extends PCTBgRun {
      * 
      * @param failOnError "true|false|on|off|yes|no"
      */
+    @Override
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
     }
@@ -327,9 +329,9 @@ public class PCTBgCompile extends PCTBgRun {
         FileNameMapper mapper = null;
         if (mapperElement != null) {
             mapper = mapperElement.getImplementation();
-        } else {
+        } /*else {
             mapper = new RCodeMapper();
-        }
+        }*/
         return mapper;
     }
 
@@ -338,6 +340,7 @@ public class PCTBgCompile extends PCTBgRun {
      * 
      * @throws BuildException Something went wrong
      */
+    @Override
     public void execute() throws BuildException {
         if (this.destDir == null) {
             this.cleanup();
@@ -409,87 +412,14 @@ public class PCTBgCompile extends PCTBgRun {
      * workers and transmitted to the OpenEdge procedures.
      */
     private void initializeCompilationUnits() {
-        // .pct dir is where PCT output files are generated
-        File dotPCTDir = new File(destDir, ".pct");
-
         for (FileSet fs : filesets) {
             
             for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                // File to be compiled
-                File inputDir = fs.getDir(getProject());
-                File inputFile = new File(fs.getDir(getProject()), str);
-                String inputFileName = inputFile.getName();
-
-                File f = inputFile.getParentFile();
-                String inputFileDir = "";
-                while (!f.equals(inputDir)) {
-                    inputFileDir = f.getName() + (inputFileDir.length() > 0 ? '/' + inputFileDir : "");
-                    f = f.getParentFile();
-                }
-                
-                int srcExtPos = inputFile.getName().lastIndexOf('.');
-                String extension = (srcExtPos != -1 ? inputFile.getName().substring(srcExtPos) : "");
-                String fileNameNoExt = (srcExtPos != -1 ? inputFile.getName().substring(0,
-                        srcExtPos) : str);
-
-                // Output directory for .r file
-                String[] outputNames = getMapper().mapFileName(str);
-                if ((outputNames != null) && (outputNames.length >= 1)) {
-                    File outputDir = null;
-                    File outputFile = new File(destDir, outputNames[0]);
-                    String targetFile = outputFile.getName();
-                    if (extension.equalsIgnoreCase(".cls") || getOptions().useRelativePaths()) {
-                        // Specific case, as Progress prepends package or directory name automatically
-                        // So outputDir has to be destDir
-                        outputDir = destDir;
-                    } else {
-                        outputDir = outputFile.getParentFile();
-                    }
-
-                    if (getOptions().useRelativePaths() && !outputFile.getParentFile().exists()) {
-                        // When using relative paths, we have to create directory structure 
-                        outputFile.getParentFile().mkdirs();
-                    } else if (!outputDir.exists()) {
-                        outputDir.mkdirs();
-                    }
-
-                    // Output directory for PCT files
-                    File PCTDir = new File(dotPCTDir, outputNames[0]).getParentFile();
-                    if (!PCTDir.exists())
-                        PCTDir.mkdirs();
-                    // Output directory for preprocess files
-                    File tmpPreprocessDir = null;
-                    if (preprocess && (preprocessDir != null)) {
-                        tmpPreprocessDir = new File(preprocessDir, outputNames[0]).getParentFile();
-                        if (!tmpPreprocessDir.exists())
-                            tmpPreprocessDir.mkdirs();
-                    }
-                    // Output directory for debug listing files
-                    File tmpDebugListingDir = null;
-                    if (debugListing && (debugListingDir != null)) {
-                        tmpDebugListingDir = new File(debugListingDir, outputNames[0]).getParentFile();
-                        if (!tmpDebugListingDir.exists())
-                            tmpDebugListingDir.mkdirs();
-                    }
-                    CompilationUnit unit = new CompilationUnit();
-                    unit.fsRootDir = inputDir;
-                    unit.fsDir = inputFileDir;
-                    unit.fsFile = inputFileName;
-                    unit.destDir = destDir;
-                    unit.compilDestDir = outputDir;
-                    unit.debugFile = (debugListing
-                            ? (debugListingDir == null ? new File(PCTDir, fileNameNoExt + extension + ".dbg") : new File(tmpDebugListingDir, fileNameNoExt + extension))
-                            : null);
-                    unit.preprocessFile = (preprocess ? (preprocessDir == null ? new File(PCTDir, fileNameNoExt + extension
-                            + ".preprocess") : new File(tmpPreprocessDir,  fileNameNoExt + extension)) : null);
-                    unit.listingFile = (listing
-                            ? new File(PCTDir, fileNameNoExt + extension)
-                            : null);
-                    unit.xrefFile = new File(PCTDir, fileNameNoExt + extension + ".xref");
-                    unit.pctRoot = new File(PCTDir, fileNameNoExt + extension);
-                    unit.targetFile = targetFile;
-                    units.add(unit);
-                }
+                CompilationUnit unit = new CompilationUnit();
+                unit.fsRootDir = fs.getDir(getProject());
+                unit.fsFile = str;
+                unit.targetFile = getMapper() == null ? null : getMapper().mapFileName(str)[0];
+                units.add(unit);
             }
         }
 
@@ -567,7 +497,7 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         private String getOptions() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append(Boolean.toString(runList)).append(';');
             sb.append(Boolean.toString(minSize)).append(';');
             sb.append(Boolean.toString(md5)).append(';');
@@ -581,11 +511,18 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(multiCompile)).append(';');
             sb.append(Boolean.toString(streamIO)).append(';');
             sb.append(Boolean.toString(v6Frame)).append(';');
-            sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths()));
+            sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths())).append(';');
+            sb.append(destDir.getAbsolutePath()).append(';');
+            sb.append(Boolean.toString(preprocess)).append(';');
+            sb.append(preprocessDir == null ? "" : preprocessDir.getAbsolutePath()).append(';');
+            sb.append(Boolean.toString(listing)).append(';');
+            sb.append(Boolean.toString(debugListing)).append(';');
+            sb.append(debugListingDir == null ? "" : debugListingDir.getAbsolutePath());
 
             return sb.toString();
         }
 
+        @Override
         public void handleResponse(String command, String parameter, boolean err,
                 String customResponse, List<Message> returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
@@ -595,8 +532,8 @@ public class PCTBgCompile extends PCTBgRun {
                     ok = Integer.parseInt(str[0]);
                     notOk = Integer.parseInt(str[1]);
                 } catch (NumberFormatException nfe) {
-                    throw new BuildException("Invalid response from pctCompile command ("
-                            + customResponse + ")", nfe);
+                    throw new BuildException("Invalid response from command " + command + "(" + parameter + ") : '" 
+                            + customResponse + "'", nfe);
                 }
                 addCompilationCounters(ok, notOk);
                 logMessages(returnValues);
@@ -610,76 +547,32 @@ public class PCTBgCompile extends PCTBgRun {
 
     private static class CompilationUnit {
         private File fsRootDir; // Fileset root directory
-        private String fsDir, fsFile; // Fileset relative directory and file name
-        private File destDir, compilDestDir; // DestDir attribute and directory where to COMPILE SAVE()
-        private File debugFile;
-        private File preprocessFile;
-        private File listingFile;
-        private File xrefFile;
-        private File pctRoot;
+        private String fsFile; // Fileset relative file name
         private String targetFile;
 
+        @Override
         public int hashCode() {
-            return new File(new File(fsRootDir, fsDir), fsFile).hashCode();
+            return new File(fsRootDir, fsFile).hashCode();
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (obj == null)
                 return false;
 
             if (obj instanceof CompilationUnit) {
                 CompilationUnit other = (CompilationUnit) obj;
-                return new File(new File(fsRootDir, fsDir), fsFile).equals(new File(new File(
-                        other.fsRootDir, other.fsDir), other.fsFile));
+                return new File(fsRootDir, fsFile).equals(new File(other.fsRootDir, other.fsFile));
             } else {
                 return false;
             }
         }
 
+        @Override
         public String toString() {
-            return fsRootDir + "|" + fsDir + "|" + fsFile + "|" + destDir + "|" + compilDestDir
-                    + "|" + (debugFile == null ? "" : debugFile.getAbsolutePath()) + "|"
-                    + (preprocessFile == null ? "" : preprocessFile.getAbsolutePath()) + "|"
-                    + (listingFile == null ? "" : listingFile.getAbsolutePath()) + "|" + xrefFile
-                    + "|" + pctRoot + "|" + targetFile;
+            return fsRootDir + "|" + fsFile + "|" + (targetFile == null ? "" : targetFile);
         }
 
-    }
-
-    public static class RCodeMapper implements FileNameMapper {
-
-        /**
-         * Ignored.
-         * 
-         * @param from ignored.
-         */
-        public void setFrom(String from) {
-        }
-
-        /**
-         * Ignored.
-         * 
-         * @param to ignored.
-         */
-        public void setTo(String to) {
-        }
-
-        /**
-         * Returns an one-element array containing the source file name.
-         * 
-         * @param sourceFileName the name to map.
-         * @return the source filename in a one-element array.
-         */
-        public String[] mapFileName(String sourceFileName) {
-            if (sourceFileName == null)
-                return null;
-            int extPos = sourceFileName.lastIndexOf('.');
-            if (extPos == -1) {
-                return new String[]{sourceFileName + ".r"};
-            } else {
-                return new String[]{sourceFileName.substring(0, extPos) + ".r"};
-            }
-        }
     }
 
 }
