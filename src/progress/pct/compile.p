@@ -316,8 +316,10 @@ PROCEDURE compileXref.
           STRING-XREF VALUE(cStrXrefFile)
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
             APPEND = AppStrXrf
-&ENDIF
           XREF-XML VALUE(cXrefFile)
+&ELSE
+          XREF VALUE(cXrefFile) APPEND=FALSE
+&ENDIF
           NO-ERROR.
     ELSE
         COMPILE
@@ -354,8 +356,10 @@ PROCEDURE compileXref.
             STRING-XREF VALUE(cStrXrefFile)
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
             APPEND = AppStrXrf
-&ENDIF
             XREF-XML VALUE(cXrefFile)
+&ELSE
+            XREF VALUE(cXrefFile) APPEND=FALSE
+&ENDIF
             NO-ERROR.
       ELSE
           COMPILE
@@ -392,8 +396,10 @@ PROCEDURE compileXref.
             STRING-XREF VALUE(cStrXrefFile)
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
               APPEND = AppStrXrf
-&ENDIF
             XREF-XML VALUE(cXrefFile)
+&ELSE
+            XREF VALUE(cXrefFile) APPEND=FALSE
+&ENDIF
             NO-ERROR.
       ELSE
           COMPILE
@@ -420,9 +426,11 @@ PROCEDURE compileXref.
       OS-DELETE VALUE(crenamefrom).
     END.
     IF (NOT noParse) THEN DO:
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
       IF lXmlXref THEN
         RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
       ELSE
+&ENDIF
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
     /* Il faut verifier le code de retour */
