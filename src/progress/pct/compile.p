@@ -436,6 +436,7 @@ PROCEDURE compileXref.
     /* Il faut verifier le code de retour */
     IF NOT keepXref THEN
       OS-DELETE VALUE(cXrefFile).
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
     IF COMPILER:WARNING THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
@@ -445,6 +446,7 @@ PROCEDURE compileXref.
       END.
       OUTPUT STREAM sWarnings CLOSE.
     END.
+&ENDIF
   END.
   ELSE DO:
     ASSIGN c = '':U.
