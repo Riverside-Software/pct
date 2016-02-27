@@ -74,6 +74,7 @@ PROCEDURE pctCompile:
   DEFINE VARIABLE zz        AS INTEGER     NO-UNDO.
   DEFINE VARIABLE compOK    AS INTEGER     NO-UNDO.
   DEFINE VARIABLE compNotOK AS INTEGER     NO-UNDO.
+  DEFINE VARIABLE skipped   AS INTEGER     NO-UNDO.
   DEFINE VARIABLE cc        AS CHARACTER   NO-UNDO.
 
   DEFINE VARIABLE lErr AS LOGICAL NO-UNDO.
@@ -89,14 +90,16 @@ PROCEDURE pctCompile:
        OUTPUT lErr,
        OUTPUT opComp).
 
-    IF lErr EQ FALSE THEN
-      ASSIGN compOK = compOK + 1.
+    IF lErr EQ FALSE THEN DO:
+      ASSIGN compOK = compOK + 1
+             skipped = skipped + (IF opComp EQ 0 THEN 1 ELSE 0).
+    END.
     ELSE
       ASSIGN compNotOk = compNotOK + 1.
   END.
 
   ASSIGN opOK = (compNotOk EQ 0)
-         opMsg = STRING(compOK) + "/" + STRING(compNotOk).
+         opMsg = STRING(compOK) + "/" + STRING(compNotOk) + "/" + STRING(skipped).
 
 END PROCEDURE.
 

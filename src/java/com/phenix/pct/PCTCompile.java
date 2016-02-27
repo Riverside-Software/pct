@@ -49,7 +49,6 @@ public class PCTCompile extends PCTRun {
     private boolean md5 = true;
     private boolean forceCompile = false;
     private boolean xcode = false;
-    private boolean noCompile = false;
     private boolean runList = false;
     private boolean listing = false;
     private String listingSource = null;
@@ -110,7 +109,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Generate String Xref Files (STRING-XREF). Option is ignored when working with Progress v9 and
-     * below (FIXME)
+     * below
      * 
      * @param stringXref "true|false|on|off|yes|no"
      * 
@@ -214,7 +213,7 @@ public class PCTCompile extends PCTRun {
         this.flattenDbg = flatten;
     }
 
-    /**
+   /**
      * Don't use XREF (and so compile everything). Removed since 0.5, use forceCompile
      * 
      * @param noXref "true|false|on|off|yes|no"
@@ -295,15 +294,6 @@ public class PCTCompile extends PCTRun {
      */
     public void setMD5(boolean md5) {
         this.md5 = md5;
-    }
-
-    /**
-     * No real compilation ; just print the files which should be recompiled
-     * 
-     * @param noCompile "true|false|on|off|yes|no"
-     */
-    public void setNoCompile(boolean noCompile) {
-        this.noCompile = noCompile;
     }
 
     /**
@@ -509,8 +499,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * 
-     * @throws BuildException
+     *      * @throws BuildException
      */
     private void writeParams() throws BuildException {
 
@@ -533,8 +522,6 @@ public class PCTCompile extends PCTRun {
             bw.write("STOPONERROR=" + (stopOnError ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XCODE=" + (this.xcode ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("NOCOMPILE=" + (this.noCompile ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("RUNLIST=" + (this.runList ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
