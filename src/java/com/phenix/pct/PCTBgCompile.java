@@ -453,10 +453,6 @@ public class PCTBgCompile extends PCTBgRun {
                 sendCommand("setOptions", getOptions());
                 return true;
             } else if (customStatus == 4) {
-                customStatus = 5;
-                sendCommand("getCRC", "");
-                return true;
-            } else if (customStatus == 5) {
                 List<CompilationUnit> sending = new ArrayList<CompilationUnit>();
                 boolean noMoreFiles = false;
                 synchronized (units) {
@@ -474,12 +470,12 @@ public class PCTBgCompile extends PCTBgRun {
                         noMoreFiles = true;
                     }
                 }
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 if (noMoreFiles) {
                     return false;
                 } else {
                     for (Iterator<CompilationUnit> iter = sending.iterator(); iter.hasNext();) {
-                        CompilationUnit cu = (CompilationUnit) iter.next();
+                        CompilationUnit cu = iter.next();
                         if (sb.length() > 0)
                             sb.append('*');
                         sb.append(cu.toString());

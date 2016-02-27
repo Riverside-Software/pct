@@ -24,13 +24,6 @@ DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 RUN pct/compile.p PERSISTENT SET hComp.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
-PROCEDURE getCRC:
-    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
-    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO INITIAL TRUE.
-    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
-
-END PROCEDURE.
-
 PROCEDURE setOptions:
     DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
@@ -77,32 +70,32 @@ PROCEDURE pctCompile:
     /*  -> Input file to compile - just the file name (CHAR) */
     /*  -> Target file name (CHAR) */
 
-    DEFINE VARIABLE zz        AS INTEGER     NO-UNDO.
-    DEFINE VARIABLE compOK    AS INTEGER     NO-UNDO.
-    DEFINE VARIABLE compNotOK AS INTEGER     NO-UNDO.
-    DEFINE VARIABLE cc        AS CHARACTER   NO-UNDO.
-    
-    DEFINE VARIABLE lErr AS LOGICAL NO-UNDO.
-    DEFINE VARIABLE opComp AS INTEGER NO-UNDO.
+  DEFINE VARIABLE zz        AS INTEGER     NO-UNDO.
+  DEFINE VARIABLE compOK    AS INTEGER     NO-UNDO.
+  DEFINE VARIABLE compNotOK AS INTEGER     NO-UNDO.
+  DEFINE VARIABLE cc        AS CHARACTER   NO-UNDO.
 
-    DO zz = 1 TO NUM-ENTRIES(ipPrm, {&SEPARATOR2}):
-      ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
+  DEFINE VARIABLE lErr AS LOGICAL NO-UNDO.
+  DEFINE VARIABLE opComp AS INTEGER NO-UNDO.
 
-      RUN compileXref IN hComp
-        (ENTRY(1, cc, {&SEPARATOR}),
-         ENTRY(2, cc, {&SEPARATOR}),
-         ENTRY(3, cc, {&SEPARATOR}),
-         OUTPUT lErr,
-         OUTPUT opComp).
+  DO zz = 1 TO NUM-ENTRIES(ipPrm, {&SEPARATOR2}):
+    ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
 
-      IF lErr EQ FALSE THEN
-        ASSIGN compOK = compOK + 1.
-      ELSE
-        ASSIGN compNotOk = compNotOK + 1.
-    END.
+    RUN compileXref IN hComp
+      (ENTRY(1, cc, {&SEPARATOR}),
+       ENTRY(2, cc, {&SEPARATOR}),
+       ENTRY(3, cc, {&SEPARATOR}),
+       OUTPUT lErr,
+       OUTPUT opComp).
 
-    ASSIGN opOK = (compNotOk EQ 0)
-           opMsg = STRING(compOK) + "/" + STRING(compNotOk).
+    IF lErr EQ FALSE THEN
+      ASSIGN compOK = compOK + 1.
+    ELSE
+      ASSIGN compNotOk = compNotOK + 1.
+  END.
+
+  ASSIGN opOK = (compNotOk EQ 0)
+         opMsg = STRING(compOK) + "/" + STRING(compNotOk).
 
 END PROCEDURE.
 
