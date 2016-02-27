@@ -316,9 +316,10 @@ public class PCTBgCompile extends PCTBgRun {
         createMapper().add(fileNameMapper);
     }
 
-    private synchronized void addCompilationCounters(int ok, int notOk) {
+    private synchronized void addCompilationCounters(int ok, int notOk, int skipped) {
         compOk += ok;
         compNotOk += notOk;
+        compSkipped += skipped;
     }
 
     /**
@@ -411,7 +412,7 @@ public class PCTBgCompile extends PCTBgRun {
             super.execute();
         } finally {
             log(MessageFormat.format(Messages.getString("PCTCompile.44"), new Object[]{Integer //$NON-NLS-1$
-                    .valueOf(compOk)}));
+                    .valueOf(compOk - compSkipped)}));
             if (compNotOk > 0) {
                 log(MessageFormat.format(Messages.getString("PCTCompile.45"), new Object[]{Integer //$NON-NLS-1$
                         .valueOf(compNotOk)}));
@@ -537,15 +538,16 @@ public class PCTBgCompile extends PCTBgRun {
                 String customResponse, List<Message> returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
                 String[] str = customResponse.split("/");
-                int ok = 0, notOk = 0;
+                int ok = 0, notOk = 0, skipped = 0;
                 try {
                     ok = Integer.parseInt(str[0]);
                     notOk = Integer.parseInt(str[1]);
+                    skipped = Integer.parseInt(str[2]);
                 } catch (NumberFormatException nfe) {
                     throw new BuildException("Invalid response from command " + command + "(" + parameter + ") : '" 
                             + customResponse + "'", nfe);
                 }
-                addCompilationCounters(ok, notOk);
+                addCompilationCounters(ok, notOk, skipped);
                 logMessages(returnValues);
                 if (err && failOnError) {
                     setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
