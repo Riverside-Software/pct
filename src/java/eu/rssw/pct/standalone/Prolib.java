@@ -3,6 +3,7 @@ package eu.rssw.pct.standalone;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,16 @@ public class Prolib {
     private static CommandExtract extract = new CommandExtract();
     private static CommandList list = new CommandList();
     private static CommandCompare compare = new CommandCompare();
+
+    private PrintStream out;
+
+    public Prolib() {
+        this(System.out);
+    }
+
+    public Prolib(PrintStream out) {
+        this.out = out;
+    }
 
     public static void main(String[] args) throws Throwable {
         Prolib main = new Prolib();
@@ -45,14 +56,14 @@ public class Prolib {
 
     public void executeList() throws IOException {
         PLReader reader = new PLReader(list.lib);
-        System.out.printf("%6s %33s %10s %s%n", "CRC", "MD5", "Size", "File");
+        out.printf("%6s %33s %10s %s%n", "CRC", "MD5", "Size", "File");
         for (FileEntry entry : reader.getFileList()) {
             try {
                 RCodeInfo info = new RCodeInfo(reader.getInputStream(entry));
-                System.out.printf("%6d %33s %10d %s%n", info.getCRC(), info.getMD5(),
+                out.printf("%6d %33s %10d %s%n", info.getCRC(), info.getMD5(),
                         entry.getSize(), entry.getFileName());
             } catch (InvalidRCodeException caught) {
-                System.out.printf("%6s %33s %10d %s%n", "-", "-", entry.getSize(),
+                out.printf("%6s %33s %10d %s%n", "-", "-", entry.getSize(),
                         entry.getFileName());
             }
         }
@@ -60,14 +71,19 @@ public class Prolib {
 
     public void executeExtract() {
         PLReader reader = new PLReader(extract.lib);
-        for (FileEntry entry : reader.getFileList()) {
+        List<FileEntry> entries = reader.getFileList();
+        if (reader.isMemoryMapped()) {
+            out.println("Unable to extract files from memory-mapped library");
+            return;
+        }
+        for (FileEntry entry : entries) {
             File file = new File(entry.getFileName().replace('\\', '/'));
             try (InputStream input = reader.getInputStream(entry)) {
                 if (file.getParentFile() != null)
                     file.getParentFile().mkdirs();
                 Files.copy(input, file.toPath());
             } catch (IOException e) {
-                System.out.printf("Unable to extract file %s%n", entry.getFileName());
+                out.printf("Unable to extract file %s%n", entry.getFileName());
             }
         }
     }
@@ -89,20 +105,20 @@ public class Prolib {
                     if ((info1.getCRC() == info2.getCRC())
                             && (info1.getMD5().equals(info2.getMD5()))) {
                         if (compare.showIdenticals)
-                            System.out.println("I " + entry1.getFileName());
+                            out.println("I " + entry1.getFileName());
                     } else {
-                        System.out.println("M " + entry1.getFileName());
+                        out.println("M " + entry1.getFileName());
                     }
                 } catch (InvalidRCodeException caught) {
-                    System.out.println("- " + entry1.getFileName());
+                    out.println("- " + entry1.getFileName());
                 }
                 list2.remove(idx);
             } else {
-                System.out.println("A " + entry1.getFileName());
+                out.println("A " + entry1.getFileName());
             }
         }
         for (FileEntry entry2 : list2) {
-            System.out.println("R " + entry2.getFileName());
+            out.println("R " + entry2.getFileName());
         }
     }
 
