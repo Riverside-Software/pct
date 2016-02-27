@@ -49,14 +49,9 @@ public class PLReader {
 
     private File pl;
     private List<FileEntry> files = null;
+    private boolean mm = false;
 
     public PLReader(File file) {
-        String name = file.getPath();
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            sm.checkRead(name);
-        }
-
         this.pl = file;
     }
 
@@ -89,13 +84,16 @@ public class PLReader {
             ByteBuffer magic = ByteBuffer.allocate(2);
             fc.read(magic);
             int magicVal = magic.getShort(0) & 0xffff;
-            if ((magicVal) == MAGIC)
+            if (magicVal == MAGIC) {
                 version = 1;
-            else if ((magicVal == MAGIC_V11) || (magicVal == MAGIC_V11_MM))
+            } else if (magicVal == MAGIC_V11) {
                 version = 2;
-            else
-                // if (!checkMagic(fc))
+            } else if (magicVal == MAGIC_V11_MM) {
+                version = 2;
+                mm = true;
+            } else {
                 throw new RuntimeException("Not a valid PL file");
+            }
 
             Charset charset = getCharset(fc);
             int offset = getTOCOffset(fc, version);
@@ -117,6 +115,10 @@ public class PLReader {
                 }
             }
         }
+    }
+
+    public boolean isMemoryMapped() {
+        return mm;
     }
 
     public InputStream getInputStream(FileEntry fe) throws IOException {
