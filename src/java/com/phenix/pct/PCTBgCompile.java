@@ -64,10 +64,12 @@ public class PCTBgCompile extends PCTBgRun {
     private File preprocessDir = null;
     private File debugListingDir = null;
     private Mapper mapperElement = null;
+    private String ignoredIncludes = null;
 
     private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
     private int compOk = 0;
     private int compNotOk = 0;
+    private int compSkipped = 0;
 
     public void setRelativePaths(boolean rel) {
         getOptions().setRelativePaths(rel);
@@ -120,6 +122,17 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setListing(boolean listing) {
         this.listing = listing;
+    }
+
+    /**
+     * Ignore Includes matching this pattern
+     * 
+     * @param pattern "can-do pattern for includefile"
+     * 
+     * @since 2.x
+     */
+    public void setIgnoredIncludes(String pattern) {
+        this.ignoredIncludes = pattern;
     }
 
     /**
@@ -513,7 +526,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(preprocessDir == null ? "" : preprocessDir.getAbsolutePath()).append(';');
             sb.append(Boolean.toString(listing)).append(';');
             sb.append(Boolean.toString(debugListing)).append(';');
-            sb.append(debugListingDir == null ? "" : debugListingDir.getAbsolutePath());
+            sb.append(debugListingDir == null ? "" : debugListingDir.getAbsolutePath()).append(';');
+            sb.append(ignoredIncludes);
 
             return sb.toString();
         }

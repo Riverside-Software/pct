@@ -34,8 +34,10 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
+  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
   FIELD ttMod      AS {&DATETIME}
-  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
+  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
+  INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
   FIELD xProcName   AS CHARACTER
   FIELD xFileName   AS CHARACTER
@@ -106,6 +108,8 @@ DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cIgnoredIncludes AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
 
 /* Handle to calling procedure in order to log messages */
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
@@ -144,12 +148,15 @@ PROCEDURE setOption.
     WHEN 'RELATIVE':U         THEN ASSIGN lRelative = (ipValue EQ '1':U).
     WHEN 'PROGPERC':U         THEN ASSIGN ProgPerc = INTEGER(ipValue).
     WHEN 'XMLXREF':U          THEN ASSIGN lXmlXref = (ipValue EQ '1':U).
+    WHEN 'IGNOREDINCLUDES':U  THEN ASSIGN cignoredIncludes = REPLACE(TRIM(ipValue), '~\':U, '/':U).
     OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
 
 END PROCEDURE.
 
-PROCEDURE initModule.
+PROCEDURE initModule:
+  ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
+
   /* Gets CRC list */
   DEFINE VARIABLE h AS HANDLE NO-UNDO.
   h = TEMP-TABLE CRCList:HANDLE.
@@ -169,7 +176,6 @@ PROCEDURE initModule.
   COMPILER:MULTI-COMPILE = multiComp.
 
 END PROCEDURE.
-
 
 PROCEDURE compileXref.
   DEFINE INPUT  PARAMETER ipInDir   AS CHARACTER  NO-UNDO. /* Fileset. Never null */
@@ -700,8 +706,12 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS {&DATE
       ASSIGN TimeStamps.ttFile = IncFile
              TimeStamps.ttFullPath = SEARCH(IncFile).
       ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+      IF lIgnoredIncludes AND CAN-DO(cIgnoredIncludes, REPLACE(IncFile, '~\':U, '/':U)) THEN /* include is not relevant for recompile */ DO:
+        RUN logVerbose IN hSrcProc (SUBSTITUTE('Ignoring changes in &1', IncFile)).
+        ASSIGN TimeStamps.ttExcept = TRUE.
+      END.
     END.
-    IF (TimeStamps.ttFullPath NE IncFullPath) OR (ts LT TimeStamps.ttMod) THEN DO:
+    IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
       ASSIGN lReturn = TRUE.
       LEAVE FileList.
     END.

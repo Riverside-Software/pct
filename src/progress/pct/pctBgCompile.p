@@ -51,6 +51,7 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('LISTING', IF ENTRY(18, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('DEBUGLISTING', IF ENTRY(19, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('DEBUGLISTINGDIR', ENTRY(20, ipPrm, ';')).
+    RUN setOption IN hComp ('IGNOREDINCLUDES', ENTRY(21, ipPrm, ';')).
 
     RUN initModule IN hComp.
 
