@@ -62,6 +62,11 @@
 
   <target name="init">
     <unzip src="testcases.zip" dest="." />
+    <mkdir dir="testbox/PCTCompileExt" />
+    <copy todir="testbox/PCTCompileExt">
+      <fileset dir="testbox/PCTCompile" />
+    </copy>
+    <replace dir="testbox/PCTCompileExt" includes="**/build.xml" token="PCTCompile" value="PCTCompileExt" />
   </target>
 
   <target name="test">
