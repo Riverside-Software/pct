@@ -1,1 +1,0 @@
-DEF VAR _c AS CHAR.

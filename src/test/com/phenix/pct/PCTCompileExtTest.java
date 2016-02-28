@@ -58,13 +58,20 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 
 import org.apache.tools.ant.BuildException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.google.common.io.LineProcessor;
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 /**
  * Class for testing PCTCompileExt task
@@ -191,6 +198,16 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("test2");
         File f2 = new File(BASEDIR + "test11/build2/test2.r");
         assertTrue(f2.exists());
+
+        executeTarget("test3");
+        assertTrue(new File(BASEDIR + "test11/build3/test0.r").exists());
+        assertFalse(new File(BASEDIR + "test11/build3/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test11/build3/test2.r").exists());
+
+        executeTarget("test4");
+        assertTrue(new File(BASEDIR + "test11/build4/test0.r").exists());
+        assertFalse(new File(BASEDIR + "test11/build4/test1.r").exists());
+        assertFalse(new File(BASEDIR + "test11/build4/test2.r").exists());
     }
 
     @Test(groups = {"v10"})
@@ -280,23 +297,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    // @Test
-    // public void test18() {
-    // executeTarget("test18init");
-    // executeTarget("test18");
-    //
-    // File f = new File("build/sandbox/test.r");
-    // File f2 = new File("build/sandbox/test2.r");
-    // assertTrue(f.exists());
-    // assertTrue(f2.exists());
-    //
-    // long mod = f.lastModified();
-    // long mod2 = f2.lastModified();
-    // executeTarget("test18bis");
-    // assertTrue(mod < f.lastModified());
-    // assertTrue(mod2 < f2.lastModified());
-    // }
-
     @Test(groups = {"v10"})
     public void test19() {
         configureProject(BASEDIR + "test19/build.xml");
@@ -324,7 +324,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f3 = new File(BASEDIR + "test20/build/.dbg/test.p");
         File f4 = new File(BASEDIR + "test20/build/.pct/test.p.xref");
         File f5 = new File(BASEDIR + "test20/debug/test.p");
-        File f6 = new File(BASEDIR + "test20/debug/dir1/dir2/test.p");
+        File f6 = new File(BASEDIR + "test20/debug/dir1_dir2_test.p");
 
         assertTrue(dotR.exists());
         assertFalse(f1.exists());
@@ -366,6 +366,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f3.exists());
         File f4 = new File(BASEDIR + "test22/build/.pct/Y.cls.crc");
         assertTrue(f4.exists());
+
+        executeTarget("test2");
+        File f5 = new File(BASEDIR + "test22/build2/Y.r");
+        assertTrue(f5.exists());
+        File f6 = new File(BASEDIR + "test22/build2/X.r");
+        assertTrue(f6.exists());
     }
 
     @Test(groups = {"v10", "win"})
@@ -374,6 +380,19 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         expectBuildException("test1", "Should fail - No stream-io");
 
         File f = new File(BASEDIR + "test23/build/test.r");
+        assertFalse(f.exists());
+        executeTarget("test2");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test24() {
+        configureProject(BASEDIR + "test24/build.xml");
+
+        File f = new File(BASEDIR + "test24/build/test.r");
+        assertFalse(f.exists());
+
+        executeTarget("test1");
         assertFalse(f.exists());
         executeTarget("test2");
         assertTrue(f.exists());
@@ -477,6 +496,371 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test30() {
+        configureProject(BASEDIR + "test30/build.xml");
+
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test30/build/test1.r").exists());
+        assertFalse(new File(BASEDIR + "test30/build/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build/test3.r").exists());
+
+        expectBuildException("test2", "ZipFileset not supported");
+
+        executeTarget("test3");
+        assertFalse(new File(BASEDIR + "test30/build3/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build3/test2.r").exists());
+        assertFalse(new File(BASEDIR + "test30/build3/test3.r").exists());
+
+        executeTarget("test4");
+        assertEquals(new File(BASEDIR + "test30/build4").list().length, 1); // Only .pct
+
+        executeTarget("test5");
+        assertTrue(new File(BASEDIR + "test30/build5/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build5/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build5/test3.r").exists());
+
+        executeTarget("test6");
+        assertTrue(new File(BASEDIR + "test30/build6/test1.r").exists());
+        assertFalse(new File(BASEDIR + "test30/build6/test2.r").exists());
+        assertFalse(new File(BASEDIR + "test30/build6/test3.r").exists());
+
+        executeTarget("test7");
+        assertTrue(new File(BASEDIR + "test30/build7/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build7/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build7/test3.r").exists());
+
+        executeTarget("test8");
+        assertTrue(new File(BASEDIR + "test30/build8/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build8/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test30/build8/test3.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test32() {
+        configureProject(BASEDIR + "test32/build.xml");
+        executeTarget("test");
+
+        assertTrue(new File(BASEDIR + "test32/build1/.pct/test1.p.strxref").exists());
+        assertTrue(new File(BASEDIR + "test32/build1/.pct/test2.p.strxref").exists());
+        assertTrue(new File(BASEDIR + "test32/build2/.pct/strings.xref").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test33() {
+        configureProject(BASEDIR + "test33/build.xml");
+        executeTarget("test");
+
+        assertTrue(new File(BASEDIR + "test33/build/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test33/build/test2.r").exists());
+
+        expectBuildException("test2", "Expected failure");
+        assertFalse(new File(BASEDIR + "test33/build2/test1.r").exists());
+        assertFalse(new File(BASEDIR + "test33/build2/test2.r").exists());
+        assertFalse(new File(BASEDIR + "test33/build2/test3.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test34() throws IOException, InvalidRCodeException {
+        configureProject(BASEDIR + "test34/build.xml");
+        executeTarget("test");
+
+        File dbg1 = new File(BASEDIR + "test34/debugListing/test1.p");
+        File dbg2 = new File(BASEDIR + "test34/debugListing/foo_bar_test2.p");
+        File rcode1 = new File(BASEDIR + "test34/build/test1.r");
+        File rcode2 = new File(BASEDIR + "test34/build/foo/bar/test2.r");
+        assertTrue(dbg1.exists());
+        assertTrue(dbg2.exists());
+        assertTrue(rcode1.exists());
+        assertTrue(rcode2.exists());
+        // Doesn't work...
+        // RCodeInfo r1 = new RCodeInfo(rcode1);
+        // RCodeInfo r2 = new RCodeInfo(rcode2);
+        // assertEquals(r1.getDebugListingFile(), "test1.p");
+        // assertEquals(r2.getDebugListingFile(), "foo_bar_test2.p");
+    }
+
+    @Test(groups = {"v10"})
+    public void test35() throws IOException {
+        configureProject(BASEDIR + "test35/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        executeTarget("test2");
+
+        File crc = new File(BASEDIR + "test35/build/.pct/test.p.crc");
+        assertTrue(crc.exists());
+        String line = Files.readFirstLine(crc, Charset.defaultCharset());
+        assertTrue(line.startsWith("\"sports2000.Item\""));
+        File inc = new File(BASEDIR + "test35/build/.pct/test.p.inc");
+        assertTrue(inc.exists());
+        // TODO Problem is still there, test case kept for future reference
+        // LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
+        // Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
+        // assertTrue(lineProcessor.getResult());
+
+        File crc2 = new File(BASEDIR + "test35/build2/.pct/test.p.crc");
+        assertTrue(crc2.exists());
+        String line2 = Files.readFirstLine(crc2, Charset.defaultCharset());
+        assertTrue(line2.startsWith("\"sports2000.Item\""));
+        File inc2 = new File(BASEDIR + "test35/build2/.pct/test.p.inc");
+        assertTrue(inc2.exists());
+        LineProcessor<Boolean> lineProcessor2 = new Test35LineProcessor();
+        Files.readLines(inc2, Charset.defaultCharset(), lineProcessor2);
+        assertTrue(lineProcessor2.getResult());
+    }
+
+    private final static class Test35LineProcessor implements LineProcessor<Boolean> {
+        private boolean retVal = false;
+        private int zz = 0;
+
+        @Override
+        public Boolean getResult() {
+            return retVal;
+        }
+
+        @Override
+        public boolean processLine(String line) throws IOException {
+            if (zz == 0) {
+                retVal = line.startsWith("\"test.i\"");
+            } else if (zz == 1) {
+                retVal &= line.startsWith("\"test2.i\"");
+            } else if (zz == 2) {
+                retVal &= line.startsWith("\"test3.i\"");
+            }
+            zz++;
+
+            return true;
+        }
+    }
+
+    @Test(groups = {"v10"})
+    public void test36() throws IOException {
+        configureProject(BASEDIR + "test36/build.xml");
+        executeTarget("test");
+
+        assertTrue(new File(BASEDIR + "test36/build/bar/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build/bar/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build/bar/test3.r").exists());
+        assertFalse(new File(BASEDIR + "test36/build/bar/test4.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build/foo/test.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build/foo/subdir/subdir2/test.r").exists());
+        assertFalse(new File(BASEDIR + "test36/build/baz/test.r").exists());
+
+        executeTarget("test2");
+
+        assertTrue(new File(BASEDIR + "test36/build2/bar/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build2/bar/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build2/bar/test3.r").exists());
+        assertFalse(new File(BASEDIR + "test36/build2/bar/test4.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build2/foo/test.r").exists());
+        assertTrue(new File(BASEDIR + "test36/build2/foo/subdir/subdir2/test.r").exists());
+        assertFalse(new File(BASEDIR + "test36/build2/baz/test.r").exists());
+    }
+
+    // @Test(groups = {"v10"})
+    // Not really a test case, just to show something is broken...
+    public void test37() throws IOException {
+        configureProject(BASEDIR + "test37/build.xml");
+        executeTarget("init");
+
+        assertTrue(new File(BASEDIR + "test37/build1/package/bar.r").exists());
+        assertTrue(new File(BASEDIR + "test37/build1/package/Foo.r").exists());
+        assertTrue(new File(BASEDIR + "test37/build2/package/bar.r").exists());
+        assertTrue(new File(BASEDIR + "test37/build2/package/foo.r").exists());
+        assertTrue(new File(BASEDIR + "test37/build3/package/bAr.r").exists());
+        assertTrue(new File(BASEDIR + "test37/build3/package/fOO.r").exists());
+
+        executeTarget("test1");
+        executeTarget("test2");
+        executeTarget("test3");
+    }
+
+    @Test(groups = {"all"})
+    public void test38() {
+        // Compile error with xcode
+        configureProject(BASEDIR + "test38/build.xml");
+        executeTarget("init");
+        expectBuildException("test", "Should fail - Progress syntax error");
+    }
+
+    @Test(groups = {"all"})
+    public void test39() {
+        // Compile error, no xcode
+        configureProject(BASEDIR + "test39/build.xml");
+        expectBuildException("test", "Should fail - Progress syntax error");
+    }
+
+    @Test(groups = {"v10"})
+    public void test40() {
+        // Test keepXref attribute
+        configureProject(BASEDIR + "test40/build.xml");
+        executeTarget("test");
+
+        assertFalse(new File(BASEDIR + "test40/build1/.pct/test.p.xref").exists());
+        assertTrue(new File(BASEDIR + "test40/build2/.pct/test.p.xref").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test42() {
+        configureProject(BASEDIR + "test42/build.xml");
+        executeTarget("test");
+
+        File f1 = new File(BASEDIR + "test42/build/test.r");
+        File f2 = new File(BASEDIR + "test42/build2/test.r");
+        long mod1 = f1.lastModified();
+        long mod2 = f2.lastModified();
+
+        executeTarget("test2");
+        /*
+         * Bug in 11.3 with standard XREF, but not on different versions. To be investigated
+         * (later...)
+         */
+        // assertTrue(mod1 == f1.lastModified());
+        /* But fixed with XML-XREF */
+        assertTrue(f2.lastModified() > mod2);
+    }
+
+    @Test(groups = {"v10"})
+    public void test43() {
+        configureProject(BASEDIR + "test43/build.xml");
+        executeTarget("test");
+
+        File f1 = new File(BASEDIR + "test43/build/test.r");
+        File f2 = new File(BASEDIR + "test43/build2/test.r");
+        long mod1 = f1.lastModified();
+        long mod2 = f2.lastModified();
+        assertFalse(new File(BASEDIR + "test43/build/.pct/test.p.xref").exists());
+        assertFalse(new File(BASEDIR + "test43/build/.pct/test.p.inc").exists());
+        assertFalse(new File(BASEDIR + "test43/build/.pct/test.p.crc").exists());
+        assertFalse(new File(BASEDIR + "test43/build/.dbg/test.p").exists());
+        assertTrue(new File(BASEDIR + "test43/build2/.dbg/test.p").exists());
+        assertTrue(new File(BASEDIR + "test43/build2/.pct/test.p.preprocess").exists());
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+        assertTrue(f2.lastModified() > mod2);
+    }
+
+    @Test(groups = {"v10"})
+    public void test45() {
+        configureProject(BASEDIR + "test45/build.xml");
+        executeTarget("test");
+
+        File f1 = new File(BASEDIR + "test45/build/test.r");
+        File f2 = new File(BASEDIR + "test45/build/.pct/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f2.length() > 650);
+    }
+
+    @Test(groups = {"v10"})
+    public void test46() {
+        configureProject(BASEDIR + "test46/build.xml");
+        executeTarget("test");
+
+        File f1 = new File(BASEDIR + "test46/build/test.r");
+        File f2 = new File(BASEDIR + "test46/build/.pct/test.p");
+        File f3 = new File(BASEDIR + "test46/build2/test.r");
+        File f4 = new File(BASEDIR + "test46/build2/.pct/test.p");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f3.exists());
+        assertTrue(f4.exists());
+        try {
+            // Preprocessed source code removes many lines of unreachable code
+            assertTrue(Files.readLines(f2, Charsets.UTF_8).size() + 10 < Files
+                    .readLines(f4, Charsets.UTF_8).size());
+        } catch (IOException caught) {
+            Assert.fail("Unable to open file", caught);
+        }
+    }
+
+    @Test(groups = {"v10"})
+    public void test47() {
+        configureProject(BASEDIR + "test47/build.xml");
+        executeTarget("test1");
+
+        File f1 = new File(BASEDIR + "test47/build/dir1/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+    }
+
+    @Test(groups = {"v10"})
+    public void test48() {
+        configureProject(BASEDIR + "test48/build.xml");
+        executeTarget("test1");
+
+        File f1 = new File(BASEDIR + "test48/build/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+
+        executeTarget("test2");
+        assertTrue(f1.lastModified() > mod1);
+    }
+
+    @Test(groups = {"v10"})
+    public void test49() {
+        configureProject(BASEDIR + "test49/build.xml");
+        executeTarget("test1");
+        File warns = new File(BASEDIR + "test49/build/.pct/test.p.warnings");
+        assertTrue(warns.exists());
+        assertTrue(warns.length() > 0);
+    }
+
+    @Test(groups = {"v10"})
+    public void test50() {
+        configureProject(BASEDIR + "test50/build.xml");
+        executeTarget("test1");
+        File rcode = new File(BASEDIR + "test50/build/test.r");
+        assertTrue(rcode.exists());
+        assertTrue(rcode.length() > 0);
+    }
+
+    @Test(groups = {"v10"})
+    public void test51() {
+        configureProject(BASEDIR + "test51/build.xml");
+        executeTarget("test1"); /* compile all programms */
+        File f1 = new File(BASEDIR + "test51/build/test.r");
+        assertTrue(f1.exists());
+        long mod1 = f1.lastModified();
+        File f2 = new File(BASEDIR + "test51/build/test2.r");
+        assertTrue(f2.exists());
+        long mod2 = f2.lastModified();
+
+        executeTarget("test2"); /* nothing should compile */
+        File f3 = new File(BASEDIR + "test51/build/test.r");
+        assertTrue(f3.exists());
+        assertFalse(f3.lastModified() > mod1);
+        mod1 = f1.lastModified();
+
+        File f4 = new File(BASEDIR + "test51/build/test2.r");
+        assertTrue(f4.exists());
+        assertFalse(f4.lastModified() > mod2);
+
+        executeTarget("test3"); /* all programms should be compiled */
+        File f5 = new File(BASEDIR + "test51/build/test.r");
+        long mod5 = f5.lastModified();
+        assertTrue(f5.exists());
+        assertTrue(mod5 > mod1);
+
+        File f6 = new File(BASEDIR + "test51/build/test2.r");
+        long mod6 = f6.lastModified();
+        assertTrue(f6.exists());
+        assertTrue(mod6 > mod2);
+
+        executeTarget("test4"); /* all programms should be compiled */
+        File f7 = new File(BASEDIR + "test51/build/test.r");
+        assertTrue(f7.exists());
+        assertTrue(f7.lastModified() > mod5);
+
+        File f8 = new File(BASEDIR + "test51/build/test2.r");
+        assertTrue(f8.exists());
+        assertTrue(f8.lastModified() > mod6);
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
@@ -575,63 +959,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f2 = new File(BASEDIR + "test107/build/test2.r");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
-    }
-
-    @Test(groups = {"all"})
-    public void test38() {
-        // Compile error with xcode
-        configureProject(BASEDIR + "test38/build.xml");
-        executeTarget("init");
-        expectBuildException("test", "Should fail - Progress syntax error");
-    }
-
-    @Test(groups = {"all"})
-    public void test39() {
-        // Compile error, no xcode
-        configureProject(BASEDIR + "test39/build.xml");
-        expectBuildException("test", "Should fail - Progress syntax error");
-    }
-
-    @Test(groups = {"v10"})
-    public void test51() {
-        configureProject(BASEDIR + "test51/build.xml");
-        executeTarget("test1"); /* compile all programms */
-        File f1 = new File(BASEDIR + "test51/build/test.r");
-        assertTrue(f1.exists());
-        long mod1 = f1.lastModified();
-        File f2 = new File(BASEDIR + "test51/build/test2.r");
-        assertTrue(f2.exists());
-        long mod2 = f2.lastModified();
-
-        executeTarget("test2"); /* nothing should compile */
-        File f3 = new File(BASEDIR + "test51/build/test.r");
-        assertTrue(f3.exists());
-        assertFalse(f3.lastModified() > mod1);
-        mod1 = f1.lastModified();
-
-        File f4 = new File(BASEDIR + "test51/build/test2.r");
-        assertTrue(f4.exists());
-        assertFalse(f4.lastModified() > mod2);
-
-        executeTarget("test3"); /* all programms should be compiled */
-        File f5 = new File(BASEDIR + "test51/build/test.r");
-        long mod5 = f5.lastModified();
-        assertTrue(f5.exists());
-        assertTrue(mod5 > mod1);
-
-        File f6 = new File(BASEDIR + "test51/build/test2.r");
-        long mod6 = f6.lastModified();
-        assertTrue(f6.exists());
-        assertTrue(mod6 > mod2);
-
-        executeTarget("test4"); /* all programms should be compiled */
-        File f7 = new File(BASEDIR + "test51/build/test.r");
-        assertTrue(f7.exists());
-        assertTrue(f7.lastModified() > mod5);
-
-        File f8 = new File(BASEDIR + "test51/build/test2.r");
-        assertTrue(f8.exists());
-        assertTrue(f8.lastModified() > mod6);
     }
 
     private static void copy(File src, File dst) throws IOException {

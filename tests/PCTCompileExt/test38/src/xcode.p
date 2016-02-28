@@ -1,1 +1,0 @@
-MSSAGE "Invalid source code".
