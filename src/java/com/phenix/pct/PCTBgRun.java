@@ -298,6 +298,7 @@ public abstract class PCTBgRun extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
+    @Override
     public void execute() throws BuildException {
         ListenerThread listener = null;
         checkDlcHome();
