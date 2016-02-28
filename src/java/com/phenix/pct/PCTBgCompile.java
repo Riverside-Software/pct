@@ -19,8 +19,10 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Mapper;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.FileNameMapper;
 
 import java.io.File;
@@ -34,6 +36,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Class for compiling Progress procedures
@@ -41,21 +45,27 @@ import java.util.Set;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTBgCompile extends PCTBgRun {
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
     private boolean minSize = false;
     private boolean md5 = true;
     private boolean forceCompile = false;
     private boolean failOnError = true;
+    private boolean stopOnError = false;
     private boolean xcode = false;
     private boolean noCompile = false;
     private boolean runList = false;
     private boolean listing = false;
+    private String listingSource = null;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
+    private boolean noParse = false;
     private boolean multiCompile = false;
     private boolean streamIO = false;
     private boolean v6Frame = false;
+    private boolean stringXref = false;
+    private boolean appendStringXref = false;
+    private boolean saveR = true;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -64,9 +74,11 @@ public class PCTBgCompile extends PCTBgRun {
     private File preprocessDir = null;
     private File debugListingDir = null;
     private Mapper mapperElement = null;
+    private boolean flattenDbg = true;
     private String ignoredIncludes = null;
+    private boolean xmlXref = false;
 
-    private Set<CompilationUnit> units = new HashSet<CompilationUnit>();
+    private SortedSet<CompilationUnit> units = new TreeSet<CompilationUnit>();
     private int compOk = 0;
     private int compNotOk = 0;
     private int compSkipped = 0;
@@ -82,6 +94,38 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setMinSize(boolean minSize) {
         this.minSize = minSize;
+    }
+
+    /**
+     * Generate String Xref Files (STRING-XREF). Option is ignored when working with Progress v9 and
+     * below
+     * 
+     * @param stringXref "true|false|on|off|yes|no"
+     * 
+     * @since 0.19
+     */
+    public void setStringXref(boolean stringXref) {
+        this.stringXref = stringXref;
+    }
+
+    /**
+     * Append Xref Strings in one file
+     * 
+     * @param AppendStringXref "true|false|on|off|yes|no"
+     */
+    public void setAppendStringXref(boolean appendStringXref) {
+        this.appendStringXref = appendStringXref;
+    }
+
+    /**
+     * Turns on/off R-Code generation in destDir Attribute SAVE=[TRUE|FALSE] from COMPILE statement
+     * 
+     * @param saveR "true|false|on|off|yes|no"
+     * 
+     * @since 0.19
+     */
+    public void setSaveR(boolean saveR) {
+        this.saveR = saveR;
     }
 
     /**
@@ -124,6 +168,17 @@ public class PCTBgCompile extends PCTBgRun {
         this.listing = listing;
     }
 
+    public void setListingSource(String source) {
+        if ((source == null) || (source.trim().length() == 0) || ("preprocessor".equalsIgnoreCase(source.trim())))
+            this.listingSource = source;
+        else
+            throw new BuildException("Invalid listingSource attribute : " + source);
+    }
+
+    public void setFlattenDebugListing(boolean flatten) {
+        this.flattenDbg = flatten;
+    }
+
     /**
      * Ignore Includes matching this pattern
      * 
@@ -152,6 +207,7 @@ public class PCTBgCompile extends PCTBgRun {
      * @since 0.19
      */
     public void setPreprocessDir(File dir) {
+        this.preprocess = true;
         this.preprocessDir = dir;
     }
 
@@ -175,14 +231,17 @@ public class PCTBgCompile extends PCTBgRun {
         this.debugListingDir = dir;
     }
 
+    public void setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+    }
+
     /**
      * Immediatly quit if a progress procedure fails to compile
      * 
-     * @param failOnError "true|false|on|off|yes|no"
+     * @param stopOnError "true|false|on|off|yes|no"
      */
-    @Override
-    public void setFailOnError(boolean failOnError) {
-        this.failOnError = failOnError;
+    public void setStopOnError(boolean stopOnError) {
+        this.stopOnError = stopOnError;
     }
 
     /**
@@ -192,6 +251,7 @@ public class PCTBgCompile extends PCTBgRun {
      * 
      * @deprecated
      */
+    @Deprecated
     public void setNoXref(boolean noXref) {
         log(Messages.getString("PCTCompile.1")); //$NON-NLS-1$
         this.forceCompile = noXref;
@@ -204,6 +264,16 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setKeepXref(boolean keepXref) {
         this.keepXref = keepXref;
+    }
+
+    /**
+     * Disables completely XREF generation and parsing. This means there's no generated file in .pct
+     * subdirectory.
+     * 
+     * @param noParse "true|false|on|off|yes|no"
+     */
+    public void setNoParse(boolean noParse) {
+        this.noParse = noParse;
     }
 
     /**
@@ -222,6 +292,13 @@ public class PCTBgCompile extends PCTBgRun {
      */
     public void setXRefDir(File xrefDir) {
         this.xRefDir = xrefDir;
+    }
+
+    /**
+     * Use XML-XREF instead of standard XREF ?
+     */
+    public void setXmlXref(boolean xmlXref) {
+        this.xmlXref = xmlXref;
     }
 
     /**
@@ -298,12 +375,16 @@ public class PCTBgCompile extends PCTBgRun {
     }
 
     /**
-     * Adds a set of files to archive.
+     * Adds a ResourceCollection to compile
      * 
-     * @param set FileSet
+     * @param rc ResourceCollection
      */
-    public void addFileset(FileSet set) {
-        filesets.add(set);
+    public void add(ResourceCollection rc) {
+        resources.add(rc);
+    }
+
+    public void addConfiguredOEFileset(OpenEdgeFileSet oefs) {
+        resources.add(oefs.getCompilationFileSet(getProject()));
     }
 
     /**
@@ -426,15 +507,26 @@ public class PCTBgCompile extends PCTBgRun {
      * workers and transmitted to the OpenEdge procedures.
      */
     private void initializeCompilationUnits() {
-        for (FileSet fs : filesets) {
-            
-            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+        int zz = 0;
+        for (ResourceCollection rc : resources) {
+            for (Resource r : rc) {
+                FileResource frs = (FileResource) r;
+                if (!frs.isDirectory()) {
                 CompilationUnit unit = new CompilationUnit();
-                unit.fsRootDir = fs.getDir(getProject());
-                unit.fsFile = str;
-                unit.targetFile = getMapper() == null ? null : getMapper().mapFileName(str)[0];
+                unit.id = zz++;
+                unit.fsRootDir = frs.getBaseDir();
+                unit.fsFile = frs.getName();
+                unit.targetFile = getMapper() == null ? null : getMapper().mapFileName(frs.getName())[0];
                 units.add(unit);
+                }
             }
+//            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+//                CompilationUnit unit = new CompilationUnit();
+//                unit.fsRootDir = fs.getDir(getProject());
+//                unit.fsFile = str;
+//                unit.targetFile = getMapper() == null ? null : getMapper().mapFileName(str)[0];
+//                units.add(unit);
+//            }
         }
 
     }
@@ -517,7 +609,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(noCompile)).append(';');
             sb.append(Boolean.toString(keepXref)).append(';');
             sb.append(languages == null ? "" : languages).append(';');
-            sb.append(Integer.toString((growthFactor > 0 ? growthFactor : 100))).append(';');
+            sb.append(Integer.toString(growthFactor > 0 ? growthFactor : 100)).append(';');
             sb.append(Boolean.toString(multiCompile)).append(';');
             sb.append(Boolean.toString(streamIO)).append(';');
             sb.append(Boolean.toString(v6Frame)).append(';');
@@ -528,7 +620,15 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(listing)).append(';');
             sb.append(Boolean.toString(debugListing)).append(';');
             sb.append(debugListingDir == null ? "" : debugListingDir.getAbsolutePath()).append(';');
-            sb.append(ignoredIncludes);
+            sb.append(ignoredIncludes).append(';');
+            sb.append(Boolean.toString(xmlXref)).append(';');
+            sb.append(Boolean.toString(stringXref)).append(';');
+            sb.append(Boolean.toString(appendStringXref)).append(';');
+            sb.append(Boolean.toString(saveR)).append(';');
+            sb.append(listingSource).append(';');
+            sb.append(Boolean.toString(noParse)).append(';');
+            sb.append(Boolean.toString(stopOnError)).append(';');
+            sb.append(Boolean.toString(flattenDbg)).append(';');
 
             return sb.toString();
         }
@@ -549,22 +649,25 @@ public class PCTBgCompile extends PCTBgRun {
                 }
                 addCompilationCounters(ok, notOk, skipped);
                 logMessages(returnValues);
-                if (err && failOnError) {
-                    setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
-                    quit();
+                if (err) {
+                    if (failOnError)
+                        setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
+                    if (stopOnError)
+                        quit();
                 }
             }
         }
     }
 
-    private static class CompilationUnit {
+    private static class CompilationUnit implements Comparable<CompilationUnit> {
+        private int id;
         private File fsRootDir; // Fileset root directory
         private String fsFile; // Fileset relative file name
         private String targetFile;
 
         @Override
         public int hashCode() {
-            return new File(fsRootDir, fsFile).hashCode();
+            return id;
         }
 
         @Override
@@ -574,7 +677,7 @@ public class PCTBgCompile extends PCTBgRun {
 
             if (obj instanceof CompilationUnit) {
                 CompilationUnit other = (CompilationUnit) obj;
-                return new File(fsRootDir, fsFile).equals(new File(other.fsRootDir, other.fsFile));
+                return id == other.id;
             } else {
                 return false;
             }
@@ -585,6 +688,10 @@ public class PCTBgCompile extends PCTBgRun {
             return fsRootDir + "|" + fsFile + "|" + (targetFile == null ? "" : targetFile);
         }
 
+        @Override
+        public int compareTo(CompilationUnit o) {
+            return id - o.id;
+        }
     }
 
 }

@@ -20,6 +20,7 @@
 
 DEFINE VARIABLE hComp    AS HANDLE NO-UNDO.
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
+DEFINE VARIABLE lStopOnErr AS LOGICAL NO-UNDO.
 
 RUN pct/compile.p PERSISTENT SET hComp.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
@@ -52,7 +53,15 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('DEBUGLISTING', IF ENTRY(19, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('DEBUGLISTINGDIR', ENTRY(20, ipPrm, ';')).
     RUN setOption IN hComp ('IGNOREDINCLUDES', ENTRY(21, ipPrm, ';')).
-
+    RUN setOption IN hComp ('XMLXREF', IF ENTRY(22, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('STRINGXREF', IF ENTRY(23, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('APPENDSTRINGXREF', IF ENTRY(24, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('SAVER', IF ENTRY(25, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('LISTINGSOURCE', ENTRY(26, ipPrm, ';')).
+    RUN setOption IN hComp ('NOPARSE', IF ENTRY(27, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
+    RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    
     RUN initModule IN hComp.
 
     ASSIGN opOk = TRUE.
@@ -80,6 +89,7 @@ PROCEDURE pctCompile:
   DEFINE VARIABLE lErr AS LOGICAL NO-UNDO.
   DEFINE VARIABLE opComp AS INTEGER NO-UNDO.
 
+  FileLoop:
   DO zz = 1 TO NUM-ENTRIES(ipPrm, {&SEPARATOR2}):
     ASSIGN cc = ENTRY(zz, ipPrm, {&SEPARATOR2}).
 
@@ -94,8 +104,10 @@ PROCEDURE pctCompile:
       ASSIGN compOK = compOK + 1
              skipped = skipped + (IF opComp EQ 0 THEN 1 ELSE 0).
     END.
-    ELSE
+    ELSE DO:
       ASSIGN compNotOk = compNotOK + 1.
+      IF lStopOnErr THEN LEAVE FileLoop.
+    END.
   END.
 
   ASSIGN opOK = (compNotOk EQ 0)

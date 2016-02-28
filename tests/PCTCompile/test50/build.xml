@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<project name="PCTCompile-test49">
+<project name="PCTCompile-test50">
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
     <mkdir dir="build" />
+    <mkdir dir="foobar" />
     <PCTCompile destDir="build" dlcHome="${DLC}" preprocessDir="foobar">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />

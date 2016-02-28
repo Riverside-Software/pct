@@ -58,11 +58,10 @@ public class PCTCompile extends PCTRun {
     private boolean noParse = false;
     private boolean multiCompile = false;
     private boolean streamIO = false;
-	private boolean v6Frame = false;
+    private boolean v6Frame = false;
     private boolean stringXref = false;
     private boolean appendStringXref = false;
     private boolean saveR = true;
-    private boolean twoPass = false;
     private boolean stopOnError = false;
     private boolean xmlXref = false;
     private String xcodeKey = null;
@@ -81,7 +80,6 @@ public class PCTCompile extends PCTRun {
     private File fsList = null;
     private int paramsId = -1;
     private File params = null;
-    private int twoPassId = -1;
     private int numFiles = 0;
 
     /**
@@ -92,7 +90,6 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
-        twoPassId = PCT.nextRandomInt();
 
         fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -393,16 +390,6 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * Two-pass compilation: first pass preprocess source code, second pass compiles the result
-     * 
-     * @param twoPass Boolean
-     * @since PCT 0.19
-     */
-    public void setTwoPass(boolean twoPass) {
-        this.twoPass = twoPass;
-    }
-
-    /**
      * Immediately stop compiling when a compilation error occurs
      * 
      * @param stopOnError Boolean
@@ -583,12 +570,6 @@ public class PCTCompile extends PCTRun {
                 bw.write("XCODEKEY=" + this.xcodeKey); //$NON-NLS-1$
                 bw.newLine();
             }
-            if (twoPass) {
-                bw.write("TWOPASS=1");
-                bw.newLine();
-                bw.write("TWOPASSID=" + Integer.toString(twoPassId));
-                bw.newLine();
-            }
 
             if (this.progPerc > 0) {
                 bw.write("PROGPERC=" + this.progPerc); //$NON-NLS-1$
@@ -656,9 +637,6 @@ public class PCTCompile extends PCTRun {
             }
         }
         
-        if (twoPass) {
-            log("Two pass compilation activated", Project.MSG_VERBOSE);
-        }
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 

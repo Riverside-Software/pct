@@ -76,7 +76,7 @@ import java.nio.charset.Charset;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCompileTest extends BuildFileTestNg {
-    private static final String BASEDIR = "PCTCompileExt/";
+    private static final String BASEDIR = "PCTCompile/";
 
     @Test(groups = {"v9"}, expectedExceptions = BuildException.class)
     public void test1() {
@@ -294,23 +294,6 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    // @Test
-    // public void test18() {
-    // executeTarget("test18init");
-    // executeTarget("test18");
-    //
-    // File f = new File("build/sandbox/test.r");
-    // File f2 = new File("build/sandbox/test2.r");
-    // assertTrue(f.exists());
-    // assertTrue(f2.exists());
-    //
-    // long mod = f.lastModified();
-    // long mod2 = f2.lastModified();
-    // executeTarget("test18bis");
-    // assertTrue(mod < f.lastModified());
-    // assertTrue(mod2 < f2.lastModified());
-    // }
-
     @Test(groups = {"v9"})
     public void test19() {
         configureProject(BASEDIR + "test19/build.xml");
@@ -339,6 +322,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f4 = new File(BASEDIR + "test20/build/.pct/test.p.xref");
         File f5 = new File(BASEDIR + "test20/debug/test.p");
         File f6 = new File(BASEDIR + "test20/debug/dir1_dir2_test.p");
+
         assertTrue(dotR.exists());
         assertFalse(f1.exists());
         assertFalse(f2.exists());
@@ -546,17 +530,6 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test30/build8/test1.r").exists());
         assertTrue(new File(BASEDIR + "test30/build8/test2.r").exists());
         assertTrue(new File(BASEDIR + "test30/build8/test3.r").exists());
-    }
-
-    @Test(groups = {"v10"})
-    public void test31() {
-        configureProject(BASEDIR + "test31/build.xml");
-        executeTarget("test");
-
-        assertTrue(new File(BASEDIR + "test31/build/test.r").exists());
-        assertTrue(new File(BASEDIR + "test31/build/eu/rssw/pct/A.r").exists());
-        assertTrue(new File(BASEDIR + "test31/build/eu/rssw/pct/Z.r").exists());
-        // Should test file content (mainly preprocessed output)
     }
 
     @Test(groups = {"v10"})
