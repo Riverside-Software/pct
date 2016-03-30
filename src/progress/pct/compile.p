@@ -417,7 +417,7 @@ PROCEDURE compileXref.
       OS-COPY VALUE(outputDir + '/' + cRenameFrom) VALUE(outputDir + '/' + ipOutFile).
       OS-DELETE VALUE(cRenameFrom).
     END.
-    IF (NOT noParse) THEN DO:
+    IF (NOT noParse) AND (NOT lXCode) THEN DO:
       IF lXmlXref THEN
         RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
       ELSE
