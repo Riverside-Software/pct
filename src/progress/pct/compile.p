@@ -102,6 +102,9 @@ DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL -1.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
+DEFINE VARIABLE lOptFullKw AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lOptFldQlf AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lOptFullNames AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE iLine     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iTotlines AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
@@ -149,12 +152,16 @@ PROCEDURE setOption.
     WHEN 'PROGPERC':U         THEN ASSIGN ProgPerc = INTEGER(ipValue).
     WHEN 'XMLXREF':U          THEN ASSIGN lXmlXref = (ipValue EQ '1':U).
     WHEN 'IGNOREDINCLUDES':U  THEN ASSIGN cignoredIncludes = REPLACE(TRIM(ipValue), '~\':U, '/':U).
+    WHEN 'FULLKW':U           THEN ASSIGN lOptFullKW = (ipValue EQ '1':U).
+    WHEN 'FIELDQLF':U         THEN ASSIGN lOptFldQlf = (ipValue EQ '1':U).
+    WHEN 'FULLNAMES':U        THEN ASSIGN lOptFullNames = (ipValue EQ '1':U).
     OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
 
 END PROCEDURE.
 
 PROCEDURE initModule:
+  DEFINE VARIABLE cOpts AS CHARACTER NO-UNDO.
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
   /* Gets CRC list */
@@ -174,6 +181,15 @@ PROCEDURE initModule:
     createDir(outputDir, '.dbg':U).
   END.
   COMPILER:MULTI-COMPILE = multiComp.
+  IF lOptFullKw THEN
+    ASSIGN cOpts = 'require-full-keywords'.
+  IF lOptFldQlf THEN
+    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-field-qualifiers'.
+  IF lOptFullNames THEN
+    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names'.
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 2)) GE 11.7 &THEN
+  COMPILER:OPTIONS = cOpts.
+&ENDIF
 
 END PROCEDURE.
 

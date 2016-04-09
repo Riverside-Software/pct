@@ -64,6 +64,9 @@ public class PCTCompile extends PCTRun {
     private boolean saveR = true;
     private boolean stopOnError = false;
     private boolean xmlXref = false;
+    private boolean requireFullKeywords = false;
+    private boolean requireFieldQualifiers = false;
+    private boolean requireFullNames = false;
     private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
@@ -359,6 +362,18 @@ public class PCTCompile extends PCTRun {
         this.progPerc = progPerc;
     }
 
+    public void setRequireFullKeywords(boolean requireFullKeywords) {
+        this.requireFullKeywords = requireFullKeywords;
+    }
+
+    public void setRequireFieldQualifiers(boolean requireFieldQualifiers) {
+        this.requireFieldQualifiers = requireFieldQualifiers;
+    }
+
+    public void setRequireFullNames(boolean requireFullNames) {
+        this.requireFullNames = requireFullNames;
+    }
+
     /**
      * Legacy method. Use add(ResourceCollection)
      */
@@ -577,6 +592,13 @@ public class PCTCompile extends PCTRun {
                 bw.write("NUMFILES=" + numFiles); //$NON-NLS-1$
                 bw.newLine();
             }
+
+            bw.write("FULLKW=" + (this.requireFullKeywords ? 1 : 0));
+            bw.newLine();
+            bw.write("FIELDQLF=" + (this.requireFieldQualifiers ? 1 : 0));
+            bw.newLine();
+            bw.write("FULLNAMES=" + (this.requireFullNames ? 1 : 0));
+            bw.newLine();
 
             bw.close();
         } catch (IOException ioe) {
