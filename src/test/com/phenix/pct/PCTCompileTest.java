@@ -856,4 +856,75 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f8.exists());
         assertTrue(f8.lastModified() > mod6);
     }
+
+    @Test(groups = {"v11"})
+    public void test52() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test52/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test52/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test52/build2/test.r");
+        assertFalse(f2.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test53() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test53/build.xml");
+        executeTarget("db");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test53/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test53/build2/test.r");
+        assertFalse(f2.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test54() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test54/build.xml");
+        executeTarget("db");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test54/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test54/build2/test.r");
+        assertFalse(f2.exists());
+    }
 }

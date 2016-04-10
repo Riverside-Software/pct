@@ -1,0 +1,2 @@
+FIND FIRST Customer.
+DISPLAY CustNu.

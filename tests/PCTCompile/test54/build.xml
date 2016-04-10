@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test54">
+  <taskdef resource="PCT.properties" />
+
+  <target name="db">
+    <mkdir dir="db" />
+    <Sports2000 destDir="db" dbName="sp2k" />
+  </target>
+
+  <target name="test1">
+    <mkdir dir="build1" />
+    <PCTCompile destDir="build1" dlcHome="${DLC}" requireFieldQualifiers="false">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile destDir="build2" dlcHome="${DLC}" requireFieldQualifiers="true">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>
