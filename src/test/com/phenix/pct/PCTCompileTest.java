@@ -875,7 +875,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test52/build1/test.r");
         assertTrue(f1.exists());
 
-        executeTarget("test2");
+        expectBuildException("test2", "Failure");
         File f2 = new File(BASEDIR + "test52/build2/test.r");
         assertFalse(f2.exists());
     }
@@ -899,7 +899,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test53/build1/test.r");
         assertTrue(f1.exists());
 
-        executeTarget("test2");
+        expectBuildException("test2", "Failure");
         File f2 = new File(BASEDIR + "test53/build2/test.r");
         assertFalse(f2.exists());
     }
@@ -923,7 +923,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test54/build1/test.r");
         assertTrue(f1.exists());
 
-        executeTarget("test2");
+        expectBuildException("test2", "Failure");
         File f2 = new File(BASEDIR + "test54/build2/test.r");
         assertFalse(f2.exists());
     }

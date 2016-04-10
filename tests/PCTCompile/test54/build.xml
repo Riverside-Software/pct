@@ -4,7 +4,7 @@
 
   <target name="db">
     <mkdir dir="db" />
-    <sports2000 destDir="db" dbName="sp2k" />
+    <sports2000 destDir="db" dbName="sp2k" dlcHome="${DLC}" />
   </target>
 
   <target name="test1">
