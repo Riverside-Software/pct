@@ -113,7 +113,7 @@
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/guava.jar" />
-    <pathelement location="lib/profiler-parser-shaded-1.4.1-SNAPSHOT.jar" />
+    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
   </path>
