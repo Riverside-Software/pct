@@ -106,13 +106,10 @@
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="lib/ant.jar" />
-    <pathelement location="lib/proparse.jar" />
-    <pathelement location="lib/antlr-2.7.7.jar" />
     <pathelement location="lib/parser.jar" />
     <pathelement location="lib/oe_common_services.jar" />
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
-    <pathelement location="lib/guava.jar" />
     <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
@@ -123,6 +120,7 @@
     <pathelement location="lib/testng-6.3.1.jar" />
     <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
+    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -176,8 +174,6 @@
         <include name="**/*.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
-      <zipfileset src="lib/proparse.jar" />
-      <zipfileset src="lib/antlr-2.7.7.jar" />
     </jar>
     <jar jarfile="${dist}/prolib.jar">
       <zipfileset src="lib/jcommander-1.30.jar" />
@@ -282,7 +278,7 @@
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
-      <fileset dir="${src.progress}" includes="**/*" />
+      <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
     </zip>
   </target>
  
@@ -323,17 +319,14 @@
         <include name="pct11.pl" />
         <include name="pct-src.zip" />
       </fileset>
-    <fileset dir="${src.java}">
+      <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
-    </fileset>
-    <zipfileset src="lib/jcommander-1.30.jar" />
-   	<zipfileset src="lib/gson-2.2.4.jar" />
-    <zipfileset src="lib/proparse.jar" includes="**/*.class" />
-    <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
-    <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-    <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
-    <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
+      </fileset>
+   	  <zipfileset src="lib/gson-2.2.4.jar" />
+      <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
+      <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
+      <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">

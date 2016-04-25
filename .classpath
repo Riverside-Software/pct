@@ -2,19 +2,17 @@
 <classpath>
 	<classpathentry kind="src" output="build/java" path="src/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.3.1.jar" sourcepath="lib/testng-src.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar" sourcepath="lib/ini4j-0.5.1-src.jar"/>
-	<classpathentry kind="lib" path="lib/proparse.jar" sourcepath="lib/proparse-src.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/parser.jar"/>
 	<classpathentry kind="lib" path="lib/oe_common_services.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="lib/profiler-parser-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/profiler-parser-shaded-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/ast.jar"/>
 	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
