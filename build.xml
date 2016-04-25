@@ -113,7 +113,7 @@
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/guava.jar" />
-    <pathelement location="lib/profiler-parser-1.2.jar" />
+    <pathelement location="lib/profiler-parser-shaded-1.4.1-SNAPSHOT.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
   </path>
@@ -330,7 +330,7 @@
     <zipfileset src="lib/jcommander-1.30.jar" />
    	<zipfileset src="lib/gson-2.2.4.jar" />
     <zipfileset src="lib/proparse.jar" includes="**/*.class" />
-    <zipfileset src="lib/profiler-parser-1.2.jar" includes="**/*.class" />
+    <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
     <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
     <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
     <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
