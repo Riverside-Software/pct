@@ -27,7 +27,7 @@ public class WSServerProcess extends PCTRun {
 
     public WSServerProcess() {
         super(false, false);
-        this.procedure = "web/objects/web-disp.p";
+//        this.procedure = "web/objects/web-disp.p";
     }
 
     public void setGraphicalMode(boolean graphMode) {
@@ -55,37 +55,38 @@ public class WSServerProcess extends PCTRun {
     }
 
     protected List<String> getCmdLineParameters() {
-        List<String> list = super.getCmdLineParameters();
+        List<String> list = runAttributes.getCmdLineParameters();
 
-        if (this.webLogError)
-            list.add("-weblogerror");
-        
-        list.add("-p");
-        list.add(procedure);
-        
-        for (PCTConnection conn : getDbConnections()) {
-            list.addAll(conn.getConnectParametersList());
-        }
+//        if (this.webLogError)
+//            list.add("-weblogerror");
+//        
+//        list.add("-p");
+//        list.add(procedure);
+//        
+//        for (PCTConnection conn : getDbConnections()) {
+//            list.addAll(conn.getConnectParametersList());
+//        }
 
         return list;
     }
 
-    /**
-     * Get the current propath as a path-separated list
-     * 
-     * @return String
-     */
+//    /**
+//     * Get the current propath as a path-separated list
+//     * 
+//     * @return String
+//     */
     public String getPropath() {
-        if (this.propath == null)
-            return "";
-
-        StringBuffer propathList = new StringBuffer("");
-        String[] lst = this.propath.list();
-        for (int k = 0; k < lst.length; k++) {
-            propathList.append(lst[k]);
-            if (k < lst.length - 1)
-                propathList.append(File.pathSeparatorChar);
-        }
-        return propathList.toString();
+//        if (ru == null)
+//            return "";
+//
+//        StringBuffer propathList = new StringBuffer("");
+//        String[] lst = this.propath.list();
+//        for (int k = 0; k < lst.length; k++) {
+//            propathList.append(lst[k]);
+//            if (k < lst.length - 1)
+//                propathList.append(File.pathSeparatorChar);
+//        }
+//        return propathList.toString();
+        return "";
     }
 }

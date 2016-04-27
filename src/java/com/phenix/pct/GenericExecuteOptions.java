@@ -28,11 +28,12 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 
-public class GenericExecuteOptions {
+public class GenericExecuteOptions implements IRunAttributes {
     private Project project = null;
 
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
+    private Collection<DBAlias> aliases = null;
     private List<PCTRunOption> options = null;
     private List<RunParameter> runParameters = null;
     private List<OutputParameter> outputParameters = null;
@@ -43,8 +44,12 @@ public class GenericExecuteOptions {
     private boolean debugPCT = false;
     private boolean compileUnderscore = false;
     private boolean batchMode = true;
+    private boolean failOnError = true;
+    private String dateFormat = null;
     private String cpStream = null;
     private String cpInternal = null;
+    private String cpColl = null;
+    private String cpCase = null;
     private String parameter = null;
     private String numsep = null;
     private String numdec = null;
@@ -71,12 +76,8 @@ public class GenericExecuteOptions {
         project = p;
     }
 
-    /**
-     * Adds a database connection
-     * 
-     * @param dbConn Instance of PCTConnection class
-     */
-    public void addPCTConnection(PCTConnection dbConn) {
+    @Override
+    public void addDBConnection(PCTConnection dbConn) {
         if (dbConnList == null) {
             dbConnList = new ArrayList<PCTConnection>();
         }
@@ -101,10 +102,7 @@ public class GenericExecuteOptions {
         return dbs;
     }
 
-    /**
-     * Adds a database connection set
-     * @param set Instance of DBConnectionSet
-     */
+    @Override
     public void addDBConnectionSet(DBConnectionSet set) {
         if (this.dbConnSet == null)
             this.dbConnSet = new ArrayList<DBConnectionSet>();
@@ -112,24 +110,23 @@ public class GenericExecuteOptions {
         dbConnSet.add(set);
     }
 
-    /**
-     * Adds a new command line option
-     * 
-     * @param option Instance of PCTRunOption class
-     */
+    public void addDBAlias(DBAlias alias) {
+        if (aliases == null) {
+            aliases = new ArrayList<DBAlias>();
+        }
+        aliases.add(alias);
+    }
+
+    public Collection<DBAlias> getAliases() {
+        return aliases;
+    }
+
+    @Override
     public void addOption(PCTRunOption option) {
         if (options == null) {
             options = new ArrayList<PCTRunOption>();
         }
         options.add(option);
-    }
-
-    /**
-     * @see com.phenix.pct.PCTRun#addOption(PCTRunOption)
-     * @param option
-     */
-    public void addPCTRunOption(PCTRunOption option) {
-        addOption(option);
     }
 
     /**
@@ -141,11 +138,7 @@ public class GenericExecuteOptions {
         return (options == null ? new ArrayList<PCTRunOption>() : options);
     }
 
-    /**
-     * Adds a new parameter which can be read by the called Progress procedure
-     * 
-     * @param param Instance of RunParameter class
-     */
+    @Override
     public void addParameter(RunParameter param) {
         if (runParameters == null) {
             runParameters = new ArrayList<RunParameter>();
@@ -162,12 +155,7 @@ public class GenericExecuteOptions {
         return (runParameters == null ? new ArrayList<RunParameter>() : runParameters);
     }
 
-    /**
-     * Add a new output param which will be passed to progress procedure
-     * 
-     * @param param Instance of OutputParameter
-     * @since PCT 0.14
-     */
+    @Override
     public void addOutputParameter(OutputParameter param) {
         if (outputParameters == null) {
             outputParameters = new ArrayList<OutputParameter>();
@@ -184,12 +172,8 @@ public class GenericExecuteOptions {
         return (outputParameters == null ? new ArrayList<OutputParameter>() : outputParameters);
     }
 
-    /**
-     * Set the propath to be used when running the procedure
-     * 
-     * @param propath an Ant Path object containing the propath
-     */
-    public void setPropath(Path propath) {
+    @Override
+    public void addPropath(Path propath) {
         createPropath().append(propath);
     }
 
@@ -206,11 +190,7 @@ public class GenericExecuteOptions {
         return propath;
     }
 
-    /**
-     * Parameter file (-pf attribute)
-     * 
-     * @param pf File
-     */
+    @Override
     public void setParamFile(File pf) {
         paramFile = pf;
     }
@@ -219,223 +199,140 @@ public class GenericExecuteOptions {
         return paramFile;
     }
 
-    /**
-     * Thousands separator (-numsep attribute)
-     * 
-     * @param numsep String
-     */
+    @Override
     public void setNumSep(String numsep) {
         this.numsep = numsep;
     }
 
-    /**
-     * Decimal separator (-numdec attribute)
-     * 
-     * @param numdec String
-     */
+    @Override
     public void setNumDec(String numdec) {
         this.numdec = numdec;
     }
 
-    /**
-     * Parameter (-param attribute)
-     * 
-     * @param param String
-     */
+    @Override
     public void setParameter(String param) {
         this.parameter = param;
     }
 
-    /**
-     * Turns on/off debugging mode (keeps Progress temp files on disk)
-     * 
-     * @param debugPCT boolean
-     */
+    @Override
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
     }
 
-    /**
-     * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
-     * for more details
-     * 
-     * @param compUnderscore boolean
-     */
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         this.compileUnderscore = compUnderscore;
     }
 
-    /**
-     * The number of compiled procedure directory entries (-D attribute)
-     * 
-     * @param dirSize int
-     */
+    @Override
     public void setDirSize(int dirSize) {
         this.dirSize = dirSize;
     }
 
-    /**
-     * Graphical mode on/off (call to _progres or prowin32)
-     * 
-     * @param graphMode boolean
-     */
+    @Override
     public void setGraphicalMode(boolean graphMode) {
         this.graphMode = graphMode;
     }
 
-    /**
-     * Sets .ini file to use (-basekey INI -ininame xxx)
-     * 
-     * @param iniFile File
-     */
+    @Override
     public void setIniFile(File iniFile) {
+        if ((iniFile != null) && !iniFile.exists()) {
+            // FIXME log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            return;
+        }
         this.iniFile = iniFile;
     }
 
-    /**
-     * Stream code page (-cpstream attribute)
-     * 
-     * @param cpStream String
-     */
+    @Override
     public void setCpStream(String cpStream) {
         this.cpStream = cpStream;
     }
 
-    /**
-     * Internal code page (-cpinternal attribute)
-     * 
-     * @param cpInternal String
-     */
+    @Override
     public void setCpInternal(String cpInternal) {
         this.cpInternal = cpInternal;
     }
 
-    /**
-     * The number of characters allowed in a single statement (-inp attribute)
-     * 
-     * @param inputChars Integer
-     */
+    @Override
+    public void setCpColl(String cpColl) {
+        this.cpColl = cpColl;
+    }
+
+    @Override
+    public void setCpCase(String cpCase) {
+        this.cpCase = cpCase;
+    }
+
+    @Override
     public void setInputChars(int inputChars) {
         this.inputChars = inputChars;
     }
 
-    /**
-     * Century year offset (-yy attribute)
-     * 
-     * @param centuryYearOffset Integer
-     */
+    @Override
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
+    @Override
     public void setCenturyYearOffset(int centuryYearOffset) {
         this.centuryYearOffset = centuryYearOffset;
     }
 
-    /**
-     * The number of tokens allowed in a 4GL statement (-tok attribute)
-     * 
-     * @param token int
-     */
+    @Override
     public void setToken(int token) {
         this.token = token;
     }
 
-    /**
-     * The amount of memory allocated for r-code segments
-     * 
-     * @param maximumMemory int
-     */
+    @Override
     public void setMaximumMemory(int maximumMemory) {
         this.maximumMemory = maximumMemory;
     }
 
-    /**
-     * The size of the stack in 1KB units.
-     * 
-     * @param stackSize int
-     */
+    @Override
     public void setStackSize(int stackSize) {
         this.stackSize = stackSize;
     }
 
-    /**
-     * Buffer Size for Temporary Tables (-Bt attribute)
-     * 
-     * @param ttBufferSize int
-     */
+    @Override
     public void setTTBufferSize(int ttBufferSize) {
         this.ttBufferSize = ttBufferSize;
     }
 
-    /**
-     * Message buffer size (-Mm attribute)
-     * 
-     * @param msgBufSize int
-     */
+    @Override
     public void setMsgBufferSize(int msgBufSize) {
         this.messageBufferSize = msgBufSize;
     }
 
-    /**
-     * Port number on which debugger should connect (-debugReady parameter)
-     * 
-     * @param debugReady int
-     */
+    @Override
     public void setDebugReady(int debugReady) {
         this.debugReady = debugReady;
     }
 
-    /**
-     * Temporary directory for Progress runtime (-T parameter)
-     * 
-     * @param tempDir File
-     */
+    @Override
     public void setTempDir(File tempDir) {
         this.tempDir = tempDir;
     }
 
-    /**
-     * The directory in which the Progress runtime should be executed.
-     * 
-     * @param baseDir File
-     */
+    @Override
     public void setBaseDir(File baseDir) {
         this.baseDir = baseDir;
     }
 
-    /**
-     * Sets the name of a property in which the return valeur of the Progress procedure should be
-     * stored. Only of interest if failonerror=false.
-     * 
-     * @since PCT 0.14
-     * 
-     * @param resultProperty name of property.
-     */
+    @Override
     public void setResultProperty(String resultProperty) {
         this.resultProperty = resultProperty;
     }
 
-    /**
-     * @since 0.19 
-     */
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
-    /**
-     * @since PCT 0.19 
-     */
+    @Override
     public void setRelativePaths(boolean relativePaths) {
         this.relativePaths = relativePaths;
     }
 
-    /**
-     * @since PCT 0.19 
-     */
     public boolean useRelativePaths() {
         return relativePaths;
     }
 
-    /**
-     * @since PCT 0.19
-     */
+    @Override
     public void addProfiler(Profiler profiler) {
         if (this.profiler != null) {
             throw new BuildException("Only one Profiler node can be defined");
@@ -443,13 +340,28 @@ public class GenericExecuteOptions {
         this.profiler = profiler;
     }
 
+    @Override
     public void setFailOnError(boolean failOnError) {
-        throw new BuildException(MessageFormat.format(
-                Messages.getString("PCTBgRun.0"), "failOnError")); //$NON-NLS-1$ //$NON-NLS-2$
+        this.failOnError = failOnError;
     }
 
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    @Override
     public void setAssemblies(File assemblies) {
+        if ((assemblies != null) && !assemblies.exists()) {
+            // FIXME log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            return;
+        }
+
         this.assemblies = assemblies;
+    }
+
+    @Override
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
     }
 
     public Collection<PCTConnection> getDbConnList() {
@@ -492,6 +404,14 @@ public class GenericExecuteOptions {
         return cpInternal;
     }
 
+    public String getCpCase() {
+        return cpCase;
+    }
+    
+    public String getCpColl() {
+        return cpColl;
+    }
+
     public String getParameter() {
         return parameter;
     }
@@ -510,6 +430,10 @@ public class GenericExecuteOptions {
 
     public int getDirSize() {
         return dirSize;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
     }
 
     public int getCenturyYearOffset() {
@@ -564,12 +488,12 @@ public class GenericExecuteOptions {
         return verbose;
     }
 
-    public void setProcedure(String procedure) {
-        this.procedure = procedure;
-    }
-
     public Profiler getProfiler() {
         return profiler;
+    }
+
+    public void setBatchMode(boolean batchMode) {
+        this.batchMode = batchMode;
     }
 
     protected List<String> getCmdLineParameters() {
@@ -617,6 +541,18 @@ public class GenericExecuteOptions {
         if (cpInternal != null) {
             list.add("-cpinternal"); //$NON-NLS-1$
             list.add(cpInternal);
+        }
+
+        // Collation table
+        if (cpColl != null) {
+            list.add("-cpcoll"); //$NON-NLS-1$
+            list.add(cpColl);
+        }
+
+        // Case table
+        if (cpCase != null) {
+            list.add("-cpcase"); //$NON-NLS-1$
+            list.add(cpCase);
         }
 
         // Directory size
@@ -689,6 +625,11 @@ public class GenericExecuteOptions {
             list.add(Integer.toString(tmpDec));
         }
 
+        if ((dateFormat != null) && (dateFormat.trim().length() > 0)) {
+            list.add("-d");
+            list.add(dateFormat.trim());
+        }
+
         // Parameter
         if (parameter != null) {
             list.add("-param"); //$NON-NLS-1$
@@ -697,8 +638,7 @@ public class GenericExecuteOptions {
 
         // Temp directory
         if (tempDir != null) {
-            // TODO Isn't exists method redundant with isDirectory ? Check JRE sources...
-            if (!tempDir.exists() || !tempDir.isDirectory()) {
+            if (!tempDir.isDirectory()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
                         tempDir));
             }
@@ -724,6 +664,22 @@ public class GenericExecuteOptions {
         }
 
         return list;
+    }
+
+    public Collection<PCTConnection> getAllDbConnections() {
+        Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
+        if (dbConnSet != null) {
+            for (DBConnectionSet set : dbConnSet) {
+                coll.addAll(set.getDBConnections());
+            }
+        }
+        if (dbConnList != null) {
+            for (PCTConnection conn : dbConnList) {
+                coll.add(conn);
+            }
+        }
+
+        return coll;
     }
 
 }

@@ -1,0 +1,188 @@
+package com.phenix.pct;
+
+import java.io.File;
+
+import org.apache.tools.ant.types.ResourceCollection;
+
+/**
+ * Compilation tasks attributes (PCTCompile and PCTBgCompile).
+ */
+public interface ICompilationAttributes {
+
+    /**
+     * MIN-SIZE option of COMPILE statement
+     */
+    void setMinSize(boolean minSize);
+
+    /**
+     * STRING-XREF option of COMPILE statement. Ignored with Progress v9 and below
+     */
+    void setStringXref(boolean stringXref);
+
+    /**
+     * Append XREF strings in one file
+     */
+    void setAppendStringXref(boolean appendStringXref);
+
+    /**
+     * SAVE option of COMPILE statement
+     */
+    void setSaveR(boolean saveR);
+
+    /**
+     * Force compilation, without checking XREF
+     */
+    void setForceCompile(boolean forceCompile);
+
+    /**
+     * Create listing files during compilation
+     */
+    void setListing(boolean listing);
+
+    /**
+     * Switch listing source to PREPROCESS'ed file
+     *  
+     * @param source Can be empty or 'PREPROCESS'
+     */
+    void setListingSource(String source);
+
+    /**
+     * Ignore include files matching this pattern
+     */
+    void setIgnoredIncludes(String pattern);
+
+    /**
+     * Create preprocessing files during compilation
+     */
+    void setPreprocess(boolean preprocess);
+
+    /**
+     * Output directory for preprocess files
+     */
+    void setPreprocessDir(File dir);
+
+    /**
+     * Create debug list files during compilation
+     */
+    void setDebugListing(boolean debugListing);
+
+    /**
+     * Output directory for debug listing files
+     */
+    void setDebugListingDir(File debugListingDir);
+
+    /**
+     * Flattens debug listing files. Debug listing file of foo/bar/proc.p will be called foo_bar_proc.p in debugListingDir
+     */
+    void setFlattenDebugListing(boolean flatten);
+
+    /**
+     * Don't use XREF (and so compile everything). Removed since 0.5, use forceCompile
+     * @deprecated
+     */
+    @Deprecated
+    void setNoXref(boolean noXref);
+
+    /**
+     * Disables completely XREF generation and parsing. This means there's no generated file in .pct
+     * subdirectory.
+     */
+    void setNoParse(boolean noParse);
+
+    /**
+     * Enables/Disables compiler:multi-compile option
+     */
+    void setMultiCompile(boolean multiCompile);
+
+    /**
+     * Enables STREAM-IO attribute in COMPILE statement
+     */
+    void setStreamIO(boolean streamIO);
+
+    /**
+     * Enables v6Frame attribute in COMPILE statement
+     */
+    void setv6Frame(boolean v6Frame);
+
+    /**
+     * Generates a .xref in the .pct directory, result of XREF option in the COMPILE statement
+     */
+    void setKeepXref(boolean keepXref);
+
+    /**
+     * Use XML-XREF instead of standard XREF
+     */
+    void setXmlXref(boolean xmlXref);
+
+    /**
+     * Directory where to store CRC and includes files : .pct subdirectory is created there
+     */
+    void setXRefDir(File xrefDir);
+
+    /**
+     * GENERATE-MD5 option of COMPILE statement
+     */
+    void setMD5(boolean md5);
+
+    /**
+     * Generates a .run file in the .pct directory, which shows internal and external procedures
+     * calls
+     */
+    void setRunList(boolean runList);
+
+    /**
+     * Location to store the .r files
+     */
+    void setDestDir(File destDir);
+
+    /**
+     * Procedures are encrypted ?
+     */
+    void setXCode(boolean xcode);
+
+    /**
+     * Compile using a specific key instead of the default key
+     */
+    void setXCodeKey(String xcodeKey);
+
+    /**
+     * Identifies which language segments to include in the compiled r-code. LANGUAGES option of the
+     * COMPILE statement
+     */
+    void setLanguages(String languages);
+
+    /**
+     * TEXT-SEG-GROWTH option of COMPILE statement
+     */
+    void setTextGrowth(int growthFactor);
+
+    /**
+     * Specifies progress percentage
+     * 
+     * @param progPerc int (a value from 0 until 100)
+     */
+    void setProgPerc(int progPerc);
+
+    void setRequireFullKeywords(boolean requireFullKeywords);
+
+    void setRequireFieldQualifiers(boolean requireFieldQualifiers);
+
+    void setRequireFullNames(boolean requireFullNames);
+
+    /**
+     * Adds a ResourceCollection to compile
+     */
+    void add(ResourceCollection rc);
+
+    void addConfiguredOEFileset(OpenEdgeFileSet oefs);
+
+    /**
+     * Immediately stop compiling when a compilation error occurs
+     * 
+     * @param stopOnError Boolean
+     * @sinc PCT build #185
+     */
+    void setStopOnError(boolean stopOnError);
+
+    // void add(FileNameMapper fileNameMapper);
+}

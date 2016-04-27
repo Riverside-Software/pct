@@ -103,9 +103,9 @@ public class ServerProcess extends PCTRun {
     }
 
     protected List<String> getCmdLineParameters() {
-        List<String> list = super.getCmdLineParameters();
+        List<String> list = runAttributes.getCmdLineParameters();
 
-        for (PCTConnection conn : getDbConnections()) {
+        for (PCTConnection conn : runAttributes.getAllDbConnections()) {
             list.addAll(conn.getConnectParametersList());
         }
 
@@ -118,11 +118,11 @@ public class ServerProcess extends PCTRun {
      * @return String
      */
     public String getPropath() {
-        if (propath == null)
+        if (runAttributes.getPropath() == null)
             return "";
 
         StringBuffer propathList = new StringBuffer("");
-        String[] lst = propath.list();
+        String[] lst = runAttributes.getPropath().list();
         for (int k = 0; k < lst.length; k++) {
             propathList.append(lst[k]);
             if (k < lst.length - 1)
