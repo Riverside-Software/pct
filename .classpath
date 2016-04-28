@@ -6,7 +6,6 @@
 	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.3.1.jar" sourcepath="lib/testng-src.jar"/>
-	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar" sourcepath="lib/ini4j-0.5.1-src.jar"/>
 	<classpathentry kind="lib" path="lib/parser.jar"/>
 	<classpathentry kind="lib" path="lib/oe_common_services.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
