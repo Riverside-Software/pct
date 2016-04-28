@@ -53,9 +53,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     private String mainCallback = null;
     private boolean noErrorOnQuit = false;
     private boolean superInit = true;
-//    protected Path propath = null;
     protected Path internalPropath = null;
-//    protected boolean failOnError = true;
     private String resultProperty = null;
 
     // Internal use

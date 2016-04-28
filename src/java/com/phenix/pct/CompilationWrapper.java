@@ -21,29 +21,26 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void execute() throws BuildException {
+        PCT pctTask;
         if ((numThreads <= 1) && (mapperElement == null)) {
-            PCTCompile task = new PCTCompile();
-            task.bindToOwner(this);
-            if (getDlcHome() != null) {
-                task.setDlcHome(getDlcHome());
-            }
-            task.setRunAttributes(runAttributes);
-            task.setCompilationAttributes(compAttributes);
-            task.execute();
+            pctTask = new PCTCompile();
+            ((PCTCompile) pctTask).setRunAttributes(runAttributes);
+            ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
         } else {
-            PCTBgCompile task = new PCTBgCompile();
-            task.bindToOwner(this);
-            if (getDlcHome() != null) {
-                task.setDlcHome(getDlcHome());
-            }
-            task.setRunAttributes(runAttributes);
-            task.setCompilationAttributes(compAttributes);
-            task.setMapper(mapperElement);
+            pctTask = new PCTBgCompile();
+            ((PCTBgCompile) pctTask).setRunAttributes(runAttributes);
+            ((PCTBgCompile) pctTask).setCompilationAttributes(compAttributes);
+            ((PCTBgCompile) pctTask).setMapper(mapperElement);
             if (numThreads > 1) {
-                task.setNumThreads(numThreads);
+                ((PCTBgCompile) pctTask).setNumThreads(numThreads);
             }
-            task.execute();
-       }
+        }
+        pctTask.bindToOwner(this);
+        if (getDlcHome() != null) {
+            pctTask.setDlcHome(getDlcHome());
+        }
+        pctTask.setIncludedPL(getIncludedPL());
+        pctTask.execute();
     }
 
     // Multi-threading management

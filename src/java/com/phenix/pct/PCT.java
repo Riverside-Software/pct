@@ -62,6 +62,8 @@ public abstract class PCT extends Task {
     private File dlcJava = null;
     private File pdsHome = null;
     private boolean includedPL = true;
+
+    // Internal use
     private ProgressProcedures pp = null;
     private DLCVersion version = null;
     private Environment env = new Environment();
