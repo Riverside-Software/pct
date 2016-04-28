@@ -71,10 +71,16 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean relativePaths = false;
     private Profiler profiler = null;
     private File assemblies = null;
+    private String mainCallback = null;
+    private boolean noErrorOnQuit = false;
+    private boolean superInit = true;
 
     public GenericExecuteOptions(Project p) {
         project = p;
     }
+
+    // *********************
+    // IRunAttribute methods
 
     @Override
     public void addDBConnection(PCTConnection dbConn) {
@@ -82,24 +88,6 @@ public class GenericExecuteOptions implements IRunAttributes {
             dbConnList = new ArrayList<PCTConnection>();
         }
         dbConnList.add(dbConn);
-    }
-
-    /**
-     * Returns list of database connections, from dbConnList and dbConnSet
-     * 
-     * @return List of PCTConnection objects. Empty list if no DB connections
-     */
-    public Collection<PCTConnection> getDBConnections() {
-        Collection<PCTConnection> dbs = new ArrayList<PCTConnection>();
-        if (dbConnList != null) {
-            dbs.addAll(dbConnList);
-        }
-        if (dbConnSet != null) {
-            for (DBConnectionSet set : dbConnSet) {
-                dbs.addAll(set.getDBConnections());
-            }
-        }
-        return dbs;
     }
 
     @Override
@@ -110,15 +98,12 @@ public class GenericExecuteOptions implements IRunAttributes {
         dbConnSet.add(set);
     }
 
+    @Override
     public void addDBAlias(DBAlias alias) {
         if (aliases == null) {
             aliases = new ArrayList<DBAlias>();
         }
         aliases.add(alias);
-    }
-
-    public Collection<DBAlias> getAliases() {
-        return aliases;
     }
 
     @Override
@@ -129,30 +114,12 @@ public class GenericExecuteOptions implements IRunAttributes {
         options.add(option);
     }
 
-    /**
-     * Returns list of command line options.
-     * 
-     * @return List of PCTRunOption objects. Empty list if no options.
-     */
-    public List<PCTRunOption> getOptions() {
-        return (options == null ? new ArrayList<PCTRunOption>() : options);
-    }
-
     @Override
     public void addParameter(RunParameter param) {
         if (runParameters == null) {
             runParameters = new ArrayList<RunParameter>();
         }
         runParameters.add(param);
-    }
-
-    /**
-     * Returns list of parameters passed to the called Progress procedure.
-     * 
-     * @return List of RunParameters objects. Empty list if no parameter.
-     */
-    public List<RunParameter> getParameters() {
-        return (runParameters == null ? new ArrayList<RunParameter>() : runParameters);
     }
 
     @Override
@@ -163,40 +130,14 @@ public class GenericExecuteOptions implements IRunAttributes {
         outputParameters.add(param);
     }
 
-    /**
-     * Returns list of output parameters to be filled by the called Progress procedure.
-     * 
-     * @return List of OutputParameter objects. Empty list if no parameter.
-     */
-    public List<OutputParameter> getOutputParameters() {
-        return (outputParameters == null ? new ArrayList<OutputParameter>() : outputParameters);
-    }
-
     @Override
     public void addPropath(Path propath) {
         createPropath().append(propath);
     }
 
-    /**
-     * Creates a new Path instance
-     * 
-     * @return Path
-     */
-    public Path createPropath() {
-        if (propath == null) {
-            propath = new Path(project);
-        }
-
-        return propath;
-    }
-
     @Override
     public void setParamFile(File pf) {
         paramFile = pf;
-    }
-
-    public File getParamFile() {
-        return paramFile;
     }
 
     @Override
@@ -237,7 +178,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setIniFile(File iniFile) {
         if ((iniFile != null) && !iniFile.exists()) {
-            // FIXME log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            project.log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
             return;
         }
         this.iniFile = iniFile;
@@ -328,10 +269,6 @@ public class GenericExecuteOptions implements IRunAttributes {
         this.relativePaths = relativePaths;
     }
 
-    public boolean useRelativePaths() {
-        return relativePaths;
-    }
-
     @Override
     public void addProfiler(Profiler profiler) {
         if (this.profiler != null) {
@@ -345,14 +282,10 @@ public class GenericExecuteOptions implements IRunAttributes {
         this.failOnError = failOnError;
     }
 
-    public boolean isFailOnError() {
-        return failOnError;
-    }
-
     @Override
     public void setAssemblies(File assemblies) {
         if ((assemblies != null) && !assemblies.exists()) {
-            // FIXME log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            project.log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
             return;
         }
 
@@ -363,6 +296,24 @@ public class GenericExecuteOptions implements IRunAttributes {
     public void setProcedure(String procedure) {
         this.procedure = procedure;
     }
+
+    @Override
+    public void setMainCallback(String mainCallback) {
+        this.mainCallback = mainCallback;
+    }
+
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        this.noErrorOnQuit = noErrorOnQuit;
+    }
+
+    @Override
+    public void setSuperInit(boolean superInit) {
+        this.superInit = superInit;
+    }
+
+    // End of IRunAttribute methods
+    // ****************************
 
     public Collection<PCTConnection> getDbConnList() {
         return dbConnList;
@@ -666,6 +617,24 @@ public class GenericExecuteOptions implements IRunAttributes {
         return list;
     }
 
+    /**
+     * Returns list of database connections, from dbConnList and dbConnSet
+     * 
+     * @return List of PCTConnection objects. Empty list if no DB connections
+     */
+    public Collection<PCTConnection> getDBConnections() {
+        Collection<PCTConnection> dbs = new ArrayList<PCTConnection>();
+        if (dbConnList != null) {
+            dbs.addAll(dbConnList);
+        }
+        if (dbConnSet != null) {
+            for (DBConnectionSet set : dbConnSet) {
+                dbs.addAll(set.getDBConnections());
+            }
+        }
+        return dbs;
+    }
+
     public Collection<PCTConnection> getAllDbConnections() {
         Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
         if (dbConnSet != null) {
@@ -682,4 +651,71 @@ public class GenericExecuteOptions implements IRunAttributes {
         return coll;
     }
 
+    public Collection<DBAlias> getAliases() {
+        return aliases;
+    }
+
+    /**
+     * Returns list of command line options.
+     * 
+     * @return List of PCTRunOption objects. Empty list if no options.
+     */
+    public List<PCTRunOption> getOptions() {
+        return (options == null ? new ArrayList<PCTRunOption>() : options);
+    }
+
+    /**
+     * Returns list of parameters passed to the called Progress procedure.
+     * 
+     * @return List of RunParameters objects. Empty list if no parameter.
+     */
+    public List<RunParameter> getParameters() {
+        return (runParameters == null ? new ArrayList<RunParameter>() : runParameters);
+    }
+
+    /**
+     * Returns list of output parameters to be filled by the called Progress procedure.
+     * 
+     * @return List of OutputParameter objects. Empty list if no parameter.
+     */
+    public List<OutputParameter> getOutputParameters() {
+        return (outputParameters == null ? new ArrayList<OutputParameter>() : outputParameters);
+    }
+
+    public File getParamFile() {
+        return paramFile;
+    }
+
+    /**
+     * Creates a new Path instance
+     * 
+     * @return Path
+     */
+    public Path createPropath() {
+        if (propath == null) {
+            propath = new Path(project);
+        }
+
+        return propath;
+    }
+
+    public boolean useRelativePaths() {
+        return relativePaths;
+    }
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public String getMainCallback() {
+        return mainCallback;
+    }
+
+    public boolean useNoErrorOnQuit() {
+        return noErrorOnQuit;
+    }
+
+    public boolean isSuperInit() {
+        return superInit;
+    }
 }

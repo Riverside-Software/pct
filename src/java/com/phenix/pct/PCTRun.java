@@ -49,11 +49,6 @@ import java.util.Collection;
 public class PCTRun extends PCT implements IRunAttributes {
     protected GenericExecuteOptions runAttributes;
     
-    // Attributes
-    private String mainCallback = null;
-    private boolean noErrorOnQuit = false;
-    private boolean superInit = true;
-
     protected Path internalPropath = null;
 
     // Internal use
@@ -146,38 +141,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     /**
      * Adds a collection of parameters
      */
-    public void setParameters(Collection<RunParameter> params) {
+    protected void setParameters(Collection<RunParameter> params) {
         for (RunParameter p : params) {
             runAttributes.addParameter(p);
         }
     }
-
-    /**
-     * Mail callback class
-     * @param mainCallback
-     */
-    public void setMainCallback(String mainCallback) {
-        this.mainCallback = mainCallback;
-    }
-
-    /**
-     * Turns on/off onQuit mode (no error on expected QUIT)
-     * 
-     * @param noErrorOnQuit boolean
-     */
-    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
-        this.noErrorOnQuit = noErrorOnQuit;
-    }
-
-    /**
-     * Add init procedure to the super procedures stack
-     * 
-     * @param superInit boolean
-     */
-    public void setSuperInit(boolean superInit) {
-        this.superInit = superInit;
-    }
-
 
     // **********************
     // IRunAttributes methods
@@ -367,42 +335,23 @@ public class PCTRun extends PCT implements IRunAttributes {
         runAttributes.addProfiler(profiler);
     }
 
+    @Override
+    public void setMainCallback(String mainCallback) {
+        runAttributes.setMainCallback(mainCallback);
+    }
+
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        runAttributes.setNoErrorOnQuit(noErrorOnQuit);
+    }
+
+    @Override
+    public void setSuperInit(boolean superInit) {
+        runAttributes.setSuperInit(superInit);
+    }
+
     // End of IRunAttribute methods
     // ****************************
-
-    public boolean isVerbose() {
-        return (getAntLoggerLever() > 2);
-    }
-
-    /**
-     * Helper method to set result property to the passed in value if appropriate.
-     * 
-     * @param result value desired for the result property value.
-     */
-    protected void maybeSetResultPropertyValue(int result) {
-        if (runAttributes.getResultProperty() != null) {
-            String res = Integer.toString(result);
-            getProject().setNewProperty(runAttributes.getResultProperty(), res);
-        }
-    }
-
-    /**
-     * Exec task is prepared ?
-     * 
-     * @return boolean
-     */
-    public boolean isPrepared() {
-        return this.prepared;
-    }
-
-    /**
-     * Returns status file name (where to write progress procedure result)
-     * 
-     * @return String
-     */
-    protected String getStatusFileName() {
-        return status.getAbsolutePath();
-    }
 
     /**
      * Do the work
@@ -525,6 +474,33 @@ public class PCTRun extends PCT implements IRunAttributes {
             throw new BuildException(Messages.getString("PCTRun.3"), nfe); //$NON-NLS-1$
         }
 
+    }
+
+    // In order to know if Progress session has to use verbose logging
+    private boolean isVerbose() {
+        return (getAntLoggerLever() > 2);
+    }
+
+    // Helper method to set result property to the passed in value if appropriate.
+    private void maybeSetResultPropertyValue(int result) {
+        if (runAttributes.getResultProperty() != null) {
+            String res = Integer.toString(result);
+            getProject().setNewProperty(runAttributes.getResultProperty(), res);
+        }
+    }
+
+    /**
+     * Is Exec task prepared ?
+     */
+    protected boolean isPrepared() {
+        return this.prepared;
+    }
+
+    /**
+     * Returns status file name (where to write progress procedure result)
+     */
+    protected String getStatusFileName() {
+        return status.getAbsolutePath();
     }
 
     /**
@@ -703,7 +679,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
-                    isVerbose(), noErrorOnQuit));
+                    isVerbose(), runAttributes.useNoErrorOnQuit()));
 
             // Defines database connections and aliases
             int dbNum = 1;
@@ -768,8 +744,8 @@ public class PCTRun extends PCT implements IRunAttributes {
             }
 
             // Callback
-            if ((mainCallback != null) && (mainCallback.trim().length() > 0)) {
-                bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), mainCallback));
+            if ((runAttributes.getMainCallback() != null) && (runAttributes.getMainCallback().trim().length() > 0)) {
+                bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), runAttributes.getMainCallback()));
             }
 
             // Defines parameters
@@ -810,7 +786,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             }
 
             // Add init procedure to the super procedures stack
-            if (superInit) {
+            if (runAttributes.isSuperInit()) {
                 bw.write(getProgressProcedures().getSuperInitString());
             }
 

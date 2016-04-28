@@ -165,21 +165,47 @@ public interface IRunAttributes {
     void setResultProperty(String resultProperty);
 
     /**
-     * @since PCT 0.19
+     * Profiler support
      */
     void addProfiler(Profiler profiler);
 
+    /**
+     * If task should throw a BuildException when error occurs, or continue to next task
+     */
     void setFailOnError(boolean failOnError);
 
+    /**
+     * assemblies.xml file reference (-assemblies parameter) 
+     */
     void setAssemblies(File assemblies);
 
+    /**
+     * Main procedure to be executed
+     */
     void setProcedure(String procedure);
 
+    /**
+     * Add a database alias
+     */
     void addDBAlias(DBAlias alias);
 
     /**
      * Use relative paths in COMPILE statements, and when defining PROPATH
      */
-     void setRelativePaths(boolean rel);
+    void setRelativePaths(boolean rel);
 
+    /**
+     * Class name used for PCT callback mechanism
+     */
+    void setMainCallback(String callback);
+
+    /**
+     * Prevents QUIT statement to throw a BuildException
+     */
+    void setNoErrorOnQuit(boolean noErrorOnQuit);
+
+    /**
+     * Add init procedure to the super procedures stack
+     */
+    void setSuperInit(boolean superInit);
 }

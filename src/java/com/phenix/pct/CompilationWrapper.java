@@ -456,6 +456,21 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         runAttributes.setRelativePaths(rel);
     }
 
+    @Override
+    public void setMainCallback(String callback) {
+        runAttributes.setMainCallback(callback);
+    }
+
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        runAttributes.setNoErrorOnQuit(noErrorOnQuit);
+    }
+
+    @Override
+    public void setSuperInit(boolean superInit) {
+        runAttributes.setSuperInit(superInit);
+    }
+
     // End of IRunAttributes methods
     // *****************************
 

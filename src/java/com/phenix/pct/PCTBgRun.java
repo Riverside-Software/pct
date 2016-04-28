@@ -45,15 +45,15 @@ import java.util.List;
 /**
  * Run a background Progress procedure.
  * 
- * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public abstract class PCTBgRun extends PCT implements IRunAttributes {
-    private GenericExecuteOptions options;
-
     protected Path internalPropath = null;
 
-    // Number of processes to use
+    // Attributes
     private int numThreads = 1;
+    private GenericExecuteOptions options;
+    
     // Internal use : socket communication
     private int port;
     // Internal use : throw BuildException
@@ -100,14 +100,22 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         addDBConnection(dbConn);
     }
 
-    @Override
-    public void addDBConnection(PCTConnection dbConn) {
-        options.addDBConnection(dbConn);
-    }
-
     // Variation pour antlib
     public void addDB_Connection_Set(DBConnectionSet set) {
         addDBConnectionSet(set);
+    }
+
+    // Legacy
+    public void addPCTRunOption(PCTRunOption option) {
+        options.addOption(option);
+    }
+
+    // **********************
+    // IRunAttributes methods
+
+    @Override
+    public void addDBConnection(PCTConnection dbConn) {
+        options.addDBConnection(dbConn);
     }
 
     @Override
@@ -117,10 +125,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
     @Override
     public void addOption(PCTRunOption option) {
-        options.addOption(option);
-    }
-
-    public void addPCTRunOption(PCTRunOption option) {
         options.addOption(option);
     }
 
@@ -266,10 +270,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
     @Override
     public void setAssemblies(File assemblies) {
-        if ((assemblies != null) && !assemblies.exists()) {
-            log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
-            return;
-        }
         options.setAssemblies(assemblies);
     }
 
@@ -291,6 +291,24 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     public void setResultProperty(String resultProperty) {
         options.setResultProperty(resultProperty);
     }
+
+    @Override
+    public void setMainCallback(String callback) {
+        throw new BuildException("Callback is not yet supported on multi-threaded PCTRun");
+    }
+
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        throw new BuildException("noErrorOnQuit is not yet supported on multi-threaded PCTRun");
+    }
+
+    @Override
+    public void setSuperInit(boolean superInit) {
+        throw new BuildException("superInit is not yet supported on multi-threaded PCTRun");
+    }
+
+    // End of IRunAttribute methods
+    // ****************************
 
     /**
      * Number of threads to throw when running task
