@@ -85,6 +85,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         runAttributes.addDBConnection(dbConn);
     }
 
+    @Deprecated
+    public void addPCTRunOption(PCTRunOption option) {
+        runAttributes.addOption(option);
+    }
+
     // ******************************
     // ICompilationAttributes methods
     
