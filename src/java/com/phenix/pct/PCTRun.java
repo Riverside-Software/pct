@@ -53,8 +53,8 @@ public class PCTRun extends PCT implements IRunAttributes {
     private String mainCallback = null;
     private boolean noErrorOnQuit = false;
     private boolean superInit = true;
+
     protected Path internalPropath = null;
-    private String resultProperty = null;
 
     // Internal use
     protected ExecTask exec = null;
@@ -362,6 +362,11 @@ public class PCTRun extends PCT implements IRunAttributes {
         runAttributes.setRelativePaths(relativePaths);
     }
 
+    @Override
+    public void addProfiler(Profiler profiler) {
+        runAttributes.addProfiler(profiler);
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -370,23 +375,14 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     /**
-     * Defines profiler
-     * 
-     * @param profiler
-     */
-    public void addProfiler(Profiler profiler) {
-        runAttributes.addProfiler(profiler);
-    }
-
-    /**
      * Helper method to set result property to the passed in value if appropriate.
      * 
      * @param result value desired for the result property value.
      */
     protected void maybeSetResultPropertyValue(int result) {
-        if (resultProperty != null) {
+        if (runAttributes.getResultProperty() != null) {
             String res = Integer.toString(result);
-            getProject().setNewProperty(resultProperty, res);
+            getProject().setNewProperty(runAttributes.getResultProperty(), res);
         }
     }
 
