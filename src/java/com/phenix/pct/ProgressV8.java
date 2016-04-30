@@ -24,45 +24,57 @@ public class ProgressV8 implements ProgressProcedures {
     private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV8"; //$NON-NLS-1$
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+    @Override
     public String getCompileProcedure() {
         return "pct/v8/pctCompile.p"; //$NON-NLS-1$
     }
 
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v8/dump_inc.p";
     }
 
+    @Override
     public String getDumpUsersProcedure() {
         return "pct/v8/dmpUsers.p";
     }
 
+    @Override
     public String getLoadUsersProcedure() {
         return "pct/v8/loadUsers.p";
     }
 
+    @Override
     public String getLoadSchemaProcedure() {
         return "pct/loadSch.p";
     }
 
+    @Override
     public String getLoadMultipleTablesDataProcedure() {
         return "pct/loadData1.p";
     }
 
+    @Override
     public String getLoadSingleTableDataProcedure() {
         return "pct/loadData2.p";
     }
+
+    @Override
     public boolean needRedirector() {
         return true;
     }
 
+    @Override
     public String getInitString() {
         return getString("ProgressV8.0"); //$NON-NLS-1$
     }
 
+    @Override
     public String getConnectString() {
         return getString("ProgressV8.1"); //$NON-NLS-1$
     }
 
+    @Override
     public String getAliasString() {
         return getString("ProgressV8.2"); //$NON-NLS-1$
     }
@@ -72,6 +84,7 @@ public class ProgressV8 implements ProgressProcedures {
         return getString("ProgressV8.15"); //$NON-NLS-1$
     }
 
+    @Override
     public String getPropathString() {
         return getString("ProgressV8.3"); //$NON-NLS-1$
     }
@@ -81,16 +94,54 @@ public class ProgressV8 implements ProgressProcedures {
         return getString("ProgressV8.13");
     }
 
+    @Override
     public String getRunString() {
         return getString("ProgressV8.4"); //$NON-NLS-1$
     }
 
+    @Override
     public String getReturnProc() {
         return getString("ProgressV8.5"); //$NON-NLS-1$
     }
 
+    @Override
     public String getParameterString() {
         return getString("ProgressV8.6"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getAfterRun() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOutputParameterCall() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOutputParameterDeclaration() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getOutputParameterProc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getQuit() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getCallbackString() {
+        return "";
     }
 
     public String getString(String key) {
@@ -101,32 +152,4 @@ public class ProgressV8 implements ProgressProcedures {
         }
     }
 
-    public String getAfterRun() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getOutputParameterCall() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getOutputParameterDeclaration() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getOutputParameterProc() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getQuit() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getCallbackString() {
-        return "";
-    }
 }
