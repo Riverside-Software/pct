@@ -136,9 +136,11 @@ public class DLCVersion implements Comparable<DLCVersion> {
             reader = new BufferedReader(new FileReader(version));
             return reader.readLine();
         } finally {
-            try {
-                reader.close();
-            } catch (IOException ioe) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ioe) {
+                }
             }
         }
 
