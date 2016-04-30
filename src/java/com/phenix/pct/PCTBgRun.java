@@ -36,7 +36,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -586,12 +585,13 @@ public abstract class PCTBgRun extends PCT {
          * to custom method
          */
         public void run() {
-            int acceptedThreads = 0;
+            int acceptedThreads = 0, deadThreads = 0;
             ThreadGroup group = new ThreadGroup("PCT");
 
-            while (acceptedThreads < numThreads) {
+            while (acceptedThreads + deadThreads < numThreads) {
                 try {
-                    final BackgroundWorker status = createOpenEdgeWorker(server.accept());
+                    final Socket socket = server.accept();
+                    final BackgroundWorker status = createOpenEdgeWorker(socket);
                     status.setDBConnections(options.getDBConnections().iterator());
                     status.setPropath(getPropathAsList().iterator());
                     status.setCustomOptions(null); // TODO
@@ -610,10 +610,9 @@ public abstract class PCTBgRun extends PCT {
                     };
                     new Thread(group, r).start();
                     acceptedThreads++;
-                } catch (SocketTimeoutException caught) {
-
-                } catch (IOException ioe) {
-
+                } catch (IOException caught) {
+                    // Thrown by accept(), so process didn't reach the listener
+                    deadThreads++;
                 }
             }
             try {

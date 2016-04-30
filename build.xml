@@ -158,7 +158,7 @@
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.compil" />
     </javac>
-    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="1.6" target="1.6" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="1.7" target="1.7" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="eu/rssw/pct/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
@@ -301,10 +301,10 @@
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <!--  Updating pct11.pl with rcode compiled on Windows -->
     <copy todir="classDocTemp">
-      <zipfileset src="lib/classDoc.zip" />
+      <zipfileset src="lib/classDoc.zip" includes="**/*.r" />
     </copy>
     <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
-      <fileset dir="classDocTemp" includes="**/*.r" />
+      <fileset dir="classDocTemp" />
     </bootstrapLibrary>
     <delete dir="classDocTemp" />
 

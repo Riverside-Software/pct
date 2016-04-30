@@ -59,8 +59,10 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
+  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
   FIELD ttMod      AS DATETIME
-  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile.
+  INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
+  INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
     FIELD xProcName   AS CHARACTER
     FIELD xFileName   AS CHARACTER
@@ -98,6 +100,7 @@ DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
 DEFINE STREAM sDbgLst1.
 DEFINE STREAM sDbgLst2.
+DEFINE STREAM sWarnings.
 
 /** Parameters from ANT call */
 DEFINE VARIABLE Filesets  AS CHARACTER  NO-UNDO.
@@ -140,6 +143,8 @@ DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStep     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE cignoredIncludes AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE lignoredIncludes AS LOGICAL     NO-UNDO.
 
 /** Internal use */
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
@@ -244,6 +249,10 @@ REPEAT:
             ASSIGN iTotLines = INTEGER(ENTRY(2, cLine, '=':U)).
         WHEN 'XMLXREF':U THEN
             ASSIGN lXmlXref = (ENTRY(2, cLine, '=':U) EQ '1':U).
+        WHEN 'ignoredIncludes':U THEN
+            ASSIGN cignoredIncludes = TRIM(ENTRY(2, cLine, '=':U))
+                   cignoredIncludes = REPLACE(cignoredIncludes, '~\':U, '/':U) /* for Unix */
+                   lignoredIncludes = (LENGTH(cignoredIncludes) > 0).
         OTHERWISE
             MESSAGE "Unknown parameter : " + cLine.
     END CASE.
@@ -393,8 +402,13 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETI
             ASSIGN TimeStamps.ttFile = IncFile
                    TimeStamps.ttFullPath = SEARCH(IncFile).
             ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+            IF lignoredIncludes AND CAN-DO(cignoredIncludes, REPLACE(IncFile, '~\':U, '/':U)) THEN /* include is not relevant for recompile */
+            DO:
+                MESSAGE 'ignoring changes in: ' IncFile.
+                ASSIGN TimeStamps.ttExcept = TRUE.
+            END.
         END.
-        IF (TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod) THEN DO:
+        IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
             ASSIGN lReturn = TRUE.
             LEAVE FileList.
         END.
@@ -522,6 +536,7 @@ PROCEDURE PCTCompileXref.
     DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
     DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
     DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
 
     IF (NOT fileExists(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile)) THEN DO:
       MESSAGE SUBSTITUTE("File [&1]/[&2] not found", pcInDir, pcInFile).
@@ -538,6 +553,7 @@ PROCEDURE PCTCompileXref.
     cSaveDir = IF cFileExt = ".cls" OR lRelative THEN pcOutDir ELSE pcOutDir + '/':U + cBase.
     
     ASSIGN cXrefFile = pcPCTDir + '/':U + pcInFile + '.xref':U.
+    ASSIGN warningsFile = pcPCTDir + '/':U + pcInFile + '.warnings':U.
     ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
                            THEN pcPCTDir + '/strings.xref':U
                            ELSE (IF StrXref
@@ -682,11 +698,20 @@ PROCEDURE PCTCompileXref.
         /* Il faut verifier le code de retour */
         IF NOT keepXref THEN
           OS-DELETE VALUE(cXrefFile).
+        IF COMPILER:WARNING THEN DO:
+          OUTPUT STREAM sWarnings TO VALUE(warningsFile).
+          DO i = 1 TO COMPILER:NUM-MESSAGES:
+            IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) THEN DO:
+              PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
+            END.
+          END.
+          OUTPUT STREAM sWarnings CLOSE.
+        END.
     END.
     ELSE DO:
         ASSIGN c = '':U.
-        DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-            ASSIGN c = c + ERROR-STATUS:GET-MESSAGE(i) + '~n':U.
+        DO i = 1 TO COMPILER:NUM-MESSAGES:
+            ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
         END.
         RUN displayCompileErrors(SEARCH(IF lRelative THEN pcInFile ELSE pcInDir + '/':U + pcInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
     END.
@@ -793,7 +818,7 @@ PROCEDURE importXmlXref.
       IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
         /* Extract include file name from field (which contains include parameters */
         CREATE ttXrefInc.
-        ASSIGN ttXrefInc.ttIncName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ASSIGN ttXrefInc.ttIncName = TRIM(SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1)).
       END.
       ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
         FOR EACH Class-Ref OF Reference:
