@@ -57,7 +57,6 @@ public class PCTCompile extends PCTRun {
      */
     public PCTCompile() {
         super();
-
         compAttrs = new CompilationAttributes(getProject());
 
         fsListId = PCT.nextRandomInt();
@@ -94,8 +93,7 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     * 
-     * @throws BuildException
+     * Generates text file with all files from resource collections
      */
     private void writeFileList() throws BuildException {
         // Map to quickly retrieve files associated with a base dir
@@ -170,10 +168,9 @@ public class PCTCompile extends PCTRun {
     }
 
     /**
-     *      * @throws BuildException
+     * Generates parameter file for pct/compile.p
      */
     private void writeParams() throws BuildException {
-
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(params));
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
@@ -291,8 +288,6 @@ public class PCTCompile extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        // File xRefDir = null; // Where to store XREF files
-
         // Create dest directory if necessary
         if (compAttrs.getDestDir() == null) {
             cleanup();
@@ -311,7 +306,7 @@ public class PCTCompile extends PCTRun {
             cleanup();
             throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "xrefDir")); //$NON-NLS-1$
         }
-        
+
         // If preprocessDir is set, then preprocess is always set to true
         if (compAttrs.getPreprocessDir() != null) {
             if (!createDir(compAttrs.getPreprocessDir())) {
@@ -325,7 +320,6 @@ public class PCTCompile extends PCTRun {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
             }
         }
-        
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
@@ -370,11 +364,7 @@ public class PCTCompile extends PCTRun {
         }
     }
 
-    /**
-     * Delete temporary files if debug not activated
-     * 
-     * @see PCTRun#cleanup
-     */
+    @Override
     protected void cleanup() {
         super.cleanup();
 

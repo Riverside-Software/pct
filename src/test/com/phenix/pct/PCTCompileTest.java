@@ -927,4 +927,21 @@ public class PCTCompileTest extends BuildFileTestNg {
         File f2 = new File(BASEDIR + "test54/build2/test.r");
         assertFalse(f2.exists());
     }
+
+    @Test(groups = {"v10"})
+    public void test55() {
+        configureProject(BASEDIR + "test55/build.xml");
+        executeTarget("test1");
+        assertTrue(new File(BASEDIR + "build1/test.r").exists());
+        assertTrue(new File(BASEDIR + "build1/.pct/test.p.inc").exists());
+
+        executeTarget("test2");
+        assertFalse(new File(BASEDIR + "build2/.pct").exists());
+        assertTrue(new File(BASEDIR + "xref2/test.p.inc").exists());
+
+        executeTarget("test3");
+        assertFalse(new File(BASEDIR + "build3/.pct").exists());
+        assertTrue(new File(BASEDIR + "xref3/test.p.inc").exists());
+    }
+
 }

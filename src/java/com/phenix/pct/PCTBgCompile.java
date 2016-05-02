@@ -234,6 +234,7 @@ public class PCTBgCompile extends PCTBgRun {
             }
         }
 
+        @Override
         public void setCustomOptions(Map<String, String> options) {
 
         }
@@ -269,6 +270,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isNoParse())).append(';');
             sb.append(Boolean.toString(compAttrs.isStopOnError())).append(';');
             sb.append(Boolean.toString(compAttrs.isFlattenDbg())).append(';');
+            sb.append(compAttrs.getxRefDir().getAbsolutePath()).append(';');
 
             return sb.toString();
         }
