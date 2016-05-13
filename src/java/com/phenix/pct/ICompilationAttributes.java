@@ -184,5 +184,8 @@ public interface ICompilationAttributes {
      */
     void setStopOnError(boolean stopOnError);
 
-    // void add(FileNameMapper fileNameMapper);
+    /**
+     * 1 will display files to be recompiled (and reason). 2 will display all files. 0 doesn't display anything
+     */
+    void setFileList(int fileList);
 }

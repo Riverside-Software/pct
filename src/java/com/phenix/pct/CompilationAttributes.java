@@ -42,6 +42,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private int progPerc = 0;
     private boolean flattenDbg = true;
     private String ignoredIncludes = null;
+    private int fileList = 0;
 
     // Internal use
     private Project project;
@@ -230,6 +231,11 @@ public class CompilationAttributes implements ICompilationAttributes {
         resources.add(oefs.getCompilationFileSet(project));
     }
 
+    @Override
+    public void setFileList(int fileList) {
+        this.fileList = fileList;
+    }
+
     public List<ResourceCollection> getResources() {
         return resources;
     }
@@ -362,4 +368,7 @@ public class CompilationAttributes implements ICompilationAttributes {
         return ignoredIncludes;
     }
 
+    public int getFileList() {
+        return fileList;
+    }
 }

@@ -265,6 +265,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FULLNAMES=" + (compAttrs.isRequireFullNames() ? 1 : 0));
             bw.newLine();
+            bw.write("FILELIST=" + compAttrs.getFileList());
+            bw.newLine();
 
             bw.close();
         } catch (IOException ioe) {

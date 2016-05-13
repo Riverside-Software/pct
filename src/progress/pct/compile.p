@@ -113,6 +113,7 @@ DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE cIgnoredIncludes AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
+DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 
 /* Handle to calling procedure in order to log messages */
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
@@ -155,6 +156,7 @@ PROCEDURE setOption.
     WHEN 'FULLKW':U           THEN ASSIGN lOptFullKW = (ipValue EQ '1':U).
     WHEN 'FIELDQLF':U         THEN ASSIGN lOptFldQlf = (ipValue EQ '1':U).
     WHEN 'FULLNAMES':U        THEN ASSIGN lOptFullNames = (ipValue EQ '1':U).
+    WHEN 'FILELIST':U         THEN ASSIGN iFileList = INTEGER(ipValue).
     OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
 
@@ -193,6 +195,18 @@ PROCEDURE initModule:
 &ENDIF
 
 END PROCEDURE.
+
+FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
+  CASE ipVal:
+    WHEN 0 THEN RETURN 'Not recompiled'.
+    WHEN 1 THEN RETURN 'No r-code'.
+    WHEN 2 THEN RETURN 'R-code older than source'.
+    WHEN 3 THEN RETURN 'R-code older than include file'.
+    WHEN 4 THEN RETURN 'Table CRC'.
+    WHEN 5 THEN RETURN 'XCode or force'.
+    OTHERWISE   RETURN '???'.
+  END.
+END FUNCTION.
 
 PROCEDURE compileXref.
   DEFINE INPUT  PARAMETER ipInDir   AS CHARACTER  NO-UNDO. /* Fileset. Never null */
@@ -274,7 +288,11 @@ PROCEDURE compileXref.
       END.
     END.
   END.
-
+  IF (iFileList GT 0) THEN DO:
+    IF ((iFileList EQ 1) AND (opComp GT 0) ) OR (iFileList EQ 2) THEN DO:
+      RUN logInfo IN hSrcProc (SUBSTITUTE("&1 [&2]", ipInFile, getRecompileLabel(opComp))).
+    END.
+  END.
   IF opComp EQ 0 THEN RETURN.
 
   ASSIGN cXrefFile = PCTDir + '/':U + ipInFile + '.xref':U.

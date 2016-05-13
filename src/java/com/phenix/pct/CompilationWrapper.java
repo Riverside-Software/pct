@@ -265,6 +265,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         compAttributes.add(oefs.getCompilationFileSet(getProject()));
     }
 
+    @Override
+    public void setFileList(int fileList) {
+        compAttributes.setFileList(fileList);
+    }
+
     // End of ICompilationAttributes methods
     // *************************************
 

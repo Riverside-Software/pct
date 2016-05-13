@@ -62,6 +62,7 @@ PROCEDURE setOptions:
     ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
     RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('PCTDIR', ENTRY(30, ipPrm, ';')).
+    RUN setOption IN hComp ('FILELIST', ENTRY(31, ipPrm, ';')).
 
     RUN initModule IN hComp.
 

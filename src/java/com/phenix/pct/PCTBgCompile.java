@@ -271,6 +271,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isStopOnError())).append(';');
             sb.append(Boolean.toString(compAttrs.isFlattenDbg())).append(';');
             sb.append(compAttrs.getxRefDir().getAbsolutePath()).append(';');
+            sb.append(Integer.toString(compAttrs.getFileList())).append(';');
 
             return sb.toString();
         }
