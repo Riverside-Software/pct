@@ -157,6 +157,8 @@ PROCEDURE setOption.
     WHEN 'FIELDQLF':U         THEN ASSIGN lOptFldQlf = (ipValue EQ '1':U).
     WHEN 'FULLNAMES':U        THEN ASSIGN lOptFullNames = (ipValue EQ '1':U).
     WHEN 'FILELIST':U         THEN ASSIGN iFileList = INTEGER(ipValue).
+    WHEN 'NUMFILES':U         THEN ASSIGN iTotLines = INTEGER(ipValue).
+
     OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
 
@@ -193,6 +195,18 @@ PROCEDURE initModule:
   IF DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7 THEN
     COMPILER:OPTIONS = cOpts.
 &ENDIF
+
+  IF ProgPerc GT 0 THEN DO:
+    ASSIGN iNrSteps = 100 / ProgPerc.
+    IF iNrSteps GT iTotLines THEN DO:
+      ASSIGN iNrSteps = iTotLines
+             ProgPerc = 100 / iNrSteps.
+      RUN logVerbose IN hSrcProc ("WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc, ">>9%":U))).
+    END.  
+    DO iStep = 1 TO iNrSteps:
+      ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
+    END.
+  END.
 
 END PROCEDURE.
 
@@ -232,6 +246,22 @@ PROCEDURE compileXref.
   DEFINE VARIABLE RCodeTS   AS {&DATETIME}   NO-UNDO.
   DEFINE VARIABLE ProcTS    AS {&DATETIME}   NO-UNDO.
   DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO initial ''.
+
+  /* Output progress */
+  IF ProgPerc GT 0 THEN DO:
+    ASSIGN iLine = iLine + 1.
+    IF LOOKUP(STRING(iLine), cDspSteps) GT 0 THEN DO:
+      ASSIGN iStepPerc = LOOKUP(STRING(iLine), cDspSteps) * ProgPerc.
+      IF iStepPerc LT 100 THEN
+        RUN logInfo IN hSrcProc (SUBSTITUTE("&1 &2 Compiling &3...", TRIM(STRING(iStepPerc, ">>9%":U)), STRING(TIME, "HH:MM:SS":U), ipInFile)).
+      ELSE
+        RUN logInfo IN hSrcProc ("100% " + STRING(TIME,"HH:MM:SS":U)).
+    END.
+    IF (iLine GE iTotLines) AND (iStepPerc LT 100) THEN DO:
+      ASSIGN iStepPerc = 100.
+      RUN logInfo IN hSrcProc ("100% " + STRING(TIME,"HH:MM:SS":U)).
+    END.
+  END.
 
   IF (NOT fileExists(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)) THEN DO:
     RUN logError IN hSrcProc (SUBSTITUTE("File [&1]/[&2] not found", ipInDir, ipInFile)).
