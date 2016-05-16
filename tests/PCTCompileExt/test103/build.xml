@@ -7,8 +7,8 @@
     <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}" numThreads="2">
       <fileset dir="src">
         <include name="**/*.p"/>
-      </fileset>	
-    </PCTCompileExt>	
+      </fileset>
+    </PCTCompileExt>
   </target>
 
 </project>

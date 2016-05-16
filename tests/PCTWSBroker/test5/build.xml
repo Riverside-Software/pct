@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<project name="PCTWSBroker-test5">
-  <taskdef resource="PCT.properties" />
-
-  <target name="test">
-    <PCTWSBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}" workDir="sandbox" autoStart="true" initialPool="4" minPool="3" maxPool="5" brokerLogFileAppend="true" serverLogFileAppend="false" />
-  </target>
-
-</project>

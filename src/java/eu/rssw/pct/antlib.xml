@@ -20,12 +20,9 @@
   <taskdef name="prounit" classname="net.cordova.prounit.ProUnit" />
   <taskdef name="ablunit" classname="com.phenix.pct.ABLUnit" />
   <taskdef name="oeunit" classname="com.phenix.pct.OEUnit" />
-  <taskdef name="asbroker" classname="com.phenix.pct.PCTASBroker" />
-  <taskdef name="wsbroker" classname="com.phenix.pct.PCTWSBroker" />
   <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
   <taskdef name="progress_version" classname="com.phenix.pct.ProgressVersion" />
   <taskdef name="version" classname="com.phenix.pct.Version" />
-  <taskdef name="prolint" classname="com.phenix.pct.Prolint" />
   <taskdef name="dump_sequences" classname="com.phenix.pct.DumpSequences" />
   <taskdef name="sports2000" classname="com.phenix.pct.Sports2000" />
   <taskdef name="dump_users" classname="com.phenix.pct.PCTDumpUsers" />

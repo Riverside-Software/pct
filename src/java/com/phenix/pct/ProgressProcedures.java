@@ -22,7 +22,6 @@ package com.phenix.pct;
  * version.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
- * @version $Revision$
  */
 public abstract interface ProgressProcedures {
     String getCompileProcedure();

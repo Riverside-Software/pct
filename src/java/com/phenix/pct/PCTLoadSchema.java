@@ -119,7 +119,7 @@ public class PCTLoadSchema extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (getDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.0")); //$NON-NLS-1$
         }

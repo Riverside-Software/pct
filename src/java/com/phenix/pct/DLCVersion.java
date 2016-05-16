@@ -32,8 +32,12 @@ public class DLCVersion implements Comparable<DLCVersion> {
     private static final String OLD_PATTERN = "\\d+\\u002E(\\d+)([A-Z])([A-Z0-9]*)";
 
     private final long rCodeVersion;
-    private final int majorVersion, minorVersion;
-    private final String fullVersion, maintenanceVersion, patchVersion, date;
+    private final int majorVersion;
+    private final int minorVersion;
+    private final String fullVersion;
+    private final String maintenanceVersion;
+    private final String patchVersion;
+    private final String date;
     private final boolean arch;
 
     /**
@@ -132,9 +136,11 @@ public class DLCVersion implements Comparable<DLCVersion> {
             reader = new BufferedReader(new FileReader(version));
             return reader.readLine();
         } finally {
-            try {
-                reader.close();
-            } catch (IOException ioe) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ioe) {
+                }
             }
         }
 
@@ -172,6 +178,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return rCodeVersion;
     }
 
+    @Override
     public String toString() {
         if (majorVersion >= 11) {
             return majorVersion + "." + minorVersion + "." + maintenanceVersion + "."
@@ -184,8 +191,12 @@ public class DLCVersion implements Comparable<DLCVersion> {
 
     public static class Builder {
         long rCodeVersion;
-        int major, minor;
-        String fullVersion, maintenance, patch, date;
+        int major;
+        int minor;
+        String fullVersion;
+        String maintenance;
+        String patch;
+        String date;
         boolean arch;
     }
 
@@ -198,9 +209,15 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return (majorVersion + "." + minorVersion + "." + maintenanceVersion).hashCode();
+    }
+
     /**
      * Compares only major, minor and maintenance
      */
+    @Override
     public int compareTo(DLCVersion other) {
         if ((majorVersion - other.majorVersion) != 0)
             return (majorVersion - other.majorVersion);

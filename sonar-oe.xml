@@ -8,13 +8,12 @@
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
   <property name="sonar.sources" value="src/progress" />
+  <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.binaries" value="build/build-v11" />
   <property name="sonar.oe.cpd.newparser" value="true" />
+  <property name="sonar.oe.propath" value="src/progress" />
+  <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.verbose" value="false" />
-  <property name="sonar.jdbc.url" value="jdbc:mysql://${MYSQL_SERVER}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
-  <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver" />
-  <property name="sonar.jdbc.username" value="sonar" />
-  <property name="sonar.jdbc.password" value="${MYSQL_PASSWORD}" />
 
   <path id="coverage.cp">
     <fileset dir="dist" includes="PCT.jar" />
@@ -23,10 +22,12 @@
   </path>
 
   <target name="sonar">
+    <touch file="dictdb.df" />
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
       <classpath path="lib/sonar-ant-task-*.jar" />
     </taskdef>
     <sonar:sonar />
+    <delete file="dictdb.df" />
   </target>
 
 </project>

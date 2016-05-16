@@ -64,12 +64,12 @@ public class PCTDumpData extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (getDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.0")); //$NON-NLS-1$
         }
 
-        if (getDbConnections().size() > 1) {
+        if (runAttributes.getAllDbConnections().size() > 1) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.1")); //$NON-NLS-1$
         }

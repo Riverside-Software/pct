@@ -49,6 +49,11 @@ public class PCTBgCRC extends PCTBgRun {
         return this.destFile;
     }
 
+    @Override
+    public void setProcedure(String procedure) {
+        throw new BuildException("Can't set procedure attribute");
+    }
+
     public class CRCThreadStatus extends BackgroundWorker {
         private int customStatus = 0;
 

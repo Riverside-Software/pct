@@ -45,15 +45,15 @@ import java.util.List;
 /**
  * Run a background Progress procedure.
  * 
- * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
+ * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public abstract class PCTBgRun extends PCT {
-    private GenericExecuteOptions options;
-
+public abstract class PCTBgRun extends PCT implements IRunAttributes {
     protected Path internalPropath = null;
 
-    // Number of processes to use
+    // Attributes
     private int numThreads = 1;
+    private GenericExecuteOptions options;
+    
     // Internal use : socket communication
     private int port;
     // Internal use : throw BuildException
@@ -83,6 +83,11 @@ public abstract class PCTBgRun extends PCT {
         initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
+    protected void setRunAttributes(GenericExecuteOptions attrs) {
+        this.options = attrs;
+        options.setProcedure("pct/_server.p");
+    }
+
     /**
      * @deprecated
      */
@@ -95,146 +100,215 @@ public abstract class PCTBgRun extends PCT {
         addDBConnection(dbConn);
     }
 
-    public void addDBConnection(PCTConnection dbConn) {
-        options.addPCTConnection(dbConn);
-    }
-
     // Variation pour antlib
     public void addDB_Connection_Set(DBConnectionSet set) {
         addDBConnectionSet(set);
     }
 
+    // Legacy
+    public void addPCTRunOption(PCTRunOption option) {
+        options.addOption(option);
+    }
+
+    // **********************
+    // IRunAttributes methods
+
+    @Override
+    public void addDBConnection(PCTConnection dbConn) {
+        options.addDBConnection(dbConn);
+    }
+
+    @Override
     public void addDBConnectionSet(DBConnectionSet set) {
         options.addDBConnectionSet(set);
     }
 
+    @Override
     public void addOption(PCTRunOption option) {
         options.addOption(option);
     }
 
-    public void addPCTRunOption(PCTRunOption option) {
-        options.addPCTRunOption(option);
-    }
-
+    @Override
     public void addParameter(RunParameter param) {
         options.addParameter(param);
     }
 
+    @Override
     public void addOutputParameter(OutputParameter param) {
         options.addOutputParameter(param);
     }
 
+    @Override
     public void addProfiler(Profiler profiler) {
         options.addProfiler(profiler);
     }
 
+    @Override
     public void setParamFile(File pf) {
         options.setParamFile(pf);
     }
 
+    @Override
     public void setNumSep(String numsep) {
         options.setNumSep(numsep);
     }
 
+    @Override
     public void setNumDec(String numdec) {
         options.setNumDec(numdec);
     }
 
+    @Override
     public void setParameter(String param) {
         options.setParameter(param);
     }
 
+    @Override
     public void setDebugPCT(boolean debugPCT) {
         options.setDebugPCT(debugPCT);
     }
 
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         options.setCompileUnderscore(compUnderscore);
     }
 
+    @Override
     public void setDirSize(int dirSize) {
         options.setDirSize(dirSize);
     }
 
+    @Override
     public void setGraphicalMode(boolean graphMode) {
         options.setGraphicalMode(graphMode);
     }
 
+    @Override
     public void setIniFile(File iniFile) {
         options.setIniFile(iniFile);
     }
 
+    @Override
     public void setFailOnError(boolean failOnError) {
         options.setFailOnError(failOnError);
     }
 
-    public void setPropath(Path propath) {
-        options.setPropath(propath);
+    @Override
+    public void addPropath(Path propath) {
+        options.addPropath(propath);
     }
 
-    public Path createPropath() {
-        return options.createPropath();
-    }
-
+    @Override
     public void setCpStream(String cpStream) {
         options.setCpStream(cpStream);
     }
 
+    @Override
     public void setCpInternal(String cpInternal) {
         options.setCpInternal(cpInternal);
     }
 
+    @Override
+    public void setCpCase(String cpCase) {
+        options.setCpCase(cpCase);
+    }
+
+    @Override
+    public void setCpColl(String cpColl) {
+        options.setCpColl(cpColl);
+    }
+
+    @Override
     public void setInputChars(int inputChars) {
         options.setInputChars(inputChars);
     }
 
+    @Override
     public void setCenturyYearOffset(int centuryYearOffset) {
         options.setCenturyYearOffset(centuryYearOffset);
     }
 
+    @Override
     public void setToken(int token) {
         options.setToken(token);
     }
 
+    @Override
     public void setMaximumMemory(int maximumMemory) {
         options.setMaximumMemory(maximumMemory);
     }
 
+    @Override
     public void setStackSize(int stackSize) {
         options.setStackSize(stackSize);
     }
 
+    @Override
     public void setTTBufferSize(int ttBufferSize) {
         options.setTTBufferSize(ttBufferSize);
     }
 
+    @Override
     public void setMsgBufferSize(int msgBufSize) {
         options.setMsgBufferSize(msgBufSize);
     }
 
+    @Override
     public void setDebugReady(int debugReady) {
         options.setDebugReady(debugReady);
     }
 
+    @Override
     public void setTempDir(File tempDir) {
         options.setTempDir(tempDir);
     }
 
+    @Override
     public void setBaseDir(File baseDir) {
         options.setBaseDir(baseDir);
     }
 
+    @Override
     public void setAssemblies(File assemblies) {
-        if ((assemblies != null) && !assemblies.exists()) {
-            log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
-            return;
-        }
         options.setAssemblies(assemblies);
+    }
+
+    @Override
+    public void setDateFormat(String dateFormat) {
+        options.setDateFormat(dateFormat);
+    }
+
+    @Override
+    public void setRelativePaths(boolean rel) {
+        options.setRelativePaths(rel);
+    }
+
+    @Override
+    public void addDBAlias(DBAlias alias) {
+        options.addDBAlias(alias);
     }
 
     public void setResultProperty(String resultProperty) {
         options.setResultProperty(resultProperty);
     }
+
+    @Override
+    public void setMainCallback(String callback) {
+        throw new BuildException("Callback is not yet supported on multi-threaded PCTRun");
+    }
+
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        throw new BuildException("noErrorOnQuit is not yet supported on multi-threaded PCTRun");
+    }
+
+    @Override
+    public void setSuperInit(boolean superInit) {
+        throw new BuildException("superInit is not yet supported on multi-threaded PCTRun");
+    }
+
+    // End of IRunAttribute methods
+    // ****************************
 
     /**
      * Number of threads to throw when running task
@@ -298,6 +372,7 @@ public abstract class PCTBgRun extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
+    @Override
     public void execute() throws BuildException {
         ListenerThread listener = null;
         checkDlcHome();

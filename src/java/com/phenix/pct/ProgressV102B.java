@@ -19,10 +19,12 @@ package com.phenix.pct;
 
 public class ProgressV102B extends ProgressV10 {
 
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v102b/dump_inc.p";
     }
 
+    @Override
     public String getLoadSingleTableDataProcedure() {
         return "pct/v102b/loadData2.p";
     }

@@ -54,14 +54,15 @@
   <path id="jacoco.cp">
     <fileset dir="lib" includes="jacocoant.jar" />
   </path>
-  <path id="coverage.cp">
-    <fileset dir="dist" includes="PCT.jar" />
-    <fileset dir="lib" includes="guava.jar" />
-    <fileset dir="lib" includes="antlr4-runtime-4.5.jar" />
-  </path>
 
   <target name="init">
     <unzip src="testcases.zip" dest="." />
+    <mkdir dir="testbox/PCTCompileExt" />
+    <copy todir="testbox/PCTCompileExt">
+      <fileset dir="testbox/PCTCompile" />
+    </copy>
+    <!-- Only in testXX, test cases with number greater than 100 are reserved for PCTCompileExt -->
+    <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="PCTCompile" value="PCTCompileExt" />
   </target>
 
   <target name="test">

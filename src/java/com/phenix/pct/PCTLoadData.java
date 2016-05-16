@@ -160,7 +160,7 @@ public class PCTLoadData extends PCTRun {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        if (getDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }

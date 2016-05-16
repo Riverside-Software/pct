@@ -24,38 +24,47 @@ public class ProgressV11 implements ProgressProcedures {
     private static final String BUNDLE_NAME = "com.phenix.pct.ProgressV11"; //$NON-NLS-1$
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+    @Override
     public String getCompileProcedure() {
-        return "pct/v11/pctCompile.p";
+        return "pct/pctCompile.p";
     }
 
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v11/silentIncDump.p";
     }
 
+    @Override
     public String getDumpUsersProcedure() {
         return "pct/v11/dmpUsers.p";
     }
 
+    @Override
     public String getLoadUsersProcedure() {
         return "pct/v11/loadUsers.p";
     }
 
+    @Override
     public String getLoadSchemaProcedure() {
         return "pct/loadSch.p";
     }
 
+    @Override
     public String getLoadMultipleTablesDataProcedure() {
         return "pct/loadData1.p";
     }
 
+    @Override
     public String getLoadSingleTableDataProcedure() {
         return "pct/v11/loadData2.p";
     }
 
+    @Override
     public boolean needRedirector() {
         return false;
     }
 
+    @Override
     public String getInitString() {
         return getString("ProgressV11.0"); //$NON-NLS-1$
     }
@@ -65,10 +74,12 @@ public class ProgressV11 implements ProgressProcedures {
         return getString("ProgressV11.13"); //$NON-NLS-1$
     }
 
+    @Override
     public String getConnectString() {
         return getString("ProgressV11.1"); //$NON-NLS-1$
     }
 
+    @Override
     public String getAliasString() {
         return getString("ProgressV11.2"); //$NON-NLS-1$
     }
@@ -78,20 +89,54 @@ public class ProgressV11 implements ProgressProcedures {
         return getString("ProgressV11.15"); //$NON-NLS-1$
     }
 
+    @Override
     public String getPropathString() {
         return getString("ProgressV11.3"); //$NON-NLS-1$
     }
 
+    @Override
     public String getRunString() {
         return getString("ProgressV11.4"); //$NON-NLS-1$
     }
 
+    @Override
     public String getReturnProc() {
         return getString("ProgressV11.5"); //$NON-NLS-1$
     }
 
+    @Override
     public String getParameterString() {
         return getString("ProgressV11.6"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getOutputParameterDeclaration() {
+        return getString("ProgressV11.8"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getOutputParameterProc() {
+        return getString("ProgressV11.9"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getAfterRun() {
+        return getString("ProgressV11.10"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getOutputParameterCall() {
+        return getString("ProgressV11.11"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getQuit() {
+        return getString("ProgressV11.12"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getCallbackString() {
+        return getString("ProgressV11.14");
     }
 
     public String getString(String key) {
@@ -102,27 +147,4 @@ public class ProgressV11 implements ProgressProcedures {
         }
     }
 
-    public String getOutputParameterDeclaration() {
-        return getString("ProgressV11.8"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterProc() {
-        return getString("ProgressV11.9"); //$NON-NLS-1$
-    }
-
-    public String getAfterRun() {
-        return getString("ProgressV11.10"); //$NON-NLS-1$
-    }
-
-    public String getOutputParameterCall() {
-        return getString("ProgressV11.11"); //$NON-NLS-1$
-    }
-
-    public String getQuit() {
-        return getString("ProgressV11.12"); //$NON-NLS-1$
-    }
-
-    public String getCallbackString() {
-        return getString("ProgressV11.14");
-    }
 }

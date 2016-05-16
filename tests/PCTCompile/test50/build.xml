@@ -4,6 +4,10 @@
 
   <target name="test1">
     <mkdir dir="build" />
+<<<<<<< HEAD
+    <mkdir dir="foobar" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" preprocessDir="foobar">
+=======
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
@@ -34,6 +38,7 @@
 	<sleep seconds="2" />
 	<touch file="src/test1.i" />
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" >
+>>>>>>> master
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />

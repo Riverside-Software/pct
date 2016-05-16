@@ -60,6 +60,8 @@
     <include name="pct/*.p" />
     <include name="pct/v9/*.p" />
     <exclude name="pct/_server.p" />
+    <exclude name="pct/compile.p" />
+    <exclude name="pct/pctCompile.p" />
     <exclude name="pct/pctBgCompile.p" />
     <exclude name="pct/pctOEUnitRunner.p" />
     <exclude name="pct/dump_seq.p" />
@@ -104,14 +106,11 @@
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="lib/ant.jar" />
-    <pathelement location="lib/proparse.jar" />
-    <pathelement location="lib/antlr-2.7.7.jar" />
     <pathelement location="lib/parser.jar" />
     <pathelement location="lib/oe_common_services.jar" />
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
-    <pathelement location="lib/guava.jar" />
-    <pathelement location="lib/profiler-parser-1.2.jar" />
+    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
   </path>
@@ -119,8 +118,8 @@
     <path refid="pct.compil" />
     <pathelement location="${build-java}" />
     <pathelement location="lib/testng-6.3.1.jar" />
-    <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
+    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -174,8 +173,6 @@
         <include name="**/*.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
-      <zipfileset src="lib/proparse.jar" />
-      <zipfileset src="lib/antlr-2.7.7.jar" />
     </jar>
     <jar jarfile="${dist}/prolib.jar">
       <zipfileset src="lib/jcommander-1.30.jar" />
@@ -280,7 +277,7 @@
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
-      <fileset dir="${src.progress}" includes="**/*" />
+      <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
     </zip>
   </target>
  
@@ -321,17 +318,14 @@
         <include name="pct11.pl" />
         <include name="pct-src.zip" />
       </fileset>
-    <fileset dir="${src.java}">
+      <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
-    </fileset>
-    <zipfileset src="lib/jcommander-1.30.jar" />
-   	<zipfileset src="lib/gson-2.2.4.jar" />
-    <zipfileset src="lib/proparse.jar" includes="**/*.class" />
-    <zipfileset src="lib/profiler-parser-1.2.jar" includes="**/*.class" />
-    <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-    <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
-    <zipfileset src="lib/antlr-2.7.7.jar" includes="**/*.class" />
+      </fileset>
+   	  <zipfileset src="lib/gson-2.2.4.jar" />
+      <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
+      <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
+      <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
@@ -348,7 +342,6 @@
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
     <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
-      <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.test.compil" />
@@ -358,6 +351,11 @@
   <target name="prepare-test" >
     <delete dir="testbox" />
     <mkdir dir="testbox" />
+    <mkdir dir="testbox/PCTCompileExt" />
+    <copy todir="testbox/PCTCompileExt">
+      <fileset dir="tests/PCTCompile" />
+    </copy>
+    <replace dir="testbox/PCTCompileExt" includes="**/build.xml" token="PCTCompile" value="PCTCompileExt" />
     <copy todir="testbox">
       <fileset dir="tests" />
     </copy>
@@ -395,7 +393,7 @@
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
-      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ant.jar,ant-apache-regexp.jar,ant-launcher.jar,antlr4-runtime-4.5.jar,ini4j-0.5.1.jar,guava.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,jacocoant.jar,*.pl" prefix="lib" />
+      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ant.jar,ant-apache-regexp.jar,ant-launcher.jar,antlr4-runtime-4.5.jar,guava.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,jacocoant.jar,*.pl" prefix="lib" />
       <zipfileset dir="${dist}" includes="PCT.jar" prefix="dist" />
     </zip>
   </target>

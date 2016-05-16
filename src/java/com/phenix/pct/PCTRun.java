@@ -20,7 +20,6 @@ package com.phenix.pct;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.FileList;
@@ -40,61 +39,17 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Run a Progress procedure.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class PCTRun extends PCT {
-    // Attributes
-    protected String procedure = null;
-    private String cpStream = null;
-    private String cpInternal = null;
-    private String cpColl = null;
-    private String cpCase = null;
-    private String parameter = null;
-    private String numsep = null;
-    private String numdec = null;
-    private String dateFormat = null;
-    private String mainCallback = null;
-    private File paramFile = null;
-    private File iniFile = null;
-    private File tempDir = null;
-    protected File baseDir = null;
-    private int inputChars = 0;
-    private int dirSize = 0;
-    private int centuryYearOffset = 0;
-    private int token = 0;
-    private int maximumMemory = 0;
-    private int stackSize = 0;
-    private int ttBufferSize = 0;
-    private int messageBufferSize = 0;
-    private int debugReady = -1;
-    private boolean graphMode = false;
-    private boolean debugPCT = false;
-    private boolean noErrorOnQuit = false;
-    private boolean compileUnderscore = false;
-    private boolean superInit = true;
-    private Collection<PCTConnection> dbConnList = null;
-    private Collection<DBConnectionSet> dbConnSet = null;
-    private Collection<PCTRunOption> options = null;
-    private Collection<DBAlias> aliases = null;
-    protected Path propath = null;
+public class PCTRun extends PCT implements IRunAttributes {
+    protected GenericExecuteOptions runAttributes;
+    
     protected Path internalPropath = null;
-    protected Collection<RunParameter> runParameters = null;
-    protected List<OutputParameter> outputParameters = null;
-    private boolean batchMode = true;
-    protected boolean failOnError = true;
-    private String resultProperty = null;
-    private File assemblies = null;
-    private boolean verbose = false;
-    // Defined here, but setter only defined in PCTCompile
-    protected boolean relativePaths = false;
-    private Profiler profiler = null;
 
     // Internal use
     protected ExecTask exec = null;
@@ -127,6 +82,7 @@ public class PCTRun extends PCT {
      */
     public PCTRun(boolean tmp) {
         super();
+        runAttributes = new GenericExecuteOptions(getProject());
 
         if (tmp) {
             statusID = PCT.nextRandomInt();
@@ -144,495 +100,258 @@ public class PCTRun extends PCT {
 
     public PCTRun(boolean tmp, boolean batchMode) {
         this(tmp);
-        this.batchMode = batchMode;
+        runAttributes.setBatchMode(batchMode);
     }
 
-    /**
-     * Adds a database connection
-     * 
-     * @param dbConn Instance of PCTConnection class
-     * @deprecated
-     */
-    public void addPCTConnection(PCTConnection dbConn) {
-        addDBConnection(dbConn);
-    }
-
-    // Variation pour antlib
-    public void addDB_Connection(PCTConnection dbConn) {
-        addDBConnection(dbConn);
-    }
-
-    public void addDBConnection(PCTConnection dbConn) {
-        if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList<PCTConnection>();
-        }
-
-        this.dbConnList.add(dbConn);
-    }
-
-    // Variation pour antlib
-    public void addDB_Connection_Set(DBConnectionSet set) {
-        addDBConnectionSet(set);
-    }
-
-    public void addDBConnectionSet(DBConnectionSet set) {
-        if (this.dbConnSet == null)
-            this.dbConnSet = new ArrayList<DBConnectionSet>();
-
-        dbConnSet.add(set);
-    }
-
-    public void addDBAlias(DBAlias alias) {
-        if (aliases == null) {
-            aliases = new ArrayList<DBAlias>();
-        }
-        aliases.add(alias);
-    }
-
-    /**
-     * Adds a new command line option
-     * 
-     * @param option Instance of PCTRunOption class
-     */
-    public void addOption(PCTRunOption option) {
-        if (this.options == null) {
-            this.options = new ArrayList<PCTRunOption>();
-        }
-
-        this.options.add(option);
-    }
-
-    public void addPCTRunOption(PCTRunOption option) {
-        if (this.options == null) {
-            this.options = new ArrayList<PCTRunOption>();
-        }
-
-        this.options.add(option);
-    }
-
-    /**
-     * Add a new parameter which will be passed to the progress procedure in a temp-table
-     * 
-     * @param param Instance of RunParameter class
-     */
-    public void addParameter(RunParameter param) {
-        if (this.runParameters == null) {
-            this.runParameters = new ArrayList<RunParameter>();
-        }
-        this.runParameters.add(param);
-    }
-
-    /**
-     * Add a new output param which will be passed to progress procedure
-     * 
-     * @param param Instance of OutputParameter
-     * @since PCT 0.14
-     */
-    public void addOutputParameter(OutputParameter param) {
-        if (this.outputParameters == null)
-            this.outputParameters = new ArrayList<OutputParameter>();
-        this.outputParameters.add(param);
-    }
-
-    /**
-     * Defines a new collection of parameters
-     * 
-     * @param params Collection<RunParameter>
-     */
-    public void setParameters(Collection<RunParameter> params) {
-        this.runParameters = params;
-    }
-
-    /**
-     * Parameter file (-pf attribute)
-     * 
-     * @param pf File
-     */
-    public void setParamFile(File pf) {
-        this.paramFile = pf;
-    }
-
-    /**
-     * Thousands separator (-numsep attribute)
-     * 
-     * @param numsep String
-     */
-    public void setNumSep(String numsep) {
-        this.numsep = numsep;
-    }
-
-    /**
-     * Decimal separator (-numdec attribute)
-     * 
-     * @param numdec String
-     */
-    public void setNumDec(String numdec) {
-        this.numdec = numdec;
-    }
-
-    /**
-     * Date format (-d attribute)
-     * 
-     * @param dateFormat
-     */
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
-    /**
-     * Mail callback class
-     * @param mainCallback
-     */
-    public void setMainCallback(String mainCallback) {
-        this.mainCallback = mainCallback;
-    }
-
-    /**
-     * Parameter (-param attribute)
-     * 
-     * @param param String
-     */
-    public void setParameter(String param) {
-        this.parameter = param;
-    }
-
-    /**
-     * Turns on/off debugging mode (keeps Progress temp files on disk)
-     * 
-     * @param debugPCT boolean
-     */
-    public void setDebugPCT(boolean debugPCT) {
-        this.debugPCT = debugPCT;
-    }
-    
-    /**
-     * Turns on/off onQuit mode (no error on expected QUIT)
-     * 
-     * @param noErrorOnQuit boolean
-     */
-    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
-        this.noErrorOnQuit = noErrorOnQuit;
-    }
-    
-
-    /**
-     * If files beginning with an underscore should be compiled (-zn option) See POSSE documentation
-     * for more details
-     * 
-     * @param compUnderscore boolean
-     */
-    public void setCompileUnderscore(boolean compUnderscore) {
-        this.compileUnderscore = compUnderscore;
-    }
-
-    /**
-     * Add init procedure to the super procedures stack
-     * 
-     * @param superInit boolean
-     */
-    public void setSuperInit(boolean superInit) {
-        this.superInit = superInit;
-    }
-
-    /**
-     * The number of compiled procedure directory entries (-D attribute)
-     * 
-     * @param dirSize int
-     */
-    public void setDirSize(int dirSize) {
-        this.dirSize = dirSize;
-    }
-
-    /**
-     * Graphical mode on/off (call to _progres or prowin32)
-     * 
-     * @param graphMode boolean
-     */
-    public void setGraphicalMode(boolean graphMode) {
-        this.graphMode = graphMode;
-    }
-
-    /**
-     * Sets .ini file to use (-basekey INI -ininame xxx)
-     * 
-     * @param iniFile File
-     */
-    public void setIniFile(File iniFile) {
-        if ((iniFile != null) && !iniFile.exists()) {
-            log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
-            return;
-        }
-        this.iniFile = iniFile;
-    }
-
-    /**
-     * Sets the failOnError parameter. Defaults to true.
-     * 
-     * @param failOnError
-     */
-    public void setFailOnError(boolean failOnError) {
-        this.failOnError = failOnError;
-    }
-
-    /**
-     * Procedure to be run (not -p param, this parameter is always pct_initXXX.p)
-     * 
-     * @param procedure String
-     */
-    public void setProcedure(String procedure) {
-        this.procedure = procedure;
-    }
-
-    public void setAssemblies(File assemblies) {
-        if ((assemblies != null) && !assemblies.exists()) {
-            log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
-            return;
-        }
-        this.assemblies = assemblies;
-    }
-
-    /**
-     * Set the propath to be used when running the procedure
-     * 
-     * @param propath an Ant Path object containing the propath
-     */
-    public void addPropath(Path propath) {
-        createPropath().append(propath);
-    }
-
-    /**
-     * Creates a new Path instance
-     * 
-     * @return Path
-     */
-    public Path createPropath() {
-        if (this.propath == null) {
-            this.propath = new Path(this.getProject());
-        }
-
-        return this.propath;
-    }
-
-    /*
-     * public void addPropathRef(Reference r) { this.propath.setRefid(r); }
-     */
-
-    /**
-     * Stream code page (-cpstream attribute)
-     * 
-     * @param cpStream String
-     */
-    public void setCpStream(String cpStream) {
-        this.cpStream = cpStream;
-    }
-
-    /**
-     * Internal code page (-cpinternal attribute)
-     * 
-     * @param cpInternal String
-     */
-    public void setCpInternal(String cpInternal) {
-        this.cpInternal = cpInternal;
-    }
-
-    /**
-     * Collation table (-cpcoll attribute)
-     * 
-     * @param cpColl String
-     */
-    public void setCpColl(String cpColl) {
-        this.cpColl = cpColl;
-    }
-
-    /**
-     * Case table (-cpcase attribute)
-     * 
-     * @param cpCase String
-     */
-    public void setCpCase(String cpCase) {
-        this.cpCase = cpCase;
-    }
-
-    /**
-     * The number of characters allowed in a single statement (-inp attribute)
-     * 
-     * @param inputChars Integer
-     */
-    public void setInputChars(int inputChars) {
-        this.inputChars = inputChars;
-    }
-
-    /**
-     * Century year offset (-yy attribute)
-     * 
-     * @param centuryYearOffset Integer
-     */
-    public void setCenturyYearOffset(int centuryYearOffset) {
-        this.centuryYearOffset = centuryYearOffset;
-    }
-
-    /**
-     * The number of tokens allowed in a 4GL statement (-tok attribute)
-     * 
-     * @param token int
-     */
-    public void setToken(int token) {
-        this.token = token;
-    }
-
-    /**
-     * The amount of memory allocated for r-code segments
-     * 
-     * @param maximumMemory int
-     */
-    public void setMaximumMemory(int maximumMemory) {
-        this.maximumMemory = maximumMemory;
-    }
-
-    /**
-     * The size of the stack in 1KB units.
-     * 
-     * @param stackSize int
-     */
-    public void setStackSize(int stackSize) {
-        this.stackSize = stackSize;
-    }
-
-    /**
-     * Buffer Size for Temporary Tables (-Bt attribute)
-     * 
-     * @param ttBufferSize int
-     */
-    public void setTTBufferSize(int ttBufferSize) {
-        this.ttBufferSize = ttBufferSize;
-    }
-
-    /**
-     * Message buffer size (-Mm attribute)
-     * 
-     * @param msgBufSize int
-     */
-    public void setMsgBufferSize(int msgBufSize) {
-        this.messageBufferSize = msgBufSize;
-    }
-
-    /**
-     * Port number on which debugger should connect (-debugReady parameter)
-     * 
-     * @param debugReady int
-     */
-    public void setDebugReady(int debugReady) {
-        this.debugReady = debugReady;
-    }
-
-    /**
-     * Temporary directory for Progress runtime (-T parameter)
-     * 
-     * @param tempDir File
-     */
-    public void setTempDir(File tempDir) {
-        this.tempDir = tempDir;
-    }
-
-    /**
-     * The directory in which the Progress runtime should be executed.
-     * 
-     * @param baseDir File
-     */
-    public void setBaseDir(File baseDir) {
-        this.baseDir = baseDir;
+    protected void setRunAttributes(GenericExecuteOptions attrs) {
+        this.runAttributes = attrs;
     }
 
     /**
      * Tells underlying Progress session to be verbose
-     * 
-     * @param verbose Boolean
-     * @since 0.19
+     * @deprecated
      */
+    @Deprecated
     public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+        log("verbose attribute is not used anymore, please use the standard -v switch");
     }
 
-    public boolean isVerbose() {
-        return verbose;
+    // Legacy method
+    @Deprecated
+    public void addPCTConnection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
     }
 
-    /**
-     * Returns a collection of PCTConnection objects, appending DBConnectionSets to PCTConnection
-     * list.
-     * 
-     * @return A non-null PCTConnection collection
-     * @since PCT 0.19
-     */
-    public Collection<PCTConnection> getDbConnections() {
-        Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
-        if (dbConnSet != null) {
-            for (DBConnectionSet set : dbConnSet) {
-                coll.addAll(set.getDBConnections());
-            }
-        }
-        if (dbConnList != null) {
-            for (PCTConnection conn : dbConnList) {
-                coll.add(conn);
-            }
-        }
+    // Slightly different syntax for antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
 
-        return coll;
+    // Slightly different syntax for antlib
+    public void addDB_Connection_Set(DBConnectionSet set) {
+        addDBConnectionSet(set);
+    }
+
+    // Legacy
+    @Deprecated
+    public void addPCTRunOption(PCTRunOption option) {
+        addOption(option);
     }
 
     /**
-     * Sets the name of a property in which the return valeur of the Progress procedure should be
-     * stored. Only of interest if failonerror=false.
-     * 
-     * @since PCT 0.14
-     * 
-     * @param resultProperty name of property.
+     * Adds a collection of parameters
      */
+    protected void setParameters(Collection<RunParameter> params) {
+        for (RunParameter p : params) {
+            runAttributes.addParameter(p);
+        }
+    }
+
+    // **********************
+    // IRunAttributes methods
+
+    @Override
+    public void addDBConnection(PCTConnection dbConn) {
+        runAttributes.addDBConnection(dbConn);
+    }
+
+    @Override
+    public void addDBConnectionSet(DBConnectionSet set) {
+        runAttributes.addDBConnectionSet(set);
+    }
+
+    @Override
+    public void addDBAlias(DBAlias alias) {
+        runAttributes.addDBAlias(alias);
+    }
+
+    @Override
+    public void addOption(PCTRunOption option) {
+        runAttributes.addOption(option);
+    }
+
+    @Override
+    public void addParameter(RunParameter param) {
+        runAttributes.addParameter(param);
+    }
+
+    @Override
+    public void addOutputParameter(OutputParameter param) {
+        runAttributes.addOutputParameter(param);
+    }
+
+    @Override
+    public void setParamFile(File pf) {
+        runAttributes.setParamFile(pf);
+    }
+
+    @Override
+    public void setNumSep(String numsep) {
+        runAttributes.setNumSep(numsep);
+    }
+
+    @Override
+    public void setNumDec(String numdec) {
+        runAttributes.setNumDec(numdec);
+    }
+
+    @Override
+    public void setParameter(String param) {
+        runAttributes.setParameter(param);
+    }
+
+    @Override
+    public void setDebugPCT(boolean debugPCT) {
+        runAttributes.setDebugPCT(debugPCT);
+    }
+    
+    @Override
+    public void setCompileUnderscore(boolean compUnderscore) {
+        runAttributes.setCompileUnderscore(compUnderscore);
+    }
+
+    @Override
+    public void setDirSize(int dirSize) {
+        runAttributes.setDirSize(dirSize);
+    }
+
+    @Override
+    public void setGraphicalMode(boolean graphMode) {
+        runAttributes.setGraphicalMode(graphMode);
+    }
+
+    @Override
+    public void setIniFile(File iniFile) {
+        runAttributes.setIniFile(iniFile);
+    }
+
+    @Override
+    public void setFailOnError(boolean failOnError) {
+        runAttributes.setFailOnError(failOnError);
+    }
+
+    @Override
+    public void setProcedure(String procedure) {
+        runAttributes.setProcedure(procedure);
+    }
+
+    @Override
+    public void setInputChars(int inputChars) {
+        runAttributes.setInputChars(inputChars);
+    }
+
+    @Override
+    public void setDateFormat(String dateFormat) {
+        runAttributes.setDateFormat(dateFormat);
+    }
+
+    @Override
+    public void setCenturyYearOffset(int centuryYearOffset) {
+        runAttributes.setCenturyYearOffset(centuryYearOffset);
+    }
+
+    @Override
+    public void setToken(int token) {
+        runAttributes.setToken(token);
+    }
+
+    @Override
+    public void setMaximumMemory(int maximumMemory) {
+        runAttributes.setMaximumMemory(maximumMemory);
+    }
+
+    @Override
+    public void setStackSize(int stackSize) {
+        runAttributes.setStackSize(stackSize);
+    }
+
+    @Override
+    public void setTTBufferSize(int ttBufferSize) {
+        runAttributes.setTTBufferSize(ttBufferSize);
+    }
+
+    @Override
+    public void setMsgBufferSize(int msgBufSize) {
+        runAttributes.setMsgBufferSize(msgBufSize);
+    }
+
+    @Override
+    public void setDebugReady(int debugReady) {
+        runAttributes.setDebugReady(debugReady);
+    }
+
+    @Override
+    public void setTempDir(File tempDir) {
+        runAttributes.setTempDir(tempDir);
+    }
+
+    @Override
+    public void setBaseDir(File baseDir) {
+        runAttributes.setBaseDir(baseDir);
+    }
+
+    @Override
+    public void addPropath(Path propath) {
+        runAttributes.addPropath(propath);
+    }
+
+    @Override
+    public void setCpStream(String cpStream) {
+        runAttributes.setCpStream(cpStream);
+    }
+
+    @Override
+    public void setCpInternal(String cpInternal) {
+        runAttributes.setCpInternal(cpInternal);
+    }
+
+    @Override
+    public void setAssemblies(File assemblies) {
+        runAttributes.setAssemblies(assemblies);
+    }
+
+    @Override
+    public void setCpColl(String cpColl) {
+        runAttributes.setCpColl(cpColl);
+    }
+
+    @Override
+    public void setCpCase(String cpCase) {
+        runAttributes.setCpCase(cpCase);
+    }
+
+    @Override
     public void setResultProperty(String resultProperty) {
-        this.resultProperty = resultProperty;
+        runAttributes.setResultProperty(resultProperty);
     }
 
-    /**
-     * Defines profiler
-     * 
-     * @param profiler
-     */
+    @Override
+    public void setRelativePaths(boolean relativePaths) {
+        runAttributes.setRelativePaths(relativePaths);
+    }
+
+    @Override
     public void addProfiler(Profiler profiler) {
-        if (this.profiler != null) {
-            throw new BuildException("Only one Profiler node can be defined");
-        }
-        this.profiler = profiler;
+        runAttributes.addProfiler(profiler);
     }
 
-    /**
-     * Helper method to set result property to the passed in value if appropriate.
-     * 
-     * @param result value desired for the result property value.
-     */
-    protected void maybeSetResultPropertyValue(int result) {
-        if (resultProperty != null) {
-            String res = Integer.toString(result);
-            getProject().setNewProperty(resultProperty, res);
-        }
+    @Override
+    public void setMainCallback(String mainCallback) {
+        runAttributes.setMainCallback(mainCallback);
     }
 
-    /**
-     * Exec task is prepared ?
-     * 
-     * @return boolean
-     */
-    public boolean isPrepared() {
-        return this.prepared;
+    @Override
+    public void setNoErrorOnQuit(boolean noErrorOnQuit) {
+        runAttributes.setNoErrorOnQuit(noErrorOnQuit);
     }
 
-    /**
-     * Returns status file name (where to write progress procedure result)
-     * 
-     * @return String
-     */
-    protected String getStatusFileName() {
-        return status.getAbsolutePath();
+    @Override
+    public void setSuperInit(boolean superInit) {
+        runAttributes.setSuperInit(superInit);
     }
+
+    // End of IRunAttribute methods
+    // ****************************
 
     /**
      * Do the work
@@ -643,13 +362,13 @@ public class PCTRun extends PCT {
         BufferedReader br = null;
 
         checkDlcHome();
-        if ((procedure == null) || (procedure.length() == 0))
+        if ((runAttributes.getProcedure() == null) || (runAttributes.getProcedure().length() == 0))
             throw new BuildException("Procedure attribute not defined");
 
         if (!prepared) {
             prepareExecTask();
-            if (profiler != null) {
-                profiler.validate(false);
+            if (runAttributes.getProfiler() != null) {
+                runAttributes.getProfiler().validate(false);
             }
         }
 
@@ -698,8 +417,8 @@ public class PCTRun extends PCT {
         }
 
         // Reads output parameter
-        if (outputParameters != null) {
-            for (OutputParameter param : outputParameters) {
+        if (runAttributes.getOutputParameters() != null) {
+            for (OutputParameter param : runAttributes.getOutputParameters()) {
                 File f = param.getTempFileName();
                 try {
                     br = new BufferedReader(new InputStreamReader(new FileInputStream(f),
@@ -735,7 +454,7 @@ public class PCTRun extends PCT {
             this.cleanup();
             int ret = Integer.parseInt(s);
 
-            if (ret != 0 && failOnError) {
+            if (ret != 0 && runAttributes.isFailOnError()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.6"), ret)); //$NON-NLS-1$
             }
             maybeSetResultPropertyValue(ret);
@@ -755,6 +474,33 @@ public class PCTRun extends PCT {
             throw new BuildException(Messages.getString("PCTRun.3"), nfe); //$NON-NLS-1$
         }
 
+    }
+
+    // In order to know if Progress session has to use verbose logging
+    private boolean isVerbose() {
+        return (getAntLoggerLever() > 2);
+    }
+
+    // Helper method to set result property to the passed in value if appropriate.
+    private void maybeSetResultPropertyValue(int result) {
+        if (runAttributes.getResultProperty() != null) {
+            String res = Integer.toString(result);
+            getProject().setNewProperty(runAttributes.getResultProperty(), res);
+        }
+    }
+
+    /**
+     * Is Exec task prepared ?
+     */
+    protected boolean isPrepared() {
+        return this.prepared;
+    }
+
+    /**
+     * Returns status file name (where to write progress procedure result)
+     */
+    protected String getStatusFileName() {
+        return status.getAbsolutePath();
     }
 
     /**
@@ -777,193 +523,20 @@ public class PCTRun extends PCT {
         this.prepared = true;
     }
 
-    protected List<String> getCmdLineParameters() {
-        List<String> list = new ArrayList<String>();
-
-        // Parameter file
-        if (this.paramFile != null) {
-            list.add("-pf"); //$NON-NLS-1$
-            list.add(this.paramFile.getAbsolutePath());
-        }
-
-        // Batch mode
-        if (this.batchMode) {
-            list.add("-b"); //$NON-NLS-1$
-            list.add("-q"); //$NON-NLS-1$
-        }
-
-        // DebugReady
-        if (this.debugReady != -1) {
-            list.add("-debugReady"); //$NON-NLS-1$
-            list.add(Integer.toString(this.debugReady));
-        }
-
-        // Inifile
-        if (this.iniFile != null) {
-            list.add("-basekey"); //$NON-NLS-1$
-            list.add("INI"); //$NON-NLS-1$
-            list.add("-ininame"); //$NON-NLS-1$
-            list.add(Commandline.quoteArgument(this.iniFile.getAbsolutePath()));
-        }
-
-        // Max length of a line
-        if (this.inputChars != 0) {
-            list.add("-inp"); //$NON-NLS-1$
-            list.add(Integer.toString(this.inputChars));
-        }
-
-        // Stream code page
-        if (this.cpStream != null) {
-            list.add("-cpstream"); //$NON-NLS-1$
-            list.add(this.cpStream);
-        }
-
-        // Internal code page
-        if (this.cpInternal != null) {
-            list.add("-cpinternal"); //$NON-NLS-1$
-            list.add(this.cpInternal);
-        }
-
-        // Collation table
-        if (cpColl != null) {
-            list.add("-cpcoll"); //$NON-NLS-1$
-            list.add(cpColl);
-        }
-
-        // Case table
-        if (cpCase != null) {
-            list.add("-cpcase"); //$NON-NLS-1$
-            list.add(cpCase);
-        }
-
-        // Directory size
-        if (this.dirSize != 0) {
-            list.add("-D"); //$NON-NLS-1$
-            list.add(Integer.toString(this.dirSize));
-        }
-
-        if (this.centuryYearOffset != 0) {
-            list.add("-yy"); //$NON-NLS-1$
-            list.add(Integer.toString(this.centuryYearOffset));
-        }
-
-        if (this.maximumMemory != 0) {
-            list.add("-mmax"); //$NON-NLS-1$
-            list.add(Integer.toString(this.maximumMemory));
-        }
-
-        if (this.stackSize != 0) {
-            list.add("-s"); //$NON-NLS-1$
-            list.add(Integer.toString(this.stackSize));
-        }
-
-        if (this.token != 0) {
-            list.add("-tok"); //$NON-NLS-1$
-            list.add(Integer.toString(this.token));
-        }
-
-        if (this.messageBufferSize != 0) {
-            list.add("-Mm"); //$NON-NLS-1$
-            list.add(Integer.toString(this.messageBufferSize));
-        }
-
-        if (this.compileUnderscore) {
-            list.add("-zn"); //$NON-NLS-1$
-        }
-
-        if (this.ttBufferSize != 0) {
-            list.add("-Bt"); //$NON-NLS-1$
-            list.add(Integer.toString(this.ttBufferSize));
-        }
-
-        if (this.numsep != null) {
-            int tmpSep = 0;
-            try {
-                tmpSep = Integer.parseInt(this.numsep);
-            } catch (NumberFormatException nfe) {
-                if (this.numsep.length() == 1)
-                    tmpSep = this.numsep.charAt(0);
-                else
-                    throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            "numsep"), nfe); //$NON-NLS-1$
-            }
-            list.add("-numsep"); //$NON-NLS-1$
-            list.add(Integer.toString(tmpSep));
-        }
-
-        if (this.numdec != null) {
-            int tmpDec = 0;
-            try {
-                tmpDec = Integer.parseInt(this.numdec);
-            } catch (NumberFormatException nfe) {
-                if (this.numdec.length() == 1)
-                    tmpDec = this.numdec.charAt(0);
-                else
-                    throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.4"), //$NON-NLS-1$
-                            "numdec"), nfe); //$NON-NLS-1$
-            }
-            list.add("-numdec"); //$NON-NLS-1$
-            list.add(Integer.toString(tmpDec));
-        }
-
-        if ((dateFormat != null) && (dateFormat.trim().length() > 0)) {
-            list.add("-d");
-            list.add(dateFormat.trim());
-        }
-
-        // Parameter
-        if (this.parameter != null) {
-            list.add("-param"); //$NON-NLS-1$
-            list.add(this.parameter);
-        }
-
-        // Temp directory
-        if (this.tempDir != null) {
-            // TODO Isn't exists method redundant with isDirectory ? Check JRE sources...
-            // XXX Yes, it's redundant !
-            if (!this.tempDir.exists() || !this.tempDir.isDirectory()) {
-                throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.7"), //$NON-NLS-1$
-                        this.tempDir));
-            }
-            list.add("-T");
-            list.add(this.tempDir.getAbsolutePath());
-        }
-
-        if (assemblies != null) {
-            list.add("-assemblies");
-            list.add(assemblies.getAbsolutePath());
-        }
-
-        if ((profiler != null) && profiler.isEnabled()) {
-            list.add("-profile");
-            list.add(profilerParamFile.getAbsolutePath());
-        }
-
-        // Additional command line options
-        if (this.options != null) {
-            for (PCTRunOption opt : options) {
-                if (opt.getName() == null) {
-                    throw new BuildException(Messages.getString("PCTRun.8")); //$NON-NLS-1$
-                }
-                list.add(opt.getName());
-                if (opt.getValue() != null)
-                    list.add(opt.getValue());
-            }
-        }
-
-        return list;
-    }
-
     protected void setExecTaskParams() {
-        exec.setExecutable(getAVMExecutable(graphMode).toString());
+        exec.setExecutable(getAVMExecutable(runAttributes.isGraphMode()).toString());
 
-        for (String str : getCmdLineParameters()) {
+        for (String str : runAttributes.getCmdLineParameters()) {
             exec.createArg().setValue(str);
+        }
+        if ((runAttributes.getProfiler() != null) && runAttributes.getProfiler().isEnabled()) {
+            exec.createArg().setValue("-profile");
+            exec.createArg().setValue(profilerParamFile.getAbsolutePath());
         }
 
         // Check for base directory
-        if ((baseDir != null) && baseDir.isDirectory()) {
-            exec.setDir(baseDir);
+        if ((runAttributes.getBaseDir() != null) && runAttributes.getBaseDir().isDirectory()) {
+            exec.setDir(runAttributes.getBaseDir());
         }
     }
 
@@ -1027,9 +600,9 @@ public class PCTRun extends PCT {
         String pfCpInt = null, pfCpStream = null;
 
         // If paramFile is defined, then read it and check for cpStream or cpInternal
-        if (paramFile != null) {
+        if (runAttributes.getParamFile() != null) {
             try {
-                PFReader reader = new PFReader(new FileInputStream(paramFile));
+                PFReader reader = new PFReader(new FileInputStream(runAttributes.getParamFile()));
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
             } catch (IOException uncaught) {
@@ -1037,12 +610,12 @@ public class PCTRun extends PCT {
             }
         }
 
-        if (cpStream != null)
-            return cpStream;
+        if (runAttributes.getCpStream() != null)
+            return runAttributes.getCpStream();
         else if (pfCpStream != null)
             return pfCpStream;
-        else if (cpInternal != null)
-            return cpInternal;
+        else if (runAttributes.getCpInternal() != null)
+            return runAttributes.getCpInternal();
         else if (pfCpInt != null)
             return pfCpInt;
         else
@@ -1050,34 +623,34 @@ public class PCTRun extends PCT {
     }
 
     private void createProfilerFile() throws BuildException {
-        if ((profiler != null) && profiler.isEnabled()) {
+        if ((runAttributes.getProfiler() != null) && runAttributes.getProfiler().isEnabled()) {
             BufferedWriter bw = null;
             try {
                 bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
                         profilerParamFile)));
-                if (profiler.getOutputFile() != null) {
-                    bw.write("-FILENAME " + profiler.getOutputFile().getAbsolutePath());
+                if (runAttributes.getProfiler().getOutputFile() != null) {
+                    bw.write("-FILENAME " + runAttributes.getProfiler().getOutputFile().getAbsolutePath());
                     bw.newLine();
                 } else {
                     // Assuming nobody will use file names with double quotes in this case... 
                     bw.write("-FILENAME \""
-                            + new File(profiler.getOutputDir(), "profiler" + profilerOutID
+                            + new File(runAttributes.getProfiler().getOutputDir(), "profiler" + profilerOutID
                                     + ".out\""));
                     bw.newLine();
                 }
-                if (profiler.hasCoverage()) {
+                if (runAttributes.getProfiler().hasCoverage()) {
                     bw.write("-COVERAGE");
                     bw.newLine();
                 }
-                if (profiler.hasStatistics()) {
+                if (runAttributes.getProfiler().hasStatistics()) {
                     bw.write("-STATISTICS");
                     bw.newLine();
                 }
-                if (profiler.getListings() != null) {
-                    bw.write("-LISTINGS \"" + profiler.getListings().getAbsolutePath() + "\"");
+                if (runAttributes.getProfiler().getListings() != null) {
+                    bw.write("-LISTINGS \"" + runAttributes.getProfiler().getListings().getAbsolutePath() + "\"");
                     bw.newLine();
                 }
-                bw.write("-DESCRIPTION \"" + profiler.getDescription() + "\"");
+                bw.write("-DESCRIPTION \"" + runAttributes.getProfiler().getDescription() + "\"");
                 bw.newLine();
                 bw.close();
             } catch (IOException caught) {
@@ -1106,11 +679,11 @@ public class PCTRun extends PCT {
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
-                    verbose,noErrorOnQuit));
+                    isVerbose(), runAttributes.useNoErrorOnQuit()));
 
             // Defines database connections and aliases
             int dbNum = 1;
-            for (PCTConnection dbc : getDbConnections()) {
+            for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
                 String connect = dbc.createConnectString();
                 bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
                         connect));
@@ -1126,8 +699,8 @@ public class PCTRun extends PCT {
                 }
                 dbNum++;
             }
-            if (aliases != null) {
-                for (DBAlias alias : aliases) {
+            if (runAttributes.getAliases() != null) {
+                for (DBAlias alias : runAttributes.getAliases()) {
                     bw.write(MessageFormat.format(getProgressProcedures().getDBAliasString(),
                             alias.getName(), alias.getValue(), alias.getNoError() ? "NO-ERROR" : ""));
                 }
@@ -1143,21 +716,21 @@ public class PCTRun extends PCT {
             }
 
             // Defines PROPATH
-            if (this.propath != null) {
+            if (runAttributes.getPropath() != null) {
                 // Bug #1058733 : multiple assignments for propath, as a long propath
                 // could lead to error 135 (More than xxx characters in a single
                 // statement--use -inp parm)
-                String[] lst = this.propath.list();
+                String[] lst = runAttributes.getPropath().list();
                 for (int k = lst.length - 1; k >= 0; k--) {
-                    if (relativePaths) {
+                    if (runAttributes.useRelativePaths()) {
                         try {
                             bw.write(MessageFormat.format(
                                     this.getProgressProcedures().getPropathString(),
                                     escapeString(FileUtils
                                             .getRelativePath(
-                                                    (baseDir == null
+                                                    (runAttributes.getBaseDir() == null
                                                             ? getProject().getBaseDir()
-                                                            : baseDir), new File(lst[k])).replace(
+                                                            : runAttributes.getBaseDir()), new File(lst[k])).replace(
                                                     '/', File.separatorChar))
                                             + File.pathSeparatorChar));
                         } catch (Exception caught) {
@@ -1171,13 +744,13 @@ public class PCTRun extends PCT {
             }
 
             // Callback
-            if ((mainCallback != null) && (mainCallback.trim().length() > 0)) {
-                bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), mainCallback));
+            if ((runAttributes.getMainCallback() != null) && (runAttributes.getMainCallback().trim().length() > 0)) {
+                bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), runAttributes.getMainCallback()));
             }
 
             // Defines parameters
-            if (this.runParameters != null) {
-                for (RunParameter param : runParameters) {
+            if (runAttributes.getRunParameters() != null) {
+                for (RunParameter param : runAttributes.getRunParameters()) {
                     if (param.validate()) {
                         bw.write(MessageFormat.format(this.getProgressProcedures()
                                 .getParameterString(), escapeString(param.getName()),
@@ -1189,9 +762,9 @@ public class PCTRun extends PCT {
             }
 
             // Defines variables for OUTPUT parameters
-            if (this.outputParameters != null) {
+            if (runAttributes.getOutputParameters() != null) {
                 int zz = 0;
-                for (OutputParameter param : outputParameters) {
+                for (OutputParameter param : runAttributes.getOutputParameters()) {
                     param.setProgressVar("outParam" + zz++);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
                             .getOutputParameterDeclaration(), param.getProgressVar()));
@@ -1201,10 +774,10 @@ public class PCTRun extends PCT {
             // Creates a StringBuffer containing output parameters when calling the progress
             // procedure
             StringBuffer sb = new StringBuffer();
-            if ((this.outputParameters != null) && (this.outputParameters.size() > 0)) {
+            if ((runAttributes.getOutputParameters() != null) && (runAttributes.getOutputParameters().size() > 0)) {
                 sb.append('(');
                 int zz = 0;
-                for (OutputParameter param : outputParameters) {
+                for (OutputParameter param : runAttributes.getOutputParameters()) {
                     if (zz++ > 0)
                         sb.append(',');
                     sb.append("OUTPUT ").append(param.getProgressVar());
@@ -1213,19 +786,19 @@ public class PCTRun extends PCT {
             }
 
             // Add init procedure to the super procedures stack
-            if (superInit) {
+            if (runAttributes.isSuperInit()) {
                 bw.write(getProgressProcedures().getSuperInitString());
             }
 
             // Calls progress procedure
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    escapeString(this.procedure), sb.toString()));
+                    escapeString(runAttributes.getProcedure()), sb.toString()));
             // Checking return value
             bw.write(MessageFormat.format(this.getProgressProcedures().getAfterRun(),
                     new Object[]{}));
             // Writing output parameters to temporary files
-            if (this.outputParameters != null) {
-                for (OutputParameter param : outputParameters) {
+            if (this.runAttributes.getOutputParameters() != null) {
+                for (OutputParameter param : runAttributes.getOutputParameters()) {
                     File tmpFile = new File(
                             System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
@@ -1317,7 +890,7 @@ public class PCTRun extends PCT {
      * @return boolean
      */
     protected boolean getDebugPCT() {
-        return this.debugPCT;
+        return runAttributes.isDebugPCT();
     }
 
     /**
@@ -1325,7 +898,7 @@ public class PCTRun extends PCT {
      * 
      */
     protected void cleanup() {
-        if (!debugPCT) {
+        if (!runAttributes.isDebugPCT()) {
             if ((initProc != null) && initProc.exists() && !initProc.delete()) {
                 log(MessageFormat
                         .format(Messages.getString("PCTRun.5"), initProc.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
@@ -1342,8 +915,8 @@ public class PCTRun extends PCT {
                     && !profilerParamFile.delete()) {
                 log(MessageFormat.format(Messages.getString("PCTRun.5"), profilerParamFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
             }
-            if (outputParameters != null) {
-                for (OutputParameter param : outputParameters) {
+            if (runAttributes.getOutputParameters() != null) {
+                for (OutputParameter param : runAttributes.getOutputParameters()) {
                     if ((param.getTempFileName() != null)
                             && (param.getTempFileName().exists() && !param.getTempFileName()
                                     .delete())) {
