@@ -266,8 +266,8 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setFileList(int fileList) {
-        compAttributes.setFileList(fileList);
+    public void setDisplayFiles(int display) {
+        compAttributes.setDisplayFiles(display);
     }
 
     // End of ICompilationAttributes methods

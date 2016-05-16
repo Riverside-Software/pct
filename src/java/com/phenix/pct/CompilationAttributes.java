@@ -232,8 +232,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     @Override
-    public void setFileList(int fileList) {
-        this.fileList = fileList;
+    public void setDisplayFiles(int display) {
+        this.fileList = display;
     }
 
     public List<ResourceCollection> getResources() {
