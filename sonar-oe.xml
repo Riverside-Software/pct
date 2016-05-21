@@ -10,10 +10,11 @@
   <property name="sonar.sources" value="src/progress" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.binaries" value="build/build-v11" />
-  <property name="sonar.oe.cpd.newparser" value="true" />
   <property name="sonar.oe.propath" value="src/progress" />
   <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.verbose" value="false" />
+  <property name="sonar.oe.dlc" value="/opt/dlc-11.6" />
+  <property name="sonar.oe.propath.dlc" value="true" />
 
   <path id="coverage.cp">
     <fileset dir="dist" includes="PCT.jar" />
