@@ -15,14 +15,6 @@
     </and>
   </condition>
 
-  <!-- Different values for UNIX/Win32 -->
-  <condition property="DBUTIL" value="_dbutil.exe">
-    <os family="windows" />
-  </condition>
-  <condition property="DBUTIL" value="_dbutil">
-    <os family="unix" />
-  </condition>
-
   <property name="env.BUILD_TAG" value="LocalBuild" />
 
   <!-- Some directories definitions -->
