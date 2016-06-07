@@ -1,4 +1,13 @@
-node {
+node ('EC2-EU1B') {
+  checkout scm
+  def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+  def dlc11 = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  
+  bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"
+  step([$class: 'ArtifactArchiver', artifacts: 'dist/classDoc.zip'])  
+}
+
+node ('master') {
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc9 = tool name: 'OE-9.1E', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
