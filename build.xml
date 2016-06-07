@@ -283,7 +283,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win}" />
-    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8" debugListing="true" listing="true" preprocess="true" listingSource="preprocessor">
+    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" preprocess="true" listingSource="preprocessor">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
