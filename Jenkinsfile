@@ -3,8 +3,11 @@ node ('EC2-EU1B') {
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc11 = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  
-  bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"
+  def jdk = tool name: 'JDK 7 64b', type: 'hudson.model.JDK'
+
+  withEnv(["JAVA_HOME=${jdk}"]) {
+    bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"
+  }
   step([$class: 'ArtifactArchiver', artifacts: 'dist/classDoc.zip'])  
 }
 
