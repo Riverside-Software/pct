@@ -1,3 +1,4 @@
+stage 'Class documentation build'
 node ('EC2-EU1B') {
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
@@ -7,6 +8,7 @@ node ('EC2-EU1B') {
   step([$class: 'ArtifactArchiver', artifacts: 'dist/classDoc.zip'])  
 }
 
+stage 'Standard build'
 node ('master') {
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
