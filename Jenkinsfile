@@ -29,6 +29,7 @@ node ('master') {
 stage 'Fail-fast tests'
 node('master') {
   ws {
+    deleteDir()
     def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     unstash name: 'tests'
