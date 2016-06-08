@@ -1,5 +1,6 @@
 stage 'Class documentation build'
 node ('EC2-EU1B') {
+  deleteDir()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc11 = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
@@ -13,6 +14,7 @@ node ('EC2-EU1B') {
 
 stage 'Standard build'
 node ('master') {
+  deleteDir()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc9 = tool name: 'OE-9.1E', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
