@@ -22,5 +22,16 @@ node ('master') {
 
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC9=${dlc9} -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DBUILD_NUMBER=${env.BUILD_NUMBER} dist"
-  step([$class: 'ArtifactArchiver', artifacts: 'dist/PCT.jar,dist/testcases.zip,tests.xml'])  
+  step([$class: 'ArtifactArchiver', artifacts: 'dist/PCT.jar'])
+  stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
+}
+
+state 'Fail-fast tests'
+node('master') {
+  ws {
+    def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+    def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+    unstash name: 'tests'
+    sh "${antHome}/bin/ant -DDLC=${dlc11} -f tests.xml init dist"
+  }
 }
