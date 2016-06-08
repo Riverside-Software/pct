@@ -41,7 +41,9 @@ node('master') {
 
 stage 'Full tests'
 def branches = [:]
-branches[0] = {
+branches[0] = testBranch('master', 'OE-11.7')
+branches[1] = testBranch('EC2-EU1B', 'OE-11.7')
+/* branches[0] = {
   node('master') {
     ws {
       deleteDir()
@@ -62,13 +64,28 @@ branches[1] = {
       bat "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
     }
   }
-}
+} */
 parallel branches
 
 stage 'Sonar'
 node('master') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
+}
+
+def testBranch = { nodeName, dlcVersion -> node(nodeName) {
+    ws {
+      deleteDir()
+      def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+      unstash name: 'tests'
+      if (isUnix())
+        sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
+      else
+        bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
+      step([$class: 'TestNGResultArchiver', testResults: 'test-output/testng-results.xml'])
+    }
+  }
 }
 
 // see https://issues.jenkins-ci.org/browse/JENKINS-31924
