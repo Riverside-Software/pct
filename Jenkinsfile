@@ -88,7 +88,7 @@ def testBranch(nodeName, dlcVersion) { node(nodeName) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
-      step([$class: 'TestNGResultArchiver', testResults: 'test-output/testng-results.xml'])
+      // step([$class: 'TestNGResultArchiver', testResults: 'test-output/testng-results.xml'])
     }
   }
 }
