@@ -26,7 +26,7 @@ node ('master') {
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
 }
 
-state 'Fail-fast tests'
+stage 'Fail-fast tests'
 node('master') {
   ws {
     def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
