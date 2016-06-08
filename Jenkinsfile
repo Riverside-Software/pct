@@ -40,10 +40,14 @@ node('master') {
 }
 
 stage 'Full tests'
-def branches = [:]
+parallel branch1: { testBranch('master', 'OE-11.7') },
+    branch2: { testBranch('EC2-EU1B', 'OE-11.7') },
+    failFast: false
+
+/*def branches = [:]
 branches[0] = testBranch('master', 'OE-11.7')
 branches[1] = testBranch('EC2-EU1B', 'OE-11.7')
-/* branches[0] = {
+ branches[0] = {
   node('master') {
     ws {
       deleteDir()
@@ -64,8 +68,8 @@ branches[1] = {
       bat "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
     }
   }
-} */
-parallel branches
+}
+parallel branches */
 
 stage 'Sonar'
 node('master') {
@@ -73,7 +77,8 @@ node('master') {
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
 }
 
-def testBranch = { nodeName, dlcVersion -> node(nodeName) {
+/* def testBranch = { nodeName, dlcVersion -> node(nodeName) { */
+def testBranch(nodeName, dlcVersion) { node(nodeName) {
     ws {
       deleteDir()
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
