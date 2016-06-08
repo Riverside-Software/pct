@@ -56,7 +56,7 @@
   </path>
 
   <target name="init">
-    <unzip src="testcases.zip" dest="." />
+    <unzip src="dist/testcases.zip" dest="." />
     <mkdir dir="testbox/PCTCompileExt" />
     <copy todir="testbox/PCTCompileExt">
       <fileset dir="testbox/PCTCompile" />
