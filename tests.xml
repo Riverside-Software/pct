@@ -86,9 +86,9 @@
     <zip destFile="oe-profiler-data-${TESTENV}.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
-    <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
+    <!--<ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
       <fileset dir="." includes="emailable-report-${TESTENV}.html" />
-    </ftp>
+    </ftp>-->
   </target>
 
 
