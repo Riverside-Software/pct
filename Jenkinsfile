@@ -24,8 +24,8 @@ node ('master') {
 
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC9=${dlc9} -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DBUILD_NUMBER=${env.BUILD_NUMBER} dist"
-  step([$class: 'ArtifactArchiver', artifacts: 'dist/PCT.jar'])
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
+  archive 'dist/PCT.jar'
 }
 
 stage 'Fail-fast tests'
@@ -37,6 +37,38 @@ node('master') {
     unstash name: 'tests'
     sh "${antHome}/bin/ant -DDLC=${dlc11} -f tests.xml init dist"
   }
+}
+
+stage 'Full tests'
+def branches = [:]
+branches[0] = {
+  node('master') {
+    ws {
+      deleteDir()
+      def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+      unstash name: 'tests'
+      sh "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
+    }
+  }
+}
+branches[1] = {
+  node('EC2-EU1B') {
+    ws {
+      deleteDir()
+      def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+      unstash name: 'tests'
+      bat "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
+    }
+  }
+}
+parallel branches
+
+stage 'Sonar'
+node('master') {
+    def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
 }
 
 // see https://issues.jenkins-ci.org/browse/JENKINS-31924
