@@ -40,45 +40,25 @@ node('master') {
 }
 
 stage 'Full tests'
-parallel branch1: { testBranch('master', 'OE-11.7') },
-    branch2: { testBranch('EC2-EU1B', 'OE-11.7') },
+parallel branch1: { testBranch('master', 'OE-11.7', false) },
+    branch2: { testBranch('EC2-EU1B', 'OE-11.7', false) },
+    branch3: { testBranch('master', 'OE-9.1E', false) },
+    branch4: { testBranch('master', 'OE-10.2B-64b', false) },
+    branch5: { testBranch('master', 'OE-11.6', false) },
+    branch6: { testBranch('EC2-EU1B', 'OE-11.6', true) },
+    branch7: { testBranch('master', 'OE-10.2B', false) },
+    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false) },
     failFast: false
-
-/*def branches = [:]
-branches[0] = testBranch('master', 'OE-11.7')
-branches[1] = testBranch('EC2-EU1B', 'OE-11.7')
- branches[0] = {
-  node('master') {
-    ws {
-      deleteDir()
-      def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-      unstash name: 'tests'
-      sh "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
-    }
-  }
-}
-branches[1] = {
-  node('EC2-EU1B') {
-    ws {
-      deleteDir()
-      def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-      unstash name: 'tests'
-      bat "${antHome}/bin/ant -DDLC=${dlc11} -DPROFILER=true -f tests.xml init dist"
-    }
-  }
-}
-parallel branches */
 
 stage 'Sonar'
 node('master') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+    unstash name: 'coverage'
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
 }
 
 /* def testBranch = { nodeName, dlcVersion -> node(nodeName) { */
-def testBranch(nodeName, dlcVersion) { node(nodeName) {
+def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
     ws {
       deleteDir()
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
@@ -89,6 +69,9 @@ def testBranch(nodeName, dlcVersion) { node(nodeName) {
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       // step([$class: 'TestNGResultArchiver', testResults: 'test-output/testng-results.xml'])
+      if stashCoverage {
+        stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data-*.zip'
+      }
     }
   }
 }
