@@ -68,7 +68,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
-      // step([$class: 'TestNGResultArchiver', testResults: 'test-output/testng-results.xml'])
+      step([$class: 'Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data-*.zip'
       }
