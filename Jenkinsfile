@@ -42,7 +42,7 @@ node('master') {
 stage 'Full tests'
 parallel branch1: { testBranch('master', 'OE-11.7', false) },
     branch2: { testBranch('EC2-EU1B', 'OE-11.7', false) },
-    branch3: { testBranch('master', 'OE-9.1E', false) },
+    /*branch3: { testBranch('master', 'OE-9.1E', false) },*/
     branch4: { testBranch('master', 'OE-10.2B-64b', false) },
     branch5: { testBranch('master', 'OE-11.6', false) },
     branch6: { testBranch('EC2-EU1B', 'OE-11.6', true) },
