@@ -40,14 +40,14 @@ node('master') {
 }
 
 stage 'Full tests'
-parallel branch1: { testBranch('master', 'OE-11.7', false) },
-    branch2: { testBranch('EC2-EU1B', 'OE-11.7', false) },
-    /*branch3: { testBranch('master', 'OE-9.1E', false) },*/
+parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true) },
+    /*branch2: { testBranch('EC2-EU1B', 'OE-11.7', false) },
+    branch3: { testBranch('master', 'OE-9.1E', false) },
     branch4: { testBranch('master', 'OE-10.2B-64b', false) },
     branch5: { testBranch('master', 'OE-11.6', false) },
-    branch6: { testBranch('EC2-EU1B', 'OE-11.6', true) },
+    branch6: { testBranch('master', 'OE-11.7', false) },
     branch7: { testBranch('master', 'OE-10.2B', false) },
-    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false) },
+    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false) },*/
     failFast: false
 
 stage 'Sonar'
@@ -68,7 +68,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
-      step([$class: 'Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
+      step([$class: 'hudson.plugins.testng.Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data-*.zip'
       }
