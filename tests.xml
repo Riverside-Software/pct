@@ -83,7 +83,7 @@
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
-    <zip destFile="oe-profiler-data-${TESTENV}.zip">
+    <zip destFile="oe-profiler-data.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
     <!--<ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
