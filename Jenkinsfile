@@ -28,7 +28,7 @@ node ('master') {
   archive 'dist/PCT.jar'
 }
 
-stage 'Fail-fast tests'
+/* stage 'Fail-fast tests'
 node('master') {
   ws {
     deleteDir()
@@ -37,7 +37,7 @@ node('master') {
     unstash name: 'tests'
     sh "${antHome}/bin/ant -DDLC=${dlc11} -f tests.xml init dist"
   }
-}
+} */
 
 stage 'Full tests'
 parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true) },
@@ -53,10 +53,11 @@ parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true) },
 stage 'Sonar'
 node('master') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+    def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
-    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
 }
 
 /* def testBranch = { nodeName, dlcVersion -> node(nodeName) { */
