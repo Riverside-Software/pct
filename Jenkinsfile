@@ -55,6 +55,8 @@ node('master') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     unstash name: 'coverage'
     sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
 }
 
 /* def testBranch = { nodeName, dlcVersion -> node(nodeName) { */
@@ -68,7 +70,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
-      step([$class: 'hudson.plugins.testng.Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
+      // step([$class: 'hudson.plugins.testng.Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data-*.zip'
       }
