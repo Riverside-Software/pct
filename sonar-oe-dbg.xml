@@ -48,7 +48,7 @@
     </PCTCompile>
 
     <mkdir dir="profiler" />
-    <unzip src="oe-profiler-data-OE-11.6-EC2-EU1B.zip" dest="profiler" />
+    <unzip src="oe-profiler-data.zip" dest="profiler" />
     <taskdef name="GenericCoverage" classname="com.phenix.pct.GenericCoverage">
       <classpath refid="coverage.cp" />
     </taskdef>
