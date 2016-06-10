@@ -56,7 +56,7 @@
   </path>
 
   <target name="init">
-    <unzip src="testcases.zip" dest="." />
+    <unzip src="dist/testcases.zip" dest="." />
     <mkdir dir="testbox/PCTCompileExt" />
     <copy todir="testbox/PCTCompileExt">
       <fileset dir="testbox/PCTCompile" />
@@ -71,7 +71,7 @@
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
-    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
+    <jacoco:coverage destFile="profiler/jacoco.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
@@ -83,12 +83,12 @@
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
     <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
-    <zip destFile="oe-profiler-data-${TESTENV}.zip">
+    <zip destFile="oe-profiler-data.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
-    <ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
+    <!--<ftp server="ftp.riverside-software.fr" remotedir="/www/pct" userid="${FTP_USERNAME}" password="${FTP_PASSWORD}" passive="true" retriesAllowed="5">
       <fileset dir="." includes="emailable-report-${TESTENV}.html" />
-    </ftp>
+    </ftp>-->
   </target>
 
 

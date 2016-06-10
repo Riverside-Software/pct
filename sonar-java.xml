@@ -13,7 +13,7 @@
   <property name="sonar.sources" value="src/java" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.jacoco.reportPath" value="jacoco-v11.4-win64.exec" />
+  <property name="sonar.jacoco.reportPath" value="profiler/jacoco.exec" />
   <!-- <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" /> -->
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
