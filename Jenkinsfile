@@ -73,7 +73,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
       // step([$class: 'hudson.plugins.testng.Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
       if (stashCoverage) {
-        stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data-*.zip'
+        stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data.zip'
       }
     }
   }
