@@ -42,9 +42,10 @@
   <condition property="sonar.github.repository" value="jakejustus/pct">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <condition property="sonar.github.oauth" value="2db61c2f84d34f70eaa02faacfba898e68698541">
+  <condition property="sonar.github.oauth" value="${GITHUB_OAUTH}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
+  <echo message="GitHub OAuth ${GITHUB_OAUTH}" />
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
