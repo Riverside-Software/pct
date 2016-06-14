@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
   <path id="lib.cp">
     <filelist dir="lib" files="ant.jar,ant-launcher.jar,oe_common_services.jar,parser.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
   </path>
@@ -19,9 +20,30 @@
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.verbose" value="false" />
 
-  <!-- Specify sonar.branch property only when not on master -->
+  <!-- Specify sonar.branch property only when not on master and not on pull requests -->
   <condition property="sonar.branch" value="${BRANCH_NAME}">
-    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+    <and>
+      <not><equals arg1="${BRANCH_NAME}" arg2="master" /></not>
+      <not><matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" /></not>
+    </and>
+  </condition>
+  <echo message="Property sonar.branch ${sonar.branch}" />
+  <!-- Incremental analysis in case of pull requests -->
+  <condition property="sonar.analysis.mode" value="issues">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <echo message="Property sonar.analysis.mode ${sonar.analysis.mode}" />
+  <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="1" casesensitive="false" />
+  <echo message="Property PR_NUMBER ${PR_NUMBER}" />
+  <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <echo message="Property sonar.github.pullRequest ${sonar.github.pullRequest}" />
+  <condition property="sonar.github.repository" value="jakejustus/pct">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <condition property="sonar.github.oauth" value="2db61c2f84d34f70eaa02faacfba898e68698541">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
 
   <target name="sonar">
