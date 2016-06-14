@@ -44,9 +44,9 @@ node('master') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
-    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
-    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
-    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DJOB_NAME=Dev2-PCT -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
+    sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
 }
 
 def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
