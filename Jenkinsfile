@@ -1,5 +1,5 @@
 stage 'Class documentation build'
-echo "Git branch : ${GIT_BRANCH}"
+echo "Git branch : ${env.GIT_BRANCH}"
 
 node ('EC2-EU1B') {
   gitClean()
