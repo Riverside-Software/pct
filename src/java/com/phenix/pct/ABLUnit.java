@@ -94,6 +94,7 @@ public class ABLUnit extends PCTRun {
 
     private void writeJsonConfigFile() throws IOException {
         JsonWriter writer = null;
+        String foobar = "abc";
         try {
             writer = new JsonWriter(new FileWriter(json));
             log("JSON file created : " + json, Project.MSG_VERBOSE);
