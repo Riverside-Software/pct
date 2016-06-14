@@ -10,7 +10,7 @@
   </taskdef>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
-  <property name="sonar.projectKey" value="eu.rssw.pct.oedbg:${JOB_NAME}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.oedbg:PCT" />
   <property name="sonar.projectName" value="PCT - OpenEdge debug module" />
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
@@ -21,6 +21,14 @@
   <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.verbose" value="false" />
   <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
+
+  <!-- Specify sonar.branch property only when not on master -->
+  <exec executable="git" outputProperty="git.branch">
+    <arg line="rev-parse --abbrev-ref HEAD"/>
+  </exec>
+  <condition property="sonar.branch" value="${git.branch}">
+    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+  </condition>
 
   <target name="sonar">
     <sports2000 dbName="sp2k" dlcHome="${DLC}" />
