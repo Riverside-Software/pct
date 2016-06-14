@@ -19,10 +19,7 @@
   <property name="sonar.verbose" value="false" />
 
   <!-- Specify sonar.branch property only when not on master -->
-  <exec executable="git" outputProperty="git.branch">
-    <arg line="rev-parse --abbrev-ref HEAD"/>
-  </exec>
-  <condition property="sonar.branch" value="${git.branch}">
+  <condition property="sonar.branch" value="${BRANCH_NAME}">
     <not><equals arg1="${git.branch}" arg2="master" /></not>    
   </condition>
 
