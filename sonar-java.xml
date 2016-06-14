@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+  <property environment="env" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
   <path id="lib.cp">
     <filelist dir="lib" files="ant.jar,ant-launcher.jar,oe_common_services.jar,parser.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
@@ -42,10 +43,10 @@
   <condition property="sonar.github.repository" value="jakejustus/pct">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <condition property="sonar.github.oauth" value="${GITHUB_OAUTH}">
+  <condition property="sonar.github.oauth" value="${env.GH_PASSWORD}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <echo message="GitHub OAuth ${GITHUB_OAUTH}" />
+  <echo message="GitHub OAuth ${env.GH_PASSWORD}" />
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
