@@ -21,9 +21,6 @@ node ('master') {
   def dlc10 = tool name: 'OE-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc10_64 = tool name: 'OE-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'AAA']]) {
-    sh 'echo $AAA'
-}
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC9=${dlc9} -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DBUILD_NUMBER=${env.BUILD_NUMBER} dist"
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
@@ -47,7 +44,6 @@ node('master') {
     def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
     withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
-      echo "GitHub ${GH_PASSWORD}"
       sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DGITHUB_OAUTH=${GH_PASSWORD} sonar"
       sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
       sh "${antHome}/bin/ant -lib lib/sonar-ant-task-2.2.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
