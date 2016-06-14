@@ -23,7 +23,7 @@
   <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
 
   <!-- Specify sonar.branch property only when not on master -->
-  <condition property="sonar.branch" value="${BRACH_NAME}">
+  <condition property="sonar.branch" value="${BRANCH_NAME}">
     <not><equals arg1="${git.branch}" arg2="master" /></not>    
   </condition>
 
