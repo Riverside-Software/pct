@@ -34,7 +34,7 @@
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
   <echo message="Property sonar.analysis.mode ${sonar.analysis.mode}" />
-  <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="1" casesensitive="false" />
+  <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="\1" casesensitive="false" />
   <echo message="Property PR_NUMBER ${PR_NUMBER}" />
   <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
