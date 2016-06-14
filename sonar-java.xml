@@ -6,7 +6,7 @@
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
-  <property name="sonar.projectKey" value="eu.rssw.pct.java:${JOB_NAME}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.java:PCT" />
   <property name="sonar.projectName" value="PCT - Java module" />
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="java" />
@@ -18,6 +18,14 @@
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.verbose" value="false" />
+
+  <!-- Specify sonar.branch property only when not on master -->
+  <exec executable="git" outputProperty="git.branch">
+    <arg line="rev-parse --abbrev-ref HEAD"/>
+  </exec>
+  <condition property="sonar.branch" value="${git.branch}">
+    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+  </condition>
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
