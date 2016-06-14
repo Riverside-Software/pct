@@ -92,8 +92,10 @@ public class ABLUnit extends PCTRun {
         testFilesets.add(set);
     }
 
-    private void writeJsonConfigFile() throws IOException {
+    private void writeJsonConfigFile() throws IOException, RuntimeException {
         JsonWriter writer = null;
+        String foobar = "abc";
+        String foobar2 = "def";
         try {
             writer = new JsonWriter(new FileWriter(json));
             log("JSON file created : " + json, Project.MSG_VERBOSE);
