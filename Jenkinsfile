@@ -1,6 +1,4 @@
 stage 'Class documentation build'
-echo "Git branch : ${env.GIT_BRANCH}"
-
 node ('EC2-EU1B') {
   gitClean()
   checkout scm
