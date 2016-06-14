@@ -3,7 +3,7 @@
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
-  <property name="sonar.projectKey" value="eu.rssw.pct.oe:${JOB_NAME}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.oe:PCT" />
   <property name="sonar.projectName" value="PCT - OpenEdge module" />
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
@@ -14,6 +14,14 @@
   <property name="sonar.oe.propath" value="src/progress" />
   <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.verbose" value="false" />
+
+  <!-- Specify sonar.branch property only when not on master -->
+  <exec executable="git" outputProperty="git.branch">
+    <arg line="rev-parse --abbrev-ref HEAD"/>
+  </exec>
+  <condition property="sonar.branch" value="${git.branch}">
+    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+  </condition>
 
   <path id="coverage.cp">
     <fileset dir="dist" includes="PCT.jar" />
