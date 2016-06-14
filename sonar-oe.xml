@@ -8,6 +8,7 @@
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
   <property name="sonar.sources" value="src/progress" />
+  <property name="sonar.exclusions" value="src/progress/pct/v8/**/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.binaries" value="build/build-v11" />
   <property name="sonar.oe.cpd.newparser" value="true" />
