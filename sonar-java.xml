@@ -50,7 +50,7 @@
 
   <target name="sonar">
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-        <classpath path="lib/sonar-ant-task-*.jar" />
+        <classpath path="lib/sonarqube-ant-task-*.jar" />
     </taskdef>
     <sonar:sonar />
   </target>
