@@ -275,7 +275,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win}" />
-    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="utf-8" debugListing="true" listing="true" preprocess="true" listingSource="preprocessor">
+    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" preprocess="true" listingSource="preprocessor">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -290,7 +290,7 @@
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
     <!--  Updating pct11.pl with rcode compiled on Windows -->
     <copy todir="classDocTemp">
-      <zipfileset src="lib/classDoc.zip" includes="**/*.r" />
+      <zipfileset src="dist/classDoc.zip" includes="**/*.r" />
     </copy>
     <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
       <fileset dir="classDocTemp" />

@@ -10,7 +10,7 @@
   </taskdef>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
-  <property name="sonar.projectKey" value="eu.rssw.pct.oedbg:${JOB_NAME}" />
+  <property name="sonar.projectKey" value="eu.rssw.pct.oedbg:PCT" />
   <property name="sonar.projectName" value="PCT - OpenEdge debug module" />
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
   <property name="sonar.language" value="oe" />
@@ -21,6 +21,11 @@
   <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.verbose" value="false" />
   <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
+
+  <!-- Specify sonar.branch property only when not on master -->
+  <condition property="sonar.branch" value="${BRANCH_NAME}">
+    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+  </condition>
 
   <target name="sonar">
     <sports2000 dbName="sp2k" dlcHome="${DLC}" />
@@ -48,7 +53,7 @@
     </PCTCompile>
 
     <mkdir dir="profiler" />
-    <unzip src="oe-profiler-data-OE-11.6-EC2-EU1B.zip" dest="profiler" />
+    <unzip src="oe-profiler-data.zip" dest="profiler" />
     <taskdef name="GenericCoverage" classname="com.phenix.pct.GenericCoverage">
       <classpath refid="coverage.cp" />
     </taskdef>
@@ -57,7 +62,7 @@
       <propath location="src/progress-dbg" />
     </GenericCoverage>
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-      <classpath path="lib/sonar-ant-task-*.jar" />
+      <classpath path="lib/sonarqube-ant-task-*.jar" />
     </taskdef>
     <touch file="dictdb.df" />
     <sonar:sonar />
