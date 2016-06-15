@@ -8,17 +8,22 @@
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
-  <property name="sonar.projectKey" value="eu.rssw.pct.java:PCT" />
-  <property name="sonar.projectName" value="PCT - Java module" />
+  <property name="sonar.projectKey" value="eu.rssw.pct:PCT" />
+  <property name="sonar.projectName" value="PCT" />
   <property name="sonar.projectVersion" value="${BUILD_NUMBER}" />
-  <property name="sonar.language" value="java" />
-  <property name="sonar.sources" value="src/java" />
+  <property name="sonar.sources" value="src/java,src/progress" />
+  <property name="sonar.exclusions" value="src/progress/pct/v8/**/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
+  <!-- That should be sonar.oe.binaries -->
+  <property name="sonar.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPath" value="profiler/jacoco.exec" />
-  <!-- <property name="sonar.libraries" value="ant.jar,ant-launcher.jar,oe_common_services.jar,proparse.jar,antlr-2.7.7.jar" /> -->
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
+  <property name="sonar.oe.propath" value="src/progress" />
+  <property name="sonar.oe.databases" value="dictdb.df" />
+  <property name="sonar.oe.dlc" value="${DLC}" />
+  <property name="sonar.oe.dlc.propath" value="true" />
   <property name="sonar.verbose" value="false" />
 
   <!-- Specify sonar.branch property only when not on master and not on pull requests -->
@@ -28,31 +33,29 @@
       <not><matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" /></not>
     </and>
   </condition>
-  <echo message="Property sonar.branch ${sonar.branch}" />
+
   <!-- Incremental analysis in case of pull requests -->
   <condition property="sonar.analysis.mode" value="issues">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <echo message="Property sonar.analysis.mode ${sonar.analysis.mode}" />
   <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="\1" casesensitive="false" />
-  <echo message="Property PR_NUMBER ${PR_NUMBER}" />
   <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <echo message="Property sonar.github.pullRequest ${sonar.github.pullRequest}" />
   <condition property="sonar.github.repository" value="jakejustus/pct">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
   <condition property="sonar.github.oauth" value="${env.GH_PASSWORD}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <echo message="GitHub OAuth ${env.GH_PASSWORD}" />
 
   <target name="sonar">
+    <touch file="dictdb.df" />
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
         <classpath path="lib/sonarqube-ant-task-*.jar" />
     </taskdef>
     <sonar:sonar />
+    <delete file="dictdb.df" />
   </target>
 
 </project>
