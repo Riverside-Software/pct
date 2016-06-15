@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 The Apache Software Foundation
+/**
+ * Copyright 2005-2016 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  *  limitations under the License.
  *
  */
+
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
 DEFINE VARIABLE hComp AS HANDLE NO-UNDO.

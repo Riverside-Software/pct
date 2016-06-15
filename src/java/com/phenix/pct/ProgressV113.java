@@ -1,5 +1,5 @@
-/*
- * Copyright  2000-2004 The Apache Software Foundation
+/**
+ * Copyright 2005-2016 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  *  limitations under the License.
  *
  */
-
 package com.phenix.pct;
 
 public class ProgressV113 extends ProgressV11 {

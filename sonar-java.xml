@@ -22,6 +22,7 @@
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.oe.propath" value="src/progress" />
   <property name="sonar.oe.databases" value="dictdb.df" />
+  <property name="sonar.oe.aliases" value="dictdb,dictdb2" />
   <property name="sonar.oe.dlc" value="${DLC}" />
   <property name="sonar.oe.dlc.propath" value="true" />
   <property name="sonar.verbose" value="false" />
