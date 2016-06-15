@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+  <property environment="env" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
   <path id="coverage.cp">
     <fileset dir="dist" includes="PCT.jar" />
   </path>
@@ -22,9 +25,27 @@
   <property name="sonar.verbose" value="false" />
   <property name="sonar.genericcoverage.reportPaths" value="coverage-data.xml" />
 
-  <!-- Specify sonar.branch property only when not on master -->
+  <!-- Specify sonar.branch property only when not on master and not on pull requests -->
   <condition property="sonar.branch" value="${BRANCH_NAME}">
-    <not><equals arg1="${git.branch}" arg2="master" /></not>    
+    <and>
+      <not><equals arg1="${BRANCH_NAME}" arg2="master" /></not>
+      <not><matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" /></not>
+    </and>
+  </condition>
+
+  <!-- Incremental analysis in case of pull requests -->
+  <condition property="sonar.analysis.mode" value="issues">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="\1" casesensitive="false" />
+  <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <condition property="sonar.github.repository" value="jakejustus/pct">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  </condition>
+  <condition property="sonar.github.oauth" value="${env.GH_PASSWORD}">
+    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
 
   <target name="sonar">
