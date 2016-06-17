@@ -32,7 +32,7 @@ parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win') },
     branch2: { testBranch('EC2-EU1B', 'OE-11.7', false, '11.7-Win') },
     branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux') },
     branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux') },
-    branch6: { testBranch('master', 'OE-11.7', false, '11.6-Linux') },
+    branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux') },
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux') },
     branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win') },
     failFast: false
