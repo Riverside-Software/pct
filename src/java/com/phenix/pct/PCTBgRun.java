@@ -306,6 +306,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         throw new BuildException("superInit is not yet supported on multi-threaded PCTRun");
     }
 
+    @Override
+    public void setOutput(File output) {
+        throw new BuildException("output is not yet supported on multi-threaded PCTRun");
+    }
+
     // End of IRunAttribute methods
     // ****************************
 

@@ -224,4 +224,9 @@ public interface IRunAttributes {
      * Add init procedure to the super procedures stack
      */
     void setSuperInit(boolean superInit);
+
+    /**
+     * Name of a file to which to write the output. If the error stream is not also redirected to a file or property, it will appear in this output.
+     */
+    void setOutput(File output);
 }

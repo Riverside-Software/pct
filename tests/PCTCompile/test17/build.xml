@@ -13,7 +13,7 @@
 
   <target name="test1">
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" xcode="true">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" xcode="true" output="output.txt">
       <fileset dir="src">
         <include name="xcode/*.p" />
       </fileset>

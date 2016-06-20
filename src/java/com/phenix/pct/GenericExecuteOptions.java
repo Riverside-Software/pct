@@ -73,6 +73,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private String mainCallback = null;
     private boolean noErrorOnQuit = false;
     private boolean superInit = true;
+    private File output;
 
     public GenericExecuteOptions(Project p) {
         project = p;
@@ -311,6 +312,11 @@ public class GenericExecuteOptions implements IRunAttributes {
         this.superInit = superInit;
     }
 
+    @Override
+    public void setOutput(File output) {
+        this.output = output;
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -444,6 +450,10 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public void setBatchMode(boolean batchMode) {
         this.batchMode = batchMode;
+    }
+
+    public File getOutput() {
+        return output;
     }
 
     protected List<String> getCmdLineParameters() {

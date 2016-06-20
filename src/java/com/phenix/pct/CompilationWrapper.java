@@ -492,6 +492,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         runAttributes.setSuperInit(superInit);
     }
 
+    @Override
+    public void setOutput(File output) {
+        runAttributes.setOutput(output);
+    }
+
     // End of IRunAttributes methods
     // *****************************
 
