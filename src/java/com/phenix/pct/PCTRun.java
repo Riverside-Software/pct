@@ -349,6 +349,11 @@ public class PCTRun extends PCT implements IRunAttributes {
         runAttributes.setSuperInit(superInit);
     }
 
+    @Override
+    public void setOutput(File output) {
+        runAttributes.setOutput(output);
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -536,6 +541,10 @@ public class PCTRun extends PCT implements IRunAttributes {
         // Check for base directory
         if ((runAttributes.getBaseDir() != null) && runAttributes.getBaseDir().isDirectory()) {
             exec.setDir(runAttributes.getBaseDir());
+        }
+
+        if (runAttributes.getOutput() != null) {
+            exec.setOutput(runAttributes.getOutput());
         }
     }
 
