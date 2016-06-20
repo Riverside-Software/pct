@@ -287,8 +287,20 @@
     </zip>
   </target>
 
+  <target name="fakeClassDoc" unless="classDocOK">
+    <echo message="Generating fake classDoc.zip file" />
+    <zip destFile="${dist}/classDoc.zip" whenEmpty="create">
+      <fileset dir="." includes="leave.it.empty" />
+    </zip>
+  </target>
+
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
+    <condition property="classDocOK">
+      <resourceexists><file file="${dist}/classDoc.zip" /></resourceexists>
+    </condition>
+    <antcall target="fakeClassDoc" />
     <!--  Updating pct11.pl with rcode compiled on Windows -->
+    <mkdir dir="classDocTemp" />
     <copy todir="classDocTemp">
       <zipfileset src="dist/classDoc.zip" includes="**/*.r" />
     </copy>
