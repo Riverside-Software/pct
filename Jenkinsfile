@@ -28,13 +28,13 @@ node ('master') {
 }
 
 stage 'Full tests'
-parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true) },
-    branch2: { testBranch('EC2-EU1B', 'OE-11.7', false) },
-    branch4: { testBranch('master', 'OE-10.2B-64b', false) },
-    branch5: { testBranch('master', 'OE-11.6', false) },
-    branch6: { testBranch('master', 'OE-11.7', false) },
-    branch7: { testBranch('master', 'OE-10.2B', false) },
-    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false) },
+parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win') },
+    branch2: { testBranch('EC2-EU1B', 'OE-11.7', false, '11.7-Win') },
+    branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux') },
+    branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux') },
+    branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux') },
+    branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux') },
+    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win') },
     failFast: false
 
 stage 'Sonar'
@@ -48,19 +48,19 @@ node('master') {
     }
 }
 
-def testBranch(nodeName, dlcVersion, stashCoverage) { node(nodeName) {
+def testBranch(nodeName, dlcVersion, stashCoverage, label) { node(nodeName) {
     ws {
       deleteDir()
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
       def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
       unstash name: 'tests'
       if (isUnix())
-        sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
+        sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
       else
-        bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -f tests.xml init dist"
-      // step([$class: 'hudson.plugins.testng.Publisher', reportFilenamePattern: 'test-output/testng-results.xml'])
+        bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
+      archive 'emailable-report-*.html,testng-results-*.xml'
       if (stashCoverage) {
-        stash name: 'coverage', includes: 'profiler/*.exec,oe-profiler-data.zip'
+        stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }
     }
   }
