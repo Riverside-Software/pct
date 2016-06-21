@@ -96,7 +96,7 @@ public class PCTBgCompile extends PCTBgRun {
                 throw new BuildException(Messages.getString("PCTCompile.35")); //$NON-NLS-1$
             }
         } else {
-            if (!compAttrs.getDestDir().mkdir()) {
+            if (!compAttrs.getDestDir().mkdirs()) {
                 this.cleanup();
                 throw new BuildException(Messages.getString("PCTCompile.36")); //$NON-NLS-1$
             }
@@ -113,7 +113,7 @@ public class PCTBgCompile extends PCTBgRun {
                 throw new BuildException(Messages.getString("PCTCompile.38")); //$NON-NLS-1$
             }
         } else {
-            if (!compAttrs.getxRefDir().mkdir()) {
+            if (!compAttrs.getxRefDir().mkdirs()) {
                 this.cleanup();
                 throw new BuildException(Messages.getString("PCTCompile.39")); //$NON-NLS-1$
             }
