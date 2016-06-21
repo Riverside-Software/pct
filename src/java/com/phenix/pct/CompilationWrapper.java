@@ -29,6 +29,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     private CompilationAttributes compAttributes;
     private Mapper mapperElement;
     private int numThreads;
+    private boolean forceMT;
 
     public CompilationWrapper() {
         compAttributes = new CompilationAttributes(getProject());
@@ -38,11 +39,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void execute() throws BuildException {
         PCT pctTask;
-        if ((numThreads <= 1) && (mapperElement == null)) {
-            pctTask = new PCTCompile();
-            ((PCTCompile) pctTask).setRunAttributes(runAttributes);
-            ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
-        } else {
+        if (forceMT || (numThreads > 1) || (mapperElement != null)) {
             pctTask = new PCTBgCompile();
             ((PCTBgCompile) pctTask).setRunAttributes(runAttributes);
             ((PCTBgCompile) pctTask).setCompilationAttributes(compAttributes);
@@ -50,6 +47,10 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
             if (numThreads > 1) {
                 ((PCTBgCompile) pctTask).setNumThreads(numThreads);
             }
+        } else {
+            pctTask = new PCTCompile();
+            ((PCTCompile) pctTask).setRunAttributes(runAttributes);
+            ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
         }
         pctTask.bindToOwner(this);
         if (getDlcHome() != null) {
@@ -57,6 +58,10 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         }
         pctTask.setIncludedPL(getIncludedPL());
         pctTask.execute();
+    }
+
+    public void setForceMT(boolean force) {
+        this.forceMT = force;
     }
 
     // Multi-threading management
