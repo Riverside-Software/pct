@@ -1086,6 +1086,25 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test67() {
+        configureProject(BASEDIR + "test67/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test67/build-interface/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test67/build-impl/rssw/pct/TestImpl.r").exists());
+        assertFalse(new File(BASEDIR + "test67/build-impl/rssw/pct/ITest.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test68() {
+        configureProject(BASEDIR + "test68/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
+        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
