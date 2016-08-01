@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  */
 public class PCTXCodeTest extends BuildFileTestNg {
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test1() {
         configureProject("PCTXCode/test1/build.xml");
         executeTarget("test");
