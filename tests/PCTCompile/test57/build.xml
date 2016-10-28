@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test57" xmlns:pct="antlib:eu/rssw/pct">
+  <taskdef uri="antlib:eu/rssw/pct" resource="eu/rssw/pct/antlib.xml" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <pct:compile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </pct:compile>
+  </target>
+
+</project>
