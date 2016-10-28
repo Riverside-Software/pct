@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <antlib>
   <taskdef name="dlc_home" classname="com.phenix.pct.DlcHome" />
-  <taskdef name="compile" classname="com.phenix.pct.PCTCompile" />
+  <taskdef name="compile" classname="com.phenix.pct.CompilationWrapper" />
   <taskdef name="library" classname="com.phenix.pct.PCTLibrary" />
   <taskdef name="run" classname="com.phenix.pct.PCTRun" />
-  <taskdef name="compile_ext" classname="com.phenix.pct.PCTBgCompile" />
+  <taskdef name="compile_ext" classname="com.phenix.pct.CompilationWrapper" />
   <taskdef name="db_create" classname="com.phenix.pct.PCTCreateBase" />
   <taskdef name="schema_load" classname="com.phenix.pct.PCTLoadSchema" />
   <taskdef name="schema_dump" classname="com.phenix.pct.PCTDumpSchema" />
