@@ -38,7 +38,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void execute() throws BuildException {
         PCT pctTask;
-        if ("pctcompileext".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag()) || (numThreads > 1) || (mapperElement != null)) {
+        // Handle pct:compile_ext
+        if ("pctcompileext".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())
+                || "pct:compile_ext"
+                        .equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())
+                || (numThreads > 1) || (mapperElement != null)) {
             pctTask = new PCTBgCompile();
             ((PCTBgCompile) pctTask).setRunAttributes(runAttributes);
             ((PCTBgCompile) pctTask).setCompilationAttributes(compAttributes);

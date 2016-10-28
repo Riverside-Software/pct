@@ -58,6 +58,7 @@
     </copy>
     <!-- Only in testXX, test cases with number greater than 100 are reserved for PCTCompileExt -->
     <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="PCTCompile" value="PCTCompileExt" />
+    <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="pct:compile" value="pct:compile_ext" />
   </target>
 
   <target name="test">
