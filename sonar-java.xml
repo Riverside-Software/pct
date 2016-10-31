@@ -57,8 +57,8 @@
     </taskdef>
     <touch file="dictdb.df" />
     <mkdir dir="profiler/progress" />
-    <unzip src="oe-profiler-data.zip" dest="profiler">
-      <cutdirsmapper dirs="1" />
+    <unzip src="oe-profiler-data.zip" dest="profiler/progress">
+      <flattenmapper />
     </unzip>
     <sonar:sonar />
     <delete file="dictdb.df" />
