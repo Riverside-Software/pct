@@ -43,8 +43,7 @@ node('master') {
     def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
     withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.4.1.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.4.1.jar -f sonar-oe-dbg.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
+      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
     }
 }
 
