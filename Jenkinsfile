@@ -29,12 +29,12 @@ node ('master') {
 
 stage 'Full tests'
 parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
-    /* branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
+    branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
     branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux', 11, 64) },
     branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
     branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
-    branch9: { testBranch('master', 'OE-9.1E', false, '9.1E-Linux', 9, 32) }, */
+    branch9: { testBranch('master', 'OE-9.1E', false, '9.1E-Linux', 9, 32) },
     failFast: false
 
 stage 'Sonar'
@@ -43,7 +43,7 @@ node('master') {
     def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
     withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.4.1.jar -f sonar-java.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
+      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DBUILD_NUMBER=${env.BUILD_NUMBER} -DDLC=${dlc} sonar"
     }
 }
 
