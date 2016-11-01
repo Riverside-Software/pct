@@ -838,6 +838,17 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test58() {
+        configureProject(BASEDIR + "test58/build.xml");
+        executeTarget("db");
+        executeTarget("build");
+        assertTrue(new File(BASEDIR + "test58/build/file1.r").exists());
+        assertTrue(new File(BASEDIR + "test58/build/dir1/file2.r").exists());
+        assertTrue(new File(BASEDIR + "test58/build/dir1/file3.r").exists());
+        executeTarget("test");
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
