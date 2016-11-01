@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test58">
+  <taskdef resource="PCT.properties" />
+
+  <target name="clean">
+    <delete dir="db" />
+    <delete dir="build" />
+  </target>
+
+  <target name="db">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="xlatedb" destDir="db" dlcHome="${DLC}" schemaFile="dump/xlatedb.df" />
+    <PCTLoadData dlcHome="${DLC}" srcDir="dump" numsep="46" numdec="44">
+      <PCTConnection dbName="xlatedb" dbDir="db" singleUser="true" />
+    </PCTLoadData>
+  </target>
+
+  <target name="build">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" languages="French,German" textGrowth="200">
+      <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
+      <fileset dir="src" includes="**/*.p" />
+      <fileset dir="src2/subdir" includes="**/*.p" />
+      <propath location="src,src2/subdir" />
+    </PCTCompile>
+  </target>
+
+  <target name="test">
+      <PCTRun procedure="src/test.p" dlcHome="${DLC}" />
+  </target>
+
+</project>

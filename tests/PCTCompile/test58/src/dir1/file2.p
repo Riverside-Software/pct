@@ -1,0 +1,1 @@
+MESSAGE "String2".
