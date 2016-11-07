@@ -42,7 +42,7 @@
   <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
-  <condition property="sonar.github.repository" value="jakejustus/pct">
+  <condition property="sonar.github.repository" value="Riverside-Software/pct">
     <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
   </condition>
   <condition property="sonar.github.oauth" value="${env.GH_PASSWORD}">
