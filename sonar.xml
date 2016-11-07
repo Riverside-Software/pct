@@ -14,7 +14,6 @@
   <property name="sonar.sources" value="src/java,src/progress" />
   <property name="sonar.exclusions" value="src/progress/pct/v8/**/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
-  <!-- That should be sonar.oe.binaries -->
   <property name="sonar.oe.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPath" value="profiler/jacoco.exec" />
@@ -25,7 +24,6 @@
   <property name="sonar.oe.aliases" value="dictdb,dictdb2" />
   <property name="sonar.oe.dlc" value="${DLC}" />
   <property name="sonar.oe.dlc.propath" value="true" />
-  <property name="sonar.verbose" value="false" />
   <property name="sonar.oe.coverage.profiler.dirs" value="profiler/progress" />
 
   <!-- Specify sonar.branch property only when not on master and not on pull requests -->
