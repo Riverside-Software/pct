@@ -930,4 +930,15 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLog("test-de-2", "DE1-DE1-DE114DE2-DE2-DE214");
     }
 
+    @Test(groups = {"v10"})
+    public void test59() {
+        configureProject(BASEDIR + "test59/build.xml");
+        executeTarget("test");
+        File warns1 = new File(BASEDIR + "test59/build1/.pct/test.p.warnings");
+        assertFalse(warns1.exists());
+        File warns2 = new File(BASEDIR + "test59/build2/.pct/test.p.warnings");
+        assertTrue(warns2.exists());
+        assertTrue(warns2.length() > 0);
+    }
+
 }

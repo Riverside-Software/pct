@@ -1,0 +1,4 @@
+
+
+MESSAGE SUBSTRING("Test", 2).
+
