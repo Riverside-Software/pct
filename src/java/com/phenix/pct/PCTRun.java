@@ -81,7 +81,7 @@ public class PCTRun extends PCT implements IRunAttributes {
      */
     public PCTRun(boolean tmp) {
         super();
-        runAttributes = new GenericExecuteOptions(getProject());
+        runAttributes = new GenericExecuteOptions(this);
 
         if (tmp) {
             statusID = PCT.nextRandomInt();

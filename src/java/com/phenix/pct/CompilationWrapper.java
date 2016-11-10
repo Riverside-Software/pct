@@ -31,8 +31,8 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     private int numThreads;
 
     public CompilationWrapper() {
-        compAttributes = new CompilationAttributes(getProject());
-        runAttributes = new GenericExecuteOptions(getProject());
+        compAttributes = new CompilationAttributes(this);
+        runAttributes = new GenericExecuteOptions(this);
     }
 
     @Override

@@ -23,12 +23,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 
 public class GenericExecuteOptions implements IRunAttributes {
-    private Project project = null;
+    private final Task parent;
 
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
@@ -75,8 +75,8 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean superInit = true;
     private File output;
 
-    public GenericExecuteOptions(Project p) {
-        project = p;
+    public GenericExecuteOptions(Task parent) {
+        this.parent = parent;
     }
 
     // *********************
@@ -178,7 +178,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setIniFile(File iniFile) {
         if ((iniFile != null) && !iniFile.exists()) {
-            project.log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            parent.getProject().log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
             return;
         }
         this.iniFile = iniFile;
@@ -285,7 +285,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setAssemblies(File assemblies) {
         if ((assemblies != null) && !assemblies.exists()) {
-            project.log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            parent.getProject().log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
             return;
         }
 
@@ -702,7 +702,7 @@ public class GenericExecuteOptions implements IRunAttributes {
      */
     public Path createPropath() {
         if (propath == null) {
-            propath = new Path(project);
+            propath = new Path(parent.getProject());
         }
 
         return propath;

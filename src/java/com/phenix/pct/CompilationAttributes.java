@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.ResourceCollection;
 
 public class CompilationAttributes implements ICompilationAttributes {
@@ -61,10 +61,10 @@ public class CompilationAttributes implements ICompilationAttributes {
     private int fileList = 0;
 
     // Internal use
-    private Project project;
+    private final Task parent;
 
-    public CompilationAttributes(Project project) {
-        this.project = project;
+    public CompilationAttributes(Task parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -244,7 +244,7 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     @Override
     public void addConfiguredOEFileset(OpenEdgeFileSet oefs) {
-        resources.add(oefs.getCompilationFileSet(project));
+        resources.add(oefs.getCompilationFileSet(parent.getProject()));
     }
 
     @Override

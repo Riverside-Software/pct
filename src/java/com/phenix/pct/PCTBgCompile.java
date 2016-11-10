@@ -52,7 +52,7 @@ public class PCTBgCompile extends PCTBgRun {
 
     public PCTBgCompile() {
         super();
-        compAttrs = new CompilationAttributes(getProject());
+        compAttrs = new CompilationAttributes(this);
     }
 
     /**

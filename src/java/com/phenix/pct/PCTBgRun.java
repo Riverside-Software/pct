@@ -72,7 +72,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     public PCTBgRun() {
         super();
 
-        options = new GenericExecuteOptions(getProject());
+        options = new GenericExecuteOptions(this);
         options.setProcedure("pct/_server.p");
 
         // Nom de la PL à créer
