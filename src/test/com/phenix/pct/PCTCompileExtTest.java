@@ -845,7 +845,8 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test58/build/file1.r").exists());
         assertTrue(new File(BASEDIR + "test58/build/dir1/file2.r").exists());
         assertTrue(new File(BASEDIR + "test58/build/dir1/file3.r").exists());
-        executeTarget("test");
+        expectLog("test-fr", "String1-FRString2-FR");
+        expectLog("test-de", "String1-DEString2-DE");
     }
 
     @Test(groups = {"v10"})
