@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test45">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="true" iniFile="test.ini" procedure="test.p" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="true" iniFile="invalid.ini" procedure="test.p" dlcHome="${DLC}" />
+  </target>
+
+</project>

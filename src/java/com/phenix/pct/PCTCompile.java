@@ -56,7 +56,7 @@ public class PCTCompile extends PCTRun {
      */
     public PCTCompile() {
         super();
-        compAttrs = new CompilationAttributes(getProject());
+        compAttrs = new CompilationAttributes(this);
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
