@@ -386,4 +386,11 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(new File("PCTRun/test44/Logger2.log.Log2.txt").exists());
         assertTrue(new File("PCTRun/test44/Logger2.afterRun.1.txt").exists());
     }
+
+    @Test(groups = {"v10", "win"})
+    public void test45() {
+        configureProject("PCTRun/test45/build.xml");
+        executeTarget("test1");
+        executeTarget("test2");
+    }
 }
