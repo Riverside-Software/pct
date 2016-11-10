@@ -119,7 +119,7 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test2", "This is dir2");
     }
 
-    @Test(groups = {"win"})
+    @Test(groups = {"v10", "win"})
     public void test14() {
         // Sous Windows uniquement
         configureProject("PCTRun/test14/build.xml");
@@ -314,7 +314,7 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test2", "Result : 123 -- 456 -- ABC");
     }
 
-    @Test(groups = {"win"})
+    @Test(groups = {"v10", "win"})
     public void test39() {
         configureProject("PCTRun/test39/build.xml");
         expectLog("test1", "Result : UTF 8 ±÷");
