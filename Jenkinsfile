@@ -17,12 +17,11 @@ node ('master') {
   gitClean()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc9 = tool name: 'OE-9.1E', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc10 = tool name: 'OE-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc10_64 = tool name: 'OE-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   unstash name: 'classdoc'
-  sh "${antHome}/bin/ant -DDLC9=${dlc9} -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DBUILD_NUMBER=${env.BUILD_NUMBER} dist"
+  sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DBUILD_NUMBER=${env.BUILD_NUMBER} dist"
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
   archive 'dist/PCT.jar'
 }
@@ -34,7 +33,6 @@ parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) 
     branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
     branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
-    branch9: { testBranch('master', 'OE-9.1E', false, '9.1E-Linux', 9, 32) },
     failFast: false
 
 stage 'Sonar'

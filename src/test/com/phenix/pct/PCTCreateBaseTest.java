@@ -31,19 +31,19 @@ import java.io.File;
  */
 public class PCTCreateBaseTest extends BuildFileTestNg {
 
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTCreateBase/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTCreateBase/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test3() {
         configureProject("PCTCreateBase/test3/build.xml");
         executeTarget("test");
@@ -52,13 +52,13 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
     public void test4() {
         configureProject("PCTCreateBase/test4/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test5() {
         configureProject("PCTCreateBase/test5/build.xml");
         executeTarget("base");
@@ -70,7 +70,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test6() {
         configureProject("PCTCreateBase/test6/build.xml");
         executeTarget("test");
@@ -81,7 +81,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.lastModified() == time);
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test7() {
         // TODO : fix the overwrite attribute and uncomment this
         // configureProject("PCTCreateBase/test7/build.xml");
@@ -93,7 +93,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         // assert True(f.lastModified() != time);
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test8() {
         configureProject("PCTCreateBase/test8/build.xml");
         executeTarget("test");
@@ -110,7 +110,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test9() {
         configureProject("PCTCreateBase/test9/build.xml");
         executeTarget("test");
@@ -122,7 +122,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test10() {
         configureProject("PCTCreateBase/test10/build.xml");
         executeTarget("test");
@@ -135,7 +135,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         expectBuildException("test2", "Should throw BuildException as schema doesn't exist");
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test11() {
         configureProject("PCTCreateBase/test11/build.xml");
         executeTarget("test1");
@@ -147,7 +147,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups = {"v9"})
+    @Test(groups = {"v10"})
     public void test12() {
         configureProject("PCTCreateBase/test12/build.xml");
         
@@ -172,7 +172,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("verify");
     }
 
-    @Test(groups = {"v9"})
+    @Test(groups = {"v10"})
     public void test15() {
         configureProject("PCTCreateBase/test15/build.xml");
         
@@ -188,7 +188,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("verify");
     }
 
-    @Test(groups= {"v9"})
+    @Test(groups= {"v10"})
     public void test17() {
         configureProject("PCTCreateBase/test17/build.xml");
         executeTarget("base");

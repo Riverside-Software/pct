@@ -9,17 +9,14 @@
   <property name="TESTLIBS" value="${basedir}/lib" />
 
   <!-- Assume version 11 when in local development -->
-  <condition property="GROUPS" value="v9,v10,v11">
+  <condition property="GROUPS" value="v10,v11">
     <not><isset property="OE_MAJOR_VERSION" /></not>
   </condition>
   <!-- Groups to be executed depending on OpenEdge major version -->
-  <condition property="GROUPS" value="v9">
-    <equals arg1="${OE_MAJOR_VERSION}" arg2="9" />
-  </condition>
-  <condition property="GROUPS" value="v9,v10">
+  <condition property="GROUPS" value="v10">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="10" />
   </condition>
-  <condition property="GROUPS" value="v9,v10,v11">
+  <condition property="GROUPS" value="v10,v11">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
   </condition>
   <!-- Excluded group depending on OS -->

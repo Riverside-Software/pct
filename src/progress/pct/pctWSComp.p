@@ -97,7 +97,7 @@ ASSIGN cOptions = cOptions + (IF cOptions EQ '':U THEN '':U ELSE ',':U) + (IF cD
 ASSIGN cOptions = cOptions + (IF cOptions EQ '':U THEN '':U ELSE ',':U) + (IF cWebObj THEN 'web-object':U ELSE 'include':U).
 ASSIGN cOptions = cOptions + (IF cOptions EQ '':U THEN '':U ELSE ',':U) + (IF cKeepMCT THEN 'keep-meta-content-type':U ELSE '':U).
 
-{src/web/method/cgidefs.i NEW}
+{web/method/cgidefs.i NEW}
 
 /* Parsing file list to compile */
 INPUT STREAM sFileset FROM VALUE(Filesets).
@@ -118,7 +118,7 @@ REPEAT:
             ASSIGN ProcTS = getTimeStampDF(CurrentFS, cLine).
             Recompile = (ProcTS GT RCodeTS).
         END.
-	    /* Selective compile */
+        /* Selective compile */
         IF Recompile THEN DO:
             RUN PCTWSComp(CurrentFS, cLine, OutputDir, RCodeName, cOptions, OUTPUT lComp).
             IF (lComp) THEN DO:

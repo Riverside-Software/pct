@@ -113,10 +113,6 @@ public abstract class PCT extends Task {
             this.pp = new ProgressV102B();
         else if (version.compareTo(new DLCVersion(10, 0, "A")) >= 0)
             this.pp = new ProgressV10();
-        else if (version.compareTo(new DLCVersion(9, 0, "A")) >= 0)
-            this.pp = new ProgressV9();
-        else if (version.compareTo(new DLCVersion(8, 0, "A")) >= 0)
-            this.pp = new ProgressV8();
         else
             throw new BuildException("Invalid Progress version : " + version.toString());
         log("Using object : " + pp.getClass().getName(), Project.MSG_VERBOSE);
