@@ -75,8 +75,6 @@
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="lib/ant.jar" />
-    <pathelement location="lib/parser.jar" />
-    <pathelement location="lib/oe_common_services.jar" />
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
@@ -273,11 +271,11 @@
       <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
+        <include name="eu/rssw/rcode/jaxb.index" />
       </fileset>
    	  <zipfileset src="lib/gson-2.2.4.jar" />
       <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
-      <zipfileset src="lib/parser.jar" includes="eu/rssw/rcode/*.class,**/jaxb.index" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
@@ -347,11 +345,7 @@
   <target name="dist" depends="srcdist,jar,testdist" />
 
   <target name="clean" description="Nettoyage">
-    <delete dir="${build-java}" />
-    <delete dir="${build-test}" />
-    <delete dir="${build-v10}" />
-    <delete dir="${build-v10-64}" />
-    <delete dir="${build-v11}" />
+    <delete dir="${build}" />
     <delete dir="${dist}" />
     <delete dir="${doc}" />
     <delete>

@@ -88,7 +88,8 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
 
         // Destination directory must exist

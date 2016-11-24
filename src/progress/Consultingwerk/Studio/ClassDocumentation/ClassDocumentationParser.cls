@@ -130,7 +130,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
             WHEN "constrComment":U THEN 
                 ASSIGN eConstructor.ConstructorComment = lcCharacterData
                        lExpectingCharacter             = FALSE.  
-            WHEN "comment":U THEN 
+            WHEN "methodComment":U THEN
                 ASSIGN eMethod.MethodComment = lcCharacterData
                        lExpectingCharacter             = FALSE.  
             WHEN "propertyComment":U THEN 
@@ -138,6 +138,9 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lExpectingCharacter       = FALSE.  
             WHEN "eventComment":U THEN 
                 ASSIGN eEvent.EventComment = lcCharacterData
+                       lExpectingCharacter = FALSE.  
+            WHEN "enumComment":U THEN 
+                ASSIGN eEnumMember.MemberComment = lcCharacterData
                        lExpectingCharacter = FALSE.  
         END CASE . 
 
@@ -178,7 +181,8 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lExpectingCharacter  = TRUE .     
             END.
             WHEN "classComment":U OR WHEN "constrComment":U OR 
-            WHEN "comment":U OR WHEN "propertyComment":U OR
+            WHEN "methodComment":U OR WHEN "propertyComment":U OR
+            WHEN "enumComment":U OR
             WHEN "eventComment":U THEN DO:
                 ASSIGN lExpectingCharacter = TRUE . 
             END.
@@ -233,8 +237,16 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        eUsing.Sequence = iUsingSequence .
                 
                 BufferHelper:ParseSaxAttributesToBuffer (BUFFER eUsing:HANDLE, phAttributes) .
-            END.                     
-                                                    
+            END.
+            WHEN "member":U THEN DO:
+                CREATE eEnumMember.
+                ASSIGN eEnumMember.GUID     = GUID
+                       eEnumMember.UnitGUID = eUnit.GUID
+                       lcCharacterData      = "":U .
+
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eEnumMember:HANDLE, phAttributes) .
+            END.
+
             OTHERWISE
                 UNDO, THROW NEW AppError (SUBSTITUTE ("Unrecognized element ~"&1~".":U, pcName), 0) .
         END CASE . 

@@ -5,7 +5,7 @@ using Progress.Lang.*.
 /* Class comment
  * <a href="test">Some text in an anchor</a>*/
  
-class eu.rssw.pct.X:
+class eu.rssw.pct.X serializable use-widget-pool:
   /* Public property foo1 */
   define public property foo1 as char get. set.
   /* Public property foo2 */

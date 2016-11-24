@@ -40,7 +40,8 @@
 { Consultingwerk/Studio/ClassDocumentation/eProperty.i }
 { Consultingwerk/Studio/ClassDocumentation/eEvent.i }
 { Consultingwerk/Studio/ClassDocumentation/eUsing.i }
+{ Consultingwerk/Studio/ClassDocumentation/eEnumMember.i }
 
 DEFINE {&ACCESS} DATASET dsClassDocumentation {&REFERENCE-ONLY} FOR 
-    eUnit, eInterfaces, eConstructor, eMethod, eParameter, eProperty, eEvent, eUsing
+    eUnit, eInterfaces, eConstructor, eMethod, eParameter, eProperty, eEvent, eUsing, eEnumMember
     .    

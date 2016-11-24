@@ -30,13 +30,16 @@
 /* ***************************  Definitions  ************************** */
 
 DEFINE {&ACCESS} TEMP-TABLE eUnit NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eUnitBefore
-    FIELD GUID         AS CHARACTER 
-    FIELD PackageName  AS CHARACTER 
-    FIELD ClassName    AS CHARACTER 
-    FIELD Inherits     AS CHARACTER
-    FIELD IsAbstract   AS LOGICAL INIT FALSE 
-    FIELD IsFinal      AS LOGICAL INIT FALSE 
-    FIELD IsInterface  AS LOGICAL INIT FALSE 
-    FIELD ClassComment AS CLOB COLUMN-CODEPAGE "UTF-8":U
+    FIELD GUID           AS CHARACTER 
+    FIELD PackageName    AS CHARACTER 
+    FIELD ClassName      AS CHARACTER 
+    FIELD Inherits       AS CHARACTER
+    FIELD IsAbstract     AS LOGICAL INIT FALSE 
+    FIELD IsFinal        AS LOGICAL INIT FALSE 
+    FIELD IsInterface    AS LOGICAL INIT FALSE 
+    FIELD IsEnum         AS LOGICAL INIT FALSE
+    FIELD IsSerializable AS LOGICAL INIT FALSE
+    FIELD UseWidgetPool  AS LOGICAL INIT FALSE
+    FIELD ClassComment   AS CLOB COLUMN-CODEPAGE "UTF-8":U
     INDEX GUID IS UNIQUE PRIMARY GUID
     .
