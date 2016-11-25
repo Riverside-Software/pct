@@ -1,4 +1,5 @@
 stage 'Class documentation build'
+echo 'test'
 node ('EC2-EU1B') {
   gitClean()
   checkout scm
