@@ -674,7 +674,7 @@ public class PCTCompileTest extends BuildFileTestNg {
          * Bug in 11.3 with standard XREF, but not on different versions. To be investigated
          * (later...)
          */
-        // assertTrue(mod1 == f1.lastModified());
+        assertTrue(f1.lastModified() > mod1);
         /* But fixed with XML-XREF */
         assertTrue(f2.lastModified() > mod2);
     }
