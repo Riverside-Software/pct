@@ -616,12 +616,10 @@ PROCEDURE importXref PRIVATE.
     CREATE ttXref.
     IMPORT STREAM sXREF ttXref.
 
-    /* Sorry, this is crude... */
+    /* Import full line in order to reposition the first stream if line is longer than 2000 characters */
     IMPORT STREAM sXREF2 UNFORMATTED cTmp.
-    /* GC Bug #47 - Lines longer than 2000 characters are truncated. This IMPORT is there to synchronize both streams.
-    IF LENGTH (cTmp) >= 2000 THEN
-      IMPORT STREAM sXREF UNFORMATTED cTmp2. */
-
+    SEEK STREAM sXREF TO SEEK(sXREF2).
+    /* Read content of xObjID field from full line */
     ASSIGN cTmp2 = ttXref.xLineNumber + ' ' + ttXref.xRefType + ' '.
     ASSIGN ttXref.xObjID = SUBSTRING(cTmp, INDEX(cTmp, cTmp2) + LENGTH(cTmp2)).
 
