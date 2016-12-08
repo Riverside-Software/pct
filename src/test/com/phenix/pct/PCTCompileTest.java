@@ -552,10 +552,10 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(line.startsWith("\"sports2000.Item\""));
         File inc = new File(BASEDIR + "test35/build/.pct/test.p.inc");
         assertTrue(inc.exists());
-        // TODO Problem is still there, test case kept for future reference
-        // LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
-        // Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
-        // assertTrue(lineProcessor.getResult());
+
+        LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
+        Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
+        assertTrue(lineProcessor.getResult());
 
         File crc2 = new File(BASEDIR + "test35/build2/.pct/test.p.crc");
         assertTrue(crc2.exists());
@@ -670,12 +670,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         long mod2 = f2.lastModified();
 
         executeTarget("test2");
-        /*
-         * Bug in 11.3 with standard XREF, but not on different versions. To be investigated
-         * (later...)
-         */
         assertTrue(f1.lastModified() > mod1);
-        /* But fixed with XML-XREF */
         assertTrue(f2.lastModified() > mod2);
     }
 
