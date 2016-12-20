@@ -249,7 +249,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(false /* FIXME noCompile */)).append(';');
             sb.append(Boolean.toString(compAttrs.isKeepXref())).append(';');
             sb.append(compAttrs.getLanguages() == null ? "" : compAttrs.getLanguages()).append(';');
-            sb.append(Integer.toString(compAttrs.getGrowthFactor() > 0 ? compAttrs.getGrowthFactor() : 100)).append(';');
+            sb.append(Integer.toString(compAttrs.getGrowthFactor() > 0 ? compAttrs.getGrowthFactor() : -1)).append(';');
             sb.append(Boolean.toString(compAttrs.isMultiCompile())).append(';');
             sb.append(Boolean.toString(compAttrs.isStreamIO())).append(';');
             sb.append(Boolean.toString(compAttrs.isV6Frame())).append(';');
