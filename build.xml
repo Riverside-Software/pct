@@ -13,7 +13,8 @@
     </and>
   </condition>
 
-  <property name="env.BUILD_TAG" value="LocalBuild" />
+  <property name="pct.release" value="207.pre" />
+  <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
@@ -108,7 +109,8 @@
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
 
-    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${env.BUILD_TAG}</echo>
+    <echo message="Version tag : ${pct.version.string}" />
+    <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version.string}</echo>
   </target>
 
   <target name="init-properties" description="Initialize properties" unless="${skip.properties}">
