@@ -1,7 +1,7 @@
-"G1" "String1" "String1-FR" "D" no "String1" "String1-FR"
-"G1" "String2" "String2-FR" "D" no "String2" "String2-FR"
-"G2" "String1" "String1-DE" "D" no "String1" "String1-DE"
-"G2" "String2" "String2-DE" "D" no "String2" "String2-DE"
+"G1" "String1" "FR1-FR1-FR1" "D" no "String1" "FR1-FR1-FR1"
+"G1" "String2" "FR2-FR2-FR2" "D" no "String2" "FR2-FR2-FR2"
+"G2" "String1" "DE1-DE1-DE1" "D" no "String1" "DE1-DE1-DE1"
+"G2" "String2" "DE2-DE2-DE2" "D" no "String2" "DE2-DE2-DE2"
 .
 PSC
 filename=XL_GlossDet

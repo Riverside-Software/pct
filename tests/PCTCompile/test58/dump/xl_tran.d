@@ -1,7 +1,7 @@
-6 6 "French" "String1-FR" 2457695,39192
-6 6 "German" "String1-DE" 2457695,3922
-7 7 "French" "String2-FR" 2457695,39203
-7 7 "German" "String2-DE" 2457695,39225
+6 6 "French" "FR1-FR1-FR1" 2457695,39192
+6 6 "German" "DE1-DE1-DE1" 2457695,3922
+7 7 "French" "FR2-FR2-FR2" 2457695,39203
+7 7 "German" "DE2-DE2-DE2" 2457695,39225
 .
 PSC
 filename=XL_translation
