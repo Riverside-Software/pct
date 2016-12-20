@@ -14,7 +14,7 @@
   </condition>
 
   <property name="pct.release" value="207.pre" />
-  <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${env.GIT_COMMIT}" />
+  <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
   <property name="src.java" location="src/java" />
