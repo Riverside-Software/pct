@@ -41,7 +41,7 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('NOCOMPILE', IF ENTRY(7, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('LANGUAGES', IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';')).
-    RUN setOption IN hComp ('GROWTH', IF ENTRY(10, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('GROWTH', ENTRY(10, ipPrm, ';')).
     RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('STREAM-IO', IF ENTRY(12, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('V6FRAME', IF ENTRY(13, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
