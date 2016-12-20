@@ -1,1 +1,3 @@
 MESSAGE "String2".
+MESSAGE LENGTH("String2").
+

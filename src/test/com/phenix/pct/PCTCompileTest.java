@@ -924,8 +924,10 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test58/build/file1.r").exists());
         assertTrue(new File(BASEDIR + "test58/build/dir1/file2.r").exists());
         assertTrue(new File(BASEDIR + "test58/build/dir1/file3.r").exists());
-        expectLog("test-fr", "String1-FRString2-FR");
-        expectLog("test-de", "String1-DEString2-DE");
+        expectLog("test-fr-1", "String1-FR10String2-FR10");
+        expectLog("test-de-1", "String1-DE10String2-DE10");
+        expectLog("test-fr-2", "String1-FR14String2-FR14");
+        expectLog("test-de-2", "String1-DE14String2-DE14");
     }
 
 }

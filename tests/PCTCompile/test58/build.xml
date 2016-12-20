@@ -4,7 +4,8 @@
 
   <target name="clean">
     <delete dir="db" />
-    <delete dir="build" />
+    <delete dir="build1" />
+    <delete dir="build2" />
   </target>
 
   <target name="db">
@@ -16,8 +17,18 @@
   </target>
 
   <target name="build">
-    <mkdir dir="build" />
-    <PCTCompile destDir="build" dlcHome="${DLC}" languages="French,German" textGrowth="200" relativePaths="true">
+    <mkdir dir="build1" />
+    <mkdir dir="build2" />
+    <PCTCompile destDir="build1" dlcHome="${DLC}" languages="French,German" relativePaths="true">
+      <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
+      <fileset dir="src" includes="**/*.p" />
+      <fileset dir="src2/subdir" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+        <pathelement location="src2/subdir" />
+      </propath>
+    </PCTCompile>
+    <PCTCompile destDir="build2" dlcHome="${DLC}" languages="French,German" textGrowth="50" relativePaths="true">
       <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
       <fileset dir="src" includes="**/*.p" />
       <fileset dir="src2/subdir" includes="**/*.p" />
@@ -28,20 +39,38 @@
     </PCTCompile>
   </target>
 
-  <target name="test-fr">
+  <target name="test-fr-1">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <Option name="-lng" value="French" />
       <propath>
-        <pathelement location="build" />
+        <pathelement location="build1" />
       </propath>
     </PCTRun>
   </target>
 
-  <target name="test-de">
+  <target name="test-fr-2">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <Option name="-lng" value="French" />
+      <propath>
+        <pathelement location="build2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test-de-1">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <Option name="-lng" value="German" />
       <propath>
-        <pathelement location="build" />
+        <pathelement location="build1" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test-de-2">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <Option name="-lng" value="German" />
+      <propath>
+        <pathelement location="build2" />
       </propath>
     </PCTRun>
   </target>
