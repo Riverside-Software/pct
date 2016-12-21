@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <project name="PCT" default="dist">
 
   <property environment="env" />
@@ -34,8 +33,8 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.5" />
-  <property name="javac.target" value="1.5" />
+  <property name="javac.source" value="1.6" />
+  <property name="javac.target" value="1.6" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v10" dir="${src.progress}">
@@ -296,7 +295,7 @@
   </target>
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
-    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="1.5" target="1.5" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <classpath refid="pct.test.compil" />

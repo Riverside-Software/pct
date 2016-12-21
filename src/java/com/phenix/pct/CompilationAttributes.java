@@ -138,11 +138,6 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     @Override
-    public void setNoXref(boolean noXref) {
-        this.forceCompile = noXref;
-    }
-
-    @Override
     public void setNoParse(boolean noParse) {
         this.noParse = noParse;
     }

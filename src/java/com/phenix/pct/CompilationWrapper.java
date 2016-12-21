@@ -176,11 +176,6 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setNoXref(boolean noXref) {
-        compAttributes.setNoXref(noXref);
-    }
-
-    @Override
     public void setNoParse(boolean noParse) {
         compAttributes.setNoParse(noParse);
     }

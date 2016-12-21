@@ -93,13 +93,6 @@ public interface ICompilationAttributes {
     void setFlattenDebugListing(boolean flatten);
 
     /**
-     * Don't use XREF (and so compile everything). Removed since 0.5, use forceCompile
-     * @deprecated
-     */
-    @Deprecated
-    void setNoXref(boolean noXref);
-
-    /**
      * Disables completely XREF generation and parsing. This means there's no generated file in .pct
      * subdirectory.
      */
