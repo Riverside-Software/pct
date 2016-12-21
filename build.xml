@@ -285,10 +285,10 @@
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
           <attribute name="Specification-Title" value="PCT" />
-          <attribute name="Specification-Version" value="${pct.version}" />
+          <attribute name="Specification-Version" value="${pct.release}" />
           <attribute name="Specification-Vendor" value="Riverside Software" />
           <attribute name="Implementation-Title" value="PCT" />
-          <attribute name="Implementation-Version" value="Build ${env.BUILD_TAG}" />
+          <attribute name="Implementation-Version" value="${GIT_COMMIT}" />
           <attribute name="Implementation-Vendor" value="Riverside Software" />
         </section>
       </manifest>
