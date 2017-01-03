@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" output="build/java" path="src/java"/>
 	<classpathentry kind="src" output="build/test" path="src/test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.3.1.jar" sourcepath="lib/testng-src.jar"/>

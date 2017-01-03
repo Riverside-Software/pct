@@ -33,8 +33,8 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.6" />
-  <property name="javac.target" value="1.6" />
+  <property name="javac.source" value="1.8" />
+  <property name="javac.target" value="1.8" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v10" dir="${src.progress}">
@@ -121,9 +121,6 @@
     <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
-      <classpath refid="pct.compil" />
-    </javac>
-    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="1.7" target="1.7" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="eu/rssw/pct/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
@@ -318,18 +315,6 @@
     <copy todir="testbox/ClassDocumentation/test3/src">
       <fileset dir="${src.progress}" includes="Consultingwerk/**/*" />
     </copy>
-  </target>
-  
-  <target name="javadoc" depends="build" description="API documentation creation">
-    <mkdir dir="${doc}" />
-    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
-      <packageset dir="${src.java}" />
-      <group title="PCT Core" packages="com.phenix.pct.*" />
-      <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
-      <link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-      <!-- Seems down -->
-      <!--<link href="http://nagoya.apache.org/gump/javadoc/ant/build/javadocs/"/>-->
-    </javadoc>
   </target>
 
   <target name="srcdist" description="Generates source zip/tarball archive">
