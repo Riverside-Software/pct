@@ -234,4 +234,10 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertTrue(f.length() > 10);
     }
 
+    @Test(groups = { "v10" })
+    public void test15() {
+      // Empty schema, we shouldn't fail
+      configureProject("PCTLoadSchema/test15/build.xml");
+      executeTarget("base");
+    }
  }
