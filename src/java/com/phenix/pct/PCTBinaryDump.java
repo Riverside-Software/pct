@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class PCTBinaryDump extends PCT {
     private List<PCTConnection> dbConnList = null;
-    private List<Pattern> patterns = new ArrayList<Pattern>();
+    private List<Pattern> patterns = new ArrayList<>();
     private File dest = null;
     private Path propath = null;
 
@@ -105,7 +105,7 @@ public class PCTBinaryDump extends PCT {
 
     public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList<PCTConnection>();
+            this.dbConnList = new ArrayList<>();
         }
 
         this.dbConnList.add(dbConn);
@@ -113,7 +113,7 @@ public class PCTBinaryDump extends PCT {
 
     public void addConfiguredInclude(Pattern inc) {
         if (this.patterns == null) {
-            this.patterns = new ArrayList<Pattern>();
+            this.patterns = new ArrayList<>();
         }
         inc.setInclude(true);
         this.patterns.add(inc);
@@ -121,7 +121,7 @@ public class PCTBinaryDump extends PCT {
 
     public void addConfiguredExclude(Pattern exc) {
         if (this.patterns == null) {
-            this.patterns = new ArrayList<Pattern>();
+            this.patterns = new ArrayList<>();
         }
         exc.setInclude(false);
         this.patterns.add(exc);
@@ -137,7 +137,6 @@ public class PCTBinaryDump extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        BufferedReader reader = null;
 
         checkDlcHome();
         if (dbConnList == null) {
@@ -162,34 +161,23 @@ public class PCTBinaryDump extends PCT {
         }
 
         String s = null;
-        try {
-            reader = new BufferedReader(new FileReader(tblListFile));
+        try (FileReader fr = new FileReader(tblListFile);
+                BufferedReader reader = new BufferedReader(fr)) {
             while ((s = reader.readLine()) != null) {
                 ExecTask exec2 = dumpTask(s);
                 exec2.execute();
             }
             reader.close();
         } catch (IOException ioe) {
-            try {
-                reader.close();
-            } catch (IOException ioe2) {
-            }
             cleanup();
             throw new BuildException(Messages.getString("PCTBinaryDump.1")); //$NON-NLS-1$
-        } catch (BuildException be) {
-            try {
-                reader.close();
-            } catch (IOException ioe2) {
-            }
+        } finally {
             cleanup();
-            throw be;
         }
-
-        cleanup();
     }
 
     private ExecTask dumpTask(String table) throws BuildException {
-        File executable = null;
+        File executable;
         ExecTask exec = new ExecTask(this);
 
         if (getDLCMajorVersion() >= 10)
@@ -235,10 +223,10 @@ public class PCTBinaryDump extends PCT {
             exec.addDBConnection(dbc);
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(tblListFile.getAbsolutePath());
         for (Pattern p : patterns) {
-            StringBuffer sb2 = new StringBuffer();
+            StringBuilder sb2 = new StringBuilder();
             sb2.append('|');
             sb2.append((p.isInclude() ? 'I' : 'E'));
             sb2.append('$');

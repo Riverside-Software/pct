@@ -57,7 +57,7 @@ import eu.rssw.rcode.UsingType;
 public class ClassDocumentationVisitor extends ASTVisitor {
     private ClassCompilationUnit cu = new ClassCompilationUnit();
     private boolean firstTokenVisited = false;
-    private List<String> firstComments = new ArrayList<String>();
+    private List<String> firstComments = new ArrayList<>();
 
     public String getPackageName() {
         if (cu.packageName == null)

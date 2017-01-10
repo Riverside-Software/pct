@@ -44,7 +44,7 @@ public class PCTBgCompile extends PCTBgRun {
     private CompilationAttributes compAttrs;
     private Mapper mapperElement;
 
-    private SortedSet<CompilationUnit> units = new TreeSet<CompilationUnit>();
+    private SortedSet<CompilationUnit> units = new TreeSet<>();
 
     private int compOk = 0;
     private int compNotOk = 0;
@@ -159,13 +159,6 @@ public class PCTBgCompile extends PCTBgRun {
                 units.add(unit);
                 }
             }
-//            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-//                CompilationUnit unit = new CompilationUnit();
-//                unit.fsRootDir = fs.getDir(getProject());
-//                unit.fsFile = str;
-//                unit.targetFile = getMapper() == null ? null : getMapper().mapFileName(str)[0];
-//                units.add(unit);
-//            }
         }
 
     }

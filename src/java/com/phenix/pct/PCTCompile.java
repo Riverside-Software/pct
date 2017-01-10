@@ -96,9 +96,9 @@ public class PCTCompile extends PCTRun {
      */
     private void writeFileList() throws BuildException {
         // Map to quickly retrieve files associated with a base dir
-        Map<String, List<String>> files = new HashMap<String, List<String>>();
+        Map<String, List<String>> files = new HashMap<>();
         // And a list to keep order
-        List<String> orderedBaseDirs = new ArrayList<String>();
+        List<String> orderedBaseDirs = new ArrayList<>();
 
         for (ResourceCollection rc : compAttrs.getResources()) {
             Iterator<Resource> iter = rc.iterator();
@@ -125,7 +125,7 @@ public class PCTCompile extends PCTRun {
                 // And stored in this set
                 List<String> set = files.get(resBaseDir);
                 if (set == null) {
-                    set = new ArrayList<String>();
+                    set = new ArrayList<>();
                     files.put(resBaseDir, set);
                     orderedBaseDirs.add(resBaseDir);
                 }
@@ -139,11 +139,9 @@ public class PCTCompile extends PCTRun {
         }
 
         // Then files list is written to temp file
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fsList),
-                    getCharset()));
-
+        try (FileOutputStream fos = new FileOutputStream(fsList);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, getCharset());
+                BufferedWriter bw = new BufferedWriter(osw)) {
             for (String baseDir : orderedBaseDirs) {
                 bw.write("FILESET=" + baseDir);
                 bw.newLine();
@@ -155,23 +153,14 @@ public class PCTCompile extends PCTRun {
             }
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException uncaught) {
-
-                }
-            }
-        }
+        } 
     }
 
     /**
      * Generates parameter file for pct/compile.p
      */
     private void writeParams() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
+        try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
             bw.write("OUTPUTDIR=" + compAttrs.getDestDir().getAbsolutePath()); //$NON-NLS-1$
@@ -266,8 +255,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FILELIST=" + compAttrs.getFileList());
             bw.newLine();
-
-            bw.close();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
         }

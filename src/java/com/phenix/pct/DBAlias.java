@@ -16,7 +16,6 @@
  */
 package com.phenix.pct;
 
-
 /**
  * Alias object on PCTRun
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>

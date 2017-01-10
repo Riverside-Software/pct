@@ -47,7 +47,7 @@ public class PCTCreateBase extends PCT {
     private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
     private String schema = null;
-    private List<ResourceCollection> schemaResColl = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> schemaResColl = new ArrayList<>();
     private Path propath = null;
     private int[] blocks = {0, 1024, 2048, 0, 4096, 0, 0, 0, 8192};
     private int wordRule = -1;
@@ -300,7 +300,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addOracleHolder(OracleHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList<SchemaHolder>();
+            this.holders = new ArrayList<>();
         }
         this.holders.add(holder);
     }
@@ -312,7 +312,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addMSSHolder(MSSHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList<SchemaHolder>();
+            this.holders = new ArrayList<>();
         }
         this.holders.add(holder);
     }
@@ -324,7 +324,7 @@ public class PCTCreateBase extends PCT {
      */
     public void addODBCHolder(ODBCHolder holder) {
         if (this.holders == null) {
-            this.holders = new ArrayList<SchemaHolder>();
+            this.holders = new ArrayList<>();
         }
         this.holders.add(holder);
     }
@@ -335,7 +335,7 @@ public class PCTCreateBase extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        ExecTask exec = null;
+        ExecTask exec;
 
         checkDlcHome();
 
@@ -350,7 +350,7 @@ public class PCTCreateBase extends PCT {
         }
 
         // If schema holders defined, then no Progress schema can be loaded
-        if ((holders != null) && (holders.size() > 0)) {
+        if ((holders != null) && (!holders.isEmpty())) {
             if ((schema != null) && (schema.trim().length() > 0)) {
                 throw new BuildException("On peut pas !!!");
             }
@@ -475,7 +475,7 @@ public class PCTCreateBase extends PCT {
             }
         }
 
-        if (schemaResColl.size() > 0) {
+        if (!schemaResColl.isEmpty()) {
             PCTLoadSchema pls = new PCTLoadSchema();
             pls.bindToOwner(this);
             pls.setDlcHome(getDlcHome());
@@ -546,7 +546,7 @@ public class PCTCreateBase extends PCT {
     private ExecTask initCmdLine() {
         ExecTask exec = new ExecTask(this);
 
-        File srcDB = null;
+        File srcDB;
         if (sourceDb != null) {
             srcDB = sourceDb;
         } else {

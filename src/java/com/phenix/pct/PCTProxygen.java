@@ -45,7 +45,7 @@ public class PCTProxygen extends PCT {
     private static final String PROXYGEN_CLASS = "com.progress.open4gl.proxygen.Batch";
 
     private File srcFile = null;
-    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> resources = new ArrayList<>();
     private boolean keepFiles = false;
     private File workingDirectory = null;
 

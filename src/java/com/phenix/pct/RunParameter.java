@@ -26,12 +26,6 @@ public class RunParameter {
     private String name = null;
     private String value = null;
 
-    /**
-     * Default constructor
-     */
-    public RunParameter() {
-    }
-
     public RunParameter(String name, String value) {
         this.name = name;
         this.value = value;

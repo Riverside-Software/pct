@@ -108,7 +108,8 @@ public class Prolib {
         PLReader lib1 = new PLReader(compare.libs.get(0));
         PLReader lib2 = new PLReader(compare.libs.get(1));
 
-        List<FileEntry> list1 = lib1.getFileList(), list2 = lib2.getFileList();
+        List<FileEntry> list1 = lib1.getFileList();
+        List<FileEntry> list2 = lib2.getFileList();
         Collections.sort(list1);
         Collections.sort(list2);
 

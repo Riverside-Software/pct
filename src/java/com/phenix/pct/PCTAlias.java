@@ -16,7 +16,6 @@
  */
 package com.phenix.pct;
 
-
 /**
  * Alias object for PCTConnection
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
@@ -24,8 +23,6 @@ package com.phenix.pct;
 public class PCTAlias {
     private String name = null;
     private boolean noError = false;
-
-    // TODO Issue a warning if two identical aliases are defined for database connections
 
     /**
      * Alias name

@@ -77,7 +77,7 @@ public class GenericCoverage extends Task {
                 File resourceAsFile = new File(profilerFiles.getDir(getProject()), str);
                 session.mergeWith(ProfilerUtils.getProfilerSession(resourceAsFile).getCoverage());
             }
-            Collection<File> path = new ArrayList<File>();
+            Collection<File> path = new ArrayList<>();
             if (propath != null) {
                 for (String str : propath.list()) {
                     path.add(getProject().resolveFile(str));

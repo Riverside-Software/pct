@@ -74,13 +74,9 @@ public class ProUnit extends PCTRun {
         this.compatibility = compatibility;
     }
 
-    public ProUnit() {
-        super();
-    }
-
     public void execute() throws BuildException {
         // This parameter is mandatory (to get a return-value)
-        StringBuffer sb = new StringBuffer("-runningAnt=true");
+        StringBuilder sb = new StringBuilder("-runningAnt=true");
         String proc = "startProUnitBatch.p";
 
         if ((project == null) || !project.isFile()) {

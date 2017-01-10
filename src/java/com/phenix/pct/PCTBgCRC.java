@@ -76,22 +76,14 @@ public class PCTBgCRC extends PCTBgRun {
         }
 
         public void handleResponse(String command, String parameter, boolean err, String customResponse, List<Message> returnValues) {
-            BufferedWriter bw = null;
-
-            try {
-                bw = new BufferedWriter(new FileWriter(getDestFile()));
+            try (FileWriter fw = new FileWriter(getDestFile());
+                    BufferedWriter bw = new BufferedWriter(fw)) {
                 for (Message msg : returnValues) {
                     bw.write(msg.getMsg());
                     bw.newLine();
                 }
             } catch (IOException caught) {
                 setBuildException(caught);
-            } finally {
-                try {
-                    bw.close();
-                } catch (IOException uncaught) {
-
-                }
             }
         }
     }

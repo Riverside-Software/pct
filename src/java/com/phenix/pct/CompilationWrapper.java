@@ -36,7 +36,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         PCT pctTask;
         // Handle pct:compile_ext
         if ("pctcompileext".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())
@@ -86,7 +86,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
      * @return a mapper to be configured.
      * @exception BuildException if more than one mapper is defined.
      */
-    public Mapper createMapper() throws BuildException {
+    public Mapper createMapper() {
         if (mapperElement != null) {
             throw new BuildException("Cannot define more than one mapper", getLocation());
         }

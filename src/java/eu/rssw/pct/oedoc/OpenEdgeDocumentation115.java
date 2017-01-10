@@ -50,7 +50,7 @@ import com.phenix.pct.PCT;
 public class OpenEdgeDocumentation115 extends PCT {
     private File destDir = null;
     private String encoding = null;
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
 
     public OpenEdgeDocumentation115() {
@@ -65,15 +65,6 @@ public class OpenEdgeDocumentation115 extends PCT {
      */
     public void addFileset(FileSet set) {
         filesets.add(set);
-    }
-
-    /**
-     * Build dir 
-     * 
-     * @param dir Directory
-     */
-    public void setBuildDir(File dir) {
-        
     }
 
     /**
@@ -129,7 +120,7 @@ public class OpenEdgeDocumentation115 extends PCT {
             throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
         }
         // There must be at least one fileset
-        if (this.filesets.size() == 0) {
+        if (filesets.isEmpty()) {
             throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.1"));
         }
         IPropath pp = new Propath(new org.eclipse.core.runtime.Path(getProject().getBaseDir().getAbsolutePath()), propath.list());
@@ -170,9 +161,7 @@ public class OpenEdgeDocumentation115 extends PCT {
                     }
                 }
             }
-        } catch (IOException caught) {
-            throw new BuildException(caught);
-        } catch (JAXBException caught) {
+        } catch (IOException | JAXBException caught) {
             throw new BuildException(caught);
         }
     }

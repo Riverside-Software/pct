@@ -20,7 +20,6 @@ import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
-
 /**
  * Dumps data from database
  *
@@ -79,8 +78,8 @@ public class PCTDumpData extends PCTRun {
         }
 
         addParameter(new RunParameter("destDir", destDir.toString())); //$NON-NLS-1$
-        addParameter(new RunParameter("tables", (tables == null ? "ALL" : tables))); //$NON-NLS-1$ $NON-NLS-2$
-        addParameter(new RunParameter("encoding", (encoding == null ? "" : encoding))); //$NON-NLS-1$ $NON-NLS-2$
+        addParameter(new RunParameter("tables", tables == null ? "ALL" : tables)); //$NON-NLS-1$ $NON-NLS-2$
+        addParameter(new RunParameter("encoding", encoding == null ? "" : encoding)); //$NON-NLS-1$ $NON-NLS-2$
         setProcedure("pct/pctDumpData.p"); //$NON-NLS-1$
 
         super.execute();

@@ -33,7 +33,6 @@ import org.apache.tools.ant.types.FileSet;
 import org.xml.sax.InputSource;
 
 import com.google.gson.stream.JsonWriter;
-import com.phenix.pct.PCTRun;
 
 /**
  * Ant task for ABLUnit tests
@@ -43,21 +42,23 @@ import com.phenix.pct.PCTRun;
 public class ABLUnit extends PCTRun {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    private Collection<FileSet> testFilesets = null;
+    private Collection<FileSet> testFilesets;
     private File destDir;
     private String format = "xml";
     private String[] testCase;
-    private boolean writeLog = false;
-    private boolean haltOnFailure = false;
+    private boolean writeLog;
+    private boolean haltOnFailure;
 
     // Internal use
     private File json = null;
 
     public ABLUnit() {
         super();
-
-        json = new File(System.getProperty("java.io.tmpdir"), "ablunit" + PCT.nextRandomInt()
-                + ".json");
+        try {
+            json = File.createTempFile("ablunit", ".json");
+        } catch (IOException caught) {
+            throw new BuildException(caught);
+        }
     }
 
     /**
@@ -103,15 +104,13 @@ public class ABLUnit extends PCTRun {
      */
     public void addConfiguredFileset(FileSet set) {
         if (this.testFilesets == null) {
-            testFilesets = new ArrayList<FileSet>();
+            testFilesets = new ArrayList<>();
         }
         testFilesets.add(set);
     }
 
     private void writeJsonConfigFile() throws IOException {
-        JsonWriter writer = null;
-        try {
-            writer = new JsonWriter(new FileWriter(json));
+        try (JsonWriter writer = new JsonWriter(new FileWriter(json))) {
             log("JSON file created : " + json, Project.MSG_VERBOSE);
 
             writer.beginObject();
@@ -140,9 +139,7 @@ public class ABLUnit extends PCTRun {
                     log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
                     writer.beginObject().name("test").value(f.toString());
                     // If we want to execute a specific test
-                    // XXX Support only one case for now, but keep possibility to have multiple
-                    // cases
-                    // XXX Why ?
+                    // XXX Support only one case for now, but keep possibility to have multiple cases. Why ?
                     if (testCase != null) {
                         writer.name("cases").beginArray();
                         for (String cs : testCase) {
@@ -157,18 +154,10 @@ public class ABLUnit extends PCTRun {
 
             // Root object
             writer.endObject();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException uncaught) {
-                }
-            }
-
-        }
+        } 
     }
 
-    public void execute() throws BuildException {
+    public void execute() {
         // Validation
         if (destDir != null && !destDir.isDirectory())
             throw new BuildException("Invalid destDir (" + destDir + ")");
@@ -225,11 +214,9 @@ public class ABLUnit extends PCTRun {
         super.cleanup();
 
         // Clean JSON File
-        if (!getDebugPCT()) {
-            if (json.exists() && !json.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTRun.5"),
-                        json.getAbsolutePath()), Project.MSG_INFO);
-            }
+        if (!getDebugPCT() && json.exists() && !json.delete()) {
+            log(MessageFormat.format(Messages.getString("PCTRun.5"), json.getAbsolutePath()),
+                    Project.MSG_INFO);
         }
     }
 }

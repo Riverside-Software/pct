@@ -868,7 +868,7 @@ public class PCTRun extends PCT implements IRunAttributes {
         }
 
         int slen = str.length();
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
 
         for (int i = 0; i < slen; i++) {
             char c = str.charAt(i);
@@ -876,17 +876,11 @@ public class PCTRun extends PCT implements IRunAttributes {
             switch (c) {
                 case '\u007E' : // TILDE converted to TILDE TILDE
                     res.append("\u007E\u007E"); //$NON-NLS-1$
-
                     break;
 
                 case '\u0022' : // QUOTATION MARK converted to TILDE APOSTROPHE
+                case '\''     : // APOSTROPHE converted to TILDE APOSTROPHE
                     res.append("\u007E\u0027"); //$NON-NLS-1$
-
-                    break;
-
-                case '\'' : // APOSTROPHE converted to TILDE APOSTROPHE
-                    res.append("\u007E\u0027"); //$NON-NLS-1$
-
                     break;
 
                 default :

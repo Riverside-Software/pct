@@ -30,10 +30,10 @@ import org.apache.tools.ant.types.FileSet;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class OpenEdgeFileSet {
-    private final static String SUBDIRS = "/**";
+    private static final String SUBDIRS = "/**";
 
     private File baseDir = null;
-    private List<Module> moduleList = new ArrayList<Module>();
+    private List<Module> moduleList = new ArrayList<>();
     private boolean includeSubDirs = true;
     private String modules = null;
     private String excludes = null;
@@ -63,7 +63,7 @@ public class OpenEdgeFileSet {
         fs.setProject(project);
         fs.setDir(baseDir);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (modules != null) {
             for (String str : modules.split(",")) {
                 if (sb.length() > 0) {
@@ -97,7 +97,7 @@ public class OpenEdgeFileSet {
         fs.setProject(project);
         fs.setDir(baseDir);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String str : modules.split(",")) {
             if (sb.length() > 0) {
                 sb.append(',');
