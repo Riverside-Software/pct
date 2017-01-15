@@ -40,7 +40,10 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
     if logger:loadException or logger:bailed then do:
       message substitute("Restoring &1 content from &2", this-object:tblName, this-object:bkupFile).
       if not logger:loadException then backupTable (input ?).
-      run pct/v11/restoreTableContent.p (this-object:tblName, this-object:bkupFile).
+      if (decimal(substring(replace(proversion(0), '.', session:numeric-decimal-point), 1, 4)) le 11.6) then
+        run pct/v11/restoreTableContent.p (this-object:tblName, this-object:bkupFile).
+      else
+        run pct/v11/restoreTableContent117.p (this-object:tblName, this-object:bkupFile).
     end.
 
   end method.
@@ -142,3 +145,4 @@ END method.
   end method.
 
 end class.
+

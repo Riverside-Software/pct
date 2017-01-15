@@ -63,10 +63,11 @@ public class PLFileSetTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"})
     public void test2() {
+        DLCVersion version = null;
         // Really crude, but we rely on prodict.pl in $DLC/tty
         // Number of files is different in every release
         try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if (version.getMajorVersion() != 11)
                 return;
         } catch (IOException e) {
@@ -79,7 +80,7 @@ public class PLFileSetTest extends BuildFileTestNg {
 
         executeTarget("test1");
         File f1 = new File("PLFileSet/test2/lib1/prodict");
-        assertEquals(f1.list().length, 38);
+        assertEquals(f1.list().length, version.getMinorVersion() >= 7 ? 40 : 38);
 
         executeTarget("test2");
         File f2 = new File("PLFileSet/test2/lib2/prodict");
