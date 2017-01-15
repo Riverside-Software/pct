@@ -222,4 +222,33 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     
     end method.
 
+    method public void AddCDCPolicies (pcPath as character, table-handle htbl):
+
+    end method.
+
+    method public void AddPolicyError (fname as character, pname as character, e as class Progress.Lang.Error):
+
+    end method.
+
+    method public void AddPolicyError (fname as character, pname as character, msg as character):
+
+    end method.
+
+    method public void EndPolicy (fname as character, pname as character):
+
+    end method.
+
+    method public void EndPolicy (fname as character, pname as character, numrows as int64):
+
+    end method.
+
+    method public logical SetPolicyBailed (fname as character, pname as character):
+
+    end method.
+
+    method public logical CountCDCRow (fname as character, pname as character):
+
+    end method.
+
 END CLASS.
+
