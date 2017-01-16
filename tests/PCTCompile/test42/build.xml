@@ -22,7 +22,7 @@
   </target>
 
   <target name="test2">
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <touch file="src/include2.i" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true">
       <fileset dir="src" includes="test.p" />
@@ -41,3 +41,4 @@
   </target>
 
 </project>
+

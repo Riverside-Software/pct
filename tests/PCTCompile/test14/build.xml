@@ -24,7 +24,7 @@
   </target>
 
   <target name="test2">
-    <sleep seconds="2" />
+    <sleep milliseconds="1000" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />

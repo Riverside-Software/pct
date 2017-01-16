@@ -17,7 +17,7 @@
   </target>
 
   <target name="test2">
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">
         <include name="**/*.p" />
