@@ -14,7 +14,7 @@
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <!-- Method definition update -->
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <copy file="src/foo.cls2" tofile="src/foo.cls" />
     <copy file="src/rssw.cls2" tofile="src/rssw.cls" />
     <!-- Having 'build' in propath will fail, but works without build in propath -->
@@ -29,3 +29,4 @@
   </target>
 
 </project>
+

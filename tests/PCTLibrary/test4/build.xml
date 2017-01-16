@@ -13,7 +13,7 @@
 
   <target name="test2">
     <touch file="src/test" />
-    <sleep seconds="2" />
+    <sleep milliseconds="1000" />
     <PCTLibrary destFile="lib/test.pl" dlcHome="${DLC}">
       <fileset dir="src">
         <include name="test" />

@@ -12,7 +12,7 @@
     </PCTCompile>
   </target>
   <target name="test2">
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <touch file="src/test2.i" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src">

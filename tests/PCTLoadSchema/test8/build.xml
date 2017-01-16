@@ -12,7 +12,7 @@
   </target>
 
   <target name="base2">
-    <sleep seconds="2" />
+    <sleep milliseconds="1000" />
     <mkdir dir="db2" />
     <PCTCreateBase dbName="test" destDir="db2" dlcHome="${DLC}" />
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" commitWhenErrors="true">

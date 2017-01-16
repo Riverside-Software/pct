@@ -22,7 +22,7 @@
   </target>
 
   <target name="test2">
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" noparse="true">
       <fileset dir="src" includes="test.p" />
       <propath>

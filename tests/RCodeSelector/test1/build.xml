@@ -27,7 +27,7 @@
       <propath refid="std" />
     </PCTCompile>
 
-    <sleep seconds="2" />
+    <sleep milliseconds="1000" />
     <echo file="src/test.i" append="false" message="MESSAGE 'New Hello2'." />
     <mkdir dir="build3" />
     <PCTCompile destDir="build3" dlcHome="${DLC}" md5="true">

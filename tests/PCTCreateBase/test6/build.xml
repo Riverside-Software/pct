@@ -8,7 +8,7 @@
   </target>
 
   <target name="test2">
-    <sleep seconds="3" />
+    <sleep milliseconds="1000" />
     <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
   </target>
 
