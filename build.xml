@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="PCT" default="dist">
 
-  <property environment="env" />
+  <property enironment="env" />
 
   <!-- If DLC10, DLC10-64 and DLC11 are provided as properties, then skip loading properties from file -->
   <condition property="skip.properties" value="true">
