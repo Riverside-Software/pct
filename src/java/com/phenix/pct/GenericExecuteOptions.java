@@ -44,6 +44,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean compileUnderscore = false;
     private boolean batchMode = true;
     private boolean failOnError = true;
+    private boolean quickRequest = true;
     private String dateFormat = null;
     private String cpStream = null;
     private String cpInternal = null;
@@ -283,6 +284,11 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
+    public void setQuickRequest(boolean quickRequest) {
+        this.quickRequest = quickRequest;
+    }
+
+    @Override
     public void setAssemblies(File assemblies) {
         if ((assemblies != null) && !assemblies.exists()) {
             parent.getProject().log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
@@ -468,6 +474,10 @@ public class GenericExecuteOptions implements IRunAttributes {
         // Batch mode
         if (batchMode) {
             list.add("-b"); //$NON-NLS-1$
+        }
+
+        // Quick request
+        if (quickRequest) {
             list.add("-q"); //$NON-NLS-1$
         }
 
