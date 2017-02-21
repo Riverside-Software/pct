@@ -193,6 +193,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setQuickRequest(boolean quickRequest) {
+        options.setQuickRequest(quickRequest);
+    }
+
+    @Override
     public void addPropath(Path propath) {
         options.addPropath(propath);
     }
