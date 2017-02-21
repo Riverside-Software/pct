@@ -229,6 +229,7 @@ public class PCTRun extends PCT implements IRunAttributes {
         runAttributes.setFailOnError(failOnError);
     }
 
+    @Override
     public void setQuickRequest(boolean quickRequest) {
         runAttributes.setQuickRequest(quickRequest);
     }
