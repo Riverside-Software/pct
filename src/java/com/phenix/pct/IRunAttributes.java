@@ -191,6 +191,11 @@ public interface IRunAttributes {
     void setFailOnError(boolean failOnError);
 
     /**
+     * Quick request (-q parameter)
+     */
+    void setQuickRequest(boolean quickRequest);
+
+    /**
      * assemblies.xml file reference (-assemblies parameter) 
      */
     void setAssemblies(File assemblies);

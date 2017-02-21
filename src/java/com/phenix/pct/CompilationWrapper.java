@@ -457,6 +457,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setQuickRequest(boolean quickRequest) {
+        runAttributes.setQuickRequest(quickRequest);
+    }
+
+    @Override
     public void setAssemblies(File assemblies) {
         runAttributes.setAssemblies(assemblies);
     }
