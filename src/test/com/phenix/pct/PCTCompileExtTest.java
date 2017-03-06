@@ -897,18 +897,21 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test103() throws IOException {
         File inputDir = new File(BASEDIR + "test103/src");
+        File subDir1 = new File(inputDir, "dir1");
+        File subDir2 = new File(subDir1, "dir2");
+        subDir2.mkdirs();
         File srcFile = new File(BASEDIR + "test103/query-tester.w");
         for (int ii = 0; ii < 10; ii++) {
             for (int jj = 0; jj < 10; jj++) {
-                copy(srcFile, new File(inputDir, "test" + ii + jj + ".p"));
+                copy(srcFile, new File(subDir2, "test" + ii + jj + ".p"));
             }
         }
         configureProject(BASEDIR + "test103/build.xml");
         executeTarget("test");
 
-        File f = new File(BASEDIR + "test103/build/test00.r");
+        File f = new File(BASEDIR + "test103/build/dir1/dir2/test00.r");
         assertTrue(f.exists());
-        f = new File(BASEDIR + "test103/build/test99.r");
+        f = new File(BASEDIR + "test103/build/dir1/dir2/test99.r");
         assertTrue(f.exists());
     }
 
