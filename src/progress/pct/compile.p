@@ -499,6 +499,9 @@ PROCEDURE compileXref.
       END.
       OUTPUT STREAM sWarnings CLOSE.
     END.
+    ELSE DO:
+      OS-DELETE VALUE(warningsFile).
+    END.
   END.
   ELSE DO:
     ASSIGN c = '':U.
