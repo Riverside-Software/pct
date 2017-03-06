@@ -12,7 +12,8 @@
   </target>
 
   <target name="test2">
-  	<echo file="src/test.p" message="FORM &quot;xxxxxxxxxx&quot; COLON 20 WITH FRAME x SIDE-LABELS." />
+    <sleep milliseconds="1000" />
+    <echo file="src/test.p" message="FORM &quot;xxxxxxxxxx&quot; COLON 20 WITH FRAME x SIDE-LABELS." />
     <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
