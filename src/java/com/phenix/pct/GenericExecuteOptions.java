@@ -179,7 +179,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setIniFile(File iniFile) {
         if ((iniFile != null) && !iniFile.exists()) {
-            parent.getProject().log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            parent.log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
             return;
         }
         this.iniFile = iniFile;
@@ -291,7 +291,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setAssemblies(File assemblies) {
         if ((assemblies != null) && !assemblies.exists()) {
-            parent.getProject().log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            parent.log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
             return;
         }
 
