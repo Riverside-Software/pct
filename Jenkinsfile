@@ -31,12 +31,13 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
+ parallel
+    branch1: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
+    branch8: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
     branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
     branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux', 11, 64) },
     branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
-    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
     failFast: false
 }
 
