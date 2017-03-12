@@ -360,11 +360,7 @@
   <target name="dist" depends="srcdist,jar,testdist" />
 
   <target name="clean" description="Nettoyage">
-    <delete dir="${build-java}" />
-    <delete dir="${build-test}" />
-    <delete dir="${build-v10}" />
-    <delete dir="${build-v10-64}" />
-    <delete dir="${build-v11}" />
+    <delete dir="${build}" />
     <delete dir="${dist}" />
     <delete dir="${doc}" />
     <delete>
