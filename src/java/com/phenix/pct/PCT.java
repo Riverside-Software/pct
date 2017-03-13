@@ -53,8 +53,8 @@ import java.util.zip.ZipInputStream;
 public abstract class PCT extends Task {
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
-    private final static String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
-    private final static Random RANDOM = new Random();
+    private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
+    private static final Random RANDOM = new Random();
 
     private File dlcHome = null;
     private File dlcBin = null;
@@ -249,6 +249,13 @@ public abstract class PCT extends Task {
     }
 
     /**
+     * Returns prolib[.exe] executable path
+     */
+    protected final File getProlibExecutablePath() {
+        return getExecPath("prolib");
+    }
+
+    /**
      * Returns a Progress executable path
      * 
      * @param exec String
@@ -281,17 +288,6 @@ public abstract class PCT extends Task {
                 return getExecPath("prowin32");
             }
         }
-    }
-
-    /**
-     * Returns a fileset containing every JAR/ZIP files needed for proxygen task
-     * 
-     * @since 0.8
-     * @return FileSet
-     * @deprecated Since 0.11, use getJavaFileset(Project) instead
-     */
-    protected FileSet getJavaFileset() {
-        return getJavaFileset(this.getProject());
     }
 
     /**
@@ -421,23 +417,6 @@ public abstract class PCT extends Task {
         }
     }
 
-    /**
-     * Extracts pct.pl from PCT.jar into a temporary file, and returns a handle on the file.
-     * Automatically extract v9 or v10 PL
-     * 
-     * @return Handle on pct.pl (File)
-     * @since PCT 0.10
-     * @deprecated PCT 0.11 Use extractPL(File) instead
-     */
-    protected File extractPL() throws IOException {
-        int plID = nextRandomInt() & 0xffff;
-        File f = new File(System.getProperty("java.io.tmpdir"), "pct" + plID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        if (extractPL(f))
-            return f;
-        else
-            return null;
-    }
-
     protected boolean isSourceCodeUsed() {
         String src = getProject().getProperty("PCT-SRC");
         if ((src != null) && Boolean.parseBoolean(src)) {
@@ -527,13 +506,6 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * @deprecated Use {@link PCT#getDLCMaintenanceVersion()} instead
-     */
-    protected String getDLCRevision() {
-        return getDLCMaintenanceVersion();
-    }
-
-    /**
      * Returns maintenance version
      * 
      * @return 10.0B02 returns B
@@ -618,7 +590,7 @@ public abstract class PCT extends Task {
         }
 
         int slen = str.length();
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
 
         for (int i = 0; i < slen; i++) {
             char c = str.charAt(i);
@@ -630,11 +602,7 @@ public abstract class PCT extends Task {
                     break;
 
                 case '\u0022' : // QUOTATION MARK converted to TILDE APOSTROPHE
-                    res.append("\u007E\u0027"); //$NON-NLS-1$
-
-                    break;
-
-                case '\'' : // APOSTROPHE converted to TILDE APOSTROPHE
+                case '\''     : // APOSTROPHE converted to TILDE APOSTROPHE
                     res.append("\u007E\u0027"); //$NON-NLS-1$
 
                     break;
@@ -647,7 +615,7 @@ public abstract class PCT extends Task {
         return res.toString();
     }
 
-    protected final static int nextRandomInt() {
+    protected static final int nextRandomInt() {
         return RANDOM.nextInt() & 0xffff;
     }
 

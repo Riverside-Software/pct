@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class PCTBinaryLoad extends PCT {
     private List<PCTConnection> dbConnList = null;
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<FileSet> filesets = new ArrayList<>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
 
@@ -45,7 +45,7 @@ public class PCTBinaryLoad extends PCT {
      */
     public void addPCTConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList<PCTConnection>();
+            this.dbConnList = new ArrayList<>();
         }
 
         this.dbConnList.add(dbConn);
@@ -88,8 +88,6 @@ public class PCTBinaryLoad extends PCT {
      * @throws BuildException Something went wrong
      */
     public void execute() throws BuildException {
-        ExecTask exec = null;
-
         checkDlcHome();
         if (this.dbConnList == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
@@ -103,7 +101,7 @@ public class PCTBinaryLoad extends PCT {
         for (FileSet fs : filesets) {
             for (String str : fs.getDirectoryScanner(this.getProject()).getIncludedFiles()) {
                 File foo = new File(fs.getDir(this.getProject()), str);
-                exec = loadTask(foo);
+                ExecTask exec = loadTask(foo);
                 exec.execute();
             }
         }

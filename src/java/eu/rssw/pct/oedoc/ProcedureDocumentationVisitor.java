@@ -40,22 +40,6 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         cu.toXML(out);
     }
 
-//    @Override
-//    public boolean visit(IStatement node) {
-//        if (node.getStatementType() == ProgressParserTokenTypes.FIND) {
-//            Statement smt = (Statement) node;
-//            for (IASTNode iter : smt.getChildren()) {
-//                for (IASTNode zz : iter.getChildren()) {
-//                    for (IASTNode zzz : zz.getChildren()) {
-//
-//                    }
-//
-//                }
-//            }
-//        }
-//        return super.visit(node);
-//    }
-
     @Override
     public boolean visit(ProcedureDeclaration decl) {
         if (decl == null)

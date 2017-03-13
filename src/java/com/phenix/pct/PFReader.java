@@ -22,7 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class PFReader {
-    private String cpInternal, cpStream;
+    private String cpInternal;
+    private String cpStream;
 
     public PFReader(InputStream stream) throws IOException {
         readPFStream(stream);
@@ -41,7 +42,7 @@ public class PFReader {
 
         String line = reader.readLine();
         while (line != null) {
-            int end = line.indexOf("#");
+            int end = line.indexOf('#');
             if (end > -1) {
                 line = line.substring(0, end);
             }

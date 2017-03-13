@@ -19,7 +19,6 @@ package com.phenix.pct;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -43,6 +42,10 @@ public class OEUnit extends PCTRun {
     private String format = "JUnit";
 
     private String testFileName = "PCTestList" + PCT.nextRandomInt() + ".txt";
+
+    public OEUnit() {
+        super();
+    }
 
     /**
      * Set the path of the results file.
@@ -69,13 +72,9 @@ public class OEUnit extends PCTRun {
      */
     public void addConfiguredFileset(FileSet set) {
         if (this.testFilesets == null) {
-            testFilesets = new ArrayList<FileSet>();
+            testFilesets = new ArrayList<>();
         }
         testFilesets.add(set);
-    }
-
-    public OEUnit() {
-        super();
     }
 
     public void execute() throws BuildException {
@@ -91,11 +90,9 @@ public class OEUnit extends PCTRun {
 
         // Create a temp file which list test class to be executed
         testFilesList = new File(System.getProperty("java.io.tmpdir"), testFileName);
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(testFilesList),
-                    getCharset()));
-
+        try (FileOutputStream fos = new FileOutputStream(testFilesList);
+                OutputStreamWriter writer = new OutputStreamWriter(fos, getCharset());
+                BufferedWriter bw = new BufferedWriter(writer)) {
             for (FileSet fs : testFilesets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     File f = new File(fs.getDir(), file);
@@ -108,13 +105,6 @@ public class OEUnit extends PCTRun {
             }
         } catch (Exception e) {
             throw new BuildException(e);
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException uncaught) {
-                }
-            }
         }
 
         // Setting PCTRun parameters
@@ -133,11 +123,9 @@ public class OEUnit extends PCTRun {
     protected void cleanup() {
         super.cleanup();
         // Clean Test list file
-        if (!getDebugPCT()) {
-            if (testFilesList.exists() && !testFilesList.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTCompile.42"),
-                        testFilesList.getAbsolutePath()), Project.MSG_INFO);
-            }
+        if (!getDebugPCT() && testFilesList.exists() && !testFilesList.delete()) {
+            log(MessageFormat.format(Messages.getString("PCTCompile.42"),
+                    testFilesList.getAbsolutePath()), Project.MSG_INFO);
         }
     }
 }

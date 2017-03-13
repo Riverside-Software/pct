@@ -23,19 +23,12 @@ import java.io.File;
  * property
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
- * @version $Revision: 786 $
  * @since 0.14
  */
 public class OutputParameter {
     private String propertyName = null;
     private File tempFile = null;
     private String progressVar = null;
-
-    /**
-     * Default constructor
-     */
-    public OutputParameter() {
-    }
 
     /**
      * Parameter name
@@ -85,6 +78,7 @@ public class OutputParameter {
     /**
      * An OutputParameter equals another one if propertyName are equals
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof OutputParameter))
             return false;
@@ -97,6 +91,7 @@ public class OutputParameter {
     /**
      * PropertyName hashCode
      */
+    @Override
     public int hashCode() {
         return propertyName.hashCode();
     }

@@ -26,10 +26,8 @@ public class RunParameter {
     private String name = null;
     private String value = null;
 
-    /**
-     * Default constructor
-     */
     public RunParameter() {
+        // Empty constructor for Ant reflection
     }
 
     public RunParameter(String name, String value) {

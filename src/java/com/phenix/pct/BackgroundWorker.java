@@ -45,10 +45,11 @@ public abstract class BackgroundWorker {
     private Iterator<String> propath;
 
     // Dernière commande envoyée
-    private String lastCommand, lastCommandParameter;
+    private String lastCommand;
+    private String lastCommandParameter;
 
     // Faut-il quitter la boucle infinie du thread ?
-    public boolean quit = false; // FIXME
+    public boolean quit = false;
 
     private final PCTBgRun parent;
 
@@ -61,7 +62,7 @@ public abstract class BackgroundWorker {
         this.reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), parent.getCharset()));
         this.writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), parent.getCharset()));
 
-        // FIXME Should be HELLO or something like that...
+        // TODO Should be HELLO or something like that...
         reader.readLine();
 
         // Assign a unique thread number to this worker
@@ -82,7 +83,7 @@ public abstract class BackgroundWorker {
 
     public final void sendCommand(String command, String param) throws IOException {
         // Check validity
-        if ((command == null) || (command.trim().equals(""))) //$NON-NLS-1$
+        if ((command == null) || "".equals(command.trim())) //$NON-NLS-1$
             throw new IllegalArgumentException("Invalid command");
 
         lastCommand = command;
@@ -94,8 +95,9 @@ public abstract class BackgroundWorker {
     }
 
     public final void listen() {
-        boolean end = false, err = false;
-        List<Message> retVals = new ArrayList<Message>();
+        boolean end = false;
+        boolean err = false;
+        List<Message> retVals = new ArrayList<>();
         String customResponse = "";
 
         while (!end) {
@@ -104,21 +106,21 @@ public abstract class BackgroundWorker {
                 int idx = str.indexOf(':');
                 String result = (idx == -1 ? str : str.substring(0, idx));
 
-                if (result.equalsIgnoreCase("OK")) {
-                    if (lastCommand.equalsIgnoreCase("quit")) {
+                if ("OK".equalsIgnoreCase(result)) {
+                    if ("quit".equalsIgnoreCase(result)) {
                         status = 5;
                     }
                     if ((idx != -1) && (idx < (str.length() - 1)))
                         customResponse = str.substring(idx + 1);
-                } else if (result.equalsIgnoreCase("ERR")) {
+                } else if ("ERR".equalsIgnoreCase(result)) {
                     err = true;
                     if ((idx != -1) && (idx < (str.length() - 1)))
                         customResponse = str.substring(idx + 1);
-                } else if (result.equalsIgnoreCase("MSG")) {
+                } else if ("MSG".equalsIgnoreCase(result)) {
                     // Everything after MSG: is logged
                     if ((idx != -1) && (idx < (str.length() - 1)))
                         retVals.add(new Message(str.substring(idx + 1)));
-                } else if (result.equalsIgnoreCase("END")) {
+                } else if ("END".equalsIgnoreCase(result)) {
                     end = true;
                     // Standard commands (i.e. sent by this class) cannnot be handled and overridden
                     if (!isStandardCommand(lastCommand)) {
@@ -150,7 +152,7 @@ public abstract class BackgroundWorker {
             }
         } else if (status == 2) {
             if (propath.hasNext()) {
-                String s = (String) propath.next();
+                String s = propath.next();
                 sendCommand("propath", s + File.pathSeparatorChar);
             } else {
                 status = 3;
@@ -173,13 +175,8 @@ public abstract class BackgroundWorker {
     }
 
     public final boolean isStandardCommand(String command) {
-        if ("setThreadNumber".equalsIgnoreCase(command)) {
-            return true;
-        } else if ("connect".equalsIgnoreCase(command)) {
-            return true;
-        } else if ("propath".equalsIgnoreCase(command)) {
-            return true;
-        } else if ("quit".equalsIgnoreCase(command)) {
+        if ("setThreadNumber".equalsIgnoreCase(command) || "connect".equalsIgnoreCase(command)
+                || "propath".equalsIgnoreCase(command) || "quit".equalsIgnoreCase(command)) {
             return true;
         }
 
@@ -215,16 +212,14 @@ public abstract class BackgroundWorker {
 
     public final void handleStandardEventResponse(String command, String parameter, boolean err,
             String customResponse, List<Message> returnValues) {
-        if ("connect".equalsIgnoreCase(command)) {
-            if (err) {
-                parent.logMessages(returnValues);
-                parent.setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
-                quit();
-            }
+        if ("connect".equalsIgnoreCase(command) && err) {
+            parent.logMessages(returnValues);
+            parent.setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
+            quit();
         }        
     }
 
-    public final static class Message {
+    public static final class Message {
         private final String msg;
         private final int level;
 

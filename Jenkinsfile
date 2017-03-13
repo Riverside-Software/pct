@@ -4,7 +4,7 @@ stage('Class documentation build') {
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc11 = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def jdk = tool name: 'JDK 7 64b', type: 'hudson.model.JDK'
+  def jdk = tool name: 'JDK 1.8 64b', type: 'hudson.model.JDK'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
     bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"

@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class PCTLoadSchema extends PCTRun {
     private File srcFile = null;
-    private List<ResourceCollection> rcs = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> rcs = new ArrayList<>();
     private boolean unfreeze = false;
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;

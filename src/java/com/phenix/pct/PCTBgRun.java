@@ -64,7 +64,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     private File initProc = null;
     private int initProcId = -1; // Unique ID when creating temp files
     private Charset charset = null;
-    private Collection<File> profilerParams = new ArrayList<File>();
+    private Collection<File> profilerParams = new ArrayList<>();
 
     /**
      * Default constructor
@@ -90,6 +90,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     /**
      * @deprecated
      */
+    @Deprecated
     public void addPCTConnection(PCTConnection dbConn) {
         addDBConnection(dbConn);
     }
@@ -513,10 +514,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      * connections and propath modifications are not made in this file (it's delayed in the
      * background process).
      */
-    private void createInitProcedure(File f) throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-
+    private void createInitProcedure(File f) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(), null,
                     options.isVerbose(), false));
 
@@ -541,16 +540,13 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
                     escapeString(options.getProcedure())));
 
-            bw.close();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }
     }
 
-    private void createProfilerParamFile(File paramFile) throws BuildException {
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(paramFile));
+    private void createProfilerParamFile(File paramFile) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(paramFile))) {
             // Assuming nobody will use file names with double quotes in this case...
             bw.write("-FILENAME \""
                     + new File(options.getProfiler().getOutputDir(), "profiler"
@@ -574,16 +570,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             bw.close();
         } catch (IOException caught) {
             throw new BuildException(caught);
-        } finally {
-            try {
-                bw.close();
-            } catch (IOException uncaught) {
-            }
         }
     }
 
     private List<String> getPropathAsList() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (options.getPropath() != null) {
             String[] lst = options.getPropath().list();
             for (int k = lst.length - 1; k >= 0; k--) {
@@ -651,7 +642,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     private class ListenerThread extends Thread {
         // Timeout for accept method -- 5 seconds should be enough
         // Increase it if you're doing some debugging
-        private final static int TIMEOUT = 5000;
+        private static final int TIMEOUT = 5000;
 
         private ServerSocket server = null;
 
@@ -668,6 +659,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
          * Generic calls made by PCTBgRun : connect to database and change propath, then pass away
          * to custom method
          */
+        @Override
         public void run() {
             int acceptedThreads = 0, deadThreads = 0;
             ThreadGroup group = new ThreadGroup("PCT");
@@ -681,6 +673,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                     status.setCustomOptions(null); // TODO
 
                     Runnable r = new Runnable() {
+                        @Override
                         public void run() {
                             try {
                                 while (!status.quit) {

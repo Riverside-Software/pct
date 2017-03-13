@@ -35,7 +35,7 @@ public class OracleHolder extends SchemaHolder {
     }
 
     public Collection<RunParameter> getParameters() {
-        Collection<RunParameter> c = new ArrayList<RunParameter>();
+        Collection<RunParameter> c = new ArrayList<>();
         c.add(new RunParameter("SchemaHolderName", this.getDbName()));
         c.add(new RunParameter("Collation", this.getCollation()));
         c.add(new RunParameter("Codepage", this.getCodepage()));

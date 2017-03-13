@@ -32,7 +32,7 @@ public class RestGen extends PCT {
     // Class used by Proxygen
     private static final String PROXYGEN_CLASS = "com.progress.rest.tools.WARGenerator";
 
-    private static enum RestGenerationType {
+    private enum RestGenerationType {
         REST_SERVICE_PAAR("Paar"), MOBILE_SERVICE_PAAR("MobPaar"), REST_SERVICE_WAR("RESTWar"), MOBILE_SERVICE_WAR(
                 "MobWar"), MOBILE_APP_WAR("MobAppWar"), MOBILE_APP("OnlyMobApp");
 

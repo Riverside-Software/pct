@@ -34,7 +34,7 @@ public class CRCDifferent extends BaseExtendSelector {
     private void setTargetDir() {
         Parameter[] params = this.getParameters();
         for (int i = 0; i < params.length; i++) {
-            if (params[i].getName().equalsIgnoreCase("targetDir")) {
+            if ("targetDir".equalsIgnoreCase(params[i].getName())) {
                 this.targetDir = new File(params[i].getValue());
             }
         }
@@ -50,8 +50,9 @@ public class CRCDifferent extends BaseExtendSelector {
      * 
      * @return whether the file should be selected or not
      */
-    public boolean isSelected(File basedir, String filename, File file) throws BuildException {
-        RCodeInfo file1, file2;
+    public boolean isSelected(File basedir, String filename, File file) {
+        RCodeInfo file1;
+        RCodeInfo file2;
         if (this.targetDir == null)
             setTargetDir();
         if (this.targetDir == null) {

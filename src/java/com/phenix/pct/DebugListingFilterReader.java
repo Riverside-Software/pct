@@ -60,7 +60,7 @@ public class DebugListingFilterReader extends BaseParamFilterReader implements C
             setInitialized(true);
         }
 
-        int ch = -1;
+        int ch;
 
         if (queuedData != null && queuedData.length() == 0) {
             queuedData = null;

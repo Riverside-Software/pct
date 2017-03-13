@@ -32,10 +32,10 @@ import java.util.Arrays;
  */
 public class RCodeInfo {
     // Magic numbers
-    private final static int MAGIC1 = 0x56CED309;
-    private final static int MAGIC2 = 0x09D3CE56; // Bytes swapped
+    private static final int MAGIC1 = 0x56CED309;
+    private static final int MAGIC2 = 0x09D3CE56; // Bytes swapped
 
-    private final static short HEADER_SIZE = 68;
+    private static final short HEADER_SIZE = 68;
 
     private boolean swapped;
     private int version;

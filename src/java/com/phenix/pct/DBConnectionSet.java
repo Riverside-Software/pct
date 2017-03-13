@@ -27,7 +27,7 @@ import org.apache.tools.ant.types.DataType;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class DBConnectionSet extends DataType {
-    private Collection<PCTConnection> connections = new ArrayList<PCTConnection>();
+    private Collection<PCTConnection> connections = new ArrayList<>();
 
     // Variation pour antlib
     public void addDb_Connection(PCTConnection conn) {
@@ -48,7 +48,7 @@ public class DBConnectionSet extends DataType {
      * @return A non-null collection of PCTConnection
      */
     public Collection<PCTConnection> getDBConnections() {
-        Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
+        Collection<PCTConnection> coll = new ArrayList<>();
         coll.addAll(connections);
 
         if (isReference())

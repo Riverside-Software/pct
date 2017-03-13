@@ -53,13 +53,13 @@ public class PCTDumpSchema extends PCTRun {
 
     public void addConfiguredTable(PCTTable table) {
         if (this.tableList == null) {
-            tableList = new ArrayList<PCTTable>();
+            tableList = new ArrayList<>();
         }
         tableList.add(table);
     }
 
     private String getTableList() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (tables != null)
             sb.append(tables);
 
