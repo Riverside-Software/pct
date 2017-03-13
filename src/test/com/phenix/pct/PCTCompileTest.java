@@ -952,4 +952,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(warns.exists());
     }
 
+    @Test(groups = {"v10"})
+    public void test61() {
+        configureProject(BASEDIR + "test61/build.xml");
+        expectBuildException("test", "Expected...");
+        File xref = new File(BASEDIR + "test61/build/.pct/test.p.xref");
+        assertFalse(xref.exists());
+    }
+
 }

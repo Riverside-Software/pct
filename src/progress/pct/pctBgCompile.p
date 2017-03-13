@@ -75,7 +75,7 @@ PROCEDURE pctCompile:
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL FALSE.
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
-    /* Input parameter is a #-separated list of compilation units */
+    /* Input parameter is a star-separated list of compilation units */
     /* Each compilation unit is a pipe-separated list of infos : */
     /*  -> Fileset directory - Full pathname (CHAR) */
     /*  -> Input file directory - relative path */
