@@ -33,8 +33,8 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.8" />
-  <property name="javac.target" value="1.8" />
+  <property name="javac.source" value="1.7" />
+  <property name="javac.target" value="1.7" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v10" dir="${src.progress}">
