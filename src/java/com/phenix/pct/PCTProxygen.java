@@ -117,7 +117,8 @@ public class PCTProxygen extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         // Verify resource collections
         for (ResourceCollection rc : resources) {
             if (!rc.isFilesystemOnly())
@@ -184,7 +185,7 @@ public class PCTProxygen extends PCT {
 
     }
 
-    private void executeProxygen(File pxgFile) throws BuildException {
+    private void executeProxygen(File pxgFile) {
         Java pxgTask = null;
         log(MessageFormat.format(Messages.getString("PCTProxygen.3"), pxgFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
 
@@ -256,7 +257,7 @@ public class PCTProxygen extends PCT {
                 throw new BuildException("Unable to parse log file", caught);
             }
         } else {
-            log("Unable to read log file : " + pxgLogFile.getAbsolutePath(), Project.MSG_WARN);
+            log("Unable to read log file", Project.MSG_WARN);
         }
 
         if (fail) {
