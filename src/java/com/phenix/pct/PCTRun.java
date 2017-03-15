@@ -447,20 +447,18 @@ public class PCTRun extends PCT implements IRunAttributes {
         // Now read status file
         try (Reader r = new FileReader(status); BufferedReader br = new BufferedReader(r)) {
             String s = br.readLine();
-            this.cleanup();
             int ret = Integer.parseInt(s);
             if (ret != 0 && runAttributes.isFailOnError()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.6"), ret)); //$NON-NLS-1$
             }
             maybeSetResultPropertyValue(ret);
-        } catch (IOException ioe) {
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTRun.2"), ioe); //$NON-NLS-1$
-        } catch (NumberFormatException nfe) {
-            this.cleanup(); // Ce truc là ne serait pas manquant ??
-            throw new BuildException(Messages.getString("PCTRun.3"), nfe); //$NON-NLS-1$
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTRun.2"), caught); //$NON-NLS-1$
+        } catch (NumberFormatException caught) {
+            throw new BuildException(Messages.getString("PCTRun.3"), caught); //$NON-NLS-1$
+        } finally {
+            cleanup();
         }
-
     }
 
     // In order to know if Progress session has to use verbose logging
