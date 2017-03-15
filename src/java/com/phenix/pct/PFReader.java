@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class PFReader {
     private String cpInternal;
@@ -38,21 +39,21 @@ public class PFReader {
     }
 
     private void readPFStream(InputStream stream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        try (Reader r = new InputStreamReader(stream);
+                BufferedReader reader = new BufferedReader(r)) {
+            String line = reader.readLine();
+            while (line != null) {
+                int end = line.indexOf('#');
+                if (end > -1) {
+                    line = line.substring(0, end);
+                }
+                if (line.length() > 0) {
+                    parseLine(line);
+                }
 
-        String line = reader.readLine();
-        while (line != null) {
-            int end = line.indexOf('#');
-            if (end > -1) {
-                line = line.substring(0, end);
+                line = reader.readLine();
             }
-            if (line.length() > 0) {
-                parseLine(line);
-            }
-
-            line = reader.readLine();
         }
-        reader.close();
     }
 
     private void parseLine(String line) {
@@ -81,4 +82,5 @@ public class PFReader {
 
         return s;
     }
+
 }

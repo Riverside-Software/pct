@@ -26,7 +26,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -117,7 +119,8 @@ public class PCTLoadSchema extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (runAttributes.getAllDbConnections().size() == 0) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.0")); //$NON-NLS-1$
@@ -168,10 +171,7 @@ public class PCTLoadSchema extends PCTRun {
     }
 
     private void writeFileList() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                    fsList), getCharset()));
-
+        try (OutputStream os = new FileOutputStream(fsList); Writer w = new OutputStreamWriter(os); BufferedWriter bw = new BufferedWriter(w)) {
             if (srcFile != null) {
                 bw.write(srcFile.getAbsolutePath());
                 bw.newLine();
@@ -189,8 +189,6 @@ public class PCTLoadSchema extends PCTRun {
                     }
                 }
             }
-
-            bw.close();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.2"), ioe); //$NON-NLS-1$
         }
@@ -201,6 +199,7 @@ public class PCTLoadSchema extends PCTRun {
      * 
      * @see PCTRun#cleanup
      */
+    @Override
     protected void cleanup() {
         super.cleanup();
 

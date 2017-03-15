@@ -29,12 +29,15 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 import java.text.MessageFormat;
@@ -367,8 +370,8 @@ public class PCTRun extends PCT implements IRunAttributes {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
-        BufferedReader br = null;
+    @Override
+    public void execute() {
 
         checkDlcHome();
         if ((runAttributes.getProcedure() == null) || (runAttributes.getProcedure().length() == 0))
@@ -414,13 +417,11 @@ public class PCTRun extends PCT implements IRunAttributes {
 
         if (getProgressProcedures().needRedirector()) {
             String s = null;
-            try {
-                BufferedReader br2 = new BufferedReader(new FileReader(outputStream));
+            try (Reader r = new FileReader(outputStream); BufferedReader br2 = new BufferedReader(r)) {
                 while ((s = br2.readLine()) != null) {
                     log(s, Project.MSG_INFO);
                 }
-                br2.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println(e);
             }
         }
@@ -429,22 +430,12 @@ public class PCTRun extends PCT implements IRunAttributes {
         if (runAttributes.getOutputParameters() != null) {
             for (OutputParameter param : runAttributes.getOutputParameters()) {
                 File f = param.getTempFileName();
-                try {
-                    br = new BufferedReader(new InputStreamReader(new FileInputStream(f),
-                            Charset.forName("utf-8")));
+                try (InputStream fis = new FileInputStream(f);
+                        Reader r = new InputStreamReader(fis, Charset.forName("utf-8"));
+                        BufferedReader br = new BufferedReader(r)) {
                     String s = br.readLine();
-                    br.close();
                     getProject().setNewProperty(param.getName(), s);
-                } catch (FileNotFoundException fnfe) {
-                    log(MessageFormat.format(
-                            Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
-                    cleanup();
-                    throw new BuildException(fnfe);
                 } catch (IOException ioe) {
-                    try {
-                        br.close();
-                    } catch (IOException ioe2) {
-                    }
                     log(MessageFormat.format(
                             Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
                     cleanup();
@@ -454,40 +445,25 @@ public class PCTRun extends PCT implements IRunAttributes {
         }
 
         // Now read status file
-        try {
-            br = new BufferedReader(new FileReader(status));
-
+        try (Reader r = new FileReader(status); BufferedReader br = new BufferedReader(r)) {
             String s = br.readLine();
-            br.close();
-
-            this.cleanup();
             int ret = Integer.parseInt(s);
-
             if (ret != 0 && runAttributes.isFailOnError()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.6"), ret)); //$NON-NLS-1$
             }
             maybeSetResultPropertyValue(ret);
-        } catch (FileNotFoundException fnfe) {
-            // No need to clean BufferedReader as it's null in this case
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTRun.1"), fnfe); //$NON-NLS-1$
-        } catch (IOException ioe) {
-            try {
-                br.close();
-            } catch (IOException ioe2) {
-            }
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTRun.2"), ioe); //$NON-NLS-1$
-        } catch (NumberFormatException nfe) {
-            this.cleanup(); // Ce truc là ne serait pas manquant ??
-            throw new BuildException(Messages.getString("PCTRun.3"), nfe); //$NON-NLS-1$
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTRun.2"), caught); //$NON-NLS-1$
+        } catch (NumberFormatException caught) {
+            throw new BuildException(Messages.getString("PCTRun.3"), caught); //$NON-NLS-1$
+        } finally {
+            cleanup();
         }
-
     }
 
     // In order to know if Progress session has to use verbose logging
     private boolean isVerbose() {
-        return (getAntLoggerLever() > 2);
+        return getAntLoggerLever() > 2;
     }
 
     // Helper method to set result property to the passed in value if appropriate.
@@ -614,8 +590,8 @@ public class PCTRun extends PCT implements IRunAttributes {
 
         // If paramFile is defined, then read it and check for cpStream or cpInternal
         if (runAttributes.getParamFile() != null) {
-            try {
-                PFReader reader = new PFReader(new FileInputStream(runAttributes.getParamFile()));
+            try (InputStream is = new FileInputStream(runAttributes.getParamFile()); ) {
+                PFReader reader = new PFReader(is);
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
             } catch (IOException uncaught) {
@@ -635,12 +611,11 @@ public class PCTRun extends PCT implements IRunAttributes {
             return null;
     }
 
-    private void createProfilerFile() throws BuildException {
+    private void createProfilerFile() {
         if ((runAttributes.getProfiler() != null) && runAttributes.getProfiler().isEnabled()) {
-            BufferedWriter bw = null;
-            try {
-                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                        profilerParamFile)));
+            try (OutputStream os = new FileOutputStream(profilerParamFile);
+                    Writer w = new OutputStreamWriter(os);
+                    BufferedWriter bw = new BufferedWriter(w)) {
                 if (runAttributes.getProfiler().getOutputFile() != null) {
                     bw.write("-FILENAME " + runAttributes.getProfiler().getOutputFile().getAbsolutePath());
                     bw.newLine();
@@ -665,24 +640,16 @@ public class PCTRun extends PCT implements IRunAttributes {
                 }
                 bw.write("-DESCRIPTION \"" + runAttributes.getProfiler().getDescription() + "\"");
                 bw.newLine();
-                bw.close();
             } catch (IOException caught) {
                 throw new BuildException(caught);
-            } finally {
-                try {
-                    bw.close();
-                } catch (IOException uncaught) {
-                }
             }
         }
     }
 
-    private void createInitProcedure() throws BuildException {
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                    initProc), getCharset()));
-
+    private void createInitProcedure() {
+        try (OutputStream os = new FileOutputStream(initProc);
+                Writer w = new OutputStreamWriter(os, getCharset());
+                BufferedWriter bw = new BufferedWriter(w)) {
             // Progress v8 is unable to write to standard output, so output is redirected in a file,
             // which is parsed in a later stage
             if (this.getProgressProcedures().needRedirector()) {
@@ -786,7 +753,7 @@ public class PCTRun extends PCT implements IRunAttributes {
 
             // Creates a StringBuffer containing output parameters when calling the progress
             // procedure
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if ((runAttributes.getOutputParameters() != null) && (runAttributes.getOutputParameters().size() > 0)) {
                 sb.append('(');
                 int zz = 0;
@@ -832,14 +799,6 @@ public class PCTRun extends PCT implements IRunAttributes {
             bw.close();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException uncaught) {
-                    
-                }
-            }
         }
     }
 
@@ -902,7 +861,6 @@ public class PCTRun extends PCT implements IRunAttributes {
 
     /**
      * Delete temporary files if debug not activated
-     * 
      */
     protected void cleanup() {
         if (!runAttributes.isDebugPCT()) {
