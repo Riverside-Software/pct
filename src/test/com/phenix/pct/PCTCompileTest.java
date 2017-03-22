@@ -965,8 +965,16 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Same as test60 but with -swl. Warnings shouldn't be there
         configureProject(BASEDIR + "test62/build.xml");
         executeTarget("test");
-        File warns = new File(BASEDIR + "test62/build/.pct/test.p.warnings");
-        assertFalse(warns.exists());
+        File warns1 = new File(BASEDIR + "test62/build1/.pct/test.p.warnings");
+        assertTrue(warns1.exists());
+        assertTrue(warns1.length() > 0);
+        File warns2 = new File(BASEDIR + "test62/build2/.pct/test.p.warnings");
+        assertTrue(warns2.exists());
+        assertTrue(warns2.length() > 0);
+        assertTrue(warns2.length() < warns1.length());
+        File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
+        assertTrue(warns3.exists());
+        assertEquals(warns3.length(), 0);
     }
 
 }
