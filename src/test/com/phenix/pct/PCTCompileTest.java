@@ -960,4 +960,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(xref.exists());
     }
 
+    @Test(groups = {"v10"})
+    public void test62() {
+        // Same as test60 but with -swl. Warnings shouldn't be there
+        configureProject(BASEDIR + "test62/build.xml");
+        executeTarget("test");
+        File warns = new File(BASEDIR + "test62/build/.pct/test.p.warnings");
+        assertFalse(warns.exists());
+    }
+
 }
