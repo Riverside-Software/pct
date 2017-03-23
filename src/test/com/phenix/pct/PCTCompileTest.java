@@ -962,7 +962,7 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"})
     public void test62() {
-        // Same as test60 but with -swl. Warnings shouldn't be there
+        // Same as test60 but with -swl.
         configureProject(BASEDIR + "test62/build.xml");
         executeTarget("test");
         File warns1 = new File(BASEDIR + "test62/build1/.pct/test.p.warnings");
