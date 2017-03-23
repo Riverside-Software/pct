@@ -20,8 +20,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
@@ -30,6 +28,8 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.regex.Matcher;
+
+import org.testng.annotations.Test;
 
 /**
  * Class for testing PCTDumpIncremental task Assertion - following classes should work properly :
@@ -74,8 +74,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         java.util.regex.Pattern regexp = java.util.regex.Pattern.compile("INACTIVE",
                 java.util.regex.Pattern.MULTILINE);
         // Get a Channel for the source file
-        try {
-            FileInputStream fis = new FileInputStream(f1);
+        try (FileInputStream fis = new FileInputStream(f1)) {
             FileChannel fc = fis.getChannel();
 
             // Get a CharBuffer from the source file
@@ -93,8 +92,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
 
         regexp = java.util.regex.Pattern.compile("INACTIVE", java.util.regex.Pattern.MULTILINE);
         // Get a Channel for the source file
-        try {
-            FileInputStream fis = new FileInputStream(f2);
+        try (FileInputStream fis = new FileInputStream(f2)){
             FileChannel fc = fis.getChannel();
 
             // Get a CharBuffer from the source file
@@ -113,8 +111,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
 
         regexp = java.util.regex.Pattern.compile("INACTIVE", java.util.regex.Pattern.MULTILINE);
         // Get a Channel for the source file
-        try {
-            FileInputStream fis = new FileInputStream(f3);
+        try (FileInputStream fis = new FileInputStream(f3)) {
             FileChannel fc = fis.getChannel();
 
             // Get a CharBuffer from the source file
@@ -148,8 +145,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         java.util.regex.Pattern regexp = java.util.regex.Pattern.compile("cpstream=iso8859-1",
                 java.util.regex.Pattern.MULTILINE);
         // Get a Channel for the source file
-        try {
-            FileInputStream fis = new FileInputStream(f1);
+        try (FileInputStream fis = new FileInputStream(f1)) {
             FileChannel fc = fis.getChannel();
 
             // Get a CharBuffer from the source file
@@ -168,8 +164,7 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         regexp = java.util.regex.Pattern.compile("cpstream=utf-8",
                 java.util.regex.Pattern.MULTILINE);
         // Get a Channel for the source file
-        try {
-            FileInputStream fis = new FileInputStream(f2);
+        try (FileInputStream fis = new FileInputStream(f2)) {
             FileChannel fc = fis.getChannel();
 
             // Get a CharBuffer from the source file

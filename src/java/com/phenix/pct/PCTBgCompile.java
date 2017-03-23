@@ -264,6 +264,9 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isFlattenDbg())).append(';');
             sb.append(compAttrs.getxRefDir().getAbsolutePath()).append(';');
             sb.append(Integer.toString(compAttrs.getFileList())).append(';');
+            sb.append(Boolean.toString(compAttrs.isRequireFullKeywords())).append(';');
+            sb.append(Boolean.toString(compAttrs.isRequireFullNames())).append(';');
+            sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
 
             return sb.toString();
         }

@@ -31,7 +31,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG) */
     RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('MINSIZE', IF ENTRY(2, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('MD5', IF ENTRY(3, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
@@ -63,6 +63,9 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('PCTDIR', ENTRY(30, ipPrm, ';')).
     RUN setOption IN hComp ('FILELIST', ENTRY(31, ipPrm, ';')).
+    RUN setOption IN hComp ('FULLKW', IF ENTRY(32, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
 
     RUN initModule IN hComp.
 

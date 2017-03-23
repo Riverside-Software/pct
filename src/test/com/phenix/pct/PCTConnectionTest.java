@@ -129,7 +129,6 @@ public class PCTConnectionTest extends BuildFileTestNg {
         PCTConnection c2 = (PCTConnection) db2;
         PCTConnection c3 = (PCTConnection) db3;
         PCTConnection c4 = (PCTConnection) db4;
-        PCTConnection c5 = (PCTConnection) db5;
         PCTConnection c6 = (PCTConnection) db6;
         PCTConnection c7 = (PCTConnection) db7;
         PCTConnection c8 = (PCTConnection) db8;
