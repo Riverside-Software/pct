@@ -197,7 +197,7 @@ public class PCTConnection extends DataType {
 
     public void addConfiguredAlias(PCTAlias alias) {
         if (this.aliases == null) {
-            aliases = new HashMap<String, PCTAlias>();
+            aliases = new HashMap<>();
         }
 
         if (aliases.put(alias.getName(), alias) != null)
@@ -237,7 +237,7 @@ public class PCTConnection extends DataType {
      * @throws BuildException Something went wrong (dbName or paramFile not defined)
      */
     public List<String> getConnectParametersList() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (isReference()) {
             list = getRef().getConnectParametersList();
         } else if ((dbName == null) && (paramFile == null)) {
@@ -335,7 +335,7 @@ public class PCTConnection extends DataType {
      * @throws BuildException If DB name or parameter file not defined
      */
     public String createConnectString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String str : getConnectParametersList()) {
             String s = PCTRun.escapeString(str);
             sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' '); //$NON-NLS-1$ //$NON-NLS-2$
@@ -352,7 +352,7 @@ public class PCTConnection extends DataType {
      * @throws BuildException
      */
     public String createBackgroundConnectString() {
-        StringBuffer sb = new StringBuffer(createConnectString());
+        StringBuilder sb = new StringBuilder(createConnectString());
         if (hasAliases()) {
             for (PCTAlias alias : getAliases()) {
                 sb.append('|').append(alias.getName()).append(',')
@@ -381,7 +381,7 @@ public class PCTConnection extends DataType {
      * @return Collection
      */
     public Collection<PCTAlias> getAliases() {
-        Map<String, PCTAlias> map = new HashMap<String, PCTAlias>();
+        Map<String, PCTAlias> map = new HashMap<>();
         if (aliases != null) {
             for (String str : aliases.keySet()) {
                 map.put(str, aliases.get(str));

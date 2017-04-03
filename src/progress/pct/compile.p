@@ -488,16 +488,20 @@ PROCEDURE compileXref.
       ELSE
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
-    IF NOT keepXref THEN
-      OS-DELETE VALUE(cXrefFile).
     IF COMPILER:WARNING THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
+        /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
         IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
-          PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
+          IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
+            PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
+          END.
         END.
       END.
       OUTPUT STREAM sWarnings CLOSE.
+    END.
+    ELSE DO:
+      OS-DELETE VALUE(warningsFile).
     END.
   END.
   ELSE DO:
@@ -507,6 +511,8 @@ PROCEDURE compileXref.
     END.
     RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
   END.
+  IF NOT keepXref THEN
+    OS-DELETE VALUE(cXrefFile).
 
   IF (NOT opError AND lst AND lstPrepro AND (preprocessFile NE ?)) THEN DO:
     COMPILE VALUE(preprocessFile) SAVE=NO LISTING VALUE(PCTDir + '/':U + ipInFile) NO-ERROR.
@@ -834,12 +840,14 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
                 NO-LOCK NO-ERROR.
     IF (NOT AVAILABLE ttDirs) THEN DO:
       OS-CREATE-DIR VALUE(base + c).
-      IF (OS-ERROR EQ 0) THEN DO:
+      IF (OS-ERROR EQ 0) OR (OS-ERROR EQ 999) THEN DO:
+        /* Issue #200: error code 999 is sometimes sent when 2 processes want to create dir at the same time */
         CREATE ttDirs.
         ASSIGN ttDirs.baseDir = base
                ttDirs.dirName = c.
       END.
       ELSE DO:
+        RUN logError IN hSrcProc (SUBSTITUTE("Unable to create directory '&1' - Err &2", c, OS-ERROR)).
         RETURN FALSE.
       END.
     END.

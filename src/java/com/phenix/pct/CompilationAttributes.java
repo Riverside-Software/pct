@@ -25,7 +25,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.ResourceCollection;
 
 public class CompilationAttributes implements ICompilationAttributes {
-    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> resources = new ArrayList<>();
     private File destDir = null;
     private File xRefDir = null;
     private File preprocessDir = null;

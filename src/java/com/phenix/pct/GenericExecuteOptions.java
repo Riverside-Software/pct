@@ -86,7 +86,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addDBConnection(PCTConnection dbConn) {
         if (dbConnList == null) {
-            dbConnList = new ArrayList<PCTConnection>();
+            dbConnList = new ArrayList<>();
         }
         dbConnList.add(dbConn);
     }
@@ -94,7 +94,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addDBConnectionSet(DBConnectionSet set) {
         if (this.dbConnSet == null)
-            this.dbConnSet = new ArrayList<DBConnectionSet>();
+            this.dbConnSet = new ArrayList<>();
 
         dbConnSet.add(set);
     }
@@ -102,7 +102,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addDBAlias(DBAlias alias) {
         if (aliases == null) {
-            aliases = new ArrayList<DBAlias>();
+            aliases = new ArrayList<>();
         }
         aliases.add(alias);
     }
@@ -110,7 +110,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addOption(PCTRunOption option) {
         if (options == null) {
-            options = new ArrayList<PCTRunOption>();
+            options = new ArrayList<>();
         }
         options.add(option);
     }
@@ -118,7 +118,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addParameter(RunParameter param) {
         if (runParameters == null) {
-            runParameters = new ArrayList<RunParameter>();
+            runParameters = new ArrayList<>();
         }
         runParameters.add(param);
     }
@@ -126,7 +126,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void addOutputParameter(OutputParameter param) {
         if (outputParameters == null) {
-            outputParameters = new ArrayList<OutputParameter>();
+            outputParameters = new ArrayList<>();
         }
         outputParameters.add(param);
     }
@@ -179,7 +179,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setIniFile(File iniFile) {
         if ((iniFile != null) && !iniFile.exists()) {
-            parent.getProject().log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+            parent.log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
             return;
         }
         this.iniFile = iniFile;
@@ -291,7 +291,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setAssemblies(File assemblies) {
         if ((assemblies != null) && !assemblies.exists()) {
-            parent.getProject().log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+            parent.log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
             return;
         }
 
@@ -463,7 +463,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     protected List<String> getCmdLineParameters() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         // Parameter file
         if (paramFile != null) {
@@ -642,7 +642,7 @@ public class GenericExecuteOptions implements IRunAttributes {
      * @return List of PCTConnection objects. Empty list if no DB connections
      */
     public Collection<PCTConnection> getDBConnections() {
-        Collection<PCTConnection> dbs = new ArrayList<PCTConnection>();
+        Collection<PCTConnection> dbs = new ArrayList<>();
         if (dbConnList != null) {
             dbs.addAll(dbConnList);
         }
@@ -655,7 +655,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     public Collection<PCTConnection> getAllDbConnections() {
-        Collection<PCTConnection> coll = new ArrayList<PCTConnection>();
+        Collection<PCTConnection> coll = new ArrayList<>();
         if (dbConnSet != null) {
             for (DBConnectionSet set : dbConnSet) {
                 coll.addAll(set.getDBConnections());

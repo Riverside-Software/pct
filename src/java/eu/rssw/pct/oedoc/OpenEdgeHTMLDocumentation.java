@@ -139,7 +139,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
     private void extractTemplateDirectory(File templateDir, File outputDir) throws IOException {
         URL url = getClass().getClassLoader().getResource(
                 getClass().getName().replace(".", "/") + ".class");
-        String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
+        String jarPath = url.getPath().substring(5, url.getPath().indexOf('!'));
         JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 
         Enumeration<JarEntry> entries = jar.entries();

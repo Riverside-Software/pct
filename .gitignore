@@ -1,4 +1,5 @@
 /.sonar/
+/.sonarlint/
 /build/
 /dist/
 /testbox/

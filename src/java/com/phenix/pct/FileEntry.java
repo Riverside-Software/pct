@@ -79,6 +79,7 @@ public class FileEntry implements Comparable<FileEntry> {
         return valid;
     }
 
+    @Override
     public String toString() {
         return MessageFormat
                 .format(Messages.getString("PLReader.6"), this.fileName, Integer.valueOf(size), new Date(addDate), new Date(modDate), Long.valueOf(offset)); //$NON-NLS-1$

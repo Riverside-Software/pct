@@ -24,7 +24,6 @@ import java.io.InputStream;
 import org.apache.tools.ant.types.resources.ArchiveResource;
 import org.apache.tools.ant.types.resources.FileResource;
 
-
 public class PLResource extends ArchiveResource {
     private FileEntry e;
 

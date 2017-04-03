@@ -941,4 +941,40 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns2.length() > 0);
     }
 
+    @Test(groups = {"v10"})
+    public void test60() {
+        configureProject(BASEDIR + "test60/build.xml");
+        executeTarget("test");
+        File warns = new File(BASEDIR + "test60/build/.pct/test.p.warnings");
+        assertTrue(warns.exists());
+        assertTrue(warns.length() > 0);
+        executeTarget("test2");
+        assertFalse(warns.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test61() {
+        configureProject(BASEDIR + "test61/build.xml");
+        expectBuildException("test", "Expected...");
+        File xref = new File(BASEDIR + "test61/build/.pct/test.p.xref");
+        assertFalse(xref.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test62() {
+        // Same as test60 but with -swl.
+        configureProject(BASEDIR + "test62/build.xml");
+        executeTarget("test");
+        File warns1 = new File(BASEDIR + "test62/build1/.pct/test.p.warnings");
+        assertTrue(warns1.exists());
+        assertTrue(warns1.length() > 0);
+        File warns2 = new File(BASEDIR + "test62/build2/.pct/test.p.warnings");
+        assertTrue(warns2.exists());
+        assertTrue(warns2.length() > 0);
+        assertTrue(warns2.length() < warns1.length());
+        File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
+        assertTrue(warns3.exists());
+        assertEquals(warns3.length(), 0);
+    }
+
 }

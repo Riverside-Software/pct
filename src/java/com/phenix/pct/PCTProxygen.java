@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,7 +46,7 @@ public class PCTProxygen extends PCT {
     private static final String PROXYGEN_CLASS = "com.progress.open4gl.proxygen.Batch";
 
     private File srcFile = null;
-    private List<ResourceCollection> resources = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> resources = new ArrayList<>();
     private boolean keepFiles = false;
     private File workingDirectory = null;
 
@@ -116,7 +117,8 @@ public class PCTProxygen extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         // Verify resource collections
         for (ResourceCollection rc : resources) {
             if (!rc.isFilesystemOnly())
@@ -183,7 +185,7 @@ public class PCTProxygen extends PCT {
 
     }
 
-    private void executeProxygen(File pxgFile) throws BuildException {
+    private void executeProxygen(File pxgFile) {
         Java pxgTask = null;
         log(MessageFormat.format(Messages.getString("PCTProxygen.3"), pxgFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
 
@@ -216,9 +218,7 @@ public class PCTProxygen extends PCT {
         }
 
         // Parse output of proxygen task
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(logFile));
+        try (Reader r = new FileReader(logFile); BufferedReader reader = new BufferedReader(r)) {
             String str = null;
             while ((str = reader.readLine()) != null) {
                 if (str.contains("Warnings")) {
@@ -236,20 +236,12 @@ public class PCTProxygen extends PCT {
         } catch (IOException caught) {
             cleanup();
             throw new BuildException("Unable to parse output", caught);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException uncaught) {
-                }
-            }
         }
         cleanup();
 
         // Parse log file of proxygen itself, if file is available
         if ((pxgLogFile != null) && pxgLogFile.exists()) {
-            try {
-                reader = new BufferedReader(new FileReader(pxgLogFile));
+            try (Reader r = new FileReader(pxgLogFile); BufferedReader reader = new BufferedReader(r)) {
                 String str = null;
                 while ((str = reader.readLine()) != null) {
                     if (str.trim().startsWith(">>WARN")) {
@@ -263,16 +255,9 @@ public class PCTProxygen extends PCT {
             } catch (IOException caught) {
                 cleanup();
                 throw new BuildException("Unable to parse log file", caught);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException uncaught) {
-                    }
-                }
             }
         } else {
-            log("Unable to read log file : " + pxgLogFile.getAbsolutePath(), Project.MSG_WARN);
+            log("Unable to read log file", Project.MSG_WARN);
         }
 
         if (fail) {

@@ -31,8 +31,8 @@ import java.text.MessageFormat;
  * @since PCT 0.17
  */
 public class RCodeSelector extends BaseExtendSelector {
-    private final static int MODE_CRC = 1;
-    private final static int MODE_MD5 = 2;
+    private static final int MODE_CRC = 1;
+    private static final int MODE_MD5 = 2;
     
     private File dir = null;
     private File lib = null;

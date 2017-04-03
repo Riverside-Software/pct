@@ -17,8 +17,12 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
@@ -28,13 +32,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
 /**
  * Class for testing PCTCompileExt task
@@ -400,7 +397,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f6.length() > 0);
     }
 
-    @Test(groups = {"v10", "win"})
+    @Test(groups = {"win", "v10"})
     public void test28() {
         configureProject(BASEDIR + "test28/build.xml");
         executeTarget("build");
@@ -555,10 +552,10 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(line.startsWith("\"sports2000.Item\""));
         File inc = new File(BASEDIR + "test35/build/.pct/test.p.inc");
         assertTrue(inc.exists());
-        // TODO Problem is still there, test case kept for future reference
-        // LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
-        // Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
-        // assertTrue(lineProcessor.getResult());
+
+        LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
+        Files.readLines(inc, Charset.defaultCharset(), lineProcessor);
+        assertTrue(lineProcessor.getResult());
 
         File crc2 = new File(BASEDIR + "test35/build2/.pct/test.p.crc");
         assertTrue(crc2.exists());
@@ -637,7 +634,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("test3");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v10"})
     public void test38() {
         // Compile error with xcode
         configureProject(BASEDIR + "test38/build.xml");
@@ -645,7 +642,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         expectBuildException("test", "Should fail - Progress syntax error");
     }
 
-    @Test(groups = {"all"})
+    @Test(groups = {"v10"})
     public void test39() {
         // Compile error, no xcode
         configureProject(BASEDIR + "test39/build.xml");
@@ -673,12 +670,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         long mod2 = f2.lastModified();
 
         executeTarget("test2");
-        /*
-         * Bug in 11.3 with standard XREF, but not on different versions. To be investigated
-         * (later...)
-         */
-        // assertTrue(mod1 == f1.lastModified());
-        /* But fixed with XML-XREF */
+        assertTrue(f1.lastModified() > mod1);
         assertTrue(f2.lastModified() > mod2);
     }
 
@@ -823,6 +815,93 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f8.lastModified() > mod6);
     }
 
+    @Test(groups = {"v11"})
+    public void test52() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test52/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test52/build1/test.r");
+        assertTrue(f1.exists());
+
+        expectBuildException("test2", "Failure");
+        File f2 = new File(BASEDIR + "test52/build2/test.r");
+        assertFalse(f2.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test53() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test53/build.xml");
+        executeTarget("db");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test53/build1/test.r");
+        assertTrue(f1.exists());
+
+        expectBuildException("test2", "Failure");
+        File f2 = new File(BASEDIR + "test53/build2/test.r");
+        assertFalse(f2.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test54() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 6)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test54/build.xml");
+        executeTarget("db");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test54/build1/test.r");
+        assertTrue(f1.exists());
+
+        expectBuildException("test2", "Failure");
+        File f2 = new File(BASEDIR + "test54/build2/test.r");
+        assertFalse(f2.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test55() {
+        configureProject(BASEDIR + "test55/build.xml");
+        executeTarget("test1");
+        assertTrue(new File(BASEDIR + "test55/build1/test.r").exists());
+        assertTrue(new File(BASEDIR + "test55/build1/.pct/test.p.inc").exists());
+
+        executeTarget("test2");
+        assertFalse(new File(BASEDIR + "test55/build2/.pct").exists());
+        assertTrue(new File(BASEDIR + "test55/xref2/test.p.inc").exists());
+
+        executeTarget("test3");
+        assertFalse(new File(BASEDIR + "test55/build3/.pct").exists());
+        assertTrue(new File(BASEDIR + "test55/xref3/test.p.inc").exists());
+    }
+
     @Test(groups = {"v10"})
     public void test56() {
         configureProject(BASEDIR + "test56/build.xml");
@@ -863,6 +942,42 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test60() {
+        configureProject(BASEDIR + "test60/build.xml");
+        executeTarget("test");
+        File warns = new File(BASEDIR + "test60/build/.pct/test.p.warnings");
+        assertTrue(warns.exists());
+        assertTrue(warns.length() > 0);
+        executeTarget("test2");
+        assertFalse(warns.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test61() {
+        configureProject(BASEDIR + "test61/build.xml");
+        expectBuildException("test", "Expected...");
+        File xref = new File(BASEDIR + "test61/build/.pct/test.p.xref");
+        assertFalse(xref.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test62() {
+        // Same as test60 but with -swl.
+        configureProject(BASEDIR + "test62/build.xml");
+        executeTarget("test");
+        File warns1 = new File(BASEDIR + "test62/build1/.pct/test.p.warnings");
+        assertTrue(warns1.exists());
+        assertTrue(warns1.length() > 0);
+        File warns2 = new File(BASEDIR + "test62/build2/.pct/test.p.warnings");
+        assertTrue(warns2.exists());
+        assertTrue(warns2.length() > 0);
+        assertTrue(warns2.length() < warns1.length());
+        File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
+        assertTrue(warns3.exists());
+        assertEquals(warns3.length(), 0);
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
@@ -897,18 +1012,21 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test103() throws IOException {
         File inputDir = new File(BASEDIR + "test103/src");
+        File subDir1 = new File(inputDir, "dir1");
+        File subDir2 = new File(subDir1, "dir2");
+        subDir2.mkdirs();
         File srcFile = new File(BASEDIR + "test103/query-tester.w");
         for (int ii = 0; ii < 10; ii++) {
             for (int jj = 0; jj < 10; jj++) {
-                copy(srcFile, new File(inputDir, "test" + ii + jj + ".p"));
+                Files.copy(srcFile, new File(subDir2, "test" + ii + jj + ".p"));
             }
         }
         configureProject(BASEDIR + "test103/build.xml");
         executeTarget("test");
 
-        File f = new File(BASEDIR + "test103/build/test00.r");
+        File f = new File(BASEDIR + "test103/build/dir1/dir2/test00.r");
         assertTrue(f.exists());
-        f = new File(BASEDIR + "test103/build/test99.r");
+        f = new File(BASEDIR + "test103/build/dir1/dir2/test99.r");
         assertTrue(f.exists());
     }
 
@@ -961,22 +1079,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f2 = new File(BASEDIR + "test107/build/test2.r");
         assertTrue(f1.exists());
         assertTrue(f2.exists());
-    }
-
-    private static void copy(File src, File dst) throws IOException {
-        // Create channel on the source
-        FileChannel srcChannel = new FileInputStream(src).getChannel();
-
-        // Create channel on the destination
-        FileChannel dstChannel = new FileOutputStream(dst).getChannel();
-
-        // Copy file contents from source to destination
-        dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-
-        // Close the channels
-        srcChannel.close();
-        dstChannel.close();
-
     }
 
 }

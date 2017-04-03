@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test60">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <sleep milliseconds="1000" />
+    <echo file="src/test.p" message="FORM &quot;xxxxxxxxxx&quot; COLON 20 WITH FRAME x SIDE-LABELS." />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+</project>

@@ -130,19 +130,9 @@ public class DLCVersion implements Comparable<DLCVersion> {
     private static String extractVersionInfo(File dir) throws IOException {
         File version = new File(dir, "version");
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(version));
+        try (BufferedReader reader = new BufferedReader(new FileReader(version))) {
             return reader.readLine();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ioe) {
-                }
-            }
         }
-
     }
 
     public String getFullVersion() {
@@ -199,6 +189,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
         boolean arch;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof DLCVersion) {
             DLCVersion other = (DLCVersion) obj;

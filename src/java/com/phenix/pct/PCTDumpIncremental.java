@@ -35,7 +35,8 @@ public class PCTDumpIncremental extends PCTRun {
     private String codePage = null;
     private int debugLevel = 0;
     private boolean removeEmptyDFfile = false;	
-    private PCTConnection sourceDB, targetDB;
+    private PCTConnection sourceDB;
+    private PCTConnection targetDB;
 
     /**
      * Specifies if new indexes are created Active or Inactive. 

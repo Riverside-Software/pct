@@ -34,7 +34,7 @@ import java.util.List;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTWSComp extends PCTRun {
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<FileSet> filesets = new ArrayList<>();
     private boolean debug = false;
     private boolean webObject = true;
     private boolean keepMetaContentType = false;
@@ -125,10 +125,8 @@ public class PCTWSComp extends PCTRun {
      * 
      * @throws BuildException
      */
-    private void writeFileList() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fsList));
-
+    private void writeFileList() {
+        try (FileWriter fw = new FileWriter(fsList); BufferedWriter bw = new BufferedWriter(fw)) {
             for (FileSet fs : filesets) {
                 bw.write("FILESET=" + fs.getDir(this.getProject()).getAbsolutePath()); //$NON-NLS-1$
                 bw.newLine();
@@ -138,10 +136,8 @@ public class PCTWSComp extends PCTRun {
                     bw.newLine();
                 }
             }
-
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTWSComp.6")); //$NON-NLS-1$
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTWSComp.6"), caught); //$NON-NLS-1$
         }
     }
 
@@ -150,8 +146,7 @@ public class PCTWSComp extends PCTRun {
      * @throws BuildException
      */
     private void writeParams() throws BuildException {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(params));
+        try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
             bw.write("OUTPUTDIR=" + destDir.getAbsolutePath()); //$NON-NLS-1$
@@ -166,9 +161,8 @@ public class PCTWSComp extends PCTRun {
             bw.newLine();
             bw.write("KEEPMCT=" + (this.keepMetaContentType ? "1" : "0")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             bw.newLine();
-            bw.close();
-        } catch (IOException ioe) {
-            throw new BuildException(Messages.getString("PCTWSComp.24")); //$NON-NLS-1$
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTWSComp.24"), caught); //$NON-NLS-1$
         }
     }
 

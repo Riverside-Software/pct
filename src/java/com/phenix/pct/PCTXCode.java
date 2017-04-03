@@ -34,7 +34,7 @@ import org.apache.tools.ant.types.FileSet;
  * @author <a href="mailto:d.knol@steeg-software.nl">Dick Knol</a>
  */
 public class PCTXCode extends PCT {
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<FileSet> filesets = new ArrayList<>();
     private String key = null;
     private File destDir = null;
     private int tmpLogId = -1;
@@ -53,7 +53,6 @@ public class PCTXCode extends PCT {
         super();
 
         tmpLogId = PCT.nextRandomInt();
-
         tmpLog = new File(System.getProperty("java.io.tmpdir"), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 

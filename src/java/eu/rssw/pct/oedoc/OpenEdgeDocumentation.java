@@ -47,7 +47,7 @@ import eu.rssw.parser.ParserUtils;
 public class OpenEdgeDocumentation extends PCT {
     private File destDir = null;
     private String encoding = null;
-    private List<FileSet> filesets = new ArrayList<FileSet>();
+    private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
 
     public OpenEdgeDocumentation() {
@@ -62,15 +62,6 @@ public class OpenEdgeDocumentation extends PCT {
      */
     public void addFileset(FileSet set) {
         filesets.add(set);
-    }
-
-    /**
-     * Build dir 
-     * 
-     * @param dir Directory
-     */
-    public void setBuildDir(File dir) {
-        
     }
 
     /**
@@ -126,7 +117,7 @@ public class OpenEdgeDocumentation extends PCT {
             throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
         }
         // There must be at least one fileset
-        if (this.filesets.size() == 0) {
+        if (filesets.isEmpty()) {
             throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.1"));
         }
 
@@ -167,11 +158,7 @@ public class OpenEdgeDocumentation extends PCT {
                     }
                 }
             }
-        } catch (IOException caught) {
-            throw new BuildException(caught);
-        } catch (ANTLRException caught) {
-            throw new BuildException(caught);
-        } catch (JAXBException caught) {
+        } catch (IOException | ANTLRException | JAXBException caught) {
             throw new BuildException(caught);
         }
     }
