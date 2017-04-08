@@ -65,7 +65,7 @@
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
     <jacoco:coverage destFile="profiler/jacoco.exec">
-      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedgroups="${EXCLUDES}">
+      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES}" suiteName="${TESTENV} tests">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
