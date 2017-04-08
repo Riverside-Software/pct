@@ -39,7 +39,9 @@ stage('Full tests') {
     //branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
     failFast: false
   node('master') {
-    unstash name: "testng-*"
+    // Wildcards not accepted in unstash...
+    unstash name: 'testng-11.6-Win'
+    unstash name: 'testng-10.2-64-Linux'
     step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
   }
 }
