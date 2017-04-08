@@ -38,8 +38,10 @@ stage('Full tests') {
     //branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
     //branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
     failFast: false
-  unstash name: "testng-*"
-  step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+  node('master') {
+    unstash name: "testng-*"
+    step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+  }
 }
 
 stage('Sonar') {
