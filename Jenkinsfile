@@ -38,6 +38,16 @@ stage('Full tests') {
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
     branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
     failFast: false
+  node('master') {
+    // Wildcards not accepted in unstash...
+    unstash name: 'testng-10.2-Win'
+    unstash name: 'testng-11.6-Win'
+    unstash name: 'testng-10.2-Linux'
+    unstash name: 'testng-10.2-64-Linux'
+    unstash name: 'testng-11.6-Linux'
+    unstash name: 'testng-11.7-Linux'
+    step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+  }
 }
 
 stage('Sonar') {
@@ -51,7 +61,8 @@ stage('Sonar') {
   }
 }
 
-def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) { node(nodeName) {
+def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
+  node(nodeName) {
     ws {
       deleteDir()
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
@@ -61,8 +72,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      archive 'emailable-report-*.html,testng-results-*.xml'
-      step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+      stash name: "testng-${label}", includes: 'testng-results-*.xml'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }
