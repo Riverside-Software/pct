@@ -73,6 +73,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
       stash name: "testng-${label}", includes: 'testng-results-*.xml'
+      archive 'emailable-report-*.html'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }
