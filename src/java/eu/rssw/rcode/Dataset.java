@@ -40,13 +40,13 @@ public class Dataset {
 
     public void computeText() {
         StringBuilder sb = new StringBuilder("DEFINE DATASET ");
-        sb.append(name).append(' ');
-        sb.append('\n').append(" FOR ");
+        sb.append(name).append(" FOR ");
         boolean frst = true;
         for (String str : buffers) {
-            if (!frst) {
-                sb.append(',');
+            if (frst) {
                 frst = false;
+            } else {
+                sb.append(", ");
             }
             sb.append(str);
         }
