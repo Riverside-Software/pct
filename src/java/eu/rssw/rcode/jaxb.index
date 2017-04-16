@@ -12,4 +12,7 @@ GetSetModifier
 Procedure
 Function
 EnumMember
-
+TempTable
+TableField
+TableIndex
+Dataset

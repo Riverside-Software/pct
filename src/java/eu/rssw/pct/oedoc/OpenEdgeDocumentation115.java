@@ -144,7 +144,7 @@ public class OpenEdgeDocumentation115 extends PCT {
 
                     ICompilationUnit root = astMgr.createAST(file, astContext, monitor, IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                     if (isClass) {
-                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor();
+                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(pp);
                         log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                         root.accept(visitor);
                         if (visitor.getPackageName().length() == 0)

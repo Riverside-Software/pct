@@ -14,6 +14,18 @@ class eu.rssw.pct.X serializable use-widget-pool:
   define property foo4 as char.
   define public static property foo5 as char.
 
+  define temp-table tt1 no-undo
+    field fld1 as char
+    field fld2 as int
+    field fld3 as dec
+    field fld4 as logical
+    index idx1 is primary unique fld1 fld2.
+{ eu/rssw/pct/inc2.i }
+  define dataset ds1 for tt1.
+  define dataset ds2 for tt2.
+  define dataset ds3 for tt1, tt2.
+{ eu/rssw/pct/inc3.i }
+
   define public event isSomething signature void (piCustNum as integer). 
   
   define public event MyEvent void (sender AS Progress.Lang.Object, e AS System.EventArgs).

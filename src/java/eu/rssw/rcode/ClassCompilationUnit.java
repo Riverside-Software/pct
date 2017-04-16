@@ -70,6 +70,11 @@ public class ClassCompilationUnit {
     @XmlElement(name = "member")
     public List<EnumMember> enumMembers = new ArrayList<>();
 
+    @XmlElement(name = "temp-table")
+    public List<TempTable> tts = new ArrayList<>();
+    @XmlElement(name = "dataset")
+    public List<Dataset> dss = new ArrayList<>();
+
     public void classToXML(File out) throws JAXBException, IOException {
         try (FileOutputStream fos = new FileOutputStream(out)) {
             JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName());
