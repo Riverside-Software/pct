@@ -231,10 +231,6 @@ public class PCTNSBroker extends PCTBroker {
 
         if ((serverLogLevel != -1) && ((serverLogLevel < 1) || (serverLogLevel > 5)))
             throw new BuildException("Log level should be between 1 and 5");
-
-        if (this.action == null) {
-            throw new BuildException("Action attribute is missing");
-        }
     }
 
     private void cleanup() {
