@@ -223,7 +223,7 @@ public class PCTNSBroker extends PCTBroker {
      * 
      * @throws BuildException Attributes are wrong...
      */
-    private void checkAttributes() throws BuildException {
+    private void checkAttributes() {
         if ((!action.equalsIgnoreCase(UPDATE)) && (!action.equalsIgnoreCase(CREATE))
                 && (!action.equalsIgnoreCase(DELETE))) {
             throw new BuildException("Unknown action : " + action);
@@ -232,9 +232,6 @@ public class PCTNSBroker extends PCTBroker {
         if ((serverLogLevel != -1) && ((serverLogLevel < 1) || (serverLogLevel > 5)))
             throw new BuildException("Log level should be between 1 and 5");
 
-        if (this.name == null) {
-            throw new BuildException("Name attribute is missing");
-        }
         if (this.action == null) {
             throw new BuildException("Action attribute is missing");
         }

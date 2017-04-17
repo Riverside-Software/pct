@@ -263,7 +263,7 @@ public class PCTASBroker extends PCTBroker {
                         bw.println(server.getPropath());
                     }
 
-                    // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
+                    // No quotes in this attribute
                     bw.print("srvrStartupParam=");
                     for (String str : server.getCmdLineParameters()) {
                         bw.print(str);
@@ -311,9 +311,9 @@ public class PCTASBroker extends PCTBroker {
                 if ((server != null) && (server.getShutdownProc() != null)) {
                     bw.println("srvrShutdownProc=" + server.getShutdownProc());
                 }
-                if (uid.equalsIgnoreCase("auto")) {
+                if ("auto".equalsIgnoreCase(uid)) {
                     bw.println("uuid=" + new UID().toString());
-                } else if (!uid.equalsIgnoreCase("none")) {
+                } else if (!"none".equalsIgnoreCase(uid)) {
                     bw.println("uuid=" + uid);
                 }
             }
@@ -382,13 +382,12 @@ public class PCTASBroker extends PCTBroker {
         if (name.trim().length() == 0) {
             throw new BuildException("Name attribute is empty");
         }
-        // FIXME Operating mode is case-sensitive, so we should always replace value with the correct one
+        // TODO Operating mode is case-sensitive, so we should always replace value with the correct one
         if ((!operatingMode.equals(STATELESS)) && (!operatingMode.equals(STATE_AWARE))
                 && (!operatingMode.equals(STATE_RESET)) && (!operatingMode.equals(STATE_FREE)))
             throw new BuildException(
                     "Invalid operating mode (warning : operatingMode attribute is case sensitive)");
 
-        // TODO Server's attribute should be checked there...
     }
 
     private void cleanup() {

@@ -254,7 +254,6 @@ public class PCTWSBroker extends PCTBroker {
                 bw.println("controllingNameServer=" + this.nameServer);
                 bw.println("registrationMode=Register-IP");
                 bw.println("autoStart=" + (this.autoStart ? "1" : "0"));
-                // TODO Erm, this is crap... I should use something else to handle correctly quotes in command line
                 if (this.server != null) {
                     // getPropath() is empty if no <propath> defined in <server> node
                     if (!"".equals(server.getPropath())) {

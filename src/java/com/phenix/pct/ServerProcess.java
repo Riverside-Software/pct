@@ -59,27 +59,27 @@ public class ServerProcess extends PCTRun {
 
     @Override
     public void setProcedure(String procedure) {
-        throw new BuildException("Unknown attribute");
+        throw new BuildException(PCTBroker.UNKNOWN_ATTR);
     }
 
     @Override
     public void setGraphicalMode(boolean graphMode) {
-        throw new BuildException("Unknown attribute");
+        throw new BuildException(PCTBroker.UNKNOWN_ATTR);
     }
 
     @Override
     public void setDebugPCT(boolean debugPCT) {
-        throw new BuildException("Unknown attribute");
+        throw new BuildException(PCTBroker.UNKNOWN_ATTR);
     }
 
     @Override
     public void setBaseDir(File baseDir) {
-        throw new BuildException("Unknown attribute");
+        throw new BuildException(PCTBroker.UNKNOWN_ATTR);
     }
 
     @Override
     public void setFailOnError(boolean failOnError) {
-        throw new BuildException("Unknown attribute");
+        throw new BuildException(PCTBroker.UNKNOWN_ATTR);
     }
 
     public String getActivateProc() {

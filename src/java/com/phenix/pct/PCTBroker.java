@@ -26,17 +26,19 @@ public abstract class PCTBroker extends PCT {
     protected static final String UPDATE = "update";
     protected static final String CREATE = "create";
     protected static final String DELETE = "delete";
-    
+
     protected static final String UBROKER_PROPERTIES = "ubroker.properties";
     protected static final String CONMGR_PROPERTIES = "conmgr.properties";
-    
+
     protected static final String MERGE_CLASS = "com.progress.common.property.MergeProperties";
-    
+
+    protected static final String UNKNOWN_ATTR = "Unknown attribute";
+
     protected String action = null;
     protected String name = null;
     protected String file = null;
     protected String uid = "none";
-    
+
     /**
      * Action type to handle. Must be create|update|delete
      * 
@@ -47,9 +49,9 @@ public abstract class PCTBroker extends PCT {
     }
 
     /**
-     * Properties file to update. If this method is not called, falls back to default
-     * file depending on action, ie $DLC/properties/ubroker.properties for appservers 
-     * or $DLC/properties/conmgr.properties for databases
+     * Properties file to update. If this method is not called, falls back to default file depending
+     * on action, ie $DLC/properties/ubroker.properties for appservers or
+     * $DLC/properties/conmgr.properties for databases
      * 
      * @param file File
      */
@@ -65,7 +67,7 @@ public abstract class PCTBroker extends PCT {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Set unique identifier for broker. Default value is none.
      * 
