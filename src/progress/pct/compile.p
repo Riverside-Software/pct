@@ -55,6 +55,11 @@ DEFINE TEMP-TABLE ttXrefCRC NO-UNDO
   FIELD ttTblName AS CHARACTER.
 DEFINE TEMP-TABLE ttXrefClasses NO-UNDO
   FIELD ttClsName AS CHARACTER.
+DEFINE TEMP-TABLE ttWarnings NO-UNDO
+  FIELD msgNum   AS INTEGER
+  FIELD rowNum   AS INTEGER
+  FIELD fileName AS CHARACTER
+  FIELD msg      AS CHARACTER.
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
@@ -105,6 +110,7 @@ DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE lOptFullKw AS LOGICAL   NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOptFldQlf AS LOGICAL   NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOptFullNames AS LOGICAL NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE cOpts     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE iLine     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iTotlines AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
@@ -165,7 +171,6 @@ PROCEDURE setOption.
 END PROCEDURE.
 
 PROCEDURE initModule:
-  DEFINE VARIABLE cOpts AS CHARACTER NO-UNDO.
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
   /* Gets CRC list */
@@ -191,10 +196,6 @@ PROCEDURE initModule:
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-field-qualifiers'.
   IF lOptFullNames THEN
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names'.
-&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
-  IF DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7 THEN
-    COMPILER:OPTIONS = cOpts.
-&ENDIF
 
   IF ProgPerc GT 0 THEN DO:
     ASSIGN iNrSteps = 100 / ProgPerc.
@@ -245,7 +246,8 @@ PROCEDURE compileXref.
   DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE RCodeTS   AS {&DATETIME}   NO-UNDO.
   DEFINE VARIABLE ProcTS    AS {&DATETIME}   NO-UNDO.
-  DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO initial ''.
+  DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO INITIAL ''.
+  DEFINE VARIABLE lWarnings AS LOGICAL NO-UNDO INITIAL FALSE.
 
   /* Output progress */
   IF ProgPerc GT 0 THEN DO:
@@ -357,6 +359,24 @@ PROCEDURE compileXref.
   END.
   ELSE
     ASSIGN debugListingFile = ?.
+
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
+  IF (cOpts GT "") AND (DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7) THEN DO:
+    EMPTY TEMP-TABLE ttWarnings.
+    COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE=FALSE OPTIONS cOpts NO-ERROR.
+    IF COMPILER:ERROR THEN DO i = 1 TO COMPILER:NUM-MESSAGES:
+      /* Messages 14786, 14789, 18494 are the only relevant ones */
+      IF (COMPILER:GET-NUMBER(i) EQ 14786) OR (COMPILER:GET-NUMBER(i) EQ 14789) OR (COMPILER:GET-NUMBER(i) EQ 18494) THEN DO:
+        CREATE ttWarnings.
+        ASSIGN ttWarnings.msgNum   = COMPILER:GET-NUMBER(i)
+               ttWarnings.rowNum   = COMPILER:GET-ROW(i)
+               ttWarnings.fileName = COMPILER:GET-FILE-NAME(i)
+               ttWarnings.msg      = COMPILER:GET-MESSAGE(i)
+               lWarnings           = TRUE.
+      END.
+    END.
+  END.
+&ENDIF
 
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
   IF (lXCode AND XCodeKey NE ?) THEN
@@ -488,7 +508,7 @@ PROCEDURE compileXref.
       ELSE
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
-    IF COMPILER:WARNING THEN DO:
+    IF COMPILER:WARNING OR lWarnings THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
         /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
@@ -497,6 +517,9 @@ PROCEDURE compileXref.
             PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), COMPILER:GET-MESSAGE(i), COMPILER:GET-FILE-NAME(i)) SKIP.
           END.
         END.
+      END.
+      FOR EACH ttWarnings:
+        PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", ttWarnings.rowNum, ttWarnings.msg, ttWarnings.fileName) SKIP.
       END.
       OUTPUT STREAM sWarnings CLOSE.
     END.

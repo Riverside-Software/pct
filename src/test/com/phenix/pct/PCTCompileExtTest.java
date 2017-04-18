@@ -833,9 +833,11 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test52/build1/test.r");
         assertTrue(f1.exists());
 
-        expectBuildException("test2", "Failure");
+        executeTarget("test2");
         File f2 = new File(BASEDIR + "test52/build2/test.r");
-        assertFalse(f2.exists());
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test52/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
     }
 
     @Test(groups = {"v11"})
@@ -857,9 +859,11 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test53/build1/test.r");
         assertTrue(f1.exists());
 
-        expectBuildException("test2", "Failure");
+        executeTarget("test2");
         File f2 = new File(BASEDIR + "test53/build2/test.r");
-        assertFalse(f2.exists());
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test53/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
     }
 
     @Test(groups = {"v11"})
@@ -881,9 +885,11 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File f1 = new File(BASEDIR + "test54/build1/test.r");
         assertTrue(f1.exists());
 
-        expectBuildException("test2", "Failure");
+        executeTarget("test2");
         File f2 = new File(BASEDIR + "test54/build2/test.r");
-        assertFalse(f2.exists());
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test54/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
     }
 
     @Test(groups = {"v10"})
