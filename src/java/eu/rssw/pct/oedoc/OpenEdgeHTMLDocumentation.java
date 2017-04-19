@@ -140,22 +140,23 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         URL url = getClass().getClassLoader().getResource(
                 getClass().getName().replace(".", "/") + ".class");
         String jarPath = url.getPath().substring(5, url.getPath().indexOf('!'));
-        JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 
-        Enumeration<JarEntry> entries = jar.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            if (entry.isDirectory())
-                continue;
-            if (entry.getName().startsWith("templates/") && entry.getName().endsWith(".template")) {
-                copyStreamFromJar("/" + entry.getName(), new File(templateDir, entry.getName()
-                        .substring(10)));
-            }
-            if (entry.getName().startsWith("templates/resources")) {
-                copyStreamFromJar("/" + entry.getName(), new File(outputDir, entry.getName()
-                        .substring(10)));
+        try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (entry.isDirectory())
+                    continue;
+                if (entry.getName().startsWith("templates/")
+                        && entry.getName().endsWith(".template")) {
+                    copyStreamFromJar("/" + entry.getName(),
+                            new File(templateDir, entry.getName().substring(10)));
+                }
+                if (entry.getName().startsWith("templates/resources")) {
+                    copyStreamFromJar("/" + entry.getName(),
+                            new File(outputDir, entry.getName().substring(10)));
+                }
             }
         }
-        jar.close();
     }
 }

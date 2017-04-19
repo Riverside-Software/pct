@@ -291,7 +291,7 @@ public class PCTBgCompile extends PCTBgRun {
                     if (PCTBgCompile.this.getOptions().isFailOnError())
                         setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
                     if (compAttrs.isStopOnError())
-                        quit();
+                        setStatusQuit();
                 }
             }
         }

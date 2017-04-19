@@ -16,7 +16,7 @@
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.oe.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.jacoco.reportPath" value="profiler/jacoco.exec" />
+  <property name="sonar.jacoco.reportPaths" value="profiler/jacoco.exec" />
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.oe.propath" value="src/progress" />

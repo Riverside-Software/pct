@@ -66,7 +66,7 @@ public class PCTBgCRC extends PCTBgRun {
                 sendCommand("launch", "pct/pctBgCRC.p");
             } else if (customStatus == 1) {
                 sendCommand("getCRC", "");
-                quit();
+                setStatusQuit();
             }
             return false;
         }
