@@ -36,8 +36,8 @@ import org.apache.tools.ant.types.ResourceCollection;
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
-    private static final String NEW_INSTANCE = "-newinstance";
-    private static final String RELATIVE = "-relative";
+    private static final String NEW_INSTANCE_FLAG = "-newinstance";
+    private static final String RELATIVE_FLAG = "-relative";
 
     private String dbName = null;
     private String codepage = null;
@@ -566,9 +566,9 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue(srcDB.getAbsolutePath());
         exec.createArg().setValue(dbName);
         if (newInstance)
-            exec.createArg().setValue(NEW_INSTANCE);
+            exec.createArg().setValue(NEW_INSTANCE_FLAG);
         if (relative)
-            exec.createArg().setValue(RELATIVE);
+            exec.createArg().setValue(RELATIVE_FLAG);
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$

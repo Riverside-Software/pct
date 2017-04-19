@@ -183,7 +183,7 @@ public abstract class BackgroundWorker {
         return false;
     }
 
-    public final void quit() {
+    public final void setStatusQuit() {
         status = 4;
     }
 
@@ -215,7 +215,7 @@ public abstract class BackgroundWorker {
         if ("connect".equalsIgnoreCase(command) && err) {
             parent.logMessages(returnValues);
             parent.setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
-            quit();
+            setStatusQuit();
         }        
     }
 

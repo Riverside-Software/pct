@@ -33,7 +33,7 @@ import com.phenix.pct.PCTRun;
  * @version $Revision$
  */
 public class ProUnit extends PCTRun {
-    private File project;
+    private File xmlProject;
     private File result;
     private String template;
     private boolean compatibility = false;
@@ -44,7 +44,7 @@ public class ProUnit extends PCTRun {
      * @param project Mandatory
      */
     public void setProject(File project) {
-        this.project = project;
+        this.xmlProject = project;
     }
 
     /**
@@ -79,11 +79,11 @@ public class ProUnit extends PCTRun {
         StringBuilder sb = new StringBuilder("-runningAnt=true");
         String proc = "startProUnitBatch.p";
 
-        if ((project == null) || !project.isFile()) {
+        if ((xmlProject == null) || !xmlProject.isFile()) {
             throw new BuildException(MessageFormat.format(
                     Messages.getString("ProUnit.0"), new Object[]{"project"})); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
-            sb.append(" -projectFile=").append(project);
+            sb.append(" -projectFile=").append(xmlProject);
         }
 
         if (result != null) {

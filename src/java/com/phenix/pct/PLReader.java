@@ -75,9 +75,7 @@ public class PLReader {
     }
 
     private void readFileList() {
-        RandomAccessFile raf = null;
-        try {
-            raf = new RandomAccessFile(pl, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(pl, "r")) {
             FileChannel fc = raf.getChannel();
             int version = 0;
             ByteBuffer magic = ByteBuffer.allocate(2);
@@ -96,7 +94,7 @@ public class PLReader {
 
             Charset charset = getCharset(fc);
             int offset = getTOCOffset(fc, version);
-            files = new ArrayList<FileEntry>();
+            files = new ArrayList<>();
             FileEntry fe = null;
             while ((fe = readEntry(fc, offset, charset, version)) != null) {
                 if (fe.isValid())
@@ -105,14 +103,6 @@ public class PLReader {
             }
         } catch (IOException caught) {
             throw new RuntimeException(caught);
-        } finally {
-            if (raf != null) {
-                try {
-                    raf.close();
-                } catch (IOException uncaught) {
-
-                }
-            }
         }
     }
 
@@ -122,18 +112,10 @@ public class PLReader {
 
     public InputStream getInputStream(FileEntry fe) throws IOException {
         ByteBuffer bb = null;
-        RandomAccessFile raf = null;
-        try {
-            raf = new RandomAccessFile(pl, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(pl, "r")) {
             FileChannel fc = raf.getChannel();
             bb = ByteBuffer.allocate(fe.getSize());
             fc.read(bb, fe.getOffset());
-        } finally {
-            try {
-                raf.close();
-            } catch (IOException uncaught) {
-
-            }
         }
 
         return new ByteArrayInputStream(bb.array());
@@ -144,7 +126,7 @@ public class PLReader {
         if (fc.read(bEncoding, ENCODING_OFFSET) != ENCODING_SIZE)
             throw new RuntimeException("Invalid PL file");
         bEncoding.position(0);
-        StringBuffer sbEncoding = new StringBuffer();
+        StringBuilder sbEncoding = new StringBuilder();
         int zz = 0;
         while ((zz < 20) && (bEncoding.get(zz) != 0)) {
             sbEncoding.append((char) bEncoding.get(zz++));

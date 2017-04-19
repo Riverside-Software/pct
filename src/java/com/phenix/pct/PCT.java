@@ -441,15 +441,16 @@ public abstract class PCT extends Task {
         if (isSourceCodeUsed())
             return extractZip(f);
 
-        InputStream is = this.getClass().getResourceAsStream(
-                "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl");
-        OutputStream os = new FileOutputStream(f);
-        byte[] b = new byte[2048];
-        int k = 0;
-        while ((k = is.read(b)) != -1)
-            os.write(b, 0, k);
-        os.close();
-        is.close();
+        String plFile = "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl";
+        try (InputStream is = getClass().getResourceAsStream(plFile);
+                OutputStream os = new FileOutputStream(f)) {
+            byte[] b = new byte[8192];
+            int k = 0;
+            while ((k = is.read(b)) != -1) {
+                os.write(b, 0, k);
+            }
+        }
+
         return true;
     }
 
@@ -708,13 +709,13 @@ public abstract class PCT extends Task {
     }
 
     protected static void copyStreamFromJar(String streamName, File outFile) throws IOException {
-        InputStream in = PCT.class.getResourceAsStream(streamName);
-        OutputStream out = new FileOutputStream(outFile);
-        byte[] b = new byte[4096];
-        int k = 0;
-        while ((k = in.read(b)) != -1)
-            out.write(b, 0, k);
-        out.close();
-        in.close();
+        try (InputStream in = PCT.class.getResourceAsStream(streamName);
+                OutputStream out = new FileOutputStream(outFile)) {
+            byte[] b = new byte[8192];
+            int k = 0;
+            while ((k = in.read(b)) != -1) {
+                out.write(b, 0, k);
+            }
+        }
     }
 }
