@@ -7,7 +7,7 @@ stage('Class documentation build') {
   def jdk = tool name: 'JDK 1.8 64b', type: 'hudson.model.JDK'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
-    bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"
+    bat "${antHome}\\bin\\ant -DDLC11=${dlc11} classDoc"
   }
   stash name: 'classdoc', includes: 'dist/classDoc.zip'
  }
