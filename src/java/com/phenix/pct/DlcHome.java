@@ -23,13 +23,15 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.DefaultExcludes;
 
 public class DlcHome extends Task {
+    public static final String GLOBAL_DLCHOME = "__DLC_HOME__";
+
     private File value = null;
 
     @Override
     public void execute() throws BuildException {
         if (value == null)
             throw new BuildException("Value can't be null");
-        dlcHome = value;
+        getProject().setProperty(GLOBAL_DLCHOME, value.getAbsolutePath());
 
         DefaultExcludes excludes = new DefaultExcludes();
         excludes.bindToOwner(this);
@@ -41,9 +43,4 @@ public class DlcHome extends Task {
         this.value = file;
     }
 
-    // Not really good in multi-threaded case...
-    private static File dlcHome = null;
-    public static File getDlcHome() {
-        return dlcHome;
-    }
 }
