@@ -35,7 +35,7 @@ public class Dataset {
 
     @XmlElement(name = "dsComment")
     public String comment;
-    @XmlElement(name = "field")
+    @XmlElement(name = "buffer")
     public List<String> buffers = new ArrayList<>();
 
     public void computeText() {
