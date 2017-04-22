@@ -380,13 +380,6 @@ public abstract class PCT extends Task {
         return this.pp;
     }
 
-    /**
-     * This method has to be overridden
-     * 
-     * @throws BuildException
-     */
-    public abstract void execute() throws BuildException;
-
     protected void checkDlcHome() {
         if (dlcHome == null) {
             File f = DlcHome.getDlcHome();
@@ -475,12 +468,12 @@ public abstract class PCT extends Task {
             if (!ze.isDirectory()) {
                 File tmp = new File(dir, ze.getName());
                 tmp.getParentFile().mkdirs();
-                FileOutputStream fout = new FileOutputStream(tmp);
-                for (int c = zip.read(); c != -1; c = zip.read()) {
-                    fout.write(c);
+                try (FileOutputStream fout = new FileOutputStream(tmp)) {
+                    for (int c = zip.read(); c != -1; c = zip.read()) {
+                        fout.write(c);
+                    }
+                    zip.closeEntry();
                 }
-                zip.closeEntry();
-                fout.close();
             }
         }
         zip.close();

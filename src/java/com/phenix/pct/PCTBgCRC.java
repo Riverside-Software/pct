@@ -92,7 +92,7 @@ public class PCTBgCRC extends PCTBgRun {
         CRCThreadStatus worker = new CRCThreadStatus(this);
         try {
             worker.initialize(socket);
-        } catch (Throwable uncaught) {
+        } catch (Exception uncaught) {
             throw new BuildException(uncaught);
         }
 

@@ -167,7 +167,7 @@ public class PCTBgCompile extends PCTBgRun {
         CompilationBackgroundWorker worker = new CompilationBackgroundWorker(this);
         try {
             worker.initialize(socket);
-        } catch (Throwable uncaught) {
+        } catch (Exception uncaught) {
             throw new BuildException(uncaught);
         }
 
