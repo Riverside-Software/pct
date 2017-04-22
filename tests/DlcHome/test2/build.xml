@@ -6,4 +6,8 @@
     <DlcHome value="foobar" />
   </target>
 
+  <target name="test2">
+    <PCTRun procedure="foo.p" />
+  </target>
+
 </project>

@@ -27,7 +27,8 @@ public class DlcHomeTest extends BuildFileTestNg {
     public void test1() throws XPathExpressionException {
         configureProject("DlcHome/test1/build.xml");
         executeTarget("test");
-        assertPropertyEquals(DlcHome.GLOBAL_DLCHOME, System.getenv("DLC"));
+        assertPropertyEquals(DlcHome.GLOBAL_DLCHOME, System.getProperty("DLC"));
+        executeTarget("test2");
     }
 
     @Test(groups = {"v10"})
@@ -35,5 +36,6 @@ public class DlcHomeTest extends BuildFileTestNg {
         configureProject("DlcHome/test2/build.xml");
         executeTarget("test");
         Assert.assertTrue(getProject().getProperty(DlcHome.GLOBAL_DLCHOME).endsWith("foobar"));
+        expectBuildException("test2", "DLC not set correctly");
     }
 }
