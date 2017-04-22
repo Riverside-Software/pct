@@ -382,9 +382,9 @@ public abstract class PCT extends Task {
 
     protected void checkDlcHome() {
         if (dlcHome == null) {
-            File f = DlcHome.getDlcHome();
+            String f = getProject().getProperty(DlcHome.GLOBAL_DLCHOME);
             if (f != null) {
-                setDlcHome(f);
+                setDlcHome(new File(f));
             }
         }
 
