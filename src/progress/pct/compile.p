@@ -589,7 +589,7 @@ PROCEDURE displayCompileErrors PRIVATE:
     END.
     IMPORT STREAM sXref UNFORMATTED c.
     RUN logError IN hSrcProc (INPUT ' ' + c).
-    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 1) + '-^').
     RUN logError IN hSrcProc (INPUT pcMsg).
     RUN logError IN hSrcProc (INPUT '').
 

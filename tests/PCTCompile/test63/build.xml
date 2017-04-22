@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test63">
+  <taskdef resource="PCT.properties" />
+
+  <mkdir dir="build1" />
+  <mkdir dir="build2" />
+
+  <target name="test1">
+    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+      <fileset dir="src" includes="**/test1.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+      <fileset dir="src" includes="**/test2.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test3">
+    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+      <fileset dir="src" includes="**/test3.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test4">
+    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+      <fileset dir="src" includes="**/test4.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
