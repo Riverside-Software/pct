@@ -60,6 +60,11 @@ DEFINE TEMP-TABLE ttWarnings NO-UNDO
   FIELD rowNum   AS INTEGER
   FIELD fileName AS CHARACTER
   FIELD msg      AS CHARACTER.
+DEFINE TEMP-TABLE ttErrors NO-UNDO
+  FIELD fileName AS CHARACTER
+  FIELD rowNum   AS INTEGER
+  FIELD colNum   AS INTEGER
+  FIELD msg      AS CHARACTER.
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
@@ -528,11 +533,25 @@ PROCEDURE compileXref.
     END.
   END.
   ELSE DO:
-    ASSIGN c = '':U.
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + '/':U + ipInFile, CHR(92), '/':U))).
+    EMPTY TEMP-TABLE ttErrors.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
-      ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
+      IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
+      FIND ttErrors WHERE ttErrors.fileName EQ COMPILER:GET-FILE-NAME(i)
+                      AND ttErrors.rowNum   EQ COMPILER:GET-ROW(i)
+                      AND ttErrors.colNum   EQ COMPILER:GET-COLUMN(i)
+                    NO-ERROR.
+      IF NOT AVAILABLE ttErrors THEN DO:
+        CREATE ttErrors.
+        ASSIGN ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
+               ttErrors.rowNum   = COMPILER:GET-ROW(i)
+               ttErrors.colNum   = COMPILER:GET-COLUMN(i).
+      END.
+      ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
-    RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    FOR EACH ttErrors:
+      RUN displayCompileErrors(ipInDir + '/':U + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
+    END.
   END.
   IF NOT keepXref THEN
     OS-DELETE VALUE(cXrefFile).
@@ -557,27 +576,27 @@ PROCEDURE displayCompileErrors PRIVATE:
   DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE bit AS INTEGER NO-UNDO.
   DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
-  DEFINE VARIABLE include AS LOGICAL NO-UNDO.
+  DEFINE VARIABLE include AS LOGICAL NO-UNDO init true.
 
-  ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
+  ASSIGN include = REPLACE(pcInit, CHR(92), '/') NE REPLACE(pcFile, CHR(92), '/').
 
   /* Checking if file is xcoded */
-  COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+  COPY-LOB FROM FILE pcFile FOR 1 TO memvar.
   bit = GET-BYTE (memvar, 1).
   SET-SIZE(memvar) = 0.
 
   IF (include) THEN
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in file '&1' at line &2 column &3", REPLACE(pcFile, CHR(92), '/'), piRow, piColumn)).
   ELSE
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in main file at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
   IF (bit NE 17) AND (bit NE 19) THEN DO:
-    INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
+    INPUT STREAM sXref FROM VALUE(pcFile).
     DO i = 1 TO piRow - 1:
       IMPORT STREAM sXref UNFORMATTED ^.
     END.
     IMPORT STREAM sXref UNFORMATTED c.
-    RUN logError IN hSrcProc (INPUT c).
+    RUN logError IN hSrcProc (INPUT ' ' + c).
     RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
     RUN logError IN hSrcProc (INPUT pcMsg).
     RUN logError IN hSrcProc (INPUT '').
@@ -586,7 +605,7 @@ PROCEDURE displayCompileErrors PRIVATE:
   END.
   ELSE DO:
     RUN logError IN hSrcProc (INPUT pcMsg).
-    RUN logError IN hSrcProc (INPUT SUBSTITUTE(">> Can't display xcoded source &1", (IF include THEN pcInit ELSE pcFile))).
+    RUN logError IN hSrcProc (INPUT ">> Can't display xcoded source").
     RUN logError IN hSrcProc (INPUT '').
   END.
 
