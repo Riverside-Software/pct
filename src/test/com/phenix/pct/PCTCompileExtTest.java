@@ -23,6 +23,8 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
@@ -981,6 +983,45 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
         assertTrue(warns3.exists());
         assertEquals(warns3.length(), 0);
+    }
+
+    @Test(groups = {"v10"})
+    public void test63() {
+        configureProject(BASEDIR + "test63/build.xml");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test1.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test1", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test2.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        expectLogRegexp("test2", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test3.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test3", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test4.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/rssw/pct/TestClass.cls' at line .*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test4", rexp, false);
     }
 
     @Test(groups = {"v10"})
