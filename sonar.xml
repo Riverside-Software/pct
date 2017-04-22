@@ -12,7 +12,7 @@
   <property name="sonar.projectName" value="PCT" />
   <property name="sonar.projectVersion" value="208" />
   <property name="sonar.sources" value="src/java,src/progress" />
-  <property name="sonar.exclusions" value="src/progress/**/dump_inc*.p,src/progress/**/_dmpincr*.p,src/progress/adecomm/*,src/progress/web/method/*" />
+  <property name="sonar.exclusions" value="src/progress/Consultingwerk/**/*,src/progress/**/dump_inc*.p,src/progress/**/_dmpincr*.p,src/progress/adecomm/*,src/progress/web/method/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.oe.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
