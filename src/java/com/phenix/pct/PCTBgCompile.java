@@ -22,6 +22,7 @@ import org.apache.tools.ant.types.Mapper;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
+import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class PCTBgCompile extends PCTBgRun {
      * @throws BuildException Something went wrong
      */
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         if (compAttrs.getDestDir() == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
@@ -151,16 +152,44 @@ public class PCTBgCompile extends PCTBgRun {
             for (Resource r : rc) {
                 FileResource frs = (FileResource) r;
                 if (!frs.isDirectory()) {
-                CompilationUnit unit = new CompilationUnit();
-                unit.id = zz++;
-                unit.fsRootDir = frs.getBaseDir();
-                unit.fsFile = frs.getName();
-                unit.targetFile = mapperElement == null ? null : mapperElement.getImplementation().mapFileName(frs.getName())[0];
-                units.add(unit);
+                    // Each file is associated with its base directory
+                    String resBaseDir = "";
+                    if (getOptions().useRelativePaths()) {
+                        if (!isDirInPropath(frs.getBaseDir()))
+                            log(MessageFormat.format(Messages.getString("PCTCompile.48"), frs
+                                    .getBaseDir().getAbsolutePath()), Project.MSG_WARN);
+                        try {
+                            resBaseDir = FileUtils.getRelativePath(
+                                    (getOptions().getBaseDir() == null ? getProject().getBaseDir() : getOptions().getBaseDir()),
+                                    frs.getBaseDir()).replace('/', File.separatorChar);
+                        } catch (Exception caught) {
+                            throw new BuildException(caught);
+                        }
+                    } else {
+                        resBaseDir = frs.getBaseDir().getAbsolutePath(); //$NON-NLS-1$
+                    }
+
+                    CompilationUnit unit = new CompilationUnit();
+                    unit.id = zz++;
+                    unit.fsRootDir = new File(resBaseDir);
+                    unit.fsFile = frs.getName();
+                    unit.targetFile = mapperElement == null
+                            ? null
+                            : mapperElement.getImplementation().mapFileName(frs.getName())[0];
+                    units.add(unit);
                 }
             }
         }
+    }
 
+    private boolean isDirInPropath(File dir) {
+        if (getOptions().getPropath() == null)
+            return false;
+        for (String str : getOptions().getPropath().list()) {
+            if (new File(str).equals(dir))
+                return true;
+        }
+        return false;
     }
 
     protected BackgroundWorker createOpenEdgeWorker(Socket socket) {
@@ -181,6 +210,7 @@ public class PCTBgCompile extends PCTBgRun {
             super(parent);
         }
 
+        @Override
         protected boolean performCustomAction() throws IOException {
             if (customStatus == 0) {
                 customStatus = 3;
@@ -191,7 +221,7 @@ public class PCTBgCompile extends PCTBgRun {
                 sendCommand("setOptions", getOptions());
                 return true;
             } else if (customStatus == 4) {
-                List<CompilationUnit> sending = new ArrayList<CompilationUnit>();
+                List<CompilationUnit> sending = new ArrayList<>();
                 boolean noMoreFiles = false;
                 synchronized (units) {
                     int size = units.size();
