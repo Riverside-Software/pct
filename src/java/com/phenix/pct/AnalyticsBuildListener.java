@@ -43,8 +43,6 @@ public class AnalyticsBuildListener implements BuildListener {
                 taskCount.put(taskName.toLowerCase(), 1);
             else
                 taskCount.put(taskName.toLowerCase(), i + 1);
-        } else {
-            System.out.println("oups");
         }
     }
 
