@@ -55,11 +55,13 @@ DEFINE TEMP-TABLE ttWarnings NO-UNDO
   FIELD fileName AS CHARACTER
   FIELD msg      AS CHARACTER.
 DEFINE TEMP-TABLE ttErrors NO-UNDO
+  FIELD intNum   AS INTEGER
   FIELD fileName AS CHARACTER
   FIELD rowNum   AS INTEGER
   FIELD colNum   AS INTEGER
   FIELD msg      AS CHARACTER
-  INDEX ttErrors-PK IS PRIMARY UNIQUE fileName rowNum colNum.
+  INDEX ttErrors-PK IS PRIMARY UNIQUE intNum
+  INDEX ttErrors-PK2 IS UNIQUE fileName rowNum colNum.
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
@@ -536,7 +538,8 @@ PROCEDURE compileXref.
                     NO-ERROR.
       IF NOT AVAILABLE ttErrors THEN DO:
         CREATE ttErrors.
-        ASSIGN ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
+        ASSIGN ttErrors.intNum   = i
+               ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
                ttErrors.rowNum   = COMPILER:GET-ROW(i)
                ttErrors.colNum   = COMPILER:GET-COLUMN(i).
       END.
