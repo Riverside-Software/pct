@@ -45,7 +45,7 @@ public class AnalyticsBuildListener implements BuildListener {
         for (Entry<String, Integer> entry : taskCount.entrySet()) {
             sb.append(',').append(entry.getKey() + "=" + entry.getValue());
         }
-        System.out.println("str : " + sb.toString());
+
         try {
             final URL url = new URL("http://sonar-analytics.rssw.eu/write?db=sonar");
             HttpURLConnection connx = (HttpURLConnection) url.openConnection();
@@ -56,7 +56,7 @@ public class AnalyticsBuildListener implements BuildListener {
             wr.writeBytes(sb.toString());
             wr.flush();
             wr.close();
-            System.out.println("code : "  + connx.getResponseCode());
+            connx.getResponseCode();
         } catch (IOException uncaught) {
             // No-op
         }
