@@ -55,6 +55,7 @@ public abstract class PCT extends Task {
     // Files found in $DLC/properties/JavaTool.properties
     private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
     private static final Random RANDOM = new Random();
+    private static final BuildListener ANALYTICS = new AnalyticsBuildListener();
 
     private File dlcHome = null;
     private File dlcBin = null;
@@ -407,6 +408,10 @@ public abstract class PCT extends Task {
         if (dlcHome == null) {
             // Fail...
             throw new BuildException(Messages.getString("PCT.3")); //$NON-NLS-1$
+        }
+
+        if ((getProject() != null) && (System.getProperty("TESTLIBS") == null)) {
+            getProject().addBuildListener(ANALYTICS);
         }
     }
 

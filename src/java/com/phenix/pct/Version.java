@@ -23,7 +23,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Echo;
 
 public class Version extends Task {
-    private static final String BUNDLE_NAME = "com.phenix.pct.PCT"; //$NON-NLS-1$
+    protected static final String BUNDLE_NAME = "com.phenix.pct.PCT"; //$NON-NLS-1$
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
