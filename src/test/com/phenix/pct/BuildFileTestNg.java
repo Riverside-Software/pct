@@ -17,11 +17,13 @@
 package com.phenix.pct;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.testng.Assert;
@@ -29,15 +31,11 @@ import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
 
 public class BuildFileTestNg {
-    protected Project project;
+    private Project project;
 
-    private StringBuffer logBuffer;
-    private StringBuffer fullLogBuffer;
+    private List<String> logBuffer;
+    private List<String> fullLogBuffer;
     private BuildException buildException;
-
-    public BuildFileTestNg() {
-
-    }
 
     @AfterTest
     public void tearDown() {
@@ -47,14 +45,27 @@ public class BuildFileTestNg {
     }
 
     /**
+     * Get the project which has been configured for a test.
+     * 
+     * @return the Project instance for this test.
+     */
+    public Project getProject() {
+        return project;
+    }
+
+    public BuildException getBuildException() {
+        return buildException;
+    }
+
+    /**
      * Executes a target we have set up
      * 
      * @pre configureProject has been called
      * @param targetName target to run
      */
     public void executeTarget(String targetName) {
-        logBuffer = new StringBuffer();
-        fullLogBuffer = new StringBuffer();
+        logBuffer = new ArrayList<>();
+        fullLogBuffer = new ArrayList<>();
         buildException = null;
         project.executeTarget(targetName);
     }
@@ -121,42 +132,49 @@ public class BuildFileTestNg {
     }
 
     /**
-     * Get the project which has been configured for a test.
-     * 
-     * @return the Project instance for this test.
-     */
-    public Project getProject() {
-        return project;
-    }
-
-    /**
-     * Gets the directory of the project.
-     * 
-     * @return the base dir of the project
-     */
-    public File getProjectDir() {
-        return project.getBaseDir();
-    }
-
-    /**
-     * Gets the log the BuildFileTest object.
-     * 
-     * Only valid if configureProject() has been called.
-     * 
-     * @pre fullLogBuffer!=null
-     * @return The log value
-     */
-    public String getFullLog() {
-        return fullLogBuffer.toString();
-    }
-    /**
-     * Assert that only the given message has been logged with a priority &lt;= INFO when running
+     * Assert that the given message has been logged with a priority &lt;= INFO when running
      * the given target.
      */
     public void expectLog(String target, String log) {
         executeTarget(target);
-        String realLog = getLog();
-        Assert.assertEquals(realLog, log);
+        boolean found = false;
+        for (String str : logBuffer) {
+            if (!found) {
+                found = str.equals(log);
+            }
+        }
+        if (!found)
+            Assert.fail("Message not found");
+    }
+
+    /**
+     * Assert that the given messages were the only ones logged with a priority &lt;= INFO
+     * when running the given target.
+     */
+    public void expectLog(String target, String[] expectedLog) {
+        executeTarget(target);
+        Assert.assertEquals(logBuffer.size(), expectedLog.length);
+        for (int zz = 0; zz < expectedLog.length; zz++) {
+            Assert.assertEquals(logBuffer.get(zz), expectedLog[zz]);
+        }
+    }
+
+    public void expectLogRegexp(String target, List<String> regexps, boolean strict) {
+        executeTarget(target);
+        Iterator<String> iter = regexps.iterator();
+        for (String s : logBuffer) {
+            if (!iter.hasNext()) {
+                if (strict) {
+                    Assert.fail("Not enough regexp, current line '" + s + "'");
+                }
+                return;
+            }
+            java.util.regex.Pattern regExp = java.util.regex.Pattern.compile(iter.next());
+            if (!regExp.matcher(s).matches()) {
+                Assert.fail("Log '" + s + "' doesn't match regular expression '" + regExp.toString() + "'");
+                return;
+            }
+        }
     }
 
     /**
@@ -170,13 +188,6 @@ public class BuildFileTestNg {
         URL url = getClass().getResource(resource);
         Assert.assertNotNull(url, "Could not find resource :" + resource);
         return url;
-    }
-
-    public BuildException getBuildException() {
-        return buildException;
-    }
-    public String getLog() {
-        return logBuffer.toString();
     }
 
     /**
@@ -194,8 +205,8 @@ public class BuildFileTestNg {
      * @param filename name of project file to run
      */
     public void configureProject(String filename, int logLevel) throws BuildException {
-        logBuffer = new StringBuffer();
-        fullLogBuffer = new StringBuffer();
+        logBuffer = new ArrayList<>();
+        fullLogBuffer = new ArrayList<>();
         project = new Project();
         project.init();
         File antFile = new File(System.getProperty("root"), filename);
@@ -210,7 +221,7 @@ public class BuildFileTestNg {
      * Our own personal build listener.
      */
     private class AntTestListener implements BuildListener {
-        private int logLevel;
+        private final int logLevel;
 
         /**
          * Constructs a test listener which will ignore log events above the given level.
@@ -219,78 +230,48 @@ public class BuildFileTestNg {
             this.logLevel = logLevel;
         }
 
-        /**
-         * Fired before any targets are started.
-         */
-        public void buildStarted(BuildEvent event) {
-        }
-
-        /**
-         * Fired after the last target has finished. This event will still be thrown if an error
-         * occurred during the build.
-         * 
-         * @see BuildEvent#getException()
-         */
-        public void buildFinished(BuildEvent event) {
-        }
-
-        /**
-         * Fired when a target is started.
-         * 
-         * @see BuildEvent#getTarget()
-         */
-        public void targetStarted(BuildEvent event) {
-            // System.out.println("targetStarted " + event.getTarget().getName());
-        }
-
-        /**
-         * Fired when a target has finished. This event will still be thrown if an error occurred
-         * during the build.
-         * 
-         * @see BuildEvent#getException()
-         */
-        public void targetFinished(BuildEvent event) {
-            // System.out.println("targetFinished " + event.getTarget().getName());
-        }
-
-        /**
-         * Fired when a task is started.
-         * 
-         * @see BuildEvent#getTask()
-         */
-        public void taskStarted(BuildEvent event) {
-            // System.out.println("taskStarted " + event.getTask().getTaskName());
-        }
-
-        /**
-         * Fired when a task has finished. This event will still be throw if an error occurred
-         * during the build.
-         * 
-         * @see BuildEvent#getException()
-         */
-        public void taskFinished(BuildEvent event) {
-            // System.out.println("taskFinished " + event.getTask().getTaskName());
-        }
-
-        /**
-         * Fired whenever a message is logged.
-         * 
-         * @see BuildEvent#getMessage()
-         * @see BuildEvent#getPriority()
-         */
+        @Override
         public void messageLogged(BuildEvent event) {
             if (event.getPriority() > logLevel) {
-                // ignore event
                 return;
             }
 
-            if (event.getPriority() == Project.MSG_INFO || event.getPriority() == Project.MSG_WARN
-                    || event.getPriority() == Project.MSG_ERR) {
-                logBuffer.append(event.getMessage());
+            if (event.getPriority() <= Project.MSG_INFO) {
+                logBuffer.add(event.getMessage());
                 // Add message to TestNG reporting system
                 Reporter.log(event.getMessage());
             }
-            fullLogBuffer.append(event.getMessage());
+            fullLogBuffer.add(event.getMessage());
+        }
+
+        @Override
+        public void buildStarted(BuildEvent event) {
+            // No-op
+        }
+
+        @Override
+        public void buildFinished(BuildEvent event) {
+            // No-op
+        }
+
+        @Override
+        public void targetStarted(BuildEvent event) {
+            // No-op
+        }
+
+        @Override
+        public void targetFinished(BuildEvent event) {
+            // No-op
+        }
+
+        @Override
+        public void taskStarted(BuildEvent event) {
+            // No-op
+        }
+
+        @Override
+        public void taskFinished(BuildEvent event) {
+            // No-op
         }
     }
 

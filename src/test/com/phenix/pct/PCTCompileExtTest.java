@@ -23,6 +23,8 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
@@ -930,10 +932,10 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test58/build1/file1.r").exists());
         assertTrue(new File(BASEDIR + "test58/build1/dir1/file2.r").exists());
         assertTrue(new File(BASEDIR + "test58/build1/dir1/file3.r").exists());
-        expectLog("test-fr-1", "FR1-FR17FR2-FR27");
-        expectLog("test-de-1", "DE1-DE17DE2-DE27");
-        expectLog("test-fr-2", "FR1-FR1-FR114FR2-FR2-FR214");
-        expectLog("test-de-2", "DE1-DE1-DE114DE2-DE2-DE214");
+        expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+        expectLog("test-de-1", new String[] { "DE1-DE1", "7", "DE2-DE2", "7"});
+        expectLog("test-fr-2", new String[] { "FR1-FR1-FR1", "14", "FR2-FR2-FR2", "14"});
+        expectLog("test-de-2", new String[] { "DE1-DE1-DE1", "14", "DE2-DE2-DE2", "14"});
     }
 
     @Test(groups = {"v10"})
@@ -981,6 +983,45 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
         assertTrue(warns3.exists());
         assertEquals(warns3.length(), 0);
+    }
+
+    @Test(groups = {"v10"})
+    public void test63() {
+        configureProject(BASEDIR + "test63/build.xml");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test1.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test1", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test2.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        expectLogRegexp("test2", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test3.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test3", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/dir1/test4.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in file 'src/rssw/pct/TestClass.cls' at line .*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(" \\.\\.\\. in main file.*");
+        expectLogRegexp("test4", rexp, false);
     }
 
     @Test(groups = {"v10"})

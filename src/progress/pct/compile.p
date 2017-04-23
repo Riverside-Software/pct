@@ -15,16 +15,10 @@
  *
  */
 
-&SCOPED-DEFINE DATETIME DATETIME
-&SCOPED-DEFINE DATETIME_FN DATETIME
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   { pct/v11/xrefd0004.i}
 &ELSEIF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
   { pct/v10/xrefd0003.i}
-&ELSE
-  /* No more reason for this v9 section */
-  &SCOPED-DEFINE DATETIME INTEGER
-  &SCOPED-DEFINE DATETIME_FN getDate
 &ENDIF
 
 DEFINE TEMP-TABLE CRCList NO-UNDO
@@ -35,7 +29,7 @@ DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
   FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
-  FIELD ttMod      AS {&DATETIME}
+  FIELD ttMod      AS DATETIME
   INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
   INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
@@ -60,13 +54,20 @@ DEFINE TEMP-TABLE ttWarnings NO-UNDO
   FIELD rowNum   AS INTEGER
   FIELD fileName AS CHARACTER
   FIELD msg      AS CHARACTER.
+DEFINE TEMP-TABLE ttErrors NO-UNDO
+  FIELD intNum   AS INTEGER
+  FIELD fileName AS CHARACTER
+  FIELD rowNum   AS INTEGER
+  FIELD colNum   AS INTEGER
+  FIELD msg      AS CHARACTER
+  INDEX ttErrors-PK IS PRIMARY UNIQUE intNum
+  INDEX ttErrors-PK2 IS UNIQUE fileName rowNum colNum.
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
-FUNCTION getTimeStampDF RETURN {&DATETIME} (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
-FUNCTION getTimeStampF RETURN {&DATETIME} (INPUT f AS CHARACTER) FORWARD.
-FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER) FORWARD.
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS {&DATETIME}, INPUT d AS CHARACTER) FORWARD.
+FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
+FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
@@ -237,15 +238,14 @@ PROCEDURE compileXref.
   DEFINE VARIABLE cFile2    AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cFileExt2 AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
   DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
   DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE RCodeTS   AS {&DATETIME}   NO-UNDO.
-  DEFINE VARIABLE ProcTS    AS {&DATETIME}   NO-UNDO.
+  DEFINE VARIABLE RCodeTS   AS DATETIME   NO-UNDO.
+  DEFINE VARIABLE ProcTS    AS DATETIME   NO-UNDO.
   DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO INITIAL ''.
   DEFINE VARIABLE lWarnings AS LOGICAL NO-UNDO INITIAL FALSE.
 
@@ -528,11 +528,26 @@ PROCEDURE compileXref.
     END.
   END.
   ELSE DO:
-    ASSIGN c = '':U.
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + '/':U + ipInFile, CHR(92), '/':U))).
+    EMPTY TEMP-TABLE ttErrors.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
-      ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
+      IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
+      FIND ttErrors WHERE ttErrors.fileName EQ COMPILER:GET-FILE-NAME(i)
+                      AND ttErrors.rowNum   EQ COMPILER:GET-ROW(i)
+                      AND ttErrors.colNum   EQ COMPILER:GET-COLUMN(i)
+                    NO-ERROR.
+      IF NOT AVAILABLE ttErrors THEN DO:
+        CREATE ttErrors.
+        ASSIGN ttErrors.intNum   = i
+               ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
+               ttErrors.rowNum   = COMPILER:GET-ROW(i)
+               ttErrors.colNum   = COMPILER:GET-COLUMN(i).
+      END.
+      ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
-    RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    FOR EACH ttErrors:
+      RUN displayCompileErrors(ipInDir + '/':U + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
+    END.
   END.
   IF NOT keepXref THEN
     OS-DELETE VALUE(cXrefFile).
@@ -553,32 +568,32 @@ PROCEDURE displayCompileErrors PRIVATE:
   DEFINE INPUT  PARAMETER piColumn  AS INTEGER    NO-UNDO.
   DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
 
-  DEFINE VARIABLE i AS INTEGER    NO-UNDO .
-  DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE bit AS INTEGER NO-UNDO.
-  DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
-  DEFINE VARIABLE include AS LOGICAL NO-UNDO.
+  DEFINE VARIABLE i       AS INTEGER    NO-UNDO .
+  DEFINE VARIABLE c       AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE bit     AS INTEGER    NO-UNDO.
+  DEFINE VARIABLE memvar  AS MEMPTR     NO-UNDO.
+  DEFINE VARIABLE include AS LOGICAL    NO-UNDO.
 
-  ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
+  ASSIGN include = REPLACE(pcInit, CHR(92), '/') NE REPLACE(pcFile, CHR(92), '/').
 
   /* Checking if file is xcoded */
-  COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+  COPY-LOB FROM FILE pcFile FOR 1 TO memvar.
   bit = GET-BYTE (memvar, 1).
   SET-SIZE(memvar) = 0.
 
   IF (include) THEN
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in file '&1' at line &2 column &3", REPLACE(pcFile, CHR(92), '/'), piRow, piColumn)).
   ELSE
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in main file at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
   IF (bit NE 17) AND (bit NE 19) THEN DO:
-    INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
+    INPUT STREAM sXref FROM VALUE(pcFile).
     DO i = 1 TO piRow - 1:
       IMPORT STREAM sXref UNFORMATTED ^.
     END.
     IMPORT STREAM sXref UNFORMATTED c.
-    RUN logError IN hSrcProc (INPUT c).
-    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logError IN hSrcProc (INPUT ' ' + c).
+    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 1) + '-^').
     RUN logError IN hSrcProc (INPUT pcMsg).
     RUN logError IN hSrcProc (INPUT '').
 
@@ -586,7 +601,7 @@ PROCEDURE displayCompileErrors PRIVATE:
   END.
   ELSE DO:
     RUN logError IN hSrcProc (INPUT pcMsg).
-    RUN logError IN hSrcProc (INPUT SUBSTITUTE(">> Can't display xcoded source &1", (IF include THEN pcInit ELSE pcFile))).
+    RUN logError IN hSrcProc (INPUT ">> Can't display xcoded source").
     RUN logError IN hSrcProc (INPUT '').
   END.
 
@@ -763,21 +778,16 @@ PROCEDURE importXref PRIVATE.
 
 END PROCEDURE.
 
-FUNCTION getTimeStampDF RETURNS {&DATETIME} (INPUT d AS CHARACTER, INPUT f AS CHARACTER):
+FUNCTION getTimeStampDF RETURNS DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER):
   RETURN getTimeStampF(d + (IF d EQ '':U THEN '':U ELSE '/':U) + f).
 END FUNCTION.
 
-FUNCTION getTimeStampF RETURNS {&DATETIME} (INPUT f AS CHARACTER):
+FUNCTION getTimeStampF RETURNS DATETIME (INPUT f AS CHARACTER):
   ASSIGN FILE-INFO:FILE-NAME = f.
-  RETURN {&DATETIME_FN} (FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
+  RETURN DATETIME(FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
 END FUNCTION.
 
-FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER):
-  IF (dt EQ ?) OR (tm EQ ?) THEN RETURN ?.
-  RETURN (INTEGER(dt) - INTEGER(DATE(1, 1, 1970))) * 86400 + tm.
-END FUNCTION.
-
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS {&DATETIME}, INPUT d AS CHARACTER).
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER).
   DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
