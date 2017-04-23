@@ -16,25 +16,35 @@ import org.apache.tools.ant.Task;
 public class AnalyticsBuildListener implements BuildListener {
     private static final Map<String, Integer> taskCount = new HashMap<>();
 
+    private boolean isPCTTask(Task task) {
+        if (task.getTaskType().toLowerCase().startsWith("pct"))
+            return true;
+        if ("DlcVersion".equalsIgnoreCase(task.getTaskType())
+                || "RestGen".equalsIgnoreCase(task.getTaskType())
+                || "ClassDocumentation".equalsIgnoreCase(task.getTaskType())
+                || "ABLUnit".equalsIgnoreCase(task.getTaskType()))
+            return true;
+        return false;
+    }
+
     @Override
     public void taskFinished(BuildEvent event) {
         Task task = event.getTask();
         if (task == null) {
             return;
         }
-        String type = task.getTaskType();
-        if (type == null) {
+        String taskName = task.getTaskType();
+        if (taskName == null) {
             return;
         }
-        if (type.toLowerCase().startsWith("pct") || "RestGen".equalsIgnoreCase(type)
-                || "DlcHome".equalsIgnoreCase(type) || "Sports2000".equalsIgnoreCase(type)
-                || "DlcVersion".equalsIgnoreCase(type) || "ABLUnit".equalsIgnoreCase(type)
-                || "ClassDocumentation".equalsIgnoreCase(type)) {
-            Integer i = taskCount.get(type.toLowerCase());
+        if (isPCTTask(task)) {
+            Integer i = taskCount.get(taskName.toLowerCase());
             if (i == null)
-                taskCount.put(type.toLowerCase(), 1);
+                taskCount.put(taskName.toLowerCase(), 1);
             else
-                taskCount.put(type.toLowerCase(), i + 1);
+                taskCount.put(taskName.toLowerCase(), i + 1);
+        } else {
+            System.out.println("oups");
         }
     }
 
