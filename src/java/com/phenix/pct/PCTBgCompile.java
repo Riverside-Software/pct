@@ -152,26 +152,9 @@ public class PCTBgCompile extends PCTBgRun {
             for (Resource r : rc) {
                 FileResource frs = (FileResource) r;
                 if (!frs.isDirectory()) {
-                    // Each file is associated with its base directory
-                    String resBaseDir = "";
-                    if (getOptions().useRelativePaths()) {
-                        if (!isDirInPropath(frs.getBaseDir()))
-                            log(MessageFormat.format(Messages.getString("PCTCompile.48"), frs
-                                    .getBaseDir().getAbsolutePath()), Project.MSG_WARN);
-                        try {
-                            resBaseDir = FileUtils.getRelativePath(
-                                    (getOptions().getBaseDir() == null ? getProject().getBaseDir() : getOptions().getBaseDir()),
-                                    frs.getBaseDir()).replace('/', File.separatorChar);
-                        } catch (Exception caught) {
-                            throw new BuildException(caught);
-                        }
-                    } else {
-                        resBaseDir = frs.getBaseDir().getAbsolutePath(); //$NON-NLS-1$
-                    }
-
                     CompilationUnit unit = new CompilationUnit();
                     unit.id = zz++;
-                    unit.fsRootDir = new File(resBaseDir);
+                    unit.fsRootDir = getResourceBaseDir(frs.getBaseDir());
                     unit.fsFile = frs.getName();
                     unit.targetFile = mapperElement == null
                             ? null
@@ -180,6 +163,29 @@ public class PCTBgCompile extends PCTBgRun {
                 }
             }
         }
+    }
+
+    private String getResourceBaseDir(File baseDir) {
+        String resBaseDir;
+        if (getOptions().useRelativePaths()) {
+            if (!isDirInPropath(baseDir))
+                log(MessageFormat.format(Messages.getString("PCTCompile.48"),
+                        baseDir.getAbsolutePath()), Project.MSG_WARN);
+            try {
+                resBaseDir = FileUtils
+                        .getRelativePath(
+                                getOptions().getBaseDir() == null
+                                        ? getProject().getBaseDir()
+                                        : getOptions().getBaseDir(),
+                                baseDir)
+                        .replace('/', File.separatorChar);
+            } catch (Exception caught) {
+                throw new BuildException(caught);
+            }
+        } else {
+            resBaseDir = baseDir.getAbsolutePath(); // $NON-NLS-1$
+        }
+        return resBaseDir;
     }
 
     private boolean isDirInPropath(File dir) {
@@ -329,8 +335,8 @@ public class PCTBgCompile extends PCTBgRun {
 
     private static class CompilationUnit implements Comparable<CompilationUnit> {
         private int id;
-        private File fsRootDir; // Fileset root directory
-        private String fsFile; // Fileset relative file name
+        private String fsRootDir; // Fileset root directory
+        private String fsFile;    // Fileset relative file name
         private String targetFile;
 
         @Override
