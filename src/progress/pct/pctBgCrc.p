@@ -50,5 +50,5 @@ PROCEDURE getCRC.
         DELETE OBJECT h_File.
     END.
 
-	ASSIGN opOK = TRUE.    
+    ASSIGN opOK = TRUE.    
 END PROCEDURE.

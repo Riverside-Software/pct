@@ -37,11 +37,11 @@ DO TRANSACTION ON ERROR UNDO, RETRY:
     END.
     
     bDB:BUFFER-CREATE().
-		ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
-		       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
-		       bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
-		       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
-		       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
-		       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = "ODBC".
+    ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
+           bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
+           bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
+           bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
+           bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
+           bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = "ODBC".
 END.
 RETURN '0'.

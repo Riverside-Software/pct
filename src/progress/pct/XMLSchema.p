@@ -214,16 +214,16 @@ qSequence:QUERY-PREPARE('FOR EACH _Sequence':U).
 qSequence:QUERY-OPEN().
 qSequence:GET-FIRST(NO-LOCK).
 REPEAT:
-	IF qSequence:QUERY-OFF-END THEN LEAVE.
-	xRoot:CREATE-NODE(xSequence, 'sequence':U, 'ELEMENT':U).
-	xDB:APPEND-CHILD(xSequence).
-	xSequence:SET-ATTRIBUTE('name', STRING(bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE)).
-	xSequence:SET-ATTRIBUTE('init', STRING(bSequence:BUFFER-FIELD('_Seq-init':U):BUFFER-VALUE)).
-	xSequence:SET-ATTRIBUTE('incr', STRING(bSequence:BUFFER-FIELD('_Seq-incr':U):BUFFER-VALUE)).
-	xSequence:SET-ATTRIBUTE('min', STRING(bSequence:BUFFER-FIELD('_Seq-min':U):BUFFER-VALUE)).
-	xSequence:SET-ATTRIBUTE('max', STRING(bSequence:BUFFER-FIELD('_Seq-max':U):BUFFER-VALUE)) NO-ERROR.
-	xSequence:SET-ATTRIBUTE('cycle', STRING(bSequence:BUFFER-FIELD('_Cycle-ok':U):BUFFER-VALUE)).
-	qSequence:GET-NEXT(NO-LOCK).
+    IF qSequence:QUERY-OFF-END THEN LEAVE.
+    xRoot:CREATE-NODE(xSequence, 'sequence':U, 'ELEMENT':U).
+    xDB:APPEND-CHILD(xSequence).
+    xSequence:SET-ATTRIBUTE('name', STRING(bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE)).
+    xSequence:SET-ATTRIBUTE('init', STRING(bSequence:BUFFER-FIELD('_Seq-init':U):BUFFER-VALUE)).
+    xSequence:SET-ATTRIBUTE('incr', STRING(bSequence:BUFFER-FIELD('_Seq-incr':U):BUFFER-VALUE)).
+    xSequence:SET-ATTRIBUTE('min', STRING(bSequence:BUFFER-FIELD('_Seq-min':U):BUFFER-VALUE)).
+    xSequence:SET-ATTRIBUTE('max', STRING(bSequence:BUFFER-FIELD('_Seq-max':U):BUFFER-VALUE)) NO-ERROR.
+    xSequence:SET-ATTRIBUTE('cycle', STRING(bSequence:BUFFER-FIELD('_Cycle-ok':U):BUFFER-VALUE)).
+    qSequence:GET-NEXT(NO-LOCK).
 END.
 qSequence:QUERY-CLOSE().
 
@@ -322,16 +322,16 @@ REPEAT:
             xIndex:APPEND-CHILD(xText).
         END.
         
-	    /* Searching area number */
-	    qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfIdxNum:BUFFER-VALUE) + ' AND _Object-type EQ 2').
-	    qStorage:QUERY-OPEN().
-	    qStorage:GET-FIRST(NO-LOCK).
-	    REPEAT:
-	        IF qStorage:QUERY-OFF-END THEN LEAVE.
-	        xIndex:SET-ATTRIBUTE('areaNum', STRING(bStorage:BUFFER-FIELD('_Area-number':U):BUFFER-VALUE)).
-	        qStorage:GET-NEXT(NO-LOCK).
-	    END.
-	    qStorage:QUERY-CLOSE().
+        /* Searching area number */
+        qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfIdxNum:BUFFER-VALUE) + ' AND _Object-type EQ 2').
+        qStorage:QUERY-OPEN().
+        qStorage:GET-FIRST(NO-LOCK).
+        REPEAT:
+            IF qStorage:QUERY-OFF-END THEN LEAVE.
+            xIndex:SET-ATTRIBUTE('areaNum', STRING(bStorage:BUFFER-FIELD('_Area-number':U):BUFFER-VALUE)).
+            qStorage:GET-NEXT(NO-LOCK).
+        END.
+        qStorage:QUERY-CLOSE().
 
         /* Parsing index's fields */
         ASSIGN cQuery = 'FOR EACH _Index-Field WHERE _Index-Field._Index-recid EQ ' + STRING (hBIndex:RECID).
