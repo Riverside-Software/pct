@@ -25,4 +25,6 @@ public class TableField {
     public String name;
     @XmlAttribute
     public String dataType;
+    @XmlAttribute
+    public String initialValue;
 }

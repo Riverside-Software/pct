@@ -115,7 +115,11 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.name = node.getName();
         tt.comment = findPreviousComment(node);
         tt.like = node.getLikeTable();
-        String fName = "Main file";
+        tt.noUndo = node.getChild(ProgressParserTokenTypes.NO__UNDO) != null;
+        tt.beforeTable = node.getBeforeTable();
+        tt.xmlNodeName = node.getXmlNodeName();
+        tt.serialize = node.getSerializeName();
+        String fName = "";
         if (node.getFileName() != null) {
          fName = propath.searchRelative(node.getFileName(), false).toPortableString();
         }
@@ -125,6 +129,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             TableField fld = new TableField();
             fld.name = col.getName();
             fld.dataType = col.getDataType().getName();
+            fld.initialValue = col.getInitial();
             tt.fields.add(fld);
         }
         for (IIndex idx : node.getIndexes()) {

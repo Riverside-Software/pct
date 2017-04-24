@@ -33,6 +33,12 @@ public class TempTable {
     public String definition;
     @XmlAttribute
     public boolean noUndo;
+    @XmlAttribute
+    public String beforeTable;
+    @XmlAttribute
+    public String xmlNodeName;
+    @XmlAttribute
+    public String serialize;
 
     @XmlElement(name = "text")
     public String aceText;
@@ -53,9 +59,21 @@ public class TempTable {
         if (noUndo) {
             sb.append("NO-UNDO ");
         }
+        if ((beforeTable != null) && !beforeTable.isEmpty()) {
+            sb.append("BEFORE-TABLE " + beforeTable + " ");
+        }
+        if ((xmlNodeName != null) && !xmlNodeName.isEmpty()) {
+            sb.append("XML-NODE-NAME '" + xmlNodeName + "' ");
+        }
+        if ((serialize != null) && !serialize.isEmpty()) {
+            sb.append("SERIALIZE-NAME '" + serialize + "' ");
+        }
         sb.append('\n');
         for (TableField fld : fields) {
-            sb.append("  FIELD ").append(fld.name).append(" AS ").append(fld.dataType).append('\n');
+            sb.append("  FIELD ").append(fld.name).append(" AS ").append(fld.dataType);
+            if (fld.initialValue != null)
+                sb.append(" INITIAL ").append(fld.initialValue);
+            sb.append('\n');
         }
         for (TableIndex idx : indexes) {
             sb.append("  INDEX ").append(idx.name);
