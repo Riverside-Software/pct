@@ -39,12 +39,12 @@ DO TRANSACTION ON ERROR UNDO, RETRY:
     END.
     
     bDB:BUFFER-CREATE().
-		ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
-		       bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
-		       bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
-		       bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
-		       bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
-		       bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = "ORACLE"
-		       bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[3]  = INTEGER(oraVers).
+    ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
+           bDB:BUFFER-FIELD('_Db-slave'):BUFFER-VALUE     = TRUE
+           bDB:BUFFER-FIELD('_Db-comm'):BUFFER-VALUE      = '':U
+           bDB:BUFFER-FIELD('_Db-xl-name'):BUFFER-VALUE   = cp
+           bDB:BUFFER-FIELD('_Db-coll-name'):BUFFER-VALUE = coll
+           bDB:BUFFER-FIELD('_Db-type'):BUFFER-VALUE      = "ORACLE"
+           bDB:BUFFER-FIELD('_Db-misc1'):BUFFER-VALUE[3]  = INTEGER(oraVers).
 END.
 RETURN '0'.

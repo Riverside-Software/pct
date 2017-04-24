@@ -28,7 +28,7 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
-  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
+  FIELD ttExcept   AS LOGICAL INITIAL FALSE  /* True in case of includes to ignore for recompile */
   FIELD ttMod      AS DATETIME
   INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
   INDEX TimeStamps-ttFile ttFile.
@@ -206,7 +206,7 @@ PROCEDURE initModule:
       RUN logVerbose IN hSrcProc ("WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc, ">>9%":U))).
     END.  
     DO iStep = 1 TO iNrSteps:
-      ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
+      ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INTEGER((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
     END.
   END.
 
@@ -434,7 +434,7 @@ PROCEDURE compileXref.
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
             STREAM-IO=streamIO
             V6FRAME=lV6Frame
             LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
@@ -449,7 +449,7 @@ PROCEDURE compileXref.
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
             STREAM-IO=streamIO
             V6FRAME=lV6Frame
             LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
