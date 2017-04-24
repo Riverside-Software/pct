@@ -29,6 +29,10 @@ public class Dataset {
     public String name;
     @XmlAttribute
     public String definition;
+    @XmlAttribute
+    public String xmlNodeName;
+    @XmlAttribute
+    public String serialize;
 
     @XmlElement(name = "text")
     public String aceText;
@@ -40,6 +44,12 @@ public class Dataset {
 
     public void computeText() {
         StringBuilder sb = new StringBuilder("DEFINE DATASET ");
+        if ((xmlNodeName != null) && !xmlNodeName.isEmpty()) {
+            sb.append("XML-NODE-NAME '" + xmlNodeName + "' ");
+        }
+        if ((serialize != null) && !serialize.isEmpty()) {
+            sb.append("SERIALIZE-NAME '" + serialize + "' ");
+        }
         sb.append(name).append(" FOR ");
         boolean frst = true;
         for (String str : buffers) {
