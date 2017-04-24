@@ -15,14 +15,14 @@
  *
  */
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW.
+routine-level on error undo, throw.
 
-USING Progress.Lang.*.
-USING OpenEdge.DataAdmin.Binding.ITableDataMonitor FROM PROPATH. 
+using Progress.Lang.*.
+using OpenEdge.DataAdmin.Binding.ITableDataMonitor from propath. 
 
-CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor: 
+class rssw.pct.LoadDataLogger implements ITableDataMonitor: 
   define stream sErr.
-  DEFINE VARIABLE errors AS LONGCHAR NO-UNDO.
+  define variable errors as longchar no-undo.
 
     define public property loadException as logical initial false no-undo
         get.
@@ -83,19 +83,19 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
         get. 
         set.
         
-    define public property ErrorMessage as char no-undo 
+    define public property ErrorMessage as character no-undo 
         get. 
         set.
         
-    define public property Interval as int no-undo 
+    define public property Interval as integer no-undo 
         get. 
         set.    
     
-    define public property IsComplete as log no-undo 
+    define public property IsComplete as logical no-undo 
         get. 
         set.    
     
-    define public property LogType as char no-undo 
+    define public property LogType as character no-undo 
         get. 
         set.
     
@@ -118,15 +118,15 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
         get. 
         set.    
 
-    method public void AddSharedTables(pcPath as char, table-handle htbl):
+    method public void AddSharedTables(pcPath as character, table-handle htbl):
     
     end method.
     
-    method public void AddGroupTables(pcPath as char, pcGroupdir as char,  table-handle htbl):
+    method public void AddGroupTables(pcPath as character, pcGroupdir as character,  table-handle htbl):
     
     end method.
     
-    method public void AddTenantTables(pcPath as char, pcTenant as char, table-handle htbl):
+    method public void AddTenantTables(pcPath as character, pcTenant as character, table-handle htbl):
     
     end method.
  
@@ -138,7 +138,7 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
        the actual file name used in the dump may differ, since the we 
        dump logic may change slashes and possibly also differences with relative 
        name and full path (?)  so we pass both owner and file at start */ 
-    method public void StartTable(ptable as char, ptype as character,powner as char,pfile as char):
+    method public void StartTable(ptable as character, ptype as character,powner as character,pfile as character):
       if dynamic-function('getParameter', 'silent') ne '' then
         message substitute("Loading data from &2 to &1...", ptable, pfile).
     end method.
@@ -149,7 +149,7 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     end method.
   
     method public void EndTable(pname as character,numrows as int64):
-      def var zz as char no-undo.
+      DEFINE VARIABLE zz AS character NO-UNDO.
 
       /* NumRows is not set in 11.4 */
       if dynamic-function('getParameter', 'silent') ne '' then do:
@@ -191,7 +191,7 @@ CLASS rssw.pct.LoadDataLogger IMPLEMENTS ITableDataMonitor:
     end method.
 
     /** called with any error logger may store all or just keep track of any  */
-    method public void AddTableError(pname as character,msg as char):
+    method public void AddTableError(pname as character,msg as character):
       this-object:anyError = true.
       /* File is not even loaded, that should throw a BuildException */
       if (msg EQ 'Numeric Format error') then this-object:loadException = true.
