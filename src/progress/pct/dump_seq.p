@@ -15,7 +15,7 @@
  *
  */
 
- DEFINE VARIABLE qSequence   AS HANDLE     NO-UNDO.
+DEFINE VARIABLE qSequence   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE bSequence   AS HANDLE     NO-UNDO.
 DEFINE VARIABLE cEncoding   AS CHARACTER  NO-UNDO.
 
@@ -31,11 +31,11 @@ qSequence:QUERY-PREPARE('FOR EACH _Sequence':U).
 qSequence:QUERY-OPEN().
 qSequence:GET-FIRST(NO-LOCK).
 REPEAT:
-	IF qSequence:QUERY-OFF-END THEN LEAVE.
-	EXPORT bSequence:BUFFER-FIELD('_Seq-num':U):BUFFER-VALUE
-	       bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE
-	       DYNAMIC-CURRENT-VALUE(bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE, 'DICTDB').
-	qSequence:GET-NEXT(NO-LOCK).
+    IF qSequence:QUERY-OFF-END THEN LEAVE.
+    EXPORT bSequence:BUFFER-FIELD('_Seq-num':U):BUFFER-VALUE
+           bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE
+           DYNAMIC-CURRENT-VALUE(bSequence:BUFFER-FIELD('_Seq-name':U):BUFFER-VALUE, 'DICTDB').
+    qSequence:GET-NEXT(NO-LOCK).
 END.
 qSequence:QUERY-CLOSE().
 DELETE OBJECT bSequence.
