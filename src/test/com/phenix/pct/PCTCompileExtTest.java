@@ -1022,6 +1022,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         rexp.add(".*");
         rexp.add(" \\.\\.\\. in main file.*");
         expectLogRegexp("test4", rexp, false);
+
+        rexp.clear();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'rssw/pct/TestClass2.cls' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in main file at line .*");
+        expectLogRegexp("test5", rexp, false);
     }
 
     @Test(groups = {"v10"})

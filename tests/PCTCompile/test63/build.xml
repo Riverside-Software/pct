@@ -2,11 +2,10 @@
 <project name="PCTCompile-test63">
   <taskdef resource="PCT.properties" />
 
-  <mkdir dir="build1" />
-  <mkdir dir="build2" />
+  <mkdir dir="build" />
 
   <target name="test1">
-    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false">
       <fileset dir="src" includes="**/test1.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
@@ -14,7 +13,7 @@
   </target>
 
   <target name="test2">
-    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false">
       <fileset dir="src" includes="**/test2.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
@@ -22,7 +21,7 @@
   </target>
 
   <target name="test3">
-    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false">
       <fileset dir="src" includes="**/test3.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
@@ -30,9 +29,17 @@
   </target>
 
   <target name="test4">
-    <PCTCompile destDir="build1" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false">
       <fileset dir="src" includes="**/test4.p" />
       <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test5">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false">
+      <fileset dir="." includes="rssw/pct/TestClass2.cls" />
+      <propath location="." />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>

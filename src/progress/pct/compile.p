@@ -528,7 +528,7 @@ PROCEDURE compileXref.
     END.
   END.
   ELSE DO:
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + '/':U + ipInFile, CHR(92), '/':U))).
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/':U))).
     EMPTY TEMP-TABLE ttErrors.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
       IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
@@ -546,7 +546,7 @@ PROCEDURE compileXref.
       ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
     FOR EACH ttErrors:
-      RUN displayCompileErrors(ipInDir + '/':U + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
+      RUN displayCompileErrors(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
     END.
   END.
   IF NOT keepXref THEN
