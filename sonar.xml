@@ -4,7 +4,7 @@
   <property environment="env" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
   <path id="lib.cp">
-    <filelist dir="lib" files="ant.jar,ant-launcher.jar,oe_common_services.jar,parser.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
+    <filelist dir="lib" files="ant.jar,ant-launcher.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />

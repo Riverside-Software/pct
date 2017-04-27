@@ -33,9 +33,9 @@ DEFINE {&ACCESS} TEMP-TABLE eMethod NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eMeth
     FIELD GUID               AS CHARACTER
     FIELD Signature          AS CHARACTER 
     FIELD Modifier           AS CHARACTER 
-    FIELD IsStatic           AS LOGICAL INIT FALSE 
-    FIELD IsFinal            AS LOGICAL INIT FALSE
-    FIELD IsAbstract         AS LOGICAL INIT FALSE
+    FIELD IsStatic           AS LOGICAL INITIAL FALSE 
+    FIELD IsFinal            AS LOGICAL INITIAL FALSE
+    FIELD IsAbstract         AS LOGICAL INITIAL FALSE
     FIELD MethodName         AS CHARACTER 
     FIELD ReturnType         AS CHARACTER
     FIELD Inheritance        AS CHARACTER 

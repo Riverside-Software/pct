@@ -24,10 +24,14 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import antlr.CommonHiddenStreamToken;
-
+import com.openedge.core.metadata.DataTypes;
+import com.openedge.core.metadata.IDataType;
+import com.openedge.core.runtime.IPropath;
 import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
+import com.openedge.pdt.core.ast.DatasetDeclaration;
+import com.openedge.pdt.core.ast.EnumDeclaration;
+import com.openedge.pdt.core.ast.EnumeratorItem;
 import com.openedge.pdt.core.ast.EventDeclaration;
 import com.openedge.pdt.core.ast.MethodDeclaration;
 import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
@@ -35,29 +39,46 @@ import com.openedge.pdt.core.ast.ProgressTokenTypes;
 import com.openedge.pdt.core.ast.PropertyDeclaration;
 import com.openedge.pdt.core.ast.PropertyMethod;
 import com.openedge.pdt.core.ast.SimpleToken;
+import com.openedge.pdt.core.ast.TemptableDeclaration;
 import com.openedge.pdt.core.ast.TypeDeclaration;
 import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
+import com.openedge.pdt.core.ast.IndexDeclaration.IndexColumn;
 import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.IField;
+import com.openedge.pdt.core.ast.model.IIndex;
 import com.openedge.pdt.core.ast.model.IParameter;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
+import antlr.CommonHiddenStreamToken;
 import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
+import eu.rssw.rcode.Dataset;
+import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.GetSetModifier;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Parameter;
 import eu.rssw.rcode.ParameterMode;
 import eu.rssw.rcode.Property;
+import eu.rssw.rcode.TableField;
+import eu.rssw.rcode.TableIndex;
+import eu.rssw.rcode.TempTable;
 import eu.rssw.rcode.Using;
 import eu.rssw.rcode.UsingType;
 
 public class ClassDocumentationVisitor extends ASTVisitor {
+    private final IPropath propath;
+
     private ClassCompilationUnit cu = new ClassCompilationUnit();
     private boolean firstTokenVisited = false;
     private List<String> firstComments = new ArrayList<>();
+    private boolean gotEnum = false;
+
+    public ClassDocumentationVisitor(IPropath propath) {
+        this.propath = propath;
+    }
 
     public String getPackageName() {
         if (cu.packageName == null)
@@ -88,13 +109,114 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
+    public boolean visit(TemptableDeclaration node) {
+        TempTable tt = new TempTable();
+        tt.name = node.getName();
+        tt.comment = findPreviousComment(node);
+        tt.like = node.getLikeTable();
+        tt.noUndo = node.getChild(ProgressParserTokenTypes.NO__UNDO) != null;
+        tt.beforeTable = node.getBeforeTable();
+        tt.xmlNodeName = node.getXmlNodeName();
+        tt.serialize = node.getSerializeName();
+        String fName = "";
+        if (node.getFileName() != null) {
+         fName = propath.searchRelative(node.getFileName(), false).toPortableString();
+        }
+        tt.definition = fName;
+
+        for (IField col : node.getColumns()) {
+            TableField fld = new TableField();
+            fld.name = col.getName();
+            fld.dataType = col.getDataType().getName();
+            fld.initialValue = col.getInitial();
+            tt.fields.add(fld);
+        }
+        for (IIndex idx : node.getIndexes()) {
+            TableIndex tidx = new TableIndex();
+            tidx.name = idx.getName();
+            tidx.unique = idx.isUnique();
+            tidx.wordIndex = idx.isWordIndex();
+            tidx.primary = idx.isPrimary();
+            List<IndexColumn> lst = (List<IndexColumn>) idx.getColumnList();
+            for (IndexColumn col : lst) {
+                tidx.fields.add(col.getName());
+            }
+            tt.indexes.add(tidx);
+        }
+        cu.tts.add(tt);
+        tt.computeText();
+        return true;
+    }
+
+    @Override
+    public boolean visit(DatasetDeclaration node) {
+        Dataset ds = new Dataset();
+        ds.name = node.getName();
+        ds.comment = findPreviousComment(node);
+
+        for (String str : node.getBufferNames()) {
+            ds.buffers.add(str);
+        }
+        String fName = "Main file";
+        if (node.getFileName() != null) {
+         fName = propath.searchRelative(node.getFileName(), false).toPortableString();
+        }
+        ds.definition = fName;
+
+        cu.dss.add(ds);
+        ds.computeText();
+
+        return super.visit(node);
+    }
+
+    @Override
+    public boolean visit(TypeName name) {
+        if (cu.isEnum && gotEnum) {
+            int pos = name.getQualifiedName().lastIndexOf('.');
+            if (pos == -1) {
+                cu.className = name.getQualifiedName();
+            } else {
+                cu.packageName = name.getQualifiedName().substring(0, pos);
+                cu.className = name.getQualifiedName().substring(pos + 1);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnumDeclaration decl) {
+        cu.isEnum = true;
+        gotEnum = true;
+        cu.classComment.addAll(firstComments);
+        cu.classComment.add(findPreviousComment(decl));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnumeratorItem item) {
+        EnumMember member = new EnumMember(item.toString());
+        member.comment = findPreviousComment(item);
+        cu.enumMembers.add(member);
+
+        return true;
+    }
+
+    @Override
     public boolean visit(TypeDeclaration decl) {
         cu.packageName = decl.getPackageName();
         cu.className = decl.getClassName();
         cu.isInterface = decl.isInterface();
         cu.isAbstract = decl.isAbstract();
         cu.isFinal = decl.isFinal();
+        IASTNode clzNode = decl.getChildFirstLevel(ProgressParserTokenTypes.CLASS);
+        if (clzNode != null) {
+            cu.isSerializable = clzNode.getChildFirstLevel(ProgressParserTokenTypes.SERIALIZABLE) != null;
+            cu.useWidgetPool = clzNode.getChildFirstLevel(ProgressParserTokenTypes.USE__WIDGET__POOL) != null;
+        }
         cu.classComment.addAll(firstComments);
+        cu.classComment.add(findPreviousComment(decl));
 
         if (decl.getInherits() != null)
             cu.inherits = decl.getInherits().getQualifiedName();
@@ -107,6 +229,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(PropertyDeclaration decl) {
         Property prop = new Property();
         prop.name = decl.getName();
@@ -114,7 +237,15 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             prop.isStatic |= (zz == ProgressParserTokenTypes.STATIC);
         }
         prop.isAbstract = decl.isAbstract();
-        prop.dataType = decl.getDataType().getName();
+        if (decl.getDataType() == null) {
+            prop.dataType = "";
+        } else {
+            IDataType idt = DataTypes.getDataType(decl.getDataType().getName());
+            if (idt != null)
+                prop.dataType = idt.getABLName(true);
+            else
+                prop.dataType = decl.getDataType().getName();
+        }
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
         prop.propertyComment = findPreviousComment(decl);
@@ -123,6 +254,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(PropertyMethod decl) {
         IASTNode node = decl.getParent();
         if (node instanceof PropertyDeclaration) {
@@ -133,9 +265,9 @@ public class ClassDocumentationVisitor extends ASTVisitor {
                     prop = p;
             }
             if (prop != null) {
-                if (decl.getName().equalsIgnoreCase("get")) {
+                if ("get".equalsIgnoreCase(decl.getName())) {
                     prop.getModifier = GetSetModifier.from(decl.getAccessModifier());
-                } else if (decl.getName().equalsIgnoreCase("set")) {
+                } else if ("set".equalsIgnoreCase(decl.getName())) {
                     prop.setModifier = GetSetModifier.from(decl.getAccessModifier());
                 }
             }
@@ -144,6 +276,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(ConstructorDeclaration decl) {
         if (decl == null)
             return true;
@@ -159,7 +292,15 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
-                param.dataType = p.getDataType().getName();
+                if (p.getDataType() == null) {
+                    param.dataType = "";
+                } else {
+                    IDataType idt = DataTypes.getDataType(p.getDataType().getName());
+                    if (idt != null)
+                        param.dataType = idt.getABLName(true);
+                    else
+                        param.dataType = p.getDataType().getName();
+                }
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
                 constr.parameters.add(param);
@@ -170,6 +311,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(MethodDeclaration decl) {
         if (decl == null)
             return true;
@@ -192,7 +334,11 @@ public class ClassDocumentationVisitor extends ASTVisitor {
                 if (p.getDataType() == null) {
                     param.dataType = "";
                 } else {
-                    param.dataType = p.getDataType().getName();
+                    IDataType idt = DataTypes.getDataType(p.getDataType().getName());
+                    if (idt != null)
+                        param.dataType = idt.getABLName(true);
+                    else
+                        param.dataType = p.getDataType().getName();
                 }
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
@@ -203,6 +349,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(EventDeclaration decl) {
         if (decl == null)
             return true;
@@ -222,7 +369,11 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
-                param.dataType = p.getDataType().getName();
+                IDataType idt = DataTypes.getDataType(p.getDataType().getName());
+                if (idt != null)
+                    param.dataType = idt.getABLName(true);
+                else
+                    param.dataType = p.getDataType().getName();
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
                 event.parameters.add(param);
@@ -232,6 +383,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return true;
     }
 
+    @Override
     public boolean visit(UsingDeclaration decl) {
         Using using = new Using();
         using.name = decl.getName();
@@ -252,22 +404,21 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     }
 
     /**
-     * Renvoie le *dernier* commentaire
-     * 
-     * @param node
-     * @return
+     * Returns *last* comment
      */
     public static String findPreviousComment(ASTNode node) {
-      if ((node.getHiddenPrevious() != null) && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
-        return node.getHiddenPrevious().getText();
-      }
-      IASTNode n = node.getPrevSibling();
-      while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
-        if ((n.getHiddenPrevious() != null) && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
-          return n.getHiddenPrevious().getText();
-        n = n.getPrevSibling();
-      }
-      return null;
+        if ((node.getHiddenPrevious() != null)
+                && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
+            return node.getHiddenPrevious().getText();
+        }
+        IASTNode n = node.getPrevSibling();
+        while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
+            if ((n.getHiddenPrevious() != null)
+                    && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
+                return n.getHiddenPrevious().getText();
+            n = n.getPrevSibling();
+        }
+        return null;
     }
 
 }

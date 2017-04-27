@@ -13,20 +13,24 @@
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.testng.remote.RemoteTestNG"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="PCT"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DDLC=C:/Progress/DLC-11.3 -DTESTLIBS=C:/Users/Bastien/ProjetsRiverside/ProgressLib"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DDLC=C:/Progress/OpenEdge-11.6 -DTESTLIBS=C:/Users/gquer/Projets/PCT/lib"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:PCT/testbox}"/>
 <mapAttribute key="org.testng.eclipse.ALL_CLASS_METHODS">
 <mapEntry key="com.phenix.pct.ABLUnitTest" value=""/>
+<mapEntry key="com.phenix.pct.ClassDocumentationTest" value=""/>
 <mapEntry key="com.phenix.pct.PCTCompileTest" value=""/>
 <mapEntry key="com.phenix.pct.PCTRunTest" value=""/>
 <mapEntry key="com.phenix.pct.ProUnitTest" value=""/>
 </mapAttribute>
 <listAttribute key="org.testng.eclipse.CLASS_TEST_LIST">
-<listEntry value="com.phenix.pct.ABLUnitTest"/>
+<listEntry value="com.phenix.pct.ClassDocumentationTest"/>
 </listAttribute>
+<booleanAttribute key="org.testng.eclipse.DEBUG" value="false"/>
 <listAttribute key="org.testng.eclipse.GROUP_LIST"/>
 <listAttribute key="org.testng.eclipse.GROUP_LIST_CLASS"/>
 <stringAttribute key="org.testng.eclipse.LOG_LEVEL" value="2"/>
 <listAttribute key="org.testng.eclipse.PACKAGE_TEST_LIST"/>
+<stringAttribute key="org.testng.eclipse.PROTOCOL" value="json"/>
 <intAttribute key="org.testng.eclipse.TYPE" value="1"/>
+<booleanAttribute key="org.testng.eclipse.VERBOSE" value="false"/>
 </launchConfiguration>
