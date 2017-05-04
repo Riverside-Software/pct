@@ -10,7 +10,7 @@
       <isset property="DLC10-64" />
       <isset property="DLC11" />
     </and>
-  </condition>
+  </condition> <echo message="test gilles" />
 
   <property name="pct.release" value="208" />
   <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
