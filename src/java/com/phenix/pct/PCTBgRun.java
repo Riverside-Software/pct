@@ -476,7 +476,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             charset = Charset.defaultCharset();
         }
         if (charset == null) {
-            log(Messages.getString("PCTCompile.47"), Project.MSG_INFO); //$NON-NLS-1$
+            log(Messages.getString("PCTCompile.47"), Project.MSG_VERBOSE); //$NON-NLS-1$
             charset = Charset.defaultCharset();
         }
 

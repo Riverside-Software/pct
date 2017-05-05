@@ -21,7 +21,7 @@ USING Progress.Lang.*.
 USING OpenEdge.DataAdmin.Binding.IDataDefinitionLoader FROM PROPATH. 
 
 CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
-  DEFINE PUBLIC PROPERTY IsReader AS LOGICAL  NO-UNDO INIT TRUE GET. PROTECTED SET.
+  DEFINE PUBLIC PROPERTY IsReader AS LOGICAL  NO-UNDO INITIAL TRUE GET. PROTECTED SET.
   DEFINE PUBLIC PROPERTY Error    AS AppError NO-UNDO GET. PRIVATE SET.
   DEFINE PUBLIC PROPERTY Warning  AS AppError NO-UNDO GET. PRIVATE SET.
   DEFINE PUBLIC PROPERTY AddingChildToNewTable AS LOGICAL NO-UNDO GET. SET. 
@@ -34,87 +34,87 @@ CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddError( pcText as char ) :
+  METHOD PUBLIC VOID AddError( pcText as character ) :
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddPhase2Error( pcText as char ):
+  METHOD PUBLIC VOID AddPhase2Error( pcText as character ):
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddWarning( pcText as char ) :
+  METHOD PUBLIC VOID AddWarning( pcText as character ) :
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddTable(pcAction as char, h as handle, piArea as int):
+  METHOD PUBLIC VOID AddTable(pcAction as character, h as handle, piArea as integer):
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddSequence(pcAction as char, h as handle):
+  METHOD PUBLIC VOID AddSequence(pcAction as character, h as handle):
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddIndex(pcAction as char, pcTable as char, h as handle, piArea as int):
+  METHOD PUBLIC VOID AddIndex(pcAction as character, pcTable as character, h as handle, piArea as integer):
 
   END METHOD.
 
-  METHOD PUBLIC VOID AddIndex(pcAction as char, pcTable as char, h as handle, piArea as int, piPrimary as log):
+  METHOD PUBLIC VOID AddIndex(pcAction as character, pcTable as character, h as handle, piArea as integer, piPrimary as logical):
 
   END METHOD.
   
-  METHOD PUBLIC VOID AddField(pcAction as char, pcTable as char, h as handle, piArea as int):
+  METHOD PUBLIC VOID AddField(pcAction as character, pcTable as character, h as handle, piArea as integer):
 
   END METHOD.
     
-  METHOD PUBLIC LOGICAL IsNewTable(pcTable as char):
+  METHOD PUBLIC LOGICAL IsNewTable(pcTable as character):
     RETURN TRUE.
   END METHOD. 
     
-  METHOD PUBLIC VOID RenameTable(pcname as char,pcNewname as char):
+  METHOD PUBLIC VOID RenameTable(pcname as character,pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC VOID RenameField(pcTable as char, pcname as char,pcNewname as char):
+  METHOD PUBLIC VOID RenameField(pcTable as character, pcname as character,pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC VOID RenameIndex(pcTable as char, pcname as char,pcNewname as char):
+  METHOD PUBLIC VOID RenameIndex(pcTable as character, pcname as character,pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC VOID RenameSequence(pcname as char,pcNewname as char):
+  METHOD PUBLIC VOID RenameSequence(pcname as character,pcNewname as character):
 
   END METHOD. 
 
-  METHOD PUBLIC CHAR TableOldName(pcNewname as char):
+  METHOD PUBLIC CHARACTER TableOldName(pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR FieldOldName(pcTable as char, pcNewname as char):
+  METHOD PUBLIC CHARACTER FieldOldName(pcTable as character, pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR IndexOldName(pcTable as char, pcNewname as char):
+  METHOD PUBLIC CHARACTER IndexOldName(pcTable as character, pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR SequenceOldName(pcNewname as char):
+  METHOD PUBLIC CHARACTER SequenceOldName(pcNewname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR FieldNewName(pcTable as char, pcOldname as char):
+  METHOD PUBLIC CHARACTER FieldNewName(pcTable as character, pcOldname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR IndexNewName(pcTable as char, pcOldname as char):
+  METHOD PUBLIC CHARACTER IndexNewName(pcTable as character, pcOldname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR TableNewName(pcOldname as char):
+  METHOD PUBLIC CHARACTER TableNewName(pcOldname as character):
 
   END METHOD.
 
-  METHOD PUBLIC CHAR SequenceNewName(pcOldname as char):
+  METHOD PUBLIC CHARACTER SequenceNewName(pcOldname as character):
 
   END METHOD.
 
@@ -126,11 +126,11 @@ CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
     RETURN ?.
   END METHOD.
 
-  METHOD PUBLIC CHAR RemoveErrorMessages ():
+  METHOD PUBLIC CHARACTER RemoveErrorMessages ():
     RETURN "".
   END METHOD.
 
-  METHOD PUBLIC CHAR RemoveWarningMessages ():
+  METHOD PUBLIC CHARACTER RemoveWarningMessages ():
     RETURN "".
   END METHOD.
 

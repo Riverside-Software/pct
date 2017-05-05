@@ -47,7 +47,7 @@ CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
 
   END METHOD.
 
-  METHOD PUBLIC OVERRIDE VOID AddError( pcText as char ):
+  METHOD PUBLIC OVERRIDE VOID AddError( pcText as character ):
     /* Yup, this message is hard-coded in prodict/dump/_lodsddl.p */
     IF (pcText EQ 'Input file is empty or invalid.') THEN DO:
       AddWarning(pcText).
@@ -59,13 +59,13 @@ CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
 
   END METHOD.
     
-  METHOD PUBLIC OVERRIDE VOID AddPhase2Error( pcText as char ) :
+  METHOD PUBLIC OVERRIDE VOID AddPhase2Error( pcText as character ) :
     THIS-OBJECT:numErrors = THIS-OBJECT:numErrors + 1.
     MESSAGE pcText.
     errors = errors + pcText + "~n".
   END METHOD.
     
-  METHOD PUBLIC OVERRIDE VOID AddWarning( pcText as char ) :
+  METHOD PUBLIC OVERRIDE VOID AddWarning( pcText as character ) :
     THIS-OBJECT:numWarnings = THIS-OBJECT:numWarnings + 1.
     MESSAGE pcText.
     warnings = warnings + pcText + "~n".

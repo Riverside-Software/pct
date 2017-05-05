@@ -39,6 +39,78 @@ CLASS Consultingwerk.Util.ListHelper:
         
     END CONSTRUCTOR.
 
+    /**
+     * Purpose: Adds an entry to the list (at the end)
+     * Notes:
+     * @param pcList The list to add the entry to
+     * @param pcEntry The entry to add to the list
+     * @return The new list
+     */
+    METHOD PUBLIC STATIC CHARACTER AddEntry (pcList AS CHARACTER,
+                                             pcEntry AS CHARACTER):
+
+        IF pcList = "":U THEN
+            RETURN pcEntry .
+        ELSE
+            RETURN pcList + ",":U + pcEntry .
+
+    END METHOD.
+
+    /**
+     * Purpose: Adds an entry to the list (at the end)
+     * Notes:
+     * @param pcList The list to add the entry to
+     * @param pcEntry The entry to add to the list
+     * @param pcDelimiter The list delimiter
+     * @return The new list
+     */
+    METHOD PUBLIC STATIC CHARACTER AddEntry (pcList AS CHARACTER,
+                                             pcEntry AS CHARACTER,
+                                             pcDelimiter AS CHARACTER):
+
+        IF pcList = "":U THEN
+            RETURN pcEntry .
+        ELSE
+            RETURN pcList + pcDelimiter + pcEntry .
+
+    END METHOD.
+
+    /**
+     * Purpose: Adds an entry to the list (at the end)
+     * Notes:
+     * @param pcList The list to add the entry to
+     * @param pcEntry The entry to add to the list
+     * @return The new list
+     */
+    METHOD PUBLIC STATIC LONGCHAR AddEntry (pcList AS LONGCHAR,
+                                            pcEntry AS LONGCHAR):
+
+        IF pcList = "":U THEN
+            RETURN pcEntry .
+        ELSE
+            RETURN pcList + ",":U + pcEntry .
+
+    END METHOD.
+
+    /**
+     * Purpose: Adds an entry to the list (at the end)
+     * Notes:
+     * @param pcList The list to add the entry to
+     * @param pcEntry The entry to add to the list
+     * @param pcDelimiter The list delimiter
+     * @return The new list
+     */
+    METHOD PUBLIC STATIC LONGCHAR AddEntry (pcList AS LONGCHAR,
+                                            pcEntry AS LONGCHAR,
+                                            pcDelimiter AS CHARACTER):
+
+        IF pcList = "":U THEN
+            RETURN pcEntry .
+        ELSE
+            RETURN pcList + pcDelimiter + pcEntry .
+
+    END METHOD.
+
     /*------------------------------------------------------------------------------
         Purpose: Checks a string against a list of one or more string matching patterns 
         Notes:   ABL CAN-DO like function, restoring the pre OE11.0 behaviour. In OE11.0    

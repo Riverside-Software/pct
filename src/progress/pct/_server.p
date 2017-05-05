@@ -92,24 +92,24 @@ PROCEDURE WriteToSocket:
     DEFINE INPUT  PARAMETER pcResp AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
-	DEFINE VARIABLE packet       as longchar no-undo.
-	DEFINE VARIABLE lfirst       as logical  no-undo.
-	
-    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
-	FOR EACH ttMsgs:
-	    ASSIGN packet = packet + "MSG:" + STRING(ttMsgs.level) + ":" + ttMsgs.msgLine + "~n".
-	END.
-	ASSIGN packet = packet + "END~n".
+    DEFINE VARIABLE packet       as longchar no-undo.
+    DEFINE VARIABLE lfirst       as logical  no-undo.
 
-	COPY-LOB FROM packet TO packetBuffer. 
+    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
+    FOR EACH ttMsgs:
+    ASSIGN packet = packet + "MSG:" + STRING(ttMsgs.level) + ":" + ttMsgs.msgLine + "~n".
+    END.
+    ASSIGN packet = packet + "END~n".
+
+    COPY-LOB FROM packet TO packetBuffer.
     IF VALID-HANDLE(hSocket) THEN DO:
         IF hSocket:CONNECTED() THEN DO:
-	        hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
-	        SET-SIZE(packetBuffer) = 0.    
+            hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
+            SET-SIZE(packetBuffer) = 0.
         END.
         ELSE DO:
-		    RUN Quit("").
-  	    END.
+            RUN Quit("").
+        END.
     END.
 END.
 

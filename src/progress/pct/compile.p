@@ -15,16 +15,10 @@
  *
  */
 
-&SCOPED-DEFINE DATETIME DATETIME
-&SCOPED-DEFINE DATETIME_FN DATETIME
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   { pct/v11/xrefd0004.i}
 &ELSEIF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
   { pct/v10/xrefd0003.i}
-&ELSE
-  /* No more reason for this v9 section */
-  &SCOPED-DEFINE DATETIME INTEGER
-  &SCOPED-DEFINE DATETIME_FN getDate
 &ENDIF
 
 DEFINE TEMP-TABLE CRCList NO-UNDO
@@ -34,8 +28,8 @@ DEFINE TEMP-TABLE CRCList NO-UNDO
 DEFINE TEMP-TABLE TimeStamps NO-UNDO
   FIELD ttFile     AS CHARACTER CASE-SENSITIVE
   FIELD ttFullPath AS CHARACTER CASE-SENSITIVE
-  FIELD ttExcept   AS LOGICAL INIT FALSE  /* True in case of includes to ignore for recompile */
-  FIELD ttMod      AS {&DATETIME}
+  FIELD ttExcept   AS LOGICAL INITIAL FALSE  /* True in case of includes to ignore for recompile */
+  FIELD ttMod      AS DATETIME
   INDEX PK-TimeStamps IS PRIMARY UNIQUE ttFile
   INDEX TimeStamps-ttFile ttFile.
 DEFINE TEMP-TABLE ttXref NO-UNDO
@@ -55,13 +49,25 @@ DEFINE TEMP-TABLE ttXrefCRC NO-UNDO
   FIELD ttTblName AS CHARACTER.
 DEFINE TEMP-TABLE ttXrefClasses NO-UNDO
   FIELD ttClsName AS CHARACTER.
+DEFINE TEMP-TABLE ttWarnings NO-UNDO
+  FIELD msgNum   AS INTEGER
+  FIELD rowNum   AS INTEGER
+  FIELD fileName AS CHARACTER
+  FIELD msg      AS CHARACTER.
+DEFINE TEMP-TABLE ttErrors NO-UNDO
+  FIELD intNum   AS INTEGER
+  FIELD fileName AS CHARACTER
+  FIELD rowNum   AS INTEGER
+  FIELD colNum   AS INTEGER
+  FIELD msg      AS CHARACTER
+  INDEX ttErrors-PK IS PRIMARY UNIQUE intNum
+  INDEX ttErrors-PK2 IS UNIQUE fileName rowNum colNum.
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
-FUNCTION getTimeStampDF RETURN {&DATETIME} (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
-FUNCTION getTimeStampF RETURN {&DATETIME} (INPUT f AS CHARACTER) FORWARD.
-FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER) FORWARD.
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS {&DATETIME}, INPUT d AS CHARACTER) FORWARD.
+FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
+FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
@@ -105,6 +111,7 @@ DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE lOptFullKw AS LOGICAL   NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOptFldQlf AS LOGICAL   NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOptFullNames AS LOGICAL NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE cOpts     AS CHARACTER NO-UNDO.
 DEFINE VARIABLE iLine     AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iTotlines AS INTEGER    NO-UNDO.
 DEFINE VARIABLE iNrSteps  AS INTEGER    NO-UNDO.
@@ -165,7 +172,6 @@ PROCEDURE setOption.
 END PROCEDURE.
 
 PROCEDURE initModule:
-  DEFINE VARIABLE cOpts AS CHARACTER NO-UNDO.
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
   /* Gets CRC list */
@@ -191,10 +197,6 @@ PROCEDURE initModule:
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-field-qualifiers'.
   IF lOptFullNames THEN
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names'.
-&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
-  IF DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7 THEN
-    COMPILER:OPTIONS = cOpts.
-&ENDIF
 
   IF ProgPerc GT 0 THEN DO:
     ASSIGN iNrSteps = 100 / ProgPerc.
@@ -204,7 +206,7 @@ PROCEDURE initModule:
       RUN logVerbose IN hSrcProc ("WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc, ">>9%":U))).
     END.  
     DO iStep = 1 TO iNrSteps:
-      ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INT((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
+      ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INTEGER((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
     END.
   END.
 
@@ -236,16 +238,16 @@ PROCEDURE compileXref.
   DEFINE VARIABLE cFile2    AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cFileExt AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cFileExt2 AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE c        AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
   DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
   DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
-  DEFINE VARIABLE RCodeTS   AS {&DATETIME}   NO-UNDO.
-  DEFINE VARIABLE ProcTS    AS {&DATETIME}   NO-UNDO.
-  DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO initial ''.
+  DEFINE VARIABLE RCodeTS   AS DATETIME   NO-UNDO.
+  DEFINE VARIABLE ProcTS    AS DATETIME   NO-UNDO.
+  DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO INITIAL ''.
+  DEFINE VARIABLE lWarnings AS LOGICAL NO-UNDO INITIAL FALSE.
 
   /* Output progress */
   IF ProgPerc GT 0 THEN DO:
@@ -358,6 +360,24 @@ PROCEDURE compileXref.
   ELSE
     ASSIGN debugListingFile = ?.
 
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
+  IF (cOpts GT "") AND (DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7) THEN DO:
+    EMPTY TEMP-TABLE ttWarnings.
+    COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE=FALSE OPTIONS cOpts NO-ERROR.
+    IF COMPILER:ERROR THEN DO i = 1 TO COMPILER:NUM-MESSAGES:
+      /* Messages 14786, 14789, 18494 are the only relevant ones */
+      IF (COMPILER:GET-NUMBER(i) EQ 14786) OR (COMPILER:GET-NUMBER(i) EQ 14789) OR (COMPILER:GET-NUMBER(i) EQ 18494) THEN DO:
+        CREATE ttWarnings.
+        ASSIGN ttWarnings.msgNum   = COMPILER:GET-NUMBER(i)
+               ttWarnings.rowNum   = COMPILER:GET-ROW(i)
+               ttWarnings.fileName = COMPILER:GET-FILE-NAME(i)
+               ttWarnings.msg      = COMPILER:GET-MESSAGE(i)
+               lWarnings           = TRUE.
+      END.
+    END.
+  END.
+&ENDIF
+
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
   IF (lXCode AND XCodeKey NE ?) THEN
     COMPILE
@@ -414,7 +434,7 @@ PROCEDURE compileXref.
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
             STREAM-IO=streamIO
             V6FRAME=lV6Frame
             LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
@@ -429,7 +449,7 @@ PROCEDURE compileXref.
           COMPILE
             VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
             SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROW=gwtFact
+            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
             STREAM-IO=streamIO
             V6FRAME=lV6Frame
             LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
@@ -488,7 +508,7 @@ PROCEDURE compileXref.
       ELSE
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
-    IF COMPILER:WARNING THEN DO:
+    IF COMPILER:WARNING OR lWarnings THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
         /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
@@ -498,6 +518,9 @@ PROCEDURE compileXref.
           END.
         END.
       END.
+      FOR EACH ttWarnings:
+        PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", ttWarnings.rowNum, ttWarnings.msg, ttWarnings.fileName) SKIP.
+      END.
       OUTPUT STREAM sWarnings CLOSE.
     END.
     ELSE DO:
@@ -505,11 +528,26 @@ PROCEDURE compileXref.
     END.
   END.
   ELSE DO:
-    ASSIGN c = '':U.
+    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/':U))).
+    EMPTY TEMP-TABLE ttErrors.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
-      ASSIGN c = c + COMPILER:GET-MESSAGE(i) + '~n':U.
+      IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
+      FIND ttErrors WHERE ttErrors.fileName EQ COMPILER:GET-FILE-NAME(i)
+                      AND ttErrors.rowNum   EQ COMPILER:GET-ROW(i)
+                      AND ttErrors.colNum   EQ COMPILER:GET-COLUMN(i)
+                    NO-ERROR.
+      IF NOT AVAILABLE ttErrors THEN DO:
+        CREATE ttErrors.
+        ASSIGN ttErrors.intNum   = i
+               ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
+               ttErrors.rowNum   = COMPILER:GET-ROW(i)
+               ttErrors.colNum   = COMPILER:GET-COLUMN(i).
+      END.
+      ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
-    RUN displayCompileErrors(SEARCH(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile), INPUT SEARCH(COMPILER:FILE-NAME), INPUT COMPILER:ERROR-ROW, INPUT COMPILER:ERROR-COLUMN, INPUT c).
+    FOR EACH ttErrors:
+      RUN displayCompileErrors(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
+    END.
   END.
   IF NOT keepXref THEN
     OS-DELETE VALUE(cXrefFile).
@@ -530,32 +568,32 @@ PROCEDURE displayCompileErrors PRIVATE:
   DEFINE INPUT  PARAMETER piColumn  AS INTEGER    NO-UNDO.
   DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
 
-  DEFINE VARIABLE i AS INTEGER    NO-UNDO .
-  DEFINE VARIABLE c AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE bit AS INTEGER NO-UNDO.
-  DEFINE VARIABLE memvar AS MEMPTR NO-UNDO.
-  DEFINE VARIABLE include AS LOGICAL NO-UNDO.
+  DEFINE VARIABLE i       AS INTEGER    NO-UNDO .
+  DEFINE VARIABLE c       AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE bit     AS INTEGER    NO-UNDO.
+  DEFINE VARIABLE memvar  AS MEMPTR     NO-UNDO.
+  DEFINE VARIABLE include AS LOGICAL    NO-UNDO.
 
-  ASSIGN include = REPLACE(pcInit, CHR(92), '/') EQ REPLACE(pcFile, CHR(92), '/').
+  ASSIGN include = REPLACE(pcInit, CHR(92), '/') NE REPLACE(pcFile, CHR(92), '/').
 
   /* Checking if file is xcoded */
-  COPY-LOB FROM FILE (IF include THEN pcInit ELSE pcFile) FOR 1 TO memvar.
+  COPY-LOB FROM FILE pcFile FOR 1 TO memvar.
   bit = GET-BYTE (memvar, 1).
   SET-SIZE(memvar) = 0.
 
   IF (include) THEN
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 at line &2 column &3", pcInit, piRow, piColumn)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in file '&1' at line &2 column &3", REPLACE(pcFile, CHR(92), '/'), piRow, piColumn)).
   ELSE
-    RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file &1 in included file &4 at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+    RUN logError IN hSrcProc (SUBSTITUTE(" ... in main file at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
 
   IF (bit NE 17) AND (bit NE 19) THEN DO:
-    INPUT STREAM sXref FROM VALUE((IF include THEN pcInit ELSE pcFile)).
+    INPUT STREAM sXref FROM VALUE(pcFile).
     DO i = 1 TO piRow - 1:
       IMPORT STREAM sXref UNFORMATTED ^.
     END.
     IMPORT STREAM sXref UNFORMATTED c.
-    RUN logError IN hSrcProc (INPUT c).
-    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 2) + '-^').
+    RUN logError IN hSrcProc (INPUT ' ' + c).
+    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 1) + '-^').
     RUN logError IN hSrcProc (INPUT pcMsg).
     RUN logError IN hSrcProc (INPUT '').
 
@@ -563,7 +601,7 @@ PROCEDURE displayCompileErrors PRIVATE:
   END.
   ELSE DO:
     RUN logError IN hSrcProc (INPUT pcMsg).
-    RUN logError IN hSrcProc (INPUT SUBSTITUTE(">> Can't display xcoded source &1", (IF include THEN pcInit ELSE pcFile))).
+    RUN logError IN hSrcProc (INPUT ">> Can't display xcoded source").
     RUN logError IN hSrcProc (INPUT '').
   END.
 
@@ -740,21 +778,16 @@ PROCEDURE importXref PRIVATE.
 
 END PROCEDURE.
 
-FUNCTION getTimeStampDF RETURNS {&DATETIME} (INPUT d AS CHARACTER, INPUT f AS CHARACTER):
+FUNCTION getTimeStampDF RETURNS DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER):
   RETURN getTimeStampF(d + (IF d EQ '':U THEN '':U ELSE '/':U) + f).
 END FUNCTION.
 
-FUNCTION getTimeStampF RETURNS {&DATETIME} (INPUT f AS CHARACTER):
+FUNCTION getTimeStampF RETURNS DATETIME (INPUT f AS CHARACTER):
   ASSIGN FILE-INFO:FILE-NAME = f.
-  RETURN {&DATETIME_FN} (FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
+  RETURN DATETIME(FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
 END FUNCTION.
 
-FUNCTION getDate RETURNS INTEGER (INPUT dt AS DATE, INPUT tm AS INTEGER):
-  IF (dt EQ ?) OR (tm EQ ?) THEN RETURN ?.
-  RETURN (INTEGER(dt) - INTEGER(DATE(1, 1, 1970))) * 86400 + tm.
-END FUNCTION.
-
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS {&DATETIME}, INPUT d AS CHARACTER).
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER).
   DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.

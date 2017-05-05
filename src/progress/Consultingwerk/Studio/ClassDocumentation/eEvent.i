@@ -33,8 +33,8 @@ DEFINE {&ACCESS} TEMP-TABLE eEvent NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eEvent
     FIELD GUID               AS CHARACTER
     FIELD Modifier           AS CHARACTER 
     FIELD Signature          AS CHARACTER 
-    FIELD IsStatic           AS LOGICAL INIT FALSE 
-    FIELD IsAbstract         AS LOGICAL INIT FALSE 
+    FIELD IsStatic           AS LOGICAL INITIAL FALSE 
+    FIELD IsAbstract         AS LOGICAL INITIAL FALSE 
     FIELD EventName          AS CHARACTER 
     FIELD DelegateName       AS CHARACTER 
     FIELD EventComment       AS CLOB COLUMN-CODEPAGE "UTF-8":U

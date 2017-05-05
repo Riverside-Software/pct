@@ -35,4 +35,9 @@ DEFINE {&ACCESS} TEMP-TABLE eTreeNode NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eBe
     FIELD NodeParentFullname AS CHARACTER
     FIELD Order              AS INTEGER
     FIELD PackageLink        AS CHARACTER
+    
+    INDEX NodeParentName NodeParent NodeName 
+    INDEX NodeType NodeType 
+    INDEX NodeParentTypeOrder NodeParent NodeType Order
+    INDEX NodeParentOrder NodeParent Order NodeName
     .

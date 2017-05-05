@@ -3,7 +3,6 @@ ProcedureCompilationUnit
 Constructor
 Property
 Method
-Comment
 Parameter
 AccessModifier
 ParameterMode
@@ -12,3 +11,8 @@ UsingType
 GetSetModifier
 Procedure
 Function
+EnumMember
+TempTable
+TableField
+TableIndex
+Dataset

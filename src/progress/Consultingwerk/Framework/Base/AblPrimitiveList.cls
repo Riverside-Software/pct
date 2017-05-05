@@ -190,9 +190,9 @@ CLASS Consultingwerk.Framework.Base.AblPrimitiveList
                                                             STRING (piIndex),
                                                             THIS-OBJECT:GetClass():TypeName) .
                 
-        RETURN ENTRY (piIndex,
+        RETURN STRING(ENTRY (piIndex,
                       THIS-OBJECT:Values,
-                      THIS-OBJECT:ValueDelimiter) .                                                     
+                      THIS-OBJECT:ValueDelimiter)).
                                                             
     END METHOD.
 

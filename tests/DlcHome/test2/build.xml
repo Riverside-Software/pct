@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="DlcHome-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <DlcHome value="foobar" />
+  </target>
+
+  <target name="test2">
+    <PCTRun procedure="foo.p" />
+  </target>
+
+</project>

@@ -66,7 +66,7 @@ public class PCTBgCRC extends PCTBgRun {
                 sendCommand("launch", "pct/pctBgCRC.p");
             } else if (customStatus == 1) {
                 sendCommand("getCRC", "");
-                quit();
+                setStatusQuit();
             }
             return false;
         }
@@ -92,7 +92,7 @@ public class PCTBgCRC extends PCTBgRun {
         CRCThreadStatus worker = new CRCThreadStatus(this);
         try {
             worker.initialize(socket);
-        } catch (Throwable uncaught) {
+        } catch (Exception uncaught) {
             throw new BuildException(uncaught);
         }
 

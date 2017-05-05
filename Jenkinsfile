@@ -3,11 +3,11 @@ stage('Class documentation build') {
   gitClean()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc11 = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def jdk = tool name: 'JDK 1.8 64b', type: 'hudson.model.JDK'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
-    bat "${antHome}\\bin\\ant -DDLC=${dlc11} classDoc"
+    bat "${antHome}\\bin\\ant -DDLC11=${dlc11} classDoc"
   }
   stash name: 'classdoc', includes: 'dist/classDoc.zip'
  }
@@ -31,13 +31,23 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
+ parallel branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
+    branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
     branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
     branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux', 11, 64) },
     branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
     branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
-    branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
     failFast: false
+  node('master') {
+    // Wildcards not accepted in unstash...
+    unstash name: 'testng-10.2-Win'
+    unstash name: 'testng-11.6-Win'
+    unstash name: 'testng-10.2-Linux'
+    unstash name: 'testng-10.2-64-Linux'
+    unstash name: 'testng-11.6-Linux'
+    unstash name: 'testng-11.7-Linux'
+    step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+  }
 }
 
 stage('Sonar') {
@@ -51,7 +61,8 @@ stage('Sonar') {
   }
 }
 
-def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) { node(nodeName) {
+def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
+  node(nodeName) {
     ws {
       deleteDir()
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
@@ -61,8 +72,8 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      archive 'emailable-report-*.html,testng-results-*.xml'
-      step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+      stash name: "testng-${label}", includes: 'testng-results-*.xml'
+      archive 'emailable-report-*.html'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }

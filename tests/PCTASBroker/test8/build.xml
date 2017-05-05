@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTASBroker-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTASBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}" />
+    <PCTASBroker action="delete" name="Test" file="ubroker.properties" dlcHome="${DLC}" />
+  </target>
+
+</project>

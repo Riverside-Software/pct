@@ -21,11 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,9 +73,7 @@ public class PLReader {
     }
 
     private void readFileList() {
-        RandomAccessFile raf = null;
-        try {
-            raf = new RandomAccessFile(pl, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(pl, "r")) {
             FileChannel fc = raf.getChannel();
             int version = 0;
             ByteBuffer magic = ByteBuffer.allocate(2);
@@ -91,12 +87,12 @@ public class PLReader {
                 version = 2;
                 mm = true;
             } else {
-                throw new RuntimeException("Not a valid PL file");
+                throw new InvalidLibraryException("Incorrect magic number");
             }
 
             Charset charset = getCharset(fc);
             int offset = getTOCOffset(fc, version);
-            files = new ArrayList<FileEntry>();
+            files = new ArrayList<>();
             FileEntry fe = null;
             while ((fe = readEntry(fc, offset, charset, version)) != null) {
                 if (fe.isValid())
@@ -104,15 +100,7 @@ public class PLReader {
                 offset += fe.getTocSize();
             }
         } catch (IOException caught) {
-            throw new RuntimeException(caught);
-        } finally {
-            if (raf != null) {
-                try {
-                    raf.close();
-                } catch (IOException uncaught) {
-
-                }
-            }
+            throw new InvalidLibraryException(caught);
         }
     }
 
@@ -122,18 +110,10 @@ public class PLReader {
 
     public InputStream getInputStream(FileEntry fe) throws IOException {
         ByteBuffer bb = null;
-        RandomAccessFile raf = null;
-        try {
-            raf = new RandomAccessFile(pl, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(pl, "r")) {
             FileChannel fc = raf.getChannel();
             bb = ByteBuffer.allocate(fe.getSize());
             fc.read(bb, fe.getOffset());
-        } finally {
-            try {
-                raf.close();
-            } catch (IOException uncaught) {
-
-            }
         }
 
         return new ByteArrayInputStream(bb.array());
@@ -142,9 +122,9 @@ public class PLReader {
     private Charset getCharset(FileChannel fc) throws IOException {
         ByteBuffer bEncoding = ByteBuffer.allocate(ENCODING_SIZE);
         if (fc.read(bEncoding, ENCODING_OFFSET) != ENCODING_SIZE)
-            throw new RuntimeException("Invalid PL file");
+            throw new InvalidLibraryException("Invalid charset");
         bEncoding.position(0);
-        StringBuffer sbEncoding = new StringBuffer();
+        StringBuilder sbEncoding = new StringBuilder();
         int zz = 0;
         while ((zz < 20) && (bEncoding.get(zz) != 0)) {
             sbEncoding.append((char) bEncoding.get(zz++));
@@ -159,7 +139,7 @@ public class PLReader {
     private int getTOCOffset(FileChannel fc, int version) throws IOException {
         ByteBuffer bTOC = ByteBuffer.allocate(4);
         if (fc.read(bTOC, (version == 1 ? FILE_LIST_OFFSET : FILE_LIST_OFFSET_V11)) != 4)
-            throw new RuntimeException("Invalid PL file");
+            throw new InvalidLibraryException("Unable to read table of contents");
         return bTOC.getInt(0);
     }
 
@@ -202,5 +182,17 @@ public class PLReader {
             return null;
         }
 
+    }
+
+    public static class InvalidLibraryException extends RuntimeException {
+        private static final long serialVersionUID = -5636414187086107273L;
+
+        public InvalidLibraryException(String msg) {
+            super(msg);
+        }
+
+        public InvalidLibraryException(Throwable cause) {
+            super(cause);
+        }
     }
 }

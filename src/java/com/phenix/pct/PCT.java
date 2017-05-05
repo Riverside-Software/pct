@@ -55,6 +55,7 @@ public abstract class PCT extends Task {
     // Files found in $DLC/properties/JavaTool.properties
     private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
     private static final Random RANDOM = new Random();
+    private static final BuildListener ANALYTICS = new AnalyticsBuildListener();
 
     private File dlcHome = null;
     private File dlcBin = null;
@@ -380,18 +381,11 @@ public abstract class PCT extends Task {
         return this.pp;
     }
 
-    /**
-     * This method has to be overridden
-     * 
-     * @throws BuildException
-     */
-    public abstract void execute() throws BuildException;
-
     protected void checkDlcHome() {
         if (dlcHome == null) {
-            File f = DlcHome.getDlcHome();
+            String f = getProject().getProperty(DlcHome.GLOBAL_DLCHOME);
             if (f != null) {
-                setDlcHome(f);
+                setDlcHome(new File(f));
             }
         }
 
@@ -414,6 +408,10 @@ public abstract class PCT extends Task {
         if (dlcHome == null) {
             // Fail...
             throw new BuildException(Messages.getString("PCT.3")); //$NON-NLS-1$
+        }
+
+        if ((getProject() != null) && (System.getProperty("TESTLIBS") == null)) {
+            getProject().addBuildListener(ANALYTICS);
         }
     }
 
@@ -441,15 +439,16 @@ public abstract class PCT extends Task {
         if (isSourceCodeUsed())
             return extractZip(f);
 
-        InputStream is = this.getClass().getResourceAsStream(
-                "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl");
-        OutputStream os = new FileOutputStream(f);
-        byte[] b = new byte[2048];
-        int k = 0;
-        while ((k = is.read(b)) != -1)
-            os.write(b, 0, k);
-        os.close();
-        is.close();
+        String plFile = "/pct" + version.getMajorVersion() + (version.is64bits() ? "-64" : "") + ".pl";
+        try (InputStream is = getClass().getResourceAsStream(plFile);
+                OutputStream os = new FileOutputStream(f)) {
+            byte[] b = new byte[8192];
+            int k = 0;
+            while ((k = is.read(b)) != -1) {
+                os.write(b, 0, k);
+            }
+        }
+
         return true;
     }
 
@@ -474,12 +473,12 @@ public abstract class PCT extends Task {
             if (!ze.isDirectory()) {
                 File tmp = new File(dir, ze.getName());
                 tmp.getParentFile().mkdirs();
-                FileOutputStream fout = new FileOutputStream(tmp);
-                for (int c = zip.read(); c != -1; c = zip.read()) {
-                    fout.write(c);
+                try (FileOutputStream fout = new FileOutputStream(tmp)) {
+                    for (int c = zip.read(); c != -1; c = zip.read()) {
+                        fout.write(c);
+                    }
+                    zip.closeEntry();
                 }
-                zip.closeEntry();
-                fout.close();
             }
         }
         zip.close();
@@ -708,13 +707,13 @@ public abstract class PCT extends Task {
     }
 
     protected static void copyStreamFromJar(String streamName, File outFile) throws IOException {
-        InputStream in = PCT.class.getResourceAsStream(streamName);
-        OutputStream out = new FileOutputStream(outFile);
-        byte[] b = new byte[4096];
-        int k = 0;
-        while ((k = in.read(b)) != -1)
-            out.write(b, 0, k);
-        out.close();
-        in.close();
+        try (InputStream in = PCT.class.getResourceAsStream(streamName);
+                OutputStream out = new FileOutputStream(outFile)) {
+            byte[] b = new byte[8192];
+            int k = 0;
+            while ((k = in.read(b)) != -1) {
+                out.write(b, 0, k);
+            }
+        }
     }
 }

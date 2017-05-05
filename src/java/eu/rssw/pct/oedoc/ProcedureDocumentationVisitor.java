@@ -26,6 +26,7 @@ import com.openedge.pdt.core.ast.ProcedureDeclaration;
 import com.openedge.pdt.core.ast.ProgressParserTokenTypes;
 import com.openedge.pdt.core.ast.ProgressTokenTypes;
 import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.IParameter;
 import com.openedge.pdt.core.ast.visitor.ASTVisitor;
 
 import eu.rssw.rcode.Parameter;
@@ -52,7 +53,7 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         cu.procedures.add(method);
 
         if (decl.getParameters() != null) {
-            for (com.openedge.pdt.core.ast.model.IParameter p : decl.getParameters()) {
+            for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
                 if (p.getDataType() == null) {
@@ -76,16 +77,18 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
      * @return
      */
     public static String findPreviousComment(ASTNode node) {
-      if ((node.getHiddenPrevious() != null) && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
-        return node.getHiddenPrevious().getText();
-      }
-      IASTNode n = node.getPrevSibling();
-      while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
-        if ((n.getHiddenPrevious() != null) && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
-          return n.getHiddenPrevious().getText();
-        n = n.getPrevSibling();
-      }
-      return null;
+        if ((node.getHiddenPrevious() != null)
+                && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
+            return node.getHiddenPrevious().getText();
+        }
+        IASTNode n = node.getPrevSibling();
+        while ((n != null) && (n.getType() == ProgressParserTokenTypes.ANNOTATION)) {
+            if ((n.getHiddenPrevious() != null)
+                    && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
+                return n.getHiddenPrevious().getText();
+            n = n.getPrevSibling();
+        }
+        return null;
     }
 
 }

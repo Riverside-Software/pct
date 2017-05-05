@@ -4,7 +4,7 @@
   <property environment="env" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
   <path id="lib.cp">
-    <filelist dir="lib" files="ant.jar,ant-launcher.jar,oe_common_services.jar,parser.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
+    <filelist dir="lib" files="ant.jar,ant-launcher.jar,testng-6.3.1.jar,gson-2.2.4.jar,profiler-parser-shaded-1.4.1.jar" />
   </path>
 
   <property name="sonar.host.url" value="${SONAR_URL}" />
@@ -12,11 +12,11 @@
   <property name="sonar.projectName" value="PCT" />
   <property name="sonar.projectVersion" value="208" />
   <property name="sonar.sources" value="src/java,src/progress" />
-  <property name="sonar.exclusions" value="src/progress/pct/v8/**/*" />
+  <property name="sonar.exclusions" value="src/progress/Consultingwerk/**/*,src/progress/**/dump_inc*.p,src/progress/**/_dmp*.p,src/progress/prodict/**/*,src/progress/adecomm/*,src/progress/web/method/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.oe.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.jacoco.reportPath" value="profiler/jacoco.exec" />
+  <property name="sonar.jacoco.reportPaths" value="profiler/jacoco.exec" />
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.oe.propath" value="src/progress" />

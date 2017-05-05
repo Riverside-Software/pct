@@ -34,8 +34,8 @@ DEFINE {&ACCESS} TEMP-TABLE eProperty NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE ePr
     FIELD Modifier           AS CHARACTER 
     FIELD SetModifier        AS CHARACTER 
     FIELD GetModifier        AS CHARACTER 
-    FIELD IsStatic           AS LOGICAL INIT FALSE 
-    FIELD IsAbstract         AS LOGICAL INIT FALSE 
+    FIELD IsStatic           AS LOGICAL INITIAL FALSE 
+    FIELD IsAbstract         AS LOGICAL INITIAL FALSE 
     FIELD Name               AS CHARACTER 
     FIELD DataType           AS CHARACTER 
     FIELD PropertyComment    AS CLOB COLUMN-CODEPAGE "UTF-8":U

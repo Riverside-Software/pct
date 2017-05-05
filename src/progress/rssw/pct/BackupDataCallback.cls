@@ -79,13 +79,13 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
 END method.
 
   method private character exportRecord (input hRecord  as handle, input cDelim  as character):
-    DEF VAR hFld     AS HANDLE    NO-UNDO.
-  DEF VAR iCnt     AS INTEGER   NO-UNDO.
-  DEF VAR iExtnt   AS INTEGER   NO-UNDO.
-  DEF VAR cTmp     AS CHARACTER NO-UNDO.
-  DEF VAR cArray   AS CHARACTER NO-UNDO.
-  DEF VAR cResult  AS CHARACTER NO-UNDO.
-  DEF VAR cLobname AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE hFld     AS HANDLE    NO-UNDO.
+    DEFINE VARIABLE iCnt     AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE iExtnt   AS INTEGER   NO-UNDO.
+    DEFINE VARIABLE cTmp     AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cArray   AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cResult  AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cLobname AS CHARACTER NO-UNDO.
 
   IF hRecord:TYPE <> "BUFFER" THEN
       RETURN ?.
