@@ -234,14 +234,18 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test16() {
         configureProject(BASEDIR + "test16/build.xml");
         executeTarget("xcode");
-        File f1 = new File(BASEDIR + "test16/src/xcode/test.p");
+        File f1 = new File(BASEDIR + "test16/src/xcode1/test.p");
         assertTrue(f1.exists());
-        executeTarget("test");
+        File f1bis = new File(BASEDIR + "test16/src/xcode2/test.p");
+        assertTrue(f1bis.exists());
 
-        File f2 = new File(BASEDIR + "test16/build/std/test.r");
+        executeTarget("test");
+        File f2 = new File(BASEDIR + "test16/build1/xcode/test.r");
         assertTrue(f2.exists());
-        File f3 = new File(BASEDIR + "test16/build/xcode/test.r");
+        File f3 = new File(BASEDIR + "test16/build2/xcode/test.r");
         assertTrue(f3.exists());
+        File f4 = new File(BASEDIR + "test16/build3/xcode/test.r");
+        assertTrue(f4.exists());
     }
 
     @Test(groups = {"v10"})
