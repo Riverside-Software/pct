@@ -2,7 +2,7 @@
 <project name="PCT" default="dist">
 
   <property environment="env" />
-
+  <echo message="Test gilles" />
   <!-- If DLC10, DLC10-64 and DLC11 are provided as properties, then skip loading properties from file -->
   <condition property="skip.properties" value="true">
     <and>
