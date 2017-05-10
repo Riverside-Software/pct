@@ -125,6 +125,10 @@ DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 /* Handle to calling procedure in order to log messages */
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
+MESSAGE "One more line covered".
+IF FALSE THEN DO:
+  MESSAGE "Not covered...".
+END.
 
 PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipName  AS CHARACTER NO-UNDO.
