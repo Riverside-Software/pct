@@ -240,11 +240,11 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f1bis.exists());
 
         executeTarget("test");
-        File f2 = new File(BASEDIR + "test16/build1/xcode/test.r");
+        File f2 = new File(BASEDIR + "test16/build1/test.r");
         assertTrue(f2.exists());
-        File f3 = new File(BASEDIR + "test16/build2/xcode/test.r");
+        File f3 = new File(BASEDIR + "test16/build2/test.r");
         assertTrue(f3.exists());
-        File f4 = new File(BASEDIR + "test16/build3/xcode/test.r");
+        File f4 = new File(BASEDIR + "test16/build3/test.r");
         assertTrue(f4.exists());
     }
 
