@@ -3,20 +3,30 @@
   <taskdef resource="PCT.properties" />
 
   <target name="xcode">
-    <mkdir dir="src/xcode" />
-    <PCTXCode destDir="src/xcode" dlcHome="${DLC}">
-      <fileset dir="src/std">
-        <include name="test.p" />
-      </fileset>
+    <mkdir dir="src/xcode1" />
+    <mkdir dir="src/xcode2" />
+    <PCTXCode destDir="src/xcode1" dlcHome="${DLC}">
+      <fileset dir="src/std" includes="test.p" />
+    </PCTXCode>
+    <PCTXCode destDir="src/xcode2" dlcHome="${DLC}" key="pct">
+      <fileset dir="src/std" includes="test.p" />
     </PCTXCode>
   </target>
 
   <target name="test">
-    <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
-      <fileset dir="src">
-        <include name="**/*.p" />
-      </fileset>
+    <mkdir dir="build1" />
+    <mkdir dir="build2" />
+    <mkdir dir="build3" />
+    <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
+      <fileset dir="src/xcode1" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" xcode="true">
+      <fileset dir="src/xcode1" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}" xcode="true" xcodekey="pct">
+      <fileset dir="src/xcode2" includes="*.p" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>

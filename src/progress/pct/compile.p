@@ -379,7 +379,7 @@ PROCEDURE compileXref.
 &ENDIF
 
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
-  IF (lXCode AND XCodeKey NE ?) THEN
+  IF lXCode AND (XCodeKey GT '':U) THEN
     COMPILE
       VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
       SAVE = SaveR INTO VALUE(cSaveDir)
