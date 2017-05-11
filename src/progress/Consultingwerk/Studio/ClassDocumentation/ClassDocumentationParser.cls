@@ -193,7 +193,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        iInterfaceSequence = 0
                        lcCharacterData      = "":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eUnit:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eUnit:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "interfaces":U THEN DO:
                 CREATE eInterfaces .
@@ -218,7 +218,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        cParameterParentGUID = eConstructor.GUID
                        lcCharacterData      = "":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eConstructor:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eConstructor:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "method":U THEN DO:
                 CREATE eMethod .
@@ -228,7 +228,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lcCharacterData      = "":U
                        cCommentFor          = "M":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eMethod:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eMethod:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "parameter":U THEN DO:
                CREATE eParameter .
@@ -237,7 +237,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                       eParameter.ParentGUID = cParameterParentGUID
                       eParameter.Sequence   = iParameterSequence .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eParameter:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eParameter:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "property":U THEN DO:
                 CREATE eProperty .
@@ -245,7 +245,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lcCharacterData      = "":U
                        cCommentFor          = "P":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eProperty:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eProperty:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "event":U THEN DO:
                 CREATE eEvent .
@@ -254,7 +254,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        cParameterParentGUID = eEvent.GUID
                        lcCharacterData      = "":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eEvent:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eEvent:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "using":U THEN DO:
                 CREATE eUsing.
@@ -263,7 +263,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        eUsing.UnitGUID = eUnit.GUID
                        eUsing.Sequence = iUsingSequence .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eUsing:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eUsing:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "member":U THEN DO:
                 CREATE eMember.
@@ -273,7 +273,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        eMember.Sequence = iMemberSequence
                        cCommentFor      = "EM":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eMember:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eMember:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "enumComment":U THEN DO:
                 ASSIGN lExpectingCharacter = TRUE
@@ -286,7 +286,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lcCharacterData      = "":U
                        cTextFor             = "temp-table":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eTempTable:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eTempTable:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "dataset":U THEN DO:
                 CREATE eDataset .
@@ -295,7 +295,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lcCharacterData    = "":U
                        cTextFor           = "dataset":U .
 
-                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eDataset:HANDLE, phAttributes) .
+                BufferHelper:ParseSaxAttributesToBuffer (BUFFER eDataset:HANDLE, phAttributes, FALSE) .
             END.
             WHEN "field":U OR WHEN "index":U OR WHEN "ttComment":U THEN DO:
                 /* Ignore */
