@@ -20,7 +20,7 @@ class eu.rssw.pct.X serializable use-widget-pool:
     field fld3 as dec
     field fld4 as logical
     index idx1 is primary unique fld1 fld2.
-  define temp-table tt2 no-undo like tt1
+  define temp-table tt3 no-undo like tt1
     field fld5 like tt1.fld1.
 
 { eu/rssw/pct/inc2.i }
