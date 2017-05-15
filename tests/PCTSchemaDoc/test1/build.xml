@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="PCTSchemaDoc-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dlcHome="${DLC}" />
+    <PCTSchemaDoc file="doc.xml" dlcHome="${DLC}">
+      <PCTConnection dbName="sports2000" dbDir="db" singleUser="true" />
+    </PCTSchemaDoc>
+  </target>
+
+</project>
