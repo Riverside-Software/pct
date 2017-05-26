@@ -34,6 +34,7 @@ import javax.xml.xpath.XPathFactory;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -42,9 +43,10 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class ClassDocumentationTest extends BuildFileTestNg {
+    private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     @Test(groups= {"win", "v11"})
-    public void test1() {
+    public void test1() throws XPathExpressionException {
         configureProject("ClassDocumentation/test1/build.xml");
         executeTarget("test");
 
@@ -62,6 +64,11 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f6.exists());
         File f7 = new File("ClassDocumentation/test1/doc/eu.rssw.pct.TestClass.xml");
         assertTrue(f7.exists());
+
+        InputSource inputSource = new InputSource("ClassDocumentation/test1/doc/eu.rssw.pct.X.xml");
+        assertEquals(xpath.evaluate("//unit/temp-table[@name='tt3']/@like", inputSource), "tt1");
+        assertEquals(xpath.evaluate("//unit/temp-table[@name='tt3']/field[@name='fld5']/@dataType", inputSource), "UNKNOWN DATATYPE");
+        // assertEquals(xpath.evaluate("//unit/temp-table[@name='tt3']/field[@name='fld5']/@like", inputSource), "tt1.fld1");
     }
 
     @Test(groups= {"v11"})

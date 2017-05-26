@@ -128,7 +128,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         for (IField col : node.getColumns()) {
             TableField fld = new TableField();
             fld.name = col.getName();
-            fld.dataType = col.getDataType().getName();
+            fld.dataType = getDataTypeName(col.getDataType());
             fld.initialValue = col.getInitial();
             tt.fields.add(fld);
         }
@@ -237,15 +237,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             prop.isStatic |= (zz == ProgressParserTokenTypes.STATIC);
         }
         prop.isAbstract = decl.isAbstract();
-        if (decl.getDataType() == null) {
-            prop.dataType = "";
-        } else {
-            IDataType idt = DataTypes.getDataType(decl.getDataType().getName());
-            if (idt != null)
-                prop.dataType = idt.getABLName(true);
-            else
-                prop.dataType = decl.getDataType().getName();
-        }
+        prop.dataType = getDataTypeName(decl.getDataType());
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
         prop.propertyComment = findPreviousComment(decl);
@@ -292,15 +284,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
-                if (p.getDataType() == null) {
-                    param.dataType = "";
-                } else {
-                    IDataType idt = DataTypes.getDataType(p.getDataType().getName());
-                    if (idt != null)
-                        param.dataType = idt.getABLName(true);
-                    else
-                        param.dataType = p.getDataType().getName();
-                }
+                param.dataType = getDataTypeName(p.getDataType());
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
                 constr.parameters.add(param);
@@ -331,15 +315,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
-                if (p.getDataType() == null) {
-                    param.dataType = "";
-                } else {
-                    IDataType idt = DataTypes.getDataType(p.getDataType().getName());
-                    if (idt != null)
-                        param.dataType = idt.getABLName(true);
-                    else
-                        param.dataType = p.getDataType().getName();
-                }
+                param.dataType = getDataTypeName(p.getDataType());
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
                 method.parameters.add(param);
@@ -369,11 +345,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             for (IParameter p : decl.getParameters()) {
                 Parameter param = new Parameter();
                 param.name = p.getName();
-                IDataType idt = DataTypes.getDataType(p.getDataType().getName());
-                if (idt != null)
-                    param.dataType = idt.getABLName(true);
-                else
-                    param.dataType = p.getDataType().getName();
+                param.dataType = getDataTypeName(p.getDataType());
                 param.position = p.getPosition();
                 param.mode = ParameterMode.from(p.getMode());
                 event.parameters.add(param);
@@ -406,7 +378,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     /**
      * Returns *last* comment
      */
-    public static String findPreviousComment(ASTNode node) {
+    private static String findPreviousComment(ASTNode node) {
         if ((node.getHiddenPrevious() != null)
                 && (node.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT)) {
             return node.getHiddenPrevious().getText();
@@ -421,4 +393,15 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return null;
     }
 
+    private static String getDataTypeName(TypeName typeName) {
+        if (typeName == null) {
+            return DataTypes.UNKNOWN.getABLName(true);
+        }
+        IDataType idt = DataTypes.getDataType(typeName.getName());
+        if (idt != null)
+            return idt.getABLName(true);
+        else
+            return typeName.getName();
+
+    }
 }
