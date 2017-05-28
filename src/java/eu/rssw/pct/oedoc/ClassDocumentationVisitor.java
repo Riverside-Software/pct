@@ -90,6 +90,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         return cu.className;
     }
 
+    public ClassCompilationUnit getClassCompilationUnit() {
+        return cu;
+    }
+
     public void toXML(File out) throws IOException, JAXBException {
         cu.classToXML(out);
     }

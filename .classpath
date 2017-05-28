@@ -13,6 +13,11 @@
 	<classpathentry kind="lib" path="lib/ast.jar"/>
 	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar"/>
+	<!-- For ABLDuck -->
+	<classpathentry kind="lib" path="lib/antlr-4.7-complete.jar"/>
+	<classpathentry kind="lib" path="lib/javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/markdown4j-2.2.jar"/>
+	
 	<classpathentry kind="output" path="bin"/>
 </classpath>
 

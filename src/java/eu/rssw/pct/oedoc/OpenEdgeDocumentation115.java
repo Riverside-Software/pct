@@ -42,6 +42,8 @@ import com.openedge.pdt.core.ast.model.ICompilationUnit;
 import com.phenix.pct.Messages;
 import com.phenix.pct.PCT;
 
+import java.text.MessageFormat;
+
 /**
  * Class for generating XML documentation from OpenEdge classes
  * 
@@ -118,7 +120,7 @@ public class OpenEdgeDocumentation115 extends PCT {
 
         // Destination directory must exist
         if (this.destDir == null) {
-            throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.0"));
+            throw new BuildException(MessageFormat.format(Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
         }
         // There must be at least one fileset
         if (filesets.isEmpty()) {
