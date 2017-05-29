@@ -83,11 +83,23 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             throw ex;
         }
 
+        Integer methodCount = 0;
+        String previousMethodName = "";
         // Members
         for (Method method : cu.methods) {
             MemberObject m = new MemberObject();
 
-            m.id = "method-" + method.methodName;
+            if (previousMethodName.equals(method.methodName)) {
+                methodCount++;
+            } else {
+                methodCount = 0;
+                previousMethodName = method.methodName;
+            }
+
+            if (methodCount == 0)
+                m.id = "method-" + method.methodName;
+            else
+                m.id = "method-" + method.methodName + "-" + methodCount.toString();
             m.name = method.methodName;
             m.owner = fullClassName;
             m.tagname = "method";
@@ -197,10 +209,6 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
             js.members.add(m);
         }
-
         return js;
-
     }
-
-
 }
