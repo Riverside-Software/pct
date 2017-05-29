@@ -37,5 +37,4 @@ public class SignatureDataObject {
         this.short_ = s;
         this.tagname = t;
     }
-	
 }

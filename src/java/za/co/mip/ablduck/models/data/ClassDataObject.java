@@ -34,5 +34,4 @@ public class ClassDataObject {
     @Expose
     @SerializedName("private")
     Boolean private_ = false;
-
 }

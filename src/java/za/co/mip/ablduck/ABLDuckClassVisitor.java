@@ -33,7 +33,7 @@ import eu.rssw.rcode.AccessModifier;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 	
-	public ABLDuckClassVisitor(IPropath propath) {
+    public ABLDuckClassVisitor(IPropath propath) {
         super(propath);
     }
 
@@ -48,8 +48,8 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             fullClassName = cu.className;
 
         js.id        = "class-" + fullClassName;
-    	js.tagname   = "class";
-    	js.name      = fullClassName;
+        js.tagname   = "class";
+        js.name      = fullClassName;
         js.shortname = cu.className;
         js.classIcon = "class";
 

@@ -32,5 +32,4 @@ public class ParameterObject {
     //Internal Use
     @Expose(serialize = false)
     String comment = "";
-
 }

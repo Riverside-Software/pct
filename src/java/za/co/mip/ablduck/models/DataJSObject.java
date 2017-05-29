@@ -141,6 +141,5 @@ public class DataJSObject {
         memberType.subsections = null;
 
         memberTypes.add(memberType);
-
     }
 }

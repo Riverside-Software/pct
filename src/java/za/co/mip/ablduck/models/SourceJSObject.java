@@ -87,5 +87,4 @@ public class SourceJSObject {
 
     @Expose(serialize = false)
     String shortname = "";
-
 }

@@ -65,14 +65,13 @@ import com.google.gson.GsonBuilder;
  */
 public class ABLDuck extends PCT {
     private HashMap<String, SourceJSObject> jsObjects = new HashMap<String, SourceJSObject>();
-	private String title = "ABLDuck documentation";
-	private File destDir = null;
-	private File destDirOutput = null;
-	private List<FileSet> filesets = new ArrayList<>();
-	protected Path propath = null;
+    private String title = "ABLDuck documentation";
+    private File destDir = null;
+    private File destDirOutput = null;
+    private List<FileSet> filesets = new ArrayList<>();
+    protected Path propath = null;
 
-
-	public ABLDuck() {
+    public ABLDuck() {
         super();
         createPropath();
     }

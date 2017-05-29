@@ -31,5 +31,4 @@ public class SubsectionDataObject {
 
 	@Expose
 	MetaObject filter = new MetaObject();
-	
 }

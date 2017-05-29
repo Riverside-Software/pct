@@ -42,5 +42,4 @@ public class MetaObject {
 
     @Expose
 	DeprecatedObject deprecated = null; 
-
 }

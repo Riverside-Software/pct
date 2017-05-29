@@ -37,5 +37,4 @@ public class MemberTypeDataObject {
 
 	@Expose
 	List<SubsectionDataObject> subsections = new ArrayList<SubsectionDataObject>();
-	
 }
