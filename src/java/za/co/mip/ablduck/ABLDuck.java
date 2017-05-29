@@ -181,9 +181,12 @@ public class ABLDuck extends PCT {
                     log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                     root.accept(visitor);
                     
-                    SourceJSObject jsObject = visitor.getJSObject();
-                    jsObjects.put(jsObject.name, jsObject);
-
+                    try {
+                        SourceJSObject jsObject = visitor.getJSObject();
+                        jsObjects.put(jsObject.name, jsObject);
+                    } catch (IOException ex) {
+                        throw new BuildException(ex);
+                    }
                 } 
             }
         }

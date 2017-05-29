@@ -37,7 +37,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         super(propath);
     }
 
-    public SourceJSObject getJSObject() {
+    public SourceJSObject getJSObject() throws IOException{
         SourceJSObject js = new SourceJSObject();
     	ClassCompilationUnit cu = getClassCompilationUnit();
         String fullClassName;
@@ -57,27 +57,31 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             js.extends_ = cu.inherits;
 
         String c = cu.classComment.get(cu.classComment.size() - 1); // Assuming last comment will always be the class comment, will need to cater for license later
+        
+        try {
+            CommentParseResult commentParseResult = CommentParser.parseComment(c, fullClassName);
 
-        CommentParseResult commentParseResult = CommentParser.parseComment(c);
-        //TODO: fix this, not even sure i like it
-        if (!commentParseResult.internal)
-            commentParseResult.internal = cu.className.startsWith("_");
+            //TODO: fix this, not even sure i like it
+            if (!commentParseResult.internal)
+                commentParseResult.internal = cu.className.startsWith("_");
 
+            js.comment = commentParseResult.comment;
+            js.author = commentParseResult.author;
+    
+            if (commentParseResult.internal)
+                js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
+    
+    
+            if (!commentParseResult.deprecatedVersion.equals("")) {
+                js.meta.deprecated = new DeprecatedObject();
+    
+                js.meta.deprecated.version = commentParseResult.deprecatedVersion;
+                js.meta.deprecated.text    = commentParseResult.deprecatedText;
+            }
 
-        js.comment = commentParseResult.comment;
-        js.author = commentParseResult.author;
-
-        if (commentParseResult.internal)
-            js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
-
-
-        if (!commentParseResult.deprecatedVersion.equals("")) {
-            js.meta.deprecated = new DeprecatedObject();
-
-            js.meta.deprecated.version = commentParseResult.deprecatedVersion;
-            js.meta.deprecated.text    = commentParseResult.deprecatedText;
+        } catch (IOException ex) {
+            throw ex;
         }
-
 
         // Members
         for (Method method : cu.methods) {
@@ -89,13 +93,28 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             m.tagname = "method";
             m.signature = method.signature;
 
-            commentParseResult = CommentParser.parseComment(method.methodComment);
+            try {
+                CommentParseResult commentParseResult = CommentParser.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
+
+                if (!commentParseResult.internal)
+                    commentParseResult.internal = method.methodName.startsWith("_");
+
+                m.returnComment = commentParseResult.returnComment;
+                m.comment = commentParseResult.comment;
+
+                if (commentParseResult.internal)
+                    m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
+
+                //TODO: remove this duplication tsk tsk, write a meta adding method for class, method and property
+                if (!commentParseResult.deprecatedVersion.equals("")) {
+                    m.meta.deprecated = new DeprecatedObject();
         
-            if (!commentParseResult.internal)
-                commentParseResult.internal = method.methodName.startsWith("_");
-            
-            m.returnComment = commentParseResult.returnComment;
-            m.comment = commentParseResult.comment;
+                    m.meta.deprecated.version = commentParseResult.deprecatedVersion;
+                    m.meta.deprecated.text    = commentParseResult.deprecatedText;
+                }
+            } catch (IOException ex) {
+                throw ex;
+            }
             
             switch (method.modifier){
                 case PRIVATE:
@@ -105,23 +124,12 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                     m.meta.protected_ = true;
                     break;
             }
-
-            if (commentParseResult.internal)
-                m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
-
+            
             if (method.isAbstract)
                 m.meta.abstract_ = true;
 
             if (method.isStatic)
                 m.meta.static_ = true;
-
-            //TODO: remove this duplication tsk tsk, write a meta adding method for class, method and property
-            if (!commentParseResult.deprecatedVersion.equals("")) {
-                m.meta.deprecated = new DeprecatedObject();
-    
-                m.meta.deprecated.version = commentParseResult.deprecatedVersion;
-                m.meta.deprecated.text    = commentParseResult.deprecatedText;
-            }
 
             m.parameters = new ArrayList<ParameterObject>();
             for (Parameter parameter : method.parameters) {
@@ -150,12 +158,27 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             m.tagname = "property";
             m.datatype = property.dataType;
 
-            commentParseResult = CommentParser.parseComment(property.propertyComment);
+            try {
+                CommentParseResult commentParseResult = CommentParser.parseComment(property.propertyComment, fullClassName + ":" + property.name);
+
+                if (!commentParseResult.internal)
+                    commentParseResult.internal = property.name.startsWith("_");
+
+                m.comment = commentParseResult.comment;
+
+                if (commentParseResult.internal)
+                    m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
+
+                if (!commentParseResult.deprecatedVersion.equals("")) {
+                    m.meta.deprecated = new DeprecatedObject();
         
-            if (!commentParseResult.internal)
-                commentParseResult.internal = property.name.startsWith("_");
-            
-            m.comment = commentParseResult.comment;
+                    m.meta.deprecated.version = commentParseResult.deprecatedVersion;
+                    m.meta.deprecated.text    = commentParseResult.deprecatedText;
+                }
+
+            } catch (IOException ex) {
+                throw ex;
+            }
             
             switch (property.modifier){
                 case PRIVATE:
@@ -166,21 +189,11 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                     break;
             }
 
-            if (commentParseResult.internal)
-                m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
-
             if (property.isAbstract)
                 m.meta.abstract_ = true;
 
             if (property.isStatic)
                 m.meta.static_ = true;
-
-            if (!commentParseResult.deprecatedVersion.equals("")) {
-                m.meta.deprecated = new DeprecatedObject();
-    
-                m.meta.deprecated.version = commentParseResult.deprecatedVersion;
-                m.meta.deprecated.text    = commentParseResult.deprecatedText;
-            }
 
             js.members.add(m);
         }

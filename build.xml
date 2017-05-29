@@ -83,7 +83,6 @@
 
     <!-- ABLDuck classes -->
     <pathelement location="lib/antlr-4.7-complete.jar"/>
-    <pathelement location="lib/javadoc.jar"/>
     <pathelement location="lib/markdown4j-2.2.jar"/>
   </path>
   <path id="pct.test.compil">
@@ -131,6 +130,7 @@
     </javac>
     <copy todir="${build-java}">
       <fileset dir="${src.java}" includes="**/*.properties" />
+      <fileset dir="${src.java}" includes="**/*.tokens" />
     </copy>
   </target>
 
@@ -267,6 +267,7 @@
       <fileset dir="${build-java}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
+        <include name="**/*.tokens" />
       </fileset>
       <fileset dir="${build}">
         <include name="pct10.pl" />
@@ -284,9 +285,7 @@
 
       <!-- ABLDuck classes -->
       <zipfileset src="lib/antlr-4.7-complete.jar"/>
-      <zipfileset src="lib/javadoc.jar"/>
       <zipfileset src="lib/markdown4j-2.2.jar"/>
-
 
       <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />

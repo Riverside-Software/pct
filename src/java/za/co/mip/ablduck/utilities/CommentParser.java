@@ -25,21 +25,19 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javadoc.*;
 
 public class CommentParser {
     private static String comment;
+    private static String source;
     private static CommentParseResult commentParseResult;
     private static HashMap<String, String> nestedComments = new HashMap<String, String>();
     
-    public static String markdown(String comment){
+    public static String markdown(String comment) throws IOException{
         String markdown = "";
-        try {
-            Markdown4jProcessor processor = new Markdown4jProcessor();
-            markdown = processor.process(comment);
-        } catch (IOException ex) {
-            System.out.println (ex.toString());
-        }
+
+        Markdown4jProcessor processor = new Markdown4jProcessor();
+        markdown = processor.process(comment);
+
         return markdown;
     }
     
@@ -61,7 +59,7 @@ public class CommentParser {
     }
     
     public static void generateLinks(){
-        ArrayList tags = Javadoc.parseComment(comment);
+        ArrayList tags = Javadoc.parseComment(comment, source);
         Pattern linkPattern = Pattern.compile("^\\{@link ((?:\\w|\\.|-)+)\\s*(.*)\\}$", Pattern.DOTALL);
         
         String l;
@@ -82,12 +80,13 @@ public class CommentParser {
         
     }
     
-    public static CommentParseResult parseComment(String com){
+    public static CommentParseResult parseComment(String com, String src) throws IOException{
         CommentParseResult commentParseResult = new CommentParseResult();
         if (com == null)
             return commentParseResult;
         
         comment = com;
+        source = src;
         
         // Trim the comment lines
         trimCommentLines();
@@ -138,7 +137,7 @@ public class CommentParser {
         commentParseResult.internal = getBooleanTag(Pattern.compile("@internal"));
     }
     
-    public static void parseDeprecated(CommentParseResult commentParseResult){
+    public static void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
         HashMap<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
         
         if (deprecated.size() > 0) {
@@ -147,7 +146,7 @@ public class CommentParser {
         }
     }
     
-    public static void parseParamComments(CommentParseResult commentParseResult){
+    public static void parseParamComments(CommentParseResult commentParseResult) throws IOException{
         commentParseResult.parameterComments = getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
     }
     
@@ -169,10 +168,10 @@ public class CommentParser {
         }
     }
     
-    public static HashMap<String, String> getKeyValueTags(Pattern paramRegex){
+    public static HashMap<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
         HashMap<String, String> keyvaluetag = new HashMap<String, String>();
         
-        ArrayList tags = Javadoc.parseComment(comment);
+        ArrayList tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -190,7 +189,7 @@ public class CommentParser {
     public static String getValueTag(Pattern paramRegex){
         String value = "";
         
-        ArrayList tags = Javadoc.parseComment(comment);
+        ArrayList tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -208,7 +207,7 @@ public class CommentParser {
     public static Boolean getBooleanTag(Pattern paramRegex){
         Boolean flag = false;
         
-        ArrayList tags = Javadoc.parseComment(comment);
+        ArrayList tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
