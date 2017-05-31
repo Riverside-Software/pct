@@ -27,23 +27,23 @@ import za.co.mip.ablduck.javadoc.JavadocLexer;
 import za.co.mip.ablduck.javadoc.JavadocParser;
 
 public class Javadoc {
-    private DescriptiveErrorListener listener;
+    private DescriptiveErrorListener errorListener;
     
     public Javadoc(Task ablduck) {
-        listener = new DescriptiveErrorListener(ablduck);
+        this.errorListener = new DescriptiveErrorListener(ablduck);
     }
     
     public List<String> parseComment(String comment, String source){
         
         JavadocLexer lexer = new JavadocLexer(CharStreams.fromString(comment, source));
         lexer.removeErrorListeners();
-        lexer.addErrorListener(listener);
+        lexer.addErrorListener(this.errorListener);
         
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         
         JavadocParser parser = new JavadocParser(tokens);
         parser.removeErrorListeners();
-        parser.addErrorListener(listener);
+        parser.addErrorListener(this.errorListener);
         
         JavadocParser.DocumentationContext documentation = parser.documentation();
         
