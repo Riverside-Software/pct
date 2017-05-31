@@ -252,10 +252,11 @@ public class ABLDuck extends PCT {
             HierarchyResult result = new HierarchyResult();
             result = determineClassHierarchy(js, result);
 
-            Collections.reverse(result.hierarchy);
-            js.superclasses.addAll(result.hierarchy);
+            List<String> hierarchy = result.getHierarchy();
+            Collections.reverse(hierarchy);
+            js.superclasses.addAll(hierarchy);
 
-            js.members.addAll(result.inheritedmembers);
+            js.members.addAll(result.getInheritedmembers());
 
             //Subclasses
             for (Map.Entry<String, SourceJSObject> subclass:jsObjects.entrySet()) {
@@ -295,14 +296,14 @@ public class ABLDuck extends PCT {
         String inherits = curClass.ext;
 
         if (!"".equals(inherits)) {
-            result.hierarchy.add(inherits);
+            result.addHierarchy(inherits);
 
             SourceJSObject nextClass = jsObjects.get(inherits);
                         
             if (nextClass != null) {
                 for (MemberObject member : nextClass.members) {
                     if (member.owner.equals(inherits) && (member.meta.isPrivate == null || !member.meta.isPrivate)) 
-                        result.inheritedmembers.add(member);
+                        result.addInheritedmember(member);
                 }
             
                 determineClassHierarchy(nextClass, result);
