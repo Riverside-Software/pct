@@ -59,7 +59,7 @@ public class DataJSObject {
     public Boolean showPrintButton = true;
 
     @Expose
-    public Boolean touchExamplesUi = false; //TODO: Need to remove this
+    public Boolean touchExamplesUi = false;
 
     @Expose
     public Boolean source = false;

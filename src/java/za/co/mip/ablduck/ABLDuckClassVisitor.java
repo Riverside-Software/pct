@@ -18,6 +18,8 @@ package za.co.mip.ablduck;
 
 import java.util.ArrayList;
 
+import org.apache.tools.ant.Task;
+
 import java.io.IOException;
 
 import com.openedge.core.runtime.IPropath;
@@ -38,9 +40,12 @@ import za.co.mip.ablduck.utilities.CommentParser;
 import za.co.mip.ablduck.utilities.CommentParseResult;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
+    private CommentParser comments;
 	
-    public ABLDuckClassVisitor(IPropath propath) {
+    public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
         super(propath);
+        
+        this.comments = new CommentParser(ablduck);
     }
 
     public SourceJSObject getJSObject() throws IOException{
@@ -65,7 +70,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         String c = cu.classComment.get(cu.classComment.size() - 1); // Assuming last comment will always be the class comment, will need to cater for license later
         
         try {
-            CommentParseResult commentParseResult = CommentParser.parseComment(c, fullClassName);
+            CommentParseResult commentParseResult = comments.parseComment(c, fullClassName);
 
             if (!commentParseResult.internal)
                 commentParseResult.internal = cu.className.startsWith("_");
@@ -111,7 +116,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             m.signature = method.signature;
 
             try {
-                CommentParseResult commentParseResult = CommentParser.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
+                CommentParseResult commentParseResult = comments.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
 
                 if (!commentParseResult.internal)
                     commentParseResult.internal = method.methodName.startsWith("_");
@@ -168,7 +173,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             m.datatype = property.dataType;
 
             try {
-                CommentParseResult commentParseResult = CommentParser.parseComment(property.propertyComment, fullClassName + ":" + property.name);
+                CommentParseResult commentParseResult = comments.parseComment(property.propertyComment, fullClassName + ":" + property.name);
 
                 if (!commentParseResult.internal)
                     commentParseResult.internal = property.name.startsWith("_");

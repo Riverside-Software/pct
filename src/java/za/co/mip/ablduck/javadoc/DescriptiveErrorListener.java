@@ -16,26 +16,28 @@
  */
 package za.co.mip.ablduck.javadoc;
 
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 
 public class DescriptiveErrorListener extends BaseErrorListener {
-    public static DescriptiveErrorListener INSTANCE = new DescriptiveErrorListener();
-    //TODO: maybe a ant flag to turn this off?
-    private static final boolean REPORT_SYNTAX_ERRORS = true;
+    private Task ablduck;
+    
+    public DescriptiveErrorListener(Task ablduck) {
+        this.ablduck = ablduck;
+    }
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                             int line, int charPositionInLine,
                             String msg, RecognitionException e)
     {
-        if (!REPORT_SYNTAX_ERRORS)
-            return;
-
         String sourceName = recognizer.getInputStream().getSourceName();
         if (!sourceName.isEmpty()) {
             sourceName = String.format("%s:%d:%d ", sourceName, line, charPositionInLine);
         }
-
-        System.err.println(sourceName+" "+msg);
+        this.ablduck.getProject().log(sourceName+" "+msg, Project.MSG_INFO);
     }
 }

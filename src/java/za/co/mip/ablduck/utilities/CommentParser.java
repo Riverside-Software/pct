@@ -16,6 +16,7 @@ s * Copyright 2017 MIP Holdings
  */
 package za.co.mip.ablduck.utilities;
 
+import org.apache.tools.ant.Task;
 import org.markdown4j.Markdown4jProcessor;
 
 import za.co.mip.ablduck.javadoc.Javadoc;
@@ -29,11 +30,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 public class CommentParser {
-    private static String comment;
-    private static String source;
-    private static HashMap<String, String> nestedComments = new HashMap<>();
+    private String comment;
+    private String source;
+    private HashMap<String, String> nestedComments = new HashMap<>();
+    private Javadoc javadocParser;
     
-    public static String markdown(String comment) throws IOException{
+    public CommentParser (Task ablduck) {
+        javadocParser = new Javadoc(ablduck);
+    }
+    
+    public String markdown(String comment) throws IOException{
         String markdown = "";
 
         Markdown4jProcessor processor = new Markdown4jProcessor();
@@ -42,7 +48,7 @@ public class CommentParser {
         return markdown;
     }
     
-    public static void trimCommentLines(){
+    public void trimCommentLines(){
         
         Integer start = comment.indexOf("\n");
         Integer end   = comment.lastIndexOf("\n");
@@ -59,8 +65,8 @@ public class CommentParser {
         comment = commentLeadingAstrix.matcher(comment).replaceAll("");
     }
     
-    public static void generateLinks(){
-        List<String> tags = Javadoc.parseComment(comment, source);
+    public void generateLinks(){
+        List<String> tags = javadocParser.parseComment(comment, source);
         Pattern linkPattern = Pattern.compile("^\\{@link ((?:\\w|\\.|-)+)\\s*(.*)\\}$", Pattern.DOTALL);
         
         String l;
@@ -81,7 +87,7 @@ public class CommentParser {
         
     }
     
-    public static CommentParseResult parseComment(String com, String src) throws IOException{
+    public CommentParseResult parseComment(String com, String src) throws IOException{
         CommentParseResult commentParseResult = new CommentParseResult();
         if (com == null)
             return commentParseResult;
@@ -126,19 +132,19 @@ public class CommentParser {
         return commentParseResult;
     }
     
-    public static void parseReturn(CommentParseResult commentParseResult){
+    public void parseReturn(CommentParseResult commentParseResult){
         commentParseResult.returnComment = getValueTag(Pattern.compile("@return\\s+(.*)", Pattern.DOTALL));
     }
     
-    public static void parseAuthor(CommentParseResult commentParseResult){
+    public void parseAuthor(CommentParseResult commentParseResult){
         commentParseResult.author = getValueTag(Pattern.compile("@author\\s+(.*)", Pattern.DOTALL));
     }
     
-    public static void parseInternal(CommentParseResult commentParseResult){
+    public void parseInternal(CommentParseResult commentParseResult){
         commentParseResult.internal = getBooleanTag(Pattern.compile("@internal"));
     }
     
-    public static void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
+    public void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
         HashMap<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
         
         if (deprecated.size() > 0) {
@@ -147,11 +153,11 @@ public class CommentParser {
         }
     }
     
-    public static void parseParamComments(CommentParseResult commentParseResult) throws IOException{
+    public void parseParamComments(CommentParseResult commentParseResult) throws IOException{
         commentParseResult.parameterComments = getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
     }
     
-    public static void protectInternalComments(){
+    public void protectInternalComments(){
         Pattern simpleComment = Pattern.compile("(\\/\\*.*\\*\\/)", Pattern.DOTALL);
         Matcher m = simpleComment.matcher(comment);
         Integer commentCount = 0;
@@ -163,16 +169,16 @@ public class CommentParser {
         }
     }
     
-    public static void returnInternalComments(){
+    public void returnInternalComments(){
         for (Map.Entry<String, String> c:nestedComments.entrySet()) {
             comment = comment.replaceFirst(Pattern.quote(c.getKey()), Matcher.quoteReplacement(c.getValue()));
         }
     }
     
-    public static HashMap<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
+    public HashMap<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
         HashMap<String, String> keyvaluetag = new HashMap<String, String>();
         
-        List<String> tags = Javadoc.parseComment(comment, source);
+        List<String> tags = javadocParser.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -187,10 +193,10 @@ public class CommentParser {
         return keyvaluetag;
     }
     
-    public static String getValueTag(Pattern paramRegex){
+    public String getValueTag(Pattern paramRegex){
         String value = "";
         
-        List<String> tags = Javadoc.parseComment(comment, source);
+        List<String> tags = javadocParser.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -205,10 +211,10 @@ public class CommentParser {
         return value;
     }
     
-    public static Boolean getBooleanTag(Pattern paramRegex){
+    public Boolean getBooleanTag(Pattern paramRegex){
         Boolean flag = false;
         
-        List<String> tags = Javadoc.parseComment(comment, source);
+        List<String> tags = javadocParser.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -223,7 +229,7 @@ public class CommentParser {
         return flag;
     }
     
-    public static String removeLeadingWhitespace(String text){
+    public String removeLeadingWhitespace(String text){
         Pattern whitespace = Pattern.compile("\\n\\s+");
         
         text = whitespace.matcher(text).replaceAll("\n");

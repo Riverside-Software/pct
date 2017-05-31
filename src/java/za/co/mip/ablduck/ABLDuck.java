@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Date;
 import java.util.HashMap;
@@ -160,17 +161,15 @@ public class ABLDuck extends PCT {
         //Extract template
         try {
             extractTemplateDirectory(this.destDir);
-
-            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "index.html"));
-            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "template.html"));
-            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "print-template.html")); 
             
-            replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), "index.html")); 
-            replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), "template.html")); 
-
             Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
-            replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), "index.html")); 
-            replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), "template.html")); 
+            List<String> files = Arrays.asList("index.html", "template.html", "print-template.html");
+            
+            for(String file : files) {
+                replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), file));
+                replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), file));
+                replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), file));
+            } 
         } catch (IOException ex) {
             throw new BuildException(ex);
         }
@@ -199,7 +198,7 @@ public class ABLDuck extends PCT {
 
                 ICompilationUnit root = astMgr.createAST(file, astContext, monitor, IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                 if (isClass) {
-                    ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
+                    ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp, this);
                     log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                     root.accept(visitor);
                     
@@ -298,17 +297,15 @@ public class ABLDuck extends PCT {
         if (!"".equals(inherits)) {
             result.hierarchy.add(inherits);
 
-            curClass = jsObjects.get(inherits);
+            SourceJSObject nextClass = jsObjects.get(inherits);
                         
-            if (curClass != null) {
-                for (MemberObject member : curClass.members) {
-                    if (member.owner.equals(inherits)) 
-                        if(member.meta.isPrivate == null || member.meta.isPrivate != true)
-                            result.inheritedmembers.add(member);
-                    
+            if (nextClass != null) {
+                for (MemberObject member : nextClass.members) {
+                    if (member.owner.equals(inherits) && (member.meta.isPrivate == null || !member.meta.isPrivate)) 
+                        result.inheritedmembers.add(member);
                 }
             
-                determineClassHierarchy(curClass, result);
+                determineClassHierarchy(nextClass, result);
             }
         }
         return result;

@@ -21,23 +21,29 @@ import java.util.List;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.tools.ant.Task;
 
 import za.co.mip.ablduck.javadoc.JavadocLexer;
 import za.co.mip.ablduck.javadoc.JavadocParser;
 
 public class Javadoc {
+    private DescriptiveErrorListener listener;
     
-    public static List<String> parseComment(String comment, String source){
+    public Javadoc(Task ablduck) {
+        listener = new DescriptiveErrorListener(ablduck);
+    }
+    
+    public List<String> parseComment(String comment, String source){
         
         JavadocLexer lexer = new JavadocLexer(CharStreams.fromString(comment, source));
         lexer.removeErrorListeners();
-        lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
+        lexer.addErrorListener(listener);
         
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         
         JavadocParser parser = new JavadocParser(tokens);
         parser.removeErrorListeners();
-        parser.addErrorListener(DescriptiveErrorListener.INSTANCE);
+        parser.addErrorListener(listener);
         
         JavadocParser.DocumentationContext documentation = parser.documentation();
         
