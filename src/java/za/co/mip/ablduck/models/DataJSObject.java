@@ -18,7 +18,6 @@ package za.co.mip.ablduck.models;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.Object;
 
 import com.google.gson.annotations.Expose;
 
