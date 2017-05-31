@@ -14,24 +14,24 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.data;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class ClassDataObject {
 
 	@Expose
-    String name = "";
+	public String name = "";
 
 	@Expose
 	@SerializedName("extends")
-    String extends_ = "";
+	public String ext = "";
 
 	@Expose
-    String icon = "";
+	public String icon = "";
 
-    @Expose
-    @SerializedName("private")
-    Boolean private_ = false;
+	@Expose
+	@SerializedName("private")
+	public Boolean isPrivate = false;
 }

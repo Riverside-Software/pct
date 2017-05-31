@@ -14,22 +14,22 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.source;
 
 import com.google.gson.annotations.Expose;
 
 public class ParameterObject {
 
 	@Expose
-    String name = "";
+	public String name = "";
 
-    @Expose
-    String datatype = "";
+	@Expose
+	public String datatype = "";
 
-    @Expose
-    String mode = "";
+	@Expose
+	public String mode = "";
 
-    //Internal Use
-    @Expose(serialize = false)
-    String comment = "";
+	//Internal Use
+	@Expose(serialize = false)
+	public String comment = "";
 }

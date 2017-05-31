@@ -14,14 +14,14 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.generic;
 
 import com.google.gson.annotations.Expose;
 
 public class DeprecatedObject {
 	@Expose
-    String version = "";
+	public String version = "";
 
-    @Expose
-    String text = "";
+	@Expose
+	public String text = "";
 }

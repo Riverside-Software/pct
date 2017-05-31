@@ -14,17 +14,21 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.javadoc;
 
-import java.util.ArrayList;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import java.util.List;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import za.co.mip.ablduck.javadoc.JavadocLexer;
+import za.co.mip.ablduck.javadoc.JavadocParser;
 
 public class Javadoc {
     
-    public static ArrayList parseComment(String comment, String source){
+    public static List<String> parseComment(String comment, String source){
         
-        ArrayList parsedComments;
         JavadocLexer lexer = new JavadocLexer(CharStreams.fromString(comment, source));
         lexer.removeErrorListeners();
         lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
@@ -40,9 +44,7 @@ public class Javadoc {
         ParseTreeWalker walker = new ParseTreeWalker();
         JavadocListener listener = new JavadocListener();
         walker.walk(listener, documentation);
-        
-        parsedComments = listener.getTags();
-        
-        return parsedComments;
+               
+        return listener.getTags();
     }
 }

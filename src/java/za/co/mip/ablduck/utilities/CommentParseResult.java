@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.utilities;
 import java.util.HashMap;
 
 public class CommentParseResult {
@@ -26,7 +26,7 @@ public class CommentParseResult {
     public String deprecatedText = "";
     
     //Parameter comments from @param tags
-    public HashMap<String, String> parameterComments = new HashMap<String, String>();
+    public HashMap<String, String> parameterComments = new HashMap<>();
     
     //Internal flag from @internal
     public Boolean internal = false;

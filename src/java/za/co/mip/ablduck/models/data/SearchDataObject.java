@@ -14,24 +14,26 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.data;
 
 import com.google.gson.annotations.Expose;
 
+import za.co.mip.ablduck.models.generic.MetaObject;
+
 public class SearchDataObject {
 
-	@Expose
-    String name = "";
+    @Expose
+    public String name = "";
 
     @Expose
-    String icon = "";
+    public String icon = "";
 
     @Expose
-    String url = "";
+    public String url = "";
 
     @Expose
-    Integer sort = 0;
+    public Integer sort = 0;
 
     @Expose
-	MetaObject meta = null;
+    public MetaObject meta = null;
 }

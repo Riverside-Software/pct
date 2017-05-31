@@ -14,27 +14,27 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.data;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class SignatureDataObject {
 
 	@Expose
 	@SerializedName("long")
-	String long_ = "";
+	public String longName = "";
 
 	@Expose
 	@SerializedName("short")
-	String short_ = "";
+	public String shortName = "";
 
 	@Expose
-	String tagname = "";
+	public String tagname = "";
 
 	public SignatureDataObject(String l, String s, String t) {
-        this.long_ = l;
-        this.short_ = s;
-        this.tagname = t;
-    }
+	    this.longName = l;
+	    this.shortName = s;
+	    this.tagname = t;
+	}
 }

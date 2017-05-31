@@ -14,65 +14,69 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Object;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
 
+import za.co.mip.ablduck.models.data.ClassDataObject;
+import za.co.mip.ablduck.models.data.MemberTypeDataObject;
+import za.co.mip.ablduck.models.data.SearchDataObject;
+import za.co.mip.ablduck.models.data.SignatureDataObject;
+import za.co.mip.ablduck.models.data.SubsectionDataObject;
 
 public class DataJSObject {
-	//Empty for now
-	@Expose
-	List<String> guides = new ArrayList<String>();
-	@Expose
-	List<String> videos = new ArrayList<String>();
-	@Expose
-	List<String> examples = new ArrayList<String>();
-	@Expose
-	Object guideSearch = new Object();
+    //Empty for now
+    @Expose
+    public List<String> guides = new ArrayList<>();
+    @Expose
+    public List<String> videos = new ArrayList<>();
+    @Expose
+    public List<String> examples = new ArrayList<>();
+    @Expose
+    public Object guideSearch = new Object();
 
-	//Implemented
-	@Expose
-	String localStorageDb = "docs";
+    //Implemented
+    @Expose
+    public String localStorageDb = "docs";
 
-	@Expose
-	String commentsUrl = "";
+    @Expose
+    public String commentsUrl = "";
 
-	@Expose
-	String commentsDomain = "";
+    @Expose
+    public String commentsDomain = "";
 
-	@Expose
-	String message = "";
+    @Expose
+    public String message = "";
 
-	@Expose
-	Boolean tests = false;
+    @Expose
+    public Boolean tests = false;
 
-	@Expose
-	Boolean showPrintButton = true;
+    @Expose
+    public Boolean showPrintButton = true;
 
-	@Expose
-	Boolean touchExamplesUi = false; //TODO: Need to remove this
+    @Expose
+    public Boolean touchExamplesUi = false; //TODO: Need to remove this
 
-	@Expose
-	Boolean source = false;
+    @Expose
+    public Boolean source = false;
 
-	@Expose
-	List<ClassDataObject> classes = new ArrayList<ClassDataObject>();
+    @Expose
+    public List<ClassDataObject> classes = new ArrayList<>();
 
-	@Expose
-	List<SearchDataObject> search = new ArrayList<SearchDataObject>();
+    @Expose
+    public List<SearchDataObject> search = new ArrayList<>();
 
-	@Expose
-	List<SignatureDataObject> signatures = new ArrayList<SignatureDataObject>();
+    @Expose
+    public List<SignatureDataObject> signatures = new ArrayList<>();
 
-	@Expose
-	List<MemberTypeDataObject> memberTypes = new ArrayList<MemberTypeDataObject>();
+    @Expose
+    public List<MemberTypeDataObject> memberTypes = new ArrayList<>();
 
-	public DataJSObject() {
+    public DataJSObject() {
         signatures.add(new SignatureDataObject("internal","INT","internal"));
         signatures.add(new SignatureDataObject("abstract","ABS","abstract"));
         signatures.add(new SignatureDataObject("deprecated","DEP","deprecated"));
@@ -96,14 +100,14 @@ public class DataJSObject {
         
         subsection = new SubsectionDataObject();
         subsection.title = "Instance properties";
-        subsection.default_ = true;
-        subsection.filter.static_ = false;
+        subsection.def = true;
+        subsection.filter.isStatic = false;
 
         memberType.subsections.add(subsection);
 
         subsection = new SubsectionDataObject();
         subsection.title = "Static properties";
-        subsection.filter.static_ = true;
+        subsection.filter.isStatic = true;
 
         memberType.subsections.add(subsection);
 
@@ -118,14 +122,14 @@ public class DataJSObject {
         
         subsection = new SubsectionDataObject();
         subsection.title = "Instance methods";
-        subsection.default_ = true;
-        subsection.filter.static_ = false;
+        subsection.def = true;
+        subsection.filter.isStatic = false;
 
         memberType.subsections.add(subsection);
 
         subsection = new SubsectionDataObject();
         subsection.title = "Static methods";
-        subsection.filter.static_ = true;
+        subsection.filter.isStatic = true;
 
         memberType.subsections.add(subsection);
 

@@ -14,21 +14,22 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.data;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
+import za.co.mip.ablduck.models.generic.MetaObject;
 
 public class SubsectionDataObject {
 
 	@Expose
-	String title = "";
+	public String title = "";
 
 	@Expose
 	@SerializedName("default")
-	Boolean default_ = null;
+	public Boolean def = null;
 
 	@Expose
-	MetaObject filter = new MetaObject();
+	public MetaObject filter = new MetaObject();
 }

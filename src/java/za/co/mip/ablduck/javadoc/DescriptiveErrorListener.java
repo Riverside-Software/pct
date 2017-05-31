@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.javadoc;
 
 import org.antlr.v4.runtime.*;
 

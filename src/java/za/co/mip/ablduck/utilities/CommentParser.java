@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 MIP Holdings
+s * Copyright 2017 MIP Holdings
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.utilities;
 
 import org.markdown4j.Markdown4jProcessor;
+
+import za.co.mip.ablduck.javadoc.Javadoc;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CommentParser {
     private static String comment;
     private static String source;
-    private static CommentParseResult commentParseResult;
-    private static HashMap<String, String> nestedComments = new HashMap<String, String>();
+    private static HashMap<String, String> nestedComments = new HashMap<>();
     
     public static String markdown(String comment) throws IOException{
         String markdown = "";
@@ -59,7 +60,7 @@ public class CommentParser {
     }
     
     public static void generateLinks(){
-        ArrayList tags = Javadoc.parseComment(comment, source);
+        List<String> tags = Javadoc.parseComment(comment, source);
         Pattern linkPattern = Pattern.compile("^\\{@link ((?:\\w|\\.|-)+)\\s*(.*)\\}$", Pattern.DOTALL);
         
         String l;
@@ -69,7 +70,7 @@ public class CommentParser {
             Matcher tag = linkPattern.matcher((String)tags.get(i));
             
             if(tag.find()) {
-                if (!tag.group(2).equals(""))
+                if (!"".equals(tag.group(2)))
                     linkText = tag.group(2).trim();
                 else
                     linkText = tag.group(1).trim();
@@ -91,7 +92,7 @@ public class CommentParser {
         // Trim the comment lines
         trimCommentLines();
         
-        if(comment.equals(""))
+        if("".equals(comment))
             return commentParseResult;
         
         //Take the internal comments out for javaDoc parser
@@ -163,15 +164,15 @@ public class CommentParser {
     }
     
     public static void returnInternalComments(){
-        for (Map.Entry c:nestedComments.entrySet()) {
-            comment = comment.replaceFirst(Pattern.quote((String)c.getKey()), Matcher.quoteReplacement((String)c.getValue()));
+        for (Map.Entry<String, String> c:nestedComments.entrySet()) {
+            comment = comment.replaceFirst(Pattern.quote(c.getKey()), Matcher.quoteReplacement(c.getValue()));
         }
     }
     
     public static HashMap<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
         HashMap<String, String> keyvaluetag = new HashMap<String, String>();
         
-        ArrayList tags = Javadoc.parseComment(comment, source);
+        List<String> tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -189,7 +190,7 @@ public class CommentParser {
     public static String getValueTag(Pattern paramRegex){
         String value = "";
         
-        ArrayList tags = Javadoc.parseComment(comment, source);
+        List<String> tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));
@@ -207,7 +208,7 @@ public class CommentParser {
     public static Boolean getBooleanTag(Pattern paramRegex){
         Boolean flag = false;
         
-        ArrayList tags = Javadoc.parseComment(comment, source);
+        List<String> tags = Javadoc.parseComment(comment, source);
         
         for (int i = 0; i < tags.size(); i++) {
             Matcher tag = paramRegex.matcher((String)tags.get(i));

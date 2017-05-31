@@ -14,42 +14,43 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.source;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
 
+import za.co.mip.ablduck.models.generic.MetaObject;
+
 public class MemberObject {
 	@Expose
-	String id = "";
+	public String id = "";
 
 	@Expose
-	String name = "";
+	public String name = "";
 
 	@Expose
-	String owner = "";
+	public String owner = "";
 
 	@Expose
-	String tagname = "";
+	public String tagname = "";
 
 	@Expose
-	String datatype = null;
+	public String datatype = null;
 
 	@Expose
-	String signature = null;
+	public String signature = null;
 
 	@Expose
-	String returnComment = null;
+	public String returnComment = null;
 
 	@Expose
-	MetaObject meta = new MetaObject();
+	public MetaObject meta = new MetaObject();
 
 	//Internal Use
 	@Expose(serialize = false)
-	String comment = "";
+	public String comment = "";
 
 	@Expose(serialize = false)
-	List<ParameterObject> parameters = null;
+	public List<ParameterObject> parameters = null;
 }

@@ -14,25 +14,28 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.utilities;
 
 import java.util.List;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import org.apache.tools.ant.BuildException;
 
+import za.co.mip.ablduck.models.SourceJSObject;
+import za.co.mip.ablduck.models.generic.DeprecatedObject;
+import za.co.mip.ablduck.models.generic.MetaObject;
+import za.co.mip.ablduck.models.source.MemberObject;
+import za.co.mip.ablduck.models.source.ParameterObject;
+
 import java.lang.reflect.*;
 
 public class HTMLGenerator {
-    private static Pattern signature = Pattern.compile("\\((.+)\\)");
     private static Pattern returnType = Pattern.compile("\\):(.*)");
-    private HashMap classes;
+    private HashMap<String, SourceJSObject> classes;
             
-    public String getClassHtml (HashMap allclasses, SourceJSObject cls) {
+    public String getClassHtml (HashMap<String, SourceJSObject> allclasses, SourceJSObject cls) {
         classes = allclasses;
         String classHtml = "<div>"
                            + renderSidebar(cls)
@@ -50,7 +53,7 @@ public class HTMLGenerator {
     private String renderSidebar (SourceJSObject cls) {
         String sidebar = "";
         
-        if(!cls.extends_.equals("") || cls.subclasses.size() > 0){
+        if(!"".equals(cls.ext) || cls.subclasses.size() > 0){
             
             sidebar = "<pre class='hierarchy'>"
                          + renderClassTree(cls)
@@ -64,7 +67,7 @@ public class HTMLGenerator {
     
     private String renderAuthor (SourceJSObject cls) {
         String author = "";
-        if (!cls.author.equals("")){
+        if (!"".equals(cls.author)){
             author = "<h4>Author</h4>"
                    + "<div class='dependency'>" + cls.author + "</div>";
         }
@@ -86,7 +89,7 @@ public class HTMLGenerator {
         return classTree;
     }
     
-    private String renderSuperTree (List superclasses, Integer i) {
+    private String renderSuperTree (List<String> superclasses, Integer i) {
         if (i == superclasses.size())
             return "";
         
@@ -250,10 +253,8 @@ public class HTMLGenerator {
                               // member name and type + link to owner class and source
                               + "<div class='title'>"
                                   + "<div class='meta'>"
-                                      // TODO: inherited
                                       + "<span class='defined-in' rel='" + member.owner + "'>" + member.owner + "</span>"
                                       + "<br/>"
-                                      // TODO: source optional
                                       //+ "<a href='source/abc.html' target='_blank' class='view-source'>view source</a>"
                                   + "</div>"
                                   + "<a href='#!/api/" + cls.name + "-" + member.id + "' class='name expandable'>" + member.name + "</a>"
@@ -321,7 +322,7 @@ public class HTMLGenerator {
             else
                 flag = (Boolean)field.get(meta);
             
-            key = field.getName().toString().replace("_", "");
+            key = field.getName().toString().replace("is", "");
 
           } catch (IllegalAccessException ex) {
             throw new BuildException(ex);

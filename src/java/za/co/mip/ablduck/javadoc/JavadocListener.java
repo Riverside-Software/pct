@@ -3,14 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.javadoc;
 
+import java.util.List;
 import java.util.ArrayList;
 
+import za.co.mip.ablduck.javadoc.JavadocParser;
+import za.co.mip.ablduck.javadoc.JavadocParserBaseListener;
+
 public class JavadocListener extends JavadocParserBaseListener {
-    ArrayList tags = new ArrayList();
+    private List<String> tags = new ArrayList<>();
     
-    public ArrayList getTags() {
+    public List<String> getTags() {
         return tags;
     }
     

@@ -18,7 +18,6 @@ package za.co.mip.ablduck;
 
 import java.util.ArrayList;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.openedge.core.runtime.IPropath;
@@ -30,6 +29,13 @@ import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
 import eu.rssw.rcode.Parameter;
 import eu.rssw.rcode.AccessModifier;
+
+import za.co.mip.ablduck.models.SourceJSObject;
+import za.co.mip.ablduck.models.generic.DeprecatedObject;
+import za.co.mip.ablduck.models.source.MemberObject;
+import za.co.mip.ablduck.models.source.ParameterObject;
+import za.co.mip.ablduck.utilities.CommentParser;
+import za.co.mip.ablduck.utilities.CommentParseResult;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 	
@@ -54,14 +60,13 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         js.classIcon = "class";
 
         if (cu.inherits != null)
-            js.extends_ = cu.inherits;
+            js.ext = cu.inherits;
 
         String c = cu.classComment.get(cu.classComment.size() - 1); // Assuming last comment will always be the class comment, will need to cater for license later
         
         try {
             CommentParseResult commentParseResult = CommentParser.parseComment(c, fullClassName);
 
-            //TODO: fix this, not even sure i like it
             if (!commentParseResult.internal)
                 commentParseResult.internal = cu.className.startsWith("_");
 
@@ -72,7 +77,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
     
     
-            if (!commentParseResult.deprecatedVersion.equals("")) {
+            if (!"".equals(commentParseResult.deprecatedVersion)) {
                 js.meta.deprecated = new DeprecatedObject();
     
                 js.meta.deprecated.version = commentParseResult.deprecatedVersion;
@@ -117,8 +122,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 if (commentParseResult.internal)
                     m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
 
-                //TODO: remove this duplication tsk tsk, write a meta adding method for class, method and property
-                if (!commentParseResult.deprecatedVersion.equals("")) {
+                if (!"".equals(commentParseResult.deprecatedVersion)) {
                     m.meta.deprecated = new DeprecatedObject();
         
                     m.meta.deprecated.version = commentParseResult.deprecatedVersion;
@@ -128,29 +132,24 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 throw ex;
             }
             
-            switch (method.modifier){
-                case PRIVATE:
-                    m.meta.private_ = true;
-                    break;
-                case PROTECTED:
-                    m.meta.protected_ = true;
-                    break;
-            }
+            if (method.modifier == AccessModifier.PRIVATE)
+                m.meta.isPrivate = true;
+            
+            if (method.modifier == AccessModifier.PROTECTED)
+                m.meta.isProtected = true;
             
             if (method.isAbstract)
-                m.meta.abstract_ = true;
+                m.meta.isAbstract = true;
 
             if (method.isStatic)
-                m.meta.static_ = true;
+                m.meta.isStatic = true;
 
-            m.parameters = new ArrayList<ParameterObject>();
+            m.parameters = new ArrayList<>();
             for (Parameter parameter : method.parameters) {
                 ParameterObject p = new ParameterObject();
 
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
-
-                //TODO: do i need this? probably need to show this in the docs somewhere
                 p.mode = parameter.mode.toString();
 
                 m.parameters.add(p);
@@ -159,8 +158,6 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             js.members.add(m);
         }
 
-        //TODO: remove this duplication tsk tsk, write a meta adding method for class, method and property
-        //Properties
         for (Property property : cu.properties) {
             MemberObject m = new MemberObject();
 
@@ -181,7 +178,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 if (commentParseResult.internal)
                     m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
 
-                if (!commentParseResult.deprecatedVersion.equals("")) {
+                if (!"".equals(commentParseResult.deprecatedVersion)) {
                     m.meta.deprecated = new DeprecatedObject();
         
                     m.meta.deprecated.version = commentParseResult.deprecatedVersion;
@@ -192,20 +189,17 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 throw ex;
             }
             
-            switch (property.modifier){
-                case PRIVATE:
-                    m.meta.private_ = true;
-                    break;
-                case PROTECTED:
-                    m.meta.protected_ = true;
-                    break;
-            }
+            if (property.modifier == AccessModifier.PRIVATE)
+                m.meta.isPrivate = true;
+            
+            if (property.modifier == AccessModifier.PROTECTED)
+                m.meta.isProtected = true;
 
             if (property.isAbstract)
-                m.meta.abstract_ = true;
+                m.meta.isAbstract = true;
 
             if (property.isStatic)
-                m.meta.static_ = true;
+                m.meta.isStatic = true;
 
             js.members.add(m);
         }

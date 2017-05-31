@@ -14,32 +14,32 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.generic;
 
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class MetaObject {
 
-	@Expose
-    String internal = null;
+    @Expose
+    public String internal = null;
 
     @Expose
     @SerializedName("private")
-    Boolean private_ = null;
+    public Boolean isPrivate = null;
 
     @Expose
     @SerializedName("protected")
-    Boolean protected_ = null;
+    public Boolean isProtected = null;
 
     @Expose
     @SerializedName("static")
-    Boolean static_ = null;
+    public Boolean isStatic = null;
 
     @Expose
     @SerializedName("abstract")
-    Boolean abstract_ = null;
+    public Boolean isAbstract = null;
 
     @Expose
-	DeprecatedObject deprecated = null; 
+    public DeprecatedObject deprecated = null; 
 }

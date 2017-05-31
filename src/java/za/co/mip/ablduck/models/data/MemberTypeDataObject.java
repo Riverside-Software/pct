@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package za.co.mip.ablduck;
+package za.co.mip.ablduck.models.data;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,17 +24,17 @@ import com.google.gson.annotations.Expose;
 public class MemberTypeDataObject {
 
 	@Expose
-	String name = "";
-
+	public String name = "";
+	
 	@Expose
-	String title = "";
-
+	public String title = "";
+	
 	@Expose
-	String icon = "";
-
+	public String icon = "";
+	
 	@Expose
-	Integer position = 0;
-
+	public Integer position = 0;
+	
 	@Expose
-	List<SubsectionDataObject> subsections = new ArrayList<SubsectionDataObject>();
+	public List<SubsectionDataObject> subsections = new ArrayList<>();
 }

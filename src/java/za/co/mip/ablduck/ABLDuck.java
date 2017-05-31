@@ -18,6 +18,7 @@ package za.co.mip.ablduck;
 
 import java.text.SimpleDateFormat;
 import java.text.Format;
+import java.text.MessageFormat;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import java.nio.file.Files;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,11 +44,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 
-import java.text.MessageFormat;
-
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.FileSet;
-
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
 
@@ -57,19 +54,22 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.openedge.core.runtime.IPropath;
 import com.openedge.core.runtime.Propath;
-
 import com.openedge.pdt.core.ast.ASTManager;
-import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.IASTManager;
 import com.openedge.pdt.core.ast.PropathASTContext;
-
 import com.openedge.pdt.core.ast.model.IASTContext;
-import com.openedge.pdt.core.ast.model.IASTNode;
 import com.openedge.pdt.core.ast.model.ICompilationUnit;
 
 import com.phenix.pct.PCT;
 import com.phenix.pct.Messages;
 import com.phenix.pct.Version;
+
+import za.co.mip.ablduck.models.DataJSObject;
+import za.co.mip.ablduck.models.SourceJSObject;
+import za.co.mip.ablduck.models.data.ClassDataObject;
+import za.co.mip.ablduck.models.data.SearchDataObject;
+import za.co.mip.ablduck.models.source.MemberObject;
+import za.co.mip.ablduck.utilities.HTMLGenerator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -80,7 +80,7 @@ import com.google.gson.GsonBuilder;
  * @author <a href="mailto:robertedwardsmail@gmail.com">Robert Edwards</a>
  */
 public class ABLDuck extends PCT {
-    private HashMap<String, SourceJSObject> jsObjects = new HashMap<String, SourceJSObject>();
+    private HashMap<String, SourceJSObject> jsObjects = new HashMap<>();
     private String title = "ABLDuck documentation";
     private File destDir = null;
     private File destDirOutput = null;
@@ -214,17 +214,17 @@ public class ABLDuck extends PCT {
         }
 
         //Determine class hierarchy, subclasses and search objects
-        for (Map.Entry j:jsObjects.entrySet()) {
-            SourceJSObject js = (SourceJSObject)j.getValue();
+        for (Map.Entry<String, SourceJSObject> j:jsObjects.entrySet()) {
+            SourceJSObject js = j.getValue();
 
             //Class tree
             ClassDataObject cls = new ClassDataObject();
             cls.name = js.name;
-            cls.extends_ = js.extends_;
+            cls.ext = js.ext;
             cls.icon = "icon-class";
 
-            if (js.meta.private_ != null && js.meta.private_)
-                cls.private_ = true;
+            if (js.meta.isPrivate != null && js.meta.isPrivate)
+                cls.isPrivate = true;
 
             dataJSObject.classes.add(cls);
 
@@ -259,17 +259,17 @@ public class ABLDuck extends PCT {
             js.members.addAll(result.inheritedmembers);
 
             //Subclasses
-            for (Map.Entry subclass:jsObjects.entrySet()) {
-                SourceJSObject subc = (SourceJSObject)subclass.getValue();
-                if(subc.extends_.equals(js.name)) 
+            for (Map.Entry<String, SourceJSObject> subclass:jsObjects.entrySet()) {
+                SourceJSObject subc = subclass.getValue();
+                if(subc.ext.equals(js.name)) 
                     js.subclasses.add(subc.name);
             }
 
         }
 
         //Write class js files out
-        for (Map.Entry j:jsObjects.entrySet()) {
-            SourceJSObject js = (SourceJSObject)j.getValue();
+        for (Map.Entry<String, SourceJSObject> j:jsObjects.entrySet()) {
+            SourceJSObject js = j.getValue();
 
             //Generate html
             js.html = html.getClassHtml(jsObjects, js);
@@ -293,9 +293,9 @@ public class ABLDuck extends PCT {
 
     private HierarchyResult determineClassHierarchy(SourceJSObject curClass, HierarchyResult result) {
         
-        String inherits = curClass.extends_;
+        String inherits = curClass.ext;
 
-        if (!inherits.equals("")) {
+        if (!"".equals(inherits)) {
             result.hierarchy.add(inherits);
 
             curClass = jsObjects.get(inherits);
@@ -303,7 +303,7 @@ public class ABLDuck extends PCT {
             if (curClass != null) {
                 for (MemberObject member : curClass.members) {
                     if (member.owner.equals(inherits)) 
-                        if(member.meta.private_ == null || member.meta.private_ != true)
+                        if(member.meta.isPrivate == null || member.meta.isPrivate != true)
                             result.inheritedmembers.add(member);
                     
                 }
