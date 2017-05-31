@@ -1,6 +1,5 @@
-// Generated from JavadocLexer.g4 by ANTLR 4.7
+// Generated from /home/roberte/Projects/pct/src/java/za/co/mip/ablduck/javadoc/JavadocLexer.g4 by ANTLR 4.7
 package za.co.mip.ablduck;
-
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

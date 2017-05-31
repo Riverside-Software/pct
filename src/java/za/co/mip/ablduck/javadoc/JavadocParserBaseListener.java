@@ -1,4 +1,4 @@
-// Generated from JavadocParser.g4 by ANTLR 4.7
+// Generated from /home/roberte/Projects/pct/src/java/za/co/mip/ablduck/javadoc/JavadocParser.g4 by ANTLR 4.7
 package za.co.mip.ablduck;
 
 import org.antlr.v4.runtime.ParserRuleContext;
