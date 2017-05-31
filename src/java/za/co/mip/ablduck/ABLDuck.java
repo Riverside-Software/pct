@@ -16,18 +16,33 @@
  */
 package za.co.mip.ablduck;
 
+import java.text.SimpleDateFormat;
+import java.text.Format;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import java.net.URL;
+import java.net.URLDecoder;
 
 import java.text.MessageFormat;
 
@@ -54,6 +69,7 @@ import com.openedge.pdt.core.ast.model.ICompilationUnit;
 
 import com.phenix.pct.PCT;
 import com.phenix.pct.Messages;
+import com.phenix.pct.Version;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -143,11 +159,18 @@ public class ABLDuck extends PCT {
 
         //Extract template
         try {
-            TemplateUtility.extractTemplate("ablduck.zip", this.destDir);
+            extractTemplateDirectory(this.destDir);
 
-            TemplateUtility.replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "index.html"));
-            TemplateUtility.replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "template.html"));
-            TemplateUtility.replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "print-template.html")); 
+            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "index.html"));
+            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "template.html"));
+            replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), "print-template.html")); 
+            
+            replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), "index.html")); 
+            replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), "template.html")); 
+
+            Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
+            replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), "index.html")); 
+            replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), "template.html")); 
         } catch (IOException ex) {
             throw new BuildException(ex);
         }
@@ -289,5 +312,34 @@ public class ABLDuck extends PCT {
             }
         }
         return result;
+    }
+
+    private void extractTemplateDirectory(File outputDir) throws IOException {
+        URL url = getClass().getClassLoader().getResource(getClass().getName().replace(".", "/") + ".class");
+        String jarPath = url.getPath().substring(5, url.getPath().indexOf('!'));
+
+        try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (entry.getName().startsWith("ablducktemplate")) {
+                    File template = new File(outputDir, entry.getName().substring(15));
+                    if (entry.isDirectory()) {
+                        template.mkdirs();
+                        continue;
+                    }
+
+                    copyStreamFromJar("/" + entry.getName(), template);
+                }
+            }
+        }
+    }
+
+    private void replaceTemplateTags(String tag, String value, java.nio.file.Path file) throws IOException {
+        Charset charset = StandardCharsets.UTF_8;
+
+        String content = new String(Files.readAllBytes(file), charset);
+        content = content.replaceAll(Pattern.quote(tag), Matcher.quoteReplacement(value));
+        Files.write(file, content.getBytes(charset));
     }
 }

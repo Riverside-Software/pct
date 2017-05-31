@@ -34,4 +34,8 @@ public class Version extends Task {
         echo.setMessage(str);
         echo.execute();
     }
+
+    public static String getPCTVersion() {
+    	return RESOURCE_BUNDLE.getString("PCTVersion");
+    }
 }
