@@ -23,13 +23,16 @@ import java.util.regex.Matcher;
 
 import org.apache.tools.ant.BuildException;
 
+import com.google.gson.annotations.SerializedName;
+
 import za.co.mip.ablduck.models.SourceJSObject;
 import za.co.mip.ablduck.models.generic.DeprecatedObject;
 import za.co.mip.ablduck.models.generic.MetaObject;
 import za.co.mip.ablduck.models.source.MemberObject;
 import za.co.mip.ablduck.models.source.ParameterObject;
 
-import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 public class HTMLGenerator {
     private static Pattern returnType = Pattern.compile("\\):(.*)");
@@ -308,29 +311,37 @@ public class HTMLGenerator {
     
     private String renderTags (MetaObject meta) {
         String tags = "<span class=\"signature\">";
-
+        
         Class<?> c = meta.getClass();
         Field[] fields = c.getDeclaredFields();
 
         for (Field field : fields) {
-          field.setAccessible(true);
-          Boolean flag = false;
-          String key;
-
-          try {
-            if(field.get(meta) instanceof DeprecatedObject || field.get(meta) instanceof String)
-                flag = true;
-            else
-                flag = (Boolean)field.get(meta);
+            field.setAccessible(true);
+            Boolean flag = false;
+            String key = null;
             
-            key = field.getName().toString().replace("is", "");
-
-          } catch (IllegalAccessException ex) {
-            throw new BuildException(ex);
-          }
-
-          if (flag != null && flag)
-              tags += "<span class='" + key.toLowerCase() + "'>" + key.toUpperCase() + "</span>";
+            Annotation[] annotations = field.getDeclaredAnnotations();
+            for(Annotation annotation : annotations){
+                if(annotation instanceof SerializedName){
+                    SerializedName myAnnotation = (SerializedName) annotation;
+                    key = myAnnotation.value();
+                    
+                    try {
+                        System.out.println(key + " " + (field.get(meta) instanceof DeprecatedObject || field.get(meta) instanceof String));
+                        if(field.get(meta) instanceof DeprecatedObject || field.get(meta) instanceof String)
+                            flag = true;
+                        else
+                            flag = (Boolean) field.get(meta);
+                        System.out.println(flag);
+                    } catch (IllegalAccessException ex) {
+                        throw new BuildException(ex);
+                    }
+                    
+                }
+            }
+            
+            if (flag != null && flag)
+                tags += "<span class='" + key.toLowerCase() + "'>" + key.toUpperCase() + "</span>";
         }
         
         tags += "</span>";

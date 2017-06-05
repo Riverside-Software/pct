@@ -22,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
 public class MetaObject {
 
     @Expose
+    @SerializedName("internal")
     public String internal = null;
 
     @Expose
@@ -41,5 +42,6 @@ public class MetaObject {
     public Boolean isAbstract = null;
 
     @Expose
+    @SerializedName("deprecated")
     public DeprecatedObject deprecated = null; 
 }
