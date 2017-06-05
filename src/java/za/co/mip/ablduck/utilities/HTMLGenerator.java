@@ -327,12 +327,10 @@ public class HTMLGenerator {
                     key = myAnnotation.value();
                     
                     try {
-                        System.out.println(key + " " + (field.get(meta) instanceof DeprecatedObject || field.get(meta) instanceof String));
                         if(field.get(meta) instanceof DeprecatedObject || field.get(meta) instanceof String)
                             flag = true;
                         else
                             flag = (Boolean) field.get(meta);
-                        System.out.println(flag);
                     } catch (IllegalAccessException ex) {
                         throw new BuildException(ex);
                     }
