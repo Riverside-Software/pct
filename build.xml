@@ -323,6 +323,7 @@
       <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
+      <include name="za/co/mip/ablduck/*.java" />
       <classpath refid="pct.test.compil" />
     </javac>
   </target>
