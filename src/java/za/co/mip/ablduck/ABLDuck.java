@@ -85,6 +85,7 @@ public class ABLDuck extends PCT {
     private String title = "ABLDuck documentation";
     private File destDir = null;
     private File destDirOutput = null;
+    private Boolean dataFilesOnly = false;
     private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
 
@@ -142,6 +143,15 @@ public class ABLDuck extends PCT {
 
         return this.propath;
     }
+    
+    /**
+     * Generate the data files only
+     * 
+     * @param dataFilesOnly Generate only the data files, wont extract the template
+     */
+    public void setDataFilesOnly(Boolean dataOnly) {
+        this.dataFilesOnly = dataOnly;
+    }
 
     @Override
     public void execute() {
@@ -158,20 +168,22 @@ public class ABLDuck extends PCT {
 
         this.destDirOutput.mkdirs();
 
-        //Extract template
-        try {
-            extractTemplateDirectory(this.destDir);
-            
-            Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
-            List<String> files = Arrays.asList("index.html", "template.html", "print-template.html");
-            
-            for(String file : files) {
-                replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), file));
-                replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), file));
-                replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), file));
-            } 
-        } catch (IOException ex) {
-            throw new BuildException(ex);
+        if (!this.dataFilesOnly) {
+            //Extract template
+            try {
+                extractTemplateDirectory(this.destDir);
+                
+                Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
+                List<String> files = Arrays.asList("index.html", "template.html", "print-template.html");
+                
+                for(String file : files) {
+                    replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), file));
+                    replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), file));
+                    replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), file));
+                } 
+            } catch (IOException ex) {
+                throw new BuildException(ex);
+            }
         }
 
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
