@@ -313,6 +313,7 @@ public class HTMLGenerator {
         Field[] fields = c.getDeclaredFields();
 
         for (Field field : fields) {
+          field.setAccessible(true);
           Boolean flag = false;
           String key;
 
