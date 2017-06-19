@@ -1,5 +1,5 @@
 /**
-s * Copyright 2017 MIP Holdings
+ * Copyright 2017 MIP Holdings
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.

@@ -284,7 +284,7 @@ public class ABLDuck extends PCT {
         //Write class js files out
         for (Map.Entry<String, SourceJSObject> j:jsObjects.entrySet()) {
             SourceJSObject js = j.getValue();
-
+            
             //Generate html
             js.html = html.getClassHtml(jsObjects, js);
     

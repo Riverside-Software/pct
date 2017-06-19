@@ -57,7 +57,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     	   fullClassName = cu.packageName + "." + cu.className;
         else
             fullClassName = cu.className;
-
+        
         js.id        = "class-" + fullClassName;
         js.tagname   = "class";
         js.name      = fullClassName;
@@ -110,20 +110,22 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 m.id = "method-" + method.methodName;
             else
                 m.id = "method-" + method.methodName + "-" + methodCount.toString();
+            
             m.name = method.methodName;
             m.owner = fullClassName;
             m.tagname = "method";
             m.signature = method.signature;
 
+            CommentParseResult commentParseResult = null;
             try {
-                CommentParseResult commentParseResult = comments.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
+                commentParseResult = comments.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
 
                 if (!commentParseResult.internal)
                     commentParseResult.internal = method.methodName.startsWith("_");
 
                 m.returnComment = commentParseResult.returnComment;
                 m.comment = commentParseResult.comment;
-
+                
                 if (commentParseResult.internal)
                     m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
 
@@ -156,6 +158,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
                 p.mode = parameter.mode.toString();
+                
+                if(commentParseResult.parameterComments.get(parameter.name) != null)
+                    p.comment = commentParseResult.parameterComments.get(parameter.name);
 
                 m.parameters.add(p);
             }
