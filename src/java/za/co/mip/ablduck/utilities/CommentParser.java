@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 public class CommentParser {
     private String comment;
     private String source;
-    private HashMap<String, String> nestedComments = new HashMap<>();
+    private Map<String, String> nestedComments = new HashMap<>();
     private Javadoc javadocParser;
     
     public CommentParser (Task ablduck) {
@@ -50,8 +50,8 @@ public class CommentParser {
     
     public void trimCommentLines(){
         
-        Integer start = comment.indexOf("\n");
-        Integer end   = comment.lastIndexOf("\n");
+        Integer start = comment.indexOf('\n');
+        Integer end   = comment.lastIndexOf('\n');
         
         if (Objects.equals(start, end)) {
             comment = "";
@@ -145,7 +145,7 @@ public class CommentParser {
     }
     
     public void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
-        HashMap<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
+        Map<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
         
         if (deprecated.size() > 0) {
             commentParseResult.deprecatedVersion = deprecated.keySet().iterator().next();
@@ -175,8 +175,8 @@ public class CommentParser {
         }
     }
     
-    public HashMap<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
-        HashMap<String, String> keyvaluetag = new HashMap<String, String>();
+    public Map<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
+        Map<String, String> keyvaluetag = new HashMap<>();
         
         List<String> tags = javadocParser.parseComment(comment, source);
         
@@ -232,8 +232,8 @@ public class CommentParser {
     public String removeLeadingWhitespace(String text){
         Pattern whitespace = Pattern.compile("\\n\\s+");
         
-        text = whitespace.matcher(text).replaceAll("\n");
+        String trimmed = whitespace.matcher(text).replaceAll("\n");
         
-        return text.trim();
+        return trimmed.trim();
     }
 }

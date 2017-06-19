@@ -17,7 +17,7 @@
 package za.co.mip.ablduck.utilities;
 
 import java.util.List;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -35,21 +35,28 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 public class HTMLGenerator {
+    private String ulTag = "<ul>";
+    private String ulEndTag = "</ul>";
+    private String liTag = "<li>";
+    private String liEndTag = "</li>";
+    private String brTag = "</br>";
+    private String divEndTag = "</div>";
+    
     private static Pattern returnType = Pattern.compile("\\):(.*)");
-    private HashMap<String, SourceJSObject> classes;
+    private Map<String, SourceJSObject> classes;
             
-    public String getClassHtml (HashMap<String, SourceJSObject> allclasses, SourceJSObject cls) {
+    public String getClassHtml (Map<String, SourceJSObject> allclasses, SourceJSObject cls) {
         classes = allclasses;
         String classHtml = "<div>"
                            + renderSidebar(cls)
                            + "<div class='doc-contents'>"
                            + renderClassComment(cls)
-                           + "</div>"
+                           + this.divEndTag
                            + "<div class='members'>"
                            + renderMemberDetails(cls, "property", "Properties")
                            + renderMemberDetails(cls, "method", "Methods")
-                           + "</div>"
-                         + "</div>";
+                           + this.divEndTag
+                         + this.divEndTag;
         return classHtml;
     }
     
@@ -72,7 +79,7 @@ public class HTMLGenerator {
         String author = "";
         if (!"".equals(cls.author)){
             author = "<h4>Author</h4>"
-                   + "<div class='dependency'>" + cls.author + "</div>";
+                   + "<div class='dependency'>" + cls.author + this.divEndTag;
         }
         
         return author;
@@ -81,7 +88,7 @@ public class HTMLGenerator {
     private String renderClassTree (SourceJSObject cls) {
         String classTree = "";
                 
-        if(cls.superclasses.size() > 0) {
+        if(!cls.superclasses.isEmpty()) {
             classTree = "<h4>Hierarchy</h4>";
             
             cls.superclasses.add(cls.name);
@@ -111,18 +118,18 @@ public class HTMLGenerator {
         tree += "<div class='subclass " + firstChild + "'>"
               + name
               + renderSuperTree(superclasses, i + 1)
-              + "</div>";
+              + this.divEndTag;
         
         return tree;
     }
     
     private String renderSubclasses (SourceJSObject cls) {
         String deps = "";
-        if(cls.subclasses.size() > 0){
+        if(!cls.subclasses.isEmpty()){
             deps = "<h4>Subclasses</h4>";
 
             for (String subclass : cls.subclasses) {
-                deps += "<div class='dependency'>" + renderLink(subclass) + "</div>";
+                deps += "<div class='dependency'>" + renderLink(subclass) + this.divEndTag;
             }
         }
         return deps;
@@ -132,10 +139,10 @@ public class HTMLGenerator {
         String classComment = "";
         
         if (cls.meta.internal != null) 
-            classComment = renderInternal(cls.meta.internal) + "</br>";
+            classComment = renderInternal(cls.meta.internal) + this.brTag;
                 
         if (cls.meta.deprecated != null)
-            classComment = renderDeprecated("class", cls.meta.deprecated) + "</br>" + classComment;
+            classComment = renderDeprecated("class", cls.meta.deprecated) + this.brTag + classComment;
                
         classComment += cls.comment;
         return classComment;
@@ -143,15 +150,13 @@ public class HTMLGenerator {
     
     private String renderMemberDetails (SourceJSObject cls, String memberSection, String memberSectionTitle) {
         
-        String member = "<div class='members-section'>"
-                          + "<div class='definedBy'>Defined By</div>"
-                          + "<h3 class='members-title icon-" + memberSection + "'>" + memberSectionTitle + "</h3>"
-                          + "<div class='subsection'>"
-                              + renderMember(cls, memberSection)
-                          + "</div>"
-                      + "</div>";
-        
-        return member;
+        return "<div class='members-section'>"
+                 + "<div class='definedBy'>Defined By</div>"
+                 + "<h3 class='members-title icon-" + memberSection + "'>" + memberSectionTitle + "</h3>"
+                 + "<div class='subsection'>"
+                    + renderMember(cls, memberSection)
+                 + this.divEndTag
+              + this.divEndTag;
     }
     
     private String renderMember (SourceJSObject cls, String memberType) {
@@ -185,23 +190,23 @@ public class HTMLGenerator {
                 
                 if(shortdoc.length() == 0) {
                     shortdoc = "&nbsp;";
-                    doc      = "&nbsp;";
+                    doc      = shortdoc;
                 }
                 
                 if (member.meta.internal != null) 
-                    doc = renderInternal(member.meta.internal) + "</br>" + doc;
+                    doc = renderInternal(member.meta.internal) + this.brTag + doc;
                 
                 if (member.meta.deprecated != null)
-                    doc = renderDeprecated(member.tagname, member.meta.deprecated) + "</br>" + doc;
+                    doc = renderDeprecated(member.tagname, member.meta.deprecated) + this.brTag + doc;
                
                 String sig = "";
                 String returnT = "";
                 
-                if (member.tagname.equals("method")) {
+                if ("method".equals(member.tagname)) {
                     if (member.parameters.size() > 0) {
-                        doc += "<br>"
+                        doc += this.brTag
                             + "<h3 class=\"pa\">Parameters</h3>"
-                            + "<ul>";
+                            + this.ulTag;
                     }
                     
                     sig = "(";
@@ -215,7 +220,7 @@ public class HTMLGenerator {
                         else 
                           datatype = parameter.datatype;
                         
-                        if (sig.equals("("))
+                        if ("(".equals(sig))
                             sig += datatype;
                         else
                             sig += ", " + datatype;
@@ -225,7 +230,7 @@ public class HTMLGenerator {
                     sig += ")";
                     
                     if (member.parameters.size() > 0) {
-                        doc += "</ul>";
+                        doc += this.ulEndTag;
                     }
                     
                     Matcher r = returnType.matcher(member.signature);
@@ -240,7 +245,7 @@ public class HTMLGenerator {
                     doc += renderReturns(returnT, member.returnComment);
                 }
                 
-                if (member.tagname.equals("property")) {
+                if ("property".equals(member.tagname)) {
                     if(classes.get(member.datatype) != null){
                         returnT = renderLink(member.datatype);
                     } else {
@@ -259,20 +264,20 @@ public class HTMLGenerator {
                                       + "<span class='defined-in' rel='" + member.owner + "'>" + member.owner + "</span>"
                                       + "<br/>"
                                       //+ "<a href='source/abc.html' target='_blank' class='view-source'>view source</a>"
-                                  + "</div>"
+                                  + this.divEndTag
                                   + "<a href='#!/api/" + cls.name + "-" + member.id + "' class='name expandable'>" + member.name + "</a>"
                                   + " " + sig + " : " + returnT
                                   + renderTags(member.meta)
-                              + "</div>"
+                              + this.divEndTag
                               + "<div class='description'>"
                                   + "<div class='short'>"
                                       + shortdoc
-                                  + "</div>"
+                                  + this.divEndTag
                                   + "<div class='long'>"
                                       + doc
-                                  + "</div>"
-                              + "</div>"
-                            + "</div>";
+                                  + this.divEndTag
+                              + this.divEndTag
+                            + this.divEndTag;
             }
         }
         
@@ -280,33 +285,25 @@ public class HTMLGenerator {
     }
     
     private String renderReturns (String returnsType, String returnsDoc) {
-        String returns = "";
-        
-        returns += "<h3 class='pa'>Returns</h3>"
-                   + "<ul>"
-                       + "<li>"
-                           + "<span class='pre'>" + returnsType +"</span>"
-                           + "<div class='sub-desc'>"
-                               + returnsDoc
-                           + "</div>"
-                       + "</li>"
-                    + "</ul>";
-        
-        return returns;
+        return "<h3 class='pa'>Returns</h3>"
+             + this.ulTag
+                + this.liTag
+                   + "<span class='pre'>" + returnsType +"</span>"
+                   + "<div class='sub-desc'>"
+                      + returnsDoc
+                   + this.divEndTag
+                + this.liEndTag
+             + this.ulEndTag;
     }
     
     private String renderParams (ParameterObject renderParams) {
-        String param = "";
-        
-        param += "<li>"
-                   + "<span class='pre'>" + renderParams.name + "</span> : "
-                   + renderParams.datatype
-                   + "<div class='sub-desc'>"
-                       + renderParams.comment
-                   + "</div>"
-               + "</li>";
-        
-        return param;
+        return this.liTag
+               + "<span class='pre'>" + renderParams.name + "</span> : "
+               + renderParams.datatype
+               + "<div class='sub-desc'>"
+                   + renderParams.comment
+               + this.divEndTag
+             + this.liEndTag;
     }
     
     private String renderTags (MetaObject meta) {
@@ -348,18 +345,16 @@ public class HTMLGenerator {
     }
     
     private String renderDeprecated (String tagname, DeprecatedObject deprecated) {
-        String dep = "<div class='rounded-box deprecated-box deprecated-tag-box'>\n" +
-                         "<p>This " + tagname + " has been <strong>deprected</strong> since " + deprecated.version + "</p>\n" +
-                         deprecated.text + "\n" +
-                     "</div>";
-        return dep;
+        return "<div class='rounded-box deprecated-box deprecated-tag-box'>\n"
+                  + "<p>This " + tagname + " has been <strong>deprected</strong> since " + deprecated.version + "</p>\n"
+                  + deprecated.text + "\n"
+             + this.divEndTag;
     }
     
     private String renderInternal (String internal) {
-        String dep = "<div class='rounded-box private-box'>\n" +
-                         "<p><strong>NOTE:</strong> " + internal + "</p>\n" +
-                     "</div>";
-        return dep;
+        return "<div class='rounded-box private-box'>\n"
+                  + "<p><strong>NOTE:</strong> " + internal + "</p>\n"
+              + this.divEndTag;
     }
     
     private String renderLink (String link) {
@@ -367,10 +362,6 @@ public class HTMLGenerator {
     }
     
     private String stripHtmlTags(String doc) {
-        
-        doc = doc.replaceAll("<[^>]*>", "");
-        
-        return doc;
-
+        return doc.replaceAll("<[^>]*>", "");
     }
 }
