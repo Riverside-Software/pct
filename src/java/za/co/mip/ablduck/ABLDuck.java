@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -37,11 +39,14 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -81,6 +86,7 @@ import com.google.gson.GsonBuilder;
  * @author <a href="mailto:robertedwardsmail@gmail.com">Robert Edwards</a>
  */
 public class ABLDuck extends PCT {
+    private static final int BUFFER_SIZE = 4096;
     private HashMap<String, SourceJSObject> jsObjects = new HashMap<>();
     private String title = "ABLDuck documentation";
     private File destDir = null;
@@ -88,6 +94,7 @@ public class ABLDuck extends PCT {
     private Boolean dataFilesOnly = false;
     private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
+    
 
     public ABLDuck() {
         super();
@@ -325,26 +332,81 @@ public class ABLDuck extends PCT {
     }
 
     private void extractTemplateDirectory(File outputDir) throws IOException {
-        URL url = getClass().getClassLoader().getResource(getClass().getName().replace(".", "/") + ".class");
-        String jarPath = url.getPath().substring(5, url.getPath().indexOf('!'));
+ 
+        File template = exportResource("ablduck.zip", outputDir);
 
-        try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                if (entry.getName().startsWith("ablducktemplate")) {
-                    File template = new File(outputDir, entry.getName().substring(15));
-                    if (entry.isDirectory()) {
-                        template.mkdirs();
-                        continue;
-                    }
+        unzip(template.getAbsolutePath(), outputDir.getAbsolutePath());
 
-                    copyStreamFromJar("/" + entry.getName(), template);
-                }
-            }
-        }
+        template.delete();
+ 
     }
 
+    public File exportResource(String resourceName, File outputDir) throws IOException {
+        InputStream stream = null;
+        OutputStream resStreamOut = null;
+        File resource;
+
+        try {
+            stream = ABLDuck.class.getResourceAsStream("resources/" + resourceName); 
+            if(stream == null) {
+                throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
+            }
+    
+            int readBytes;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            
+            resource = new File(outputDir, resourceName); 
+            resStreamOut = new FileOutputStream(resource.getAbsolutePath());
+            while ((readBytes = stream.read(buffer)) > 0) {
+                resStreamOut.write(buffer, 0, readBytes);
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if(stream != null)
+                stream.close();
+
+            if(resStreamOut != null)
+                resStreamOut.close();
+        }
+    
+        return resource;
+    }
+    
+    public void unzip(String zipFilePath, String destDirectory) throws IOException {
+        File destDir = new File(destDirectory);
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+        ZipEntry entry = zipIn.getNextEntry();
+        // iterates over entries in the zip file
+        while (entry != null) {
+            String filePath = Paths.get(destDirectory, entry.getName()).toString();
+            if (!entry.isDirectory()) {
+                // if the entry is a file, extracts it
+                extractFile(zipIn, filePath);
+            } else {
+                // if the entry is a directory, make the directory
+                File dir = new File(filePath);
+                dir.mkdir();
+            }
+            zipIn.closeEntry();
+            entry = zipIn.getNextEntry();
+        }
+        zipIn.close();
+    }
+    
+    private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        byte[] bytesIn = new byte[BUFFER_SIZE];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
+}
+    
     private void replaceTemplateTags(String tag, String value, java.nio.file.Path file) throws IOException {
         Charset charset = StandardCharsets.UTF_8;
 
