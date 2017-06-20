@@ -97,12 +97,12 @@ public class HTMLGenerator {
             cssClass = "first-child";
         
         //Render superclasses as a hyperlink unless we are the first class, ourself
-        String classLink = renderLink(superclasses.get(i).toString());
+        String classLink = renderLink(superclasses.get(i));
         
         if (i == superclasses.size() - 1)
             classLink = "<strong>" + superclasses.get(i) + "</strong>";
              
-        return MessageFormat.format(getTemplate("HIERARCHY_ITEM"), 
+        return MessageFormat.format(getTemplate("HIERARCHY.ITEM"), 
                                         cssClass, 
                                         classLink, 
                                         renderSuperTree(superclasses, i + 1));
@@ -113,7 +113,7 @@ public class HTMLGenerator {
             
             StringBuilder subclassBuilder = new StringBuilder();
             for (String subclass : cls.subclasses) {
-                subclassBuilder.append(MessageFormat.format(getTemplate("SUBCLASS_ITEM"), renderLink(subclass)));
+                subclassBuilder.append(MessageFormat.format(getTemplate("SUBCLASS.ITEM"), renderLink(subclass)));
             }
             
             return MessageFormat.format(getTemplate("SUBCLASSES"), subclassBuilder.toString()); 
@@ -137,7 +137,7 @@ public class HTMLGenerator {
     }
     
     private String renderMemberDetails (SourceJSObject cls, String memberSection, String memberSectionTitle) {
-        return MessageFormat.format(getTemplate("MEMBER_SECTION"), memberSection, memberSectionTitle, renderMember(cls, memberSection));  
+        return MessageFormat.format(getTemplate("MEMBER.SECTION"), memberSection, memberSectionTitle, renderMember(cls, memberSection));  
     }
     
     private String renderMember (SourceJSObject cls, String memberType) {
