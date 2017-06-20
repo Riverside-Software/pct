@@ -346,7 +346,7 @@ public class ABLDuck extends PCT {
 
         try (
             InputStream stream = ABLDuck.class.getResourceAsStream("resources/" + resourceName);
-            OutputStream resStreamOut = new FileOutputStream(resource.getAbsolutePath());
+            OutputStream resStreamOut = new FileOutputStream(resource.getAbsolutePath())
         ){
             
             if(stream == null) {
@@ -375,7 +375,7 @@ public class ABLDuck extends PCT {
         
         
         try (
-            ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFile.getAbsolutePath()));
+            ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFile.getAbsolutePath()))
         ){
             ZipEntry entry = zipIn.getNextEntry();
             
@@ -398,7 +398,7 @@ public class ABLDuck extends PCT {
     private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         
         try (
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))
         ){
             byte[] bytesIn = new byte[BUFFER_SIZE];
             int read = 0;

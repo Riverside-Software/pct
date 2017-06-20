@@ -15,26 +15,82 @@
  *
  */
 package za.co.mip.ablduck.utilities;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CommentParseResult {
     //Remaining formatted comment
-    public String comment = "";
+    private String comment = "";
     
     //Deprecated version and note from @deprecated
-    public String deprecatedVersion = "";        
-    public String deprecatedText = "";
+    private String deprecatedVersion = "";        
+    private String deprecatedText = "";
     
     //Parameter comments from @param tags
-    public Map<String, String> parameterComments = new HashMap<>();
+    private Map<String, String> parameterComments;
     
     //Internal flag from @internal
-    public Boolean internal = false;
+    private Boolean internal = false;
     
     //Return comment
-    public String returnComment = "";
+    private String returnComment = "";
     
     //Author tag
-    public String author = "";
+    private String author = "";
+    
+    
+    public String getComment() {
+        return this.comment;
+    }
+    
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+    
+    public String getDeprecatedVersion() {
+        return this.deprecatedVersion;
+    }
+    
+    public void setDeprecatedVersion(String depVer) {
+        this.deprecatedVersion = depVer;
+    }
+    
+    public String getDeprecatedText() {
+        return this.deprecatedText;
+    }
+    
+    public void setDeprecatedText(String depText) {
+        this.deprecatedText = depText;
+    }
+    
+    public Map<String, String> getParameterComments() {
+        return this.parameterComments;
+    }
+    
+    public void setParameterComment(Map<String, String> params) {
+        this.parameterComments = params;
+    }
+    
+    public Boolean getInternal() {
+        return this.internal;
+    }
+    
+    public void setInternal(Boolean internal) {
+        this.internal = internal;
+    }
+    
+    public String getReturnComment() {
+        return this.returnComment;
+    }
+    
+    public void setReturnComment(String comment) {
+        this.returnComment = comment;
+    }
+    
+    public String getAuthor() {
+        return this.author;
+    }
+    
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 }

@@ -72,21 +72,21 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         try {
             CommentParseResult commentParseResult = comments.parseComment(c, fullClassName);
 
-            if (!commentParseResult.internal)
-                commentParseResult.internal = cu.className.startsWith("_");
+            if (!commentParseResult.getInternal())
+                commentParseResult.setInternal(cu.className.startsWith("_"));
 
-            js.comment = commentParseResult.comment;
-            js.author = commentParseResult.author;
+            js.comment = commentParseResult.getComment();
+            js.author = commentParseResult.getAuthor();
     
-            if (commentParseResult.internal)
+            if (commentParseResult.getInternal())
                 js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
     
     
-            if (!"".equals(commentParseResult.deprecatedVersion)) {
+            if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                 js.meta.deprecated = new DeprecatedObject();
     
-                js.meta.deprecated.version = commentParseResult.deprecatedVersion;
-                js.meta.deprecated.text    = commentParseResult.deprecatedText;
+                js.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
+                js.meta.deprecated.text    = commentParseResult.getDeprecatedText();
             }
 
         } catch (IOException ex) {
@@ -120,20 +120,20 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             try {
                 commentParseResult = comments.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
 
-                if (!commentParseResult.internal)
-                    commentParseResult.internal = method.methodName.startsWith("_");
+                if (!commentParseResult.getInternal())
+                    commentParseResult.setInternal(method.methodName.startsWith("_"));
 
-                m.returnComment = commentParseResult.returnComment;
-                m.comment = commentParseResult.comment;
+                m.returnComment = commentParseResult.getReturnComment();
+                m.comment = commentParseResult.getComment();
                 
-                if (commentParseResult.internal)
+                if (commentParseResult.getInternal())
                     m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
 
-                if (!"".equals(commentParseResult.deprecatedVersion)) {
+                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                     m.meta.deprecated = new DeprecatedObject();
         
-                    m.meta.deprecated.version = commentParseResult.deprecatedVersion;
-                    m.meta.deprecated.text    = commentParseResult.deprecatedText;
+                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
+                    m.meta.deprecated.text    = commentParseResult.getDeprecatedText();
                 }
             } catch (IOException ex) {
                 throw ex;
@@ -159,8 +159,8 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 p.datatype = parameter.dataType;
                 p.mode = parameter.mode.toString();
                 
-                if(commentParseResult.parameterComments.get(parameter.name) != null)
-                    p.comment = commentParseResult.parameterComments.get(parameter.name);
+                if(commentParseResult.getParameterComments().get(parameter.name) != null)
+                    p.comment = commentParseResult.getParameterComments().get(parameter.name);
 
                 m.parameters.add(p);
             }
@@ -180,19 +180,19 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             try {
                 CommentParseResult commentParseResult = comments.parseComment(property.propertyComment, fullClassName + ":" + property.name);
 
-                if (!commentParseResult.internal)
-                    commentParseResult.internal = property.name.startsWith("_");
+                if (!commentParseResult.getInternal())
+                    commentParseResult.setInternal(property.name.startsWith("_"));
 
-                m.comment = commentParseResult.comment;
+                m.comment = commentParseResult.getComment();
 
-                if (commentParseResult.internal)
+                if (commentParseResult.getInternal())
                     m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
 
-                if (!"".equals(commentParseResult.deprecatedVersion)) {
+                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                     m.meta.deprecated = new DeprecatedObject();
         
-                    m.meta.deprecated.version = commentParseResult.deprecatedVersion;
-                    m.meta.deprecated.text    = commentParseResult.deprecatedText;
+                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
+                    m.meta.deprecated.text    = commentParseResult.getDeprecatedText();
                 }
 
             } catch (IOException ex) {

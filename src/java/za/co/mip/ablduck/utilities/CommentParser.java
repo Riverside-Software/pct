@@ -127,34 +127,34 @@ public class CommentParser {
         
         comment = markdown(comment);
         
-        commentParseResult.comment = comment;
+        commentParseResult.setComment(comment);
         
         return commentParseResult;
     }
     
     public void parseReturn(CommentParseResult commentParseResult){
-        commentParseResult.returnComment = getValueTag(Pattern.compile("@return\\s+(.*)", Pattern.DOTALL));
+        commentParseResult.setReturnComment(getValueTag(Pattern.compile("@return\\s+(.*)", Pattern.DOTALL)));
     }
     
     public void parseAuthor(CommentParseResult commentParseResult){
-        commentParseResult.author = getValueTag(Pattern.compile("@author\\s+(.*)", Pattern.DOTALL));
+        commentParseResult.setAuthor(getValueTag(Pattern.compile("@author\\s+(.*)", Pattern.DOTALL)));
     }
     
     public void parseInternal(CommentParseResult commentParseResult){
-        commentParseResult.internal = getBooleanTag(Pattern.compile("@internal"));
+        commentParseResult.setInternal(getBooleanTag(Pattern.compile("@internal")));
     }
     
     public void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
         Map<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
         
         if (deprecated.size() > 0) {
-            commentParseResult.deprecatedVersion = deprecated.keySet().iterator().next();
-            commentParseResult.deprecatedText = deprecated.get(commentParseResult.deprecatedVersion);
+            commentParseResult.setDeprecatedVersion(deprecated.keySet().iterator().next());
+            commentParseResult.setDeprecatedText(deprecated.get(commentParseResult.getDeprecatedVersion()));
         }
     }
     
     public void parseParamComments(CommentParseResult commentParseResult) throws IOException{
-        commentParseResult.parameterComments = getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
+        commentParseResult.setParameterComment(getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL)));
     }
     
     public void protectInternalComments(){
