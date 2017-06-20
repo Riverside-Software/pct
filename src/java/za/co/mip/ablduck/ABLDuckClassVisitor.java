@@ -159,8 +159,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 p.datatype = parameter.dataType;
                 p.mode = parameter.mode.toString();
                 
-                if(commentParseResult.getParameterComments().get(parameter.name) != null)
-                    p.comment = commentParseResult.getParameterComments().get(parameter.name);
+                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
+                if(paramComment != null)
+                    p.comment = paramComment;
 
                 m.parameters.add(p);
             }

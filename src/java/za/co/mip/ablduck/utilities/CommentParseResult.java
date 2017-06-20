@@ -15,6 +15,7 @@
  *
  */
 package za.co.mip.ablduck.utilities;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CommentParseResult {
@@ -26,7 +27,7 @@ public class CommentParseResult {
     private String deprecatedText = "";
     
     //Parameter comments from @param tags
-    private Map<String, String> parameterComments;
+    private Map<String, String> parameterComments = new HashMap<>();
     
     //Internal flag from @internal
     private Boolean internal = false;
