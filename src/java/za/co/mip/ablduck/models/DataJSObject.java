@@ -28,7 +28,7 @@ import za.co.mip.ablduck.models.data.SignatureDataObject;
 import za.co.mip.ablduck.models.data.SubsectionDataObject;
 
 public class DataJSObject {
-    //Empty for now
+    // Empty for now
     @Expose
     public List<String> guides = new ArrayList<>();
     @Expose
@@ -38,7 +38,7 @@ public class DataJSObject {
     @Expose
     public Object guideSearch = new Object();
 
-    //Implemented
+    // Implemented
     @Expose
     public String localStorageDb = "docs";
 
@@ -76,16 +76,16 @@ public class DataJSObject {
     public List<MemberTypeDataObject> memberTypes = new ArrayList<>();
 
     public DataJSObject() {
-        signatures.add(new SignatureDataObject("internal","INT","internal"));
-        signatures.add(new SignatureDataObject("abstract","ABS","abstract"));
-        signatures.add(new SignatureDataObject("deprecated","DEP","deprecated"));
-        signatures.add(new SignatureDataObject("experimental","EXP","experimental"));
-        signatures.add(new SignatureDataObject("private","PRI","private"));
-        signatures.add(new SignatureDataObject("protected","PRO","protected"));
-        signatures.add(new SignatureDataObject("readonly","R O","readonly"));
-        signatures.add(new SignatureDataObject("removed","REM","removed"));
-        signatures.add(new SignatureDataObject("required","REQ","required"));
-        signatures.add(new SignatureDataObject("static","STA","static"));
+        signatures.add(new SignatureDataObject("internal", "INT", "internal"));
+        signatures.add(new SignatureDataObject("abstract", "ABS", "abstract"));
+        signatures.add(new SignatureDataObject("deprecated", "DEP", "deprecated"));
+        signatures.add(new SignatureDataObject("experimental", "EXP", "experimental"));
+        signatures.add(new SignatureDataObject("private", "PRI", "private"));
+        signatures.add(new SignatureDataObject("protected", "PRO", "protected"));
+        signatures.add(new SignatureDataObject("readonly", "R O", "readonly"));
+        signatures.add(new SignatureDataObject("removed", "REM", "removed"));
+        signatures.add(new SignatureDataObject("required", "REQ", "required"));
+        signatures.add(new SignatureDataObject("static", "STA", "static"));
 
         MemberTypeDataObject memberType;
         SubsectionDataObject subsection;
@@ -96,7 +96,7 @@ public class DataJSObject {
         memberType.title = "Properties";
         memberType.icon = "icons/property.png";
         memberType.position = 1;
-        
+
         subsection = new SubsectionDataObject();
         subsection.title = "Instance properties";
         subsection.def = true;
@@ -118,7 +118,7 @@ public class DataJSObject {
         memberType.title = "Methods";
         memberType.icon = "icons/method.png";
         memberType.position = 2;
-        
+
         subsection = new SubsectionDataObject();
         subsection.title = "Instance methods";
         subsection.def = true;
@@ -140,7 +140,7 @@ public class DataJSObject {
         memberType.title = "Events";
         memberType.icon = "icons/event.png";
         memberType.position = 3;
-        
+
         memberType.subsections = null;
 
         memberTypes.add(memberType);

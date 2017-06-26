@@ -19,78 +19,77 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommentParseResult {
-    //Remaining formatted comment
+    // Remaining formatted comment
     private String comment = "";
-    
-    //Deprecated version and note from @deprecated
-    private String deprecatedVersion = "";        
+
+    // Deprecated version and note from @deprecated
+    private String deprecatedVersion = "";
     private String deprecatedText = "";
-    
-    //Parameter comments from @param tags
+
+    // Parameter comments from @param tags
     private Map<String, String> parameterComments = new HashMap<>();
-    
-    //Internal flag from @internal
+
+    // Internal flag from @internal
     private Boolean internal = false;
-    
-    //Return comment
+
+    // Return comment
     private String returnComment = "";
-    
-    //Author tag
+
+    // Author tag
     private String author = "";
-    
-    
+
     public String getComment() {
         return this.comment;
     }
-    
+
     public void setComment(String comment) {
         this.comment = comment;
     }
-    
+
     public String getDeprecatedVersion() {
         return this.deprecatedVersion;
     }
-    
+
     public void setDeprecatedVersion(String depVer) {
         this.deprecatedVersion = depVer;
     }
-    
+
     public String getDeprecatedText() {
         return this.deprecatedText;
     }
-    
+
     public void setDeprecatedText(String depText) {
         this.deprecatedText = depText;
     }
-    
+
     public Map<String, String> getParameterComments() {
         return this.parameterComments;
     }
-    
+
     public void setParameterComment(Map<String, String> params) {
         this.parameterComments = params;
     }
-    
+
     public Boolean getInternal() {
         return this.internal;
     }
-    
+
     public void setInternal(Boolean internal) {
         this.internal = internal;
     }
-    
+
     public String getReturnComment() {
         return this.returnComment;
     }
-    
+
     public void setReturnComment(String comment) {
         this.returnComment = comment;
     }
-    
+
     public String getAuthor() {
         return this.author;
     }
-    
+
     public void setAuthor(String author) {
         this.author = author;
     }

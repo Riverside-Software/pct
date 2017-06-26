@@ -23,18 +23,18 @@ import com.google.gson.annotations.Expose;
 
 public class MemberTypeDataObject {
 
-	@Expose
-	public String name = "";
-	
-	@Expose
-	public String title = "";
-	
-	@Expose
-	public String icon = "";
-	
-	@Expose
-	public Integer position = 0;
-	
-	@Expose
-	public List<SubsectionDataObject> subsections = new ArrayList<>();
+    @Expose
+    public String name = "";
+
+    @Expose
+    public String title = "";
+
+    @Expose
+    public String icon = "";
+
+    @Expose
+    public Integer position = 0;
+
+    @Expose
+    public List<SubsectionDataObject> subsections = new ArrayList<>();
 }

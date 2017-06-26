@@ -23,13 +23,13 @@ import za.co.mip.ablduck.models.generic.MetaObject;
 
 public class SubsectionDataObject {
 
-	@Expose
-	public String title = "";
+    @Expose
+    public String title = "";
 
-	@Expose
-	@SerializedName("default")
-	public Boolean def = null;
+    @Expose
+    @SerializedName("default")
+    public Boolean def = null;
 
-	@Expose
-	public MetaObject filter = new MetaObject();
+    @Expose
+    public MetaObject filter = new MetaObject();
 }

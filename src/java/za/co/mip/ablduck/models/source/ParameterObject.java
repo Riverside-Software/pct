@@ -20,16 +20,16 @@ import com.google.gson.annotations.Expose;
 
 public class ParameterObject {
 
-	@Expose
-	public String name = "";
+    @Expose
+    public String name = "";
 
-	@Expose
-	public String datatype = "";
+    @Expose
+    public String datatype = "";
 
-	@Expose
-	public String mode = "";
+    @Expose
+    public String mode = "";
 
-	//Internal Use
-	@Expose(serialize = false)
-	public String comment = "";
+    // Internal Use
+    @Expose(serialize = false)
+    public String comment = "";
 }

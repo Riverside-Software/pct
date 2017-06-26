@@ -21,20 +21,20 @@ import com.google.gson.annotations.SerializedName;
 
 public class SignatureDataObject {
 
-	@Expose
-	@SerializedName("long")
-	public String longName = "";
+    @Expose
+    @SerializedName("long")
+    public String longName = "";
 
-	@Expose
-	@SerializedName("short")
-	public String shortName = "";
+    @Expose
+    @SerializedName("short")
+    public String shortName = "";
 
-	@Expose
-	public String tagname = "";
+    @Expose
+    public String tagname = "";
 
-	public SignatureDataObject(String l, String s, String t) {
-	    this.longName = l;
-	    this.shortName = s;
-	    this.tagname = t;
-	}
+    public SignatureDataObject(String l, String s, String t) {
+        this.longName = l;
+        this.shortName = s;
+        this.tagname = t;
+    }
 }

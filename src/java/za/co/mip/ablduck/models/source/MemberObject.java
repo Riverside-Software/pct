@@ -23,34 +23,34 @@ import com.google.gson.annotations.Expose;
 import za.co.mip.ablduck.models.generic.MetaObject;
 
 public class MemberObject {
-	@Expose
-	public String id = "";
+    @Expose
+    public String id = "";
 
-	@Expose
-	public String name = "";
+    @Expose
+    public String name = "";
 
-	@Expose
-	public String owner = "";
+    @Expose
+    public String owner = "";
 
-	@Expose
-	public String tagname = "";
+    @Expose
+    public String tagname = "";
 
-	@Expose
-	public String datatype = null;
+    @Expose
+    public String datatype = null;
 
-	@Expose
-	public String signature = null;
+    @Expose
+    public String signature = null;
 
-	@Expose
-	public String returnComment = null;
+    @Expose
+    public String returnComment = null;
 
-	@Expose
-	public MetaObject meta = new MetaObject();
+    @Expose
+    public MetaObject meta = new MetaObject();
 
-	//Internal Use
-	@Expose(serialize = false)
-	public String comment = "";
+    // Internal Use
+    @Expose(serialize = false)
+    public String comment = "";
 
-	@Expose(serialize = false)
-	public List<ParameterObject> parameters = null;
+    @Expose(serialize = false)
+    public List<ParameterObject> parameters = null;
 }

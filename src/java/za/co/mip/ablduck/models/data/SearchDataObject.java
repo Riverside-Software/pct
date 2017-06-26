@@ -26,6 +26,9 @@ public class SearchDataObject {
     public String name = "";
 
     @Expose
+    public String fullName = "";
+
+    @Expose
     public String icon = "";
 
     @Expose

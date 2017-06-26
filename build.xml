@@ -83,9 +83,9 @@
     <pathelement location="lib/ast-dependencies.jar" />
 
     <!-- ABLDuck classes -->
-    <pathelement location="lib/antlr-4.7-complete.jar"/>
+    <pathelement location="lib/antlr-runtime-4.7.jar"/>
     <pathelement location="lib/markdown4j-2.2.jar"/>
-  	<pathelement location="${build-javadoc}" />
+    <pathelement location="${build-javadoc}" />
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
@@ -102,7 +102,7 @@
     </tstamp>
 
     <mkdir dir="${build-java}" />
-  	<mkdir dir="${build-javadoc}" />
+    <mkdir dir="${build-javadoc}" />
     <mkdir dir="${build-test}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
@@ -144,7 +144,7 @@
       <include name="za/co/mip/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
-    	
+      
     <copy todir="${build-java}">
       <fileset dir="${src.java}" includes="**/*.properties" />
     </copy>
@@ -299,7 +299,7 @@
       <zipfileset src="lib/gson-2.2.4.jar" />
 
       <!-- ABLDuck classes -->
-      <zipfileset src="lib/antlr-4.7-complete.jar"/>
+      <zipfileset src="lib/antlr-runtime-4.7.jar"/>
       <zipfileset src="lib/markdown4j-2.2.jar"/>
 
       <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />

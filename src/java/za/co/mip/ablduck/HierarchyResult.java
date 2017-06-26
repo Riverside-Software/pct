@@ -24,11 +24,11 @@ import za.co.mip.ablduck.models.source.MemberObject;
 public class HierarchyResult {
     private List<String> hierarchy = new ArrayList<>();
     private List<MemberObject> inheritedmembers = new ArrayList<>();
-    
+
     public List<String> getHierarchy() {
         return this.hierarchy;
     }
-    
+
     public void addHierarchy(String h) {
         this.hierarchy.add(h);
     }
@@ -36,7 +36,7 @@ public class HierarchyResult {
     public List<MemberObject> getInheritedmembers() {
         return this.inheritedmembers;
     }
-    
+
     public void addInheritedmember(MemberObject member) {
         this.inheritedmembers.add(member);
     }

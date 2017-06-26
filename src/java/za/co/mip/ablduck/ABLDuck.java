@@ -89,14 +89,13 @@ public class ABLDuck extends PCT {
     private Boolean dataFilesOnly = false;
     private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
-    
 
     public ABLDuck() {
         super();
         createPropath();
     }
 
-	/**
+    /**
      * Adds a set of files to archive.
      * 
      * @param set FileSet
@@ -145,7 +144,7 @@ public class ABLDuck extends PCT {
 
         return this.propath;
     }
-    
+
     /**
      * Generate the data files only
      * 
@@ -161,7 +160,8 @@ public class ABLDuck extends PCT {
 
         // Destination directory must exist
         if (this.destDir == null) {
-            throw new BuildException(MessageFormat.format(Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
+            throw new BuildException(MessageFormat
+                    .format(Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
         }
         // There must be at least one fileset
         if (filesets.isEmpty()) {
@@ -171,18 +171,22 @@ public class ABLDuck extends PCT {
         this.destDirOutput.mkdirs();
 
         if (!this.dataFilesOnly) {
-            //Extract template
+            // Extract template
             try {
                 extractTemplateDirectory(this.destDir);
-                
+
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
-                List<String> files = Arrays.asList("index.html", "template.html", "print-template.html");
-                
-                for(String file : files) {
-                    replaceTemplateTags("{title}", this.title, Paths.get(this.destDir.getAbsolutePath(), file));
-                    replaceTemplateTags("{version}", Version.getPCTVersion(), Paths.get(this.destDir.getAbsolutePath(), file));
-                    replaceTemplateTags("{date}", formatter.format(new Date()), Paths.get(this.destDir.getAbsolutePath(), file));
-                } 
+                List<String> files = Arrays.asList("index.html", "template.html",
+                        "print-template.html");
+
+                for (String file : files) {
+                    replaceTemplateTags("{title}", this.title,
+                            Paths.get(this.destDir.getAbsolutePath(), file));
+                    replaceTemplateTags("{version}", Version.getPCTVersion(),
+                            Paths.get(this.destDir.getAbsolutePath(), file));
+                    replaceTemplateTags("{date}", formatter.format(new Date()),
+                            Paths.get(this.destDir.getAbsolutePath(), file));
+                }
             } catch (IOException ex) {
                 throw new BuildException(ex);
             }
@@ -191,7 +195,9 @@ public class ABLDuck extends PCT {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         DataJSObject dataJSObject = new DataJSObject();
         HTMLGenerator html = new HTMLGenerator();
-        IPropath pp = new Propath(new org.eclipse.core.runtime.Path(getProject().getBaseDir().getAbsolutePath()), propath.list());
+        IPropath pp = new Propath(
+                new org.eclipse.core.runtime.Path(getProject().getBaseDir().getAbsolutePath()),
+                propath.list());
         IASTContext astContext = new PropathASTContext(pp);
         IProgressMonitor monitor = new NullProgressMonitor();
         IASTManager astMgr = ASTManager.getASTManager();
@@ -203,34 +209,36 @@ public class ABLDuck extends PCT {
             String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
 
             for (int i = 0; i < dsfiles.length; i++) {
-            	File file = new File(fs.getDir(this.getProject()), dsfiles[i]);
-            	log("Generating AST for " + file.getAbsolutePath(), Project.MSG_VERBOSE);
+                File file = new File(fs.getDir(this.getProject()), dsfiles[i]);
+                log("Generating AST for " + file.getAbsolutePath(), Project.MSG_VERBOSE);
 
-            	int extPos = file.getName().lastIndexOf('.');
+                int extPos = file.getName().lastIndexOf('.');
                 String ext = file.getName().substring(extPos);
                 boolean isClass = ".cls".equalsIgnoreCase(ext);
 
-                ICompilationUnit root = astMgr.createAST(file, astContext, monitor, IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
+                ICompilationUnit root = astMgr.createAST(file, astContext, monitor,
+                        IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                 if (isClass) {
                     ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp, this);
-                    log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
+                    log("Executing AST ClassVisitor " + file.getAbsolutePath(),
+                            Project.MSG_VERBOSE);
                     root.accept(visitor);
-                    
+
                     try {
                         SourceJSObject jsObject = visitor.getJSObject();
                         jsObjects.put(jsObject.name, jsObject);
                     } catch (IOException ex) {
                         throw new BuildException(ex);
                     }
-                } 
+                }
             }
         }
 
-        //Determine class hierarchy, subclasses and search objects
-        for (Map.Entry<String, SourceJSObject> j:jsObjects.entrySet()) {
+        // Determine class hierarchy, subclasses and search objects
+        for (Map.Entry<String, SourceJSObject> j : jsObjects.entrySet()) {
             SourceJSObject js = j.getValue();
 
-            //Class tree
+            // Class tree
             ClassDataObject cls = new ClassDataObject();
             cls.name = js.name;
             cls.ext = js.ext;
@@ -241,9 +249,10 @@ public class ABLDuck extends PCT {
 
             dataJSObject.classes.add(cls);
 
-            //Create search object
+            // Create search object
             SearchDataObject search = new SearchDataObject();
             search.name = js.shortname;
+            search.fullName = js.name;
             search.icon = "icon-class";
             search.url = "#!/api/" + js.name;
             search.sort = 1;
@@ -254,15 +263,16 @@ public class ABLDuck extends PCT {
             for (MemberObject member : js.members) {
                 search = new SearchDataObject();
                 search.name = member.name;
+                search.fullName = member.owner + ":" + member.name;
                 search.icon = "icon-" + member.tagname;
                 search.url = "#!/api/" + member.owner + "-method-" + member.name;
                 search.sort = 3;
                 search.meta = member.meta;
-    
+
                 dataJSObject.search.add(search);
             }
-            
-            //Hierarchy
+
+            // Hierarchy
             HierarchyResult result = new HierarchyResult();
             result = determineClassHierarchy(js, result);
 
@@ -272,25 +282,26 @@ public class ABLDuck extends PCT {
 
             js.members.addAll(result.getInheritedmembers());
 
-            //Subclasses
-            for (Map.Entry<String, SourceJSObject> subclass:jsObjects.entrySet()) {
+            // Subclasses
+            for (Map.Entry<String, SourceJSObject> subclass : jsObjects.entrySet()) {
                 SourceJSObject subc = subclass.getValue();
-                if(subc.ext.equals(js.name)) 
+                if (subc.ext.equals(js.name))
                     js.subclasses.add(subc.name);
             }
 
         }
 
-        //Write class js files out
-        for (Map.Entry<String, SourceJSObject> j:jsObjects.entrySet()) {
+        // Write class js files out
+        for (Map.Entry<String, SourceJSObject> j : jsObjects.entrySet()) {
             SourceJSObject js = j.getValue();
-            
-            //Generate html
+
+            // Generate html
             js.html = html.getClassHtml(jsObjects, js);
-    
+
             File outputFile = new File(this.destDirOutput, js.name + ".js");
             try (FileWriter file = new FileWriter(outputFile.toString())) {
-                file.write("Ext.data.JsonP." + js.name.replace(".", "_") + "(" + gson.toJson(js) + ");");
+                file.write("Ext.data.JsonP." + js.name.replace(".", "_") + "(" + gson.toJson(js)
+                        + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
             }
@@ -302,24 +313,26 @@ public class ABLDuck extends PCT {
         } catch (IOException ex) {
             throw new BuildException(ex);
         }
-        
+
     }
 
-    private HierarchyResult determineClassHierarchy(SourceJSObject curClass, HierarchyResult result) {
-        
+    private HierarchyResult determineClassHierarchy(SourceJSObject curClass,
+            HierarchyResult result) {
+
         String inherits = curClass.ext;
 
         if (!"".equals(inherits)) {
             result.addHierarchy(inherits);
 
             SourceJSObject nextClass = jsObjects.get(inherits);
-                        
+
             if (nextClass != null) {
                 for (MemberObject member : nextClass.members) {
-                    if (member.owner.equals(inherits) && (member.meta.isPrivate == null || !member.meta.isPrivate)) 
+                    if (member.owner.equals(inherits)
+                            && (member.meta.isPrivate == null || !member.meta.isPrivate))
                         result.addInheritedmember(member);
                 }
-            
+
                 determineClassHierarchy(nextClass, result);
             }
         }
@@ -327,58 +340,53 @@ public class ABLDuck extends PCT {
     }
 
     private void extractTemplateDirectory(File outputDir) throws IOException {
- 
+
         File template = exportResource("ablduck.zip", outputDir);
 
         unzip(template, outputDir);
 
         if (!template.delete()) {
-            log("Unable to delete " + template.getAbsolutePath() + ", please delete this manually.", Project.MSG_INFO);
+            log("Unable to delete " + template.getAbsolutePath() + ", please delete this manually.",
+                    Project.MSG_INFO);
         }
-        
- 
+
     }
 
     public File exportResource(String resourceName, File outputDir) throws IOException {
-        
-        
+
         File resource = new File(outputDir, resourceName);
 
-        try (
-            InputStream stream = ABLDuck.class.getResourceAsStream("resources/" + resourceName);
-            OutputStream resStreamOut = new FileOutputStream(resource.getAbsolutePath())
-        ){
-            
-            if(stream == null) {
-                throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
+        try (InputStream stream = ABLDuck.class.getResourceAsStream("resources/" + resourceName);
+                OutputStream resStreamOut = new FileOutputStream(resource.getAbsolutePath())) {
+
+            if (stream == null) {
+                throw new IOException(
+                        "Cannot get resource \"" + resourceName + "\" from Jar file.");
             }
- 
+
             int readBytes;
             byte[] buffer = new byte[BUFFER_SIZE];
-            
+
             while ((readBytes = stream.read(buffer)) > 0) {
                 resStreamOut.write(buffer, 0, readBytes);
             }
         } catch (IOException ex) {
             throw ex;
         }
-    
+
         return resource;
     }
-    
+
     public void unzip(File zipFile, File unzipTo) throws IOException {
 
         if (!unzipTo.exists()) {
             unzipTo.mkdir();
         }
-        
-        
-        
-        try (
-            ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFile.getAbsolutePath()))
-        ){
+
+        try (ZipInputStream zipIn = new ZipInputStream(
+                new FileInputStream(zipFile.getAbsolutePath()))) {
             ZipEntry entry = zipIn.getNextEntry();
-            
+
             while (entry != null) {
                 String filePath = Paths.get(unzipTo.getAbsolutePath(), entry.getName()).toString();
                 if (!entry.isDirectory()) {
@@ -394,12 +402,10 @@ public class ABLDuck extends PCT {
             throw ex;
         }
     }
-    
+
     private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        
-        try (
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))
-        ){
+
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
             byte[] bytesIn = new byte[BUFFER_SIZE];
             int read = 0;
             while ((read = zipIn.read(bytesIn)) != -1) {
@@ -409,8 +415,9 @@ public class ABLDuck extends PCT {
             throw ex;
         }
     }
-    
-    private void replaceTemplateTags(String tag, String value, java.nio.file.Path file) throws IOException {
+
+    private void replaceTemplateTags(String tag, String value, java.nio.file.Path file)
+            throws IOException {
         Charset charset = StandardCharsets.UTF_8;
 
         String content = new String(Files.readAllBytes(file), charset);

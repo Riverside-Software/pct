@@ -13,17 +13,17 @@ import za.co.mip.ablduck.javadoc.JavadocParserBaseListener;
 
 public class JavadocListener extends JavadocParserBaseListener {
     private List<String> tags = new ArrayList<>();
-    
+
     public List<String> getTags() {
         return tags;
     }
-    
-    @Override 
+
+    @Override
     public void enterBlockTag(JavadocParser.BlockTagContext ctx) {
         tags.add(ctx.getText());
-    } 
-    @Override 
+    }
+    @Override
     public void enterInlineTag(JavadocParser.InlineTagContext ctx) {
         tags.add(ctx.getText());
-    } 
+    }
 }

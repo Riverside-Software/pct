@@ -43,5 +43,5 @@ public class MetaObject {
 
     @Expose
     @SerializedName("deprecated")
-    public DeprecatedObject deprecated = null; 
+    public DeprecatedObject deprecated = null;
 }

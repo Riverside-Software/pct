@@ -28,29 +28,29 @@ import za.co.mip.ablduck.javadoc.JavadocParser;
 
 public class Javadoc {
     private DescriptiveErrorListener errorListener;
-    
+
     public Javadoc(Task ablduck) {
         this.errorListener = new DescriptiveErrorListener(ablduck);
     }
-    
-    public List<String> parseComment(String comment, String source){
-        
+
+    public List<String> parseComment(String comment, String source) {
+
         JavadocLexer lexer = new JavadocLexer(CharStreams.fromString(comment, source));
         lexer.removeErrorListeners();
         lexer.addErrorListener(this.errorListener);
-        
+
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        
+
         JavadocParser parser = new JavadocParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(this.errorListener);
-        
+
         JavadocParser.DocumentationContext documentation = parser.documentation();
-        
+
         ParseTreeWalker walker = new ParseTreeWalker();
         JavadocListener listener = new JavadocListener();
         walker.walk(listener, documentation);
-               
+
         return listener.getTags();
     }
 }

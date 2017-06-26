@@ -41,34 +41,37 @@ import za.co.mip.ablduck.utilities.CommentParseResult;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     private CommentParser comments;
-	
+
     public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
         super(propath);
-        
+
         this.comments = new CommentParser(ablduck);
     }
 
-    public SourceJSObject getJSObject() throws IOException{
+    public SourceJSObject getJSObject() throws IOException {
         SourceJSObject js = new SourceJSObject();
-    	ClassCompilationUnit cu = getClassCompilationUnit();
+        ClassCompilationUnit cu = getClassCompilationUnit();
         String fullClassName;
 
         if (cu.packageName != null)
-    	   fullClassName = cu.packageName + "." + cu.className;
+            fullClassName = cu.packageName + "." + cu.className;
         else
             fullClassName = cu.className;
-        
-        js.id        = "class-" + fullClassName;
-        js.tagname   = "class";
-        js.name      = fullClassName;
+
+        js.id = "class-" + fullClassName;
+        js.tagname = "class";
+        js.name = fullClassName;
         js.shortname = cu.className;
         js.classIcon = "class";
 
         if (cu.inherits != null)
             js.ext = cu.inherits;
 
-        String c = cu.classComment.get(cu.classComment.size() - 1); // Assuming last comment will always be the class comment, will need to cater for license later
-        
+        String c = cu.classComment.get(cu.classComment.size() - 1); // Assuming last comment will
+                                                                    // always be the class comment,
+                                                                    // will need to cater for
+                                                                    // license later
+
         try {
             CommentParseResult commentParseResult = comments.parseComment(c, fullClassName);
 
@@ -77,16 +80,15 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
             js.comment = commentParseResult.getComment();
             js.author = commentParseResult.getAuthor();
-    
+
             if (commentParseResult.getInternal())
                 js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
-    
-    
+
             if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                 js.meta.deprecated = new DeprecatedObject();
-    
+
                 js.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                js.meta.deprecated.text    = commentParseResult.getDeprecatedText();
+                js.meta.deprecated.text = commentParseResult.getDeprecatedText();
             }
 
         } catch (IOException ex) {
@@ -110,7 +112,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 m.id = "method-" + method.methodName;
             else
                 m.id = "method-" + method.methodName + "-" + methodCount.toString();
-            
+
             m.name = method.methodName;
             m.owner = fullClassName;
             m.tagname = "method";
@@ -118,33 +120,34 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
             CommentParseResult commentParseResult = null;
             try {
-                commentParseResult = comments.parseComment(method.methodComment, fullClassName + ":" + method.methodName);
+                commentParseResult = comments.parseComment(method.methodComment,
+                        fullClassName + ":" + method.methodName);
 
                 if (!commentParseResult.getInternal())
                     commentParseResult.setInternal(method.methodName.startsWith("_"));
 
                 m.returnComment = commentParseResult.getReturnComment();
                 m.comment = commentParseResult.getComment();
-                
+
                 if (commentParseResult.getInternal())
                     m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
 
                 if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                     m.meta.deprecated = new DeprecatedObject();
-        
+
                     m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text    = commentParseResult.getDeprecatedText();
+                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
                 }
             } catch (IOException ex) {
                 throw ex;
             }
-            
+
             if (method.modifier == AccessModifier.PRIVATE)
                 m.meta.isPrivate = true;
-            
+
             if (method.modifier == AccessModifier.PROTECTED)
                 m.meta.isProtected = true;
-            
+
             if (method.isAbstract)
                 m.meta.isAbstract = true;
 
@@ -158,9 +161,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
                 p.mode = parameter.mode.toString();
-                
+
                 String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if(paramComment != null)
+                if (paramComment != null)
                     p.comment = paramComment;
 
                 m.parameters.add(p);
@@ -179,7 +182,8 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             m.datatype = property.dataType;
 
             try {
-                CommentParseResult commentParseResult = comments.parseComment(property.propertyComment, fullClassName + ":" + property.name);
+                CommentParseResult commentParseResult = comments.parseComment(
+                        property.propertyComment, fullClassName + ":" + property.name);
 
                 if (!commentParseResult.getInternal())
                     commentParseResult.setInternal(property.name.startsWith("_"));
@@ -191,18 +195,18 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
                 if (!"".equals(commentParseResult.getDeprecatedVersion())) {
                     m.meta.deprecated = new DeprecatedObject();
-        
+
                     m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text    = commentParseResult.getDeprecatedText();
+                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
                 }
 
             } catch (IOException ex) {
                 throw ex;
             }
-            
+
             if (property.modifier == AccessModifier.PRIVATE)
                 m.meta.isPrivate = true;
-            
+
             if (property.modifier == AccessModifier.PROTECTED)
                 m.meta.isProtected = true;
 

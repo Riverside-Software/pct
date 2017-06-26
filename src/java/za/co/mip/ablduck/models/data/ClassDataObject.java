@@ -21,17 +21,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class ClassDataObject {
 
-	@Expose
-	public String name = "";
+    @Expose
+    public String name = "";
 
-	@Expose
-	@SerializedName("extends")
-	public String ext = "";
+    @Expose
+    @SerializedName("extends")
+    public String ext = "";
 
-	@Expose
-	public String icon = "";
+    @Expose
+    public String icon = "";
 
-	@Expose
-	@SerializedName("private")
-	public Boolean isPrivate = false;
+    @Expose
+    @SerializedName("private")
+    public Boolean isPrivate = false;
 }

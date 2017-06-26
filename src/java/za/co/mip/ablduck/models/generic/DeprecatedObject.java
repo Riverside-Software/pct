@@ -19,9 +19,9 @@ package za.co.mip.ablduck.models.generic;
 import com.google.gson.annotations.Expose;
 
 public class DeprecatedObject {
-	@Expose
-	public String version = "";
+    @Expose
+    public String version = "";
 
-	@Expose
-	public String text = "";
+    @Expose
+    public String text = "";
 }

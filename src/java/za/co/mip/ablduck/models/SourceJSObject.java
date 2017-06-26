@@ -27,67 +27,67 @@ import za.co.mip.ablduck.models.source.MemberObject;
 import com.google.gson.annotations.Expose;
 
 public class SourceJSObject {
-	//Not used need to remove dep in web app
-	@Expose
-	List<String> mixedInto = new ArrayList<>();
-	@Expose
-	List<String> parentMixins = new ArrayList<>();
-	@Expose
-	List<String> files = new ArrayList<>();
-	@Expose
-	List<String> alternateClassNames = new ArrayList<>();
-	@Expose
-	List<String> mixins = new ArrayList<>();
-	@Expose
-	List<String> requires = new ArrayList<>();
-	@Expose
-	List<String> uses = new ArrayList<>();
-	@Expose
-	Object aliases = new Object();
+    // Not used need to remove dep in web app
+    @Expose
+    List<String> mixedInto = new ArrayList<>();
+    @Expose
+    List<String> parentMixins = new ArrayList<>();
+    @Expose
+    List<String> files = new ArrayList<>();
+    @Expose
+    List<String> alternateClassNames = new ArrayList<>();
+    @Expose
+    List<String> mixins = new ArrayList<>();
+    @Expose
+    List<String> requires = new ArrayList<>();
+    @Expose
+    List<String> uses = new ArrayList<>();
+    @Expose
+    Object aliases = new Object();
 
-	//Actual js object properties
-	@Expose
-	public String id = "";
+    // Actual js object properties
+    @Expose
+    public String id = "";
 
-	@Expose
-	public String tagname = "";
+    @Expose
+    public String tagname = "";
 
-	@Expose
-	public String name = "";
+    @Expose
+    public String name = "";
 
-	// extends is a reserved word
-	@Expose
-	@SerializedName("extends")
-	public String ext = "";
+    // extends is a reserved word
+    @Expose
+    @SerializedName("extends")
+    public String ext = "";
 
-	@Expose
-	public String author = "";
+    @Expose
+    public String author = "";
 
-	@Expose
-	public String shortDoc = "";
+    @Expose
+    public String shortDoc = "";
 
-	@Expose
-	public String html = "";
+    @Expose
+    public String html = "";
 
-	@Expose
-	public String classIcon = "";
+    @Expose
+    public String classIcon = "";
 
-	@Expose
-	public List<MemberObject> members = new ArrayList<>();
+    @Expose
+    public List<MemberObject> members = new ArrayList<>();
 
-	@Expose
-	public List<String> superclasses = new ArrayList<>();
+    @Expose
+    public List<String> superclasses = new ArrayList<>();
 
-	@Expose
-	public List<String> subclasses = new ArrayList<>();
+    @Expose
+    public List<String> subclasses = new ArrayList<>();
 
-	@Expose
-	public MetaObject meta = new MetaObject();
+    @Expose
+    public MetaObject meta = new MetaObject();
 
-	//Internal Use
-	@Expose(serialize = false)
-	public String comment = "";
+    // Internal Use
+    @Expose(serialize = false)
+    public String comment = "";
 
-	@Expose(serialize = false)
-	public String shortname = "";
+    @Expose(serialize = false)
+    public String shortname = "";
 }

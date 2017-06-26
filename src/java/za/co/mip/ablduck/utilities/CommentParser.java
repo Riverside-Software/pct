@@ -34,12 +34,12 @@ public class CommentParser {
     private String source;
     private Map<String, String> nestedComments = new HashMap<>();
     private Javadoc javadocParser;
-    
-    public CommentParser (Task ablduck) {
+
+    public CommentParser(Task ablduck) {
         javadocParser = new Javadoc(ablduck);
     }
-    
-    public String markdown(String comment) throws IOException{
+
+    public String markdown(String comment) throws IOException {
         String markdown = "";
 
         Markdown4jProcessor processor = new Markdown4jProcessor();
@@ -47,193 +47,203 @@ public class CommentParser {
 
         return markdown;
     }
-    
-    public void trimCommentLines(){
-        
+
+    public void trimCommentLines() {
+
         Integer start = comment.indexOf('\n');
-        Integer end   = comment.lastIndexOf('\n');
-        
+        Integer end = comment.lastIndexOf('\n');
+
         if (Objects.equals(start, end)) {
             comment = "";
             return;
         }
-            
+
         if (start != -1 && end != -1) {
             comment = comment.substring(start + 1, end - 1);
         }
         Pattern commentLeadingAstrix = Pattern.compile("^\\s*\\*\\s", Pattern.MULTILINE);
         comment = commentLeadingAstrix.matcher(comment).replaceAll("");
     }
-    
-    public void generateLinks(){
+
+    public void generateLinks() {
         List<String> tags = javadocParser.parseComment(comment, source);
-        Pattern linkPattern = Pattern.compile("^\\{@link ((?:\\w|\\.|-)+)\\s*(.*)\\}$", Pattern.DOTALL);
-        
+        Pattern linkPattern = Pattern.compile("^\\{@link ((?:\\w|\\.|-)+)\\s*(.*)\\}$",
+                Pattern.DOTALL);
+
         String l;
         String linkText;
-        
+
         for (int i = 0; i < tags.size(); i++) {
-            Matcher tag = linkPattern.matcher((String)tags.get(i));
-            
-            if(tag.find()) {
+            Matcher tag = linkPattern.matcher((String) tags.get(i));
+
+            if (tag.find()) {
                 if (!"".equals(tag.group(2)))
                     linkText = tag.group(2).trim();
                 else
                     linkText = tag.group(1).trim();
-                l = "<a href='#!/api/" + tag.group(1).trim() + "' rel='" + tag.group(1).trim() + "' class='docClass'>" + linkText + "</a>";
-                comment = comment.replaceFirst(Pattern.quote(tag.group(0)), Matcher.quoteReplacement(l));
+                l = "<a href='#!/api/" + tag.group(1).trim() + "' rel='" + tag.group(1).trim()
+                        + "' class='docClass'>" + linkText + "</a>";
+                comment = comment.replaceFirst(Pattern.quote(tag.group(0)),
+                        Matcher.quoteReplacement(l));
             }
         }
-        
+
     }
-    
-    public CommentParseResult parseComment(String com, String src) throws IOException{
+
+    public CommentParseResult parseComment(String com, String src) throws IOException {
         CommentParseResult commentParseResult = new CommentParseResult();
         if (com == null)
             return commentParseResult;
-        
+
         comment = com;
         source = src;
-        
+
         // Trim the comment lines
         trimCommentLines();
-        
-        if("".equals(comment))
+
+        if ("".equals(comment))
             return commentParseResult;
-        
-        //Take the internal comments out for javaDoc parser
+
+        // Take the internal comments out for javaDoc parser
         protectInternalComments();
-        
-        //Generate links
+
+        // Generate links
         generateLinks();
-        
-        //Deprecated flag
+
+        // Deprecated flag
         parseDeprecated(commentParseResult);
-        
-        //Internal tag
+
+        // Internal tag
         parseInternal(commentParseResult);
-        
-        //Return tag
+
+        // Return tag
         parseReturn(commentParseResult);
-        
-        //Parameter tags
+
+        // Parameter tags
         parseParamComments(commentParseResult);
-        
-        //Internal tag
+
+        // Internal tag
         parseAuthor(commentParseResult);
-        
-        //Put comments back in after javaDoc parser
+
+        // Put comments back in after javaDoc parser
         returnInternalComments();
-        
+
         comment = markdown(comment);
-        
+
         commentParseResult.setComment(comment);
-        
+
         return commentParseResult;
     }
-    
-    public void parseReturn(CommentParseResult commentParseResult){
-        commentParseResult.setReturnComment(getValueTag(Pattern.compile("@return\\s+(.*)", Pattern.DOTALL)));
+
+    public void parseReturn(CommentParseResult commentParseResult) {
+        commentParseResult
+                .setReturnComment(getValueTag(Pattern.compile("@return\\s+(.*)", Pattern.DOTALL)));
     }
-    
-    public void parseAuthor(CommentParseResult commentParseResult){
-        commentParseResult.setAuthor(getValueTag(Pattern.compile("@author\\s+(.*)", Pattern.DOTALL)));
+
+    public void parseAuthor(CommentParseResult commentParseResult) {
+        commentParseResult
+                .setAuthor(getValueTag(Pattern.compile("@author\\s+(.*)", Pattern.DOTALL)));
     }
-    
-    public void parseInternal(CommentParseResult commentParseResult){
+
+    public void parseInternal(CommentParseResult commentParseResult) {
         commentParseResult.setInternal(getBooleanTag(Pattern.compile("@internal")));
     }
-    
-    public void parseDeprecated(CommentParseResult commentParseResult) throws IOException{
-        Map<String, String> deprecated = getKeyValueTags(Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
-        
+
+    public void parseDeprecated(CommentParseResult commentParseResult) throws IOException {
+        Map<String, String> deprecated = getKeyValueTags(
+                Pattern.compile("@deprecated\\s+(.+?)\\s+(.*)", Pattern.DOTALL));
+
         if (deprecated.size() > 0) {
             commentParseResult.setDeprecatedVersion(deprecated.keySet().iterator().next());
-            commentParseResult.setDeprecatedText(deprecated.get(commentParseResult.getDeprecatedVersion()));
+            commentParseResult
+                    .setDeprecatedText(deprecated.get(commentParseResult.getDeprecatedVersion()));
         }
     }
-    
-    public void parseParamComments(CommentParseResult commentParseResult) throws IOException{
-        commentParseResult.setParameterComment(getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL)));
+
+    public void parseParamComments(CommentParseResult commentParseResult) throws IOException {
+        commentParseResult.setParameterComment(
+                getKeyValueTags(Pattern.compile("@param\\s+(.+?)\\s+(.*)", Pattern.DOTALL)));
     }
-    
-    public void protectInternalComments(){
+
+    public void protectInternalComments() {
         Pattern simpleComment = Pattern.compile("(\\/\\*.*\\*\\/)", Pattern.DOTALL);
         Matcher m = simpleComment.matcher(comment);
         Integer commentCount = 0;
         while (m.find()) {
             String commentTag = "[comment-" + commentCount.toString() + "]";
             nestedComments.put(commentTag, m.group(1));
-            comment = comment.replaceFirst(Pattern.quote(m.group(1)), Matcher.quoteReplacement(commentTag));
+            comment = comment.replaceFirst(Pattern.quote(m.group(1)),
+                    Matcher.quoteReplacement(commentTag));
             commentCount++;
         }
     }
-    
-    public void returnInternalComments(){
-        for (Map.Entry<String, String> c:nestedComments.entrySet()) {
-            comment = comment.replaceFirst(Pattern.quote(c.getKey()), Matcher.quoteReplacement(c.getValue()));
+
+    public void returnInternalComments() {
+        for (Map.Entry<String, String> c : nestedComments.entrySet()) {
+            comment = comment.replaceFirst(Pattern.quote(c.getKey()),
+                    Matcher.quoteReplacement(c.getValue()));
         }
     }
-    
-    public Map<String, String> getKeyValueTags(Pattern paramRegex) throws IOException{
+
+    public Map<String, String> getKeyValueTags(Pattern paramRegex) throws IOException {
         Map<String, String> keyvaluetag = new HashMap<>();
-        
+
         List<String> tags = javadocParser.parseComment(comment, source);
-        
+
         for (int i = 0; i < tags.size(); i++) {
-            Matcher tag = paramRegex.matcher((String)tags.get(i));
-            if(tag.find()) {
+            Matcher tag = paramRegex.matcher((String) tags.get(i));
+            if (tag.find()) {
                 keyvaluetag.put(tag.group(1), markdown(removeLeadingWhitespace(tag.group(2))));
-              
-                comment = comment.replaceFirst(Pattern.quote((String)tags.get(i)), "");
+
+                comment = comment.replaceFirst(Pattern.quote((String) tags.get(i)), "");
             }
         }
 
         comment = comment.trim();
         return keyvaluetag;
     }
-    
-    public String getValueTag(Pattern paramRegex){
+
+    public String getValueTag(Pattern paramRegex) {
         String value = "";
-        
+
         List<String> tags = javadocParser.parseComment(comment, source);
-        
+
         for (int i = 0; i < tags.size(); i++) {
-            Matcher tag = paramRegex.matcher((String)tags.get(i));
-            if(tag.find()) {
+            Matcher tag = paramRegex.matcher((String) tags.get(i));
+            if (tag.find()) {
                 value = tag.group(1);
-              
-                comment = comment.replaceFirst(Pattern.quote((String)tags.get(i)), "");
+
+                comment = comment.replaceFirst(Pattern.quote((String) tags.get(i)), "");
             }
         }
 
         comment = comment.trim();
         return value;
     }
-    
-    public Boolean getBooleanTag(Pattern paramRegex){
+
+    public Boolean getBooleanTag(Pattern paramRegex) {
         Boolean flag = false;
-        
+
         List<String> tags = javadocParser.parseComment(comment, source);
-        
+
         for (int i = 0; i < tags.size(); i++) {
-            Matcher tag = paramRegex.matcher((String)tags.get(i));
-            if(tag.find()) {
+            Matcher tag = paramRegex.matcher((String) tags.get(i));
+            if (tag.find()) {
                 flag = true;
-              
-                comment = comment.replaceFirst(Pattern.quote((String)tags.get(i)), "");
+
+                comment = comment.replaceFirst(Pattern.quote((String) tags.get(i)), "");
             }
         }
 
         comment = comment.trim();
         return flag;
     }
-    
-    public String removeLeadingWhitespace(String text){
+
+    public String removeLeadingWhitespace(String text) {
         Pattern whitespace = Pattern.compile("\\n\\s+");
-        
+
         String trimmed = whitespace.matcher(text).replaceAll("\n");
-        
+
         return trimmed.trim();
     }
 }

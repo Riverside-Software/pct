@@ -24,20 +24,18 @@ import org.apache.tools.ant.Task;
 
 public class DescriptiveErrorListener extends BaseErrorListener {
     private Task ablduck;
-    
+
     public DescriptiveErrorListener(Task ablduck) {
         this.ablduck = ablduck;
     }
 
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-                            int line, int charPositionInLine,
-                            String msg, RecognitionException e)
-    {
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+            int charPositionInLine, String msg, RecognitionException e) {
         String sourceName = recognizer.getInputStream().getSourceName();
         if (!sourceName.isEmpty()) {
             sourceName = String.format("%s:%d:%d ", sourceName, line, charPositionInLine);
         }
-        this.ablduck.getProject().log(sourceName+" "+msg, Project.MSG_INFO);
+        this.ablduck.getProject().log(sourceName + " " + msg, Project.MSG_INFO);
     }
 }
