@@ -68,7 +68,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             js.ext = cu.inherits;
 
         String c = null;
-        if (cu.classComment.size() > 0) {
+        if (!cu.classComment.isEmpty()) {
             for (int i = cu.classComment.size() - 1; i >= 0; i--) {
                 c = cu.classComment.get(i); // Assuming last comment will always be the class
                                             // comment, will need to cater for license later

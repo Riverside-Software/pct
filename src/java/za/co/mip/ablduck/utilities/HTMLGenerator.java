@@ -230,8 +230,9 @@ public class HTMLGenerator {
                     }
                 }
 
+                String colonReturnType = "";
                 if (returnTypeDoc.length() > 0)
-                    returnTypeDoc = " : " + returnTypeDoc;
+                    colonReturnType = " : " + returnTypeDoc;
 
                 memberHTML.append(MessageFormat.format(getTemplate("MEMBER"), member.id, // 0
                         firstChild, // 1
@@ -240,7 +241,7 @@ public class HTMLGenerator {
                         cls.name, // 4
                         member.name, // 5
                         sig.toString(), // 6
-                        returnTypeDoc, // 7
+                        colonReturnType, // 7
                         renderTags(member.meta), // 8
                         shortdoc, // 9
                         doc.toString())); // 10

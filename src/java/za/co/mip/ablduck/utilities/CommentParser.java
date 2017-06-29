@@ -40,12 +40,11 @@ public class CommentParser {
             Pattern.MULTILINE);
     private String oldCommentTokenPattern = "(^\\s*?[TOKEN]\\s*?:([\\s\\S]*?))(?:\\n|\\z)*(?:^\\s*?Component\\s*?:|^\\s*?Author\\s*?:|^\\s*?File\\s*?:|^\\s*?Purpose\\s*?:|^\\s*?Syntax\\s*?:|^\\s*?Description\\s*?:|^\\s*?Author\\(s\\)\\s*?:|^\\s*?Created\\s*?:|^\\s*?Notes\\s*?:|^\\s*?@param|^\\s*?@return|\\z)";
     private Map<String, Pattern> oldCommentPatterns = new HashMap<>();
+    private String[] oldCommentTokens = {"File", "Purpose", "Syntax", "Description", "Author(s)",
+            "Created", "Notes", "Author", "Component"};
 
     public CommentParser(Task ablduck) {
         javadocParser = new Javadoc(ablduck);
-
-        String[] oldCommentTokens = {"File", "Purpose", "Syntax", "Description", "Author(s)",
-                "Created", "Notes", "Author", "Component"};
 
         for (String token : oldCommentTokens) {
             oldCommentPatterns.put(token,
@@ -81,8 +80,9 @@ public class CommentParser {
         if (start != -1 && end != -1) {
             comment = comment.substring(start + 1, end);
         }
-        Pattern commentLeadingAstrix = Pattern.compile("^\\s*\\*\\s", Pattern.MULTILINE);
-        comment = commentLeadingAstrix.matcher(comment).replaceAll("");
+        Pattern commentLeadingAstrix = Pattern.compile("^\\s*\\*(?:\\s|)(\\n?|[\\s\\S]+?)",
+                Pattern.MULTILINE);
+        comment = commentLeadingAstrix.matcher(comment).replaceAll("$1");
     }
 
     public void generateLinks() {
@@ -167,15 +167,9 @@ public class CommentParser {
     }
 
     public void parseOldCommentTokens(CommentParseResult commentParseResult) {
-        getOldCommentTag("Author(s)", commentParseResult);
-        getOldCommentTag("Author", commentParseResult);
-        getOldCommentTag("Component", commentParseResult);
-        getOldCommentTag("File", commentParseResult);
-        getOldCommentTag("Purpose", commentParseResult);
-        getOldCommentTag("Syntax", commentParseResult);
-        getOldCommentTag("Description", commentParseResult);
-        getOldCommentTag("Created", commentParseResult);
-        getOldCommentTag("Notes", commentParseResult);
+        for (String token : oldCommentTokens) {
+            getOldCommentTag(token, commentParseResult);
+        }
     }
 
     public void getOldCommentTag(String tag, CommentParseResult commentParseResult) {
