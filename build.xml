@@ -84,7 +84,7 @@
 
     <!-- ABLDuck classes -->
     <pathelement location="lib/antlr-runtime-4.7.jar"/>
-    <pathelement location="lib/markdown4j-2.2.jar"/>
+    <pathelement location="lib/commonmark-0.9.0.jar"/>
     <pathelement location="${build-javadoc}" />
   </path>
   <path id="pct.test.compil">
@@ -300,7 +300,7 @@
 
       <!-- ABLDuck classes -->
       <zipfileset src="lib/antlr-runtime-4.7.jar"/>
-      <zipfileset src="lib/markdown4j-2.2.jar"/>
+      <zipfileset src="lib/commonmark-0.9.0.jar"/>
 
       <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />

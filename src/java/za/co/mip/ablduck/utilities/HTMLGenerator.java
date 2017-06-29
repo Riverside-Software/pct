@@ -56,7 +56,7 @@ public class HTMLGenerator {
     }
 
     private String renderSidebar(SourceJSObject cls) {
-        if (!"".equals(cls.ext) || !cls.subclasses.isEmpty())
+        if (!"".equals(cls.ext) || !cls.subclasses.isEmpty() || !"".equals(cls.author))
             return MessageFormat.format(getTemplate("SIDEBAR"), renderClassTree(cls),
                     renderSubclasses(cls), renderAuthor(cls));
 
@@ -217,9 +217,9 @@ public class HTMLGenerator {
                         } else {
                             returnTypeDoc = r.group(1);
                         }
-                    }
 
-                    doc.append(renderReturns(returnTypeDoc, member.returnComment));
+                        doc.append(renderReturns(returnTypeDoc, member.returnComment));
+                    }
                 }
 
                 if ("property".equals(member.tagname)) {
@@ -229,6 +229,9 @@ public class HTMLGenerator {
                         returnTypeDoc = member.datatype;
                     }
                 }
+
+                if (returnTypeDoc.length() > 0)
+                    returnTypeDoc = " : " + returnTypeDoc;
 
                 memberHTML.append(MessageFormat.format(getTemplate("MEMBER"), member.id, // 0
                         firstChild, // 1

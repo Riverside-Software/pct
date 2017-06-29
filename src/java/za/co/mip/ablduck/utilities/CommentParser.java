@@ -17,7 +17,9 @@
 package za.co.mip.ablduck.utilities;
 
 import org.apache.tools.ant.Task;
-import org.markdown4j.Markdown4jProcessor;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 import za.co.mip.ablduck.javadoc.Javadoc;
 
@@ -34,16 +36,34 @@ public class CommentParser {
     private String source;
     private Map<String, String> nestedComments = new HashMap<>();
     private Javadoc javadocParser;
+    private Pattern oldCommentDetectPattern = Pattern.compile("^\\s*?\\/\\*\\s*?-+.+$",
+            Pattern.MULTILINE);
+    private String oldCommentTokenPattern = "(^\\s*?[TOKEN]\\s*?:([\\s\\S]*?))(?:\\n|\\z)*(?:^\\s*?Component\\s*?:|^\\s*?Author\\s*?:|^\\s*?File\\s*?:|^\\s*?Purpose\\s*?:|^\\s*?Syntax\\s*?:|^\\s*?Description\\s*?:|^\\s*?Author\\(s\\)\\s*?:|^\\s*?Created\\s*?:|^\\s*?Notes\\s*?:|^\\s*?@param|^\\s*?@return|\\z)";
+    private Map<String, Pattern> oldCommentPatterns = new HashMap<>();
 
     public CommentParser(Task ablduck) {
         javadocParser = new Javadoc(ablduck);
+
+        String[] oldCommentTokens = {"File", "Purpose", "Syntax", "Description", "Author(s)",
+                "Created", "Notes", "Author", "Component"};
+
+        for (String token : oldCommentTokens) {
+            oldCommentPatterns.put(token,
+                    Pattern.compile(
+                            oldCommentTokenPattern.replaceFirst(Pattern.quote("[TOKEN]"),
+                                    Matcher.quoteReplacement(token.replaceFirst("\\(", "\\\\(")
+                                            .replaceFirst("\\)", "\\\\)"))),
+                            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE));
+        }
     }
 
     public String markdown(String comment) throws IOException {
         String markdown = "";
 
-        Markdown4jProcessor processor = new Markdown4jProcessor();
-        markdown = processor.process(comment);
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(comment);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        markdown = renderer.render(document);
 
         return markdown;
     }
@@ -59,7 +79,7 @@ public class CommentParser {
         }
 
         if (start != -1 && end != -1) {
-            comment = comment.substring(start + 1, end - 1);
+            comment = comment.substring(start + 1, end);
         }
         Pattern commentLeadingAstrix = Pattern.compile("^\\s*\\*\\s", Pattern.MULTILINE);
         comment = commentLeadingAstrix.matcher(comment).replaceAll("");
@@ -98,6 +118,8 @@ public class CommentParser {
         comment = com;
         source = src;
 
+        Boolean isOldComment = detectOldComments();
+
         // Trim the comment lines
         trimCommentLines();
 
@@ -122,8 +144,12 @@ public class CommentParser {
         // Parameter tags
         parseParamComments(commentParseResult);
 
-        // Internal tag
-        parseAuthor(commentParseResult);
+        if (isOldComment) {
+            parseOldCommentTokens(commentParseResult);
+        } else {
+            // Author tag
+            parseAuthor(commentParseResult);
+        }
 
         // Put comments back in after javaDoc parser
         returnInternalComments();
@@ -133,6 +159,59 @@ public class CommentParser {
         commentParseResult.setComment(comment);
 
         return commentParseResult;
+    }
+
+    public Boolean detectOldComments() {
+        Matcher oldComment = oldCommentDetectPattern.matcher(comment);
+        return oldComment.find();
+    }
+
+    public void parseOldCommentTokens(CommentParseResult commentParseResult) {
+        getOldCommentTag("Author(s)", commentParseResult);
+        getOldCommentTag("Author", commentParseResult);
+        getOldCommentTag("Component", commentParseResult);
+        getOldCommentTag("File", commentParseResult);
+        getOldCommentTag("Purpose", commentParseResult);
+        getOldCommentTag("Syntax", commentParseResult);
+        getOldCommentTag("Description", commentParseResult);
+        getOldCommentTag("Created", commentParseResult);
+        getOldCommentTag("Notes", commentParseResult);
+    }
+
+    public void getOldCommentTag(String tag, CommentParseResult commentParseResult) {
+        Matcher t = oldCommentPatterns.get(tag).matcher(comment);
+
+        if (t.find()) {
+            String match = t.group(2).trim();
+            match = match.replaceAll("(?m)^\\s*", "");
+
+            if ("".equals(match)) {
+                comment = comment.replaceFirst(Pattern.quote(t.group(1)), "");
+            } else {
+                switch (tag) {
+                    case "Purpose" :
+                        comment = comment.replaceFirst(Pattern.quote(t.group(1)),
+                                Matcher.quoteReplacement("## Purpose\n" + match));
+                        break;
+                    case "Notes" :
+                        comment = comment.replaceFirst(Pattern.quote(t.group(1)),
+                                Matcher.quoteReplacement("## Notes\n" + match));
+                        break;
+                    case "Description" :
+                        comment = comment.replaceFirst(Pattern.quote(t.group(1)),
+                                Matcher.quoteReplacement("## Description\n" + match));
+                        break;
+                    case "Author(s)" :
+                    case "Author" :
+                        comment = comment.replaceFirst(Pattern.quote(t.group(1)), "");
+                        commentParseResult.setAuthor(match);
+                        break;
+                    default :
+                        comment = comment.replaceFirst(Pattern.quote(t.group(1)), "");
+                        break;
+                }
+            }
+        }
     }
 
     public void parseReturn(CommentParseResult commentParseResult) {
