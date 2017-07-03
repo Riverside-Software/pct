@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 
+import eu.rssw.rcode.Using;
 import za.co.mip.ablduck.models.generic.MetaObject;
 import za.co.mip.ablduck.models.source.MemberObject;
 
@@ -90,4 +91,16 @@ public class SourceJSObject {
 
     @Expose(serialize = false)
     public String shortname = "";
+    
+    @Expose(serialize = false)
+    public boolean isInterface = false;
+
+    @Expose(serialize = false)
+    public List<String> interfaces = new ArrayList<>();
+    
+    @Expose(serialize = false)
+    public List<String> implementers = new ArrayList<>();
+    
+    @Expose(serialize = false)
+    public List<Using> using = new ArrayList<>();
 }

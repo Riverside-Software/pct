@@ -26,6 +26,7 @@ import org.apache.tools.ant.BuildException;
 
 import com.google.gson.annotations.SerializedName;
 
+import za.co.mip.ablduck.ABLDuck;
 import za.co.mip.ablduck.models.SourceJSObject;
 import za.co.mip.ablduck.models.generic.DeprecatedObject;
 import za.co.mip.ablduck.models.generic.MetaObject;
@@ -56,9 +57,38 @@ public class HTMLGenerator {
     }
 
     private String renderSidebar(SourceJSObject cls) {
-        if (!"".equals(cls.ext) || !cls.subclasses.isEmpty() || !"".equals(cls.author))
+        if (!"".equals(cls.ext) || !cls.subclasses.isEmpty() || !"".equals(cls.author)
+                || !cls.interfaces.isEmpty() || !cls.implementers.isEmpty())
             return MessageFormat.format(getTemplate("SIDEBAR"), renderClassTree(cls),
-                    renderSubclasses(cls), renderAuthor(cls));
+                    renderSubclasses(cls), renderInterfaces(cls), renderImplementers(cls),
+                    renderAuthor(cls));
+
+        return "";
+    }
+
+    private String renderImplementers(SourceJSObject cls) {
+        if (!cls.implementers.isEmpty()) {
+            StringBuilder implementerBuilder = new StringBuilder();
+            for (String implementer : cls.implementers) {
+                implementerBuilder.append(MessageFormat.format(getTemplate("IMPLEMENTER.ITEM"),
+                        renderLink(cls, implementer)));
+            }
+            return MessageFormat.format(getTemplate("IMPLEMENTERS"), implementerBuilder.toString());
+        }
+        return "";
+    }
+
+    private String renderInterfaces(SourceJSObject cls) {
+        if (!cls.interfaces.isEmpty()) {
+
+            StringBuilder interfaceBuilder = new StringBuilder();
+            for (String iface : cls.interfaces) {
+                interfaceBuilder.append(MessageFormat.format(getTemplate("INTERFACE.ITEM"),
+                        renderLink(cls, iface)));
+            }
+
+            return MessageFormat.format(getTemplate("INTERFACES"), interfaceBuilder.toString());
+        }
 
         return "";
     }
@@ -75,7 +105,7 @@ public class HTMLGenerator {
             // Add this class to the tree for display purposes
             cls.superclasses.add(cls.name);
 
-            String classTree = renderSuperTree(cls.superclasses, 0);
+            String classTree = renderSuperTree(cls, 0);
 
             return MessageFormat.format(getTemplate("HIERARCHY"), classTree);
         }
@@ -83,7 +113,8 @@ public class HTMLGenerator {
         return "";
     }
 
-    private String renderSuperTree(List<String> superclasses, Integer i) {
+    private String renderSuperTree(SourceJSObject cls, Integer i) {
+        List<String> superclasses = cls.superclasses;
         // If we are finished rendering the links leave
         if (i == superclasses.size())
             return "";
@@ -94,13 +125,13 @@ public class HTMLGenerator {
             cssClass = "first-child";
 
         // Render superclasses as a hyperlink unless we are the first class, ourself
-        String classLink = renderLink(superclasses.get(i));
+        String classLink = renderLink(cls, superclasses.get(i));
 
         if (i == superclasses.size() - 1)
             classLink = "<strong>" + superclasses.get(i) + "</strong>";
 
         return MessageFormat.format(getTemplate("HIERARCHY.ITEM"), cssClass, classLink,
-                renderSuperTree(superclasses, i + 1));
+                renderSuperTree(cls, i + 1));
     }
 
     private String renderSubclasses(SourceJSObject cls) {
@@ -108,8 +139,8 @@ public class HTMLGenerator {
 
             StringBuilder subclassBuilder = new StringBuilder();
             for (String subclass : cls.subclasses) {
-                subclassBuilder.append(
-                        MessageFormat.format(getTemplate("SUBCLASS.ITEM"), renderLink(subclass)));
+                subclassBuilder.append(MessageFormat.format(getTemplate("SUBCLASS.ITEM"),
+                        renderLink(cls, subclass)));
             }
 
             return MessageFormat.format(getTemplate("SUBCLASSES"), subclassBuilder.toString());
@@ -190,11 +221,7 @@ public class HTMLGenerator {
                     for (ParameterObject parameter : member.parameters) {
 
                         // Are we a known class being passed in? if so render a link to class
-                        String datatype;
-                        if (classes.get(parameter.datatype) != null)
-                            datatype = renderLink(parameter.datatype);
-                        else
-                            datatype = parameter.datatype;
+                        String datatype = renderLink(cls, parameter.datatype);
 
                         if ("(".equals(sig.toString()))
                             sig.append(datatype);
@@ -212,22 +239,14 @@ public class HTMLGenerator {
 
                     Matcher r = returnType.matcher(member.signature);
                     if (r.find()) {
-                        if (classes.get(r.group(1)) != null) {
-                            returnTypeDoc = renderLink(r.group(1));
-                        } else {
-                            returnTypeDoc = r.group(1);
-                        }
+                        returnTypeDoc = renderLink(cls, r.group(1));
 
                         doc.append(renderReturns(returnTypeDoc, member.returnComment));
                     }
                 }
 
                 if ("property".equals(member.tagname)) {
-                    if (classes.get(member.datatype) != null) {
-                        returnTypeDoc = renderLink(member.datatype);
-                    } else {
-                        returnTypeDoc = member.datatype;
-                    }
+                    returnTypeDoc = renderLink(cls, member.datatype);
                 }
 
                 String colonReturnType = "";
@@ -307,8 +326,14 @@ public class HTMLGenerator {
         return MessageFormat.format(getTemplate("INTERNAL"), internal);
     }
 
-    private String renderLink(String link) {
-        return MessageFormat.format(getTemplate("LINK"), link);
+    private String renderLink(SourceJSObject cls, String dataType) {
+        String fullClassName = ABLDuck.determineUsingClass(classes, cls, dataType);
+
+        // Can we find a with the exact className
+        if (classes.get(fullClassName) != null)
+            return MessageFormat.format(getTemplate("LINK"), fullClassName, dataType);
+
+        return dataType;
     }
 
     private String stripHtmlTags(String doc) {

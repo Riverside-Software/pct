@@ -65,6 +65,7 @@ import com.phenix.pct.PCT;
 import com.phenix.pct.Messages;
 import com.phenix.pct.Version;
 
+import eu.rssw.rcode.Using;
 import za.co.mip.ablduck.models.DataJSObject;
 import za.co.mip.ablduck.models.SourceJSObject;
 import za.co.mip.ablduck.models.data.ClassDataObject;
@@ -242,7 +243,7 @@ public class ABLDuck extends PCT {
             ClassDataObject cls = new ClassDataObject();
             cls.name = js.name;
             cls.ext = js.ext;
-            cls.icon = "icon-class";
+            cls.icon = "icon-" + js.classIcon;
 
             if (js.meta.isPrivate != null && js.meta.isPrivate)
                 cls.isPrivate = true;
@@ -253,7 +254,7 @@ public class ABLDuck extends PCT {
             SearchDataObject search = new SearchDataObject();
             search.name = js.shortname;
             search.fullName = js.name;
-            search.icon = "icon-class";
+            search.icon = "icon-" + js.classIcon;
             search.url = "#!/api/" + js.name;
             search.sort = 1;
             search.meta = js.meta;
@@ -287,6 +288,15 @@ public class ABLDuck extends PCT {
                 SourceJSObject subc = subclass.getValue();
                 if (subc.ext.equals(js.name))
                     js.subclasses.add(subc.name);
+            }
+
+            // Add implementers to the interface
+            for (String i : js.interfaces) {
+                String fullInterfacePath = determineUsingClass(jsObjects, js, i);
+                SourceJSObject iface = jsObjects.get(fullInterfacePath);
+                if (iface != null) {
+                    iface.implementers.add(js.name);
+                }
             }
 
         }
@@ -423,5 +433,31 @@ public class ABLDuck extends PCT {
         String content = new String(Files.readAllBytes(file), charset);
         content = content.replaceAll(Pattern.quote(tag), Matcher.quoteReplacement(value));
         Files.write(file, content.getBytes(charset));
+    }
+
+    public static String determineUsingClass(Map<String, SourceJSObject> classes,
+            SourceJSObject cls, String dataType) {
+        if (classes.get(dataType) != null)
+            return dataType;
+
+        // First check if we have a direct using statement for the datatype
+        for (Using using : cls.using) {
+            String[] u = using.name.split("\\.");
+            if (u[u.length - 1].equals(dataType) && classes.get(using.name) != null) {
+                return using.name;
+            }
+        }
+
+        // Now check for * using statements
+        for (Using using : cls.using) {
+            String[] u = using.name.split("\\.");
+            if (u[u.length - 1].equals("*")) {
+                String fullName = using.name.replaceAll("\\*", dataType);
+                if (classes.get(fullName) != null)
+                    return fullName;
+            }
+        }
+
+        return null;
     }
 }

@@ -62,7 +62,14 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         js.tagname = "class";
         js.name = fullClassName;
         js.shortname = cu.className;
-        js.classIcon = "class";
+        js.interfaces.addAll(cu.interfaces);
+        js.using.addAll(cu.usings);
+        js.isInterface = cu.isInterface;
+
+        if (cu.isInterface)
+            js.classIcon = "interface";
+        else
+            js.classIcon = "class";
 
         if (cu.inherits != null)
             js.ext = cu.inherits;
