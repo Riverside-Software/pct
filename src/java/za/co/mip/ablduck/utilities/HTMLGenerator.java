@@ -57,8 +57,9 @@ public class HTMLGenerator {
     }
 
     private String renderSidebar(SourceJSObject cls) {
-        if (!"".equals(cls.ext) || !cls.subclasses.isEmpty() || !"".equals(cls.author)
-                || !cls.interfaces.isEmpty() || !cls.implementers.isEmpty())
+        boolean hasSubIntImp = !cls.subclasses.isEmpty() || !cls.interfaces.isEmpty()
+                || !cls.implementers.isEmpty();
+        if (hasSubIntImp || !"".equals(cls.ext) || !"".equals(cls.author))
             return MessageFormat.format(getTemplate("SIDEBAR"), renderClassTree(cls),
                     renderSubclasses(cls), renderInterfaces(cls), renderImplementers(cls),
                     renderAuthor(cls));
@@ -70,7 +71,7 @@ public class HTMLGenerator {
         if (!cls.implementers.isEmpty()) {
             StringBuilder implementerBuilder = new StringBuilder();
             for (String implementer : cls.implementers) {
-                implementerBuilder.append(MessageFormat.format(getTemplate("IMPLEMENTER.ITEM"),
+                implementerBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
                         renderLink(cls, implementer)));
             }
             return MessageFormat.format(getTemplate("IMPLEMENTERS"), implementerBuilder.toString());
@@ -83,7 +84,7 @@ public class HTMLGenerator {
 
             StringBuilder interfaceBuilder = new StringBuilder();
             for (String iface : cls.interfaces) {
-                interfaceBuilder.append(MessageFormat.format(getTemplate("INTERFACE.ITEM"),
+                interfaceBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
                         renderLink(cls, iface)));
             }
 
@@ -139,7 +140,7 @@ public class HTMLGenerator {
 
             StringBuilder subclassBuilder = new StringBuilder();
             for (String subclass : cls.subclasses) {
-                subclassBuilder.append(MessageFormat.format(getTemplate("SUBCLASS.ITEM"),
+                subclassBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
                         renderLink(cls, subclass)));
             }
 

@@ -83,6 +83,7 @@ import com.google.gson.GsonBuilder;
  */
 public class ABLDuck extends PCT {
     private static final int BUFFER_SIZE = 4096;
+    private static final String ICON_PREFIX = "icon-";
     private HashMap<String, SourceJSObject> jsObjects = new HashMap<>();
     private String title = "ABLDuck documentation";
     private File destDir = null;
@@ -243,7 +244,7 @@ public class ABLDuck extends PCT {
             ClassDataObject cls = new ClassDataObject();
             cls.name = js.name;
             cls.ext = js.ext;
-            cls.icon = "icon-" + js.classIcon;
+            cls.icon = ICON_PREFIX + js.classIcon;
 
             if (js.meta.isPrivate != null && js.meta.isPrivate)
                 cls.isPrivate = true;
@@ -254,7 +255,7 @@ public class ABLDuck extends PCT {
             SearchDataObject search = new SearchDataObject();
             search.name = js.shortname;
             search.fullName = js.name;
-            search.icon = "icon-" + js.classIcon;
+            search.icon = ICON_PREFIX + js.classIcon;
             search.url = "#!/api/" + js.name;
             search.sort = 1;
             search.meta = js.meta;
@@ -265,7 +266,7 @@ public class ABLDuck extends PCT {
                 search = new SearchDataObject();
                 search.name = member.name;
                 search.fullName = member.owner + ":" + member.name;
-                search.icon = "icon-" + member.tagname;
+                search.icon = ICON_PREFIX + member.tagname;
                 search.url = "#!/api/" + member.owner + "-method-" + member.name;
                 search.sort = 3;
                 search.meta = member.meta;
@@ -451,7 +452,7 @@ public class ABLDuck extends PCT {
         // Now check for * using statements
         for (Using using : cls.using) {
             String[] u = using.name.split("\\.");
-            if (u[u.length - 1].equals("*")) {
+            if ("*".equals(u[u.length - 1])) {
                 String fullName = using.name.replaceAll("\\*", dataType);
                 if (classes.get(fullName) != null)
                     return fullName;
