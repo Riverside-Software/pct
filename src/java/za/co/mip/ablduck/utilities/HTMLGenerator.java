@@ -40,6 +40,7 @@ import java.text.MessageFormat;
 public class HTMLGenerator {
     private static final ResourceBundle TEMPLATES = ResourceBundle
             .getBundle("za.co.mip.ablduck.utilities.templates");
+    private static final String DEPENDANCY = "DEPENDANCY.ITEM";
 
     private static Pattern returnType = Pattern.compile("\\):(.*)");
     private Map<String, SourceJSObject> classes;
@@ -71,7 +72,7 @@ public class HTMLGenerator {
         if (!cls.implementers.isEmpty()) {
             StringBuilder implementerBuilder = new StringBuilder();
             for (String implementer : cls.implementers) {
-                implementerBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
+                implementerBuilder.append(MessageFormat.format(getTemplate(DEPENDANCY),
                         renderLink(cls, implementer)));
             }
             return MessageFormat.format(getTemplate("IMPLEMENTERS"), implementerBuilder.toString());
@@ -84,7 +85,7 @@ public class HTMLGenerator {
 
             StringBuilder interfaceBuilder = new StringBuilder();
             for (String iface : cls.interfaces) {
-                interfaceBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
+                interfaceBuilder.append(MessageFormat.format(getTemplate(DEPENDANCY),
                         renderLink(cls, iface)));
             }
 
@@ -140,7 +141,7 @@ public class HTMLGenerator {
 
             StringBuilder subclassBuilder = new StringBuilder();
             for (String subclass : cls.subclasses) {
-                subclassBuilder.append(MessageFormat.format(getTemplate("DEPENDANCY.ITEM"),
+                subclassBuilder.append(MessageFormat.format(getTemplate(DEPENDANCY),
                         renderLink(cls, subclass)));
             }
 
