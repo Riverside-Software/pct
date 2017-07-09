@@ -381,8 +381,6 @@ public class ABLDuck extends PCT {
             while ((readBytes = stream.read(buffer)) > 0) {
                 resStreamOut.write(buffer, 0, readBytes);
             }
-        } catch (IOException ex) {
-            throw ex;
         }
 
         return resource;
@@ -409,8 +407,6 @@ public class ABLDuck extends PCT {
                 zipIn.closeEntry();
                 entry = zipIn.getNextEntry();
             }
-        } catch (IOException ex) {
-            throw ex;
         }
     }
 
@@ -422,8 +418,6 @@ public class ABLDuck extends PCT {
             while ((read = zipIn.read(bytesIn)) != -1) {
                 bos.write(bytesIn, 0, read);
             }
-        } catch (IOException ex) {
-            throw ex;
         }
     }
 
