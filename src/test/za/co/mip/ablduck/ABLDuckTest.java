@@ -69,7 +69,7 @@ public class ABLDuckTest extends BuildFileTestNg {
     @Test(groups= {"v11"}, dependsOnMethods = { "testGenerateDocs" })
     public void testSourceJSFiles() throws IOException {
           
-        //Do the source js files exist
+        //Does the source js files exist
         String filename = "ABLDuck/test/docs/output/base.class.js"; 
         File f1 = new File(filename);
         assertTrue(f1.exists());
@@ -92,7 +92,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         
         
         
-        //Do the source js files exist
+        //Does the source js files exist
         filename = "ABLDuck/test/docs/output/test.js";   
         f1 = new File(filename);
         assertTrue(f1.exists());
@@ -102,8 +102,8 @@ public class ABLDuckTest extends BuildFileTestNg {
              
         js = gson.fromJson(content, SourceJSObject.class);  
         
-        //Should contain 2 methods and 1 property
-        assertEquals(js.members.size(), 3);
+        //Should contain 2 methods 1 property, 1 constructor and 1 event
+        assertEquals(js.members.size(), 5);
         
         assertEquals(js.id, "class-test");
         assertEquals(js.tagname, "class");
