@@ -267,7 +267,7 @@ public class ABLDuck extends PCT {
                 search.name = member.name;
                 search.fullName = member.owner + ":" + member.name;
                 search.icon = ICON_PREFIX + member.tagname;
-                search.url = "#!/api/" + member.owner + "-method-" + member.name;
+                search.url = "#!/api/" + member.owner + "-" + member.tagname + "-" + member.name;
                 search.sort = 3;
                 search.meta = member.meta;
 

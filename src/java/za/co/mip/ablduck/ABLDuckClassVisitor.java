@@ -27,6 +27,7 @@ import com.openedge.core.runtime.IPropath;
 import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
 
 import eu.rssw.rcode.ClassCompilationUnit;
+import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
 import eu.rssw.rcode.Parameter;
@@ -228,6 +229,69 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             if (property.isStatic)
                 m.meta.isStatic = true;
 
+            js.members.add(m);
+        }
+        
+        for (Event event : cu.events) {
+            MemberObject m = new MemberObject();
+
+            m.id = "event-" + event.eventName;
+            m.name = event.eventName;
+            m.owner = fullClassName;
+            m.tagname = "event";
+            m.signature = event.signature;
+            
+            CommentParseResult commentParseResult = null;
+            try {
+                commentParseResult = comments.parseComment(event.eventComment,
+                        fullClassName + ":" + event.eventName);
+
+                if (!commentParseResult.getInternal())
+                    commentParseResult.setInternal(event.eventName.startsWith("_"));
+
+                m.returnComment = commentParseResult.getReturnComment();
+                m.comment = commentParseResult.getComment();
+
+                if (commentParseResult.getInternal())
+                    m.meta.internal = "This is a private event for internal use by the framework. Don't rely on its existence.";
+
+                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
+                    m.meta.deprecated = new DeprecatedObject();
+
+                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
+                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
+                }
+            } catch (IOException ex) {
+                throw ex;
+            }
+            
+            if (event.modifier == AccessModifier.PRIVATE)
+                m.meta.isPrivate = true;
+
+            if (event.modifier == AccessModifier.PROTECTED)
+                m.meta.isProtected = true;
+
+            if (event.isAbstract)
+                m.meta.isAbstract = true;
+
+            if (event.isStatic)
+                m.meta.isStatic = true;
+            
+            m.parameters = new ArrayList<>();
+            for (Parameter parameter : event.parameters) {
+                ParameterObject p = new ParameterObject();
+
+                p.name = parameter.name;
+                p.datatype = parameter.dataType;
+                p.mode = parameter.mode.toString();
+
+                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
+                if (paramComment != null)
+                    p.comment = paramComment;
+
+                m.parameters.add(p);
+            }
+            
             js.members.add(m);
         }
         return js;
