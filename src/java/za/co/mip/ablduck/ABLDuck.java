@@ -340,7 +340,8 @@ public class ABLDuck extends PCT {
             if (nextClass != null) {
                 for (MemberObject member : nextClass.members) {
                     if (member.owner.equals(inherits)
-                            && (member.meta.isPrivate == null || !member.meta.isPrivate))
+                            && (member.meta.isPrivate == null || !member.meta.isPrivate)
+                            && !"constructor".equals(member.tagname))
                         result.addInheritedmember(member);
                 }
 

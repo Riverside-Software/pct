@@ -53,7 +53,8 @@ public class HTMLGenerator {
         this.classes = allclasses;
 
         return MessageFormat.format(getTemplate("CLASSBODY"), renderSidebar(cls),
-                renderClassComment(cls), renderMemberDetails(cls, "event", "Events"), renderMemberDetails(cls, "property", "Properties"),
+                renderClassComment(cls), renderMemberDetails(cls, "constructor", "Constructors"),
+                renderMemberDetails(cls, "event", "Events"), renderMemberDetails(cls, "property", "Properties"),
                 renderMemberDetails(cls, "method", "Methods"));
     }
 
@@ -216,7 +217,7 @@ public class HTMLGenerator {
                 StringBuilder sig = new StringBuilder();
                 String returnTypeDoc = "";
 
-                if ("method".equals(member.tagname) || "event".equals(member.tagname)) {
+                if ("method".equals(member.tagname) || "event".equals(member.tagname) || "constructor".equals(member.tagname)) {
                     StringBuilder parameters = new StringBuilder();
                     sig.append("(");
 

@@ -27,6 +27,7 @@ import com.openedge.core.runtime.IPropath;
 import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
 
 import eu.rssw.rcode.ClassCompilationUnit;
+import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
@@ -106,6 +107,63 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
         } catch (IOException ex) {
             throw ex;
+        }
+        
+        Integer constructorCount = 0;
+        for (Constructor constructor : cu.constructors) {
+            MemberObject m = new MemberObject();
+            
+            constructorCount++;
+
+            m.id = "constructor-" + cu.className + constructorCount.toString();
+            m.name = cu.className;
+            m.owner = fullClassName;
+            m.tagname = "constructor";
+            m.signature = constructor.signature;
+            
+            CommentParseResult commentParseResult = null;
+            try {
+                commentParseResult = comments.parseComment(constructor.constrComment,
+                        fullClassName + ":" + cu.className);
+
+                m.returnComment = commentParseResult.getReturnComment();
+                m.comment = commentParseResult.getComment();
+
+                if (commentParseResult.getInternal())
+                    m.meta.internal = "This is a private constructor for internal use by the framework. Don't rely on its existence.";
+
+                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
+                    m.meta.deprecated = new DeprecatedObject();
+
+                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
+                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
+                }
+            } catch (IOException ex) {
+                throw ex;
+            }
+            
+            if (constructor.modifier == AccessModifier.PRIVATE)
+                m.meta.isPrivate = true;
+
+            if (constructor.modifier == AccessModifier.PROTECTED)
+                m.meta.isProtected = true;
+            
+            m.parameters = new ArrayList<>();
+            for (Parameter parameter : constructor.parameters) {
+                ParameterObject p = new ParameterObject();
+
+                p.name = parameter.name;
+                p.datatype = parameter.dataType;
+                p.mode = parameter.mode.toString();
+
+                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
+                if (paramComment != null)
+                    p.comment = paramComment;
+
+                m.parameters.add(p);
+            }
+            
+            js.members.add(m);
         }
 
         Integer methodCount = 0;
