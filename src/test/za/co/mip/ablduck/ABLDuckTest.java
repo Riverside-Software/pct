@@ -62,8 +62,8 @@ public class ABLDuckTest extends BuildFileTestNg {
         //Should contain 2 classes
         assertEquals(dataJSObject.classes.size(), 2);
         
-        //Should contain 2 classes, 1 property and 2 methods
-        assertEquals(dataJSObject.search.size(), 5);
+        //Should contain 2 classes, 1 property and 2 methods, 1 constructor and 1 event
+        assertEquals(dataJSObject.search.size(), 7);
     }
     
     @Test(groups= {"v11"}, dependsOnMethods = { "testGenerateDocs" })
