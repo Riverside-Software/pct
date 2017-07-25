@@ -225,11 +225,14 @@ public class HTMLGenerator {
                         // Are we a known class being passed in? if so render a link to class
                         String datatype = renderLink(cls, parameter.datatype);
 
-                        if ("(".equals(sig.toString()))
-                            sig.append(datatype);
-                        else
-                            sig.append(", " + datatype);
-
+                        if (!"(".equals(sig.toString()))
+                            sig.append(", ");
+                            
+                        if (!"INPUT".equals(parameter.mode))
+                            sig.append(parameter.mode + " ");
+                        
+                        sig.append(datatype);
+                            
                         parameters.append(renderParams(cls, parameter));
                     }
                     sig.append(")");
