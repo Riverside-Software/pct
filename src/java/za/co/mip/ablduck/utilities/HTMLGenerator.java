@@ -53,7 +53,8 @@ public class HTMLGenerator {
         this.classes = allclasses;
 
         return MessageFormat.format(getTemplate("CLASSBODY"), renderSidebar(cls),
-                renderClassComment(cls), renderMemberDetails(cls, "property", "Properties"),
+                renderClassComment(cls), renderMemberDetails(cls, "constructor", "Constructors"),
+                renderMemberDetails(cls, "event", "Events"), renderMemberDetails(cls, "property", "Properties"),
                 renderMemberDetails(cls, "method", "Methods"));
     }
 
@@ -216,7 +217,7 @@ public class HTMLGenerator {
                 StringBuilder sig = new StringBuilder();
                 String returnTypeDoc = "";
 
-                if ("method".equals(member.tagname)) {
+                if ("method".equals(member.tagname) || "event".equals(member.tagname) || "constructor".equals(member.tagname)) {
                     StringBuilder parameters = new StringBuilder();
                     sig.append("(");
 
@@ -225,12 +226,15 @@ public class HTMLGenerator {
                         // Are we a known class being passed in? if so render a link to class
                         String datatype = renderLink(cls, parameter.datatype);
 
-                        if ("(".equals(sig.toString()))
-                            sig.append(datatype);
-                        else
-                            sig.append(", " + datatype);
-
-                        parameters.append(renderParams(parameter));
+                        if (!"(".equals(sig.toString()))
+                            sig.append(", ");
+                            
+                        if (!"INPUT".equals(parameter.mode))
+                            sig.append(parameter.mode + " ");
+                        
+                        sig.append(datatype);
+                            
+                        parameters.append(renderParams(cls, parameter));
                     }
                     sig.append(")");
 
@@ -276,9 +280,9 @@ public class HTMLGenerator {
         return MessageFormat.format(getTemplate("RETURNS"), returnsType, returnsDoc);
     }
 
-    private String renderParams(ParameterObject renderParams) {
+    private String renderParams(SourceJSObject cls, ParameterObject renderParams) {
         return MessageFormat.format(getTemplate("PARAMETER"), renderParams.name,
-                renderParams.datatype, renderParams.comment);
+                renderLink(cls, renderParams.datatype), renderParams.comment);
     }
 
     private String renderTags(MetaObject meta) {

@@ -15,7 +15,12 @@
  * @author     Robert Edwards  
  */
 CLASS test INHERITS base.class:
+  
+  DEFINE PUBLIC EVENT someEvent SIGNATURE VOID (sender AS Progress.Lang.Object, e AS CHARACTER).
 
+  CONSTRUCTOR PRIVATE test ():
+    
+  END CONSTRUCTOR.
 
 END CLASS.
 

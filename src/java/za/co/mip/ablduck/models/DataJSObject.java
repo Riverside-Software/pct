@@ -25,7 +25,6 @@ import za.co.mip.ablduck.models.data.ClassDataObject;
 import za.co.mip.ablduck.models.data.MemberTypeDataObject;
 import za.co.mip.ablduck.models.data.SearchDataObject;
 import za.co.mip.ablduck.models.data.SignatureDataObject;
-import za.co.mip.ablduck.models.data.SubsectionDataObject;
 
 public class DataJSObject {
     // Empty for now
@@ -88,27 +87,24 @@ public class DataJSObject {
         signatures.add(new SignatureDataObject("static", "STA", "static"));
 
         MemberTypeDataObject memberType;
-        SubsectionDataObject subsection;
+        
+        // Constructor Member Type
+        memberType = new MemberTypeDataObject();
+        memberType.name = "constructor";
+        memberType.title = "Constructors";
+        memberType.icon = "icons/event.png";
+        memberType.position = 1;
+
+        memberType.subsections = null;
+
+        memberTypes.add(memberType);
 
         // Property Member Type
         memberType = new MemberTypeDataObject();
         memberType.name = "property";
         memberType.title = "Properties";
         memberType.icon = "icons/property.png";
-        memberType.position = 1;
-
-        subsection = new SubsectionDataObject();
-        subsection.title = "Instance properties";
-        subsection.def = true;
-        subsection.filter.isStatic = false;
-
-        memberType.subsections.add(subsection);
-
-        subsection = new SubsectionDataObject();
-        subsection.title = "Static properties";
-        subsection.filter.isStatic = true;
-
-        memberType.subsections.add(subsection);
+        memberType.position = 2;
 
         memberTypes.add(memberType);
 
@@ -117,20 +113,7 @@ public class DataJSObject {
         memberType.name = "method";
         memberType.title = "Methods";
         memberType.icon = "icons/method.png";
-        memberType.position = 2;
-
-        subsection = new SubsectionDataObject();
-        subsection.title = "Instance methods";
-        subsection.def = true;
-        subsection.filter.isStatic = false;
-
-        memberType.subsections.add(subsection);
-
-        subsection = new SubsectionDataObject();
-        subsection.title = "Static methods";
-        subsection.filter.isStatic = true;
-
-        memberType.subsections.add(subsection);
+        memberType.position = 3;
 
         memberTypes.add(memberType);
 
@@ -139,7 +122,7 @@ public class DataJSObject {
         memberType.name = "event";
         memberType.title = "Events";
         memberType.icon = "icons/event.png";
-        memberType.position = 3;
+        memberType.position = 4;
 
         memberType.subsections = null;
 

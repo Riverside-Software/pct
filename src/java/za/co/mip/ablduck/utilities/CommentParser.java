@@ -38,7 +38,7 @@ public class CommentParser {
     private Javadoc javadocParser;
     private Pattern oldCommentDetectPattern = Pattern.compile("^\\s*?\\/\\*\\s*?-+.+$",
             Pattern.MULTILINE);
-    private String oldCommentTokenPattern = "(^\\s*?[TOKEN]\\s*?:([\\s\\S]*?))(?:\\n|\\z)*(?:^\\s*?Component\\s*?:|^\\s*?Author\\s*?:|^\\s*?File\\s*?:|^\\s*?Purpose\\s*?:|^\\s*?Syntax\\s*?:|^\\s*?Description\\s*?:|^\\s*?Author\\(s\\)\\s*?:|^\\s*?Created\\s*?:|^\\s*?Notes\\s*?:|^\\s*?@param|^\\s*?@return|\\z)";
+    private String oldCommentTokenPattern = "(^\\s*?[TOKEN]\\s*?:([\\s\\S]*?))(?:\\n|\\z)*(?:^\\s*?Component\\s*?:|^\\s*?Author\\s*?:|^\\s*?File\\s*?:|^\\s*?Purpose\\s*?:|^\\s*?Syntax\\s*?:|^\\s*?Description\\s*?:|^\\s*?Author\\(s\\)\\s*?:|^\\s*?Created\\s*?:|^\\s*?Notes\\s*?:|^\\s*?@param|^\\s*?@return|^\\s*?## Purpose|^\\s*?## Description|^\\s*?## Notes|\\z)";
     private Map<String, Pattern> oldCommentPatterns = new HashMap<>();
     private String[] oldCommentTokens = {"File", "Purpose", "Syntax", "Description", "Author(s)",
             "Created", "Notes", "Author", "Component"};

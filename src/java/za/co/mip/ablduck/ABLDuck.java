@@ -267,7 +267,7 @@ public class ABLDuck extends PCT {
                 search.name = member.name;
                 search.fullName = member.owner + ":" + member.name;
                 search.icon = ICON_PREFIX + member.tagname;
-                search.url = "#!/api/" + member.owner + "-method-" + member.name;
+                search.url = "#!/api/" + member.owner + "-" + member.tagname + "-" + member.name;
                 search.sort = 3;
                 search.meta = member.meta;
 
@@ -340,7 +340,8 @@ public class ABLDuck extends PCT {
             if (nextClass != null) {
                 for (MemberObject member : nextClass.members) {
                     if (member.owner.equals(inherits)
-                            && (member.meta.isPrivate == null || !member.meta.isPrivate))
+                            && (member.meta.isPrivate == null || !member.meta.isPrivate)
+                            && !"constructor".equals(member.tagname))
                         result.addInheritedmember(member);
                 }
 
