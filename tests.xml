@@ -19,9 +19,17 @@
   <condition property="GROUPS" value="v10,v11">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
   </condition>
+  <condition property="GROUPS" value="v10,v11,v12">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
+  </condition>
+
   <!-- Excluded group depending on OS -->
-  <condition property="EXCLUDES" value="unix" else="win">
+  <condition property="EXCLUDES-OS" value="unix" else="win">
     <os family="windows" />
+  </condition>
+  <!-- Excluded group depending on version -->
+  <condition property="EXCLUDES-VERSION" value="nov12" else="">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
   <!-- Only for ProUnit and OEUnit -->
   <condition property="SIXTYFOUR" value="-64" else="">
@@ -65,7 +73,7 @@
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
     <jacoco:coverage destFile="profiler/jacoco.exec">
-      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES}" suiteName="${TESTENV} tests">
+      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES-OS},${EXCLUDES-VERSION}" suiteName="${TESTENV} tests">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
