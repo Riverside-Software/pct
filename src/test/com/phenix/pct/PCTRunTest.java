@@ -302,7 +302,7 @@ public class PCTRunTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test37() {
         configureProject("PCTRun/test37/build.xml");
-        expectLog("test1", "Result : 789");
+        expectLog("test1", "Result : 123");
         expectLog("test2", "Result : 1");
         expectLog("test3", "Result : 1");
     }

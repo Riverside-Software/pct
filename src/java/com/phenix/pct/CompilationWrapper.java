@@ -38,6 +38,9 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void execute() {
+        // Assert DLC correctly set in parent task
+        checkDlcHome();
+
         PCT pctTask;
         checkDlcHome();
         // Handle pct:compile_ext

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="PCTRun-test36">
+<project name="PCTRun-test37">
   <taskdef resource="PCT.properties" />
 
   <target name="test1">

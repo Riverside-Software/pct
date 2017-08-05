@@ -118,8 +118,8 @@ public class RCodeSelector extends BaseExtendSelector {
                 log(MessageFormat.format("CRC {2} File1 {0} File2 {1}", file1.getCRC(), file2.getCRC(), filename), Project.MSG_VERBOSE);
                 return (file1.getCRC() != file2.getCRC());
             case MODE_MD5:
-                log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getMD5(), file2.getMD5(), filename), Project.MSG_VERBOSE);
-                return !file1.getMD5().equals(file2.getMD5());
+                log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getRcodeDigest(), file2.getRcodeDigest(), filename), Project.MSG_VERBOSE);
+                return !file1.getRcodeDigest().equals(file2.getRcodeDigest());
             default:
                 return true;
         }

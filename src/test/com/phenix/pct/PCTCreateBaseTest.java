@@ -22,7 +22,10 @@ import static org.testng.Assert.assertTrue;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Class for testing PCTCreateBase task
@@ -166,6 +169,15 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
 
     @Test(groups = {"v11", "unix"})
     public void test14() {
+        // Not valid anymore on v12+, all databases have large files enabled
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMajorVersion() >= 12)
+                return;
+        } catch (IOException | InvalidRCodeException caught) {
+            return;
+        }
+
         configureProject("PCTCreateBase/test14/build.xml");
         
         executeTarget("test");

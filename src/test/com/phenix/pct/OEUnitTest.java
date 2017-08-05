@@ -37,7 +37,7 @@ public class OEUnitTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Regular run of 2 test procedures
-    @Test(groups = {"v10"})
+    @Test(groups = {"v10", "nov12"})
     public void test1() throws XPathExpressionException {
         configureProject("OEUnit/test1/build.xml");
         executeTarget("test");
@@ -54,7 +54,7 @@ public class OEUnitTest extends BuildFileTestNg {
     }
 
     // No output dir, default value instead
-    @Test(groups = {"v10"})
+    @Test(groups = {"v10", "nov12"})
     public void test2() throws XPathExpressionException {
         configureProject("OEUnit/test2/build.xml");
         executeTarget("test");
@@ -71,7 +71,7 @@ public class OEUnitTest extends BuildFileTestNg {
     }
 
     // Running a test suite class
-    @Test(groups = {"v10"})
+    @Test(groups = {"v10", "nov12"})
     public void test3() throws XPathExpressionException {
         configureProject("OEUnit/test3/build.xml");
         executeTarget("test");
@@ -83,7 +83,7 @@ public class OEUnitTest extends BuildFileTestNg {
     }
 
     // Test all report formats
-    @Test(groups = {"v10"})
+    @Test(groups = {"v10", "nov12"})
     public void test4() throws XPathExpressionException {
         configureProject("OEUnit/test4/build.xml");
         executeTarget("test");

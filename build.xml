@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="PCT" default="dist">
+<project name="PCT" default="dist" xmlns:if="ant:if" xmlns:unless="ant:unless">
 
   <property environment="env" />
 
@@ -9,6 +9,7 @@
       <isset property="DLC10" />
       <isset property="DLC10-64" />
       <isset property="DLC11" />
+      <isset property="DLC12" />
     </and>
   </condition>
 
@@ -27,7 +28,9 @@
   <property name="build-v10" location="build/build-v10" />
   <property name="build-v10-64" location="build/build-v10-64" />
   <property name="build-v11" location="build/build-v11" />
-  <property name="build-win" location="build/windows" />
+  <property name="build-v12" location="build/build-v12" />
+  <property name="build-win-v11" location="build/windows-v11" />
+  <property name="build-win-v12" location="build/windows-v12" />
   <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
@@ -49,6 +52,12 @@
     <include name="pct/v11/*.p" />
     <include name="rssw/**/*.cls" />
   </fileset>
+  <fileset id="fs.v12" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <exclude name="pct/pctOEUnitRunner.p" />
+    <include name="pct/v12/*.p" />
+    <include name="rssw/**/*.cls" />
+  </fileset>
   <fileset id="fs.classDoc" dir="${src.progress}">
     <include name="Consultingwerk/**/*.cls" />
     <include name="Consultingwerk/**/*.p" />
@@ -56,22 +65,25 @@
   
   <!-- Different propath depending on version -->
   <path id="pp.v8">
-        <pathelement location="${src.progress}" />
+    <pathelement location="${src.progress}" />
   </path>
   <path id="pp.v9">
-        <pathelement location="${src.progress}" />
+    <pathelement location="${src.progress}" />
   </path>
   <path id="pp.v10">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc10.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc10.pl" />
   </path>
   <path id="pp.v10-64">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc10-64.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc10-64.pl" />
   </path>
   <path id="pp.v11">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc11.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc11.pl" />
+  </path>
+  <path id="pp.v12">
+    <pathelement location="${src.progress}" />
   </path>
 
   <!-- Classpath for PCT compilation -->
@@ -107,12 +119,14 @@
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${build-v11}" />
     <mkdir dir="${doc}" />
+    <mkdir dir="${build-v12}" />
     <mkdir dir="${dist}" />
 
     <!-- Checking v10 and v11 availability -->
     <available file="${DLC10}/version" property="dlc.v10.present" />
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
+    <available file="${DLC12}/version" property="dlc.v12.present" />
 
     <echo message="Version tag : ${pct.version.string}" />
     <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version.string}</echo>
@@ -207,6 +221,7 @@
     <echo message="Checking v10 in ${DLC10}" />
     <echo message="Checking v10-64 in ${DLC10-64}" />
     <echo message="Checking v11 in ${DLC11}" />
+    <echo message="Checking v12 in ${DLC12}" />
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10.present" />
@@ -238,29 +253,52 @@
       <param name="xmlxref" value="true" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v12.present" />
+      <param name="dlcHome" value="${DLC12}" />
+      <param name="buildDir" value="${build-v12}" />
+      <param name="libName" value="pct12.pl" />
+      <param name="fsid" value="fs.v12" />
+      <param name="propid" value="pp.v12" />
+      <param name="xmlxref" value="true" />
+    </antcall>
+
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
     </zip>
   </target>
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
-    <mkdir dir="${build-win}" />
-    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
+    <mkdir dir="${build-win-v11}" />
+    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
+
+    <mkdir dir="${build-win-v12}" />
+    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+
     <zip destFile="${dist}/classDoc.zip">
-      <fileset dir="${build-win}" />
+      <zipfileset dir="${build-win-v11}" prefix="v11" includes="**/*.r" />
+      <zipfileset dir="${build-win-v12}" prefix="v12" includes="**/*.r" />
     </zip>
   </target>
 
   <target name="fakeClassDoc" unless="classDocOK">
     <echo message="Generating fake classDoc.zip file" />
+    <echo file="${dist}/empty.txt" />
     <zip destFile="${dist}/classDoc.zip" whenEmpty="create">
-      <fileset dir="." includes="leave.it.empty" />
+      <zipfileset dir="${dist}" includes="empty.txt" prefix="v11" />
+      <zipfileset dir="${dist}" includes="empty.txt" prefix="v12" />
     </zip>
   </target>
 
@@ -269,13 +307,17 @@
       <resourceexists><file file="${dist}/classDoc.zip" /></resourceexists>
     </condition>
     <antcall target="fakeClassDoc" />
-    <!--  Updating pct11.pl with rcode compiled on Windows -->
+
+    <!--  Updating pct11.pl and pct12.pl with rcode compiled on Windows -->
     <mkdir dir="classDocTemp" />
     <copy todir="classDocTemp">
-      <zipfileset src="dist/classDoc.zip" includes="**/*.r" />
+      <zipfileset src="dist/classDoc.zip" />
     </copy>
-    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
-      <fileset dir="classDocTemp" />
+    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined" if:true="${dlc.v11.present}">
+      <fileset dir="classDocTemp/v11" includes="**/*.r" />
+    </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct12.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
+      <fileset dir="classDocTemp/v12" includes="**/*.r" />
     </bootstrapLibrary>
     <delete dir="classDocTemp" />
 
@@ -288,6 +330,7 @@
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
         <include name="pct11.pl" />
+        <include name="pct12.pl" />
         <include name="pct-src.zip" />
       </fileset>
       <fileset dir="${src.java}">
