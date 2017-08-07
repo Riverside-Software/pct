@@ -78,7 +78,6 @@
     <pathelement location="lib/ant.jar" />
     <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
-    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
 
@@ -93,7 +92,6 @@
     <pathelement location="lib/testng-6.3.1.jar" />
     <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
-    <pathelement location="lib/profiler-parser-shaded-1.4.1.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -302,7 +300,6 @@
       <zipfileset src="lib/antlr-runtime-4.7.jar"/>
       <zipfileset src="lib/commonmark-0.9.0.jar"/>
 
-      <zipfileset src="lib/profiler-parser-shaded-1.4.1.jar" includes="**/*.class" />
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
