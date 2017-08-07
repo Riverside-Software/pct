@@ -162,7 +162,7 @@
       <zipfileset src="lib/jcommander-1.30.jar" />
       <fileset dir="${build-java}">
         <include name="eu/rssw/pct/standalone/**/*.class" />
-        <include name="com/phenix/pct/PLReader.class" />
+        <include name="com/phenix/pct/PLReader*.class" />
         <include name="com/phenix/pct/FileEntry.class" />
         <include name="com/phenix/pct/RCodeInfo*.class" />
       </fileset>
