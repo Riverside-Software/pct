@@ -10,7 +10,6 @@
 	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="lib/profiler-parser-shaded-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/ast.jar"/>
 	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar"/>
