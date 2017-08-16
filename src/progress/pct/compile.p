@@ -383,6 +383,7 @@ PROCEDURE compileXref.
     COMPILE
       VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
       SAVE = SaveR INTO VALUE(cSaveDir)
+      LANGUAGES (VALUE(languages))
       STREAM-IO=streamIO
       V6FRAME=lV6Frame
       MIN-SIZE=MinSize
