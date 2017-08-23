@@ -385,6 +385,7 @@ PROCEDURE compileXref.
       SAVE = SaveR INTO VALUE(cSaveDir)
       STREAM-IO=streamIO
       V6FRAME=lV6Frame
+      DEBUG-LIST VALUE(debugListingFile)
       MIN-SIZE=MinSize
       GENERATE-MD5=MD5
       XCODE XCodeKey
@@ -395,6 +396,7 @@ PROCEDURE compileXref.
       SAVE = SaveR INTO VALUE(cSaveDir)
       STREAM-IO=streamIO
       V6FRAME=lV6Frame
+      DEBUG-LIST VALUE(debugListingFile)
       MIN-SIZE=MinSize
       GENERATE-MD5=MD5
       NO-ERROR.
