@@ -1033,4 +1033,18 @@ public class PCTCompileTest extends BuildFileTestNg {
         rexp.add(" \\.\\.\\. in main file at line .*");
         expectLogRegexp("test5", rexp, false);
     }
+
+    @Test(groups = {"v10"})
+    public void test64() {
+        // Simplified version of test58
+        configureProject(BASEDIR + "test64/build.xml");
+        executeTarget("init");
+        executeTarget("build");
+        assertTrue(new File(BASEDIR + "test64/build1/file1.r").exists());
+        assertTrue(new File(BASEDIR + "test64/build2/file1.r").exists());
+        assertTrue(new File(BASEDIR + "test64/build1/.dbg/file1.p").exists());
+        assertTrue(new File(BASEDIR + "test64/build2/.dbg/file1.p").exists());
+        expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+        expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+    }
 }
