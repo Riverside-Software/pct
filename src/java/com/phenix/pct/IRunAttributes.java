@@ -206,6 +206,11 @@ public interface IRunAttributes {
     void setProcedure(String procedure);
 
     /**
+     * XCode init procedure
+     */
+    void setXCodeInit(boolean xcode);
+
+    /**
      * Add a database alias
      */
     void addDBAlias(DBAlias alias);
