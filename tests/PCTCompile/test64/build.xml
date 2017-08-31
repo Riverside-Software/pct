@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test64">
+  <taskdef resource="PCT.properties" />
+
+  <target name="clean">
+    <delete dir="db" />
+    <delete dir="build1" />
+    <delete dir="build2" />
+  </target>
+
+  <target name="init">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="xlatedb" destDir="db" dlcHome="${DLC}" schemaFile="dump/xlatedb.df" />
+    <PCTLoadData dlcHome="${DLC}" srcDir="dump" numsep="46" numdec="44">
+      <PCTConnection dbName="xlatedb" dbDir="db" singleUser="true" />
+    </PCTLoadData>
+    <mkdir dir="src" />
+    <mkdir dir="src2" />
+    <PCTXCode destDir="src" dlcHome="${DLC}">
+      <fileset dir="src-clear" includes="file1.p,dir1/file2.p" />
+    </PCTXCode>
+    <PCTXCode destDir="src2" key="rssw" dlcHome="${DLC}">
+      <fileset dir="src-clear" includes="file1.p,dir1/file2.p" />
+    </PCTXCode>
+  </target>
+
+  <target name="build">
+    <mkdir dir="build1" />
+    <mkdir dir="build2" />
+    <PCTCompile destDir="build1" dlcHome="${DLC}" languages="French,German" relativePaths="true" debugListing="true" xCode="true">
+      <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
+      <fileset dir="src" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </PCTCompile>
+    <PCTCompile destDir="build2" dlcHome="${DLC}" languages="French,German" relativePaths="true" debugListing="true" xCode="true" xCodeKey="rssw">
+      <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
+      <fileset dir="src2" includes="**/*.p" />
+      <propath>
+        <pathelement location="src2" />
+      </propath>
+    </PCTCompile>
+  </target>
+
+  <target name="test-fr-1">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <Option name="-lng" value="French" />
+      <propath>
+        <pathelement location="build1" />
+      </propath>
+    </PCTRun>
+  </target>
+
+  <target name="test-fr-2">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <Option name="-lng" value="French" />
+      <propath>
+        <pathelement location="build2" />
+      </propath>
+    </PCTRun>
+  </target>
+
+</project>

@@ -383,8 +383,10 @@ PROCEDURE compileXref.
     COMPILE
       VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
       SAVE = SaveR INTO VALUE(cSaveDir)
+      LANGUAGES (VALUE(languages))
       STREAM-IO=streamIO
       V6FRAME=lV6Frame
+      DEBUG-LIST VALUE(debugListingFile)
       MIN-SIZE=MinSize
       GENERATE-MD5=MD5
       XCODE XCodeKey
@@ -393,8 +395,10 @@ PROCEDURE compileXref.
     COMPILE
       VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
       SAVE = SaveR INTO VALUE(cSaveDir)
+      LANGUAGES (VALUE(languages))
       STREAM-IO=streamIO
       V6FRAME=lV6Frame
+      DEBUG-LIST VALUE(debugListingFile)
       MIN-SIZE=MinSize
       GENERATE-MD5=MD5
       NO-ERROR.
