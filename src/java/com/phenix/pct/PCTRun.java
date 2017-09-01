@@ -16,15 +16,6 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Environment.Variable;
-import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.FileUtils;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,9 +30,17 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-
 import java.text.MessageFormat;
 import java.util.Collection;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
+import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Run a Progress procedure.
@@ -391,7 +390,10 @@ public class PCTRun extends PCT implements IRunAttributes {
         task.createArg().setValue("-d");
         task.createArg().setValue(xcodeDir.getAbsolutePath());
         task.createArg().setValue(initProc.getName());
+        // Just to redirect output and not display it
+        task.setOutputproperty("xcodeout" + xcodeID);
 
+        log("xcoding init procedure...", Project.MSG_VERBOSE);
         task.execute();
     }
 
@@ -898,56 +900,20 @@ public class PCTRun extends PCT implements IRunAttributes {
      * Delete temporary files if debug not activated
      */
     protected void cleanup() {
-        if (!runAttributes.isDebugPCT()) {
-            if ((initProc != null) && initProc.exists() && !initProc.delete()) {
-                log(MessageFormat
-                        .format(Messages.getString("PCTRun.5"), initProc.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-
-            if ((status != null) && status.exists() && !status.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTRun.5"), status.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-            if ((outputStream != null) && outputStream.exists() && !outputStream.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTRun.5"), outputStream.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-            if ((profilerParamFile != null) && profilerParamFile.exists()
-                    && !profilerParamFile.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTRun.5"), profilerParamFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-            if (runAttributes.getOutputParameters() != null) {
-                for (OutputParameter param : runAttributes.getOutputParameters()) {
-                    if ((param.getTempFileName() != null)
-                            && (param.getTempFileName().exists() && !param.getTempFileName()
-                                    .delete())) {
-                        log(MessageFormat
-                                .format(Messages.getString("PCTRun.5"), param.getTempFileName().getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-                    }
-                }
-            }
-            if (runAttributes.getXCodeInit()) {
-                if (!new File(xcodeDir, initProc.getName()).delete()) {
-                    log("Unable to delete xcode'd procedure"); //$NON-NLS-1$
-                }
-                if (!xcodeDir.delete()) {
-                    log("Unable to delete xcode temp directory"); //$NON-NLS-1$
-                }
-            }
+        // Always delete pct.pl, even in debugPCT mode
+        if (pctLib != null) {
+            deleteFile(pctLib);
         }
-        // pct.pl is always deleted
-        if ((pctLib != null) && pctLib.exists()) {
-            if (pctLib.isDirectory()) {
-                try {
-                    deleteDirectory(pctLib);
-                } catch (IOException uncaught) {
+        if (runAttributes.isDebugPCT())
+            return;
 
-                }
-            } else {
-                if (!pctLib.delete()) {
-                    log(MessageFormat.format(
-                            Messages.getString("PCTRun.5"), pctLib.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
-                }
-            }
+        deleteFile(initProc);
+        deleteFile(status);
+        deleteFile(outputStream);
+        deleteFile(profilerParamFile);
+        for (OutputParameter param : runAttributes.getOutputParameters()) {
+            deleteFile(param.getTempFileName());
         }
+        deleteFile(xcodeDir);
     }
 }
