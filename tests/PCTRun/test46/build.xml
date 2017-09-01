@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test46">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="src" />
+    <PCTXCode destDir="src" dlcHome="${DLC}">
+      <fileset dir="src-clear" includes="test.p" />
+    </PCTXCode>
+  </target>
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+      <Option name="-rr" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}" xCodeInit="true">
+      <Option name="-rr" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}">
+      <Option name="-rx" />
+    </PCTRun>
+  </target>
+
+  <target name="test4">
+    <PCTRun graphicalMode="false" procedure="src/test.p" dlcHome="${DLC}" xCodeInit="true">
+      <Option name="-rx" />
+    </PCTRun>
+  </target>
+
+</project>
