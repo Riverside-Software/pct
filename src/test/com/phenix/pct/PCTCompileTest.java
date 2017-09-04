@@ -929,13 +929,18 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
-    public void test58() {
+    public void test58() throws IOException {
         configureProject(BASEDIR + "test58/build.xml");
         executeTarget("db");
         executeTarget("build");
         assertTrue(new File(BASEDIR + "test58/build1/file1.r").exists());
         assertTrue(new File(BASEDIR + "test58/build1/dir1/file2.r").exists());
         assertTrue(new File(BASEDIR + "test58/build1/dir1/file3.r").exists());
+        // Make sure there are two warnings, and each warning is on a single line
+        // As promsgs 4788 contains %r
+        File warnings = new File(BASEDIR + "test58/build1/.pct/file1.p.warnings");
+        assertTrue(warnings.exists());
+        assertEquals(Files.readLines(warnings, Charset.defaultCharset()).size(), 2);
         expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
         expectLog("test-de-1", new String[] { "DE1-DE1", "7", "DE2-DE2", "7"});
         expectLog("test-fr-2", new String[] { "FR1-FR1-FR1", "14", "FR2-FR2-FR2", "14"});
