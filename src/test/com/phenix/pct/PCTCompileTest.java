@@ -929,7 +929,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
-    public void test58() {
+    public void test58() throws IOException {
         configureProject(BASEDIR + "test58/build.xml");
         executeTarget("db");
         executeTarget("build");
@@ -940,6 +940,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLog("test-de-1", new String[] { "DE1-DE1", "7", "DE2-DE2", "7"});
         expectLog("test-fr-2", new String[] { "FR1-FR1-FR1", "14", "FR2-FR2-FR2", "14"});
         expectLog("test-de-2", new String[] { "DE1-DE1-DE1", "14", "DE2-DE2-DE2", "14"});
+
+        // Warning 4788 is only generated in version 11+, not on v10
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMajorVersion() < 11)
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        // Make sure there are two warnings, and each warning is on a single line
+        // As promsgs 4788 contains %r
+        File warnings = new File(BASEDIR + "test58/build1/.pct/file1.p.warnings");
+        assertTrue(warnings.exists());
+        assertEquals(Files.readLines(warnings, Charset.defaultCharset()).size(), 2);
     }
 
     @Test(groups = {"v10"})
