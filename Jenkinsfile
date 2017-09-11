@@ -62,6 +62,7 @@ stage('Sonar') {
 }
 
 def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
+ stage(nodeName + '--' + dlcVersion) {
   node(nodeName) {
     ws {
       deleteDir()
@@ -79,6 +80,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       }
     }
   }
+ }
 }
 
 // see https://issues.jenkins-ci.org/browse/JENKINS-31924
