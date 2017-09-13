@@ -169,6 +169,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setXCodeInit(boolean xcode) {
+        options.setXCodeInit(xcode);
+    }
+
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         options.setCompileUnderscore(compUnderscore);
     }
@@ -609,22 +614,16 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     protected void cleanup() {
-        if (!pctLib.isDirectory()) {
-            pctLib.delete();
-        } else {
-            try {
-                deleteDirectory(pctLib);
-            } catch (IOException uncaught) {
-                log(Messages.getString("PCTBgRun.4"), uncaught, Project.MSG_INFO);
-            }
+        // Always delete pct.pl, even in debugPCT mode
+        if (pctLib != null) {
+            deleteFile(pctLib);
         }
-        initProc.delete();
-        for (File f : profilerParams) {
-            if (!f.delete()) {
-                log(MessageFormat
-                        .format(Messages.getString("PCTRun.5"), f.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
+        if (options.isDebugPCT())
+            return;
 
+        deleteFile(initProc);
+        for (File f : profilerParams) {
+            deleteFile(f);
         }
     }
 

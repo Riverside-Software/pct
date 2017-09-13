@@ -75,6 +75,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean noErrorOnQuit = false;
     private boolean superInit = true;
     private File output;
+    private boolean xCodeInit = false;
 
     public GenericExecuteOptions(Task parent) {
         this.parent = parent;
@@ -304,6 +305,11 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
+    public void setXCodeInit(boolean xcode) {
+        this.xCodeInit = xcode;
+    }
+
+    @Override
     public void setMainCallback(String mainCallback) {
         this.mainCallback = mainCallback;
     }
@@ -440,6 +446,10 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public String getProcedure() {
         return procedure;
+    }
+
+    public boolean getXCodeInit() {
+        return xCodeInit;
     }
 
     public File getAssemblies() {

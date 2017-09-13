@@ -16,6 +16,20 @@
  */
 package com.phenix.pct;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.DefaultLogger;
@@ -28,20 +42,6 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PatternSet;
 
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
@@ -627,82 +627,35 @@ public abstract class PCT extends Task {
      * @param directory directory to delete
      * @throws IOException in case deletion is unsuccessful
      */
-    protected static void deleteDirectory(File directory) throws IOException {
+    protected void deleteDirectory(File directory) {
+        if (directory == null)
+            return;
         if (!directory.exists()) {
             return;
         }
 
-        cleanDirectory(directory);
+        for (File f : directory.listFiles()) {
+            deleteFile(f);
+        }
+        try {
+            Files.deleteIfExists(directory.toPath());
+        } catch (IOException caught) {
+            log(MessageFormat.format(Messages.getString("PCTRun.5"), directory.getAbsolutePath()),
+                    Project.MSG_VERBOSE);
 
-        if (!directory.delete()) {
-            String message = "Unable to delete directory " + directory + ".";
-            throw new IOException(message);
         }
     }
 
-    /**
-     * Cleans a directory without deleting it.
-     * 
-     * @param directory directory to clean
-     * @throws IOException in case cleaning is unsuccessful
-     */
-    private static void cleanDirectory(File directory) throws IOException {
-        if (!directory.exists()) {
-            String message = directory + " does not exist";
-            throw new IllegalArgumentException(message);
-        }
-
-        if (!directory.isDirectory()) {
-            String message = directory + " is not a directory";
-            throw new IllegalArgumentException(message);
-        }
-
-        File[] files = directory.listFiles();
-        if (files == null) { // null if security restricted
-            throw new IOException("Failed to list contents of " + directory);
-        }
-
-        IOException exception = null;
-        for (int zz = 0; zz < files.length; zz++) {
-            try {
-                forceDelete(files[zz]);
-            } catch (IOException ioe) {
-                exception = ioe;
-            }
-        }
-
-        if (null != exception) {
-            throw exception;
-        }
-    }
-
-    /**
-     * Deletes a file. If file is a directory, delete it and all sub-directories.
-     * <p>
-     * The difference between File.delete() and this method are:
-     * <ul>
-     * <li>A directory to be deleted does not have to be empty.</li>
-     * <li>You get exceptions when a file or directory cannot be deleted. (java.io.File methods
-     * returns a boolean)</li>
-     * </ul>
-     * 
-     * @param file file or directory to delete, must not be <code>null</code>
-     * @throws NullPointerException if the directory is <code>null</code>
-     * @throws FileNotFoundException if the file was not found
-     * @throws IOException in case deletion is unsuccessful
-     */
-    private static void forceDelete(File file) throws IOException {
-        if (file.isDirectory()) {
+    protected void deleteFile(File file) {
+        if (file == null)
+            return;
+        if (file.isDirectory())
             deleteDirectory(file);
-        } else {
-            boolean filePresent = file.exists();
-            if (!file.delete()) {
-                if (!filePresent) {
-                    throw new FileNotFoundException("File does not exist: " + file);
-                }
-                String message = "Unable to delete file: " + file;
-                throw new IOException(message);
-            }
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException caught) {
+            log(MessageFormat.format(Messages.getString("PCTRun.5"), file.getAbsolutePath()),
+                    Project.MSG_VERBOSE);
         }
     }
 

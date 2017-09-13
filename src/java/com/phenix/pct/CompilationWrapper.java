@@ -472,6 +472,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setXCodeInit(boolean xcode) {
+        throw new BuildException("Can't set XCodeInit attribute here");
+    }
+
+    @Override
     public void setParameter(String param) {
         throw new BuildException("Can't set parameter attribute here");
     }
