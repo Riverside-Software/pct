@@ -126,6 +126,9 @@ DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
+DEFINE VARIABLE bAbove101 AS LOGICAL NO-UNDO INITIAL TRUE.
+ASSIGN bAbove101 = (DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GT 10.1).
+
 PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipName  AS CHARACTER NO-UNDO.
   DEFINE INPUT PARAMETER ipValue AS CHARACTER NO-UNDO.
@@ -515,10 +518,12 @@ PROCEDURE compileXref.
     IF COMPILER:WARNING OR lWarnings THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
-        /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
-        IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
-          IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
-            PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), REPLACE(COMPILER:GET-MESSAGE(i), '~n', ' '), COMPILER:GET-FILE-NAME(i)) SKIP.
+        IF bAbove101 THEN DO:
+          /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
+          IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
+            IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
+              PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", COMPILER:GET-ROW(i), REPLACE(COMPILER:GET-MESSAGE(i), '~n', ' '), COMPILER:GET-FILE-NAME(i)) SKIP.
+            END.
           END.
         END.
       END.
@@ -537,15 +542,15 @@ PROCEDURE compileXref.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
       IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
       FIND ttErrors WHERE ttErrors.fileName EQ COMPILER:GET-FILE-NAME(i)
-                      AND ttErrors.rowNum   EQ COMPILER:GET-ROW(i)
-                      AND ttErrors.colNum   EQ COMPILER:GET-COLUMN(i)
+                      AND ttErrors.rowNum   EQ (IF bAbove101 THEN COMPILER:GET-ROW(i) ELSE COMPILER:GET-ERROR-ROW(i))
+                      AND ttErrors.colNum   EQ (IF bAbove101 THEN COMPILER:GET-COLUMN(i) ELSE COMPILER:GET-ERROR-COLUMN(i))
                     NO-ERROR.
       IF NOT AVAILABLE ttErrors THEN DO:
         CREATE ttErrors.
         ASSIGN ttErrors.intNum   = i
                ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
-               ttErrors.rowNum   = COMPILER:GET-ROW(i)
-               ttErrors.colNum   = COMPILER:GET-COLUMN(i).
+               ttErrors.rowNum   = (IF bAbove101 THEN COMPILER:GET-ROW(i) ELSE COMPILER:GET-ERROR-ROW(i))
+               ttErrors.colNum   = (IF bAbove101 THEN COMPILER:GET-COLUMN(i) ELSE COMPILER:GET-ERROR-COLUMN(i)).
       END.
       ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
