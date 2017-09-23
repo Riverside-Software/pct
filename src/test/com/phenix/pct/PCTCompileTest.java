@@ -1013,41 +1013,41 @@ public class PCTCompileTest extends BuildFileTestNg {
         List<String> rexp = new ArrayList<>();
         rexp.add("PCTCompile - Progress Code Compiler");
         rexp.add("Error compiling file 'src/dir1/test1.p' \\.\\.\\.");
-        rexp.add(" \\.\\.\\. in main file.*");
+        rexp.add(" \\.\\.\\. in main file at line 3.*");
         expectLogRegexp("test1", rexp, false);
 
         rexp.clear();
         rexp.add("PCTCompile - Progress Code Compiler");
         rexp.add("Error compiling file 'src/dir1/test2.p' \\.\\.\\.");
-        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line 3.*");
         expectLogRegexp("test2", rexp, false);
 
         rexp.clear();
         rexp.add("PCTCompile - Progress Code Compiler");
         rexp.add("Error compiling file 'src/dir1/test3.p' \\.\\.\\.");
-        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line .*");
+        rexp.add(" \\.\\.\\. in file 'src/dir1/test2.i' at line 3.*");
         rexp.add(".*");
         rexp.add(".*");
         rexp.add(".*");
         rexp.add(".*");
-        rexp.add(" \\.\\.\\. in main file.*");
+        rexp.add(" \\.\\.\\. in main file at line 4.*");
         expectLogRegexp("test3", rexp, false);
 
         rexp.clear();
         rexp.add("PCTCompile - Progress Code Compiler");
         rexp.add("Error compiling file 'src/dir1/test4.p' \\.\\.\\.");
-        rexp.add(" \\.\\.\\. in file 'src/rssw/pct/TestClass.cls' at line .*");
+        rexp.add(" \\.\\.\\. in file 'src/rssw/pct/TestClass.cls' at line 2.*");
         rexp.add(".*");
         rexp.add(".*");
         rexp.add(".*");
         rexp.add(".*");
-        rexp.add(" \\.\\.\\. in main file.*");
+        rexp.add(" \\.\\.\\. in main file at line 2.*");
         expectLogRegexp("test4", rexp, false);
 
         rexp.clear();
         rexp.add("PCTCompile - Progress Code Compiler");
         rexp.add("Error compiling file 'rssw/pct/TestClass2.cls' \\.\\.\\.");
-        rexp.add(" \\.\\.\\. in main file at line .*");
+        rexp.add(" \\.\\.\\. in main file at line 2.*");
         expectLogRegexp("test5", rexp, false);
     }
 
