@@ -77,7 +77,12 @@ public class ClassCompilationUnit {
 
     public void classToXML(File out) throws JAXBException, IOException {
         try (FileOutputStream fos = new FileOutputStream(out)) {
-            JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName());
+            JAXBContext context = JAXBContext.newInstance(AccessModifier.class,
+                    ClassCompilationUnit.class, Constructor.class, Dataset.class, EnumMember.class,
+                    Event.class, Function.class, GetSetModifier.class, Method.class,
+                    Parameter.class, ParameterMode.class, Procedure.class,
+                    ProcedureCompilationUnit.class, Property.class, TableField.class,
+                    TableIndex.class, TempTable.class, Using.class, UsingType.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(this, fos);

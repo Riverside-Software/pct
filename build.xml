@@ -291,7 +291,6 @@
       <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
-        <include name="eu/rssw/rcode/jaxb.index" />
         <include name="za/co/mip/ablduck/resources/ablduck.zip" />
       </fileset>
       <zipfileset src="lib/gson-2.2.4.jar" />
