@@ -154,7 +154,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
-                p.mode = parameter.mode.toString();
+                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
 
                 String paramComment = commentParseResult.getParameterComments().get(parameter.name);
                 if (paramComment != null)
@@ -231,7 +231,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
-                p.mode = parameter.mode.toString();
+                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
 
                 String paramComment = commentParseResult.getParameterComments().get(parameter.name);
                 if (paramComment != null)
@@ -341,7 +341,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
                 p.name = parameter.name;
                 p.datatype = parameter.dataType;
-                p.mode = parameter.mode.toString();
+                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
 
                 String paramComment = commentParseResult.getParameterComments().get(parameter.name);
                 if (paramComment != null)
