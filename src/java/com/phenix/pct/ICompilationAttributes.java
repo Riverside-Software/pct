@@ -114,6 +114,16 @@ public interface ICompilationAttributes {
     void setv6Frame(boolean v6Frame);
 
     /**
+     * Enables USE-REVVIDEO attribute in COMPILE statement
+     */
+    void setUseRevvideo(boolean useRevvideo);
+
+    /**
+     * Enables USE-UNDERLINE attribute in COMPILE statement
+     */
+    void setUseUnderline(boolean useUnderline);
+
+    /**
      * Generates a .xref in the .pct directory, result of XREF option in the COMPILE statement
      */
     void setKeepXref(boolean keepXref);

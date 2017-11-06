@@ -223,6 +223,10 @@ public class PCTCompile extends PCTRun {
                 bw.write("V6FRAME=1");
                 bw.newLine();
             }
+            bw.write("USEREVVIDEO=" + (compAttrs.isUseRevvideo() ? 1 : 0));
+            bw.newLine();
+            bw.write("USEUNDERLINE=" + (compAttrs.isUseUnderline() ? 1 : 0));
+            bw.newLine();
             bw.write("SAVER=" + (compAttrs.isSaveR() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));

@@ -44,6 +44,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean multiCompile = false;
     private boolean streamIO = false;
     private boolean v6Frame = false;
+	private boolean useRevvideo = false;
+	private boolean useUnderline = false;
     private boolean stringXref = false;
     private boolean appendStringXref = false;
     private boolean saveR = true;
@@ -155,6 +157,16 @@ public class CompilationAttributes implements ICompilationAttributes {
     @Override
     public void setv6Frame(boolean v6Frame) {
         this.v6Frame = v6Frame;
+    }
+
+    @Override
+    public void setUseRevvideo(boolean useRevvideo) {
+        this.useRevvideo = useRevvideo;
+    }
+
+    @Override
+    public void setUseUnderline(boolean useUnderline) {
+        this.useUnderline = useUnderline;
     }
 
     @Override
@@ -306,6 +318,14 @@ public class CompilationAttributes implements ICompilationAttributes {
     public boolean isV6Frame() {
         return v6Frame;
     }
+	
+	public boolean isUseRevvideo(){
+		return useRevvideo;
+	}
+	
+	public boolean isUseUnderline(){
+		return useUnderline;
+	}
 
     public boolean isStringXref() {
         return stringXref;
