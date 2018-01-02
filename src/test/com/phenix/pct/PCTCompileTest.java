@@ -44,12 +44,6 @@ import java.util.List;
 public class PCTCompileTest extends BuildFileTestNg {
     private static final String BASEDIR = "PCTCompile/";
 
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
-    public void test1() {
-        configureProject(BASEDIR + "test1/build.xml");
-        executeTarget("test");
-    }
-
     @Test(groups = {"v10"})
     public void test2() {
         configureProject(BASEDIR + "test2/build.xml");
@@ -1064,6 +1058,22 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test64/build2/.dbg/file1.p").exists());
         expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
         expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+    }
+
+    @Test(groups = {"v10"})
+    public void test65() {
+        // Test without destDir
+        configureProject(BASEDIR + "test65/build.xml");
+        executeTarget("init");
+        executeTarget("build");
+        
+        assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
+        assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
+        assertTrue(new File(BASEDIR + "test65/c/src/c/c.r").exists());
+        
+        assertFalse(new File(BASEDIR + "test65/b/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/b/b.r").exists());
     }
 
     @Test(groups = {"v10", "win"})

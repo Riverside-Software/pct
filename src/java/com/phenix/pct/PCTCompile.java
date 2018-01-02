@@ -168,8 +168,10 @@ public class PCTCompile extends PCTRun {
         try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUTDIR=" + compAttrs.getDestDir().getAbsolutePath()); //$NON-NLS-1$
-            bw.newLine();
+            if (compAttrs.getDestDir() != null) {
+                bw.write("OUTPUTDIR=" + compAttrs.getDestDir().getAbsolutePath()); //$NON-NLS-1$
+                bw.newLine();
+            }
             bw.write("PCTDIR=" + compAttrs.getxRefDir().getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
@@ -263,11 +265,7 @@ public class PCTCompile extends PCTRun {
     @Override
     public void execute() {
         // Create dest directory if necessary
-        if (compAttrs.getDestDir() == null) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
-        }
-        if (!createDir(compAttrs.getDestDir())) {
+        if (compAttrs.getDestDir() != null && !createDir(compAttrs.getDestDir())) {
             cleanup();
             throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "destDir")); //$NON-NLS-1$
         }
@@ -287,17 +285,13 @@ public class PCTCompile extends PCTRun {
         }
 
         // If preprocessDir is set, then preprocess is always set to true
-        if (compAttrs.getPreprocessDir() != null) {
-            if (!createDir(compAttrs.getPreprocessDir())) {
-                cleanup();
-                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "preprocessDir")); //$NON-NLS-1$
-            }
+        if (compAttrs.getPreprocessDir() != null && !createDir(compAttrs.getPreprocessDir())) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "preprocessDir")); //$NON-NLS-1$
         }
-        if (compAttrs.getDebugListingDir() != null) {
-            if (!createDir(compAttrs.getDebugListingDir())) {
-                cleanup();
-                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
-            }
+        if (compAttrs.getDebugListingDir() != null && !createDir(compAttrs.getDebugListingDir())) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
         }
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="PCTCompile-test64" default="build" >
+
+    <taskdef resource="PCT.properties" />
+
+    <path id="PCTPropath">
+        <pathelement path="a/src" />
+        <pathelement path="b/src" />
+        <pathelement path="c/src" />
+    </path>
+
+    <target name="init" description="Initialize" >
+    </target>
+
+    <target name="clean" description="Delete ALL workspace r-code" >
+        <delete>
+            <fileset dir="." includes="**/*.r" />
+        </delete>
+    </target>
+
+    <macrodef name="compiledir">
+      <attribute name="sourcedir"/>
+      <element name="sourceset"/>
+      <sequential>
+        <PCTCompile
+            graphicalMode="false" dlcHome="${DLC}"
+            stackSize="500"
+            multiCompile="false"
+            relativePaths="true"
+          >
+        <fileset dir="@{sourcedir}">
+            <include name="**/*.cls" />
+        </fileset>
+          <propath refid="PCTPropath" />
+        </PCTCompile>
+      </sequential>
+  </macrodef>
+
+    <extension-point name="build" description="build"/>
+
+    <target name="build_a" depends="clean" extensionOf="build">
+        <compiledir sourcedir="a/src" />
+    </target>
+
+    <target name="build_b" depends="build_a" extensionOf="build">
+        <compiledir sourcedir="b/src" />
+    </target>
+
+    <target name="build_c" depends="build_b" extensionOf="build">
+        <compiledir sourcedir="c/src" />
+    </target>
+
+</project>
