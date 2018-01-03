@@ -159,6 +159,9 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return date;
     }
 
+    /**
+     * @returns "Bitness" of rcode, valid until v10.x
+     */
     public boolean is64bits() {
         return arch;
     }
