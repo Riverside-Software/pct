@@ -16,18 +16,9 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.Mapper;
-import org.apache.tools.ant.types.Resource;
-import org.apache.tools.ant.types.ResourceCollection;
-import org.apache.tools.ant.types.resources.FileResource;
-import org.apache.tools.ant.util.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Mapper;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.resources.FileResource;
+import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Class for compiling Progress procedures
@@ -50,10 +50,16 @@ public class PCTBgCompile extends PCTBgRun {
     private int compOk = 0;
     private int compNotOk = 0;
     private int compSkipped = 0;
+    // Internal use
+    private int compId = -1;
+    private File compDir = null;
 
     public PCTBgCompile() {
         super();
         compAttrs = new CompilationAttributes(this);
+
+        compId = PCT.nextRandomInt();
+        compDir = new File(System.getProperty("java.io.tmpdir"), "pctcomp" + compId);
     }
 
     /**
@@ -95,6 +101,11 @@ public class PCTBgCompile extends PCTBgRun {
             throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
         }
 
+        if (compDir.exists() || !compDir.mkdirs()) {
+            this.cleanup();
+            throw new BuildException("Unable to create temp directory for compile procedure");
+        }
+
         // Test output directory
         if (compAttrs.getDestDir().exists()) {
             if (!compAttrs.getDestDir().isDirectory()) {
@@ -133,6 +144,8 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         initializeCompilationUnits();
+        compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
+        getOptions().addPropath(new Path(getProject(), compDir.getAbsolutePath()));
 
         try {
             super.execute();
@@ -212,6 +225,15 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         return worker;
+    }
+
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+
+        if (getOptions().isDebugPCT())
+            return;
+        deleteFile(compDir);
     }
 
     public class CompilationBackgroundWorker extends BackgroundWorker {

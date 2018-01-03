@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -45,6 +46,8 @@ public class PCTCompile extends PCTRun {
     private CompilationAttributes compAttrs;
 
     // Internal use
+    private int compId = -1;
+    private File compDir = null;
     private int fsListId = -1;
     private File fsList = null;
     private int paramsId = -1;
@@ -60,8 +63,10 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
+        compId = PCT.nextRandomInt();
         fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty(PCT.TMPDIR), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        compDir = new File(System.getProperty(PCT.TMPDIR), "pctcomp" + compId); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -291,6 +296,11 @@ public class PCTCompile extends PCTRun {
             throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "destDir")); //$NON-NLS-1$
         }
 
+        if (compDir.exists() || !compDir.mkdirs()) {
+            this.cleanup();
+            throw new BuildException("Unable to create temp directory for compile procedure");
+        }
+
         // Test xRef directory
         if (compAttrs.getxRefDir() == null) {
             compAttrs.setXRefDir(new File(compAttrs.getDestDir(), ".pct")); //$NON-NLS-1$
@@ -345,8 +355,10 @@ public class PCTCompile extends PCTRun {
         checkDlcHome();
 
         try {
+            compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
             writeFileList();
             writeParams();
+            runAttributes.addPropath(new Path(getProject(), compDir.getAbsolutePath()));
             runAttributes.setProcedure(this.getProgressProcedures().getCompileProcedure());
             runAttributes.setParameter(params.getAbsolutePath());
             super.execute();
@@ -365,5 +377,6 @@ public class PCTCompile extends PCTRun {
             return;
         deleteFile(fsList);
         deleteFile(params);
+        deleteFile(compDir);
     }
 }
