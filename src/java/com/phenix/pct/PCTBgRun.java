@@ -53,8 +53,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     private int numThreads = 1;
     private GenericExecuteOptions options;
     
-    // Internal use : socket communication
-    private int port;
     // Internal use : throw BuildException
     private boolean buildException;
     private Throwable buildExceptionSource;
@@ -388,8 +386,9 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      * @throws BuildException Something went wrong
      */
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         ListenerThread listener = null;
+        int port = 0;
         checkDlcHome();
         if (options.getProfiler() != null)
             options.getProfiler().validate(true);
@@ -402,14 +401,14 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         try {
             listener = new ListenerThread();
             listener.start();
-            this.port = listener.getLocalPort();
+            port = listener.getLocalPort();
         } catch (IOException ioe) {
             cleanup();
             throw new BuildException(ioe);
         }
 
         // Each thread needs to know the port number of master server
-        options.addParameter(new RunParameter("portNumber", Integer.toString(this.port))); //$NON-NLS-1$
+        options.addParameter(new RunParameter("portNumber", Integer.toString(port))); //$NON-NLS-1$
 
         this.preparePropath();
 
@@ -444,8 +443,9 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             // Waiting for listener thread to stop
             listener.join();
         } catch (InterruptedException ie) {
-            this.cleanup();
             throw new BuildException(ie);
+        } finally {
+            cleanup();
         }
 
         if (buildException) {
@@ -497,7 +497,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                 PFReader reader = new PFReader(new FileInputStream(options.getParamFile()));
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
-            } catch (IOException caught) {
+            } catch (IOException uncaught) {
 
             }
         }
@@ -572,7 +572,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             }
             bw.write("-DESCRIPTION \"" + options.getProfiler().getDescription() + "\"");
             bw.newLine();
-            bw.close();
         } catch (IOException caught) {
             throw new BuildException(caught);
         }

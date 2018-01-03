@@ -820,8 +820,8 @@ public class PCTRun extends PCT implements IRunAttributes {
                             System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
-                            .getOutputParameterCall(), new Object[]{param.getProgressVar(),
-                            escapeString(tmpFile.getAbsolutePath())}));
+                            .getOutputParameterCall(), param.getProgressVar(),
+                            escapeString(tmpFile.getAbsolutePath())));
                 }
             }
             // Quit
@@ -829,11 +829,9 @@ public class PCTRun extends PCT implements IRunAttributes {
 
             // Private procedures
             bw.write(MessageFormat.format(this.getProgressProcedures().getReturnProc(),
-                    new Object[]{escapeString(status.getAbsolutePath())}));
+                    escapeString(status.getAbsolutePath())));
             bw.write(MessageFormat.format(this.getProgressProcedures().getOutputParameterProc(),
                     new Object[]{}));
-
-            bw.close();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }

@@ -19,7 +19,7 @@ package com.phenix.pct;
 import java.util.StringTokenizer;
 
 public class QuotedStringTokenizer extends StringTokenizer {
-    private String _quote = "\"";
+    private String quote = "\"";
     private String delimiters = " \t\n\r\f";
 
     public QuotedStringTokenizer(String str) {
@@ -34,9 +34,10 @@ public class QuotedStringTokenizer extends StringTokenizer {
     public QuotedStringTokenizer(String str, String delim, String quote) {
         super(str, delim, true);
         this.delimiters = delim;
-        this._quote = quote;
+        this.quote = quote;
     }
 
+    @Override
     public String nextToken() {
         String nextToken = super.nextToken();
         String nextDelimiter = null;
@@ -47,10 +48,10 @@ public class QuotedStringTokenizer extends StringTokenizer {
             nextToken = super.nextToken();
         }
 
-        if ((this._quote != null) && (nextToken.startsWith(this._quote))
-                && (!nextToken.endsWith(this._quote))) {
+        if ((this.quote != null) && (nextToken.startsWith(this.quote))
+                && (!nextToken.endsWith(this.quote))) {
             while ((super.hasMoreTokens())
-                    && (!(nextDelimiter = super.nextToken()).endsWith(this._quote))) {
+                    && (!(nextDelimiter = super.nextToken()).endsWith(this.quote))) {
                 nextToken = nextToken + nextDelimiter;
             }
             nextToken = nextToken + nextDelimiter;

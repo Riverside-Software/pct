@@ -266,8 +266,6 @@ public class PCTProxygen extends PCT {
     }
 
     protected void cleanup() {
-        if ((logFile != null) && logFile.exists() && !logFile.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTRun.5"), logFile.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-        }
+        deleteFile(logFile);
     }
 }

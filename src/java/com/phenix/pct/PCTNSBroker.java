@@ -21,10 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.text.MessageFormat;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
@@ -155,8 +153,6 @@ public class PCTNSBroker extends PCTBroker {
             writeDeltaFile();
             Task task = getCmdLineMergeTask(propFile, tmpFile);
             task.execute();
-        } catch (BuildException be) {
-            throw be;
         } finally {
             this.cleanup();
         }
@@ -186,7 +182,6 @@ public class PCTNSBroker extends PCTBroker {
                     bw.println("workDir=" + this.workDir);
 
             }
-            bw.close();
         } catch (IOException caught) {
             throw new BuildException("Unable to create temp file", caught);
         }
@@ -234,12 +229,7 @@ public class PCTNSBroker extends PCTBroker {
     }
 
     private void cleanup() {
-        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
-            log(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmpFile.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
-        }
+        deleteFile(tmpFile);
     }
 
 }

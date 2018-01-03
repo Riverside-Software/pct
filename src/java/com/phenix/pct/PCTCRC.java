@@ -44,13 +44,14 @@ public class PCTCRC extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (this.destFile == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$
         }
 
-        if (runAttributes.getAllDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCRC.1")); //$NON-NLS-1$
         }

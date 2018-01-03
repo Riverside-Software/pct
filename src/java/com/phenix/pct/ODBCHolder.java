@@ -23,10 +23,12 @@ public class ODBCHolder extends SchemaHolder {
     private String user;
     private String password;
     
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
     }

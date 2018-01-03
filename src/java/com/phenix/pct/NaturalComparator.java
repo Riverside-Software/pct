@@ -83,9 +83,5 @@ public class NaturalComparator extends ResourceComparator {
 
         return s1Length - s2Length;
     }
-    
-    public static void main(String[] args) {
-        NaturalComparator comp = new NaturalComparator();
-        System.out.println("Comp : " + comp.compareNatural2("foo400a", "foo400b"));
-    }
+
 }

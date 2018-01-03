@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -78,7 +77,7 @@ public class OEUnit extends PCTRun {
     }
 
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         // Validation
         if (testFilesets == null)
             throw new BuildException("You must set a fileset (testFilesets).");
@@ -124,10 +123,9 @@ public class OEUnit extends PCTRun {
     @Override
     protected void cleanup() {
         super.cleanup();
-        // Clean Test list file
-        if (!getDebugPCT() && testFilesList.exists() && !testFilesList.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.42"),
-                    testFilesList.getAbsolutePath()), Project.MSG_INFO);
-        }
+
+        if (getDebugPCT())
+            return;
+        deleteFile(testFilesList);
     }
 }

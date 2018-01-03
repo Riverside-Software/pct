@@ -225,6 +225,7 @@ public class PCTLibrary extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
+    @Override
     public void execute() {
         ExecTask exec;
 
@@ -408,7 +409,7 @@ public class PCTLibrary extends PCT {
      * @param fs FileSet to be written
      * @throws BuildException
      */
-    private void writeFileList(FileSet fs) throws BuildException {
+    private void writeFileList(FileSet fs) {
         try (FileWriter fw = new FileWriter(tmpFile); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("-replace ");
 
@@ -418,7 +419,6 @@ public class PCTLibrary extends PCT {
                 // check not including the pl itself in the pl
                 File resourceAsFile = new File(fs.getDir(getProject()), str);
                 if (resourceAsFile.equals(destFile)) {
-                    bw.close();
                     throw new BuildException(Messages.getString("PCTLibrary.3"));
                 }
 
@@ -480,12 +480,9 @@ public class PCTLibrary extends PCT {
      * Delete temporary files if debug not activated
      */
     protected void cleanup() {
-        if (!debugPCT) {
-            if ((tmpFile != null) && tmpFile.exists() && !tmpFile.delete()) {
-                log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
-                        tmpFile.getAbsolutePath()), Project.MSG_VERBOSE);
-            }
-        }
+        if (debugPCT)
+            return;
+        deleteFile(tmpFile);
     }
 
 }

@@ -94,7 +94,7 @@ public class PCTCompile extends PCTRun {
     /**
      * Generates text file with all files from resource collections
      */
-    private void writeFileList() throws BuildException {
+    private void writeFileList() {
         // Map to quickly retrieve files associated with a base dir
         Map<String, List<String>> files = new HashMap<>();
         // And a list to keep order
@@ -159,7 +159,7 @@ public class PCTCompile extends PCTRun {
     /**
      * Generates parameter file for pct/compile.p
      */
-    private void writeParams() throws BuildException {
+    private void writeParams() {
         try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
@@ -275,7 +275,8 @@ public class PCTCompile extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         // Create dest directory if necessary
         if (compAttrs.getDestDir() == null) {
             cleanup();
@@ -356,16 +357,9 @@ public class PCTCompile extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        if (!getDebugPCT()) {
-            if (fsList.exists() && !fsList.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), fsList.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-
-            if (params.exists() && !params.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), params.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-        }
+        if (getDebugPCT())
+            return;
+        deleteFile(fsList);
+        deleteFile(params);
     }
 }

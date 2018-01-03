@@ -117,6 +117,7 @@ public class PCTDumpIncremental extends PCTRun {
         renameFile = file;
     }
 
+    @Override
     public void addDBConnection(PCTConnection dbConn) {
         throw new BuildException(
                 "DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
@@ -125,6 +126,7 @@ public class PCTDumpIncremental extends PCTRun {
     /**
      * @deprecated
      */
+    @Override
     public void addPCTConnection(PCTConnection dbConn) {
         log("PCTConnection is deprecrated. Use sourceDb and targetDb instead", Project.MSG_INFO);
         super.addDBConnection(dbConn);
@@ -153,7 +155,8 @@ public class PCTDumpIncremental extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if ((sourceDB != null) && (targetDB != null)) {
             super.addDBConnection(sourceDB);
             super.addDBConnection(targetDB);
@@ -208,7 +211,7 @@ public class PCTDumpIncremental extends PCTRun {
      * @return boolean
      */
     private boolean aliasDefined(String aliasName) {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             return false;
         }
 

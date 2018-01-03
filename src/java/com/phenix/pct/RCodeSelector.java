@@ -16,13 +16,12 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.selectors.BaseExtendSelector;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.text.MessageFormat;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
 /**
  * Selector for rcode
@@ -55,6 +54,7 @@ public class RCodeSelector extends BaseExtendSelector {
         this.lib = lib;
     }
 
+    @Override
     public void verifySettings() {
         super.verifySettings();
 
@@ -80,7 +80,7 @@ public class RCodeSelector extends BaseExtendSelector {
      * 
      * @return whether the file should be selected or not
      */
-    public boolean isSelected(File basedir, String filename, File file) throws BuildException {
+    public boolean isSelected(File basedir, String filename, File file) {
         validate();
 
         RCodeInfo file1, file2;

@@ -28,7 +28,7 @@ public class DlcHome extends Task {
     private File value = null;
 
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         if (value == null)
             throw new BuildException("Value can't be null");
         getProject().setProperty(GLOBAL_DLCHOME, value.getAbsolutePath());

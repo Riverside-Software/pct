@@ -42,8 +42,9 @@ public class PCTLoadUsers extends PCTRun {
      *
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+    @Override
+    public void execute() {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }

@@ -42,13 +42,14 @@ public class PCTSchemaDoc extends PCTRun {
      * 
      * @throws BuildException If attributes are not valid
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (this.destFile == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.0")); //$NON-NLS-1$
         }
 
-        if (runAttributes.getAllDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.1")); //$NON-NLS-1$
         }

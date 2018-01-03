@@ -129,7 +129,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         // Checking xcode and (listing || preprocess) attributes -- They're mutually exclusive
         if (compAttrs.isXcode() && (compAttrs.isListing() || compAttrs.isPreprocess())) {
-            log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$ // TODO Update this message
+            log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$
         }
 
         initializeCompilationUnits();
@@ -137,11 +137,11 @@ public class PCTBgCompile extends PCTBgRun {
         try {
             super.execute();
         } finally {
-            log(MessageFormat.format(Messages.getString("PCTCompile.44"), new Object[]{Integer //$NON-NLS-1$
-                    .valueOf(compOk - compSkipped)}));
+            log(MessageFormat.format(Messages.getString("PCTCompile.44"), Integer //$NON-NLS-1$
+                    .valueOf(compOk - compSkipped)));
             if (compNotOk > 0) {
-                log(MessageFormat.format(Messages.getString("PCTCompile.45"), new Object[]{Integer //$NON-NLS-1$
-                        .valueOf(compNotOk)}));
+                log(MessageFormat.format(Messages.getString("PCTCompile.45"), Integer //$NON-NLS-1$
+                        .valueOf(compNotOk)));
             }
         }
     }
@@ -269,7 +269,7 @@ public class PCTBgCompile extends PCTBgRun {
 
         @Override
         public void setCustomOptions(Map<String, String> options) {
-
+            // No-op
         }
 
         private String getOptions() {

@@ -106,7 +106,7 @@ public class PCTXCode extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    private void createDirectories() throws BuildException {
+    private void createDirectories() {
         for (FileSet fs : filesets) {
             for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                 int j = str.replace(File.separatorChar, '/').lastIndexOf('/');
@@ -128,7 +128,8 @@ public class PCTXCode extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
         if (destDir == null) {
             cleanup();
@@ -195,9 +196,6 @@ public class PCTXCode extends PCT {
     }
 
     protected void cleanup() {
-        if (tmpLog.exists() && !tmpLog.delete()) {
-            log(MessageFormat.format(
-                    Messages.getString("PCTXCode.13"), tmpLog.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
-        }
+        deleteFile(tmpLog);
     }
 }
