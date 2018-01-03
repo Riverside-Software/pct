@@ -334,6 +334,7 @@ public abstract class PCT extends Task {
         ps2.createInclude().setName("com.progress.tools.caf.adapter.rest.expose.core_*.jar");
         ps2.createInclude().setName("com.progress.openedge.pdt.restoe_*/lib/1padapters-idl.jar");
         ps2.createInclude().setName("com.progress.tools.caf.runtime_*/lib/rest/expose/1padapters-restExpose.jar");
+        ps2.createInclude().setName("com.progress.tools.caf.runtime_*/lib/framework/lib/log4j/log4j-*.jar");
         ps2.createInclude().setName("com.progress.tools.common.ui.mapper.el_*.jar");
         ps2.createInclude().setName("com.progress.tools.common.ui.mapper_*.jar");
         ps2.createInclude().setName("com.progress.tools.common.ui.el_*.jar");
