@@ -160,4 +160,13 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             }
         }
     }
+
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+
+        if (getDebugPCT())
+            return;
+        deleteFile(templateDir);
+    }
 }
