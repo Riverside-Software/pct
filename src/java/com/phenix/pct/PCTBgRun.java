@@ -543,7 +543,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             }
 
             bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    escapeString(options.getProcedure())));
+                    escapeString(options.getProcedure()), ""));
 
         } catch (IOException ioe) {
             throw new BuildException(ioe);
