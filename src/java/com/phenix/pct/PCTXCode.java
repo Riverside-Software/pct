@@ -53,7 +53,7 @@ public class PCTXCode extends PCT {
         super();
 
         tmpLogId = PCT.nextRandomInt();
-        tmpLog = new File(System.getProperty("java.io.tmpdir"), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tmpLog = new File(System.getProperty(PCT.TMPDIR), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

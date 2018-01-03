@@ -51,6 +51,8 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
  * @version $Revision$
  */
 public abstract class PCT extends Task {
+    public static final String TMPDIR = "java.io.tmpdir";
+
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
     private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$

@@ -95,12 +95,12 @@ public class PCTRun extends PCT implements IRunAttributes {
             profilerOutID = PCT.nextRandomInt();
             xcodeID = PCT.nextRandomInt();
 
-            status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            status = new File(System.getProperty(PCT.TMPDIR), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            initProc = new File(System.getProperty(PCT.TMPDIR), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             profilerParamFile = new File(
-                    System.getProperty("java.io.tmpdir"), "prof" + profilerID + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    System.getProperty(PCT.TMPDIR), "prof" + profilerID + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             // XCode temp directory
-            xcodeDir = new File(System.getProperty("java.io.tmpdir"), "xcode" + xcodeID); 
+            xcodeDir = new File(System.getProperty(PCT.TMPDIR), "xcode" + xcodeID); 
         }
     }
 
@@ -424,7 +424,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             // something.pl as Progress tries to open a procedure library, and miserably fails with
             // error 13.
             pctLib = new File(
-                    System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    System.getProperty(PCT.TMPDIR), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             preparePropath();
             createInitProcedure();
@@ -692,7 +692,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             if (this.getProgressProcedures().needRedirector()) {
                 outputStreamID = PCT.nextRandomInt();
                 outputStream = new File(
-                        System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        System.getProperty(PCT.TMPDIR), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
@@ -817,7 +817,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             if (this.runAttributes.getOutputParameters() != null) {
                 for (OutputParameter param : runAttributes.getOutputParameters()) {
                     File tmpFile = new File(
-                            System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            System.getProperty(PCT.TMPDIR), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
                             .getOutputParameterCall(), param.getProgressVar(),

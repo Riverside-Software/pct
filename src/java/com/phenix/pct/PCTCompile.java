@@ -60,8 +60,8 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        params = new File(System.getProperty(PCT.TMPDIR), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

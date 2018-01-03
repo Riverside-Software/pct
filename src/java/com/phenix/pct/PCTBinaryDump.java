@@ -61,7 +61,7 @@ public class PCTBinaryDump extends PCT {
         super();
 
         tblListID = PCT.nextRandomInt();
-        tblListFile = new File(System.getProperty("java.io.tmpdir"), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tblListFile = new File(System.getProperty(PCT.TMPDIR), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

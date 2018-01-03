@@ -89,7 +89,7 @@ public class OEUnit extends PCTRun {
             destDir = getProject().getBaseDir();
 
         // Create a temp file which list test class to be executed
-        testFilesList = new File(System.getProperty("java.io.tmpdir"), testFileName);
+        testFilesList = new File(System.getProperty(PCT.TMPDIR), testFileName);
         try (FileOutputStream fos = new FileOutputStream(testFilesList);
                 OutputStreamWriter writer = new OutputStreamWriter(fos, getCharset());
                 BufferedWriter bw = new BufferedWriter(writer)) {

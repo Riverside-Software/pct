@@ -69,7 +69,7 @@ public class PCTLibrary extends PCT {
         super();
         tmpFileID = nextRandomInt();
         tmpLibraryID = nextRandomInt(); 
-        tmpFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tmpFile = new File(System.getProperty(PCT.TMPDIR), "PCTLib" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -242,7 +242,7 @@ public class PCTLibrary extends PCT {
 
         if ((destFile == null) && (sharedFile != null)) {
             // Only interested in memory-mapped PL file
-            destFile = new File(System.getProperty("java.io.tmpdir"), "PCTLib" + tmpLibraryID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            destFile = new File(System.getProperty(PCT.TMPDIR), "PCTLib" + tmpLibraryID + ".pl"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             deleteTempFile = true;
             noCompress = true;
         }

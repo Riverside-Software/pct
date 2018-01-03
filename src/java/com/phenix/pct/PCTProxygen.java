@@ -58,7 +58,7 @@ public class PCTProxygen extends PCT {
 
     public PCTProxygen() {
         logID = PCT.nextRandomInt();
-        logFile = new File(System.getProperty("java.io.tmpdir"), "pxg" + logID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        logFile = new File(System.getProperty(PCT.TMPDIR), "pxg" + logID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

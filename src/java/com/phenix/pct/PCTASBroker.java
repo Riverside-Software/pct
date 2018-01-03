@@ -66,7 +66,7 @@ public class PCTASBroker extends PCTBroker {
         super();
 
         tmpFileID = PCT.nextRandomInt();
-        tmpFile = new File(System.getProperty("java.io.tmpdir"), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tmpFile = new File(System.getProperty(PCT.TMPDIR), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

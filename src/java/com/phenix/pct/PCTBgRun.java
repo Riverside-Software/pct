@@ -77,7 +77,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         plID = PCT.nextRandomInt();
 
         initProcId = PCT.nextRandomInt();
-        initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        initProc = new File(System.getProperty(PCT.TMPDIR), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     protected void setRunAttributes(GenericExecuteOptions attrs) {
@@ -360,7 +360,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
         // Specific configuration for profiler
         if ((options.getProfiler() != null) && options.getProfiler().isEnabled()) {
-            File profParam = new File(System.getProperty("java.io.tmpdir"), "prof" + PCT.nextRandomInt() + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            File profParam = new File(System.getProperty(PCT.TMPDIR), "prof" + PCT.nextRandomInt() + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             createProfilerParamFile(profParam);
             exec.createArg().setValue("-profiler");
             exec.createArg().setValue(profParam.getAbsolutePath());
@@ -395,7 +395,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         
         // See comment in PCTRun#execute() on why file name is generated now
         pctLib = new File(
-                System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                System.getProperty(PCT.TMPDIR), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         // Starting the listener thread
         try {

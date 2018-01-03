@@ -46,7 +46,8 @@ public class PCTLoadSchema extends PCTRun {
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
     private boolean inactiveIndexes = false;
-    private String callbackClass = "", analyzerClass = "";
+    private String callbackClass = "";
+    private String analyzerClass = "";
 
     // Internal use
     private int fsListId = -1;
@@ -59,7 +60,7 @@ public class PCTLoadSchema extends PCTRun {
         super();
 
         fsListId = PCT.nextRandomInt();
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void add(ResourceCollection rc) {

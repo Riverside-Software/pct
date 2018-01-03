@@ -106,7 +106,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         // PCT.jar
         if (templateDir == null) {
             int tempDirNum = PCT.nextRandomInt();
-            templateDir = new File(System.getProperty("java.io.tmpdir"), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
+            templateDir = new File(System.getProperty(PCT.TMPDIR), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
             templateDir.mkdirs();
             new File(destDir, "resources").mkdir();
             try {
