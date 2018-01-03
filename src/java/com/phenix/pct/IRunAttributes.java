@@ -206,9 +206,9 @@ public interface IRunAttributes {
     void setProcedure(String procedure);
 
     /**
-     * XCode init procedure
+     * XCode session key
      */
-    void setXCodeInit(boolean xcode);
+    void setXCodeSessionKey(String xCodeSessionKey);
 
     /**
      * Add a database alias

@@ -482,8 +482,8 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        throw new BuildException("Can't set XCodeInit attribute here");
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override

@@ -138,6 +138,11 @@ public class ProgressV10 implements ProgressProcedures {
         return "";
     }
 
+    @Override
+    public String getXCodeSessionKey() {
+        return getString("ProgressV10.16"); //$NON-NLS-1$
+    }
+
     public String getString(String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);

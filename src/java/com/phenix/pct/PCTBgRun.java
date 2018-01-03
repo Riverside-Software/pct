@@ -167,8 +167,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        options.setXCodeInit(xcode);
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        options.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override

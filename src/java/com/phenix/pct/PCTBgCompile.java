@@ -84,11 +84,6 @@ public class PCTBgCompile extends PCTBgRun {
         throw new BuildException("Can't set procedure attribute");
     }
 
-    @Override
-    public void setXCodeInit(boolean xcode) {
-        throw new BuildException("Can't set xCodeInit attribute");
-    }
-
     /**
      * Do the work
      * 
