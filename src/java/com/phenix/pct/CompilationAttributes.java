@@ -59,7 +59,6 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean requireFullKeywords = false;
     private boolean requireFieldQualifiers = false;
     private boolean requireFullNames = false;
-    private String xcodeKey = null;
     private String languages = null;
     private int growthFactor = -1;
     private int progPerc = 0;
@@ -211,7 +210,7 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     @Override
     public void setXCodeKey(String xcodeKey) {
-        this.xcodeKey = xcodeKey;
+        throw new UnsupportedOperationException("Not used anymore");
     }
 
     @Override
@@ -362,10 +361,6 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public boolean isRequireFullNames() {
         return requireFullNames;
-    }
-
-    public String getXcodeKey() {
-        return xcodeKey;
     }
 
     public String getLanguages() {

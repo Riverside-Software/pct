@@ -99,7 +99,6 @@ DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXmlXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
-DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE lOptFullKw AS LOGICAL   NO-UNDO INITIAL FALSE.
@@ -132,7 +131,6 @@ PROCEDURE setOption.
     WHEN 'PCTDIR':U           THEN ASSIGN PCTDir = ipValue.
     WHEN 'FORCECOMPILE':U     THEN ASSIGN ForceComp = (ipValue EQ '1':U).
     WHEN 'XCODE':U            THEN ASSIGN lXCode = (ipValue EQ '1':U).
-    WHEN 'XCODEKEY':U         THEN ASSIGN XCodeKey = ipValue.
     WHEN 'RUNLIST':U          THEN ASSIGN RunList = (ipValue EQ '1':U).
     WHEN 'LISTING':U          THEN ASSIGN Lst = (ipValue EQ '1':U).
     WHEN 'LISTINGSOURCE':U    THEN ASSIGN LstPrepro = (ipValue EQ 'PREPROCESSOR':U).
@@ -388,15 +386,10 @@ PROCEDURE compileXref.
       OS-DELETE VALUE(cRenameFrom).
     END.
     IF (NOT noParse) AND (NOT lXCode) THEN DO:
-      IF fileExists(cXrefFile) THEN DO:
-        IF lXmlXref THEN
-          RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
-        ELSE
-          RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
-      END.
-      ELSE DO:
-        RUN logVerbose IN hSrcProc (SUBSTITUTE("Unable to find XREF file '&1'", cXrefFile)).
-      END.
+      IF lXmlXref THEN
+        RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+      ELSE
+        RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
     IF COMPILER:WARNING OR lWarnings THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).

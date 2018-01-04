@@ -39,7 +39,7 @@ import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Class for compiling Progress procedures
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
@@ -158,7 +158,7 @@ public class PCTCompile extends PCTRun {
             }
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
-        } 
+        }
     }
 
     /**
@@ -222,10 +222,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));
             bw.newLine();
-            if (compAttrs.getXcodeKey() != null) {
-                bw.write("XCODEKEY=" + compAttrs.getXcodeKey()); //$NON-NLS-1$
-                bw.newLine();
-            }
 
             if (compAttrs.getProgPerc() > 0) {
                 bw.write("PROGPERC=" + compAttrs.getProgPerc()); //$NON-NLS-1$
@@ -250,7 +246,7 @@ public class PCTCompile extends PCTRun {
     private boolean createDir(File dir) {
         if (dir.exists() && !dir.isDirectory()) {
             return false;
-        } 
+        }
         if (!dir.exists() && !dir.mkdirs()) {
             return false;
         }
@@ -259,7 +255,7 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Do the work
-     * 
+     *
      * @throws BuildException Something went wrong
      */
     @Override
@@ -318,7 +314,7 @@ public class PCTCompile extends PCTRun {
 
         // Check valid value for ProgPerc
         if ((compAttrs.getProgPerc() < 0) || (compAttrs.getProgPerc() > 100)) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.91"), compAttrs.getProgPerc()), Project.MSG_WARN); //$NON-NLS-1$          
+            log(MessageFormat.format(Messages.getString("PCTCompile.91"), compAttrs.getProgPerc()), Project.MSG_WARN); //$NON-NLS-1$
             compAttrs.setProgPerc(0);
         }
 
