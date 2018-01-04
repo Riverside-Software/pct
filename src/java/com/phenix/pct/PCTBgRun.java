@@ -53,8 +53,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     private int numThreads = 1;
     private GenericExecuteOptions options;
     
-    // Internal use : socket communication
-    private int port;
     // Internal use : throw BuildException
     private boolean buildException;
     private Throwable buildExceptionSource;
@@ -79,7 +77,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         plID = PCT.nextRandomInt();
 
         initProcId = PCT.nextRandomInt();
-        initProc = new File(System.getProperty("java.io.tmpdir"), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        initProc = new File(System.getProperty(PCT.TMPDIR), "pct_init" + initProcId + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     protected void setRunAttributes(GenericExecuteOptions attrs) {
@@ -362,7 +360,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
         // Specific configuration for profiler
         if ((options.getProfiler() != null) && options.getProfiler().isEnabled()) {
-            File profParam = new File(System.getProperty("java.io.tmpdir"), "prof" + PCT.nextRandomInt() + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            File profParam = new File(System.getProperty(PCT.TMPDIR), "prof" + PCT.nextRandomInt() + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             createProfilerParamFile(profParam);
             exec.createArg().setValue("-profiler");
             exec.createArg().setValue(profParam.getAbsolutePath());
@@ -388,28 +386,29 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      * @throws BuildException Something went wrong
      */
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         ListenerThread listener = null;
+        int port = 0;
         checkDlcHome();
         if (options.getProfiler() != null)
             options.getProfiler().validate(true);
         
         // See comment in PCTRun#execute() on why file name is generated now
         pctLib = new File(
-                System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                System.getProperty(PCT.TMPDIR), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         // Starting the listener thread
         try {
             listener = new ListenerThread();
             listener.start();
-            this.port = listener.getLocalPort();
+            port = listener.getLocalPort();
         } catch (IOException ioe) {
             cleanup();
             throw new BuildException(ioe);
         }
 
         // Each thread needs to know the port number of master server
-        options.addParameter(new RunParameter("portNumber", Integer.toString(this.port))); //$NON-NLS-1$
+        options.addParameter(new RunParameter("portNumber", Integer.toString(port))); //$NON-NLS-1$
 
         this.preparePropath();
 
@@ -444,8 +443,9 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             // Waiting for listener thread to stop
             listener.join();
         } catch (InterruptedException ie) {
-            this.cleanup();
             throw new BuildException(ie);
+        } finally {
+            cleanup();
         }
 
         if (buildException) {
@@ -497,7 +497,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                 PFReader reader = new PFReader(new FileInputStream(options.getParamFile()));
                 pfCpInt = reader.getCpInternal();
                 pfCpStream = reader.getCpStream();
-            } catch (IOException caught) {
+            } catch (IOException uncaught) {
 
             }
         }
@@ -572,7 +572,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             }
             bw.write("-DESCRIPTION \"" + options.getProfiler().getDescription() + "\"");
             bw.newLine();
-            bw.close();
         } catch (IOException caught) {
             throw new BuildException(caught);
         }

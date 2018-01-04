@@ -131,7 +131,7 @@ public class Profiler {
      * @param backgroundTask
      * @throws BuildException
      */
-    public void validate(boolean backgroundTask) throws BuildException {
+    public void validate(boolean backgroundTask) {
         if (!enabled)
             return;
         if ((outputDir == null) && (outputFile == null))

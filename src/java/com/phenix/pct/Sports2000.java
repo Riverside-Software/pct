@@ -69,7 +69,8 @@ public class Sports2000 extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
 
         // If dbName is null, then it's sports2000

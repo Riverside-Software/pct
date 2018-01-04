@@ -16,8 +16,6 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-
 /**
  * Feeds properties with Progress version
  * 
@@ -61,7 +59,8 @@ public class ProgressVersion extends PCT {
         this.rcodeVersion = rcodeVersion;
     }
 
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
         if (this.majorVersion != null)
             getProject().setNewProperty(this.majorVersion, Integer.toString(getDLCMajorVersion()));

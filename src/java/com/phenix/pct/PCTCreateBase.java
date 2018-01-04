@@ -334,7 +334,8 @@ public class PCTCreateBase extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         ExecTask exec;
 
         checkDlcHome();

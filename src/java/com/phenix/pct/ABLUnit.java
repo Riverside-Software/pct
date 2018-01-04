@@ -215,10 +215,8 @@ public class ABLUnit extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        // Clean JSON File
-        if (!getDebugPCT() && json.exists() && !json.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTRun.5"), json.getAbsolutePath()),
-                    Project.MSG_INFO);
-        }
+        if (getDebugPCT())
+            return;
+        deleteFile(json);
     }
 }

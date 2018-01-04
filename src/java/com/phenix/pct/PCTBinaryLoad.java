@@ -87,7 +87,8 @@ public class PCTBinaryLoad extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
         if (this.dbConnList == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$

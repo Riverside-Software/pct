@@ -61,8 +61,9 @@ public class PCTDumpData extends PCTRun {
      * Do the work
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+    @Override
+    public void execute() {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpData.0")); //$NON-NLS-1$
         }

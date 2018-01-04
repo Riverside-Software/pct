@@ -31,7 +31,7 @@ public class PLScanner extends ArchiveScanner {
     protected void fillMapsFromArchive(Resource archive, String encoding, Map fileEntries,
             Map matchFileEntries, Map dirEntries, Map matchDirEntries) {
         File srcFile = null;
-        FileProvider fp = (FileProvider) archive.as(FileProvider.class);
+        FileProvider fp = archive.as(FileProvider.class);
         if (fp != null) {
             srcFile = fp.getFile();
         } else {

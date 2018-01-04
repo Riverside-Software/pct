@@ -51,6 +51,8 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
  * @version $Revision$
  */
 public abstract class PCT extends Task {
+    public static final String TMPDIR = "java.io.tmpdir";
+
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
     private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
@@ -98,9 +100,7 @@ public abstract class PCT extends Task {
         try {
             version = DLCVersion.getObject(dlcHome);
             log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
-        } catch (IOException caught) {
-            throw new BuildException(caught);
-        } catch (InvalidRCodeException caught) {
+        } catch (IOException | InvalidRCodeException caught) {
             throw new BuildException(caught);
         }
 
@@ -138,8 +138,8 @@ public abstract class PCT extends Task {
      */
     public final void setDlcBin(File dlcBin) {
         if (!dlcBin.exists()) {
-            throw new BuildException(MessageFormat.format(
-                    Messages.getString("PCT.1"), new Object[]{"dlcBin", dlcBin.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new BuildException(MessageFormat.format(Messages.getString("PCT.1"), "dlcBin", //$NON-NLS-1$ //$NON-NLS-2$
+                    dlcBin.getAbsolutePath()));
         }
 
         this.dlcBin = dlcBin;
@@ -153,9 +153,8 @@ public abstract class PCT extends Task {
      */
     public final void setDlcJava(File dlcJava) {
         if (!dlcJava.exists()) {
-            throw new BuildException(
-                    MessageFormat.format(
-                            Messages.getString("PCT.1"), new Object[]{"dlcJava", dlcJava.getAbsolutePath()})); //$NON-NLS-1$ //$NON-NLS-2$
+            throw new BuildException(MessageFormat.format(Messages.getString("PCT.1"), "dlcJava", //$NON-NLS-1$ //$NON-NLS-2$
+                    dlcJava.getAbsolutePath()));
         }
 
         this.dlcJava = dlcJava;
