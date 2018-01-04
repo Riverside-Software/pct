@@ -395,12 +395,10 @@ public class PCTRunTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
-    public void test46() {
-        configureProject("PCTRun/test46/build.xml");
+    public void test47() {
+        configureProject("PCTRun/test47/build.xml");
         executeTarget("init");
-        expectBuildException("test1", "Can't use xcode with -rr");
-        expectBuildException("test2", "Can't use xcode with -rr");
-        expectBuildException("test3", "-rx and init proc not xcode'd");
-        expectLog("test4", "Hello");
+        expectLog("test1", "Hello1");
+        expectLog("test2", "Hello2");
     }
 }
