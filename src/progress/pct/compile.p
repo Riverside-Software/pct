@@ -388,10 +388,15 @@ PROCEDURE compileXref.
       OS-DELETE VALUE(cRenameFrom).
     END.
     IF (NOT noParse) AND (NOT lXCode) THEN DO:
-      IF lXmlXref THEN
-        RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
-      ELSE
-        RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+      IF fileExists(cXrefFile) THEN DO:
+        IF lXmlXref THEN
+          RUN ImportXmlXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+        ELSE
+          RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
+      END.
+      ELSE DO:
+        RUN logVerbose IN hSrcProc (SUBSTITUTE("Unable to find XREF file '&1'", cXrefFile)).
+      END.
     END.
     IF COMPILER:WARNING OR lWarnings THEN DO:
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).

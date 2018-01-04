@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Class for testing PCTCompile task
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCompileTest extends BuildFileTestNg {
@@ -1122,4 +1122,13 @@ public class PCTCompileTest extends BuildFileTestNg {
         // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
     }
 
+    @Test(groups = {"v10"})
+    public void test69() {
+        configureProject(BASEDIR + "test69/build.xml");
+        executeTarget("init");
+        executeTarget("test1");
+        executeTarget("test2");
+        assertTrue(new File(BASEDIR + "test65/build/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test65/build/test2.r").exists());
+    }
 }
