@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test13">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTDynRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" >
+      <propath>
+        <pathelement location="." />
+        <pathelement location="dir1" />
+        <pathelement location="dir2" />
+      </propath>
+    </PCTDynRun>
+  </target>
+
+  <target name="test2">
+    <PCTDynRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" >
+      <propath>
+        <pathelement location="." />
+        <pathelement location="dir2" />
+        <pathelement location="dir1" />
+      </propath>
+    </PCTDynRun>
+  </target>
+
+</project>

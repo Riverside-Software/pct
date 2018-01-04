@@ -471,7 +471,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     // In order to know if Progress session has to use verbose logging
-    private boolean isVerbose() {
+    protected boolean isVerbose() {
         return getAntLoggerLever() > 2;
     }
 
