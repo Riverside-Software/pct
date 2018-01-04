@@ -46,6 +46,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
     private boolean treeViewOverview = true;
     private boolean preloadClasses = true;
 
+    // Internal use
+    private boolean tempTmplDir = false;
+
     public OpenEdgeHTMLDocumentation() {
         super();
     }
@@ -105,6 +108,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         // Template directory is optional. If not set, then extract the template directory from
         // PCT.jar
         if (templateDir == null) {
+            tempTmplDir = true;
             int tempDirNum = PCT.nextRandomInt();
             templateDir = new File(System.getProperty(PCT.TMPDIR), "Templates" + tempDirNum); //$NON-NLS-1$ //$NON-NLS-2$
             templateDir.mkdirs();
@@ -167,6 +171,7 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
         if (getDebugPCT())
             return;
-        deleteFile(templateDir);
+        if (tempTmplDir)
+            deleteFile(templateDir);
     }
 }
