@@ -102,7 +102,7 @@ public class RCodeInfo {
         return md5;
     }
 
-    public long getrCodeSize() {
+    public long getRCodeSize() {
         return rCodeSize;
     }
 

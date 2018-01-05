@@ -33,18 +33,12 @@ PROCEDURE setOptions:
     /* Defines compilation option -- This is a ';' separated string containing */
     /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG) */
     RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('MINSIZE', IF ENTRY(2, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('MD5', IF ENTRY(3, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('XCODE', IF ENTRY(4, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('XCODEKEY', ENTRY(5, ipPrm, ';')).
     RUN setOption IN hComp ('FORCECOMPILE', IF ENTRY(6, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('NOCOMPILE', IF ENTRY(7, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('LANGUAGES', IF ENTRY(9, ipPrm, ';') EQ '' THEN ? ELSE ENTRY(9, ipPrm, ';')).
-    RUN setOption IN hComp ('GROWTH', ENTRY(10, ipPrm, ';')).
     RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('STREAM-IO', IF ENTRY(12, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('V6FRAME', IF ENTRY(13, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('RELATIVE', IF ENTRY(14, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('OUTPUTDIR', ENTRY(15, ipPrm, ';')).
     RUN setOption IN hComp ('PREPROCESS', IF ENTRY(16, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').

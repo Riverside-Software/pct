@@ -297,18 +297,18 @@ public class PCTBgCompile extends PCTBgRun {
         private String getOptions() {
             StringBuilder sb = new StringBuilder();
             sb.append(Boolean.toString(compAttrs.isRunList())).append(';');
-            sb.append(Boolean.toString(compAttrs.isMinSize())).append(';');
-            sb.append(Boolean.toString(compAttrs.isMd5())).append(';');
+            sb.append("").append(';'); // Previously min-size
+            sb.append("").append(';'); // Previously MD5
             sb.append(Boolean.toString(compAttrs.isXcode())).append(';');
             sb.append(compAttrs.getXcodeKey() == null ? "" : compAttrs.getXcodeKey()).append(';');
             sb.append(Boolean.toString(compAttrs.isForceCompile())).append(';');
             sb.append(Boolean.toString(false /* FIXME noCompile */)).append(';');
             sb.append(Boolean.toString(compAttrs.isKeepXref())).append(';');
-            sb.append(compAttrs.getLanguages() == null ? "" : compAttrs.getLanguages()).append(';');
-            sb.append(Integer.toString(compAttrs.getGrowthFactor() > 0 ? compAttrs.getGrowthFactor() : -1)).append(';');
+            sb.append("").append(';'); // Previously languages
+            sb.append("").append(';'); // Previously growth factor
             sb.append(Boolean.toString(compAttrs.isMultiCompile())).append(';');
-            sb.append(Boolean.toString(compAttrs.isStreamIO())).append(';');
-            sb.append(Boolean.toString(compAttrs.isV6Frame())).append(';');
+            sb.append("").append(';'); // Previously stream-io
+            sb.append("").append(';'); // Previous v6frame
             sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths())).append(';');
             sb.append(compAttrs.getDestDir().getAbsolutePath()).append(';');
             sb.append(Boolean.toString(compAttrs.isPreprocess())).append(';');

@@ -172,10 +172,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("PCTDIR=" + compAttrs.getxRefDir().getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("MINSIZE=" + (compAttrs.isMinSize() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("MD5=" + (compAttrs.isMd5() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("FAILONERROR=" + (runAttributes.isFailOnError() ? 1 : 0)); //$NON-NLS-1$
@@ -222,28 +218,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("MULTICOMPILE=" + (compAttrs.isMultiCompile() ? 1 : 0));
             bw.newLine();
-            bw.write("STREAM-IO=" + (compAttrs.isStreamIO() ? 1 : 0));
-            bw.newLine();
-            if (compAttrs.isV6Frame()) {
-                bw.write("V6FRAME=1");
-                bw.newLine();
-            }
-            bw.write("USEREVVIDEO=" + (compAttrs.isUseRevvideo() ? 1 : 0));
-            bw.newLine();
-            bw.write("USEUNDERLINE=" + (compAttrs.isUseUnderline() ? 1 : 0));
-            bw.newLine();
             bw.write("SAVER=" + (compAttrs.isSaveR() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));
             bw.newLine();
-            if (compAttrs.getLanguages() != null) {
-                bw.write("LANGUAGES=" + compAttrs.getLanguages()); //$NON-NLS-1$
-                bw.newLine();
-                if (compAttrs.getGrowthFactor() > 0) {
-                    bw.write("GROWTH=" + compAttrs.getGrowthFactor()); //$NON-NLS-1$
-                    bw.newLine();
-                }
-            }
             if (compAttrs.getXcodeKey() != null) {
                 bw.write("XCODEKEY=" + compAttrs.getXcodeKey()); //$NON-NLS-1$
                 bw.newLine();

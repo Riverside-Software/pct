@@ -1061,19 +1061,19 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         RCodeInfo rci0 = new RCodeInfo(new File(BASEDIR + "test66/build/v9.r"));
         RCodeInfo rci1 = new RCodeInfo(new File(BASEDIR + "test66/build/v6.r"));
         RCodeInfo rci2 = new RCodeInfo(new File(BASEDIR + "test66/build-v6/v9.r"));
-        assertEquals(rci1.getrCodeSize(), rci2.getrCodeSize());
+        assertEquals(rci1.getRCodeSize(), rci2.getRCodeSize());
 
         RCodeInfo rci3 = new RCodeInfo(new File(BASEDIR + "test66/build/ul.r"));
         RCodeInfo rci4 = new RCodeInfo(new File(BASEDIR + "test66/build-v6underline/v9.r"));
-        assertEquals(rci3.getrCodeSize(), rci4.getrCodeSize());
+        assertEquals(rci3.getRCodeSize(), rci4.getRCodeSize());
 
         RCodeInfo rci5 = new RCodeInfo(new File(BASEDIR + "test66/build/rv.r"));
         RCodeInfo rci6 = new RCodeInfo(new File(BASEDIR + "test66/build-v6revvideo/v9.r"));
-        assertEquals(rci5.getrCodeSize(), rci6.getrCodeSize());
+        assertEquals(rci5.getRCodeSize(), rci6.getRCodeSize());
 
-        assertNotEquals(rci0.getrCodeSize(), rci1.getrCodeSize());
-        assertNotEquals(rci1.getrCodeSize(), rci3.getrCodeSize());
-        assertNotEquals(rci1.getrCodeSize(), rci5.getrCodeSize());
+        assertNotEquals(rci0.getRCodeSize(), rci1.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci3.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci5.getRCodeSize());
     }
 
     @Test(groups = {"v10"})
