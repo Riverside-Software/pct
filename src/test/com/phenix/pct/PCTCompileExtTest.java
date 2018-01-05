@@ -1049,7 +1049,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v10", "win"})
     public void test66() throws InvalidRCodeException, IOException {
         configureProject(BASEDIR + "test66/build.xml");
         executeTarget("test");
