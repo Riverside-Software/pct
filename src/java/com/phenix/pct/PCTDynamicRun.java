@@ -173,7 +173,7 @@ public class PCTDynamicRun extends PCTRun {
             createProfilerFile();
             setExecTaskParams();
             exec.createArg().setValue("-p");
-            exec.createArg().setValue("pct/dynrun.p");
+            exec.createArg().setValue("pct/v11/dynrun.p");
             
             
             if (getIncludedPL() && !extractPL(pctLib)) {

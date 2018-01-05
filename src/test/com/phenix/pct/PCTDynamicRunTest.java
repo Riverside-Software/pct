@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
  */
 public class PCTDynamicRunTest extends BuildFileTestNg {
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test13() {
         configureProject("PCTDynamicRun/test1/build.xml");
         executeTarget("init");
