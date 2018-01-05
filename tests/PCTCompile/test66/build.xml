@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test66">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <mkdir dir="build-v6" />
+    <mkdir dir="build-v6underline" />
+    <mkdir dir="build-v6revvideo" />
+
+    <PCTCompile graphicalMode="true" destDir="build" dlcHome="${DLC}" relativePaths="true" minSize="true">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="true"  destDir="build-v6" dlcHome="${DLC}" relativePaths="true" v6frame="true" minSize="true">
+      <fileset dir="src" includes="v9.p" />
+      <propath location="src" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="true"  destDir="build-v6underline" dlcHome="${DLC}" relativePaths="true" v6frame="true" useUnderline="true" minSize="true">
+      <fileset dir="src" includes="v9.p" />
+      <propath location="src" />
+    </PCTCompile>
+    <PCTCompile graphicalMode="true"  destDir="build-v6revvideo" dlcHome="${DLC}" relativePaths="true" v6frame="true" useRevVideo="true" minSize="true">
+      <fileset dir="src" includes="v9.p" />
+      <propath location="src" />
+    </PCTCompile>
+  </target>
+
+</project>
