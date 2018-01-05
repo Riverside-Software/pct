@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project name="PCTDynamicRun-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dbName="sp2k" dlcHome="${DLC}" />
+    <sports2000 destDir="db" dbName="sp3k" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test1">
+    <PCTDynRun graphicalMode="false" procedure="test1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" >
+      <dbconnection dbName="sp2k" dbDir="db" singleUser="true">
+        <alias name="alias1" />
+        <alias name="alias2" />
+        <alias name="alias3" />
+      </dbconnection>
+      <dbconnection dbName="sp3k" dbDir="db" singleUser="true">
+        <alias name="alias4" />
+        <alias name="alias5" />
+      </dbconnection>
+      <Parameter name="prm1" value="val1" />
+      <Parameter name="prm2" value="val2" />
+      <OutputParameter name="dynrun1" />
+      <propath>
+        <pathelement location="." />
+        <pathelement location="dir1" />
+        <pathelement location="dir2" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+    <echo message="Output ${dynrun1}" />
+  </target>
+
+  <target name="test2">
+    <PCTDynRun graphicalMode="false" procedure="test2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" >
+      <propath>
+        <pathelement location="." />
+        <pathelement location="dir2" />
+        <pathelement location="dir1" />
+      </propath>
+    </PCTDynRun>
+  </target>
+
+</project>

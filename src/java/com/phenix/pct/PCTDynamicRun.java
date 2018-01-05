@@ -1,13 +1,19 @@
 package com.phenix.pct;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Collection;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.util.FileUtils;
@@ -25,13 +31,8 @@ public class PCTDynamicRun extends PCTRun {
         super(true);
         configID = PCT.nextRandomInt();
         iniID = PCT.nextRandomInt();
-        jsonConfig = new File(System.getProperty("java.io.tmpdir"), "config" + configID + ".json");
-        iniFile = new File(System.getProperty("java.io.tmpdir"), "config" + iniID + ".ini");
-    }
-
-    @Override
-    public void addOutputParameter(OutputParameter param) {
-        throw new UnsupportedOperationException("No OutputParameter in this mode");
+        jsonConfig = new File(System.getProperty(PCT.TMPDIR), "config" + configID + ".json");
+        iniFile = new File(System.getProperty(PCT.TMPDIR), "config" + iniID + ".ini");
     }
 
     @Override
@@ -42,11 +43,6 @@ public class PCTDynamicRun extends PCTRun {
     @Override
     public void setIniFile(File iniFile) {
         throw new UnsupportedOperationException("No -ininame attribute in this mode");
-    }
-
-    @Override
-    public void addProfiler(Profiler profiler) {
-        throw new UnsupportedOperationException("No profiler attribute in this mode");
     }
 
     @Override
@@ -78,12 +74,50 @@ public class PCTDynamicRun extends PCTRun {
                     writer.value(lst[k]);
                 }
             }
-
             writer.endArray();
             
             writer.name("databases").beginArray();
-            
+            for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
+                writer.beginObject();
+                writer.name("connect").value(dbc.createConnectString());
+                writer.name("aliases").beginArray();
+                
+                Collection<PCTAlias> aliases = dbc.getAliases();
+                if (aliases != null) {
+                    for (PCTAlias alias : aliases) {
+                        writer.value(alias.getName());
+                    }
+                }
+                writer.endArray();
+                writer.endObject();
+            }
             writer.endArray();
+
+            writer.name("parameters").beginArray();
+            if (runAttributes.getRunParameters() != null) {
+                for (RunParameter param : runAttributes.getRunParameters()) {
+                    if (param.validate()) {
+                        writer.beginObject().name("name").value(param.getName()).name("value")
+                                .value(param.getValue()).endObject();
+                    } else {
+                        log(MessageFormat.format(Messages.getString("PCTRun.9"), param.getName()),
+                                Project.MSG_WARN);
+                    }
+                }
+            }
+            writer.endArray();
+
+            writer.name("output").beginArray();
+            if (runAttributes.getOutputParameters() != null) {
+                for (OutputParameter param : runAttributes.getOutputParameters()) {
+                    File tmpFile = new File(System.getProperty(PCT.TMPDIR),
+                            param.getProgressVar() + "." + PCT.nextRandomInt() + ".out");
+                    param.setTempFileName(tmpFile);
+                    writer.value(tmpFile.getAbsolutePath());
+                }
+            }
+            writer.endArray();
+
             writer.endObject();
         }
     }
@@ -105,8 +139,13 @@ public class PCTDynamicRun extends PCTRun {
         checkDlcHome();
         if ((runAttributes.getProcedure() == null) || (runAttributes.getProcedure().length() == 0))
             throw new BuildException("Procedure attribute not defined");
-
+        if ((runAttributes.getOutputParameters() != null) && (runAttributes.getOutputParameters().size() > 2))
+            throw new BuildException("Only two OutputParameter nodes allowed");
+        
         prepareExecTask();
+        if (runAttributes.getProfiler() != null) {
+            runAttributes.getProfiler().validate(false);
+        }
         super.setParameter(jsonConfig.getAbsolutePath());
 
         try {
@@ -131,6 +170,7 @@ public class PCTDynamicRun extends PCTRun {
 
 
             writeJsonConfigFile();
+            createProfilerFile();
             setExecTaskParams();
             exec.createArg().setValue("-p");
             exec.createArg().setValue("pct/dynrun.p");
@@ -150,6 +190,24 @@ public class PCTDynamicRun extends PCTRun {
             throw new BuildException(caught);
         }
 
+        // Reads output parameter
+        if (runAttributes.getOutputParameters() != null) {
+            for (OutputParameter param : runAttributes.getOutputParameters()) {
+                File f = param.getTempFileName();
+                try (InputStream fis = new FileInputStream(f);
+                        Reader r = new InputStreamReader(fis, Charset.forName("utf-8"));
+                        BufferedReader br = new BufferedReader(r)) {
+                    String s = br.readLine();
+                    getProject().setNewProperty(param.getName(), s);
+                } catch (IOException ioe) {
+                    log(MessageFormat.format(
+                            Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
+                    cleanup();
+                    throw new BuildException(ioe);
+                }
+            }
+        }
+
         // Now read status file
         try (Reader r = new FileReader(status); BufferedReader br = new BufferedReader(r)) {
             String s = br.readLine();
@@ -157,7 +215,7 @@ public class PCTDynamicRun extends PCTRun {
             if (ret != 0 && runAttributes.isFailOnError()) {
                 throw new BuildException(MessageFormat.format(Messages.getString("PCTRun.6"), ret)); //$NON-NLS-1$
             }
-//            maybeSetResultPropertyValue(ret);
+            maybeSetResultPropertyValue(ret);
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("PCTRun.2"), caught); //$NON-NLS-1$
         } catch (NumberFormatException caught) {
@@ -165,7 +223,15 @@ public class PCTDynamicRun extends PCTRun {
         } finally {
             cleanup();
         }
+    }
 
-        // super.execute();
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+
+        if (getDebugPCT())
+            return;
+        deleteFile(jsonConfig);
+        deleteFile(iniFile);
     }
 }

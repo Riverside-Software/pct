@@ -476,7 +476,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     // Helper method to set result property to the passed in value if appropriate.
-    private void maybeSetResultPropertyValue(int result) {
+    protected void maybeSetResultPropertyValue(int result) {
         if (runAttributes.getResultProperty() != null) {
             String res = Integer.toString(result);
             getProject().setNewProperty(runAttributes.getResultProperty(), res);
@@ -620,7 +620,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             return null;
     }
 
-    private void createProfilerFile() {
+    protected void createProfilerFile() {
         if ((runAttributes.getProfiler() != null) && runAttributes.getProfiler().isEnabled()) {
             try (OutputStream os = new FileOutputStream(profilerParamFile);
                     Writer w = new OutputStreamWriter(os);
