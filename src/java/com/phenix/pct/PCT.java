@@ -617,7 +617,7 @@ public abstract class PCT extends Task {
     }
 
     protected static final int nextRandomInt() {
-        return RANDOM.nextInt();
+        return RANDOM.nextInt() & 0xfffffff;
     }
 
     // ----------------------------------
