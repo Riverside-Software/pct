@@ -182,6 +182,7 @@ public class RCodeInfo {
         signatureSize = readUnsignedShort(fc, 8, swapped);
         int md5Offset = readUnsignedShort(fc, 10, swapped);
         segmentTableSize = readUnsignedShort(fc, 30, swapped);
+        rCodeSize = readUnsignedInt(fc, 64, swapped);
         crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + 0x6E,
                 swapped);
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
