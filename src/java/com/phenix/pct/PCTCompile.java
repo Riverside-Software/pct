@@ -218,8 +218,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("MULTICOMPILE=" + (compAttrs.isMultiCompile() ? 1 : 0));
             bw.newLine();
-            bw.write("SAVER=" + (compAttrs.isSaveR() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));
             bw.newLine();
             if (compAttrs.getXcodeKey() != null) {

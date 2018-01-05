@@ -50,7 +50,6 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('XMLXREF', IF ENTRY(22, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('STRINGXREF', IF ENTRY(23, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('APPENDSTRINGXREF', IF ENTRY(24, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('SAVER', IF ENTRY(25, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('LISTINGSOURCE', ENTRY(26, ipPrm, ';')).
     RUN setOption IN hComp ('NOPARSE', IF ENTRY(27, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
