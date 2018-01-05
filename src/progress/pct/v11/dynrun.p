@@ -41,7 +41,8 @@ ASSIGN pctVerbose = configJson:getLogical("verbose").
 ASSIGN dbEntries = configJson:GetJsonArray("databases").
 DO zz = 1 TO dbEntries:Length:
   ASSIGN dbEntry = dbEntries:GetJsonObject(zz).
-  IF pctVerbose THEN MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
+  IF pctVerbose THEN
+    MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
   CONNECT VALUE(dbEntry:getCharacter("connect")) NO-ERROR.
   IF ERROR-STATUS:ERROR THEN DO:
     MESSAGE "Unable to connect to '" + dbEntry:getCharacter("connect") + "'".
@@ -52,7 +53,8 @@ DO zz = 1 TO dbEntries:Length:
     QUIT.
   END.
   DO xx = 1 TO dbEntry:getJsonArray("aliases"):Length:
-    IF pctVerbose THEN MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx), zz, LDBNAME(zz)).
+    IF pctVerbose THEN
+      MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx), zz, LDBNAME(zz)).
     CREATE ALIAS VALUE(dbEntry:getJsonArray("aliases"):getCharacter(xx)) FOR DATABASE VALUE(LDBNAME(zz)) NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
       MESSAGE SUBSTITUTE("Unable to create alias '&1' for database '&2'", dbEntry:getJsonArray("aliases"):getCharacter(xx),  LDBNAME(zz) ).
@@ -70,7 +72,8 @@ ASSIGN ppEntries = configJson:GetJsonArray("propath").
 DO zz = 1 TO ppEntries:Length:
     ASSIGN PROPATH = ppEntries:getCharacter(zz) + "," + PROPATH.
 END.
-IF pctVerbose THEN MESSAGE "PROPATH : " + PROPATH.
+IF pctVerbose THEN
+  MESSAGE "PROPATH : " + PROPATH.
 
 // Input parameters
 ASSIGN prmEntries = configJson:GetJsonArray("parameters").
@@ -87,7 +90,8 @@ END.
 ASSIGN outprmEntries = configJson:GetJsonArray("output").
 
 // Execute procedure
-IF pctVerbose THEN MESSAGE "RUN " + configJson:getCharacter("procedure").
+IF pctVerbose THEN
+  MESSAGE "RUN " + configJson:getCharacter("procedure").
 RunBlock:
 DO ON QUIT UNDO, RETRY:
   IF RETRY THEN DO:
@@ -117,7 +121,8 @@ QUIT.
 PROCEDURE returnValue PRIVATE.
   DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO.
 
-  IF pctVerbose THEN MESSAGE SUBSTITUTE("Return value : &1", retVal).
+  IF pctVerbose THEN
+    MESSAGE SUBSTITUTE("Return value : &1", retVal).
   OUTPUT TO VALUE(configJson:getCharacter("returnValue")) CONVERT TARGET "utf-8".
   PUT UNFORMATTED retVal SKIP.
   OUTPUT CLOSE.
@@ -128,7 +133,8 @@ PROCEDURE writeOutputParam PRIVATE.
   DEFINE INPUT PARAMETER prm AS CHARACTER NO-UNDO.
   DEFINE INPUT PARAMETER outFile AS CHARACTER NO-UNDO.
 
-  IF pctVerbose THEN MESSAGE SUBSTITUTE("OUTPUT PARAMETER : &1", prm).
+  IF pctVerbose THEN
+    MESSAGE SUBSTITUTE("OUTPUT PARAMETER : &1", prm).
   OUTPUT TO VALUE(outFile) CONVERT TARGET "utf-8".
   PUT UNFORMATTED prm SKIP.
   OUTPUT CLOSE.
