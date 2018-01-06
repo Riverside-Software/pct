@@ -42,6 +42,7 @@ public class RCodeInfo {
     private boolean sixty_four_bits;
     private long crc;
     private String md5;
+    private long rCodeSize;
     private long timeStamp;
 
     private InputStream input;
@@ -99,6 +100,10 @@ public class RCodeInfo {
 
     public String getMD5() {
         return md5;
+    }
+
+    public long getRCodeSize() {
+        return rCodeSize;
     }
 
     public boolean is64bits() {
@@ -167,7 +172,7 @@ public class RCodeInfo {
         // expirationDate = readUnsignedInt(fc, 32, swapped);
         signatureSize = readUnsignedInt(fc, 56, swapped);
         // typeBlockSize = readUnsignedInt(fc, 60, swapped);
-        // rcodeSize = readUnsignedInt(fc, 64, swapped);
+        rCodeSize = readUnsignedInt(fc, 64, swapped);
         crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + signatureSize + 0xA4, swapped);
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);
     }
@@ -177,6 +182,7 @@ public class RCodeInfo {
         signatureSize = readUnsignedShort(fc, 8, swapped);
         int md5Offset = readUnsignedShort(fc, 10, swapped);
         segmentTableSize = readUnsignedShort(fc, 30, swapped);
+        rCodeSize = readUnsignedInt(fc, 64, swapped);
         crc = readUnsignedShort(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + 0x6E,
                 swapped);
         md5 = bufferToHex(fc, HEADER_SIZE + segmentTableSize + (int) signatureSize + md5Offset, 16);

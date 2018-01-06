@@ -18,6 +18,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
@@ -1046,6 +1047,33 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test64/build2/.dbg/file1.p").exists());
         expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
         expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+    }
+
+    @Test(groups = {"v10", "win"})
+    public void test66() throws InvalidRCodeException, IOException {
+        configureProject(BASEDIR + "test66/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test66/build/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6underline/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6revvideo/v9.r").exists());
+
+        RCodeInfo rci0 = new RCodeInfo(new File(BASEDIR + "test66/build/v9.r"));
+        RCodeInfo rci1 = new RCodeInfo(new File(BASEDIR + "test66/build/v6.r"));
+        RCodeInfo rci2 = new RCodeInfo(new File(BASEDIR + "test66/build-v6/v9.r"));
+        assertEquals(rci1.getRCodeSize(), rci2.getRCodeSize());
+
+        RCodeInfo rci3 = new RCodeInfo(new File(BASEDIR + "test66/build/ul.r"));
+        RCodeInfo rci4 = new RCodeInfo(new File(BASEDIR + "test66/build-v6underline/v9.r"));
+        assertEquals(rci3.getRCodeSize(), rci4.getRCodeSize());
+
+        RCodeInfo rci5 = new RCodeInfo(new File(BASEDIR + "test66/build/rv.r"));
+        RCodeInfo rci6 = new RCodeInfo(new File(BASEDIR + "test66/build-v6revvideo/v9.r"));
+        assertEquals(rci5.getRCodeSize(), rci6.getRCodeSize());
+
+        assertNotEquals(rci0.getRCodeSize(), rci1.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci3.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci5.getRCodeSize());
     }
 
     @Test(groups = {"v10"})

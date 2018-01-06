@@ -85,13 +85,10 @@ DEFINE VARIABLE PCTDir    AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE preprocessDir AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE dbgListDir AS CHARACTER NO-UNDO.
 DEFINE VARIABLE flattenDbg AS LOGICAL   NO-UNDO.
-DEFINE VARIABLE MinSize   AS LOGICAL    NO-UNDO.
-DEFINE VARIABLE MD5       AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE ForceComp AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE NoParse   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE StrXref   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE AppStrXrf AS LOGICAL    NO-UNDO INITIAL FALSE.
-DEFINE VARIABLE SaveR     AS LOGICAL    NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE LstPrepro AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -99,13 +96,9 @@ DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
-DEFINE VARIABLE streamIO  AS LOGICAL    NO-UNDO INITIAL FALSE.
-DEFINE VARIABLE lV6Frame  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXmlXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE XCodeKey  AS CHARACTER  NO-UNDO INITIAL ?.
-DEFINE VARIABLE Languages AS CHARACTER  NO-UNDO INITIAL ?.
-DEFINE VARIABLE gwtFact   AS INTEGER    NO-UNDO INITIAL -1.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE lOptFullKw AS LOGICAL   NO-UNDO INITIAL FALSE.
@@ -136,8 +129,6 @@ PROCEDURE setOption.
   CASE ipName:
     WHEN 'OUTPUTDIR':U        THEN ASSIGN OutputDir = ipValue.
     WHEN 'PCTDIR':U           THEN ASSIGN PCTDir = ipValue.
-    WHEN 'MINSIZE':U          THEN ASSIGN MinSize = (ipValue EQ '1':U).
-    WHEN 'MD5':U              THEN ASSIGN MD5 = (ipValue EQ '1':U).
     WHEN 'FORCECOMPILE':U     THEN ASSIGN ForceComp = (ipValue EQ '1':U).
     WHEN 'XCODE':U            THEN ASSIGN lXCode = (ipValue EQ '1':U).
     WHEN 'XCODEKEY':U         THEN ASSIGN XCodeKey = ipValue.
@@ -151,14 +142,9 @@ PROCEDURE setOption.
     WHEN 'FLATTENDBG':U       THEN ASSIGN flattenDbg = (ipValue EQ '1':U).
     WHEN 'STRINGXREF':U       THEN ASSIGN StrXref = (ipValue EQ '1':U).
     WHEN 'APPENDSTRINGXREF':U THEN ASSIGN AppStrXrf = (ipValue EQ '1':U).
-    WHEN 'SAVER':U            THEN ASSIGN SaveR = (ipValue EQ '1':U).
     WHEN 'KEEPXREF':U         THEN ASSIGN keepXref = (ipValue EQ '1':U).
-    WHEN 'LANGUAGES':U        THEN ASSIGN languages = ipValue.
-    WHEN 'GROWTH':U           THEN ASSIGN gwtFact = INTEGER(ipValue).
     WHEN 'NOPARSE':U          THEN ASSIGN noParse = (ipValue EQ '1':U).
     WHEN 'MULTICOMPILE':U     THEN ASSIGN multiComp = (ipValue EQ '1':U).
-    WHEN 'STREAM-IO':U        THEN ASSIGN streamIO = (ipValue EQ '1':U).
-    WHEN 'V6FRAME':U          THEN ASSIGN lV6Frame = (ipValue EQ '1':U).
     WHEN 'RELATIVE':U         THEN ASSIGN lRelative = (ipValue EQ '1':U).
     WHEN 'PROGPERC':U         THEN ASSIGN ProgPerc = INTEGER(ipValue).
     WHEN 'XMLXREF':U          THEN ASSIGN lXmlXref = (ipValue EQ '1':U).
@@ -283,7 +269,7 @@ PROCEDURE compileXref.
   IF (opError) THEN RETURN.
   cSaveDir = IF cFileExt = ".cls" OR lRelative THEN outputDir ELSE outputDir + '/':U + cBase.
 
-  IF (ipOutFile EQ ?) or (ipOutFile EQ '') THEN DO:
+  IF (ipOutFile EQ ?) OR (ipOutFile EQ '') THEN DO:
     ASSIGN ipOutFile = SUBSTRING(ipInFile, 1, R-INDEX(ipInFile, cFileExt) - 1) + '.r':U.
   END.
   ELSE DO:
@@ -293,7 +279,7 @@ PROCEDURE compileXref.
     IF (opError) THEN RETURN.
     ASSIGN opError = NOT createDir(PCTDir, cBase2).
     IF (opError) THEN RETURN.
-    ASSIGN cRenameFrom = cBase + (if cbase eq '' then '' else '/') + substring(cfile, 1, r-index(cfile, '.') - 1) + '.r'.
+    ASSIGN cRenameFrom = cBase + (IF cbase EQ '' THEN '' ELSE '/') + substring(cfile, 1, R-INDEX(cfile, '.') - 1) + '.r'.
   END.
 
   IF (noParse OR ForceComp OR lXCode) THEN DO:
@@ -382,125 +368,10 @@ PROCEDURE compileXref.
 &ENDIF
 
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
-  IF lXCode AND (XCodeKey GT '':U) THEN
-    COMPILE
-      VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-      SAVE = SaveR INTO VALUE(cSaveDir)
-      LANGUAGES (VALUE(languages))
-      STREAM-IO=streamIO
-      V6FRAME=lV6Frame
-      DEBUG-LIST VALUE(debugListingFile)
-      MIN-SIZE=MinSize
-      GENERATE-MD5=MD5
-      XCODE XCodeKey
-      NO-ERROR.
-  ELSE IF (lXCode) THEN
-    COMPILE
-      VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-      SAVE = SaveR INTO VALUE(cSaveDir)
-      LANGUAGES (VALUE(languages))
-      STREAM-IO=streamIO
-      V6FRAME=lV6Frame
-      DEBUG-LIST VALUE(debugListingFile)
-      MIN-SIZE=MinSize
-      GENERATE-MD5=MD5
-      NO-ERROR.
-  ELSE IF (languages EQ ?) THEN DO:
-    IF lXmlXref THEN
-        COMPILE
-          VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-          SAVE = SaveR INTO VALUE(cSaveDir)
-          STREAM-IO=streamIO
-          V6FRAME=lV6Frame
-          LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-          DEBUG-LIST VALUE(debugListingFile)
-          PREPROCESS VALUE(preprocessFile) 
-          MIN-SIZE=MinSize
-          GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-          XREF-XML VALUE(cXrefFile)
-          NO-ERROR.
-    ELSE
-        COMPILE
-          VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-          SAVE = SaveR INTO VALUE(cSaveDir)
-          STREAM-IO=streamIO
-          V6FRAME=lV6Frame
-          LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-          DEBUG-LIST VALUE(debugListingFile)
-          PREPROCESS VALUE(preprocessFile) 
-          MIN-SIZE=MinSize
-          GENERATE-MD5=MD5
-          STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-          XREF VALUE(cXrefFile) APPEND=FALSE
-          NO-ERROR.
-  END.
-  ELSE DO:
-    IF (gwtFact GE 0) THEN DO:
-      IF lXmlXref THEN
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF-XML VALUE(cXrefFile)
-            NO-ERROR.
-      ELSE
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages)) TEXT-SEG-GROWTH=gwtFact
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF VALUE(cXrefFile) APPEND=FALSE
-            NO-ERROR.
-    END.
-    ELSE DO:
-      IF lXmlXref THEN
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages))
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF-XML VALUE(cXrefFile)
-            NO-ERROR.
-      ELSE
-          COMPILE
-            VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile)
-            SAVE = SaveR INTO VALUE(cSaveDir)
-            LANGUAGES (VALUE(languages))
-            STREAM-IO=streamIO
-            V6FRAME=lV6Frame
-            LISTING VALUE((IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?))
-            DEBUG-LIST VALUE(debugListingFile)
-            PREPROCESS VALUE(preprocessFile)
-            MIN-SIZE=MinSize
-            GENERATE-MD5=MD5
-            STRING-XREF VALUE(cStrXrefFile) APPEND = AppStrXrf
-            XREF VALUE(cXrefFile) APPEND=FALSE
-            NO-ERROR.
-    END.
-  END.
+  RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
+                 cSaveDir, debugListingFile,
+                 IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
+                 preprocessFile, cStrXrefFile, cXrefFile).
 
   ASSIGN opError = COMPILER:ERROR.
   IF NOT opError THEN DO:

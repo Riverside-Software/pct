@@ -196,6 +196,16 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setUseRevvideo(boolean useRevvideo) {
+        compAttributes.setUseRevvideo(useRevvideo);
+    }
+
+    @Override
+    public void setUseUnderline(boolean useUnderline) {
+        compAttributes.setUseUnderline(useUnderline);
+    }
+
+    @Override
     public void setKeepXref(boolean keepXref) {
         compAttributes.setKeepXref(keepXref);
     }

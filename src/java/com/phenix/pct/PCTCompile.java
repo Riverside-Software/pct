@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -45,6 +46,8 @@ public class PCTCompile extends PCTRun {
     private CompilationAttributes compAttrs;
 
     // Internal use
+    private int compId = -1;
+    private File compDir = null;
     private int fsListId = -1;
     private File fsList = null;
     private int paramsId = -1;
@@ -60,8 +63,10 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
+        compId = PCT.nextRandomInt();
         fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         params = new File(System.getProperty(PCT.TMPDIR), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        compDir = new File(System.getProperty(PCT.TMPDIR), "pctcomp" + compId); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -167,10 +172,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("PCTDIR=" + compAttrs.getxRefDir().getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("MINSIZE=" + (compAttrs.isMinSize() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("MD5=" + (compAttrs.isMd5() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("FAILONERROR=" + (runAttributes.isFailOnError() ? 1 : 0)); //$NON-NLS-1$
@@ -217,24 +218,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("MULTICOMPILE=" + (compAttrs.isMultiCompile() ? 1 : 0));
             bw.newLine();
-            bw.write("STREAM-IO=" + (compAttrs.isStreamIO() ? 1 : 0));
-            bw.newLine();
-            if (compAttrs.isV6Frame()) {
-                bw.write("V6FRAME=1");
-                bw.newLine();
-            }
-            bw.write("SAVER=" + (compAttrs.isSaveR() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));
             bw.newLine();
-            if (compAttrs.getLanguages() != null) {
-                bw.write("LANGUAGES=" + compAttrs.getLanguages()); //$NON-NLS-1$
-                bw.newLine();
-                if (compAttrs.getGrowthFactor() > 0) {
-                    bw.write("GROWTH=" + compAttrs.getGrowthFactor()); //$NON-NLS-1$
-                    bw.newLine();
-                }
-            }
             if (compAttrs.getXcodeKey() != null) {
                 bw.write("XCODEKEY=" + compAttrs.getXcodeKey()); //$NON-NLS-1$
                 bw.newLine();
@@ -285,6 +270,11 @@ public class PCTCompile extends PCTRun {
         if (!createDir(compAttrs.getDestDir())) {
             cleanup();
             throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "destDir")); //$NON-NLS-1$
+        }
+
+        if (compDir.exists() || !compDir.mkdirs()) {
+            this.cleanup();
+            throw new BuildException("Unable to create temp directory for compile procedure");
         }
 
         // Test xRef directory
@@ -341,8 +331,10 @@ public class PCTCompile extends PCTRun {
         checkDlcHome();
 
         try {
+            compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
             writeFileList();
             writeParams();
+            runAttributes.addPropath(new Path(getProject(), compDir.getAbsolutePath()));
             runAttributes.setProcedure(this.getProgressProcedures().getCompileProcedure());
             runAttributes.setParameter(params.getAbsolutePath());
             super.execute();
@@ -361,5 +353,6 @@ public class PCTCompile extends PCTRun {
             return;
         deleteFile(fsList);
         deleteFile(params);
+        deleteFile(compDir);
     }
 }

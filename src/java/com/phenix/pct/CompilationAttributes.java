@@ -16,7 +16,12 @@
  */
 package com.phenix.pct;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +49,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean multiCompile = false;
     private boolean streamIO = false;
     private boolean v6Frame = false;
+    private boolean useRevvideo = false;
+    private boolean useUnderline = false;
     private boolean stringXref = false;
     private boolean appendStringXref = false;
     private boolean saveR = true;
@@ -155,6 +162,16 @@ public class CompilationAttributes implements ICompilationAttributes {
     @Override
     public void setv6Frame(boolean v6Frame) {
         this.v6Frame = v6Frame;
+    }
+
+    @Override
+    public void setUseRevvideo(boolean useRevvideo) {
+        this.useRevvideo = useRevvideo;
+    }
+
+    @Override
+    public void setUseUnderline(boolean useUnderline) {
+        this.useUnderline = useUnderline;
     }
 
     @Override
@@ -307,6 +324,14 @@ public class CompilationAttributes implements ICompilationAttributes {
         return v6Frame;
     }
 
+    public boolean isUseRevvideo() {
+        return useRevvideo;
+    }
+
+    public boolean isUseUnderline() {
+        return useUnderline;
+    }
+
     public boolean isStringXref() {
         return stringXref;
     }
@@ -382,4 +407,67 @@ public class CompilationAttributes implements ICompilationAttributes {
     public int getFileList() {
         return fileList;
     }
+
+    protected void writeCompilationProcedure(File f, Charset c) {
+        try (FileOutputStream fos = new FileOutputStream(f);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, c);
+                BufferedWriter bw = new BufferedWriter(osw)) {
+            bw.write("DEFINE INPUT PARAMETER ipSrcFile AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipSaveDir AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipDbg AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipListing AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipPreprocess AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipStrXref AS CHARACTER NO-UNDO.");
+            bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipXREF AS CHARACTER NO-UNDO.");
+            bw.newLine();
+
+            bw.write("COMPILE VALUE(ipSrcFile) ");
+            if (isSaveR())
+                bw.write("SAVE INTO VALUE(ipSaveDir) ");
+            bw.write(" DEBUG-LIST VALUE(ipDbg) ");
+            if (getLanguages() != null) {
+                bw.write("LANGUAGES (\"" + getLanguages() + "\") ");
+                if (getGrowthFactor() > 0)
+                    bw.write("TEXT-SEG-GROWTH=" + getGrowthFactor() + " ");
+            }
+            if (isMd5())
+                bw.write("GENERATE-MD5 ");
+            if (isMinSize())
+                bw.write("MIN-SIZE ");
+            if (isStreamIO())
+                bw.write("STREAM-IO ");
+            if (isV6Frame()) {
+                bw.write("V6FRAME ");
+                if (isUseRevvideo())
+                    bw.write("USE-REVVIDEO ");
+                else if (isUseUnderline())
+                    bw.write("USE-UNDERLINE ");
+            }
+            if (!isXcode()) {
+                bw.write("LISTING VALUE(ipListing) ");
+                bw.write("PREPROCESS VALUE(ipPreprocess) ");
+                bw.write("STRING-XREF VALUE(ipStrXref) ");
+                if (isAppendStringXref())
+                    bw.write("APPEND ");
+                if (isXmlXref())
+                    bw.write("XREF-XML VALUE(ipXREF) ");
+                else
+                    bw.write("XREF VALUE(ipXREF) ");
+
+            } else if (getXcodeKey() != null) {
+                bw.write("XCODE \"" + getXcodeKey() + "\" ");
+            }
+            bw.write("NO-ERROR.");
+            bw.newLine();
+        } catch (IOException caught) {
+            throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
+        }
+    }
+
 }
