@@ -54,10 +54,12 @@ DO zz = 1 TO dbEntries:Length:
   END.
   DO xx = 1 TO dbEntry:getJsonArray("aliases"):Length:
     IF pctVerbose THEN
-      MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx), zz, LDBNAME(zz)).
+      MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx),
+                         zz, LDBNAME(zz)).
     CREATE ALIAS VALUE(dbEntry:getJsonArray("aliases"):getCharacter(xx)) FOR DATABASE VALUE(LDBNAME(zz)) NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
-      MESSAGE SUBSTITUTE("Unable to create alias '&1' for database '&2'", dbEntry:getJsonArray("aliases"):getCharacter(xx),  LDBNAME(zz) ).
+      MESSAGE SUBSTITUTE("Unable to create alias '&1' for database '&2'",
+                         dbEntry:getJsonArray("aliases"):getCharacter(xx), LDBNAME(zz)).
       DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
         MESSAGE ERROR-STATUS:GET-MESSAGE(i).
       END.
@@ -106,9 +108,12 @@ DO ON QUIT UNDO, RETRY:
   ELSE IF (outprmEntries:Length EQ 2) THEN
     RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1, OUTPUT out2) NO-ERROR.
 END.
-IF ERROR-STATUS:ERROR THEN ASSIGN i = 1.
-IF (i EQ ?) THEN ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, " ")) NO-ERROR.
-IF (i EQ ?) THEN ASSIGN i = 1.
+IF ERROR-STATUS:ERROR THEN
+  ASSIGN i = 1.
+IF (i EQ ?) THEN
+  ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, " ")) NO-ERROR.
+IF (i EQ ?) THEN
+  ASSIGN i = 1.
 RUN returnValue(i).
 
 IF (outprmEntries:Length GE 1) THEN
