@@ -1064,7 +1064,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Test without destDir
         configureProject(BASEDIR + "test65/build.xml");
         executeTarget("init");
-        executeTarget("build");
+        executeTarget("build_a");
+        executeTarget("build_b");
+        executeTarget("build_c");
 
         assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
         assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
