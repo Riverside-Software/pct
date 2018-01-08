@@ -455,8 +455,6 @@ public class CompilationAttributes implements ICompilationAttributes {
                 else
                     bw.write("XREF VALUE(ipXREF) ");
 
-            } else if (getXcodeKey() != null) {
-                bw.write("XCODE \"" + getXcodeKey() + "\" ");
             }
             bw.write("NO-ERROR.");
             bw.newLine();
