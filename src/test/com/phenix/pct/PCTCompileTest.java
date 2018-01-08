@@ -1063,7 +1063,6 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test65() {
         // Test without destDir
         configureProject(BASEDIR + "test65/build.xml");
-        executeTarget("init");
         executeTarget("build_a");
         executeTarget("build_b");
         executeTarget("build_c");
