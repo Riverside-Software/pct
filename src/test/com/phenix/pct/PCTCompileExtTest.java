@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -43,12 +42,6 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
     private static final String BASEDIR = "PCTCompileExt/";
-
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
-    public void test1() {
-        configureProject(BASEDIR + "test1/build.xml");
-        executeTarget("test");
-    }
 
     @Test(groups = {"v10"})
     public void test2() {
@@ -1074,6 +1067,22 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertNotEquals(rci0.getRCodeSize(), rci1.getRCodeSize());
         assertNotEquals(rci1.getRCodeSize(), rci3.getRCodeSize());
         assertNotEquals(rci1.getRCodeSize(), rci5.getRCodeSize());
+    }
+
+    @Test(groups = {"v10"})
+    public void test65() {
+        // Test without destDir
+        configureProject(BASEDIR + "test65/build.xml");
+        executeTarget("init");
+        executeTarget("build");
+
+        assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
+        assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
+        assertTrue(new File(BASEDIR + "test65/c/src/c/c.r").exists());
+
+        assertFalse(new File(BASEDIR + "test65/b/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/b/b.r").exists());
     }
 
     @Test(groups = {"v10"})

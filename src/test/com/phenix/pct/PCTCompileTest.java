@@ -21,7 +21,6 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 
-import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -1066,11 +1065,11 @@ public class PCTCompileTest extends BuildFileTestNg {
         configureProject(BASEDIR + "test65/build.xml");
         executeTarget("init");
         executeTarget("build");
-        
+
         assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
         assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
         assertTrue(new File(BASEDIR + "test65/c/src/c/c.r").exists());
-        
+
         assertFalse(new File(BASEDIR + "test65/b/src/a/a.r").exists());
         assertFalse(new File(BASEDIR + "test65/c/src/a/a.r").exists());
         assertFalse(new File(BASEDIR + "test65/c/src/b/b.r").exists());
