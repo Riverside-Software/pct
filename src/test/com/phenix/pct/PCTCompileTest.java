@@ -21,7 +21,6 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 
-import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -43,12 +42,6 @@ import java.util.List;
  */
 public class PCTCompileTest extends BuildFileTestNg {
     private static final String BASEDIR = "PCTCompile/";
-
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
-    public void test1() {
-        configureProject(BASEDIR + "test1/build.xml");
-        executeTarget("test");
-    }
 
     @Test(groups = {"v10"})
     public void test2() {
@@ -1066,6 +1059,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
     }
 
+    @Test(groups = {"v10"})
+    public void test65() {
+        // Test without destDir
+        configureProject(BASEDIR + "test65/build.xml");
+        executeTarget("build_a");
+        executeTarget("build_b");
+        executeTarget("build_c");
+
+        assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
+        assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
+        assertTrue(new File(BASEDIR + "test65/c/src/c/c.r").exists());
+
+        assertFalse(new File(BASEDIR + "test65/b/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/b/b.r").exists());
+    }
+
     @Test(groups = {"v10", "win"})
     public void test66() throws InvalidRCodeException, IOException {
         configureProject(BASEDIR + "test66/build.xml");
@@ -1092,4 +1102,24 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertNotEquals(rci1.getRCodeSize(), rci3.getRCodeSize());
         assertNotEquals(rci1.getRCodeSize(), rci5.getRCodeSize());
     }
+
+    @Test(groups = {"v10"})
+    public void test67() {
+        configureProject(BASEDIR + "test67/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test67/build-interface/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test67/build-impl/rssw/pct/TestImpl.r").exists());
+        assertFalse(new File(BASEDIR + "test67/build-impl/rssw/pct/ITest.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test68() {
+        configureProject(BASEDIR + "test68/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
+        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
+    }
+
 }

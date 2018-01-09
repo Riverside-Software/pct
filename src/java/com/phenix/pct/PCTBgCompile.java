@@ -96,26 +96,23 @@ public class PCTBgCompile extends PCTBgRun {
      */
     @Override
     public void execute() {
-        if (compAttrs.getDestDir() == null) {
-            this.cleanup();
-            throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
-        }
-
         if (compDir.exists() || !compDir.mkdirs()) {
             this.cleanup();
             throw new BuildException("Unable to create temp directory for compile procedure");
         }
 
         // Test output directory
-        if (compAttrs.getDestDir().exists()) {
-            if (!compAttrs.getDestDir().isDirectory()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.35")); //$NON-NLS-1$
-            }
-        } else {
-            if (!compAttrs.getDestDir().mkdirs()) {
-                this.cleanup();
-                throw new BuildException(Messages.getString("PCTCompile.36")); //$NON-NLS-1$
+        if (compAttrs.getDestDir() != null) {
+            if (compAttrs.getDestDir().exists()) {
+                if (!compAttrs.getDestDir().isDirectory()) {
+                    this.cleanup();
+                    throw new BuildException(Messages.getString("PCTCompile.35")); //$NON-NLS-1$
+                }
+            } else {
+                if (!compAttrs.getDestDir().mkdirs()) {
+                    this.cleanup();
+                    throw new BuildException(Messages.getString("PCTCompile.36")); //$NON-NLS-1$
+                }
             }
         }
 
@@ -310,7 +307,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append("").append(';'); // Previously stream-io
             sb.append("").append(';'); // Previous v6frame
             sb.append(Boolean.toString(PCTBgCompile.this.getOptions().useRelativePaths())).append(';');
-            sb.append(compAttrs.getDestDir().getAbsolutePath()).append(';');
+            sb.append(compAttrs.getDestDir() == null ? "" : compAttrs.getDestDir().getAbsolutePath()).append(';');
             sb.append(Boolean.toString(compAttrs.isPreprocess())).append(';');
             sb.append(compAttrs.getPreprocessDir() == null ? "" : compAttrs.getPreprocessDir().getAbsolutePath()).append(';');
             sb.append(Boolean.toString(compAttrs.isListing())).append(';');

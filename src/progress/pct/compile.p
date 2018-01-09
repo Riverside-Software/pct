@@ -81,6 +81,7 @@ DEFINE STREAM sWarnings.
 
 /* PCTCompile attributes */
 DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
+DEFINE VARIABLE DestDir AS CHARACTER  NO-UNDO INITIAL ?.
 DEFINE VARIABLE PCTDir    AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE preprocessDir AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE dbgListDir AS CHARACTER NO-UNDO.
@@ -127,7 +128,7 @@ PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipValue AS CHARACTER NO-UNDO.
 
   CASE ipName:
-    WHEN 'OUTPUTDIR':U        THEN ASSIGN OutputDir = ipValue.
+    when 'OUTPUTDIR':U        THEN ASSIGN DestDir = ipValue.
     WHEN 'PCTDIR':U           THEN ASSIGN PCTDir = ipValue.
     WHEN 'FORCECOMPILE':U     THEN ASSIGN ForceComp = (ipValue EQ '1':U).
     WHEN 'XCODE':U            THEN ASSIGN lXCode = (ipValue EQ '1':U).
@@ -171,6 +172,7 @@ PROCEDURE initModule:
     RETURN RETURN-VALUE.
 
   /* Checks if valid config */
+  OutputDir = if DestDir ne ? then DestDir else ".".
   IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
   IF NOT FileExists(PCTDir) THEN
@@ -193,7 +195,7 @@ PROCEDURE initModule:
       ASSIGN iNrSteps = iTotLines
              ProgPerc = 100 / iNrSteps.
       RUN logVerbose IN hSrcProc ("WARNING: Less files then percentage steps. Automatically increasing percentage to " + TRIM(STRING(ProgPerc, ">>9%":U))).
-    END.  
+    END.
     DO iStep = 1 TO iNrSteps:
       ASSIGN cDspSteps = cDspSteps + (IF cDspSteps NE "" THEN "," ELSE "") + STRING(MIN(INTEGER((iTotLines / 100) * (ProgPerc * iStep)), iTotLines)).
     END.
@@ -229,7 +231,7 @@ PROCEDURE compileXref.
   DEFINE VARIABLE cFileExt2 AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cSaveDir AS CHARACTER NO-UNDO.
   DEFINE VARIABLE cXrefFile AS CHARACTER  NO-UNDO.
-  DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.    
+  DEFINE VARIABLE cStrXrefFile AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE preprocessFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE debugListingFile AS CHARACTER NO-UNDO.
   DEFINE VARIABLE warningsFile AS CHARACTER NO-UNDO.
@@ -258,7 +260,7 @@ PROCEDURE compileXref.
     RUN logError IN hSrcProc (SUBSTITUTE("File [&1]/[&2] not found", ipInDir, ipInFile)).
     ASSIGN opError = TRUE.
     ASSIGN opComp = 0.
-    RETURN.    
+    RETURN.
   END.
 
   RUN adecomm/_osprefx.p(INPUT ipInFile, OUTPUT cBase, OUTPUT cFile).
@@ -267,7 +269,11 @@ PROCEDURE compileXref.
   IF (opError) THEN RETURN.
   ASSIGN opError = NOT createDir(PCTDir, cBase).
   IF (opError) THEN RETURN.
-  cSaveDir = IF cFileExt = ".cls" OR lRelative THEN outputDir ELSE outputDir + '/':U + cBase.
+  ASSIGN cSaveDir = (IF DestDir EQ ?
+                       THEN ?
+                       ELSE (IF cFileExt = ".cls":U OR lRelative
+                               THEN outputDir
+                               ELSE outputDir + '/':U + cBase)).
 
   IF (ipOutFile EQ ?) OR (ipOutFile EQ '') THEN DO:
     ASSIGN ipOutFile = SUBSTRING(ipInFile, 1, R-INDEX(ipInFile, cFileExt) - 1) + '.r':U.
@@ -286,8 +292,9 @@ PROCEDURE compileXref.
     ASSIGN opComp = 5.
   END.
   ELSE DO:
-    /* Does .r file exists ? */
-    ASSIGN RCodeTS = getTimeStampDF(OutputDir, ipOutFile).
+    /* Does .r file exists ?,
+       if DestDir = unknown rcode will be located in the same directory as the source : ipInDir */
+    ASSIGN RCodeTS = getTimeStampDF(if DestDir = ? then ipInDir else OutputDir, ipOutFile).
     IF (RCodeTS EQ ?) THEN DO:
       opComp = 1.
     END.

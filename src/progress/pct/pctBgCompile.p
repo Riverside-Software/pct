@@ -40,7 +40,8 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('RELATIVE', IF ENTRY(14, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('OUTPUTDIR', ENTRY(15, ipPrm, ';')).
+    IF (ENTRY(15, ipPrm, ';') GT "") THEN
+      RUN setOption IN hComp ('OUTPUTDIR', ENTRY(15, ipPrm, ';')).
     RUN setOption IN hComp ('PREPROCESS', IF ENTRY(16, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('PREPROCESSDIR', ENTRY(17, ipPrm, ';')).
     RUN setOption IN hComp ('LISTING', IF ENTRY(18, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
