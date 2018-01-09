@@ -167,8 +167,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        options.setXCodeInit(xcode);
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        options.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override
@@ -531,6 +531,13 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                     bw.write(MessageFormat.format(this.getProgressProcedures().getPropathString(),
                             escapeString(lst[k]) + File.pathSeparatorChar));
                 }
+            }
+
+            // XCode session key
+            if (options.getXCodeSessionKey() != null) {
+                bw.write(MessageFormat.format(this.getProgressProcedures().getXCodeSessionKey(),
+                        options.getXCodeSessionKey()));
+                bw.newLine();
             }
 
             // Defines parameters

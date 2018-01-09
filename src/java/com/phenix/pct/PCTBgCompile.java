@@ -84,11 +84,6 @@ public class PCTBgCompile extends PCTBgRun {
         throw new BuildException("Can't set procedure attribute");
     }
 
-    @Override
-    public void setXCodeInit(boolean xcode) {
-        throw new BuildException("Can't set xCodeInit attribute");
-    }
-
     /**
      * Do the work
      * 
@@ -297,7 +292,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append("").append(';'); // Previously min-size
             sb.append("").append(';'); // Previously MD5
             sb.append(Boolean.toString(compAttrs.isXcode())).append(';');
-            sb.append(compAttrs.getXcodeKey() == null ? "" : compAttrs.getXcodeKey()).append(';');
+            sb.append("").append(';');
             sb.append(Boolean.toString(compAttrs.isForceCompile())).append(';');
             sb.append(Boolean.toString(false /* FIXME noCompile */)).append(';');
             sb.append(Boolean.toString(compAttrs.isKeepXref())).append(';');

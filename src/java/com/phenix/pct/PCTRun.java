@@ -247,8 +247,8 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        runAttributes.setXCodeInit(xcode);
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override
@@ -374,29 +374,6 @@ public class PCTRun extends PCT implements IRunAttributes {
     // End of IRunAttribute methods
     // ****************************
 
-    public void xCodeInitProcedure() {
-        if (!xcodeDir.mkdirs()) {
-            throw new BuildException("Unable to create temp directory " + xcodeDir.getAbsolutePath());
-        }
-        ExecTask task = new ExecTask(this);
-
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        task.addEnv(var);
-
-        task.setExecutable(getExecPath("xcode").getAbsolutePath());
-        task.setDir(initProc.getParentFile());
-        task.createArg().setValue("-d");
-        task.createArg().setValue(xcodeDir.getAbsolutePath());
-        task.createArg().setValue(initProc.getName());
-        // Just to redirect output and not display it
-        task.setOutputproperty("xcodeout" + xcodeID);
-
-        log("xcoding init procedure...", Project.MSG_VERBOSE);
-        task.execute();
-    }
-
     /**
      * Do the work
      * 
@@ -433,12 +410,7 @@ public class PCTRun extends PCT implements IRunAttributes {
 
             // Startup procedure
             exec.createArg().setValue("-p"); //$NON-NLS-1$
-            if (runAttributes.getXCodeInit()) {
-                xCodeInitProcedure();
-                exec.createArg().setValue(new File(xcodeDir, initProc.getName()).getAbsolutePath());
-            } else {
-                exec.createArg().setValue(initProc.getAbsolutePath());
-            }
+            exec.createArg().setValue(initProc.getAbsolutePath());
             if (getIncludedPL() && !extractPL(pctLib)) {
                 throw new BuildException("Unable to extract pct.pl.");
             }
@@ -697,6 +669,13 @@ public class PCTRun extends PCT implements IRunAttributes {
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
                     isVerbose(), runAttributes.useNoErrorOnQuit()));
+
+            // XCode session key
+            if (runAttributes.getXCodeSessionKey() != null) {
+                bw.write(MessageFormat.format(this.getProgressProcedures().getXCodeSessionKey(),
+                        runAttributes.getXCodeSessionKey()));
+                bw.newLine();
+            }
 
             // Defines database connections and aliases
             int dbNum = 1;

@@ -46,4 +46,5 @@ public abstract interface ProgressProcedures {
     String getAfterRun();
     String getOutputParameterCall();
     String getQuit();
+    String getXCodeSessionKey();
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test69">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="xcode" />
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="key1">
+      <fileset dir="src" includes="test1.p" />
+    </PCTXCode>
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="key2">
+      <fileset dir="src" includes="test2.i" />
+    </PCTXCode>
+    <mkdir dir="build" />
+  </target>
+
+  <target name="test1">
+    <PCTCompile destDir="build" graphicalMode="false" dlcHome="${DLC}" xcodesessionkey="key1" xcode="true">
+      <fileset dir="xcode" includes="test1.p" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile destDir="build" graphicalMode="false" dlcHome="${DLC}" xcodesessionkey="key2" debugListing="true" xcode="true">
+      <fileset dir="src" includes="test2.p" />
+      <propath location="xcode" />
+    </PCTCompile>
+  </target>
+
+</project>

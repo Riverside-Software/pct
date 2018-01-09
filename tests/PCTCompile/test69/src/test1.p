@@ -1,0 +1,2 @@
+MESSAGE "Hello1".
+RETURN "0".

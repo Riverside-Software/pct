@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test47">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="xcode" />
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="key1">
+      <fileset dir="src" includes="test1.p" />
+    </PCTXCode>
+    <PCTXCode destDir="xcode" dlcHome="${DLC}" key="key2">
+      <fileset dir="src" includes="test2.p" />
+    </PCTXCode>
+  </target>
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="xcode/test1.p" dlcHome="${DLC}" xcodesessionkey="key1" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="xcode/test2.p" dlcHome="${DLC}" xcodesessionkey="key2" />
+  </target>
+
+</project>
