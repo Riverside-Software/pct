@@ -26,27 +26,9 @@
   <property name="sonar.oe.dlc.propath" value="true" />
   <property name="sonar.oe.coverage.profiler.dirs" value="profiler/progress" />
 
-  <!-- Specify sonar.branch property only when not on master and not on pull requests -->
-  <condition property="sonar.branch" value="${BRANCH_NAME}">
-    <and>
-      <not><equals arg1="${BRANCH_NAME}" arg2="master" /></not>
-      <not><matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" /></not>
-    </and>
-  </condition>
-
-  <!-- Incremental analysis in case of pull requests -->
-  <condition property="sonar.analysis.mode" value="issues">
-    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
-  </condition>
-  <propertyregex property="PR_NUMBER" input="${BRANCH_NAME}" regexp="PR-([0-9]*)" select="\1" casesensitive="false" />
-  <condition property="sonar.github.pullRequest" value="${PR_NUMBER}">
-    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
-  </condition>
-  <condition property="sonar.github.repository" value="Riverside-Software/pct">
-    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
-  </condition>
-  <condition property="sonar.github.oauth" value="${env.GH_PASSWORD}">
-    <matches string="${BRANCH_NAME}" pattern="PR-[0-9]*" />
+  <property name="sonar.branch.name" value="${BRANCH_NAME}" />
+  <condition property="sonar.branch.target" value="master">
+    <not><equals arg1="${BRANCH_NAME}" arg2="master" /></not>
   </condition>
 
   <target name="sonar">
