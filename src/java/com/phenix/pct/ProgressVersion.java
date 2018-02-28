@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-
 /**
  * Feeds properties with Progress version
  * 
@@ -31,7 +29,6 @@ public class ProgressVersion extends PCT {
     private String minorVersion;
     private String revision;
     private String patchLevel;
-    private String arch;
     private String rcodeVersion;
 
     public void setMajorVersion(String majorVersion) {
@@ -58,15 +55,12 @@ public class ProgressVersion extends PCT {
         this.reducedVersion = reducedVersion;
     }
 
-    public void setArch(String arch) {
-        this.arch = arch;
-    }
-
     public void setRCodeVersion(String rcodeVersion) {
         this.rcodeVersion = rcodeVersion;
     }
 
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         checkDlcHome();
         if (this.majorVersion != null)
             getProject().setNewProperty(this.majorVersion, Integer.toString(getDLCMajorVersion()));
@@ -80,8 +74,6 @@ public class ProgressVersion extends PCT {
             getProject().setNewProperty(this.fullVersion, getFullVersion());
         if (this.reducedVersion != null)
             getProject().setNewProperty(this.reducedVersion, getReducedVersion());
-        if (this.arch != null) 
-            getProject().setNewProperty(this.arch, (is64bits() ? "64 bits" : "32 bits"));
         if (this.rcodeVersion != null)
             getProject().setNewProperty(this.rcodeVersion, Long.toString(getRCodeVersion()));
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
@@ -26,7 +27,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,12 +42,6 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
     private static final String BASEDIR = "PCTCompileExt/";
-
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
-    public void test1() {
-        configureProject(BASEDIR + "test1/build.xml");
-        executeTarget("test");
-    }
 
     @Test(groups = {"v10"})
     public void test2() {
@@ -1046,6 +1040,80 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test64/build2/.dbg/file1.p").exists());
         expectLog("test-fr-1", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
         expectLog("test-fr-2", new String[] { "FR1-FR1", "7", "FR2-FR2", "7"});
+    }
+
+    @Test(groups = {"v10"})
+    public void test65() {
+        // Test without destDir
+        configureProject(BASEDIR + "test65/build.xml");
+        executeTarget("build_a");
+        executeTarget("build_b");
+        executeTarget("build_c");
+
+        assertTrue(new File(BASEDIR + "test65/a/src/a/a.r").exists());
+        assertTrue(new File(BASEDIR + "test65/b/src/b/b.r").exists());
+        assertTrue(new File(BASEDIR + "test65/c/src/c/c.r").exists());
+
+        assertFalse(new File(BASEDIR + "test65/b/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/a/a.r").exists());
+        assertFalse(new File(BASEDIR + "test65/c/src/b/b.r").exists());
+    }
+
+    @Test(groups = {"v10", "win"})
+    public void test66() throws InvalidRCodeException, IOException {
+        configureProject(BASEDIR + "test66/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test66/build/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6underline/v9.r").exists());
+        assertTrue(new File(BASEDIR + "test66/build-v6revvideo/v9.r").exists());
+
+        RCodeInfo rci0 = new RCodeInfo(new File(BASEDIR + "test66/build/v9.r"));
+        RCodeInfo rci1 = new RCodeInfo(new File(BASEDIR + "test66/build/v6.r"));
+        RCodeInfo rci2 = new RCodeInfo(new File(BASEDIR + "test66/build-v6/v9.r"));
+        assertEquals(rci1.getRCodeSize(), rci2.getRCodeSize());
+
+        RCodeInfo rci3 = new RCodeInfo(new File(BASEDIR + "test66/build/ul.r"));
+        RCodeInfo rci4 = new RCodeInfo(new File(BASEDIR + "test66/build-v6underline/v9.r"));
+        assertEquals(rci3.getRCodeSize(), rci4.getRCodeSize());
+
+        RCodeInfo rci5 = new RCodeInfo(new File(BASEDIR + "test66/build/rv.r"));
+        RCodeInfo rci6 = new RCodeInfo(new File(BASEDIR + "test66/build-v6revvideo/v9.r"));
+        assertEquals(rci5.getRCodeSize(), rci6.getRCodeSize());
+
+        assertNotEquals(rci0.getRCodeSize(), rci1.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci3.getRCodeSize());
+        assertNotEquals(rci1.getRCodeSize(), rci5.getRCodeSize());
+    }
+
+    @Test(groups = {"v10"})
+    public void test67() {
+        configureProject(BASEDIR + "test67/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test67/build-interface/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test67/build-impl/rssw/pct/TestImpl.r").exists());
+        assertFalse(new File(BASEDIR + "test67/build-impl/rssw/pct/ITest.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test68() {
+        configureProject(BASEDIR + "test68/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
+        assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
+        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test69() {
+        configureProject(BASEDIR + "test69/build.xml");
+        executeTarget("init");
+        executeTarget("test1");
+        executeTarget("test2");
+        assertTrue(new File(BASEDIR + "test69/build/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test69/build/test2.r").exists());
+        assertTrue(new File(BASEDIR + "test69/build/.dbg/test2.p").exists());
     }
 
     @Test(groups = {"v10"})

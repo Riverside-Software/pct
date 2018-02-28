@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class PCTBgCRC extends PCTBgRun {
         }
 
         public void setCustomOptions(Map<String, String> options) {
-
+            // No-op
         }
 
         public void handleResponse(String command, String parameter, boolean err, String customResponse, List<Message> returnValues) {
@@ -104,7 +104,8 @@ public class PCTBgCRC extends PCTBgRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (this.destFile == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$

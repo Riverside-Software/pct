@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="PCTCompile-test65">
+
+  <taskdef resource="PCT.properties" />
+
+  <path id="PCTPropath">
+    <pathelement path="a/src" />
+    <pathelement path="b/src" />
+    <pathelement path="c/src" />
+  </path>
+
+  <target name="build_a">
+    <PCTCompile dlcHome="${DLC}" multiCompile="false" relativePaths="true">
+      <fileset dir="a/src" includes="**/*.cls" />
+      <propath refid="PCTPropath" />
+    </PCTCompile>
+  </target>
+
+  <target name="build_b">
+    <PCTCompile dlcHome="${DLC}" multiCompile="false" relativePaths="true">
+      <fileset dir="b/src" includes="**/*.cls" />
+      <propath refid="PCTPropath" />
+    </PCTCompile>
+  </target>
+
+  <target name="build_c">
+    <PCTCompile dlcHome="${DLC}" multiCompile="false" relativePaths="true">
+      <fileset dir="c/src" includes="**/*.cls" />
+      <propath refid="PCTPropath" />
+    </PCTCompile>
+  </target>
+
+</project>

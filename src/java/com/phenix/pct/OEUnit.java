@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -78,7 +77,7 @@ public class OEUnit extends PCTRun {
     }
 
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         // Validation
         if (testFilesets == null)
             throw new BuildException("You must set a fileset (testFilesets).");
@@ -90,7 +89,7 @@ public class OEUnit extends PCTRun {
             destDir = getProject().getBaseDir();
 
         // Create a temp file which list test class to be executed
-        testFilesList = new File(System.getProperty("java.io.tmpdir"), testFileName);
+        testFilesList = new File(System.getProperty(PCT.TMPDIR), testFileName);
         try (FileOutputStream fos = new FileOutputStream(testFilesList);
                 OutputStreamWriter writer = new OutputStreamWriter(fos, getCharset());
                 BufferedWriter bw = new BufferedWriter(writer)) {
@@ -124,10 +123,9 @@ public class OEUnit extends PCTRun {
     @Override
     protected void cleanup() {
         super.cleanup();
-        // Clean Test list file
-        if (!getDebugPCT() && testFilesList.exists() && !testFilesList.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.42"),
-                    testFilesList.getAbsolutePath()), Project.MSG_INFO);
-        }
+
+        if (getDebugPCT())
+            return;
+        deleteFile(testFilesList);
     }
 }

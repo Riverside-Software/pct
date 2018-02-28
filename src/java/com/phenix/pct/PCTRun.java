@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -95,12 +95,12 @@ public class PCTRun extends PCT implements IRunAttributes {
             profilerOutID = PCT.nextRandomInt();
             xcodeID = PCT.nextRandomInt();
 
-            status = new File(System.getProperty("java.io.tmpdir"), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            initProc = new File(System.getProperty("java.io.tmpdir"), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            status = new File(System.getProperty(PCT.TMPDIR), "PCTResult" + statusID + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            initProc = new File(System.getProperty(PCT.TMPDIR), "pctinit" + initID + ".p"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             profilerParamFile = new File(
-                    System.getProperty("java.io.tmpdir"), "prof" + profilerID + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    System.getProperty(PCT.TMPDIR), "prof" + profilerID + ".pf"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             // XCode temp directory
-            xcodeDir = new File(System.getProperty("java.io.tmpdir"), "xcode" + xcodeID); 
+            xcodeDir = new File(System.getProperty(PCT.TMPDIR), "xcode" + xcodeID); 
         }
     }
 
@@ -247,8 +247,8 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        runAttributes.setXCodeInit(xcode);
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override
@@ -374,29 +374,6 @@ public class PCTRun extends PCT implements IRunAttributes {
     // End of IRunAttribute methods
     // ****************************
 
-    public void xCodeInitProcedure() {
-        if (!xcodeDir.mkdirs()) {
-            throw new BuildException("Unable to create temp directory " + xcodeDir.getAbsolutePath());
-        }
-        ExecTask task = new ExecTask(this);
-
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        task.addEnv(var);
-
-        task.setExecutable(getExecPath("xcode").getAbsolutePath());
-        task.setDir(initProc.getParentFile());
-        task.createArg().setValue("-d");
-        task.createArg().setValue(xcodeDir.getAbsolutePath());
-        task.createArg().setValue(initProc.getName());
-        // Just to redirect output and not display it
-        task.setOutputproperty("xcodeout" + xcodeID);
-
-        log("xcoding init procedure...", Project.MSG_VERBOSE);
-        task.execute();
-    }
-
     /**
      * Do the work
      * 
@@ -424,7 +401,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             // something.pl as Progress tries to open a procedure library, and miserably fails with
             // error 13.
             pctLib = new File(
-                    System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    System.getProperty(PCT.TMPDIR), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             preparePropath();
             createInitProcedure();
@@ -433,12 +410,7 @@ public class PCTRun extends PCT implements IRunAttributes {
 
             // Startup procedure
             exec.createArg().setValue("-p"); //$NON-NLS-1$
-            if (runAttributes.getXCodeInit()) {
-                xCodeInitProcedure();
-                exec.createArg().setValue(new File(xcodeDir, initProc.getName()).getAbsolutePath());
-            } else {
-                exec.createArg().setValue(initProc.getAbsolutePath());
-            }
+            exec.createArg().setValue(initProc.getAbsolutePath());
             if (getIncludedPL() && !extractPL(pctLib)) {
                 throw new BuildException("Unable to extract pct.pl.");
             }
@@ -692,11 +664,18 @@ public class PCTRun extends PCT implements IRunAttributes {
             if (this.getProgressProcedures().needRedirector()) {
                 outputStreamID = PCT.nextRandomInt();
                 outputStream = new File(
-                        System.getProperty("java.io.tmpdir"), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        System.getProperty(PCT.TMPDIR), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
                     isVerbose(), runAttributes.useNoErrorOnQuit()));
+
+            // XCode session key
+            if (runAttributes.getXCodeSessionKey() != null) {
+                bw.write(MessageFormat.format(this.getProgressProcedures().getXCodeSessionKey(),
+                        runAttributes.getXCodeSessionKey()));
+                bw.newLine();
+            }
 
             // Defines database connections and aliases
             int dbNum = 1;
@@ -817,11 +796,11 @@ public class PCTRun extends PCT implements IRunAttributes {
             if (this.runAttributes.getOutputParameters() != null) {
                 for (OutputParameter param : runAttributes.getOutputParameters()) {
                     File tmpFile = new File(
-                            System.getProperty("java.io.tmpdir"), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            System.getProperty(PCT.TMPDIR), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     param.setTempFileName(tmpFile);
                     bw.write(MessageFormat.format(this.getProgressProcedures()
-                            .getOutputParameterCall(), new Object[]{param.getProgressVar(),
-                            escapeString(tmpFile.getAbsolutePath())}));
+                            .getOutputParameterCall(), param.getProgressVar(),
+                            escapeString(tmpFile.getAbsolutePath())));
                 }
             }
             // Quit
@@ -829,11 +808,9 @@ public class PCTRun extends PCT implements IRunAttributes {
 
             // Private procedures
             bw.write(MessageFormat.format(this.getProgressProcedures().getReturnProc(),
-                    new Object[]{escapeString(status.getAbsolutePath())}));
+                    escapeString(status.getAbsolutePath())));
             bw.write(MessageFormat.format(this.getProgressProcedures().getOutputParameterProc(),
                     new Object[]{}));
-
-            bw.close();
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class PLResource extends ArchiveResource {
         // Nothing....
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         FileResource res = (FileResource) this.getArchive();
         return new PLReader(res.getFile()).getInputStream(e);
@@ -65,10 +66,12 @@ public class PLResource extends ArchiveResource {
             skip(e.getOffset());
         }
 
+        @Override
         public int available() throws IOException {
             return e.getSize() - bytesRead;
         }
 
+        @Override
         public int read() throws IOException {
             if (bytesRead > e.getSize())
                 return -1;
@@ -76,10 +79,12 @@ public class PLResource extends ArchiveResource {
             return super.read();
         }
 
+        @Override
         public int read(byte[] b) throws IOException {
             throw new UnsupportedOperationException("Not supported 1");
         }
 
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             if (bytesRead >= e.getSize())
                 return -1;

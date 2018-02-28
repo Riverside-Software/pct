@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,4 +46,5 @@ public abstract interface ProgressProcedures {
     String getAfterRun();
     String getOutputParameterCall();
     String getQuit();
+    String getXCodeSessionKey();
 }

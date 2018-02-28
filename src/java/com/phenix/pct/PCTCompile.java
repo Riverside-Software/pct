@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -38,13 +39,15 @@ import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Class for compiling Progress procedures
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTCompile extends PCTRun {
     private CompilationAttributes compAttrs;
 
     // Internal use
+    private int compId = -1;
+    private File compDir = null;
     private int fsListId = -1;
     private File fsList = null;
     private int paramsId = -1;
@@ -60,8 +63,10 @@ public class PCTCompile extends PCTRun {
 
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        compId = PCT.nextRandomInt();
+        fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        params = new File(System.getProperty(PCT.TMPDIR), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        compDir = new File(System.getProperty(PCT.TMPDIR), "pctcomp" + compId); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -94,7 +99,7 @@ public class PCTCompile extends PCTRun {
     /**
      * Generates text file with all files from resource collections
      */
-    private void writeFileList() throws BuildException {
+    private void writeFileList() {
         // Map to quickly retrieve files associated with a base dir
         Map<String, List<String>> files = new HashMap<>();
         // And a list to keep order
@@ -153,23 +158,21 @@ public class PCTCompile extends PCTRun {
             }
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
-        } 
+        }
     }
 
     /**
      * Generates parameter file for pct/compile.p
      */
-    private void writeParams() throws BuildException {
+    private void writeParams() {
         try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
-            bw.write("OUTPUTDIR=" + compAttrs.getDestDir().getAbsolutePath()); //$NON-NLS-1$
-            bw.newLine();
+            if (compAttrs.getDestDir() != null) {
+                bw.write("OUTPUTDIR=" + compAttrs.getDestDir().getAbsolutePath()); //$NON-NLS-1$
+                bw.newLine();
+            }
             bw.write("PCTDIR=" + compAttrs.getxRefDir().getAbsolutePath()); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("MINSIZE=" + (compAttrs.isMinSize() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("MD5=" + (compAttrs.isMd5() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
@@ -217,28 +220,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("MULTICOMPILE=" + (compAttrs.isMultiCompile() ? 1 : 0));
             bw.newLine();
-            bw.write("STREAM-IO=" + (compAttrs.isStreamIO() ? 1 : 0));
-            bw.newLine();
-            if (compAttrs.isV6Frame()) {
-                bw.write("V6FRAME=1");
-                bw.newLine();
-            }
-            bw.write("SAVER=" + (compAttrs.isSaveR() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("RELATIVE=" + (runAttributes.useRelativePaths() ? 1 : 0));
             bw.newLine();
-            if (compAttrs.getLanguages() != null) {
-                bw.write("LANGUAGES=" + compAttrs.getLanguages()); //$NON-NLS-1$
-                bw.newLine();
-                if (compAttrs.getGrowthFactor() > 0) {
-                    bw.write("GROWTH=" + compAttrs.getGrowthFactor()); //$NON-NLS-1$
-                    bw.newLine();
-                }
-            }
-            if (compAttrs.getXcodeKey() != null) {
-                bw.write("XCODEKEY=" + compAttrs.getXcodeKey()); //$NON-NLS-1$
-                bw.newLine();
-            }
 
             if (compAttrs.getProgPerc() > 0) {
                 bw.write("PROGPERC=" + compAttrs.getProgPerc()); //$NON-NLS-1$
@@ -263,7 +246,7 @@ public class PCTCompile extends PCTRun {
     private boolean createDir(File dir) {
         if (dir.exists() && !dir.isDirectory()) {
             return false;
-        } 
+        }
         if (!dir.exists() && !dir.mkdirs()) {
             return false;
         }
@@ -272,18 +255,20 @@ public class PCTCompile extends PCTRun {
 
     /**
      * Do the work
-     * 
+     *
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         // Create dest directory if necessary
-        if (compAttrs.getDestDir() == null) {
-            cleanup();
-            throw new BuildException(Messages.getString("PCTCompile.34")); //$NON-NLS-1$
-        }
-        if (!createDir(compAttrs.getDestDir())) {
+        if (compAttrs.getDestDir() != null && !createDir(compAttrs.getDestDir())) {
             cleanup();
             throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "destDir")); //$NON-NLS-1$
+        }
+
+        if (compDir.exists() || !compDir.mkdirs()) {
+            this.cleanup();
+            throw new BuildException("Unable to create temp directory for compile procedure");
         }
 
         // Test xRef directory
@@ -296,17 +281,13 @@ public class PCTCompile extends PCTRun {
         }
 
         // If preprocessDir is set, then preprocess is always set to true
-        if (compAttrs.getPreprocessDir() != null) {
-            if (!createDir(compAttrs.getPreprocessDir())) {
-                cleanup();
-                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "preprocessDir")); //$NON-NLS-1$
-            }
+        if (compAttrs.getPreprocessDir() != null && !createDir(compAttrs.getPreprocessDir())) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "preprocessDir")); //$NON-NLS-1$
         }
-        if (compAttrs.getDebugListingDir() != null) {
-            if (!createDir(compAttrs.getDebugListingDir())) {
-                cleanup();
-                throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
-            }
+        if (compAttrs.getDebugListingDir() != null && !createDir(compAttrs.getDebugListingDir())) {
+            cleanup();
+            throw new BuildException(MessageFormat.format(Messages.getString("PCTCompile.36"), "debugListingDir")); //$NON-NLS-1$
         }
 
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
@@ -333,15 +314,17 @@ public class PCTCompile extends PCTRun {
 
         // Check valid value for ProgPerc
         if ((compAttrs.getProgPerc() < 0) || (compAttrs.getProgPerc() > 100)) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.91"), compAttrs.getProgPerc()), Project.MSG_WARN); //$NON-NLS-1$          
+            log(MessageFormat.format(Messages.getString("PCTCompile.91"), compAttrs.getProgPerc()), Project.MSG_WARN); //$NON-NLS-1$
             compAttrs.setProgPerc(0);
         }
 
         checkDlcHome();
 
         try {
+            compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
             writeFileList();
             writeParams();
+            runAttributes.addPropath(new Path(getProject(), compDir.getAbsolutePath()));
             runAttributes.setProcedure(this.getProgressProcedures().getCompileProcedure());
             runAttributes.setParameter(params.getAbsolutePath());
             super.execute();
@@ -356,16 +339,10 @@ public class PCTCompile extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        if (!getDebugPCT()) {
-            if (fsList.exists() && !fsList.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), fsList.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-
-            if (params.exists() && !params.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), params.getAbsolutePath()), Project.MSG_INFO); //$NON-NLS-1$
-            }
-        }
+        if (getDebugPCT())
+            return;
+        deleteFile(fsList);
+        deleteFile(params);
+        deleteFile(compDir);
     }
 }

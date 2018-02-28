@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,20 +16,18 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Path;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Path;
 
 /**
  * Binary dump task
@@ -63,7 +61,7 @@ public class PCTBinaryDump extends PCT {
         super();
 
         tblListID = PCT.nextRandomInt();
-        tblListFile = new File(System.getProperty("java.io.tmpdir"), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tblListFile = new File(System.getProperty(PCT.TMPDIR), "tblList" + tblListID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -136,7 +134,8 @@ public class PCTBinaryDump extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
 
         checkDlcHome();
         if (dbConnList == null) {
@@ -167,16 +166,14 @@ public class PCTBinaryDump extends PCT {
                 ExecTask exec2 = dumpTask(s);
                 exec2.execute();
             }
-            reader.close();
         } catch (IOException ioe) {
-            cleanup();
             throw new BuildException(Messages.getString("PCTBinaryDump.1")); //$NON-NLS-1$
         } finally {
             cleanup();
         }
     }
 
-    private ExecTask dumpTask(String table) throws BuildException {
+    private ExecTask dumpTask(String table) {
         File executable;
         ExecTask exec = new ExecTask(this);
 
@@ -243,10 +240,7 @@ public class PCTBinaryDump extends PCT {
      * 
      */
     protected void cleanup() {
-        if (tblListFile.exists() && !tblListFile.delete()) {
-            log(MessageFormat.format(
-                    Messages.getString("PCTBinaryDump.3"), tblListFile.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
-        }
+        deleteFile(tblListFile);
     }
 
     public static class Include extends Pattern {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 public abstract class BackgroundWorker {
     private static final AtomicInteger threadCounter = new AtomicInteger(0);
 
     private int threadNumber;
-    private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -58,9 +58,8 @@ public abstract class BackgroundWorker {
     }
 
     public final void initialize(Socket socket) throws IOException {
-        this.socket = socket;
-        this.reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream(), parent.getCharset()));
-        this.writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream(), parent.getCharset()));
+        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), parent.getCharset()));
+        this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), parent.getCharset()));
 
         // TODO Should be HELLO or something like that...
         reader.readLine();
@@ -132,7 +131,7 @@ public abstract class BackgroundWorker {
                     }
                 }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                parent.log(ioe, Project.MSG_ERR);
                 end = true;
             }
         }
@@ -144,7 +143,7 @@ public abstract class BackgroundWorker {
             sendCommand("setThreadNumber", Integer.toString(threadNumber));
         } else if (status == 1) {
             if (dbConnections.hasNext()) {
-                PCTConnection dbc = (PCTConnection) dbConnections.next();
+                PCTConnection dbc = dbConnections.next();
                 sendCommand("connect", dbc.createBackgroundConnectString());
             } else {
                 status = 2;
@@ -170,7 +169,7 @@ public abstract class BackgroundWorker {
             sendCommand("quit", "");
             quit = true;
         } else if (status == 5) {
-
+            // No-op
         }
     }
 

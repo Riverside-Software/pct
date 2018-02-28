@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -98,7 +98,8 @@ public class RestGen extends PCT {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (projectDir == null) {
             throw new BuildException(Messages.getString("PCTProxygen.1")); //$NON-NLS-1$
         }
@@ -113,8 +114,6 @@ public class RestGen extends PCT {
         }
 
         pxg.setFork(true);
-        // No included JDK on UNIX
-        // if (Os.isFamily(Os.FAMILY_WINDOWS) || (Os.isFamily(Os.FAMILY_UNIX) /* >= v11 */))
         pxg.setJvm(getJVM().getAbsolutePath());
         pxg.setDir(this.getProject().getBaseDir());
 

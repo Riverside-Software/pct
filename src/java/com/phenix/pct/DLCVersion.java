@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -159,6 +159,9 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return date;
     }
 
+    /**
+     * @returns "Bitness" of rcode, valid until v10.x
+     */
     public boolean is64bits() {
         return arch;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -82,8 +82,9 @@ public class PCTDumpSchema extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+    @Override
+    public void execute() {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTDumpSchema.0")); //$NON-NLS-1$
         }

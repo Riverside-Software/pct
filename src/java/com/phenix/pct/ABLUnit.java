@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -215,10 +215,8 @@ public class ABLUnit extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        // Clean JSON File
-        if (!getDebugPCT() && json.exists() && !json.delete()) {
-            log(MessageFormat.format(Messages.getString("PCTRun.5"), json.getAbsolutePath()),
-                    Project.MSG_INFO);
-        }
+        if (getDebugPCT())
+            return;
+        deleteFile(json);
     }
 }

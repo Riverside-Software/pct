@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ public class PCTLoadSchema extends PCTRun {
     private boolean commitWhenErrors = false;
     private boolean onlineChanges = false;
     private boolean inactiveIndexes = false;
-    private String callbackClass = "", analyzerClass = "";
+    private String callbackClass = "";
+    private String analyzerClass = "";
 
     // Internal use
     private int fsListId = -1;
@@ -59,7 +60,7 @@ public class PCTLoadSchema extends PCTRun {
         super();
 
         fsListId = PCT.nextRandomInt();
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void add(ResourceCollection rc) {
@@ -121,17 +122,17 @@ public class PCTLoadSchema extends PCTRun {
      */
     @Override
     public void execute() {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.0")); //$NON-NLS-1$
         }
 
-        if ((srcFile == null) && (rcs.size() == 0)) {
+        if ((srcFile == null) && rcs.isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.2")); //$NON-NLS-1$
         }
 
-        if ((srcFile != null) && (rcs.size() > 0)) {
+        if ((srcFile != null) && !rcs.isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadSchema.5")); //$NON-NLS-1$
         }
@@ -170,7 +171,7 @@ public class PCTLoadSchema extends PCTRun {
         }
     }
 
-    private void writeFileList() throws BuildException {
+    private void writeFileList() {
         try (OutputStream os = new FileOutputStream(fsList); Writer w = new OutputStreamWriter(os); BufferedWriter bw = new BufferedWriter(w)) {
             if (srcFile != null) {
                 bw.write(srcFile.getAbsolutePath());
@@ -203,11 +204,9 @@ public class PCTLoadSchema extends PCTRun {
     protected void cleanup() {
         super.cleanup();
 
-        if (!this.getDebugPCT()) {
-            if (this.fsList.exists() && !this.fsList.delete()) {
-                log(MessageFormat.format(
-                        Messages.getString("PCTCompile.42"), this.fsList.getAbsolutePath()), Project.MSG_VERBOSE); //$NON-NLS-1$
-            }
-        }
+        if (getDebugPCT())
+            return;
+
+        deleteFile(fsList);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public class Profiler {
      * @param backgroundTask
      * @throws BuildException
      */
-    public void validate(boolean backgroundTask) throws BuildException {
+    public void validate(boolean backgroundTask) {
         if (!enabled)
             return;
         if ((outputDir == null) && (outputFile == null))

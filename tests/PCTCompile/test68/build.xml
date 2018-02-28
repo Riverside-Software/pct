@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test66">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTCompile destDir="src1" dlcHome="${DLC}">
+      <fileset dir="src1" includes="**/*.cls" />
+      <propath location="src1" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+    <mkdir dir="build-impl" />
+    <PCTCompile destDir="build-impl" dlcHome="${DLC}">
+      <fileset dir="src2" includes="**/*.cls" />
+      <propath location="src1" />
+      <propath location="build-impl" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

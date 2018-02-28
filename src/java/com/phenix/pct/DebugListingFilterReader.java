@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ public class DebugListingFilterReader extends BaseParamFilterReader implements C
      * 
      * @exception IOException if the underlying stream throws an IOException during reading
      */
+    @Override
     public int read() throws IOException {
         if (!getInitialized()) {
             setInitialized(true);

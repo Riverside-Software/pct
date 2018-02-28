@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -112,6 +112,16 @@ public interface ICompilationAttributes {
      * Enables v6Frame attribute in COMPILE statement
      */
     void setv6Frame(boolean v6Frame);
+
+    /**
+     * Enables USE-REVVIDEO attribute in COMPILE statement
+     */
+    void setUseRevvideo(boolean useRevvideo);
+
+    /**
+     * Enables USE-UNDERLINE attribute in COMPILE statement
+     */
+    void setUseUnderline(boolean useUnderline);
 
     /**
      * Generates a .xref in the .pct directory, result of XREF option in the COMPILE statement

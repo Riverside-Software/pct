@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.phenix.pct;
 
 import java.util.ResourceBundle;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Echo;
 
@@ -27,7 +26,8 @@ public class Version extends Task {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         String str = "PCT Version : " + RESOURCE_BUNDLE.getString("PCTVersion");
         Echo echo = new Echo();
         echo.bindToOwner(this);

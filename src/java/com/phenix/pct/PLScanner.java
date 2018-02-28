@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class PLScanner extends ArchiveScanner {
     protected void fillMapsFromArchive(Resource archive, String encoding, Map fileEntries,
             Map matchFileEntries, Map dirEntries, Map matchDirEntries) {
         File srcFile = null;
-        FileProvider fp = (FileProvider) archive.as(FileProvider.class);
+        FileProvider fp = archive.as(FileProvider.class);
         if (fp != null) {
             srcFile = fp.getFile();
         } else {

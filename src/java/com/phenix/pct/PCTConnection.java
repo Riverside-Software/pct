@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -275,7 +275,7 @@ public class PCTConnection extends DataType {
         }
 
         if (singleUser != null) {
-            if (singleUser == true) {
+            if (singleUser) {
                 list.add("-1"); //$NON-NLS-1$    
             }
             else {
@@ -305,7 +305,7 @@ public class PCTConnection extends DataType {
         }
 
         if (readOnly != null ) {
-            if ( readOnly == true ) {
+            if (readOnly) {
                 list.add("-RO");
             }
             else
@@ -369,7 +369,7 @@ public class PCTConnection extends DataType {
      * @param task Exec task to populate
      * @throws BuildException Something went wrong
      */
-    public void createArguments(ExecTask task) throws BuildException {
+    public void createArguments(ExecTask task) {
         for (String str : getConnectParametersList()) {
             task.createArg().setValue(str);
         }

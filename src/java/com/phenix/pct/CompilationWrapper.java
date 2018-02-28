@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -196,6 +196,16 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setUseRevvideo(boolean useRevvideo) {
+        compAttributes.setUseRevvideo(useRevvideo);
+    }
+
+    @Override
+    public void setUseUnderline(boolean useUnderline) {
+        compAttributes.setUseUnderline(useUnderline);
+    }
+
+    @Override
     public void setKeepXref(boolean keepXref) {
         compAttributes.setKeepXref(keepXref);
     }
@@ -230,9 +240,10 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         compAttributes.setXCode(xcode);
     }
 
+    @Deprecated
     @Override
     public void setXCodeKey(String xcodeKey) {
-        compAttributes.setXCodeKey(xcodeKey);
+        setXCodeSessionKey(xcodeKey);
     }
 
     @Override
@@ -472,8 +483,8 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        throw new BuildException("Can't set XCodeInit attribute here");
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }
 
     @Override

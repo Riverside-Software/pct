@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,13 +42,14 @@ public class PCTSchemaDoc extends PCTRun {
      * 
      * @throws BuildException If attributes are not valid
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         if (this.destFile == null) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.0")); //$NON-NLS-1$
         }
 
-        if (runAttributes.getAllDbConnections().size() == 0) {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             this.cleanup();
             throw new BuildException(Messages.getString("PCTSchemaDoc.1")); //$NON-NLS-1$
         }

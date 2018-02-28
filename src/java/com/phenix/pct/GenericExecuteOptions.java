@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean noErrorOnQuit = false;
     private boolean superInit = true;
     private File output;
-    private boolean xCodeInit = false;
+    private String xCodeSessionKey = null;
 
     public GenericExecuteOptions(Task parent) {
         this.parent = parent;
@@ -305,11 +305,6 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
-    public void setXCodeInit(boolean xcode) {
-        this.xCodeInit = xcode;
-    }
-
-    @Override
     public void setMainCallback(String mainCallback) {
         this.mainCallback = mainCallback;
     }
@@ -327,6 +322,11 @@ public class GenericExecuteOptions implements IRunAttributes {
     @Override
     public void setOutput(File output) {
         this.output = output;
+    }
+
+    @Override
+    public void setXCodeSessionKey(String xCodeSessionKey) {
+        this.xCodeSessionKey = xCodeSessionKey;
     }
 
     // End of IRunAttribute methods
@@ -448,10 +448,6 @@ public class GenericExecuteOptions implements IRunAttributes {
         return procedure;
     }
 
-    public boolean getXCodeInit() {
-        return xCodeInit;
-    }
-
     public File getAssemblies() {
         return assemblies;
     }
@@ -470,6 +466,10 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public File getOutput() {
         return output;
+    }
+
+    public String getXCodeSessionKey() {
+        return xCodeSessionKey;
     }
 
     protected List<String> getCmdLineParameters() {

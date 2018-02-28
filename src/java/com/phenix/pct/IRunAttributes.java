@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -206,9 +206,9 @@ public interface IRunAttributes {
     void setProcedure(String procedure);
 
     /**
-     * XCode init procedure
+     * XCode session key
      */
-    void setXCodeInit(boolean xcode);
+    void setXCodeSessionKey(String xCodeSessionKey);
 
     /**
      * Add a database alias

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public class PCTWSComp extends PCTRun {
         fsListId = PCT.nextRandomInt();
         paramsId = PCT.nextRandomInt();
 
-        fsList = new File(System.getProperty("java.io.tmpdir"), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        params = new File(System.getProperty("java.io.tmpdir"), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        fsList = new File(System.getProperty(PCT.TMPDIR), "pct_filesets" + fsListId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        params = new File(System.getProperty(PCT.TMPDIR), "pct_params" + paramsId + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -72,6 +72,7 @@ public class PCTWSComp extends PCTRun {
      * 
      * @param failOnError "true|false|on|off|yes|no"
      */
+    @Override
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
     }
@@ -145,7 +146,7 @@ public class PCTWSComp extends PCTRun {
      * 
      * @throws BuildException
      */
-    private void writeParams() throws BuildException {
+    private void writeParams() {
         try (FileWriter fw = new FileWriter(params); BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("FILESETS=" + fsList.getAbsolutePath()); //$NON-NLS-1$
             bw.newLine();
@@ -171,7 +172,8 @@ public class PCTWSComp extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
 
         if (this.destDir == null) {
             this.cleanup();
@@ -211,18 +213,14 @@ public class PCTWSComp extends PCTRun {
      * 
      * @see PCTRun#cleanup
      */
+    @Override
     protected void cleanup() {
         super.cleanup();
 
-        if (!this.getDebugPCT()) {
-            if (this.fsList.exists() && !this.fsList.delete()) {
-                log(Messages.getString("PCTWSComp.30") + this.fsList.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
-            }
-
-            if (this.params.exists() && !this.params.delete()) {
-                log(Messages.getString("PCTWSComp.30") + this.params.getAbsolutePath(), Project.MSG_VERBOSE); //$NON-NLS-1$
-            }
-        }
+        if (getDebugPCT())
+            return;
+        deleteFile(fsList);
+        deleteFile(params);
     }
 
 }

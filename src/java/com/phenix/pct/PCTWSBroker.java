@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,11 +22,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.rmi.server.UID;
-import java.text.MessageFormat;
 import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
@@ -71,7 +69,7 @@ public class PCTWSBroker extends PCTBroker {
         super();
 
         tmpFileID = new Random().nextInt() & 0xffff;
-        tmpFile = new File(System.getProperty("java.io.tmpdir"), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        tmpFile = new File(System.getProperty(PCT.TMPDIR), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -228,8 +226,6 @@ public class PCTWSBroker extends PCTBroker {
             writeDeltaFile();
             Task task = getCmdLineMergeTask(propFile, tmpFile);
             task.execute();
-        } catch (BuildException be) {
-            throw be;
         } finally {
             // Unwanted side effect of using PCTRun in server attribute, empty temporary files need
             // to be cleaned
@@ -314,7 +310,6 @@ public class PCTWSBroker extends PCTBroker {
                     bw.println("uuid=" + this.uid);
                 }
             }
-            bw.close();
         } catch (IOException caught) {
             throw new BuildException("Unable to create temp file", caught);
         }
@@ -382,12 +377,7 @@ public class PCTWSBroker extends PCTBroker {
     }
 
     private void cleanup() {
-        if (this.tmpFile.exists() && !this.tmpFile.delete()) {
-            log(
-                    MessageFormat
-                            .format(
-                                    Messages.getString("PCTASBroker.1"), new Object[]{this.tmpFile.getAbsolutePath()}), Project.MSG_VERBOSE); //$NON-NLS-1$
-        }
+        deleteFile(tmpFile);
     }
 
     public String getAppURL() {

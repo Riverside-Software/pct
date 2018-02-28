@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2017 Riverside Software
+ * Copyright 2005-2018 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class PCTLoadData extends PCTRun {
 
     public void addConfiguredTable(PCTTable table) {
         if (this.tableList == null) {
-            tableList = new ArrayList<PCTTable>();
+            tableList = new ArrayList<>();
         }
         tableList.add(table);
     }
@@ -99,7 +99,7 @@ public class PCTLoadData extends PCTRun {
      */
     public void addConfiguredFileset(FileSet set) {
         if (this.tableFilesets == null) {
-            tableFilesets = new ArrayList<FileSet>();
+            tableFilesets = new ArrayList<>();
         }
         tableFilesets.add(set);
     }
@@ -109,7 +109,7 @@ public class PCTLoadData extends PCTRun {
     }
 
     private Collection<String> getTableList() {
-        Collection<String> list = new ArrayList<String>();
+        Collection<String> list = new ArrayList<>();
         if (tables != null)
             list.addAll(tables);
 
@@ -129,13 +129,13 @@ public class PCTLoadData extends PCTRun {
             }
         }
 
-        if (list.size() == 0)
+        if (list.isEmpty())
             list.add("ALL");
 
         return list;
     }
 
-    private void checkAttributes() throws BuildException {
+    private void checkAttributes() {
         // Only one of srcDir / srcFile can be used
         if ((srcDir == null) && (srcFile == null))
             throw new BuildException(Messages.getString("PCTLoadData.4")); //$NON-NLS-1$
@@ -158,8 +158,9 @@ public class PCTLoadData extends PCTRun {
      * 
      * @throws BuildException Something went wrong
      */
-    public void execute() throws BuildException {
-        if (runAttributes.getAllDbConnections().size() == 0) {
+    @Override
+    public void execute() {
+        if (runAttributes.getAllDbConnections().isEmpty()) {
             cleanup();
             throw new BuildException(Messages.getString("PCTLoadData.0")); //$NON-NLS-1$
         }
@@ -193,7 +194,7 @@ public class PCTLoadData extends PCTRun {
      * Dummy implementation
      */
     private static String join(Collection<String> strings) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String str : strings) {
             if (sb.length() > 0) sb.append(',');
             sb.append(str);
