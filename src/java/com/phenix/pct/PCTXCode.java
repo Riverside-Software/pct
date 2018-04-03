@@ -16,15 +16,18 @@
  */
 package com.phenix.pct;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
 
@@ -39,12 +42,10 @@ public class PCTXCode extends PCT {
     private File destDir = null;
     private int tmpLogId = -1;
     private File tmpLog = null;
+    private int filesListId = -1;
+    private File filesList = null;
     private boolean overwrite = false;
     private boolean lowercase = false;
-
-    // Internal use
-    private ExecTask exec = null;
-    private Commandline.Argument arg = null;
 
     /**
      * Default constructor
@@ -54,6 +55,8 @@ public class PCTXCode extends PCT {
 
         tmpLogId = PCT.nextRandomInt();
         tmpLog = new File(System.getProperty(PCT.TMPDIR), "pct_outp" + tmpLogId + ".log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        filesListId = PCT.nextRandomInt();
+        filesList = new File(System.getProperty(PCT.TMPDIR), "xcode" + filesListId + ".input"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -102,28 +105,6 @@ public class PCTXCode extends PCT {
     }
 
     /**
-     * Creates destination directories, according to source directory tree
-     * 
-     * @throws BuildException Something went wrong
-     */
-    private void createDirectories() {
-        for (FileSet fs : filesets) {
-            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                int j = str.replace(File.separatorChar, '/').lastIndexOf('/');
-
-                if (j != -1) {
-                    File f2 = new File(destDir, str.substring(0, j));
-
-                    if (!f2.exists() && !f2.mkdirs()) {
-                        throw new BuildException(MessageFormat.format(
-                                Messages.getString("PCTXCode.3"), f2.getAbsolutePath())); //$NON-NLS-1$
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Do the work
      * 
      * @throws BuildException Something went wrong
@@ -139,39 +120,55 @@ public class PCTXCode extends PCT {
         log(Messages.getString("PCTXCode.5"), Project.MSG_INFO); //$NON-NLS-1$
 
         try {
-            createDirectories();
-            createExecTask();
-
             for (FileSet fs : filesets) {
-                exec.setDir(fs.getDir(getProject()));
-
-                for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                    File trgFile = new File(destDir, str);
-                    File srcFile = new File(fs.getDir(getProject()), str);
-
-                    if (!trgFile.exists() || overwrite
-                            || (srcFile.lastModified() > trgFile.lastModified())) {
-                        log(MessageFormat.format(
-                                Messages.getString("PCTXCode.6"), trgFile.toString()), Project.MSG_VERBOSE); //$NON-NLS-1$
-                        arg.setValue(str);
-                        if (overwrite) {
-                            if (!trgFile.delete())
-                                throw new BuildException(Messages.getString("PCTXCode.7"));
-                        }
-                        exec.execute();
-                    }
-                }
+                Task task = createExecTask(fs);
+                task.execute();
             }
             cleanup();
         } catch (BuildException be) {
             cleanup();
             throw be;
         }
-
     }
 
-    private void createExecTask() {
-        exec = new ExecTask(this);
+    private void createFileList(FileSet fs) {
+        try (FileWriter w = new FileWriter(filesList); BufferedWriter writer = new BufferedWriter(w)) {
+            for (String str : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+                int j = str.replace(File.separatorChar, '/').lastIndexOf('/');
+
+                if (j != -1) {
+                    File f2 = new File(destDir, str.substring(0, j));
+
+                    if (!f2.exists() && !f2.mkdirs()) {
+                        throw new BuildException(MessageFormat.format(
+                                Messages.getString("PCTXCode.3"), f2.getAbsolutePath())); //$NON-NLS-1$
+                    }
+                }
+
+                File trgFile = new File(destDir, str);
+                File srcFile = new File(fs.getDir(getProject()), str);
+
+                if (!trgFile.exists() || overwrite
+                        || (srcFile.lastModified() > trgFile.lastModified())) {
+                    log(MessageFormat.format(
+                            Messages.getString("PCTXCode.6"), trgFile.toString()), Project.MSG_VERBOSE); //$NON-NLS-1$
+                    writer.write(str);
+                    writer.newLine();
+
+                    if (overwrite) {
+                        if (!trgFile.delete())
+                            throw new BuildException(Messages.getString("PCTXCode.7"));
+                    }
+                }
+            }
+        } catch (IOException caught) {
+            throw new BuildException(caught);
+        }
+    }
+
+    private Task createExecTask(FileSet fs) {
+        ExecTask exec = new ExecTask(this);
+        exec.setDir(fs.getDir(getProject()));
         exec.setOutput(tmpLog);
         exec.setExecutable(getExecPath("xcode").toString()); //$NON-NLS-1$
 
@@ -192,10 +189,16 @@ public class PCTXCode extends PCT {
             exec.createArg().setValue("-l"); //$NON-NLS-1$
         }
 
-        arg = exec.createArg();
+        exec.createArg().setValue("-");
+
+        createFileList(fs);
+        exec.setInput(filesList);
+
+        return exec;
     }
 
     protected void cleanup() {
         deleteFile(tmpLog);
+        deleteFile(filesList);
     }
 }
