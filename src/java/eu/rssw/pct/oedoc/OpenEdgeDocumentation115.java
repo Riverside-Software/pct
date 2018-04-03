@@ -122,6 +122,10 @@ public class OpenEdgeDocumentation115 extends PCT {
         if (this.destDir == null) {
             throw new BuildException(MessageFormat.format(Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
         }
+        if (!createDir(destDir)) {
+            throw new BuildException("Unable to create destination directory");
+        }
+
         // There must be at least one fileset
         if (filesets.isEmpty()) {
             throw new BuildException(Messages.getString("OpenEdgeClassDocumentation.1"));

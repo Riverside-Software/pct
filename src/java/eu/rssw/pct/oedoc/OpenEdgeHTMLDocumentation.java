@@ -100,6 +100,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
             throw new BuildException(MessageFormat.format(
                     Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
         }
+        if (!createDir(destDir)) {
+            throw new BuildException("Unable to create destination directory");
+        }
         // And source directory too
         if (sourceDir == null) {
             throw new BuildException(MessageFormat.format(
