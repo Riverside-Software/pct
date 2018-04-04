@@ -1,0 +1,1046 @@
+ADD TABLE "XL_CustomFilter"
+  AREA "Schema Area"
+  DESCRIPTION "A list of user-defined filters that figure in the extract (XREF)."
+  FROZEN
+  DUMP-NAME "xl_cust"
+
+ADD FIELD "Filter" OF "XL_CustomFilter" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Filter"
+  POSITION 2
+  MAX-WIDTH 160
+  COLUMN-LABEL "Filter"
+  ORDER 10
+
+ADD FIELD "RecType" OF "XL_CustomFilter" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  POSITION 3
+  MAX-WIDTH 16
+  LENGTH 0
+  ORDER 20
+
+ADD INDEX "RecType-Filter" ON "XL_CustomFilter" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "RecType" ASCENDING 
+  INDEX-FIELD "Filter" ASCENDING 
+
+ADD INDEX "FilterIDX" ON "XL_CustomFilter" 
+  AREA "Schema Area"
+  INDEX-FIELD "Filter" ASCENDING 
+
+ADD TABLE "XL_Glossary"
+  AREA "Schema Area"
+  DESCRIPTION "Keeps track of linked glossaries"
+  FROZEN
+  DUMP-NAME "xl_glsry"
+
+ADD FIELD "GlossaryName" OF "XL_Glossary" AS character 
+  FORMAT "x(30)"
+  INITIAL ""
+  LABEL "Glossary Name"
+  POSITION 2
+  MAX-WIDTH 60
+  COLUMN-LABEL "Glossary!Name"
+  ORDER 10
+
+ADD FIELD "GlossaryType" OF "XL_Glossary" AS character 
+  FORMAT "x(30)"
+  INITIAL ""
+  LABEL "Glossary Type"
+  POSITION 3
+  MAX-WIDTH 60
+  COLUMN-LABEL "Glossary!Type"
+  ORDER 20
+
+ADD FIELD "CreateDate" OF "XL_Glossary" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  LABEL "CreateDate"
+  POSITION 4
+  MAX-WIDTH 4
+  COLUMN-LABEL "Create!Date"
+  ORDER 30
+
+ADD FIELD "LinkType" OF "XL_Glossary" AS character 
+  DESCRIPTION "S=Static
+L=Linked"
+  FORMAT "X(1)"
+  INITIAL "S"
+  LABEL "Link Type"
+  POSITION 5
+  MAX-WIDTH 2
+  COLUMN-LABEL "Link!Type"
+  ORDER 60
+
+ADD FIELD "GlossaryCount" OF "XL_Glossary" AS integer 
+  FORMAT ">>>,>>9"
+  INITIAL "0"
+  LABEL "Glossary Count"
+  POSITION 6
+  MAX-WIDTH 4
+  COLUMN-LABEL "Glossary!Count"
+  ORDER 50
+
+ADD INDEX "GlossName" ON "XL_Glossary" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "GlossaryName" ASCENDING 
+
+ADD TABLE "XL_GlossDet"
+  AREA "Schema Area"
+  DESCRIPTION "Main glossary table for this project"
+  FROZEN
+  DUMP-NAME "xl_glsdt"
+
+ADD FIELD "GlossaryName" OF "XL_GlossDet" AS character 
+  FORMAT "X(30)"
+  INITIAL ""
+  LABEL "Glossary Name"
+  POSITION 2
+  MAX-WIDTH 60
+  COLUMN-LABEL "Glossary Name"
+  ORDER 10
+
+ADD FIELD "SourcePhrase" OF "XL_GlossDet" AS character 
+  FORMAT "X(90)"
+  INITIAL ""
+  LABEL "Source Phrase"
+  POSITION 3
+  MAX-WIDTH 180
+  COLUMN-LABEL "Source!Phrase"
+  ORDER 20
+
+ADD FIELD "TargetPhrase" OF "XL_GlossDet" AS character 
+  FORMAT "X(90)"
+  INITIAL ""
+  LABEL "Target Phrase"
+  POSITION 4
+  MAX-WIDTH 180
+  COLUMN-LABEL "Target!Phrase"
+  ORDER 30
+
+ADD FIELD "GlossaryType" OF "XL_GlossDet" AS character 
+  DESCRIPTION "D=Default C=Custom"
+  FORMAT "X(1)"
+  INITIAL ""
+  LABEL "Type"
+  POSITION 5
+  MAX-WIDTH 2
+  COLUMN-LABEL "!Type"
+  ORDER 50
+
+ADD FIELD "ModifiedByTranslator" OF "XL_GlossDet" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Modified By Translator"
+  POSITION 6
+  MAX-WIDTH 1
+  COLUMN-LABEL "!Modified"
+  ORDER 60
+
+ADD FIELD "ShortSrc" OF "XL_GlossDet" AS character 
+  DESCRIPTION "Use for indexing because the actual source may be too large."
+  FORMAT "X(63)"
+  INITIAL ""
+  LABEL "Short Source"
+  POSITION 7
+  MAX-WIDTH 126
+  LENGTH 0
+  ORDER 70
+
+ADD FIELD "ShortTarg" OF "XL_GlossDet" AS character 
+  DESCRIPTION "Use for indexing because the actual target may be too large."
+  FORMAT "X(63)"
+  INITIAL ""
+  LABEL "Short Target"
+  POSITION 8
+  MAX-WIDTH 126
+  LENGTH 0
+  ORDER 80
+
+ADD INDEX "GlossNameSrcTarg" ON "XL_GlossDet" 
+  AREA "Schema Area"
+  PRIMARY
+  DESCRIPTION "Index is based on short source and target strings"
+  INDEX-FIELD "GlossaryName" ASCENDING 
+  INDEX-FIELD "ShortSrc" ASCENDING 
+  INDEX-FIELD "ShortTarg" ASCENDING 
+
+ADD TABLE "XL_instance"
+  AREA "Schema Area"
+  DESCRIPTION "Contains procedure-level instances of each string"
+  FROZEN
+  DUMP-NAME "xl_inst"
+  TABLE-TRIGGER "CREATE" NO-OVERRIDE PROCEDURE "ADETRAN/PM/_TRGPCIN.P" CRC "?" 
+  TABLE-TRIGGER "DELETE" NO-OVERRIDE PROCEDURE "ADETRAN/PM/_TRGPDIN.P" CRC "?" 
+
+ADD FIELD "sequence_num" OF "XL_instance" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL ?
+  LABEL "Sequence Number"
+  POSITION 2
+  MAX-WIDTH 4
+  COLUMN-LABEL "Sequence!Number"
+  ORDER 10
+
+ADD FIELD "instance_num" OF "XL_instance" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Instance Number"
+  POSITION 3
+  MAX-WIDTH 4
+  COLUMN-LABEL "Instance!Number"
+  ORDER 20
+
+ADD FIELD "proc_name" OF "XL_instance" AS character 
+  FORMAT "X(20)"
+  INITIAL ""
+  LABEL "Procedure Name"
+  POSITION 4
+  MAX-WIDTH 40
+  COLUMN-LABEL "Procedure!Name"
+  ORDER 30
+
+ADD FIELD "Num_Occurs" OF "XL_instance" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number of Occurances"
+  POSITION 5
+  MAX-WIDTH 4
+  COLUMN-LABEL "#!Occurances"
+  ORDER 40
+
+ADD FIELD "last_change" OF "XL_instance" AS decimal 
+  FORMAT ">>>>>>>9.99999"
+  INITIAL "0"
+  LABEL "Last Updated"
+  POSITION 6
+  MAX-WIDTH 20
+  COLUMN-LABEL "Last!Updated"
+  DECIMALS 5
+  ORDER 50
+
+ADD FIELD "Needs_Compile" OF "XL_instance" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Needs Compile?"
+  POSITION 7
+  MAX-WIDTH 1
+  COLUMN-LABEL "Needs!Compile?"
+  ORDER 60
+
+ADD FIELD "MaxLength" OF "XL_instance" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Max Length"
+  POSITION 8
+  MAX-WIDTH 4
+  COLUMN-LABEL "Max!Length"
+  ORDER 70
+
+ADD FIELD "Justification" OF "XL_instance" AS integer 
+  DESCRIPTION "1=L, 2=R, 3=C, 4=T"
+  FORMAT "9"
+  INITIAL "1"
+  LABEL "Justification"
+  POSITION 9
+  MAX-WIDTH 4
+  COLUMN-LABEL "Justif-!cation"
+  ORDER 80
+
+ADD FIELD "Statement" OF "XL_instance" AS character 
+  FORMAT "X(15)"
+  INITIAL ""
+  LABEL "Statement"
+  POSITION 10
+  MAX-WIDTH 30
+  COLUMN-LABEL "!Statement"
+  ORDER 90
+
+ADD FIELD "Item" OF "XL_instance" AS character 
+  FORMAT "X(15)"
+  INITIAL ""
+  LABEL "Item"
+  POSITION 11
+  MAX-WIDTH 30
+  COLUMN-LABEL "!Item"
+  ORDER 100
+
+ADD FIELD "ObjectName" OF "XL_instance" AS character 
+  FORMAT "X(30)"
+  INITIAL ""
+  LABEL "Object Name"
+  POSITION 12
+  MAX-WIDTH 60
+  COLUMN-LABEL "Object!Name"
+  ORDER 110
+
+ADD FIELD "Line_Num" OF "XL_instance" AS integer 
+  DESCRIPTION "Line Number of original string *IF* Num_Occurs = 1"
+  FORMAT "->>,>>9"
+  INITIAL "0"
+  LABEL "Line Number"
+  POSITION 13
+  MAX-WIDTH 4
+  COLUMN-LABEL "Line!Number"
+  ORDER 120
+
+ADD INDEX "NeedsComp" ON "XL_instance" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "Needs_Compile" ASCENDING 
+  INDEX-FIELD "proc_name" ASCENDING 
+
+ADD INDEX "instance_num" ON "XL_instance" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "instance_num" ASCENDING 
+
+ADD INDEX "Last_Pop" ON "XL_instance" 
+  AREA "Schema Area"
+  INDEX-FIELD "sequence_num" ASCENDING 
+  INDEX-FIELD "last_change" ASCENDING 
+
+ADD INDEX "Old_Inst_Of_Proc" ON "XL_instance" 
+  AREA "Schema Area"
+  INDEX-FIELD "proc_name" ASCENDING 
+  INDEX-FIELD "last_change" ASCENDING 
+
+ADD INDEX "SequenceInst" ON "XL_instance" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "sequence_num" ASCENDING 
+  INDEX-FIELD "proc_name" ASCENDING 
+  INDEX-FIELD "Justification" ASCENDING 
+  INDEX-FIELD "MaxLength" ASCENDING 
+
+ADD TABLE "XL_Invalid"
+  AREA "Schema Area"
+  FROZEN
+  DUMP-NAME "xl_inval"
+
+ADD FIELD "TargetPhrase" OF "XL_Invalid" AS character 
+  FORMAT "X(90)"
+  INITIAL ""
+  LABEL "Target Phrase"
+  POSITION 2
+  MAX-WIDTH 180
+  COLUMN-LABEL "Target!Phrase"
+  ORDER 10
+
+ADD FIELD "GlossaryName" OF "XL_Invalid" AS character 
+  FORMAT "X(30)"
+  INITIAL ""
+  LABEL "Glossary Name"
+  POSITION 3
+  MAX-WIDTH 60
+  COLUMN-LABEL "Glossary Name"
+  ORDER 20
+
+ADD INDEX "GlossNameTrgt" ON "XL_Invalid" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "GlossaryName" ASCENDING 
+  INDEX-FIELD "TargetPhrase" ASCENDING 
+
+ADD TABLE "XL_Kit"
+  AREA "Schema Area"
+  DESCRIPTION "Contains references to kit databases"
+  FROZEN
+  DUMP-NAME "xl_kit"
+
+ADD FIELD "KitName" OF "XL_Kit" AS character 
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Kit Name"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Kit!Name"
+  ORDER 10
+
+ADD FIELD "CreateDate" OF "XL_Kit" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  LABEL "Create Date"
+  POSITION 3
+  MAX-WIDTH 4
+  COLUMN-LABEL "Create!Date"
+  ORDER 40
+
+ADD FIELD "LanguageName" OF "XL_Kit" AS character 
+  FORMAT "x(60)"
+  INITIAL ""
+  LABEL "Language Name"
+  POSITION 4
+  MAX-WIDTH 120
+  COLUMN-LABEL "!Language"
+  ORDER 50
+
+ADD FIELD "GlossaryName" OF "XL_Kit" AS character 
+  FORMAT "x(30)"
+  INITIAL ""
+  LABEL "Glossary Name"
+  POSITION 5
+  MAX-WIDTH 60
+  COLUMN-LABEL "Glossary!Name"
+  ORDER 60
+
+ADD FIELD "KitGenerated" OF "XL_Kit" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Kit Generated?"
+  POSITION 6
+  MAX-WIDTH 1
+  COLUMN-LABEL "Kit!Generated?"
+  ORDER 70
+
+ADD FIELD "KitZipped" OF "XL_Kit" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Kit Zipped?"
+  POSITION 7
+  MAX-WIDTH 1
+  COLUMN-LABEL "Kit!Zipped?"
+  ORDER 80
+
+ADD FIELD "KitConsolidated" OF "XL_Kit" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Kit Consolidated?"
+  POSITION 8
+  MAX-WIDTH 1
+  COLUMN-LABEL "Consol-!idated?"
+  ORDER 90
+
+ADD FIELD "TranslationCount" OF "XL_Kit" AS integer 
+  FORMAT ">>>,>>9"
+  INITIAL "0"
+  LABEL "Translation Count"
+  POSITION 9
+  MAX-WIDTH 4
+  COLUMN-LABEL "Translation!Count"
+  ORDER 100
+
+ADD INDEX "KitName" ON "XL_Kit" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "KitName" ASCENDING 
+
+ADD TABLE "XL_Kit-Proc"
+  AREA "Schema Area"
+  DESCRIPTION "Cross reference file for Kits and Procedures"
+  FROZEN
+  DUMP-NAME "xl_kit-p"
+
+ADD FIELD "KitName" OF "XL_Kit-Proc" AS character 
+  DESCRIPTION "The name of the kit which should be unique in the XL_Kit file"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Kit Name"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Kit!Name"
+  LENGTH 0
+  ORDER 10
+
+ADD FIELD "Directory" OF "XL_Kit-Proc" AS character 
+  DESCRIPTION "The diretory the the file resides in."
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Directory"
+  POSITION 3
+  MAX-WIDTH 160
+  COLUMN-LABEL "Directory"
+  LENGTH 0
+  ORDER 20
+
+ADD FIELD "FileName" OF "XL_Kit-Proc" AS character 
+  DESCRIPTION "The file name without the directory qualification."
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "File Name"
+  POSITION 4
+  MAX-WIDTH 160
+  COLUMN-LABEL "File!Name"
+  LENGTH 0
+  ORDER 30
+
+ADD FIELD "CurrentStatus" OF "XL_Kit-Proc" AS character 
+  DESCRIPTION "The current status (Untranslated, Translated or X/N) for this kit and this file."
+  FORMAT "x(12)"
+  INITIAL ""
+  LABEL "Current Status"
+  POSITION 5
+  MAX-WIDTH 24
+  COLUMN-LABEL "Status"
+  LENGTH 0
+  ORDER 40
+
+ADD INDEX "Kit-File" ON "XL_Kit-Proc" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "KitName" ASCENDING 
+  INDEX-FIELD "FileName" ASCENDING 
+  INDEX-FIELD "Directory" ASCENDING 
+
+ADD INDEX "File-Kit" ON "XL_Kit-Proc" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "FileName" ASCENDING 
+  INDEX-FIELD "Directory" ASCENDING 
+  INDEX-FIELD "KitName" ASCENDING 
+
+ADD TABLE "XL_Language"
+  AREA "Schema Area"
+  DESCRIPTION "A list of languages"
+  FROZEN
+  DUMP-NAME "xl_lang"
+
+ADD FIELD "lang_name" OF "XL_Language" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "Language Name"
+  POSITION 2
+  MAX-WIDTH 30
+  COLUMN-LABEL "Language!Name"
+  ORDER 10
+
+ADD FIELD "GrowthFactor" OF "XL_Language" AS integer 
+  FORMAT ">,>>9%"
+  INITIAL "0"
+  LABEL "Growth Percent"
+  POSITION 3
+  MAX-WIDTH 4
+  COLUMN-LABEL "Growth!Percent"
+  ORDER 20
+
+ADD INDEX "lang_name" ON "XL_Language" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "lang_name" ASCENDING 
+
+ADD TABLE "XL_Procedure"
+  AREA "Schema Area"
+  DESCRIPTION "A list of all the procedures that are included in this translation effort"
+  FROZEN
+  DUMP-NAME "xl_proc"
+  TABLE-TRIGGER "CREATE" NO-OVERRIDE PROCEDURE "ADETRAN/PM/_TRGPCPC.P" CRC "?" 
+  TABLE-TRIGGER "DELETE" NO-OVERRIDE PROCEDURE "ADETRAN/PM/_TRGPDPC.P" CRC "?" 
+
+ADD FIELD "Directory" OF "XL_Procedure" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Directory"
+  POSITION 2
+  MAX-WIDTH 160
+  COLUMN-LABEL "Directory"
+  ORDER 20
+
+ADD FIELD "FileName" OF "XL_Procedure" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "File Name"
+  POSITION 3
+  MAX-WIDTH 160
+  COLUMN-LABEL "File!Name"
+  ORDER 30
+
+ADD FIELD "UpdateDateTime" OF "XL_Procedure" AS character 
+  FORMAT "X(19)"
+  INITIAL ""
+  LABEL "Last Updated"
+  POSITION 4
+  MAX-WIDTH 38
+  COLUMN-LABEL "Last!Updated"
+  ORDER 91
+
+ADD FIELD "Comments" OF "XL_Procedure" AS character 
+  FORMAT "x(256)"
+  INITIAL ""
+  LABEL "Comments"
+  POSITION 5
+  MAX-WIDTH 512
+  COLUMN-LABEL "Comments"
+  ORDER 60
+
+ADD FIELD "FileSize" OF "XL_Procedure" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "File Size"
+  POSITION 6
+  MAX-WIDTH 4
+  COLUMN-LABEL "Size"
+  ORDER 70
+
+ADD FIELD "CurrentStatus" OF "XL_Procedure" AS character 
+  FORMAT "x(12)"
+  INITIAL ""
+  LABEL "Current Status"
+  POSITION 7
+  MAX-WIDTH 24
+  COLUMN-LABEL "Status"
+  ORDER 80
+
+ADD FIELD "ResourceFileGenerated" OF "XL_Procedure" AS logical 
+  FORMAT "yes/no"
+  INITIAL ?
+  LABEL "Resource File Generated?"
+  POSITION 8
+  MAX-WIDTH 1
+  COLUMN-LABEL "Generated?"
+  ORDER 90
+
+ADD FIELD "NeedsExtracting" OF "XL_Procedure" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Needs Extracting"
+  POSITION 9
+  MAX-WIDTH 1
+  COLUMN-LABEL "Needs!Extracting"
+  ORDER 100
+
+ADD INDEX "Dir-File" ON "XL_Procedure" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "Directory" ASCENDING 
+  INDEX-FIELD "FileName" ASCENDING 
+
+ADD INDEX "ProcIdx" ON "XL_Procedure" 
+  AREA "Schema Area"
+  INDEX-FIELD "FileName" ASCENDING 
+
+ADD TABLE "XL_Project"
+  AREA "Schema Area"
+  DESCRIPTION "A single record which contains all this summary information about this project."
+  FROZEN
+  DUMP-NAME "xl_proj"
+
+ADD FIELD "ProjectName" OF "XL_Project" AS character 
+  FORMAT "X(8)"
+  INITIAL ""
+  LABEL "Project Name"
+  POSITION 2
+  MAX-WIDTH 16
+  COLUMN-LABEL "Project!Name"
+  ORDER 10
+
+ADD FIELD "ProjectDesc" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Project Description"
+  POSITION 3
+  MAX-WIDTH 160
+  COLUMN-LABEL "Project!Description"
+  ORDER 20
+
+ADD FIELD "ProjectRevision" OF "XL_Project" AS character 
+  FORMAT "X(4)"
+  INITIAL ""
+  LABEL "Revison"
+  POSITION 4
+  MAX-WIDTH 8
+  COLUMN-LABEL "Project!Revision"
+  ORDER 30
+
+ADD FIELD "CodePage" OF "XL_Project" AS character 
+  FORMAT "X(12)"
+  INITIAL ""
+  LABEL "Code Page"
+  POSITION 5
+  MAX-WIDTH 24
+  COLUMN-LABEL "Code!Page"
+  ORDER 40
+
+ADD FIELD "CreateDate" OF "XL_Project" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  LABEL "Date Created"
+  POSITION 6
+  MAX-WIDTH 4
+  COLUMN-LABEL "Date!Created"
+  ORDER 50
+
+ADD FIELD "UpdateDate" OF "XL_Project" AS date 
+  FORMAT "99/99/99"
+  INITIAL ?
+  LABEL "Date Updated"
+  POSITION 7
+  MAX-WIDTH 4
+  COLUMN-LABEL "Date!Updated"
+  ORDER 60
+
+ADD FIELD "DisplayType" OF "XL_Project" AS character 
+  FORMAT "X(1)"
+  INITIAL ""
+  LABEL "Display Type"
+  POSITION 8
+  MAX-WIDTH 2
+  COLUMN-LABEL "Display!Type"
+  ORDER 70
+
+ADD FIELD "RootDirectory" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Root Directory"
+  POSITION 9
+  MAX-WIDTH 160
+  COLUMN-LABEL "Root!Directory"
+  ORDER 80
+
+ADD FIELD "SettingsFile" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "SettingsFile"
+  POSITION 10
+  MAX-WIDTH 160
+  COLUMN-LABEL "Settings!File"
+  ORDER 90
+
+ADD FIELD "UseImages" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "yes"
+  LABEL "Use Images?"
+  POSITION 11
+  MAX-WIDTH 1
+  COLUMN-LABEL "Use!Images?"
+  ORDER 100
+
+ADD FIELD "ResourcesGenerated" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Resources Generated?"
+  POSITION 12
+  MAX-WIDTH 1
+  COLUMN-LABEL "Resources!Generated?"
+  ORDER 105
+
+ADD FIELD "NumberOfProcedures" OF "XL_Project" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number of Procedures"
+  POSITION 13
+  MAX-WIDTH 4
+  COLUMN-LABEL "#!Procedures"
+  ORDER 110
+
+ADD FIELD "NumberOfPhrases" OF "XL_Project" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number of Strings"
+  POSITION 14
+  MAX-WIDTH 4
+  COLUMN-LABEL "#!Strings"
+  ORDER 120
+
+ADD FIELD "NumberOfWords" OF "XL_Project" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number of Words"
+  POSITION 15
+  MAX-WIDTH 4
+  COLUMN-LABEL "#!Words"
+  ORDER 130
+
+ADD FIELD "NumberOfUniquePhrases" OF "XL_Project" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number Of Unique Strings"
+  POSITION 16
+  MAX-WIDTH 4
+  COLUMN-LABEL "# Unique!Strings"
+  ORDER 140
+
+ADD FIELD "NumberOfUniqueWords" OF "XL_Project" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL "0"
+  LABEL "Number Of Unique Words"
+  POSITION 17
+  MAX-WIDTH 4
+  COLUMN-LABEL "# Unique!Words"
+  ORDER 150
+
+ADD FIELD "DeleteTranslations" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Delete Unused Translations"
+  POSITION 18
+  MAX-WIDTH 1
+  COLUMN-LABEL "Delete Translations?"
+  ORDER 160
+
+ADD FIELD "MustUseGlossary" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Must Use Glossary"
+  POSITION 19
+  MAX-WIDTH 1
+  COLUMN-LABEL "Must Use Glossary?"
+  ORDER 170
+
+ADD FIELD "SupersedeGlossary" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Supersede Glossary"
+  POSITION 20
+  MAX-WIDTH 1
+  COLUMN-LABEL "Supersede?"
+  ORDER 180
+
+ADD FIELD "NeedsExtract" OF "XL_Project" AS logical 
+  FORMAT "yes/no"
+  INITIAL "no"
+  LABEL "Needs Extract"
+  POSITION 21
+  MAX-WIDTH 1
+  COLUMN-LABEL "Needs!Extract?"
+  ORDER 190
+
+ADD FIELD "ApplDirectory" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Appl Directory"
+  POSITION 22
+  MAX-WIDTH 160
+  COLUMN-LABEL "Appl!Directory"
+  ORDER 200
+
+ADD FIELD "SaveInto" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Save Into Directory"
+  POSITION 23
+  MAX-WIDTH 160
+  COLUMN-LABEL "Save Into!Directory"
+  ORDER 210
+
+ADD FIELD "CompileLog" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Compilation Log File"
+  POSITION 24
+  MAX-WIDTH 160
+  COLUMN-LABEL "Compilation!Log File"
+  ORDER 220
+
+ADD FIELD "GrowthFactor" OF "XL_Project" AS integer 
+  FORMAT ">,>>9%"
+  INITIAL "0"
+  LABEL "Growth Percent"
+  POSITION 25
+  MAX-WIDTH 4
+  COLUMN-LABEL "Growth!Percent"
+  ORDER 230
+
+ADD FIELD "XrefFile" OF "XL_Project" AS character 
+  FORMAT "X(80)"
+  INITIAL ""
+  LABEL "Xref File"
+  POSITION 26
+  MAX-WIDTH 160
+  COLUMN-LABEL "Xref File"
+  ORDER 240
+
+ADD INDEX "NameRevision" ON "XL_Project" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "ProjectName" ASCENDING 
+  INDEX-FIELD "ProjectRevision" ASCENDING 
+
+ADD TABLE "XL_SelectedFilter"
+  AREA "Schema Area"
+  DESCRIPTION "A list of selected filters that figure in the extract (XREF)."
+  FROZEN
+  DUMP-NAME "xl_sel"
+
+ADD FIELD "Statement" OF "XL_SelectedFilter" AS character 
+  FORMAT "X(15)"
+  INITIAL ""
+  LABEL "Statement"
+  POSITION 2
+  MAX-WIDTH 30
+  COLUMN-LABEL "Statement"
+  ORDER 10
+
+ADD FIELD "Item" OF "XL_SelectedFilter" AS character 
+  FORMAT "X(15)"
+  INITIAL ""
+  LABEL "Item"
+  POSITION 3
+  MAX-WIDTH 30
+  COLUMN-LABEL "Item"
+  ORDER 20
+
+ADD FIELD "Mode" OF "XL_SelectedFilter" AS character 
+  FORMAT "X(9)"
+  INITIAL ""
+  POSITION 4
+  MAX-WIDTH 18
+  LENGTH 0
+  ORDER 70
+
+ADD INDEX "Mode-Item-Stmnt" ON "XL_SelectedFilter" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "Mode" ASCENDING 
+  INDEX-FIELD "Statement" ASCENDING 
+
+ADD INDEX "StatementIDX" ON "XL_SelectedFilter" 
+  AREA "Schema Area"
+  INDEX-FIELD "Statement" ASCENDING 
+  INDEX-FIELD "Item" ASCENDING 
+
+ADD TABLE "XL_string_info"
+  AREA "Schema Area"
+  DESCRIPTION "Source phrases as defined in the source code"
+  FROZEN
+  DUMP-NAME "xl_str"
+
+ADD FIELD "sequence_num" OF "XL_string_info" AS integer 
+  FORMAT "->,>>>,>>9"
+  INITIAL ?
+  LABEL "Sequence Number"
+  POSITION 2
+  MAX-WIDTH 4
+  COLUMN-LABEL "Sequence!Number"
+  ORDER 10
+
+ADD FIELD "original_string" OF "XL_string_info" AS character 
+  FORMAT "X(70)"
+  INITIAL ""
+  LABEL "Source Phrase"
+  POSITION 3
+  MAX-WIDTH 140
+  COLUMN-LABEL "Source!Phrase"
+  ORDER 20
+  CASE-SENSITIVE
+
+ADD FIELD "last_change" OF "XL_string_info" AS decimal 
+  FORMAT ">>>>>>>9.99999"
+  INITIAL "0"
+  LABEL "Last Updated"
+  POSITION 4
+  MAX-WIDTH 20
+  COLUMN-LABEL "Last!Updated"
+  DECIMALS 5
+  ORDER 30
+
+ADD FIELD "Comment" OF "XL_string_info" AS character 
+  FORMAT "X(75)"
+  INITIAL ""
+  LABEL "Comments"
+  POSITION 5
+  MAX-WIDTH 150
+  COLUMN-LABEL "!Comments"
+  LENGTH 0
+  ORDER 40
+
+ADD FIELD "KeyOfString" OF "XL_string_info" AS character 
+  FORMAT "x(70)"
+  INITIAL ""
+  LABEL "Key Of String"
+  POSITION 6
+  MAX-WIDTH 140
+  COLUMN-LABEL "Key Of!String"
+  LENGTH 0
+  ORDER 50
+  CASE-SENSITIVE
+
+ADD INDEX "String_Key" ON "XL_string_info" 
+  AREA "Schema Area"
+  PRIMARY
+  INDEX-FIELD "KeyOfString" ASCENDING 
+
+ADD INDEX "last_change" ON "XL_string_info" 
+  AREA "Schema Area"
+  INDEX-FIELD "last_change" ASCENDING 
+
+ADD INDEX "sequence_num" ON "XL_string_info" 
+  AREA "Schema Area"
+  UNIQUE
+  INDEX-FIELD "sequence_num" ASCENDING 
+
+ADD TABLE "XL_translation"
+  AREA "Schema Area"
+  DESCRIPTION "Contains translation strings for foreign languages"
+  FROZEN
+  DUMP-NAME "xl_tran"
+
+ADD FIELD "sequence_num" OF "XL_translation" AS integer 
+  FORMAT ">>>>>>>9"
+  INITIAL ?
+  LABEL "Sequence Number"
+  POSITION 2
+  MAX-WIDTH 4
+  COLUMN-LABEL "Sequence!Number"
+  ORDER 10
+
+ADD FIELD "instance_num" OF "XL_translation" AS integer 
+  FORMAT ">>>>9"
+  INITIAL "0"
+  LABEL "Instance Number"
+  POSITION 3
+  MAX-WIDTH 4
+  COLUMN-LABEL "Instance!Number"
+  ORDER 20
+
+ADD FIELD "lang_name" OF "XL_translation" AS character 
+  FORMAT "x(15)"
+  INITIAL ""
+  LABEL "Language Name"
+  POSITION 4
+  MAX-WIDTH 30
+  COLUMN-LABEL "Language!Name"
+  ORDER 30
+
+ADD FIELD "trans_string" OF "XL_translation" AS character 
+  FORMAT "x(70)"
+  INITIAL ""
+  LABEL "Target Phrase"
+  POSITION 5
+  MAX-WIDTH 140
+  COLUMN-LABEL "Target!Phrase"
+  ORDER 40
+
+ADD FIELD "last_change" OF "XL_translation" AS decimal 
+  FORMAT ">>>>>>9.99999"
+  INITIAL "0"
+  LABEL "Last Updated"
+  POSITION 6
+  MAX-WIDTH 20
+  COLUMN-LABEL "Last!Updated"
+  HELP "Date this string was translated"
+  DECIMALS 5
+  ORDER 50
+
+ADD INDEX "seq_inst" ON "XL_translation" 
+  AREA "Schema Area"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "sequence_num" ASCENDING 
+  INDEX-FIELD "instance_num" ASCENDING 
+  INDEX-FIELD "lang_name" ASCENDING 
+
+ADD INDEX "LanguageIDX" ON "XL_translation" 
+  AREA "Schema Area"
+  INDEX-FIELD "lang_name" ASCENDING 
+
+ADD INDEX "seq_lang" ON "XL_translation" 
+  AREA "Schema Area"
+  INDEX-FIELD "sequence_num" ASCENDING 
+  INDEX-FIELD "lang_name" ASCENDING 
+
+.
+PSC
+cpstream=ISO8859-15
+.
+0000023371
