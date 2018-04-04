@@ -422,6 +422,8 @@ public class CompilationAttributes implements ICompilationAttributes {
             bw.write("DEFINE INPUT PARAMETER ipXREF AS CHARACTER NO-UNDO.");
             bw.newLine();
 
+            bw.write("DO ON STOP UNDO, RETRY: IF RETRY THEN DO: COMPILER:ERROR = TRUE. RETURN. END.");
+            bw.newLine();
             bw.write("COMPILE VALUE(ipSrcFile) ");
             if (isSaveR())
                 bw.write("SAVE INTO VALUE(ipSaveDir) ");
@@ -457,6 +459,8 @@ public class CompilationAttributes implements ICompilationAttributes {
 
             }
             bw.write("NO-ERROR.");
+            bw.newLine();
+            bw.write("END.");
             bw.newLine();
         } catch (IOException caught) {
             throw new BuildException(Messages.getString("PCTCompile.2"), caught); //$NON-NLS-1$
