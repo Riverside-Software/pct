@@ -17,7 +17,7 @@
 
   <target name="build">
     <mkdir dir="build1" />
-    <PCTCompile destDir="build1" dlcHome="${DLC}" languages="French" relativePaths="true">
+    <PCTCompile destDir="build1" dlcHome="${DLC}" languages="French" relativePaths="true" failOnError="false">
       <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
       <fileset dir="src" includes="**/*.p" />
       <propath>

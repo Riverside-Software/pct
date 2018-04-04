@@ -1137,8 +1137,8 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test70() {
         configureProject(BASEDIR + "test70/build.xml");
         executeTarget("db");
-        expectBuildException("build", "Should fail");
-
+        // STOP condition raised by warning 4516 has to be trapped
+        executeTarget("build");
     }
 
 }
