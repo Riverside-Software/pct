@@ -290,13 +290,17 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
-    public void setAssemblies(File assemblies) {
-        if ((assemblies != null) && !assemblies.exists()) {
-            parent.log("Unable to find assemblies file " + assemblies.getAbsolutePath() + " - Skipping attribute");
+    public void setAssemblies(String assemblies) {
+        if ((assemblies == null) || (assemblies.trim().length() == 0)) {
+            return;
+        }
+        File file = parent.getProject().resolveFile(assemblies);
+        if (!file.exists()) {
+            parent.log("Unable to find assemblies file " + file.getAbsolutePath() + " - Skipping attribute");
             return;
         }
 
-        this.assemblies = assemblies;
+        this.assemblies = file;
     }
 
     @Override
