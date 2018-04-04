@@ -198,7 +198,7 @@ public interface IRunAttributes {
     /**
      * assemblies.xml file reference (-assemblies parameter) 
      */
-    void setAssemblies(File assemblies);
+    void setAssemblies(String assemblies);
 
     /**
      * Main procedure to be executed

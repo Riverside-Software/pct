@@ -322,7 +322,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setAssemblies(File assemblies) {
+    public void setAssemblies(String assemblies) {
         runAttributes.setAssemblies(assemblies);
     }
 

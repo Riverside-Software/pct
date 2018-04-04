@@ -473,7 +473,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setAssemblies(File assemblies) {
+    public void setAssemblies(String assemblies) {
         runAttributes.setAssemblies(assemblies);
     }
 
