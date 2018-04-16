@@ -697,7 +697,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationHelper:
         DEFINE VARIABLE iLength AS INTEGER NO-UNDO.
         DEFINE VARIABLE i       AS INTEGER NO-UNDO INIT 1.
         DEFINE VARIABLE iValue  AS INTEGER NO-UNDO.
-        DEFINE VARIABLE cChar   AS CHARACTER NO-UNDO .
+        DEFINE VARIABLE cChar   AS CHARACTER NO-UNDO CASE-SENSITIVE.
         
         FIX-CODEPAGE (cString) = "utf-8":U . 
         
