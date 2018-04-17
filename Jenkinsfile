@@ -1,7 +1,7 @@
 stage('Class documentation build') {
  node ('windows') {
-  gitClean()
-  checkout scm
+  checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def jdk = tool name: 'JDK8', type: 'hudson.model.JDK'
@@ -15,14 +15,16 @@ stage('Class documentation build') {
 
 stage('Standard build') {
  node ('linux') {
-  gitClean()
-  checkout scm
+  checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+
   sh 'git rev-parse HEAD > head-rev'
   def commit = readFile('head-rev').trim()
+
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
   def dlc10 = tool name: 'OpenEdge-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc10_64 = tool name: 'OpenEdge-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
@@ -86,39 +88,4 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       }
     }
   }
-}
-
-// see https://issues.jenkins-ci.org/browse/JENKINS-31924
-def gitClean() {
-    timeout(time: 60, unit: 'SECONDS') {
-        if (fileExists('.git')) {
-            echo 'Found Git repository: using Git to clean the tree.'
-            // The sequence of reset --hard and clean -fdx first
-            // in the root and then using submodule foreach
-            // is based on how the Jenkins Git SCM clean before checkout
-            // feature works.
-            if (isUnix()) {
-              sh 'git reset --hard'
-            } else {
-              bat 'git reset --hard'
-            }
-            // Note: -e is necessary to exclude the temp directory
-            // .jenkins-XXXXX in the workspace where Pipeline puts the
-            // batch file for the 'bat' command.
-            if (isUnix()) {
-              sh 'git clean -ffdx -e ".jenkins-*/"'
-              sh 'git submodule foreach --recursive git reset --hard'
-              sh 'git submodule foreach --recursive git clean -ffdx'
-            } else {
-              bat 'git clean -ffdx -e ".jenkins-*/"'
-              bat 'git submodule foreach --recursive git reset --hard'
-              bat 'git submodule foreach --recursive git clean -ffdx'
-            }
-        }
-        else
-        {
-            echo 'No Git repository found: using deleteDir() to wipe clean'
-            deleteDir()
-        }
-    }
 }
