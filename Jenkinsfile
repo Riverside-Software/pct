@@ -46,7 +46,14 @@ stage('Full tests') {
     unstash name: 'testng-10.2-64-Linux'
     unstash name: 'testng-11.6-Linux'
     unstash name: 'testng-11.7-Linux'
-    step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+    sh "mkdir junitreports"
+    unzip zipFile: 'junitreports-10.2-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-10.2-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-10.2-64-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.6-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
+    junit 'junitreports/**/*.xml'
   }
 }
 
@@ -72,7 +79,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
         sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
       else
         bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      stash name: "testng-${label}", includes: 'testng-results-*.xml'
+      stash name: "junit-${label}", includes: 'junitreports-*.zip'
       archive 'emailable-report-*.html'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'

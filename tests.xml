@@ -79,6 +79,9 @@
     <zip destFile="oe-profiler-data.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
+    <zip destFile="junitreports-${TESTENV}.zip">
+      <zipfileset dir="test-output/junitreports" includes="*.xml" prefix="junitreports-${TESTENV}" />
+    </zip>
   </target>
 
 </project>
