@@ -1,5 +1,5 @@
 stage('Class documentation build') {
- node ('EC2-EU1B') {
+ node ('windows') {
   gitClean()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
@@ -14,7 +14,7 @@ stage('Class documentation build') {
 }
 
 stage('Standard build') {
- node ('master') {
+ node ('linux') {
   gitClean()
   checkout scm
   sh 'git rev-parse HEAD > head-rev'
@@ -31,14 +31,14 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
-    branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
-    branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
-    branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux', 11, 64) },
-    branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
-    branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
+ parallel branch8: { testBranch('windows', 'OE-10.2B', false, '10.2-Win', 10, 32) },
+    branch1: { testBranch('windows', 'OE-11.6', true, '11.6-Win', 11, 32) },
+    branch4: { testBranch('linux', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
+    branch5: { testBranch('linux', 'OE-11.6', false, '11.6-Linux', 11, 64) },
+    branch6: { testBranch('linux', 'OE-11.7', false, '11.7-Linux', 11, 64) },
+    branch7: { testBranch('linux', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
     failFast: false
-  node('master') {
+  node('linux') {
     // Wildcards not accepted in unstash...
     unstash name: 'testng-10.2-Win'
     unstash name: 'testng-11.6-Win'
@@ -51,7 +51,7 @@ stage('Full tests') {
 }
 
 stage('Sonar') {
-  node('master') {
+  node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
