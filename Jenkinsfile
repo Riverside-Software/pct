@@ -3,8 +3,8 @@ stage('Class documentation build') {
   gitClean()
   checkout scm
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def jdk = tool name: 'JDK 1.8 64b', type: 'hudson.model.JDK'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def jdk = tool name: 'JDK8', type: 'hudson.model.JDK'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
     bat "${antHome}\\bin\\ant -DDLC11=${dlc11} classDoc"
@@ -20,9 +20,9 @@ stage('Standard build') {
   sh 'git rev-parse HEAD > head-rev'
   def commit = readFile('head-rev').trim()
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc10 = tool name: 'OE-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc10_64 = tool name: 'OE-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc10 = tool name: 'OpenEdge-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc10_64 = tool name: 'OpenEdge-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
@@ -31,12 +31,12 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel branch8: { testBranch('windows', 'OE-10.2B', false, '10.2-Win', 10, 32) },
-    branch1: { testBranch('windows', 'OE-11.6', true, '11.6-Win', 11, 32) },
-    branch4: { testBranch('linux', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
-    branch5: { testBranch('linux', 'OE-11.6', false, '11.6-Linux', 11, 64) },
-    branch6: { testBranch('linux', 'OE-11.7', false, '11.7-Linux', 11, 64) },
-    branch7: { testBranch('linux', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
+ parallel branch8: { testBranch('windows', 'OpenEdge-10.2B', false, '10.2-Win', 10, 32) },
+    branch1: { testBranch('windows', 'OpenEdge-11.6', true, '11.6-Win', 11, 32) },
+    branch4: { testBranch('linux', 'OpenEdge-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
+    branch5: { testBranch('linux', 'OpenEdge-11.6', false, '11.6-Linux', 11, 64) },
+    branch6: { testBranch('linux', 'OpenEdge-11.7', false, '11.7-Linux', 11, 64) },
+    branch7: { testBranch('linux', 'OpenEdge-10.2B', false, '10.2-Linux', 10, 32) },
     failFast: false
   node('linux') {
     // Wildcards not accepted in unstash...
@@ -53,7 +53,7 @@ stage('Full tests') {
 stage('Sonar') {
   node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-    def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+    def dlc = tool name: 'OpenEdge-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
     withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
       sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
