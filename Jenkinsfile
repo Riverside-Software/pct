@@ -32,7 +32,7 @@ stage('Standard build') {
 
 stage('Full tests') {
  parallel branch8: { testBranch('windows', 'OpenEdge-10.2B', false, '10.2-Win', 10, 32) },
-    branch1: { testBranch('windows', 'OpenEdge-11.6', true, '11.6-Win', 11, 32) },
+    branch1: { testBranch('windows', 'OpenEdge-11.7', true, '11.7-Win', 11, 32) },
     branch4: { testBranch('linux', 'OpenEdge-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
     branch5: { testBranch('linux', 'OpenEdge-11.6', false, '11.6-Linux', 11, 64) },
     branch6: { testBranch('linux', 'OpenEdge-11.7', false, '11.7-Linux', 11, 64) },
@@ -41,7 +41,7 @@ stage('Full tests') {
   node('linux') {
     // Wildcards not accepted in unstash...
     unstash name: 'testng-10.2-Win'
-    unstash name: 'testng-11.6-Win'
+    unstash name: 'testng-11.7-Win'
     unstash name: 'testng-10.2-Linux'
     unstash name: 'testng-10.2-64-Linux'
     unstash name: 'testng-11.6-Linux'
@@ -53,10 +53,10 @@ stage('Full tests') {
 stage('Sonar') {
   node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-    def dlc = tool name: 'OpenEdge-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+    def dlc = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
-    withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
+    withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
+      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
     }
   }
 }
