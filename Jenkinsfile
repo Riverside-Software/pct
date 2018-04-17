@@ -40,12 +40,12 @@ stage('Full tests') {
     failFast: false
   node('linux') {
     // Wildcards not accepted in unstash...
-    unstash name: 'testng-10.2-Win'
-    unstash name: 'testng-11.7-Win'
-    unstash name: 'testng-10.2-Linux'
-    unstash name: 'testng-10.2-64-Linux'
-    unstash name: 'testng-11.6-Linux'
-    unstash name: 'testng-11.7-Linux'
+    unstash name: 'junit-10.2-Win'
+    unstash name: 'junit-11.7-Win'
+    unstash name: 'junit-10.2-Linux'
+    unstash name: 'junit-10.2-64-Linux'
+    unstash name: 'junit-11.6-Linux'
+    unstash name: 'junit-11.7-Linux'
     sh "mkdir junitreports"
     unzip zipFile: 'junitreports-10.2-Win.zip', dir: 'junitreports'
     unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
