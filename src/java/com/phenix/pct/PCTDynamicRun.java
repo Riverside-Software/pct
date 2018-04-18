@@ -126,7 +126,9 @@ public class PCTDynamicRun extends PCTRun {
 
             writer.name("output").beginArray();
             if (runAttributes.getOutputParameters() != null) {
+                int zz = 0;
                 for (OutputParameter param : runAttributes.getOutputParameters()) {
+                    param.setProgressVar("outParam" + zz++);;
                     File tmpFile = new File(System.getProperty(PCT.TMPDIR),
                             param.getProgressVar() + "." + PCT.nextRandomInt() + ".out");
                     param.setTempFileName(tmpFile);
