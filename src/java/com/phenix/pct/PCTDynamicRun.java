@@ -1,4 +1,21 @@
+/**
+ * Copyright 2005-2018 Riverside Software
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
 package com.phenix.pct;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,16 +74,16 @@ public class PCTDynamicRun extends PCTRun {
             writer.name("procedure").value(runAttributes.getProcedure());
             writer.name("returnValue").value(status.getAbsolutePath());
             writer.name("propath").beginArray();
-            
+
             String[] lst = runAttributes.getPropath().list();
             for (int k = lst.length - 1; k >= 0; k--) {
                 if (runAttributes.useRelativePaths()) {
                     try {
-                        writer.value(
-                                FileUtils.getRelativePath((runAttributes.getBaseDir() == null
+                        writer.value(FileUtils
+                                .getRelativePath((runAttributes.getBaseDir() == null
                                         ? getProject().getBaseDir()
                                         : runAttributes.getBaseDir()), new File(lst[k]))
-                                        .replace('/', File.separatorChar));
+                                .replace('/', File.separatorChar));
                     } catch (Exception e) {
                         throw new IOException(e);
                     }
@@ -75,13 +92,13 @@ public class PCTDynamicRun extends PCTRun {
                 }
             }
             writer.endArray();
-            
+
             writer.name("databases").beginArray();
             for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
                 writer.beginObject();
                 writer.name("connect").value(dbc.createConnectString());
                 writer.name("aliases").beginArray();
-                
+
                 Collection<PCTAlias> aliases = dbc.getAliases();
                 if (aliases != null) {
                     for (PCTAlias alias : aliases) {
@@ -126,8 +143,7 @@ public class PCTDynamicRun extends PCTRun {
         try (FileWriter fw = new FileWriter(iniFile)) {
             if (runAttributes.isGraphMode()) {
                 fw.write("[Startup]\n");
-            }
-            else {
+            } else {
                 fw.write("[WinChar Startup]\n");
             }
             fw.write("PROPATH=" + pctLib.getAbsolutePath() + "\n");
@@ -139,9 +155,10 @@ public class PCTDynamicRun extends PCTRun {
         checkDlcHome();
         if ((runAttributes.getProcedure() == null) || (runAttributes.getProcedure().length() == 0))
             throw new BuildException("Procedure attribute not defined");
-        if ((runAttributes.getOutputParameters() != null) && (runAttributes.getOutputParameters().size() > 2))
+        if ((runAttributes.getOutputParameters() != null)
+                && (runAttributes.getOutputParameters().size() > 2))
             throw new BuildException("Only two OutputParameter nodes allowed");
-        
+
         prepareExecTask();
         if (runAttributes.getProfiler() != null) {
             runAttributes.getProfiler().validate(false);
@@ -155,8 +172,8 @@ public class PCTDynamicRun extends PCTRun {
             // code to a directory named
             // something.pl as Progress tries to open a procedure library, and miserably fails with
             // error 13.
-            pctLib = new File(
-                    System.getProperty("java.io.tmpdir"), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl"));
+            pctLib = new File(System.getProperty("java.io.tmpdir"),
+                    "pct" + plID + (isSourceCodeUsed() ? "" : ".pl"));
 
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 writeIniFile();
@@ -168,20 +185,18 @@ public class PCTDynamicRun extends PCTRun {
                 exec.addEnv(var);
             }
 
-
             writeJsonConfigFile();
             createProfilerFile();
             setExecTaskParams();
             exec.createArg().setValue("-p");
             exec.createArg().setValue("pct/v11/dynrun.p");
-            
-            
+
             if (getIncludedPL() && !extractPL(pctLib)) {
                 throw new BuildException("Unable to extract pct.pl.");
             }
 
             exec.execute();
-            
+
         } catch (BuildException be) {
             cleanup();
             throw be;
@@ -200,8 +215,8 @@ public class PCTDynamicRun extends PCTRun {
                     String s = br.readLine();
                     getProject().setNewProperty(param.getName(), s);
                 } catch (IOException ioe) {
-                    log(MessageFormat.format(
-                            Messages.getString("PCTRun.10"), param.getName(), f.getAbsolutePath()), Project.MSG_ERR); //$NON-NLS-1$
+                    log(MessageFormat.format(Messages.getString("PCTRun.10"), param.getName(), //$NON-NLS-1$
+                            f.getAbsolutePath()), Project.MSG_ERR);
                     cleanup();
                     throw new BuildException(ioe);
                 }
