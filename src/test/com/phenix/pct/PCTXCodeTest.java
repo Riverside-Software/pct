@@ -35,6 +35,9 @@ public class PCTXCodeTest extends BuildFileTestNg {
         executeTarget("test");
 
         assertTrue(new File("PCTXCode/test1/src/xcode/dir1/test1.p").exists());
+        assertTrue(new File("PCTXCode/test1/src/xcode/test2.p").exists());
+        assertTrue(new File("PCTXCode/test1/src/xcode/dir1/dir2/test3.p").exists());
+        assertTrue(new File("PCTXCode/test1/src/xcode/test1.p").exists());
     }
 
 }

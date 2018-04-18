@@ -6,6 +6,7 @@
     <mkdir dir="src/xcode" />
     <PCTXCode dlcHome="${DLC}" destDir="src/xcode">
       <fileset dir="src/ctx" />
+      <fileset dir="src/ctx2/dir1" />
     </PCTXCode>
   </target>
 

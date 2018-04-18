@@ -75,9 +75,11 @@
 
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
-    <copy file="test-output/testng-results.xml" tofile="testng-results-${TESTENV}.xml" />
     <zip destFile="oe-profiler-data.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
+    </zip>
+    <zip destFile="junitreports-${TESTENV}.zip">
+      <zipfileset dir="test-output/junitreports" includes="*.xml" prefix="junitreports-${TESTENV}" />
     </zip>
   </target>
 

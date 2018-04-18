@@ -3,9 +3,6 @@
   <taskdef resource="extras115.properties" />
 
   <target name="test">
-    <mkdir dir="doc" />
-    <mkdir dir="doc2" />
-    <mkdir dir="html" />
     <mkdir dir="xml" />
     <mkdir dir="profiler" />
 

@@ -277,7 +277,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setAssemblies(File assemblies) {
+    public void setAssemblies(String assemblies) {
         options.setAssemblies(assemblies);
     }
 
@@ -521,7 +521,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      */
     private void createInitProcedure(File f) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
-            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(), null,
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
                     options.isVerbose(), false));
 
             // Defines internal propath

@@ -243,16 +243,6 @@ public class PCTCompile extends PCTRun {
         }
     }
 
-    private boolean createDir(File dir) {
-        if (dir.exists() && !dir.isDirectory()) {
-            return false;
-        }
-        if (!dir.exists() && !dir.mkdirs()) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Do the work
      *

@@ -240,6 +240,9 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         compAttributes.setXCode(xcode);
     }
 
+    /**
+     * @deprecated
+     */
     @Deprecated
     @Override
     public void setXCodeKey(String xcodeKey) {
@@ -473,7 +476,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setAssemblies(File assemblies) {
+    public void setAssemblies(String assemblies) {
         runAttributes.setAssemblies(assemblies);
     }
 
