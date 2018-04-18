@@ -37,6 +37,8 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         rexp.add("This is dir1");
         rexp.add("val1");
         rexp.add("val2");
+        rexp.add("num-dbs: 2");
+        rexp.add("num-aliases: 6");
         rexp.add("Output val1val2");
         expectLogRegexp("test1", rexp, true);
 
