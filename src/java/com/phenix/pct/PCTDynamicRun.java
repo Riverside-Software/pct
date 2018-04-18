@@ -167,11 +167,9 @@ public class PCTDynamicRun extends PCTRun {
 
         try {
             // File name generation is deffered at this stage, because when defined in constructor,
-            // we still don't know if
-            // we have to use source code or compiled version. And it's impossible to extract source
-            // code to a directory named
-            // something.pl as Progress tries to open a procedure library, and miserably fails with
-            // error 13.
+            // we still don't know if we have to use source code or compiled version. And it's
+            // impossible to extract source code to a directory named something.pl as Progress tries
+            // to open a procedure library, and miserably fails with error 13.
             pctLib = new File(System.getProperty("java.io.tmpdir"),
                     "pct" + plID + (isSourceCodeUsed() ? "" : ".pl"));
 
