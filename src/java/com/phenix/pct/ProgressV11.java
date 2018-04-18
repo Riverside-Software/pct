@@ -29,6 +29,11 @@ public class ProgressV11 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicRunProcedure() {
+        return "pct/v11/dynrun.p";
+    }
+
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v11/silentIncDump.p";
     }

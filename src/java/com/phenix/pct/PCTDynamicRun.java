@@ -189,7 +189,7 @@ public class PCTDynamicRun extends PCTRun {
             createProfilerFile();
             setExecTaskParams();
             exec.createArg().setValue("-p");
-            exec.createArg().setValue("pct/v11/dynrun.p");
+            exec.createArg().setValue(getProgressProcedures().getDynamicRunProcedure());
 
             if (getIncludedPL() && !extractPL(pctLib)) {
                 throw new BuildException("Unable to extract pct.pl.");
