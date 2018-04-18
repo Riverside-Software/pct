@@ -31,7 +31,6 @@ public abstract interface ProgressProcedures {
     String getLoadSchemaProcedure();
     String getLoadSingleTableDataProcedure();
     String getLoadMultipleTablesDataProcedure();
-    boolean needRedirector();
     String getInitString();
     String getCallbackString();
     String getConnectString();

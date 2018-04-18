@@ -119,7 +119,8 @@ public class RCodeSelector extends BaseExtendSelector {
             case MODE_MD5:
                 log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getMD5(), file2.getMD5(), filename), Project.MSG_VERBOSE);
                 return !file1.getMD5().equals(file2.getMD5());
-            default: return true;
+            default:
+                return true;
         }
     }
 }

@@ -125,7 +125,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.serialize = node.getSerializeName();
         String fName = "";
         if (node.getFileName() != null) {
-         fName = propath.searchRelative(node.getFileName(), false).toPortableString();
+            fName = propath.searchRelative(node.getFileName(), false).toPortableString();
         }
         tt.definition = fName;
 
@@ -164,7 +164,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         }
         String fName = "Main file";
         if (node.getFileName() != null) {
-         fName = propath.searchRelative(node.getFileName(), false).toPortableString();
+            fName = propath.searchRelative(node.getFileName(), false).toPortableString();
         }
         ds.definition = fName;
 

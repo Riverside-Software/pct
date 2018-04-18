@@ -3,13 +3,9 @@
   <taskdef resource="extras115.properties" />
 
   <target name="test">
-  	<delete dir="docs"/>
-    <mkdir dir="docs"/>
-
     <ABLDuck destDir="docs" dlcHome="${DLC}" title="ABLDuck Documentation" dataFilesOnly="true">
       <fileset dir="src"  includes="**/*.cls"/>
     </ABLDuck>
-
   </target>
 
 </project>
