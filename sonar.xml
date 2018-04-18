@@ -10,7 +10,7 @@
   <property name="sonar.host.url" value="${SONAR_URL}" />
   <property name="sonar.projectKey" value="eu.rssw.pct:PCT" />
   <property name="sonar.projectName" value="PCT" />
-  <property name="sonar.projectVersion" value="209-pre" />
+  <property name="sonar.projectVersion" value="210-pre" />
   <property name="sonar.sources" value="src/java,src/progress" />
   <property name="sonar.exclusions" value="src/progress/Consultingwerk/**/*,src/progress/**/dump_inc*.p,src/progress/**/_dmp*.p,src/progress/prodict/**/*,src/progress/adecomm/*,src/progress/web/method/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
