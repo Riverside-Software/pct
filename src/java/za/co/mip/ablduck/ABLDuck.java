@@ -16,43 +16,40 @@
  */
 package za.co.mip.ablduck;
 
-import java.text.SimpleDateFormat;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Format;
 import java.text.MessageFormat;
-
-import java.util.List;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
-
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.openedge.core.runtime.IPropath;
 import com.openedge.core.runtime.Propath;
 import com.openedge.pdt.core.ast.ASTManager;
@@ -60,9 +57,8 @@ import com.openedge.pdt.core.ast.IASTManager;
 import com.openedge.pdt.core.ast.PropathASTContext;
 import com.openedge.pdt.core.ast.model.IASTContext;
 import com.openedge.pdt.core.ast.model.ICompilationUnit;
-
-import com.phenix.pct.PCT;
 import com.phenix.pct.Messages;
+import com.phenix.pct.PCT;
 import com.phenix.pct.Version;
 
 import eu.rssw.rcode.Using;
@@ -72,9 +68,6 @@ import za.co.mip.ablduck.models.data.ClassDataObject;
 import za.co.mip.ablduck.models.data.SearchDataObject;
 import za.co.mip.ablduck.models.source.MemberObject;
 import za.co.mip.ablduck.utilities.HTMLGenerator;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Class for generating ABLDuck documentation from OpenEdge classes
@@ -352,49 +345,16 @@ public class ABLDuck extends PCT {
     }
 
     private void extractTemplateDirectory(File outputDir) throws IOException {
-
-        File template = exportResource("ablduck.zip", outputDir);
-
-        unzip(template, outputDir);
-
-        if (!template.delete()) {
-            log("Unable to delete " + template.getAbsolutePath() + ", please delete this manually.",
-                    Project.MSG_INFO);
-        }
-
+        InputStream zipStream = ABLDuck.class.getResourceAsStream("resources/ablduck.zip");
+        unzip(zipStream, outputDir);
     }
 
-    public File exportResource(String resourceName, File outputDir) throws IOException {
-
-        File resource = new File(outputDir, resourceName);
-
-        try (InputStream stream = ABLDuck.class.getResourceAsStream("resources/" + resourceName);
-                OutputStream resStreamOut = new FileOutputStream(resource.getAbsolutePath())) {
-
-            if (stream == null) {
-                throw new IOException(
-                        "Cannot get resource \"" + resourceName + "\" from Jar file.");
-            }
-
-            int readBytes;
-            byte[] buffer = new byte[BUFFER_SIZE];
-
-            while ((readBytes = stream.read(buffer)) > 0) {
-                resStreamOut.write(buffer, 0, readBytes);
-            }
-        }
-
-        return resource;
-    }
-
-    public void unzip(File zipFile, File unzipTo) throws IOException {
-
+    public void unzip(InputStream zipStream, File unzipTo) throws IOException {
         if (!unzipTo.exists()) {
-            unzipTo.mkdir();
+            unzipTo.mkdirs();
         }
 
-        try (ZipInputStream zipIn = new ZipInputStream(
-                new FileInputStream(zipFile.getAbsolutePath()))) {
+        try (ZipInputStream zipIn = new ZipInputStream(zipStream)) {
             ZipEntry entry = zipIn.getNextEntry();
 
             while (entry != null) {
@@ -412,7 +372,6 @@ public class ABLDuck extends PCT {
     }
 
     private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-
         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
             byte[] bytesIn = new byte[BUFFER_SIZE];
             int read = 0;
