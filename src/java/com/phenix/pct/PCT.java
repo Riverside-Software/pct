@@ -674,13 +674,11 @@ public abstract class PCT extends Task {
     }
 
     protected static boolean createDir(File dir) {
-        if (dir.exists() && !dir.isDirectory()) {
-            return false;
+        if (dir.exists()) {
+            return dir.isDirectory();
+        } else {
+            return dir.mkdirs();
         }
-        if (!dir.exists() && !dir.mkdirs()) {
-            return false;
-        }
-        return true;
     }
 
 }
