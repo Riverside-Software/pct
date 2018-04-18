@@ -59,11 +59,6 @@ public class ProgressV10 implements ProgressProcedures {
     }
 
     @Override
-    public boolean needRedirector() {
-        return false;
-    }
-
-    @Override
     public String getInitString() {
         return getString("ProgressV10.0"); //$NON-NLS-1$
     }

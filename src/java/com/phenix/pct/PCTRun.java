@@ -57,14 +57,12 @@ public class PCTRun extends PCT implements IRunAttributes {
     protected int statusID = -1; // Unique ID when creating temp files
     protected int initID = -1; // Unique ID when creating temp files
     protected int plID = -1; // Unique ID when creating temp files
-    protected int outputStreamID = -1; // Unique ID when creating temp files
     private int xcodeID = -1; // Unique ID when creating temp files
     private int profilerID = -1; // Unique ID when creating temp files
     private int profilerOutID = -1; // Unique ID when creating temp files
     protected File initProc = null;
     protected File status = null;
     protected File pctLib = null;
-    protected File outputStream = null;
     private File xcodeDir = null;
     private File profilerParamFile = null;
     private boolean prepared = false;
@@ -424,17 +422,6 @@ public class PCTRun extends PCT implements IRunAttributes {
             throw new BuildException(caught);
         }
 
-        if (getProgressProcedures().needRedirector()) {
-            String s = null;
-            try (Reader r = new FileReader(outputStream); BufferedReader br2 = new BufferedReader(r)) {
-                while ((s = br2.readLine()) != null) {
-                    log(s, Project.MSG_INFO);
-                }
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-        }
-
         // Reads output parameter
         if (runAttributes.getOutputParameters() != null) {
             for (OutputParameter param : runAttributes.getOutputParameters()) {
@@ -659,16 +646,8 @@ public class PCTRun extends PCT implements IRunAttributes {
         try (OutputStream os = new FileOutputStream(initProc);
                 Writer w = new OutputStreamWriter(os, getCharset());
                 BufferedWriter bw = new BufferedWriter(w)) {
-            // Progress v8 is unable to write to standard output, so output is redirected in a file,
-            // which is parsed in a later stage
-            if (this.getProgressProcedures().needRedirector()) {
-                outputStreamID = PCT.nextRandomInt();
-                outputStream = new File(
-                        System.getProperty(PCT.TMPDIR), "pctOut" + outputStreamID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            }
-            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(),
-                    (this.outputStream == null ? null : this.outputStream.getAbsolutePath()),
-                    isVerbose(), runAttributes.useNoErrorOnQuit()));
+            bw.write(MessageFormat.format(this.getProgressProcedures().getInitString(), isVerbose(),
+                    runAttributes.useNoErrorOnQuit()));
 
             // XCode session key
             if (runAttributes.getXCodeSessionKey() != null) {
@@ -886,7 +865,6 @@ public class PCTRun extends PCT implements IRunAttributes {
 
         deleteFile(initProc);
         deleteFile(status);
-        deleteFile(outputStream);
         deleteFile(profilerParamFile);
         for (OutputParameter param : runAttributes.getOutputParameters()) {
             deleteFile(param.getTempFileName());
