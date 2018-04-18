@@ -4,6 +4,7 @@
   <taskdef name="compile" classname="com.phenix.pct.CompilationWrapper" />
   <taskdef name="library" classname="com.phenix.pct.PCTLibrary" />
   <taskdef name="run" classname="com.phenix.pct.PCTRun" />
+  <taskdef name="dynrun" classname="com.phenix.pct.PCTDynamicRun" />
   <taskdef name="compile_ext" classname="com.phenix.pct.CompilationWrapper" />
   <taskdef name="db_create" classname="com.phenix.pct.PCTCreateBase" />
   <taskdef name="schema_load" classname="com.phenix.pct.PCTLoadSchema" />

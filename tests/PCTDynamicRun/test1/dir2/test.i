@@ -1,0 +1,1 @@
+MESSAGE "This is dir2".

@@ -29,6 +29,11 @@ public class ProgressV10 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicRunProcedure() {
+        throw new UnsupportedOperationException("No dynamic procedure on version 10");
+    }
+
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v10/dump_inc.p";
     }

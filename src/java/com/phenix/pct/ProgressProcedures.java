@@ -24,6 +24,7 @@ package com.phenix.pct;
  */
 public abstract interface ProgressProcedures {
     String getCompileProcedure();
+    String getDynamicRunProcedure();
     String getIncrementalProcedure();
     String getDumpUsersProcedure();
     String getLoadUsersProcedure();
