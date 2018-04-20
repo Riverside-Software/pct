@@ -261,6 +261,11 @@ public class PCTCompile extends PCTRun {
             throw new BuildException("Unable to create temp directory for compile procedure");
         }
 
+        if (!compAttrs.isXcode() && (runAttributes.getXCodeSessionKey() != null) && !runAttributes.getXCodeSessionKey().trim().isEmpty()) {
+            log("xcode attribute set to false, resetting xcodeSessionKey attribute");
+            runAttributes.setXCodeSessionKey(null);
+        }
+
         // Test xRef directory
         if (compAttrs.getxRefDir() == null) {
             compAttrs.setXRefDir(new File(compAttrs.getDestDir(), ".pct")); //$NON-NLS-1$
