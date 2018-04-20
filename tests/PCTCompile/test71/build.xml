@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test71">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" graphicalMode="false" dlcHome="${DLC}" xcodekey="key1" xcode="false" xmlXref="true" keepXref="true">
+      <fileset dir="src" includes="test1.p" />
+    </PCTCompile>
+  </target>
+
+</project>
