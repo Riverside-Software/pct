@@ -203,7 +203,7 @@ END PROCEDURE.
 
 FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
   CASE ipVal:
-    WHEN 0 THEN RETURN 'Not recompiled'.
+    WHEN 0 THEN RETURN 'Up to date'.
     WHEN 1 THEN RETURN 'No r-code'.
     WHEN 2 THEN RETURN 'R-code older than source'.
     WHEN 3 THEN RETURN 'R-code older than include file'.
