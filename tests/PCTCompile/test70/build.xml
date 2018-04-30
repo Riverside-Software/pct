@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test70">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <flattenmapper />
+      <!--
+      Just changing the case will never work 
+      <scriptmapper language="javascript">
+        var baseName = source.substring(0, source.lastIndexOf('.'));
+        self.clear();
+        self.addMappedName(baseName.toUpperCase() + ".R");
+      </scriptmapper>
+      -->
+    </PCTCompile>
+  </target>
+
+</project>
