@@ -1120,9 +1120,10 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     public void test70() {
         configureProject(BASEDIR + "test70/build.xml");
         executeTarget("test");
-        assertTrue(new File(BASEDIR + "test70/build/test.r").exists());
-        assertTrue(new File(BASEDIR + "test70/build/test2.r").exists());
-        assertFalse(new File(BASEDIR + "test70/build/subdir/test2.r").exists());
+        // Extension is .p, not .r...
+        assertTrue(new File(BASEDIR + "test70/build/test.p").exists());
+        assertTrue(new File(BASEDIR + "test70/build/test2.p").exists());
+        assertFalse(new File(BASEDIR + "test70/build/subdir/test2.p").exists());
     }
 
     @Test(groups = {"v10"})
