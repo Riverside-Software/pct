@@ -383,7 +383,7 @@ PROCEDURE compileXref.
     /* In order to handle <mapper> element */
     IF cRenameFrom NE '' THEN DO:
       OS-COPY VALUE(outputDir + '/' + cRenameFrom) VALUE(outputDir + '/' + ipOutFile).
-      OS-DELETE VALUE(cRenameFrom).
+      OS-DELETE VALUE(outputDir + '/' + cRenameFrom).
     END.
     IF (NOT noParse) AND (NOT lXCode) THEN DO:
       IF lXmlXref THEN
