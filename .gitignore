@@ -2,8 +2,10 @@
 /.sonarlint/
 /build/
 /dist/
+/doc/
 /testbox/
 /test-output/
 /classDocTemp/
 /profiler/
+pom.xml.asc
 src/java/com/phenix/pct/PCT.properties

@@ -28,7 +28,7 @@ stage('Standard build') {
   unstash name: 'classdoc'
   sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
-  archive 'dist/PCT.jar'
+  archive 'dist/PCT.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
  }
 }
 
