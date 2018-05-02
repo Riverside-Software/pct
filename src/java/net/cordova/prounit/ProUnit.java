@@ -67,8 +67,6 @@ public class ProUnit extends PCTRun {
 
     /**
      * Configures compatibility mode for older version of prounit
-     * 
-     * @param verbose Optional, defaults to false
      */
     public void setCompatibility(boolean compatibility) {
         this.compatibility = compatibility;

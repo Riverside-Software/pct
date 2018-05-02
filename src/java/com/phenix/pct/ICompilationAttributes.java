@@ -199,7 +199,7 @@ public interface ICompilationAttributes {
      * Immediately stop compiling when a compilation error occurs
      * 
      * @param stopOnError Boolean
-     * @sinc PCT build #185
+     * @since PCT build #185
      */
     void setStopOnError(boolean stopOnError);
 

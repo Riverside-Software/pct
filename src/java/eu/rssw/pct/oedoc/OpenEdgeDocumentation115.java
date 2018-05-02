@@ -71,8 +71,6 @@ public class OpenEdgeDocumentation115 extends PCT {
 
     /**
      * Destination directory
-     * 
-     * @param destFile Directory
      */
     public void setDestDir(File dir) {
         this.destDir = dir;

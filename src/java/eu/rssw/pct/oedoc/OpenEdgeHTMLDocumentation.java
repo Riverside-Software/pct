@@ -55,8 +55,6 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
     /**
      * Destination directory
-     * 
-     * @param destFile Directory
      */
     public void setDestDir(File dir) {
         this.destDir = dir;

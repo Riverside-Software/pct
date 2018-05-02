@@ -347,7 +347,10 @@
   <target name="javadoc" depends="build" description="Javadoc generation">
     <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
       <packageset dir="${src.java}" />
-      <classpath refid="pct.compil" />
+      <classpath>
+        <path refid="pct.compil" />
+        <pathelement location="${build-java}" />
+      </classpath>
       <group title="PCT Core" packages="com.phenix.pct.*" />
       <group title="Class documentation" packages="eu.rssw.pct.*" />
       <group title="ABLDuck" packages="za.co.mip.ablduck.*" />
