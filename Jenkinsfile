@@ -26,9 +26,11 @@ stage('Standard build') {
   def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
 
   unstash name: 'classdoc'
-  sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
+  withEnv(["TERM=xterm"]) {
+    sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
+  }
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
-  archive 'dist/PCT.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
+  archiveArtifacts 'dist/PCT.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
  }
 }
 
@@ -77,12 +79,14 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
       def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
       unstash name: 'tests'
-      if (isUnix())
-        sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      else
-        bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
+      withEnv(["TERM=xterm"]) {
+        if (isUnix())
+          sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
+        else
+          bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
+      }
       stash name: "junit-${label}", includes: 'junitreports-*.zip'
-      archive 'emailable-report-*.html'
+      archiveArtifacts 'emailable-report-*.html'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }
