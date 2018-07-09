@@ -138,8 +138,6 @@ public class PCTLibrary extends PCT {
 
     /**
      * Case table to use
-     * 
-     * @param cpColl String
      */
     public void setCpCase(String cpCase) {
         this.cpCase = cpCase;

@@ -2,45 +2,22 @@
 <project name="PCTCompile-test70">
   <taskdef resource="PCT.properties" />
 
-  <target name="clean">
-    <delete dir="db" />
-    <delete dir="build1" />
-  </target>
-
-  <target name="db">
-    <mkdir dir="db" />
-    <PCTCreateBase dbName="xlatedb" destDir="db" dlcHome="${DLC}" schemaFile="dump/xlatedb.df" />
-    <PCTLoadData dlcHome="${DLC}" srcDir="dump" numsep="46" numdec="44">
-      <PCTConnection dbName="xlatedb" dbDir="db" singleUser="true" />
-    </PCTLoadData>
-  </target>
-
-  <target name="build">
-    <mkdir dir="build1" />
-    <PCTCompile destDir="build1" dlcHome="${DLC}" languages="French" relativePaths="true" failOnError="false">
-      <DBConnection dbDir="db" dbName="xlatedb" singleUser="true" />
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.p" />
-      <propath>
-        <pathelement location="src" />
-      </propath>
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <flattenmapper />
+      <!--
+      Just changing the case will never work 
+      <scriptmapper language="javascript">
+        var baseName = source.substring(0, source.lastIndexOf('.'));
+        self.clear();
+        self.addMappedName(baseName.toUpperCase() + ".R");
+      </scriptmapper>
+      -->
     </PCTCompile>
-  </target>
-
-  <target name="test-en-1">
-    <PCTRun procedure="test.p" dlcHome="${DLC}">
-      <propath>
-        <pathelement location="build1" />
-      </propath>
-    </PCTRun>
-  </target>
-
-  <target name="test-fr-1">
-    <PCTRun procedure="test.p" dlcHome="${DLC}">
-      <Option name="-lng" value="French" />
-      <propath>
-        <pathelement location="build1" />
-      </propath>
-    </PCTRun>
   </target>
 
 </project>

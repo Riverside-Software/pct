@@ -101,8 +101,6 @@ public class ABLDuck extends PCT {
 
     /**
      * Destination directory
-     * 
-     * @param destFile Directory
      */
     public void setDestDir(File dir) {
         this.destDir = dir;
@@ -143,7 +141,7 @@ public class ABLDuck extends PCT {
     /**
      * Generate the data files only
      * 
-     * @param dataFilesOnly Generate only the data files, wont extract the template
+     * @param dataOnly Generate only the data files, wont extract the template
      */
     public void setDataFilesOnly(Boolean dataOnly) {
         this.dataFilesOnly = dataOnly;

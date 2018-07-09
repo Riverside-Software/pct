@@ -542,7 +542,7 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * @returns "Bitness" of rcode, valid until v10.x
+     * @return "Bitness" of rcode, valid until v10.x
      */
     protected boolean is64bits() {
         return version.is64bits();
@@ -557,11 +557,6 @@ public abstract class PCT extends Task {
         return version.getrCodeVersion();
     }
 
-    /**
-     * 
-     * @param project
-     * @return
-     */
     public int getAntLoggerLever() {
         try {
             List<BuildListener> listeners = getProject().getBuildListeners();
@@ -628,7 +623,6 @@ public abstract class PCT extends Task {
      * Deletes a directory recursively.
      * 
      * @param directory directory to delete
-     * @throws IOException in case deletion is unsuccessful
      */
     protected void deleteDirectory(File directory) {
         if (directory == null)

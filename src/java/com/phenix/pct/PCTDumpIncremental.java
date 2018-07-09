@@ -56,7 +56,7 @@ public class PCTDumpIncremental extends PCTRun {
      * Specifies the CodePage for the .df file.
      * <ul>
      * <li>code-page = ?,"" : default conversion (SESSION:STREAM)</li>
-     * <li>code-page = "<code-page>" : convert to &lt;code-page&gt;</li>
+     * <li>code-page = "&lt;code-page&lt;" : convert to &lt;code-page&gt;</li>
      * </ul>
      * 
      * @param codePage String
