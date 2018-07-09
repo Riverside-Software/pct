@@ -21,6 +21,7 @@
  
 DEFINE VARIABLE hSocket AS HANDLE  NO-UNDO.
 DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
+DEFINE VARIABLE aResp   AS LOGICAL NO-UNDO.
 
 /* TODO Handle warning/error messages */
 DEFINE TEMP-TABLE ttMsgs NO-UNDO
@@ -53,7 +54,9 @@ RUN ConnectToServer NO-ERROR.
 EternalLoop:
 DO WHILE aOk:
     IF VALID-HANDLE(hSocket) THEN DO:
-        WAIT-FOR READ-RESPONSE OF hSocket.
+        ASSIGN aResp = FALSE.
+        WAIT-FOR READ-RESPONSE OF hSocket PAUSE 10.
+        IF NOT aResp THEN LEAVE EternalLoop.
     END.
 END.
 RETURN '0'.
@@ -130,6 +133,7 @@ PROCEDURE ReceiveCommand:
            cCmd = GET-STRING(mReadBuffer, 1, iBytes)
            SET-SIZE(mReadBuffer) = 0.
     ASSIGN cCmd = REPLACE(cCmd, CHR(13), '').  /* Strip CR */
+    ASSIGN aResp = TRUE.
 
     /* Check if a full command */
     ASSIGN cCmd = (IF SELF:PRIVATE-DATA EQ ? THEN "" ELSE SELF:PRIVATE-DATA) + cCmd
