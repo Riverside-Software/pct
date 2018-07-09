@@ -534,9 +534,9 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             }
 
             // XCode session key
-            if (options.getXCodeSessionKey() != null) {
+            if ((options.getXCodeSessionKey() != null) && !options.getXCodeSessionKey().trim().isEmpty()) {
                 bw.write(MessageFormat.format(this.getProgressProcedures().getXCodeSessionKey(),
-                        options.getXCodeSessionKey()));
+                        options.getXCodeSessionKey().trim()));
                 bw.newLine();
             }
 

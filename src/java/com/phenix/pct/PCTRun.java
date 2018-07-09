@@ -649,9 +649,9 @@ public class PCTRun extends PCT implements IRunAttributes {
                     runAttributes.useNoErrorOnQuit()));
 
             // XCode session key
-            if (runAttributes.getXCodeSessionKey() != null) {
+            if ((runAttributes.getXCodeSessionKey() != null) && !runAttributes.getXCodeSessionKey().trim().isEmpty()) {
                 bw.write(MessageFormat.format(this.getProgressProcedures().getXCodeSessionKey(),
-                        runAttributes.getXCodeSessionKey()));
+                        runAttributes.getXCodeSessionKey().trim()));
                 bw.newLine();
             }
 

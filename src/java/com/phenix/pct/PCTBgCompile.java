@@ -135,6 +135,11 @@ public class PCTBgCompile extends PCTBgRun {
             log(Messages.getString("PCTCompile.43"), Project.MSG_INFO); //$NON-NLS-1$
         }
 
+        if (!compAttrs.isXcode() && (getOptions().getXCodeSessionKey() != null) && !getOptions().getXCodeSessionKey().trim().isEmpty()) {
+            log("xcode attribute set to false, resetting xcodeSessionKey attribute");
+            getOptions().setXCodeSessionKey(null);
+        }
+
         initializeCompilationUnits();
         compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
         getOptions().addPropath(new Path(getProject(), compDir.getAbsolutePath()));
