@@ -1142,4 +1142,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test70/build/test2.p").exists());
         assertFalse(new File(BASEDIR + "test70/build/subdir/test2.p").exists());
     }
+
+    @Test(groups = {"v10"})
+    public void test72() {
+        configureProject(BASEDIR + "test72/build.xml");
+        executeTarget("db");
+        // STOP condition raised by warning 4516 has to be trapped
+        executeTarget("build");
+    }
 }

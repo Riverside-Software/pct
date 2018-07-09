@@ -1127,6 +1127,14 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test72() {
+        configureProject(BASEDIR + "test72/build.xml");
+        executeTarget("db");
+        // STOP condition raised by warning 4516 has to be trapped
+        executeTarget("build");
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
