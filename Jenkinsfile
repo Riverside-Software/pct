@@ -1,10 +1,10 @@
 stage('Class documentation build') {
- node ('EC2-EU1B') {
-  gitClean()
-  checkout scm
+ node ('windows') {
+  checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def jdk = tool name: 'JDK 1.8 64b', type: 'hudson.model.JDK'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def jdk = tool name: 'JDK8', type: 'hudson.model.JDK'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
     bat "${antHome}\\bin\\ant -DDLC11=${dlc11} classDoc"
@@ -14,49 +14,60 @@ stage('Class documentation build') {
 }
 
 stage('Standard build') {
- node ('master') {
-  gitClean()
-  checkout scm
+ node ('linux') {
+  checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+
   sh 'git rev-parse HEAD > head-rev'
   def commit = readFile('head-rev').trim()
+
   def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc10 = tool name: 'OE-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc10_64 = tool name: 'OE-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc11 = tool name: 'OE-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc10 = tool name: 'OpenEdge-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc10_64 = tool name: 'OpenEdge-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+
   unstash name: 'classdoc'
-  sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
+  withEnv(["TERM=xterm"]) {
+    sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DGIT_COMMIT=${commit} dist"
+  }
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
-  archive 'dist/PCT.jar'
+  archiveArtifacts 'dist/PCT.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
  }
 }
 
 stage('Full tests') {
- parallel branch8: { testBranch('EC2-EU1B', 'OE-10.2B', false, '10.2-Win', 10, 32) },
-    branch1: { testBranch('EC2-EU1B', 'OE-11.6', true, '11.6-Win', 11, 32) },
-    branch4: { testBranch('master', 'OE-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
-    branch5: { testBranch('master', 'OE-11.6', false, '11.6-Linux', 11, 64) },
-    branch6: { testBranch('master', 'OE-11.7', false, '11.7-Linux', 11, 64) },
-    branch7: { testBranch('master', 'OE-10.2B', false, '10.2-Linux', 10, 32) },
+ parallel branch8: { testBranch('windows', 'OpenEdge-10.2B', false, '10.2-Win', 10, 32) },
+    branch1: { testBranch('windows', 'OpenEdge-11.7', true, '11.7-Win', 11, 32) },
+    branch4: { testBranch('linux', 'OpenEdge-10.2B-64b', false, '10.2-64-Linux', 10, 64) },
+    branch5: { testBranch('linux', 'OpenEdge-11.6', false, '11.6-Linux', 11, 64) },
+    branch6: { testBranch('linux', 'OpenEdge-11.7', false, '11.7-Linux', 11, 64) },
+    branch7: { testBranch('linux', 'OpenEdge-10.2B', false, '10.2-Linux', 10, 32) },
     failFast: false
-  node('master') {
+  node('linux') {
     // Wildcards not accepted in unstash...
-    unstash name: 'testng-10.2-Win'
-    unstash name: 'testng-11.6-Win'
-    unstash name: 'testng-10.2-Linux'
-    unstash name: 'testng-10.2-64-Linux'
-    unstash name: 'testng-11.6-Linux'
-    unstash name: 'testng-11.7-Linux'
-    step([$class: 'Publisher', reportFilenamePattern: 'testng-results-*.xml'])
+    unstash name: 'junit-10.2-Win'
+    unstash name: 'junit-11.7-Win'
+    unstash name: 'junit-10.2-Linux'
+    unstash name: 'junit-10.2-64-Linux'
+    unstash name: 'junit-11.6-Linux'
+    unstash name: 'junit-11.7-Linux'
+    sh "mkdir junitreports"
+    unzip zipFile: 'junitreports-10.2-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-10.2-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-10.2-64-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.6-Linux.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
+    junit 'junitreports/**/*.xml'
   }
 }
 
 stage('Sonar') {
-  node('master') {
+  node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-    def dlc = tool name: 'OE-11.6', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+    def dlc = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
     unstash name: 'coverage'
-    withCredentials([[$class: 'StringBinding', credentialsId: 'ee33521a-8ef2-4008-a70a-a85592fecd28', variable: 'GH_PASSWORD']]) {
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
+    withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
+      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
     }
   }
 }
@@ -68,50 +79,17 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
       def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
       unstash name: 'tests'
-      if (isUnix())
-        sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      else
-        bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
-      stash name: "testng-${label}", includes: 'testng-results-*.xml'
-      archive 'emailable-report-*.html'
+      withEnv(["TERM=xterm"]) {
+        if (isUnix())
+          sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
+        else
+          bat "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
+      }
+      stash name: "junit-${label}", includes: 'junitreports-*.zip'
+      archiveArtifacts 'emailable-report-*.html'
       if (stashCoverage) {
         stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
       }
     }
   }
-}
-
-// see https://issues.jenkins-ci.org/browse/JENKINS-31924
-def gitClean() {
-    timeout(time: 60, unit: 'SECONDS') {
-        if (fileExists('.git')) {
-            echo 'Found Git repository: using Git to clean the tree.'
-            // The sequence of reset --hard and clean -fdx first
-            // in the root and then using submodule foreach
-            // is based on how the Jenkins Git SCM clean before checkout
-            // feature works.
-            if (isUnix()) {
-              sh 'git reset --hard'
-            } else {
-              bat 'git reset --hard'
-            }
-            // Note: -e is necessary to exclude the temp directory
-            // .jenkins-XXXXX in the workspace where Pipeline puts the
-            // batch file for the 'bat' command.
-            if (isUnix()) {
-              sh 'git clean -ffdx -e ".jenkins-*/"'
-              sh 'git submodule foreach --recursive git reset --hard'
-              sh 'git submodule foreach --recursive git clean -ffdx'
-            } else {
-              bat 'git clean -ffdx -e ".jenkins-*/"'
-              bat 'git submodule foreach --recursive git reset --hard'
-              bat 'git submodule foreach --recursive git clean -ffdx'
-            }
-        }
-        else
-        {
-            echo 'No Git repository found: using deleteDir() to wipe clean'
-            deleteDir()
-        }
-    }
 }

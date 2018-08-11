@@ -40,8 +40,6 @@ public class OpenEdgeXMLDocumentation extends PCTRun {
 
     /**
      * Destination directory
-     * 
-     * @param destFile Directory
      */
     public void setDestFile(File file) {
         this.destFile = file;

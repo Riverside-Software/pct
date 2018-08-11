@@ -63,8 +63,6 @@ public class ABLUnit extends PCTRun {
 
     /**
      * Set the path of the results file.
-     * 
-     * @param location
      */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
@@ -90,8 +88,6 @@ public class ABLUnit extends PCTRun {
 
     /**
      * Select case(s).
-     * 
-     * @param cases
      */
     public void setTestCase(String testCase) {
         this.testCase = testCase.split(",");

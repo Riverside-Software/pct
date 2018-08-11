@@ -38,50 +38,50 @@ import za.co.mip.ablduck.models.SourceJSObject;
  * @author <a href="mailto:robertedwardsmail@gmail.com">Robert Edwards</a>
  */
 public class ABLDuckTest extends BuildFileTestNg {
-    private Gson gson = new Gson();  
-    
-    @Test(groups= {"v11"})
+    private Gson gson = new Gson();
+
+    @Test(groups = {"v11"})
     public void testGenerateDocs() {
         configureProject("ABLDuck/test/build.xml");
         executeTarget("test");
     }
-    
-    @Test(groups= {"v11"}, dependsOnMethods = { "testGenerateDocs" })
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
     public void testDataJSFile() throws IOException {
-        String filename = "ABLDuck/test/docs/data.js";  
-        
-        //Does the data js file exist
+        String filename = "ABLDuck/test/docs/data.js";
+
+        // Does the data js file exist
         File f1 = new File(filename);
         assertTrue(f1.exists());
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(15, content.length() - 1);
-                
-        DataJSObject dataJSObject = gson.fromJson(content, DataJSObject.class);  
-        
-        //Should contain 2 classes
+
+        DataJSObject dataJSObject = gson.fromJson(content, DataJSObject.class);
+
+        // Should contain 2 classes
         assertEquals(dataJSObject.classes.size(), 2);
-        
-        //Should contain 2 classes, 1 property and 2 methods, 1 constructor and 1 event
+
+        // Should contain 2 classes, 1 property and 2 methods, 1 constructor and 1 event
         assertEquals(dataJSObject.search.size(), 7);
     }
-    
-    @Test(groups= {"v11"}, dependsOnMethods = { "testGenerateDocs" })
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
     public void testSourceJSFiles() throws IOException {
-          
-        //Does the source js files exist
-        String filename = "ABLDuck/test/docs/output/base.class.js"; 
+
+        // Does the source js files exist
+        String filename = "ABLDuck/test/docs/output/base.class.js";
         File f1 = new File(filename);
         assertTrue(f1.exists());
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
-             
-        SourceJSObject js = gson.fromJson(content, SourceJSObject.class);  
-        
-        //Should contain 2 methods and 1 property
+
+        SourceJSObject js = gson.fromJson(content, SourceJSObject.class);
+
+        // Should contain 2 methods and 1 property
         assertEquals(js.members.size(), 3);
-        
+
         assertEquals(js.id, "class-base.class");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "base.class");
@@ -89,28 +89,26 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.meta.deprecated.version, "0.0.1");
         assertEquals(js.subclasses.size(), 1);
         assertEquals(js.superclasses.size(), 0);
-        
-        
-        
-        //Does the source js files exist
-        filename = "ABLDuck/test/docs/output/test.js";   
+
+        // Does the source js files exist
+        filename = "ABLDuck/test/docs/output/test.js";
         f1 = new File(filename);
         assertTrue(f1.exists());
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
-             
-        js = gson.fromJson(content, SourceJSObject.class);  
-        
-        //Should contain 2 methods 1 property, 1 constructor and 1 event
+
+        js = gson.fromJson(content, SourceJSObject.class);
+
+        // Should contain 2 methods 1 property, 1 constructor and 1 event
         assertEquals(js.members.size(), 5);
-        
+
         assertEquals(js.id, "class-test");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "test");
         assertEquals(js.ext, "base.class");
         assertEquals(js.subclasses.size(), 0);
         assertEquals(js.superclasses.size(), 2);
-        
-    }    
+
+    }
 }

@@ -48,8 +48,6 @@ public class OEUnit extends PCTRun {
 
     /**
      * Set the path of the results file.
-     * 
-     * @param location
      */
     public void setDestDir(File destDir) {
         this.destDir = destDir;

@@ -29,6 +29,11 @@ public class ProgressV11 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicRunProcedure() {
+        return "pct/v11/dynrun.p";
+    }
+
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v11/silentIncDump.p";
     }
@@ -56,11 +61,6 @@ public class ProgressV11 implements ProgressProcedures {
     @Override
     public String getLoadSingleTableDataProcedure() {
         return "pct/v11/loadData2.p";
-    }
-
-    @Override
-    public boolean needRedirector() {
-        return false;
     }
 
     @Override

@@ -203,7 +203,7 @@ END PROCEDURE.
 
 FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
   CASE ipVal:
-    WHEN 0 THEN RETURN 'Not recompiled'.
+    WHEN 0 THEN RETURN 'Up to date'.
     WHEN 1 THEN RETURN 'No r-code'.
     WHEN 2 THEN RETURN 'R-code older than source'.
     WHEN 3 THEN RETURN 'R-code older than include file'.
@@ -383,7 +383,7 @@ PROCEDURE compileXref.
     /* In order to handle <mapper> element */
     IF cRenameFrom NE '' THEN DO:
       OS-COPY VALUE(outputDir + '/' + cRenameFrom) VALUE(outputDir + '/' + ipOutFile).
-      OS-DELETE VALUE(cRenameFrom).
+      OS-DELETE VALUE(outputDir + '/' + cRenameFrom).
     END.
     IF (NOT noParse) AND (NOT lXCode) THEN DO:
       IF lXmlXref THEN

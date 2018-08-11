@@ -16,7 +16,6 @@
  */
 package com.phenix.pct;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.text.MessageFormat;
 
@@ -65,7 +64,7 @@ public class RCodeSelector extends BaseExtendSelector {
         if ((mode != MODE_CRC) && (mode != MODE_MD5))
             setError("Invalid comparison mode");
         
-        if (lib != null) {
+        if ((lib != null) && (reader == null)) {
             reader = new PLReader(lib);
         }
     }
@@ -83,7 +82,8 @@ public class RCodeSelector extends BaseExtendSelector {
     public boolean isSelected(File basedir, String filename, File file) {
         validate();
 
-        RCodeInfo file1, file2;
+        RCodeInfo file1;
+        RCodeInfo file2;
         try {
             file1 = new RCodeInfo(file);
         } catch (Exception e) {
@@ -105,7 +105,8 @@ public class RCodeSelector extends BaseExtendSelector {
                 return true;
             }
             try {
-                file2 = new RCodeInfo(new BufferedInputStream(reader.getInputStream(e)));
+                // PLReader returns a ByteArrayInputStream object, so no need to wrap in a BufferedInputStream
+                file2 = new RCodeInfo(reader.getInputStream(e));
             } catch (Exception e2) {
                 log(MessageFormat.format("PLTarget {0} is an invalid rcode -- {1}", filename, e2.getMessage()));
                 return true;
@@ -119,7 +120,8 @@ public class RCodeSelector extends BaseExtendSelector {
             case MODE_MD5:
                 log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getMD5(), file2.getMD5(), filename), Project.MSG_VERBOSE);
                 return !file1.getMD5().equals(file2.getMD5());
-            default: return true;
+            default:
+                return true;
         }
     }
 }

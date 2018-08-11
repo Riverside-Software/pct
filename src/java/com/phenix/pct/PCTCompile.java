@@ -243,16 +243,6 @@ public class PCTCompile extends PCTRun {
         }
     }
 
-    private boolean createDir(File dir) {
-        if (dir.exists() && !dir.isDirectory()) {
-            return false;
-        }
-        if (!dir.exists() && !dir.mkdirs()) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Do the work
      *
@@ -269,6 +259,11 @@ public class PCTCompile extends PCTRun {
         if (compDir.exists() || !compDir.mkdirs()) {
             this.cleanup();
             throw new BuildException("Unable to create temp directory for compile procedure");
+        }
+
+        if (!compAttrs.isXcode() && (runAttributes.getXCodeSessionKey() != null) && !runAttributes.getXCodeSessionKey().trim().isEmpty()) {
+            log("xcode attribute set to false, resetting xcodeSessionKey attribute");
+            runAttributes.setXCodeSessionKey(null);
         }
 
         // Test xRef directory

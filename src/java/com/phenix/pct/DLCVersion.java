@@ -160,7 +160,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
     }
 
     /**
-     * @returns "Bitness" of rcode, valid until v10.x
+     * @return "Bitness" of rcode, valid until v10.x
      */
     public boolean is64bits() {
         return arch;

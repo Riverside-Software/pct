@@ -29,6 +29,11 @@ public class ProgressV10 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicRunProcedure() {
+        throw new UnsupportedOperationException("No dynamic procedure on version 10");
+    }
+
+    @Override
     public String getIncrementalProcedure() {
         return "pct/v10/dump_inc.p";
     }
@@ -56,11 +61,6 @@ public class ProgressV10 implements ProgressProcedures {
     @Override
     public String getLoadSingleTableDataProcedure() {
         return "pct/v10/loadData2.p";
-    }
-
-    @Override
-    public boolean needRedirector() {
-        return false;
     }
 
     @Override

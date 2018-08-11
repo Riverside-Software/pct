@@ -234,25 +234,12 @@ public class RCodeInfo {
         input.read(buf);
 
         StringBuffer hexString = new StringBuffer(2 * length);
-        for (int i = 0; i < length; i++)
-            appendHexPair(buf[i], hexString);
+        for (int i = 0; i < length; i++) {
+            hexString.append(String.format("%02X", buf[i]));
+        }
 
         return hexString.toString();
     }
-
-    private static void appendHexPair(byte b, StringBuffer hexString) {
-        char highNibble = kHexChars[(b & 0xF0) >> 4];
-        char lowNibble = kHexChars[b & 0x0F];
-
-        hexString.append(highNibble);
-        hexString.append(lowNibble);
-    }
-
-    /**
-     * @see http://www.bombaydigital.com/arenared/2004/2/12/1
-     */
-    private static final char kHexChars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-            'B', 'C', 'D', 'E', 'F'};
 
     public static class InvalidRCodeException extends Exception {
         private static final long serialVersionUID = 1L;

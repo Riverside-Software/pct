@@ -12,7 +12,7 @@
     </and>
   </condition>
 
-  <property name="pct.release" value="209.pre" />
+  <property name="pct.release" value="210.pre" />
   <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
@@ -28,6 +28,7 @@
   <property name="build-v10-64" location="build/build-v10-64" />
   <property name="build-v11" location="build/build-v11" />
   <property name="build-win" location="build/windows" />
+  <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
   <!-- Properties that control Java build options -->
@@ -105,6 +106,7 @@
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${build-v11}" />
+    <mkdir dir="${doc}" />
     <mkdir dir="${dist}" />
 
     <!-- Checking v10 and v11 availability -->
@@ -342,15 +344,31 @@
     </copy>
   </target>
 
+  <target name="javadoc" depends="build" description="Javadoc generation">
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
+      <packageset dir="${src.java}" />
+      <classpath>
+        <path refid="pct.compil" />
+        <pathelement location="${build-java}" />
+      </classpath>
+      <group title="PCT Core" packages="com.phenix.pct.*" />
+      <group title="Class documentation" packages="eu.rssw.pct.*" />
+      <group title="ABLDuck" packages="za.co.mip.ablduck.*" />
+      <group title="ProUnit" packages="net.cordova.prounit.*" />
+      <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
+      <link href="https://docs.oracle.com/javase/8/docs/api/" />
+      <link href="https://ant.apache.org/manual/api/" />
+    </javadoc>
+    <jar destfile="${dist}/PCT-javadoc.jar">
+      <fileset dir="${doc}" />
+    </jar>
+  </target>
+
   <target name="srcdist" description="Generates source zip/tarball archive">
-    <zip destfile="${dist}/pct-src-${env.BUILD_TAG}.zip">
-      <zipfileset prefix="pct" dir="." filemode="644">
-        <include name="src/**" />
-        <include name="build.xml" />
-        <include name="lib/*.jar" />
-        <include name="pct.build.properties" />
-      </zipfileset>
-    </zip>
+    <jar destfile="${dist}/PCT-sources.jar">
+      <fileset dir="src/java" />
+      <zipfileset dir="src/progress" prefix="progress" />
+    </jar>
   </target>
 
   <target name="testdist">
@@ -367,7 +385,7 @@
       <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
     </target>
 
-  <target name="dist" depends="srcdist,jar,testdist" />
+  <target name="dist" depends="srcdist,javadoc,jar,testdist" />
 
   <target name="clean" description="Nettoyage">
     <delete dir="${build}" />

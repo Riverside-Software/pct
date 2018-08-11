@@ -55,8 +55,6 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
 
     /**
      * Destination directory
-     * 
-     * @param destFile Directory
      */
     public void setDestDir(File dir) {
         this.destDir = dir;
@@ -99,6 +97,9 @@ public class OpenEdgeHTMLDocumentation extends PCTRun {
         if (destDir == null) {
             throw new BuildException(MessageFormat.format(
                     Messages.getString("OpenEdgeClassDocumentation.0"), "destDir"));
+        }
+        if (!createDir(destDir)) {
+            throw new BuildException("Unable to create destination directory");
         }
         // And source directory too
         if (sourceDir == null) {

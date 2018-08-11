@@ -1117,6 +1117,32 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test70() {
+        configureProject(BASEDIR + "test70/build.xml");
+        executeTarget("test");
+        // Extension is .p, not .r...
+        assertTrue(new File(BASEDIR + "test70/build/test1.p").exists());
+        assertTrue(new File(BASEDIR + "test70/build/test2.p").exists());
+        assertFalse(new File(BASEDIR + "test70/build/subdir/test2.p").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test71() {
+        configureProject(BASEDIR + "test71/build.xml");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test71/build/test1.r").exists());
+        assertTrue(new File(BASEDIR + "test71/build/.pct/test1.p.xref").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test72() {
+        configureProject(BASEDIR + "test72/build.xml");
+        executeTarget("db");
+        // STOP condition raised by warning 4516 has to be trapped
+        executeTarget("build");
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
