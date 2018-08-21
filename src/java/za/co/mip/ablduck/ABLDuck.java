@@ -62,10 +62,11 @@ import com.phenix.pct.PCT;
 import com.phenix.pct.Version;
 
 import eu.rssw.rcode.Using;
+import za.co.mip.ablduck.models.Cls;
 import za.co.mip.ablduck.models.CompilationUnit;
-import za.co.mip.ablduck.models.DataJSObject;
-import za.co.mip.ablduck.models.data.ClassDataObject;
-import za.co.mip.ablduck.models.data.SearchDataObject;
+import za.co.mip.ablduck.models.Data;
+import za.co.mip.ablduck.models.Member;
+import za.co.mip.ablduck.models.Search;
 
 /**
  * Class for generating ABLDuck documentation from OpenEdge classes
@@ -75,7 +76,10 @@ import za.co.mip.ablduck.models.data.SearchDataObject;
 public class ABLDuck extends PCT {
     private static final int BUFFER_SIZE = 4096;
     private static final String ICON_PREFIX = "icon-";
-    private HashMap<String, CompilationUnit> compilationUnits = new HashMap<>();
+    
+    private Data data = new Data();
+    private HashMap<String, CompilationUnit> classes = new HashMap<>();
+    private HashMap<String, CompilationUnit> procedures = new HashMap<>();
     private String title = "ABLDuck documentation";
     private File destDir = null;
     private File destDirOutput = null;
@@ -184,8 +188,7 @@ public class ABLDuck extends PCT {
         }
 
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        // DataJSObject dataJSObject = new DataJSObject();
-        // HTMLGenerator html = new HTMLGenerator();
+
         IPropath pp = new Propath(
                 new org.eclipse.core.runtime.Path(getProject().getBaseDir().getAbsolutePath()),
                 propath.list());
@@ -215,114 +218,101 @@ public class ABLDuck extends PCT {
                             Project.MSG_VERBOSE);
                     root.accept(visitor);
 
-                    // try {
                     CompilationUnit cu = visitor.getCompilationUnit();
-                    compilationUnits.put(cu.name, cu);
-                    /*
-                     * } catch (IOException ex) { throw new BuildException(ex); }
-                     */
+                    classes.put(cu.name, cu);
                 }
             }
         }
 
-        /*
-         * // Determine class hierarchy, subclasses and search objects for (Map.Entry<String,
-         * SourceJSObject> j : jsObjects.entrySet()) { SourceJSObject js = j.getValue();
-         * 
-         * // Class tree ClassDataObject cls = new ClassDataObject(); cls.name = js.name; cls.ext =
-         * js.ext; cls.icon = ICON_PREFIX + js.classIcon;
-         * 
-         * if (js.meta.isPrivate != null && js.meta.isPrivate) cls.isPrivate = true;
-         * 
-         * dataJSObject.classes.add(cls);
-         * 
-         * // Create search object SearchDataObject search = new SearchDataObject(); search.name =
-         * js.shortname; search.fullName = js.name; search.icon = ICON_PREFIX + js.classIcon;
-         * search.url = "#!/api/" + js.name; search.sort = 1; search.meta = js.meta;
-         * 
-         * dataJSObject.search.add(search);
-         * 
-         * for (MemberObject member : js.members) { search = new SearchDataObject(); search.name =
-         * member.name; search.fullName = member.owner + ":" + member.name; search.icon =
-         * ICON_PREFIX + member.tagname; search.url = "#!/api/" + member.owner + "-" +
-         * member.tagname + "-" + member.name; search.sort = 3; search.meta = member.meta;
-         * 
-         * dataJSObject.search.add(search); }
-         * 
-         * // Hierarchy HierarchyResult result = new HierarchyResult(); result =
-         * determineClassHierarchy(js, result);
-         * 
-         * List<String> hierarchy = result.getHierarchy(); Collections.reverse(hierarchy);
-         * js.superclasses.addAll(hierarchy);
-         * 
-         * js.members.addAll(result.getInheritedmembers());
-         * 
-         * // Subclasses for (Map.Entry<String, SourceJSObject> subclass : jsObjects.entrySet()) {
-         * SourceJSObject subc = subclass.getValue(); if (subc.ext.equals(js.name))
-         * js.subclasses.add(subc.name); }
-         * 
-         * // Add implementers to the interface for (String i : js.interfaces) { String
-         * fullInterfacePath = determineUsingClass(jsObjects, js, i); SourceJSObject iface =
-         * jsObjects.get(fullInterfacePath); if (iface != null) { iface.implementers.add(js.name); }
-         * }
-         * 
-         * }
-         */
+        
+
+        // Determine class hierarchy, subclasses and search objects
+        for (Map.Entry<String, CompilationUnit> classEntry : classes.entrySet()) {
+            CompilationUnit cu = classEntry.getValue();
+
+            createSearch(cu);
+
+            Cls cls = new Cls();
+            cls.name = cu.name;
+            cls.inherits = cu.inherits;
+            cls.icon = ICON_PREFIX + cu.icon;
+
+            data.classes.add(cls);
+
+            // Subclasses
+            for (Map.Entry<String, CompilationUnit> subclassEntry : classes.entrySet()) {
+                CompilationUnit subclass = subclassEntry.getValue();
+                if ("class".equals(subclass.tagname) && cu.name.equals(subclass.inherits))
+                    cu.subclasses.add(subclass.name);
+            }
+
+            // Add implementers to the interface
+            for (String i : cu.implementations) {
+                String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
+                if (fullInterfacePath != null) {
+                    CompilationUnit iface = classes.get(fullInterfacePath);
+                    if (iface != null) {
+                        iface.implementers.add(cu.name);
+                    }
+                }
+            }
+                /*
+            // Hierarchy
+            HierarchyResult result = new HierarchyResult();
+            result = determineClassHierarchy(js, result);
+
+            List<String> hierarchy = result.getHierarchy();
+            Collections.reverse(hierarchy);
+            js.superclasses.addAll(hierarchy);
+
+            js.members.addAll(result.getInheritedmembers());
+            */
+
+        }
+
         // Write class js files out
-        for (Map.Entry<String, CompilationUnit> cuEntry : compilationUnits.entrySet()) {
+        for (Map.Entry<String, CompilationUnit> cuEntry : classes.entrySet()) {
             CompilationUnit cu = cuEntry.getValue();
 
-            // Generate html
-            // js.html = html.getClassHtml(jsObjects, js);
+            File baseDir = new File(this.destDirOutput, "classes");
 
-            File baseDir = new File(this.destDirOutput,
-                    ("class".equals(cu.tagname) ? "classes" : "procedures"));
-            
             if (!baseDir.exists()) {
                 baseDir.mkdirs();
             }
-            
+
             File outputFile = new File(baseDir, cu.name + ".js");
             try (FileWriter file = new FileWriter(outputFile.toString())) {
-                file.write("Ext.data.JsonP." + cu.name.replace(".", "_")
-                        + ("procedures".equals(cu.tagname) ? "_p" : "") + "(" + gson.toJson(cu)
+                file.write("Ext.data.JsonP." + cu.name.replace(".", "_") + "(" + gson.toJson(cu)
                         + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
             }
         }
-        /*
-         * File dataFile = new File(this.destDir, "data.js"); try (FileWriter file = new
-         * FileWriter(dataFile.toString())) { file.write("Docs = {\"data\":" +
-         * gson.toJson(dataJSObject) + "}"); } catch (IOException ex) { throw new
-         * BuildException(ex); }
-         */
-    }
-/*
-    private HierarchyResult determineClassHierarchy(SourceJSObject curClass,
-            HierarchyResult result) {
-
-        String inherits = curClass.ext;
-
-        if (!"".equals(inherits)) {
-            result.addHierarchy(inherits);
-
-            SourceJSObject nextClass = jsObjects.get(inherits);
-
-            if (nextClass != null) {
-                for (MemberObject member : nextClass.members) {
-                    if (member.owner.equals(inherits)
-                            && (member.meta.isPrivate == null || !member.meta.isPrivate)
-                            && !"constructor".equals(member.tagname))
-                        result.addInheritedmember(member);
-                }
-
-                determineClassHierarchy(nextClass, result);
-            }
+        
+        
+        File dataFile = new File(this.destDir, "data.js"); 
+        try (FileWriter file = new FileWriter(dataFile.toString())) { 
+            file.write("Docs = {\"data\":" + gson.toJson(data) + "}"); 
+        } catch (IOException ex) { 
+            throw new BuildException(ex); 
         }
-        return result;
     }
-*/
+    /*
+     * private HierarchyResult determineClassHierarchy(SourceJSObject curClass, HierarchyResult
+     * result) {
+     * 
+     * String inherits = curClass.ext;
+     * 
+     * if (!"".equals(inherits)) { result.addHierarchy(inherits);
+     * 
+     * SourceJSObject nextClass = jsObjects.get(inherits);
+     * 
+     * if (nextClass != null) { for (MemberObject member : nextClass.members) { if
+     * (member.owner.equals(inherits) && (member.meta.isPrivate == null || !member.meta.isPrivate)
+     * && !"constructor".equals(member.tagname)) result.addInheritedmember(member); }
+     * 
+     * determineClassHierarchy(nextClass, result); } } return result; }
+     */
     private void extractTemplateDirectory(File outputDir) throws IOException {
         InputStream zipStream = ABLDuck.class.getResourceAsStream("resources/ablduck.zip");
         unzip(zipStream, outputDir);
@@ -368,25 +358,24 @@ public class ABLDuck extends PCT {
         content = content.replaceAll(Pattern.quote(tag), Matcher.quoteReplacement(value));
         Files.write(file, content.getBytes(charset));
     }
-/*
-    public static String determineUsingClass(Map<String, SourceJSObject> classes,
-            SourceJSObject cls, String dataType) {
-        if (classes.get(dataType) != null)
-            return dataType;
+
+    public String determineFullyQualifiedClassName(List<String> usings, String partialClassName) {
+        if (classes.get(partialClassName) != null)
+            return partialClassName;
 
         // First check if we have a direct using statement for the datatype
-        for (Using using : cls.using) {
-            String[] u = using.name.split("\\.");
-            if (u[u.length - 1].equals(dataType) && classes.get(using.name) != null) {
-                return using.name;
+        for (String using : usings) {
+            String[] u = using.split("\\.");
+            if (u[u.length - 1].equals(partialClassName) && classes.get(using) != null) {
+                return using;
             }
         }
 
         // Now check for * using statements
-        for (Using using : cls.using) {
-            String[] u = using.name.split("\\.");
+        for (String using : usings) {
+            String[] u = using.split("\\.");
             if ("*".equals(u[u.length - 1])) {
-                String fullName = using.name.replaceAll("\\*", dataType);
+                String fullName = using.replaceAll("\\*", partialClassName);
                 if (classes.get(fullName) != null)
                     return fullName;
             }
@@ -394,5 +383,32 @@ public class ABLDuck extends PCT {
 
         return null;
     }
-    */
+    
+    public void createSearch(CompilationUnit cu) {
+        Search search = new Search();
+        search.name = ("class".equals(cu.tagname)
+                ? cu.name.substring(cu.name.lastIndexOf(".") + 1)
+                : cu.name.substring(cu.name.lastIndexOf("/") + 1));
+        search.fullName = cu.name;
+        search.icon = ICON_PREFIX + cu.icon;
+        search.url = "#!/" + cu.tagname + "/" + cu.name;
+        search.sort = 1;
+        search.meta = cu.meta;
+
+        data.search.add(search);
+
+        for (Member member : cu.members) {
+            search = new Search();
+            search.name = member.name;
+            search.fullName = member.owner + ":" + member.name;
+            search.icon = ICON_PREFIX + member.tagname;
+            search.url = "#!/" + cu.tagname + "/" + member.owner + "-" + member.tagname + "-"
+                    + member.name;
+            search.sort = 3;
+            search.meta = member.meta;
+
+            data.search.add(search);
+        }
+    }
+
 }
