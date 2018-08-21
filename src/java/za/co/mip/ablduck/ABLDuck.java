@@ -62,12 +62,10 @@ import com.phenix.pct.PCT;
 import com.phenix.pct.Version;
 
 import eu.rssw.rcode.Using;
+import za.co.mip.ablduck.models.CompilationUnit;
 import za.co.mip.ablduck.models.DataJSObject;
-import za.co.mip.ablduck.models.SourceJSObject;
 import za.co.mip.ablduck.models.data.ClassDataObject;
 import za.co.mip.ablduck.models.data.SearchDataObject;
-import za.co.mip.ablduck.models.source.MemberObject;
-import za.co.mip.ablduck.utilities.HTMLGenerator;
 
 /**
  * Class for generating ABLDuck documentation from OpenEdge classes
@@ -77,7 +75,7 @@ import za.co.mip.ablduck.utilities.HTMLGenerator;
 public class ABLDuck extends PCT {
     private static final int BUFFER_SIZE = 4096;
     private static final String ICON_PREFIX = "icon-";
-    private HashMap<String, SourceJSObject> jsObjects = new HashMap<>();
+    private HashMap<String, CompilationUnit> compilationUnits = new HashMap<>();
     private String title = "ABLDuck documentation";
     private File destDir = null;
     private File destDirOutput = null;
@@ -186,8 +184,8 @@ public class ABLDuck extends PCT {
         }
 
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        DataJSObject dataJSObject = new DataJSObject();
-        HTMLGenerator html = new HTMLGenerator();
+        // DataJSObject dataJSObject = new DataJSObject();
+        // HTMLGenerator html = new HTMLGenerator();
         IPropath pp = new Propath(
                 new org.eclipse.core.runtime.Path(getProject().getBaseDir().getAbsolutePath()),
                 propath.list());
@@ -217,107 +215,90 @@ public class ABLDuck extends PCT {
                             Project.MSG_VERBOSE);
                     root.accept(visitor);
 
-                    try {
-                        SourceJSObject jsObject = visitor.getJSObject();
-                        jsObjects.put(jsObject.name, jsObject);
-                    } catch (IOException ex) {
-                        throw new BuildException(ex);
-                    }
+                    // try {
+                    CompilationUnit cu = visitor.getCompilationUnit();
+                    compilationUnits.put(cu.name, cu);
+                    /*
+                     * } catch (IOException ex) { throw new BuildException(ex); }
+                     */
                 }
             }
         }
 
-        // Determine class hierarchy, subclasses and search objects
-        for (Map.Entry<String, SourceJSObject> j : jsObjects.entrySet()) {
-            SourceJSObject js = j.getValue();
-
-            // Class tree
-            ClassDataObject cls = new ClassDataObject();
-            cls.name = js.name;
-            cls.ext = js.ext;
-            cls.icon = ICON_PREFIX + js.classIcon;
-
-            if (js.meta.isPrivate != null && js.meta.isPrivate)
-                cls.isPrivate = true;
-
-            dataJSObject.classes.add(cls);
-
-            // Create search object
-            SearchDataObject search = new SearchDataObject();
-            search.name = js.shortname;
-            search.fullName = js.name;
-            search.icon = ICON_PREFIX + js.classIcon;
-            search.url = "#!/api/" + js.name;
-            search.sort = 1;
-            search.meta = js.meta;
-
-            dataJSObject.search.add(search);
-
-            for (MemberObject member : js.members) {
-                search = new SearchDataObject();
-                search.name = member.name;
-                search.fullName = member.owner + ":" + member.name;
-                search.icon = ICON_PREFIX + member.tagname;
-                search.url = "#!/api/" + member.owner + "-" + member.tagname + "-" + member.name;
-                search.sort = 3;
-                search.meta = member.meta;
-
-                dataJSObject.search.add(search);
-            }
-
-            // Hierarchy
-            HierarchyResult result = new HierarchyResult();
-            result = determineClassHierarchy(js, result);
-
-            List<String> hierarchy = result.getHierarchy();
-            Collections.reverse(hierarchy);
-            js.superclasses.addAll(hierarchy);
-
-            js.members.addAll(result.getInheritedmembers());
-
-            // Subclasses
-            for (Map.Entry<String, SourceJSObject> subclass : jsObjects.entrySet()) {
-                SourceJSObject subc = subclass.getValue();
-                if (subc.ext.equals(js.name))
-                    js.subclasses.add(subc.name);
-            }
-
-            // Add implementers to the interface
-            for (String i : js.interfaces) {
-                String fullInterfacePath = determineUsingClass(jsObjects, js, i);
-                SourceJSObject iface = jsObjects.get(fullInterfacePath);
-                if (iface != null) {
-                    iface.implementers.add(js.name);
-                }
-            }
-
-        }
-
+        /*
+         * // Determine class hierarchy, subclasses and search objects for (Map.Entry<String,
+         * SourceJSObject> j : jsObjects.entrySet()) { SourceJSObject js = j.getValue();
+         * 
+         * // Class tree ClassDataObject cls = new ClassDataObject(); cls.name = js.name; cls.ext =
+         * js.ext; cls.icon = ICON_PREFIX + js.classIcon;
+         * 
+         * if (js.meta.isPrivate != null && js.meta.isPrivate) cls.isPrivate = true;
+         * 
+         * dataJSObject.classes.add(cls);
+         * 
+         * // Create search object SearchDataObject search = new SearchDataObject(); search.name =
+         * js.shortname; search.fullName = js.name; search.icon = ICON_PREFIX + js.classIcon;
+         * search.url = "#!/api/" + js.name; search.sort = 1; search.meta = js.meta;
+         * 
+         * dataJSObject.search.add(search);
+         * 
+         * for (MemberObject member : js.members) { search = new SearchDataObject(); search.name =
+         * member.name; search.fullName = member.owner + ":" + member.name; search.icon =
+         * ICON_PREFIX + member.tagname; search.url = "#!/api/" + member.owner + "-" +
+         * member.tagname + "-" + member.name; search.sort = 3; search.meta = member.meta;
+         * 
+         * dataJSObject.search.add(search); }
+         * 
+         * // Hierarchy HierarchyResult result = new HierarchyResult(); result =
+         * determineClassHierarchy(js, result);
+         * 
+         * List<String> hierarchy = result.getHierarchy(); Collections.reverse(hierarchy);
+         * js.superclasses.addAll(hierarchy);
+         * 
+         * js.members.addAll(result.getInheritedmembers());
+         * 
+         * // Subclasses for (Map.Entry<String, SourceJSObject> subclass : jsObjects.entrySet()) {
+         * SourceJSObject subc = subclass.getValue(); if (subc.ext.equals(js.name))
+         * js.subclasses.add(subc.name); }
+         * 
+         * // Add implementers to the interface for (String i : js.interfaces) { String
+         * fullInterfacePath = determineUsingClass(jsObjects, js, i); SourceJSObject iface =
+         * jsObjects.get(fullInterfacePath); if (iface != null) { iface.implementers.add(js.name); }
+         * }
+         * 
+         * }
+         */
         // Write class js files out
-        for (Map.Entry<String, SourceJSObject> j : jsObjects.entrySet()) {
-            SourceJSObject js = j.getValue();
+        for (Map.Entry<String, CompilationUnit> cuEntry : compilationUnits.entrySet()) {
+            CompilationUnit cu = cuEntry.getValue();
 
             // Generate html
-            js.html = html.getClassHtml(jsObjects, js);
+            // js.html = html.getClassHtml(jsObjects, js);
 
-            File outputFile = new File(this.destDirOutput, js.name + ".js");
+            File baseDir = new File(this.destDirOutput,
+                    ("class".equals(cu.tagname) ? "classes" : "procedures"));
+            
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
+            
+            File outputFile = new File(baseDir, cu.name + ".js");
             try (FileWriter file = new FileWriter(outputFile.toString())) {
-                file.write("Ext.data.JsonP." + js.name.replace(".", "_") + "(" + gson.toJson(js)
+                file.write("Ext.data.JsonP." + cu.name.replace(".", "_")
+                        + ("procedures".equals(cu.tagname) ? "_p" : "") + "(" + gson.toJson(cu)
                         + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
             }
         }
-
-        File dataFile = new File(this.destDir, "data.js");
-        try (FileWriter file = new FileWriter(dataFile.toString())) {
-            file.write("Docs = {\"data\":" + gson.toJson(dataJSObject) + "}");
-        } catch (IOException ex) {
-            throw new BuildException(ex);
-        }
-
+        /*
+         * File dataFile = new File(this.destDir, "data.js"); try (FileWriter file = new
+         * FileWriter(dataFile.toString())) { file.write("Docs = {\"data\":" +
+         * gson.toJson(dataJSObject) + "}"); } catch (IOException ex) { throw new
+         * BuildException(ex); }
+         */
     }
-
+/*
     private HierarchyResult determineClassHierarchy(SourceJSObject curClass,
             HierarchyResult result) {
 
@@ -341,7 +322,7 @@ public class ABLDuck extends PCT {
         }
         return result;
     }
-
+*/
     private void extractTemplateDirectory(File outputDir) throws IOException {
         InputStream zipStream = ABLDuck.class.getResourceAsStream("resources/ablduck.zip");
         unzip(zipStream, outputDir);
@@ -387,7 +368,7 @@ public class ABLDuck extends PCT {
         content = content.replaceAll(Pattern.quote(tag), Matcher.quoteReplacement(value));
         Files.write(file, content.getBytes(charset));
     }
-
+/*
     public static String determineUsingClass(Map<String, SourceJSObject> classes,
             SourceJSObject cls, String dataType) {
         if (classes.get(dataType) != null)
@@ -413,4 +394,5 @@ public class ABLDuck extends PCT {
 
         return null;
     }
+    */
 }

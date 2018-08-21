@@ -19,8 +19,6 @@ package za.co.mip.ablduck.models.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import za.co.mip.ablduck.models.generic.MetaObject;
-
 public class SubsectionDataObject {
 
     @Expose
@@ -30,6 +28,6 @@ public class SubsectionDataObject {
     @SerializedName("default")
     public Boolean def = null;
 
-    @Expose
-    public MetaObject filter = new MetaObject();
+   // @Expose
+   // public MetaObject filter = new MetaObject();
 }

@@ -18,8 +18,6 @@ package za.co.mip.ablduck.models.data;
 
 import com.google.gson.annotations.Expose;
 
-import za.co.mip.ablduck.models.generic.MetaObject;
-
 public class SearchDataObject {
 
     @Expose
@@ -36,7 +34,8 @@ public class SearchDataObject {
 
     @Expose
     public Integer sort = 0;
-
+/*
     @Expose
     public MetaObject meta = null;
+    */
 }

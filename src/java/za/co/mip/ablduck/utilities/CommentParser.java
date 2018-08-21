@@ -32,20 +32,24 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 public class CommentParser {
+    
+    /*
     private String comment;
     private String source;
-    private Map<String, String> nestedComments = new HashMap<>();
+    private Map<String, String> nestedComments = new HashMap<>(); */
     private Javadoc javadocParser;
+    
+    /*
     private Pattern oldCommentDetectPattern = Pattern.compile("^\\s*?\\/\\*\\s*?-+.+$",
             Pattern.MULTILINE);
     private String oldCommentTokenPattern = "(^\\s*?[TOKEN]\\s*?:([\\s\\S]*?))(?:\\n|\\z)*(?:^\\s*?Component\\s*?:|^\\s*?Author\\s*?:|^\\s*?File\\s*?:|^\\s*?Purpose\\s*?:|^\\s*?Syntax\\s*?:|^\\s*?Description\\s*?:|^\\s*?Author\\(s\\)\\s*?:|^\\s*?Created\\s*?:|^\\s*?Notes\\s*?:|^\\s*?@param|^\\s*?@return|^\\s*?## Purpose|^\\s*?## Description|^\\s*?## Notes|\\z)";
     private Map<String, Pattern> oldCommentPatterns = new HashMap<>();
     private String[] oldCommentTokens = {"File", "Purpose", "Syntax", "Description", "Author(s)",
             "Created", "Notes", "Author", "Component"};
-
+*/
     public CommentParser(Task ablduck) {
         javadocParser = new Javadoc(ablduck);
-
+/*
         for (String token : oldCommentTokens) {
             oldCommentPatterns.put(token,
                     Pattern.compile(
@@ -54,8 +58,9 @@ public class CommentParser {
                                             .replaceFirst("\\)", "\\\\)"))),
                             Pattern.MULTILINE | Pattern.CASE_INSENSITIVE));
         }
+        */
     }
-
+/*
     public String markdown(String comment) throws IOException {
         String markdown = "";
 
@@ -319,4 +324,6 @@ public class CommentParser {
 
         return trimmed.trim();
     }
+    
+    */
 }

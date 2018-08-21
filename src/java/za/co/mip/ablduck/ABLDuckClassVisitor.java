@@ -17,160 +17,182 @@
 package za.co.mip.ablduck;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.tools.ant.Task;
-
-import java.io.IOException;
 
 import com.openedge.core.runtime.IPropath;
 
 import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
-
+import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
+import eu.rssw.rcode.Dataset;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
-import eu.rssw.rcode.Parameter;
-import eu.rssw.rcode.AccessModifier;
-
-import za.co.mip.ablduck.models.SourceJSObject;
-import za.co.mip.ablduck.models.generic.DeprecatedObject;
-import za.co.mip.ablduck.models.source.MemberObject;
-import za.co.mip.ablduck.models.source.ParameterObject;
-import za.co.mip.ablduck.utilities.CommentParser;
-import za.co.mip.ablduck.utilities.CommentParseResult;
+import eu.rssw.rcode.TempTable;
+import eu.rssw.rcode.Using;
+import za.co.mip.ablduck.javadoc.Javadoc;
+import za.co.mip.ablduck.javadoc.JavadocListener;
+import za.co.mip.ablduck.models.CompilationUnit;
+import za.co.mip.ablduck.models.Member;
+import za.co.mip.ablduck.models.Parameter;
+import za.co.mip.ablduck.models.Return;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
-    private CommentParser comments;
-
+    private Javadoc javadocParser;
+    
     public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
         super(propath);
 
-        this.comments = new CommentParser(ablduck);
+        javadocParser = new Javadoc(ablduck);
     }
 
-    public SourceJSObject getJSObject() throws IOException {
-        SourceJSObject js = new SourceJSObject();
-        ClassCompilationUnit cu = getClassCompilationUnit();
-        String fullClassName;
+    public CompilationUnit getCompilationUnit() {
+        CompilationUnit cu = new CompilationUnit();
+        ClassCompilationUnit classUnit = getClassCompilationUnit();
 
-        if (cu.packageName != null)
-            fullClassName = cu.packageName + "." + cu.className;
-        else
-            fullClassName = cu.className;
+        String fullyQualifiedClassName = (classUnit.packageName != null
+                ? classUnit.packageName + "."
+                : "") + classUnit.className;
 
-        js.id = "class-" + fullClassName;
-        js.tagname = "class";
-        js.name = fullClassName;
-        js.shortname = cu.className;
-        js.interfaces.addAll(cu.interfaces);
-        js.using.addAll(cu.usings);
-        js.isInterface = cu.isInterface;
+        cu.files = new ArrayList<String>();
 
-        if (cu.isInterface)
-            js.classIcon = "interface";
-        else
-            js.classIcon = "class";
+        cu.uses = new ArrayList<String>();
+        for (Using using : classUnit.usings) {
+            cu.uses.add(using.name);
+        }
 
-        if (cu.inherits != null)
-            js.ext = cu.inherits;
+        cu.id = "class-" + fullyQualifiedClassName;
+        cu.tagname = "class";
+        cu.name = fullyQualifiedClassName;
+
+        cu.inherits = (classUnit.inherits != null ? classUnit.inherits : "");
+
+        cu.superclasses = new ArrayList<String>();
+        cu.subclasses = new ArrayList<String>();
+
+        if (classUnit.isInterface) {
+            cu.icon = "interface";
+            cu.implementers = new ArrayList<String>();
+        } else {
+            cu.icon = "class";
+            cu.implementations = new ArrayList<String>();
+            cu.implementations.addAll(classUnit.interfaces);
+        }
 
         String c = null;
-        if (!cu.classComment.isEmpty()) {
-            for (int i = cu.classComment.size() - 1; i >= 0; i--) {
-                c = cu.classComment.get(i); // Assuming last comment will always be the class
-                                            // comment, will need to cater for license later
+        if (!classUnit.classComment.isEmpty()) {
+            for (int i = classUnit.classComment.size() - 1; i >= 0; i--) {
+                c = classUnit.classComment.get(i); // Assuming last comment will always be the class
+                                                   // comment, will need to cater for license later
                 if (c != null)
                     break;
             }
         }
 
-        try {
-            CommentParseResult commentParseResult = comments.parseComment(c, fullClassName);
+        JavadocListener classComment = parseComment(c, fullyQualifiedClassName);
 
-            if (!commentParseResult.getInternal())
-                commentParseResult.setInternal(cu.className.startsWith("_"));
+        cu.comment = classComment.getComment();
+        cu.author = classComment.getAuthor();
 
-            js.comment = commentParseResult.getComment();
-            js.author = commentParseResult.getAuthor();
-
-            if (commentParseResult.getInternal())
-                js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
-
-            if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                js.meta.deprecated = new DeprecatedObject();
-
-                js.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                js.meta.deprecated.text = commentParseResult.getDeprecatedText();
-            }
-
-        } catch (IOException ex) {
-            throw ex;
+        cu.meta.isInternal = classComment.isInternal();
+        cu.meta.isDeprecated = classComment.getDeprecated();
+        cu.meta.isAbstract = (classUnit.isAbstract ? classUnit.isAbstract : null);
+        cu.meta.isFinal = (classUnit.isFinal ? classUnit.isFinal : null);
+        
+        cu.members = new ArrayList<>();
+        
+        // Constructor
+        Integer constructorCount = 1;
+        for (Constructor constructor : classUnit.constructors) {
+            Member member = new Member();
+            
+            member.id = "constructor-" + classUnit.className + constructorCount.toString();
+            member.name = classUnit.className;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "constructor";
+            
+            JavadocListener constructorComment = parseComment(constructor.constrComment, fullyQualifiedClassName + ":constructor#" + constructorCount.toString());
+            
+            member.comment = constructorComment.getComment();
+            
+            member.meta.isPrivate = (constructor.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (constructor.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (constructor.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isInternal = constructorComment.isInternal();
+            member.meta.isDeprecated = constructorComment.getDeprecated();
+            
+            member.parameters = addParameters(constructor.parameters, constructorComment.getParameters());
+                    
+            constructorCount++;
+            cu.members.add(member);
         }
         
-        Integer constructorCount = 0;
-        for (Constructor constructor : cu.constructors) {
-            MemberObject m = new MemberObject();
+        //TODO: Implement Destructors
+        
+        // Events
+        for (Event event : classUnit.events) {
+            Member member = new Member();
+
+            member.id = "event-" + event.eventName;
+            member.name = event.eventName;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "event";
             
-            constructorCount++;
-
-            m.id = "constructor-" + cu.className + constructorCount.toString();
-            m.name = cu.className;
-            m.owner = fullClassName;
-            m.tagname = "constructor";
-            m.signature = constructor.signature;
+            JavadocListener eventComment = parseComment(event.eventComment, fullyQualifiedClassName + ":" + event.eventName);
             
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(constructor.constrComment,
-                        fullClassName + ":" + cu.className);
-
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
-
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private constructor for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
+            member.comment = eventComment.getComment();
             
-            if (constructor.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (constructor.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
+            member.meta.isPrivate = (event.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (event.isAbstract ? true : null);
+            //TODO: Implement override on events
+            member.meta.isInternal = eventComment.isInternal();
+            member.meta.isDeprecated = eventComment.getDeprecated();
             
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : constructor.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
+            member.returns = new Return();
+            member.returns.comment = eventComment.getReturn();
+            //TODO: Implement event return datatype
             
-            js.members.add(m);
+            member.parameters = addParameters(event.parameters, eventComment.getParameters());
+            
+            cu.members.add(member);
         }
+        
+        // Properties
+        for (Property property : classUnit.properties) {
+            Member member = new Member();
 
+            member.id = "property-" + property.name;
+            member.name = property.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "property";
+            member.datatype = property.dataType;
+
+            JavadocListener propertyComment = parseComment(property.propertyComment, fullyQualifiedClassName + ":" + property.name);
+            
+            member.comment = propertyComment.getComment();
+            
+            member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (property.isAbstract ? true : null);
+            //TODO: Implement override on properties
+            member.meta.isInternal = propertyComment.isInternal();
+            member.meta.isDeprecated = propertyComment.getDeprecated();
+            
+            cu.members.add(member);
+        }
+        
+        // Methods
         Integer methodCount = 0;
         String previousMethodName = "";
-        // Members
-        for (Method method : cu.methods) {
-            MemberObject m = new MemberObject();
+        for (Method method : classUnit.methods) {
+            Member member = new Member();
 
             if (previousMethodName.equals(method.methodName)) {
                 methodCount++;
@@ -179,179 +201,128 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 previousMethodName = method.methodName;
             }
 
-            if (methodCount == 0)
-                m.id = "method-" + method.methodName;
-            else
-                m.id = "method-" + method.methodName + "-" + methodCount.toString();
+            member.id = "method-" + method.methodName + (methodCount > 0 ? "-" + methodCount.toString() : "");
 
-            m.name = method.methodName;
-            m.owner = fullClassName;
-            m.tagname = "method";
-            m.signature = method.signature;
-
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(method.methodComment,
-                        fullClassName + ":" + method.methodName);
-
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(method.methodName.startsWith("_"));
-
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
-
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
-
-            if (method.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (method.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (method.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (method.isStatic)
-                m.meta.isStatic = true;
-
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : method.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
-
-            js.members.add(m);
-        }
-
-        for (Property property : cu.properties) {
-            MemberObject m = new MemberObject();
-
-            m.id = "property-" + property.name;
-            m.name = property.name;
-            m.owner = fullClassName;
-            m.tagname = "property";
-            m.datatype = property.dataType;
-
-            try {
-                CommentParseResult commentParseResult = comments.parseComment(
-                        property.propertyComment, fullClassName + ":" + property.name);
-
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(property.name.startsWith("_"));
-
-                m.comment = commentParseResult.getComment();
-
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-
-            } catch (IOException ex) {
-                throw ex;
-            }
-
-            if (property.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (property.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (property.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (property.isStatic)
-                m.meta.isStatic = true;
-
-            js.members.add(m);
+            member.name = method.methodName;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "method";
+            
+            JavadocListener methodComment = parseComment(method.methodComment, fullyQualifiedClassName + ":" + method.methodName);
+            
+            member.comment = methodComment.getComment();
+            
+            member.meta.isPrivate = (method.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (method.isAbstract ? true : null);
+            //TODO: Implement override on methods
+            member.meta.isFinal = (method.isFinal ? true : null);
+            member.meta.isInternal = methodComment.isInternal();
+            member.meta.isDeprecated = methodComment.getDeprecated();
+            
+            member.returns = new Return();
+            member.returns.comment = methodComment.getReturn();
+            member.returns.datatype = method.returnType;
+            
+            member.parameters = addParameters(method.parameters, methodComment.getParameters());
+            
+            cu.members.add(member);
         }
         
-        for (Event event : cu.events) {
-            MemberObject m = new MemberObject();
+        // Temp-Tables
+        for (TempTable tempTable : classUnit.tts) {
+            Member member = new Member();
 
-            m.id = "event-" + event.eventName;
-            m.name = event.eventName;
-            m.owner = fullClassName;
-            m.tagname = "event";
-            m.signature = event.signature;
+            member.id = "temptable-" + tempTable.name;
+            member.name = tempTable.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "temptable";
+            member.definition = tempTable.aceText;
+
+            JavadocListener tempTableComment = parseComment(tempTable.comment, fullyQualifiedClassName + ":" + tempTable.name);
             
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(event.eventComment,
-                        fullClassName + ":" + event.eventName);
-
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(event.eventName.startsWith("_"));
-
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
-
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private event for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
+            member.comment = tempTableComment.getComment();
+            member.meta.isInternal = tempTableComment.isInternal();
+            member.meta.isDeprecated = tempTableComment.getDeprecated();
             
-            if (event.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (event.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (event.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (event.isStatic)
-                m.meta.isStatic = true;
+            //TODO: Implement private on temp-tables
+            //TODO: Implement protected on temp-tables 
+            //TODO: Implement static on temp-tables
+            //TODO: Implement new on temp-tables 
+            //TODO: Implement global on temp-tables 
+            //TODO: Implement shared on temp-tables 
+            member.meta.isNoUndo = (tempTable.noUndo ? true : null);
             
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : event.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
             
-            js.members.add(m);
+            cu.members.add(member);
         }
-        return js;
+        
+        // Datasets
+        for (Dataset dataset : classUnit.dss) {
+            Member member = new Member();
+
+            member.id = "dataset-" + dataset.name;
+            member.name = dataset.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "dataset";
+            member.definition = dataset.aceText;
+ 
+            JavadocListener datasetComment = parseComment(dataset.comment, fullyQualifiedClassName + ":" + dataset.name);
+            
+            member.comment = datasetComment.getComment();
+            member.meta.isInternal = datasetComment.isInternal();
+            member.meta.isDeprecated = datasetComment.getDeprecated();
+            
+            //TODO: Implement private on temp-tables
+            //TODO: Implement protected on temp-tables 
+            //TODO: Implement static on temp-tables
+            //TODO: Implement new on temp-tables 
+            //TODO: Implement shared on temp-tables 
+            
+            cu.members.add(member);
+        }
+        
+            
+        return cu;
+        
+    }
+    
+    public JavadocListener parseComment(String comment, String source){
+        if(comment == null)
+            comment = "";
+        
+        JavadocListener parsedComment;
+        // Javadoc Style Comments
+        if(comment.startsWith("/**")) {
+            parsedComment = javadocParser.parseComment(comment, source);
+        } else { // Old Progress Style
+            parsedComment = new JavadocListener();
+        }
+        
+        return parsedComment;
+    }
+    
+    public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters, HashMap<String, String> parameterComments){
+        List<Parameter> memberParams = null;
+        
+        if (!parameters.isEmpty()) {
+            memberParams = new ArrayList<>();
+            for (eu.rssw.rcode.Parameter param : parameters) {
+                Parameter parameter = new Parameter();
+    
+                parameter.name = param.name;
+                parameter.datatype = param.dataType;
+                parameter.mode = (param.mode == null ? "" : param.mode.toString());
+    
+                if (parameterComments != null)
+                    parameter.comment = parameterComments.get(parameter.name);
+                else
+                    parameter.comment = "";
+                
+                memberParams.add(parameter);  
+            }
+        }
+        
+        return memberParams;
     }
 }

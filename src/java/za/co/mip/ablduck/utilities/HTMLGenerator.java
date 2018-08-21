@@ -27,17 +27,13 @@ import org.apache.tools.ant.BuildException;
 import com.google.gson.annotations.SerializedName;
 
 import za.co.mip.ablduck.ABLDuck;
-import za.co.mip.ablduck.models.SourceJSObject;
-import za.co.mip.ablduck.models.generic.DeprecatedObject;
-import za.co.mip.ablduck.models.generic.MetaObject;
-import za.co.mip.ablduck.models.source.MemberObject;
-import za.co.mip.ablduck.models.source.ParameterObject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 
 public class HTMLGenerator {
+    /*
     private static final ResourceBundle TEMPLATES = ResourceBundle
             .getBundle("za.co.mip.ablduck.utilities.templates");
     private static final String DEPENDANCY = "DEPENDANCY.ITEM";
@@ -345,4 +341,5 @@ public class HTMLGenerator {
     private String stripHtmlTags(String doc) {
         return doc.replaceAll("<[^>]*>", "");
     }
+    */
 }

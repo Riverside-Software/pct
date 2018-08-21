@@ -30,7 +30,7 @@ import com.google.gson.Gson;
 import com.phenix.pct.BuildFileTestNg;
 
 import za.co.mip.ablduck.models.DataJSObject;
-import za.co.mip.ablduck.models.SourceJSObject;
+// import za.co.mip.ablduck.models.SourceJSObject;
 
 /**
  * Class for testing ABLDuck task
@@ -53,7 +53,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         // Does the data js file exist
         File f1 = new File(filename);
         assertTrue(f1.exists());
-
+/*
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(15, content.length() - 1);
 
@@ -64,11 +64,12 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         // Should contain 2 classes, 1 property and 2 methods, 1 constructor and 1 event
         assertEquals(dataJSObject.search.size(), 7);
+        */
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
     public void testSourceJSFiles() throws IOException {
-
+/*
         // Does the source js files exist
         String filename = "ABLDuck/test/docs/output/base.class.js";
         File f1 = new File(filename);
@@ -109,6 +110,6 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.ext, "base.class");
         assertEquals(js.subclasses.size(), 0);
         assertEquals(js.superclasses.size(), 2);
-
+    */
     }
 }

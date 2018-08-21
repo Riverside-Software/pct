@@ -33,7 +33,9 @@ public class Javadoc {
         this.errorListener = new DescriptiveErrorListener(ablduck);
     }
 
-    public List<String> parseComment(String comment, String source) {
+    public JavadocListener parseComment(String comment, String source) {
+        if (comment == null)
+            comment = "";
 
         JavadocLexer lexer = new JavadocLexer(CharStreams.fromString(comment, source));
         lexer.removeErrorListeners();
@@ -51,6 +53,6 @@ public class Javadoc {
         JavadocListener listener = new JavadocListener();
         walker.walk(listener, documentation);
 
-        return listener.getTags();
+        return listener;
     }
 }

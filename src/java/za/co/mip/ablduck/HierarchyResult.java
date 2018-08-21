@@ -19,9 +19,8 @@ package za.co.mip.ablduck;
 import java.util.List;
 import java.util.ArrayList;
 
-import za.co.mip.ablduck.models.source.MemberObject;
-
 public class HierarchyResult {
+    /*
     private List<String> hierarchy = new ArrayList<>();
     private List<MemberObject> inheritedmembers = new ArrayList<>();
 
@@ -40,4 +39,5 @@ public class HierarchyResult {
     public void addInheritedmember(MemberObject member) {
         this.inheritedmembers.add(member);
     }
+    */
 }
