@@ -7,6 +7,11 @@ package za.co.mip.ablduck.javadoc;
 
 import java.util.List;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+import org.commonmark.renderer.html.HtmlWriter;
+
 import antlr.StringUtils;
 
 import java.util.ArrayList;
@@ -37,7 +42,7 @@ public class JavadocListener extends JavadocParserBaseListener {
     private String returns = "";
 
     public String getComment() {
-        return comment;
+        return markdown(comment);
     }
 
     public String getAuthor() {
@@ -59,14 +64,14 @@ public class JavadocListener extends JavadocParserBaseListener {
     public String getReturn() {
         return returns;
     }
-
-    @Override
-    public void enterDescriptionLine(JavadocParser.DescriptionLineContext ctx) {
-        comment = comment + ctx.getText();
+    
+    @Override 
+    public void enterComment(JavadocParser.CommentContext ctx) { 
+        comment += ctx.getText();
     }
-
-    @Override
-    public void enterBlockTagName(JavadocParser.BlockTagNameContext ctx) {
+    
+    @Override 
+    public void enterTagName(JavadocParser.TagNameContext ctx) { 
         switch (ctx.getText()) {
             case "internal" :
                 isInternal = true;
@@ -90,9 +95,9 @@ public class JavadocListener extends JavadocParserBaseListener {
                 break;
         }
     }
-
-    @Override
-    public void enterBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) {
+    
+    @Override 
+    public void enterTagText(JavadocParser.TagTextContext ctx) { 
         if (inDeprecated) {
             if ("".equals(deprecated.version)) {
                 deprecated.version = ctx.getText();
@@ -107,7 +112,8 @@ public class JavadocListener extends JavadocParserBaseListener {
         
         if (inParam) {
             if ("".equals(paramName)) {
-                paramName = ctx.getText();
+                paramName = ctx.getText().substring(0, ctx.getText().indexOf(" "));
+                paramComment = ctx.getText().substring(ctx.getText().indexOf(" "));
             } else {
                 paramComment += ctx.getText();
             }
@@ -117,9 +123,9 @@ public class JavadocListener extends JavadocParserBaseListener {
             returns = returns += ctx.getText();
         }
     }
-
-    @Override
-    public void exitBlockTag(JavadocParser.BlockTagContext ctx) {
+    
+    @Override 
+    public void exitTag(JavadocParser.TagContext ctx) {
         if (inDeprecated)
             inDeprecated = false;
 
@@ -128,15 +134,22 @@ public class JavadocListener extends JavadocParserBaseListener {
         
         if (inParam) {
             inParam = false;
-            parameters.put(paramName, paramComment);
+            parameters.put(paramName, markdown(paramComment));
         }
             
         if (inReturns) 
             inReturns = false;
     }
+    
+    public String markdown(String comment) {
+        String markdown = "";
 
-    /*
-     * @Override public void enterInlineTag(JavadocParser.InlineTagContext ctx) {
-     * tags.add(ctx.getText()); }
-     */
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(comment);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        markdown = renderer.render(document);
+
+        return markdown;
+    }
+
 }

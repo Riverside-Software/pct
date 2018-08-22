@@ -66,6 +66,7 @@ import za.co.mip.ablduck.models.Cls;
 import za.co.mip.ablduck.models.CompilationUnit;
 import za.co.mip.ablduck.models.Data;
 import za.co.mip.ablduck.models.Member;
+import za.co.mip.ablduck.models.Parameter;
 import za.co.mip.ablduck.models.Search;
 
 /**
@@ -171,9 +172,8 @@ public class ABLDuck extends PCT {
                 extractTemplateDirectory(this.destDir);
 
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
-                List<String> files = Arrays.asList("index.html", "template.html",
-                        "print-template.html");
-
+                List<String> files = Arrays.asList("index.html"); //, "template.html", "print-template.html"
+                
                 for (String file : files) {
                     replaceTemplateTags("{title}", this.title,
                             Paths.get(this.destDir.getAbsolutePath(), file));
@@ -238,35 +238,49 @@ public class ABLDuck extends PCT {
             cls.icon = ICON_PREFIX + cu.icon;
 
             data.classes.add(cls);
+            
 
             // Subclasses
             for (Map.Entry<String, CompilationUnit> subclassEntry : classes.entrySet()) {
                 CompilationUnit subclass = subclassEntry.getValue();
-                if ("class".equals(subclass.tagname) && cu.name.equals(subclass.inherits))
+                if ("class".equals(subclass.tagname) && cu.name.equals(determineFullyQualifiedClassName(subclass.uses, subclass.inherits)))
                     cu.subclasses.add(subclass.name);
             }
 
             // Add implementers to the interface
             for (String i : cu.implementations) {
                 String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
-                if (fullInterfacePath != null) {
-                    CompilationUnit iface = classes.get(fullInterfacePath);
-                    if (iface != null) {
-                        iface.implementers.add(cu.name);
-                    }
+                CompilationUnit iface = classes.get(fullInterfacePath);
+                if (iface != null) {
+                    iface.implementers.add(cu.name);
                 }
             }
-                /*
+             
             // Hierarchy
             HierarchyResult result = new HierarchyResult();
-            result = determineClassHierarchy(js, result);
+            result = determineClassHierarchy(cu, result);
 
             List<String> hierarchy = result.getHierarchy();
             Collections.reverse(hierarchy);
-            js.superclasses.addAll(hierarchy);
+            cu.superclasses.addAll(hierarchy);
+            cu.superclasses.add(cu.name);
 
-            js.members.addAll(result.getInheritedmembers());
-            */
+            cu.members.addAll(result.getInheritedmembers());
+            
+            if(cu.uses != null && cu.uses.size() > 0) {
+                for(Member member : cu.members) {
+                    if(member.datatype != null)
+                        member.datatype = determineFullyQualifiedClassName(cu.uses, member.datatype);
+                    
+                    if(member.returns != null)
+                        member.returns.datatype = determineFullyQualifiedClassName(cu.uses, member.returns.datatype);
+                    
+                    if(member.parameters != null)
+                        for (Parameter parameter : member.parameters) {
+                            parameter.datatype = determineFullyQualifiedClassName(cu.uses, parameter.datatype);
+                        }
+                }
+            }
 
         }
 
@@ -297,22 +311,31 @@ public class ABLDuck extends PCT {
             throw new BuildException(ex); 
         }
     }
-    /*
-     * private HierarchyResult determineClassHierarchy(SourceJSObject curClass, HierarchyResult
-     * result) {
-     * 
-     * String inherits = curClass.ext;
-     * 
-     * if (!"".equals(inherits)) { result.addHierarchy(inherits);
-     * 
-     * SourceJSObject nextClass = jsObjects.get(inherits);
-     * 
-     * if (nextClass != null) { for (MemberObject member : nextClass.members) { if
-     * (member.owner.equals(inherits) && (member.meta.isPrivate == null || !member.meta.isPrivate)
-     * && !"constructor".equals(member.tagname)) result.addInheritedmember(member); }
-     * 
-     * determineClassHierarchy(nextClass, result); } } return result; }
-     */
+    
+    private HierarchyResult determineClassHierarchy(CompilationUnit curClass,
+            HierarchyResult result) {
+
+        String inherits = curClass.inherits;
+
+        if (!"".equals(inherits)) {
+            result.addHierarchy(inherits);
+
+            CompilationUnit nextClass = classes.get(inherits);
+
+            if (nextClass != null) {
+                for (Member member : nextClass.members) {
+                    if (member.owner.equals(inherits)
+                            && (member.meta.isPrivate == null || !member.meta.isPrivate)
+                            && !"constructor".equals(member.tagname))
+                        result.addInheritedmember(member);
+                }
+
+                determineClassHierarchy(nextClass, result);
+            }
+        }
+        return result;
+    }
+    
     private void extractTemplateDirectory(File outputDir) throws IOException {
         InputStream zipStream = ABLDuck.class.getResourceAsStream("resources/ablduck.zip");
         unzip(zipStream, outputDir);
@@ -360,28 +383,33 @@ public class ABLDuck extends PCT {
     }
 
     public String determineFullyQualifiedClassName(List<String> usings, String partialClassName) {
-        if (classes.get(partialClassName) != null)
+        if (partialClassName == null)
+            return partialClassName;
+        if (partialClassName == null ||
+            "".equals(partialClassName) ||
+            "LOGICAL".equals(partialClassName) ||
+            "CHARACTER".equals(partialClassName) ||
+            classes.get(partialClassName) != null)
             return partialClassName;
 
         // First check if we have a direct using statement for the datatype
         for (String using : usings) {
-            String[] u = using.split("\\.");
-            if (u[u.length - 1].equals(partialClassName) && classes.get(using) != null) {
+            if (using.endsWith("." + partialClassName)) {
                 return using;
             }
         }
 
         // Now check for * using statements
         for (String using : usings) {
-            String[] u = using.split("\\.");
-            if ("*".equals(u[u.length - 1])) {
-                String fullName = using.replaceAll("\\*", partialClassName);
+            if (using.endsWith("*")) {
+                String fullName = using.substring(0, using.length() - 1) + partialClassName;
+
                 if (classes.get(fullName) != null)
                     return fullName;
             }
         }
 
-        return null;
+        return partialClassName;
     }
     
     public void createSearch(CompilationUnit cu) {

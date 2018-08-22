@@ -237,7 +237,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.name = tempTable.name;
             member.owner = fullyQualifiedClassName;
             member.tagname = "temptable";
-            member.definition = tempTable.aceText;
+            member.definition = tempTable.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
 
             JavadocListener tempTableComment = parseComment(tempTable.comment, fullyQualifiedClassName + ":" + tempTable.name);
             
@@ -265,7 +265,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.name = dataset.name;
             member.owner = fullyQualifiedClassName;
             member.tagname = "dataset";
-            member.definition = dataset.aceText;
+            member.definition = dataset.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
  
             JavadocListener datasetComment = parseComment(dataset.comment, fullyQualifiedClassName + ":" + dataset.name);
             
@@ -281,7 +281,6 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             
             cu.members.add(member);
         }
-        
             
         return cu;
         
