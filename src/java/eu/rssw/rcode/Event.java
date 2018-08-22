@@ -39,6 +39,8 @@ public class Event {
     @XmlAttribute
     public boolean isAbstract;
     @XmlAttribute
+    public boolean isOverride;
+    @XmlAttribute
     public String eventComment;
 
     @XmlElement(name = "parameter")

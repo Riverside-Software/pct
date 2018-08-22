@@ -29,6 +29,7 @@ import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Dataset;
+import eu.rssw.rcode.Destructor;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
@@ -131,7 +132,21 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             cu.members.add(member);
         }
         
-        //TODO: Implement Destructors
+        // Destructor
+        for (Destructor destructor : classUnit.destructors) {
+            Member member = new Member();
+            
+            member.id = "destructor-" + classUnit.className;
+            member.name = classUnit.className;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "destructor";
+            
+            JavadocListener constructorComment = parseComment(destructor.destructorComment, fullyQualifiedClassName + ":destructor");
+            
+            member.comment = constructorComment.getComment();
+            
+            cu.members.add(member);
+        }
         
         // Events
         for (Event event : classUnit.events) {
@@ -150,13 +165,13 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isAbstract = (event.isAbstract ? true : null);
-            //TODO: Implement override on events
+            member.meta.isOverride = (event.isOverride ? true : null);
             member.meta.isInternal = eventComment.isInternal();
             member.meta.isDeprecated = eventComment.getDeprecated();
             
             member.returns = new Return();
             member.returns.comment = eventComment.getReturn();
-            //TODO: Implement event return datatype
+            member.returns.datatype = "VOID";
             
             member.parameters = addParameters(event.parameters, eventComment.getParameters());
             
@@ -181,7 +196,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isAbstract = (property.isAbstract ? true : null);
-            //TODO: Implement override on properties
+            member.meta.isOverride = (property.isOverride ? true : null);
             member.meta.isInternal = propertyComment.isInternal();
             member.meta.isDeprecated = propertyComment.getDeprecated();
             
@@ -215,7 +230,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isAbstract = (method.isAbstract ? true : null);
-            //TODO: Implement override on methods
+            member.meta.isOverride = (method.isOverride ? true : null);
             member.meta.isFinal = (method.isFinal ? true : null);
             member.meta.isInternal = methodComment.isInternal();
             member.meta.isDeprecated = methodComment.getDeprecated();
@@ -245,12 +260,12 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isInternal = tempTableComment.isInternal();
             member.meta.isDeprecated = tempTableComment.getDeprecated();
             
-            //TODO: Implement private on temp-tables
-            //TODO: Implement protected on temp-tables 
-            //TODO: Implement static on temp-tables
-            //TODO: Implement new on temp-tables 
-            //TODO: Implement global on temp-tables 
-            //TODO: Implement shared on temp-tables 
+            member.meta.isPrivate = (tempTable.isPrivate ? true : null);
+            member.meta.isProtected = (tempTable.isProtected ? true : null);
+            member.meta.isStatic = (tempTable.isStatic ? true : null);
+            member.meta.isNew = (tempTable.isNew ? true : null);
+            member.meta.isGlobal = (tempTable.isGlobal ? true : null);
+            member.meta.isShared = (tempTable.isShared ? true : null);
             member.meta.isNoUndo = (tempTable.noUndo ? true : null);
             
             
@@ -273,11 +288,11 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isInternal = datasetComment.isInternal();
             member.meta.isDeprecated = datasetComment.getDeprecated();
             
-            //TODO: Implement private on temp-tables
-            //TODO: Implement protected on temp-tables 
-            //TODO: Implement static on temp-tables
-            //TODO: Implement new on temp-tables 
-            //TODO: Implement shared on temp-tables 
+            member.meta.isPrivate = (dataset.isPrivate ? true : null);
+            member.meta.isProtected = (dataset.isProtected ? true : null);
+            member.meta.isStatic = (dataset.isStatic ? true : null);
+            member.meta.isNew = (dataset.isNew ? true : null);
+            member.meta.isShared = (dataset.isShared ? true : null);
             
             cu.members.add(member);
         }

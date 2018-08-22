@@ -16,23 +16,11 @@
  */
 package eu.rssw.rcode;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Property {
-    @XmlAttribute
-    public String name, dataType;
-    @XmlAttribute
-    public boolean isAbstract, isStatic, isOverride;
-    @XmlAttribute
-    public int extent;
-    @XmlAttribute
-    public AccessModifier modifier;
-    @XmlAttribute
-    public GetSetModifier getModifier = GetSetModifier.NONE, setModifier = GetSetModifier.NONE;
-    @XmlElement(name = "propertyComment")
-    public String propertyComment;
-
+public class Destructor {
+    @XmlElement
+    public String destructorComment;
 }

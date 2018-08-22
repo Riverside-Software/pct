@@ -30,6 +30,7 @@ import com.openedge.core.runtime.IPropath;
 import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
 import com.openedge.pdt.core.ast.DatasetDeclaration;
+import com.openedge.pdt.core.ast.DestructorDeclaration;
 import com.openedge.pdt.core.ast.EnumDeclaration;
 import com.openedge.pdt.core.ast.EnumeratorItem;
 import com.openedge.pdt.core.ast.EventDeclaration;
@@ -55,6 +56,7 @@ import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Dataset;
+import eu.rssw.rcode.Destructor;
 import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.GetSetModifier;
@@ -123,6 +125,12 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.beforeTable = node.getBeforeTable();
         tt.xmlNodeName = node.getXmlNodeName();
         tt.serialize = node.getSerializeName();
+        tt.isPrivate = node.getChild(ProgressParserTokenTypes.PRIVATE) != null;
+        tt.isProtected = node.getChild(ProgressParserTokenTypes.PROTECTED) != null;
+        tt.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
+        tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
+        tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
+        tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
         String fName = "";
         if (node.getFileName() != null) {
             fName = propath.searchRelative(node.getFileName(), false).toPortableString();
@@ -158,6 +166,12 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         Dataset ds = new Dataset();
         ds.name = node.getName();
         ds.comment = findPreviousComment(node);
+        
+        ds.isPrivate = node.getChild(ProgressParserTokenTypes.PRIVATE) != null;
+        ds.isProtected = node.getChild(ProgressParserTokenTypes.PROTECTED) != null;
+        ds.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
+        ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
+        ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
 
         for (String str : node.getBufferNames()) {
             ds.buffers.add(str);
@@ -241,6 +255,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             prop.isStatic |= (zz == ProgressParserTokenTypes.STATIC);
         }
         prop.isAbstract = decl.isAbstract();
+        prop.isOverride = decl.isOverride();
         prop.dataType = getDataTypeName(decl.getDataType());
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
@@ -298,6 +313,20 @@ public class ClassDocumentationVisitor extends ASTVisitor {
 
         return true;
     }
+    
+    @Override
+    public boolean visit(DestructorDeclaration decl) {
+        if (decl == null)
+            return true;
+        Destructor destructor = new Destructor();
+        
+        destructor.destructorComment = findPreviousComment(decl);
+
+        cu.destructors.add(destructor);
+
+        return true;
+    }
+
 
     @Override
     public boolean visit(MethodDeclaration decl) {
@@ -312,6 +341,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.isStatic = decl.isStatic();
         method.isFinal = decl.isFinal();
         method.isAbstract = decl.isAbstract();
+        method.isOverride = decl.isOverride();
         method.methodComment = findPreviousComment(decl);
         cu.methods.add(method);
 
@@ -340,6 +370,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.modifier = AccessModifier.from(decl.getAccessModifier());
         event.isStatic = decl.isStatic();
         event.isAbstract = decl.isAbstract();
+        event.isOverride = decl.isOverride();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
         event.eventComment = findPreviousComment(decl);

@@ -33,6 +33,9 @@ public class Dataset {
     public String xmlNodeName;
     @XmlAttribute
     public String serialize;
+    
+    @XmlAttribute
+    public boolean isPrivate, isProtected, isStatic, isNew, isShared;
 
     @XmlElement(name = "text")
     public String aceText;
