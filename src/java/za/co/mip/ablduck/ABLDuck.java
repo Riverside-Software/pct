@@ -247,11 +247,13 @@ public class ABLDuck extends PCT {
             }
 
             // Add implementers to the interface
-            for (String i : cu.implementations) {
-                String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
-                CompilationUnit iface = classes.get(fullInterfacePath);
-                if (iface != null) {
-                    iface.implementers.add(cu.name);
+            if (cu.implementations != null && cu.implementations.size() > 0) {
+                for (String i : cu.implementations) {
+                    String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
+                    CompilationUnit iface = classes.get(fullInterfacePath);
+                    if (iface != null) {
+                        iface.implementers.add(cu.name);
+                    }
                 }
             }
 

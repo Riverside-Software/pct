@@ -8,4 +8,9 @@ public class Deprecated {
 
     @Expose
     public String text = "";
+    
+    public Deprecated(String version, String text) {
+        this.version = version;
+        this.text = text;
+    }
 }

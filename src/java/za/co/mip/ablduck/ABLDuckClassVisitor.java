@@ -35,20 +35,15 @@ import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
 import eu.rssw.rcode.TempTable;
 import eu.rssw.rcode.Using;
-import za.co.mip.ablduck.javadoc.Javadoc;
-import za.co.mip.ablduck.javadoc.JavadocListener;
 import za.co.mip.ablduck.models.CompilationUnit;
 import za.co.mip.ablduck.models.Member;
 import za.co.mip.ablduck.models.Parameter;
 import za.co.mip.ablduck.models.Return;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
-    private Javadoc javadocParser;
-    
+
     public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
         super(propath);
-
-        javadocParser = new Javadoc(ablduck);
     }
 
     public CompilationUnit getCompilationUnit() {
@@ -94,7 +89,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             }
         }
 
-        JavadocListener classComment = parseComment(c, fullyQualifiedClassName);
+        Comment classComment = parseComment(c);
 
         cu.comment = classComment.getComment();
         cu.author = classComment.getAuthor();
@@ -103,51 +98,54 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         cu.meta.isDeprecated = classComment.getDeprecated();
         cu.meta.isAbstract = (classUnit.isAbstract ? classUnit.isAbstract : null);
         cu.meta.isFinal = (classUnit.isFinal ? classUnit.isFinal : null);
-        
+
         cu.members = new ArrayList<>();
-        
+
         // Constructor
         Integer constructorCount = 1;
         for (Constructor constructor : classUnit.constructors) {
             Member member = new Member();
-            
+
             member.id = "constructor-" + classUnit.className + constructorCount.toString();
             member.name = classUnit.className;
             member.owner = fullyQualifiedClassName;
             member.tagname = "constructor";
-            
-            JavadocListener constructorComment = parseComment(constructor.constrComment, fullyQualifiedClassName + ":constructor#" + constructorCount.toString());
-            
+
+            Comment constructorComment = parseComment(constructor.constrComment);
+
             member.comment = constructorComment.getComment();
-            
+
             member.meta.isPrivate = (constructor.modifier == AccessModifier.PRIVATE ? true : null);
-            member.meta.isProtected = (constructor.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isProtected = (constructor.modifier == AccessModifier.PROTECTED
+                    ? true
+                    : null);
             member.meta.isStatic = (constructor.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isInternal = constructorComment.isInternal();
             member.meta.isDeprecated = constructorComment.getDeprecated();
-            
-            member.parameters = addParameters(constructor.parameters, constructorComment.getParameters());
-                    
+
+            member.parameters = addParameters(constructor.parameters,
+                    constructorComment.getParameters());
+
             constructorCount++;
             cu.members.add(member);
         }
-        
+
         // Destructor
         for (Destructor destructor : classUnit.destructors) {
             Member member = new Member();
-            
+
             member.id = "destructor-" + classUnit.className;
             member.name = classUnit.className;
             member.owner = fullyQualifiedClassName;
             member.tagname = "destructor";
-            
-            JavadocListener constructorComment = parseComment(destructor.destructorComment, fullyQualifiedClassName + ":destructor");
-            
+
+            Comment constructorComment = parseComment(destructor.destructorComment);
+
             member.comment = constructorComment.getComment();
-            
+
             cu.members.add(member);
         }
-        
+
         // Events
         for (Event event : classUnit.events) {
             Member member = new Member();
@@ -156,11 +154,11 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.name = event.eventName;
             member.owner = fullyQualifiedClassName;
             member.tagname = "event";
-            
-            JavadocListener eventComment = parseComment(event.eventComment, fullyQualifiedClassName + ":" + event.eventName);
-            
+
+            Comment eventComment = parseComment(event.eventComment);
+
             member.comment = eventComment.getComment();
-            
+
             member.meta.isPrivate = (event.modifier == AccessModifier.PRIVATE ? true : null);
             member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? true : null);
@@ -168,16 +166,16 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isOverride = (event.isOverride ? true : null);
             member.meta.isInternal = eventComment.isInternal();
             member.meta.isDeprecated = eventComment.getDeprecated();
-            
+
             member.returns = new Return();
             member.returns.comment = eventComment.getReturn();
             member.returns.datatype = "VOID";
-            
+
             member.parameters = addParameters(event.parameters, eventComment.getParameters());
-            
+
             cu.members.add(member);
         }
-        
+
         // Properties
         for (Property property : classUnit.properties) {
             Member member = new Member();
@@ -188,10 +186,10 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.tagname = "property";
             member.datatype = property.dataType;
 
-            JavadocListener propertyComment = parseComment(property.propertyComment, fullyQualifiedClassName + ":" + property.name);
-            
+            Comment propertyComment = parseComment(property.propertyComment);
+
             member.comment = propertyComment.getComment();
-            
+
             member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? true : null);
             member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? true : null);
@@ -199,10 +197,10 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isOverride = (property.isOverride ? true : null);
             member.meta.isInternal = propertyComment.isInternal();
             member.meta.isDeprecated = propertyComment.getDeprecated();
-            
+
             cu.members.add(member);
         }
-        
+
         // Methods
         HashMap<String, Integer> methodCounts = new HashMap<>();
         for (Method method : classUnit.methods) {
@@ -216,17 +214,18 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
                 methodCount++;
                 methodCounts.put(method.methodName, methodCount);
             }
-            
-            member.id = "method-" + method.methodName + (methodCount > 0 ? "-" + methodCount.toString() : "");
+
+            member.id = "method-" + method.methodName
+                    + (methodCount > 0 ? "-" + methodCount.toString() : "");
 
             member.name = method.methodName;
             member.owner = fullyQualifiedClassName;
             member.tagname = "method";
-            
-            JavadocListener methodComment = parseComment(method.methodComment, fullyQualifiedClassName + ":" + method.methodName);
-            
+
+            Comment methodComment = parseComment(method.methodComment);
+
             member.comment = methodComment.getComment();
-            
+
             member.meta.isPrivate = (method.modifier == AccessModifier.PRIVATE ? true : null);
             member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? true : null);
@@ -235,16 +234,16 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isFinal = (method.isFinal ? true : null);
             member.meta.isInternal = methodComment.isInternal();
             member.meta.isDeprecated = methodComment.getDeprecated();
-            
+
             member.returns = new Return();
             member.returns.comment = methodComment.getReturn();
             member.returns.datatype = method.returnType;
-            
+
             member.parameters = addParameters(method.parameters, methodComment.getParameters());
-            
+
             cu.members.add(member);
         }
-        
+
         // Temp-Tables
         for (TempTable tempTable : classUnit.tts) {
             Member member = new Member();
@@ -255,24 +254,25 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.tagname = "temptable";
             member.definition = tempTable.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
 
-            JavadocListener tempTableComment = parseComment(tempTable.comment, fullyQualifiedClassName + ":" + tempTable.name);
-            
+            Comment tempTableComment = parseComment(tempTable.comment);
+
             member.comment = tempTableComment.getComment();
             member.meta.isInternal = tempTableComment.isInternal();
             member.meta.isDeprecated = tempTableComment.getDeprecated();
-            
+
             member.meta.isPrivate = (tempTable.modifier == AccessModifier.PRIVATE ? true : null);
-            member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED
+                    ? true
+                    : null);
             member.meta.isStatic = (tempTable.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isNew = (tempTable.isNew ? true : null);
             member.meta.isGlobal = (tempTable.isGlobal ? true : null);
             member.meta.isShared = (tempTable.isShared ? true : null);
             member.meta.isNoUndo = (tempTable.noUndo ? true : null);
-            
-            
+
             cu.members.add(member);
         }
-        
+
         // Datasets
         for (Dataset dataset : classUnit.dss) {
             Member member = new Member();
@@ -282,62 +282,57 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.owner = fullyQualifiedClassName;
             member.tagname = "dataset";
             member.definition = dataset.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
- 
-            JavadocListener datasetComment = parseComment(dataset.comment, fullyQualifiedClassName + ":" + dataset.name);
-            
+
+            Comment datasetComment = parseComment(dataset.comment);
+
             member.comment = datasetComment.getComment();
             member.meta.isInternal = datasetComment.isInternal();
             member.meta.isDeprecated = datasetComment.getDeprecated();
-            
+
             member.meta.isPrivate = (dataset.modifier == AccessModifier.PRIVATE ? true : null);
             member.meta.isProtected = (dataset.modifier == AccessModifier.PROTECTED ? true : null);
             member.meta.isStatic = (dataset.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isNew = (dataset.isNew ? true : null);
             member.meta.isShared = (dataset.isShared ? true : null);
-            
+
             cu.members.add(member);
         }
-            
+
         return cu;
-        
+
     }
-    
-    public JavadocListener parseComment(String comment, String source){
-        if(comment == null)
-            comment = "";
+
+    public Comment parseComment(String comment) {
         
-        JavadocListener parsedComment;
-        // Javadoc Style Comments
-        if(comment.startsWith("/**")) {
-            parsedComment = javadocParser.parseComment(comment, source);
-        } else { // Old Progress Style
-            parsedComment = new JavadocListener();
-        }
+        Comment commentParser = new Comment();
         
-        return parsedComment;
+        commentParser.parseComment(comment);
+
+        return commentParser;
     }
-    
-    public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters, HashMap<String, String> parameterComments){
+
+    public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters,
+            HashMap<String, String> parameterComments) {
         List<Parameter> memberParams = null;
-        
+
         if (!parameters.isEmpty()) {
             memberParams = new ArrayList<>();
             for (eu.rssw.rcode.Parameter param : parameters) {
                 Parameter parameter = new Parameter();
-    
+
                 parameter.name = param.name;
                 parameter.datatype = param.dataType;
                 parameter.mode = (param.mode == null ? "" : param.mode.toString());
-    
+
                 if (parameterComments != null)
                     parameter.comment = parameterComments.get(parameter.name);
                 else
                     parameter.comment = "";
-                
-                memberParams.add(parameter);  
+
+                memberParams.add(parameter);
             }
         }
-        
+
         return memberParams;
     }
 }
