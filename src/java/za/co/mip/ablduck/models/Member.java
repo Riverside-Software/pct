@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-public class Member {
+public class Member implements Cloneable {
     @Expose
     public String id;
     
@@ -34,4 +34,8 @@ public class Member {
     
     @Expose
     public Meta meta = new Meta();
+    
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

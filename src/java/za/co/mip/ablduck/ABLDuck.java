@@ -77,7 +77,7 @@ import za.co.mip.ablduck.models.Search;
 public class ABLDuck extends PCT {
     private static final int BUFFER_SIZE = 4096;
     private static final String ICON_PREFIX = "icon-";
-    
+
     private Data data = new Data();
     private HashMap<String, CompilationUnit> classes = new HashMap<>();
     private HashMap<String, CompilationUnit> procedures = new HashMap<>();
@@ -172,8 +172,9 @@ public class ABLDuck extends PCT {
                 extractTemplateDirectory(this.destDir);
 
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
-                List<String> files = Arrays.asList("index.html"); //, "template.html", "print-template.html"
-                
+                List<String> files = Arrays.asList("index.html"); // , "template.html",
+                                                                  // "print-template.html"
+
                 for (String file : files) {
                     replaceTemplateTags("{title}", this.title,
                             Paths.get(this.destDir.getAbsolutePath(), file));
@@ -224,8 +225,6 @@ public class ABLDuck extends PCT {
             }
         }
 
-        
-
         // Determine class hierarchy, subclasses and search objects
         for (Map.Entry<String, CompilationUnit> classEntry : classes.entrySet()) {
             CompilationUnit cu = classEntry.getValue();
@@ -238,12 +237,12 @@ public class ABLDuck extends PCT {
             cls.icon = ICON_PREFIX + cu.icon;
 
             data.classes.add(cls);
-            
 
             // Subclasses
             for (Map.Entry<String, CompilationUnit> subclassEntry : classes.entrySet()) {
                 CompilationUnit subclass = subclassEntry.getValue();
-                if ("class".equals(subclass.tagname) && cu.name.equals(determineFullyQualifiedClassName(subclass.uses, subclass.inherits)))
+                if ("class".equals(subclass.tagname) && cu.name
+                        .equals(determineFullyQualifiedClassName(subclass.uses, subclass.inherits)))
                     cu.subclasses.add(subclass.name);
             }
 
@@ -255,7 +254,7 @@ public class ABLDuck extends PCT {
                     iface.implementers.add(cu.name);
                 }
             }
-             
+
             // Hierarchy
             HierarchyResult result = new HierarchyResult();
             result = determineClassHierarchy(cu, result);
@@ -266,18 +265,21 @@ public class ABLDuck extends PCT {
             cu.superclasses.add(cu.name);
 
             cu.members.addAll(result.getInheritedmembers());
-            
-            if(cu.uses != null && cu.uses.size() > 0) {
-                for(Member member : cu.members) {
-                    if(member.datatype != null)
-                        member.datatype = determineFullyQualifiedClassName(cu.uses, member.datatype);
-                    
-                    if(member.returns != null)
-                        member.returns.datatype = determineFullyQualifiedClassName(cu.uses, member.returns.datatype);
-                    
-                    if(member.parameters != null)
+
+            if (cu.uses != null && cu.uses.size() > 0) {
+                for (Member member : cu.members) {
+                    if (member.datatype != null)
+                        member.datatype = determineFullyQualifiedClassName(cu.uses,
+                                member.datatype);
+
+                    if (member.returns != null)
+                        member.returns.datatype = determineFullyQualifiedClassName(cu.uses,
+                                member.returns.datatype);
+
+                    if (member.parameters != null)
                         for (Parameter parameter : member.parameters) {
-                            parameter.datatype = determineFullyQualifiedClassName(cu.uses, parameter.datatype);
+                            parameter.datatype = determineFullyQualifiedClassName(cu.uses,
+                                    parameter.datatype);
                         }
                 }
             }
@@ -302,16 +304,15 @@ public class ABLDuck extends PCT {
                 throw new BuildException(ex);
             }
         }
-        
-        
-        File dataFile = new File(this.destDir, "data.js"); 
-        try (FileWriter file = new FileWriter(dataFile.toString())) { 
-            file.write("Docs = {\"data\":" + gson.toJson(data) + "}"); 
-        } catch (IOException ex) { 
-            throw new BuildException(ex); 
+
+        File dataFile = new File(this.destDir, "data.js");
+        try (FileWriter file = new FileWriter(dataFile.toString())) {
+            file.write("Docs = {\"data\":" + gson.toJson(data) + "}");
+        } catch (IOException ex) {
+            throw new BuildException(ex);
         }
     }
-    
+
     private HierarchyResult determineClassHierarchy(CompilationUnit curClass,
             HierarchyResult result) {
 
@@ -324,10 +325,21 @@ public class ABLDuck extends PCT {
 
             if (nextClass != null) {
                 for (Member member : nextClass.members) {
-                    if (member.owner.equals(inherits)
-                            && (member.meta.isPrivate == null || !member.meta.isPrivate)
-                            && !"constructor".equals(member.tagname))
-                        result.addInheritedmember(member);
+                    if (inherits.equals(member.owner) && member.meta.isPrivate == null) {
+                        try {
+                            // Happy with a shallow copy here
+                            Member inheritedMember = (Member) member.clone();
+
+                            inheritedMember.id = inheritedMember.id.replace(
+                                    inheritedMember.tagname + "-" + inheritedMember.name,
+                                    inheritedMember.tagname + "-"
+                                            + inheritedMember.owner.replace(".", "_") + "_"
+                                            + inheritedMember.name);
+                            result.addInheritedmember(inheritedMember);
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 determineClassHierarchy(nextClass, result);
@@ -335,7 +347,7 @@ public class ABLDuck extends PCT {
         }
         return result;
     }
-    
+
     private void extractTemplateDirectory(File outputDir) throws IOException {
         InputStream zipStream = ABLDuck.class.getResourceAsStream("resources/ablduck.zip");
         unzip(zipStream, outputDir);
@@ -385,11 +397,9 @@ public class ABLDuck extends PCT {
     public String determineFullyQualifiedClassName(List<String> usings, String partialClassName) {
         if (partialClassName == null)
             return partialClassName;
-        if (partialClassName == null ||
-            "".equals(partialClassName) ||
-            "LOGICAL".equals(partialClassName) ||
-            "CHARACTER".equals(partialClassName) ||
-            classes.get(partialClassName) != null)
+        if (partialClassName == null || "".equals(partialClassName)
+                || "LOGICAL".equals(partialClassName) || "CHARACTER".equals(partialClassName)
+                || classes.get(partialClassName) != null)
             return partialClassName;
 
         // First check if we have a direct using statement for the datatype
@@ -411,7 +421,7 @@ public class ABLDuck extends PCT {
 
         return partialClassName;
     }
-    
+
     public void createSearch(CompilationUnit cu) {
         Search search = new Search();
         search.name = ("class".equals(cu.tagname)

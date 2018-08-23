@@ -125,12 +125,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.beforeTable = node.getBeforeTable();
         tt.xmlNodeName = node.getXmlNodeName();
         tt.serialize = node.getSerializeName();
-        tt.isPrivate = node.getChild(ProgressParserTokenTypes.PRIVATE) != null;
-        tt.isProtected = node.getChild(ProgressParserTokenTypes.PROTECTED) != null;
-        tt.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
         tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
         tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        tt.modifier = AccessModifier.from(node.getAccessModifier());
         String fName = "";
         if (node.getFileName() != null) {
             fName = propath.searchRelative(node.getFileName(), false).toPortableString();
@@ -167,9 +165,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         ds.name = node.getName();
         ds.comment = findPreviousComment(node);
         
-        ds.isPrivate = node.getChild(ProgressParserTokenTypes.PRIVATE) != null;
-        ds.isProtected = node.getChild(ProgressParserTokenTypes.PROTECTED) != null;
-        ds.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
+        ds.modifier = AccessModifier.from(node.getAccessModifier());
         ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
 

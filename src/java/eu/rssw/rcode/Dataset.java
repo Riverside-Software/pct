@@ -35,10 +35,13 @@ public class Dataset {
     public String serialize;
     
     @XmlAttribute
-    public boolean isPrivate, isProtected, isStatic, isNew, isShared;
+    public boolean isNew, isShared;
 
     @XmlElement(name = "text")
     public String aceText;
+    
+    @XmlAttribute
+    public AccessModifier modifier;
 
     @XmlElement(name = "dsComment")
     public String comment;

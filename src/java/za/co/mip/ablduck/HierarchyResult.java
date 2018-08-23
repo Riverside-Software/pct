@@ -23,7 +23,6 @@ import za.co.mip.ablduck.models.Member;
 import java.util.ArrayList;
 
 public class HierarchyResult {
-    
     private List<String> hierarchy = new ArrayList<>();
     private List<Member> inheritedmembers = new ArrayList<>();
 
@@ -42,5 +41,4 @@ public class HierarchyResult {
     public void addInheritedmember(Member member) {
         this.inheritedmembers.add(member);
     }
-    
 }

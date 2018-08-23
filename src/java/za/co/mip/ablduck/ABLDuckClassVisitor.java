@@ -260,9 +260,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isInternal = tempTableComment.isInternal();
             member.meta.isDeprecated = tempTableComment.getDeprecated();
             
-            member.meta.isPrivate = (tempTable.isPrivate ? true : null);
-            member.meta.isProtected = (tempTable.isProtected ? true : null);
-            member.meta.isStatic = (tempTable.isStatic ? true : null);
+            member.meta.isPrivate = (tempTable.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (tempTable.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isNew = (tempTable.isNew ? true : null);
             member.meta.isGlobal = (tempTable.isGlobal ? true : null);
             member.meta.isShared = (tempTable.isShared ? true : null);
@@ -288,9 +288,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.meta.isInternal = datasetComment.isInternal();
             member.meta.isDeprecated = datasetComment.getDeprecated();
             
-            member.meta.isPrivate = (dataset.isPrivate ? true : null);
-            member.meta.isProtected = (dataset.isProtected ? true : null);
-            member.meta.isStatic = (dataset.isStatic ? true : null);
+            member.meta.isPrivate = (dataset.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (dataset.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (dataset.modifier == AccessModifier.STATIC ? true : null);
             member.meta.isNew = (dataset.isNew ? true : null);
             member.meta.isShared = (dataset.isShared ? true : null);
             

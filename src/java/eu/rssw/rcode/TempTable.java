@@ -32,13 +32,16 @@ public class TempTable {
     @XmlAttribute
     public String definition;
     @XmlAttribute
-    public boolean noUndo, isPrivate, isProtected, isStatic, isNew, isGlobal, isShared;
+    public boolean noUndo, isNew, isGlobal, isShared;
     @XmlAttribute
     public String beforeTable;
     @XmlAttribute
     public String xmlNodeName;
     @XmlAttribute
     public String serialize;
+    
+    @XmlAttribute
+    public AccessModifier modifier;
     
     @XmlElement(name = "text")
     public String aceText;
