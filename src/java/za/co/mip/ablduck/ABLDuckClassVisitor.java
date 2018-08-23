@@ -204,18 +204,19 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         }
         
         // Methods
-        Integer methodCount = 0;
-        String previousMethodName = "";
+        HashMap<String, Integer> methodCounts = new HashMap<>();
         for (Method method : classUnit.methods) {
             Member member = new Member();
 
-            if (previousMethodName.equals(method.methodName)) {
-                methodCount++;
-            } else {
+            Integer methodCount = methodCounts.get(method.methodName);
+            if (methodCount == null) {
                 methodCount = 0;
-                previousMethodName = method.methodName;
+                methodCounts.put(method.methodName, methodCount);
+            } else {
+                methodCount++;
+                methodCounts.put(method.methodName, methodCount);
             }
-
+            
             member.id = "method-" + method.methodName + (methodCount > 0 ? "-" + methodCount.toString() : "");
 
             member.name = method.methodName;
