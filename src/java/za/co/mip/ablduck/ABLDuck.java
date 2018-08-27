@@ -50,6 +50,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.openedge.core.metadata.DataTypes;
+import com.openedge.core.metadata.IDataType;
 import com.openedge.core.runtime.IPropath;
 import com.openedge.core.runtime.Propath;
 import com.openedge.pdt.core.ast.ASTManager;
@@ -61,12 +63,12 @@ import com.phenix.pct.Messages;
 import com.phenix.pct.PCT;
 import com.phenix.pct.Version;
 
-import eu.rssw.rcode.Using;
 import za.co.mip.ablduck.models.Cls;
 import za.co.mip.ablduck.models.CompilationUnit;
 import za.co.mip.ablduck.models.Data;
 import za.co.mip.ablduck.models.Member;
 import za.co.mip.ablduck.models.Parameter;
+import za.co.mip.ablduck.models.Procedure;
 import za.co.mip.ablduck.models.Search;
 
 /**
@@ -214,13 +216,52 @@ public class ABLDuck extends PCT {
                 ICompilationUnit root = astMgr.createAST(file, astContext, monitor,
                         IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                 if (isClass) {
-                    ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp, this);
+                    ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
                     log("Executing AST ClassVisitor " + file.getAbsolutePath(),
                             Project.MSG_VERBOSE);
                     root.accept(visitor);
 
                     CompilationUnit cu = visitor.getCompilationUnit();
                     classes.put(cu.name, cu);
+                } else {
+
+                    ABLDuckProcedureVisitor visitor = new ABLDuckProcedureVisitor(dsfiles[i]);
+                    log("Executing AST ProcedureVisitor " + file.getAbsolutePath(),
+                            Project.MSG_VERBOSE);
+                    root.accept(visitor);
+
+                    CompilationUnit cu = visitor.getCompilationUnit();
+                    procedures.put(cu.name, cu);
+                }
+            }
+        }
+
+        // Procedures search objects
+        for (Map.Entry<String, CompilationUnit> procedureEntry : procedures.entrySet()) {
+            CompilationUnit cu = procedureEntry.getValue();
+            createSearch(cu);
+
+            Procedure procedure = new Procedure();
+            procedure.name = cu.name;
+            procedure.icon = ICON_PREFIX + cu.icon;
+
+            data.procedures.add(procedure);
+
+            if (cu.uses != null && cu.uses.size() > 0) {
+                for (Member member : cu.members) {
+                    if (member.datatype != null)
+                        member.datatype = determineFullyQualifiedClassName(cu.uses,
+                                member.datatype);
+
+                    if (member.returns != null)
+                        member.returns.datatype = determineFullyQualifiedClassName(cu.uses,
+                                member.returns.datatype);
+
+                    if (member.parameters != null)
+                        for (Parameter parameter : member.parameters) {
+                            parameter.datatype = determineFullyQualifiedClassName(cu.uses,
+                                    parameter.datatype);
+                        }
                 }
             }
         }
@@ -302,6 +343,25 @@ public class ABLDuck extends PCT {
             try (FileWriter file = new FileWriter(outputFile.toString())) {
                 file.write("Ext.data.JsonP." + cu.name.replace(".", "_") + "(" + gson.toJson(cu)
                         + ");");
+            } catch (IOException ex) {
+                throw new BuildException(ex);
+            }
+        }
+
+        // Write procedure js files out
+        for (Map.Entry<String, CompilationUnit> procedureEntry : procedures.entrySet()) {
+            CompilationUnit cu = procedureEntry.getValue();
+
+            File baseDir = new File(this.destDirOutput, "procedures");
+
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
+
+            String filename = cu.name.replace(".", "_").replace("/", "_");
+            File outputFile = new File(baseDir, filename + ".js");
+            try (FileWriter file = new FileWriter(outputFile.toString())) {
+                file.write("Ext.data.JsonP." + filename + "(" + gson.toJson(cu) + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
             }
@@ -397,11 +457,11 @@ public class ABLDuck extends PCT {
     }
 
     public String determineFullyQualifiedClassName(List<String> usings, String partialClassName) {
-        if (partialClassName == null)
+        if (partialClassName == null || "".equals(partialClassName))
             return partialClassName;
-        if (partialClassName == null || "".equals(partialClassName)
-                || "LOGICAL".equals(partialClassName) || "CHARACTER".equals(partialClassName)
-                || classes.get(partialClassName) != null)
+
+        IDataType idt = DataTypes.getDataType(partialClassName);
+        if (idt != null)
             return partialClassName;
 
         // First check if we have a direct using statement for the datatype
@@ -440,10 +500,12 @@ public class ABLDuck extends PCT {
         for (Member member : cu.members) {
             search = new Search();
             search.name = member.name;
-            search.fullName = member.owner + ":" + member.name;
-            search.icon = ICON_PREFIX + member.tagname;
-            search.url = "#!/" + cu.tagname + "/" + member.owner + "-" + member.tagname + "-"
+            search.fullName = (cu.tagname == "procedure" ? cu.name : member.owner) + ":"
                     + member.name;
+            search.icon = ICON_PREFIX + member.tagname;
+            search.url = "#!/" + cu.tagname + "/"
+                    + (cu.tagname == "procedure" ? cu.name : member.owner) + "-" + member.tagname
+                    + "-" + member.name;
             search.sort = 3;
             search.meta = member.meta;
 

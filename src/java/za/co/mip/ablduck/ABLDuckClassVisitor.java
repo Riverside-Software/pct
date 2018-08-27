@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.tools.ant.Task;
-
 import com.openedge.core.runtime.IPropath;
 
 import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
@@ -42,7 +40,7 @@ import za.co.mip.ablduck.models.Return;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
-    public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
+    public ABLDuckClassVisitor(IPropath propath) {
         super(propath);
     }
 
@@ -303,9 +301,9 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     }
 
     public Comment parseComment(String comment) {
-        
+
         Comment commentParser = new Comment();
-        
+
         commentParser.parseComment(comment);
 
         return commentParser;

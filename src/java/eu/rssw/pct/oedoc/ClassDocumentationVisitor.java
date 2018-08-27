@@ -46,6 +46,7 @@ import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
 import com.openedge.pdt.core.ast.IndexDeclaration.IndexColumn;
 import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.IASTToken;
 import com.openedge.pdt.core.ast.model.IField;
 import com.openedge.pdt.core.ast.model.IIndex;
 import com.openedge.pdt.core.ast.model.IParameter;
@@ -164,7 +165,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         Dataset ds = new Dataset();
         ds.name = node.getName();
         ds.comment = findPreviousComment(node);
-        
+
         ds.modifier = AccessModifier.from(node.getAccessModifier());
         ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
@@ -226,8 +227,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.isFinal = decl.isFinal();
         IASTNode clzNode = decl.getChildFirstLevel(ProgressParserTokenTypes.CLASS);
         if (clzNode != null) {
-            cu.isSerializable = clzNode.getChildFirstLevel(ProgressParserTokenTypes.SERIALIZABLE) != null;
-            cu.useWidgetPool = clzNode.getChildFirstLevel(ProgressParserTokenTypes.USE__WIDGET__POOL) != null;
+            cu.isSerializable = clzNode
+                    .getChildFirstLevel(ProgressParserTokenTypes.SERIALIZABLE) != null;
+            cu.useWidgetPool = clzNode
+                    .getChildFirstLevel(ProgressParserTokenTypes.USE__WIDGET__POOL) != null;
         }
         cu.classComment.addAll(firstComments);
         cu.classComment.add(findPreviousComment(decl));
@@ -309,20 +312,19 @@ public class ClassDocumentationVisitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(DestructorDeclaration decl) {
         if (decl == null)
             return true;
         Destructor destructor = new Destructor();
-        
+
         destructor.destructorComment = findPreviousComment(decl);
 
         cu.destructors.add(destructor);
 
         return true;
     }
-
 
     @Override
     public boolean visit(MethodDeclaration decl) {
@@ -420,6 +422,18 @@ public class ClassDocumentationVisitor extends ASTVisitor {
                     && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
                 return n.getHiddenPrevious().getText();
             n = n.getPrevSibling();
+        }
+
+        // If we find nothing lets try just after, for legacy reasons
+        for (IASTNode nd : node.getChildren()) {
+            if (nd.getType() == ProgressParserTokenTypes.EOS__COLON) {
+                IASTToken commentnode = nd.getHiddenNext();
+                if (commentnode != null
+                        && commentnode.getType() == ProgressTokenTypes.ML__COMMENT) {
+                    return commentnode.getText();
+                }
+                break;
+            }
         }
         return null;
     }

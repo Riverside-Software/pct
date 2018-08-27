@@ -39,10 +39,10 @@ public class TempTable {
     public String xmlNodeName;
     @XmlAttribute
     public String serialize;
-    
+
     @XmlAttribute
     public AccessModifier modifier;
-    
+
     @XmlElement(name = "text")
     public String aceText;
 

@@ -33,13 +33,13 @@ public class Dataset {
     public String xmlNodeName;
     @XmlAttribute
     public String serialize;
-    
+
     @XmlAttribute
     public boolean isNew, isShared;
 
     @XmlElement(name = "text")
     public String aceText;
-    
+
     @XmlAttribute
     public AccessModifier modifier;
 

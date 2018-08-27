@@ -40,9 +40,18 @@ public class ProcedureCompilationUnit {
     public List<Procedure> procedures = new ArrayList<>();
     @XmlElement(name = "function")
     public List<Function> functions = new ArrayList<>();
+    @XmlElement(name = "using")
+    public List<Using> usings = new ArrayList<>();
+
+    @XmlElement(name = "event")
+    public List<Event> events = new ArrayList<>();
+    @XmlElement(name = "temp-table")
+    public List<TempTable> tts = new ArrayList<>();
+    @XmlElement(name = "dataset")
+    public List<Dataset> dss = new ArrayList<>();
 
     public void toXML(File out) throws JAXBException, IOException {
-        try (FileOutputStream fos = new FileOutputStream(out)) { 
+        try (FileOutputStream fos = new FileOutputStream(out)) {
             JAXBContext context = JAXBContext.newInstance(AccessModifier.class,
                     ClassCompilationUnit.class, Constructor.class, Dataset.class, EnumMember.class,
                     Event.class, Function.class, GetSetModifier.class, Method.class,

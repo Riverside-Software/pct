@@ -94,7 +94,7 @@
     <pathelement location="lib/ast-dependencies.jar" />
 
     <!-- ABLDuck classes -->
-    <pathelement location="lib/commonmark-0.9.0.jar"/>
+    <pathelement location="lib/commonmark-0.11.0.jar"/>
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
@@ -324,7 +324,7 @@
       <zipfileset src="lib/gson-2.2.4.jar" />
 
       <!-- ABLDuck classes -->
-      <zipfileset src="lib/commonmark-0.9.0.jar"/>
+      <zipfileset src="lib/commonmark-0.11.0.jar"/>
 
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
       <manifest>
