@@ -96,7 +96,7 @@ INPUT STREAM sFileset CLOSE.
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN
   MESSAGE "Failed to compile " iCompFail " file(s)".
-RETURN (IF (iCompFail GT 0) AND failOnErr THEN '10' ELSE '0').
+RETURN (IF iCompFail GT 0 THEN '10' ELSE '0').
 
 PROCEDURE logError.
   DEFINE INPUT PARAMETER ipMsg AS CHARACTER NO-UNDO.
