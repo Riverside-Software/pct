@@ -1143,6 +1143,15 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test73() {
+        configureProject(BASEDIR + "test73/build.xml");
+        executeTarget("test1");
+        assertPropertyEquals("test73Result1", "10");
+        executeTarget("test2");
+        assertPropertyEquals("test73Result2", "0");
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");

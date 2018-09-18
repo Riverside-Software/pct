@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test73">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false" resultProperty="test73Result1">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false" resultProperty="test73Result2">
+      <fileset dir="src" includes="test2.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+</project>
