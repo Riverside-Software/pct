@@ -1142,7 +1142,8 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("build");
     }
 
-    @Test(groups = {"v10"})
+    // ResultProperty is meaningless in multi-threaded builds
+    @Test(enabled=false, groups = {"v10"})
     public void test73() {
         configureProject(BASEDIR + "test73/build.xml");
         executeTarget("test1");
