@@ -22,6 +22,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Mapper;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.util.FileNameMapper;
 
 public class CompilationWrapper extends PCT implements IRunAttributes, ICompilationAttributes {
@@ -54,6 +55,9 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
             pctTask = new PCTCompile();
             ((PCTCompile) pctTask).setRunAttributes(runAttributes);
             ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
+        }
+        for (Variable var : getEnvironmentVariables()) {
+            pctTask.addEnv(var);
         }
         pctTask.bindToOwner(this);
         if (getDlcHome() != null) {
