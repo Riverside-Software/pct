@@ -41,7 +41,7 @@
   </path>
 
   <path id="testng.cp">
-    <fileset dir="lib" includes="testng-6.3.1.jar" />
+    <fileset dir="lib" includes="testng-6.13.1.jar,jcommander-1.30.jar" />
   </path>
   <path id="jacoco.cp">
     <fileset dir="lib" includes="jacocoant.jar" />
