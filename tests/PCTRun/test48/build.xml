@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test48">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
+      <env key="TESTENV" value="ABCD" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
+      <env key="TESTENV" value="ABCDE" />
+    </PCTRun>
+  </target>
+
+</project>
