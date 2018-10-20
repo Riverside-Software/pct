@@ -1167,4 +1167,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test2");
         assertPropertyEquals("test73Result2", "0");
     }
+
+    @Test(groups = {"v10"})
+    public void test74() {
+        configureProject(BASEDIR + "test74/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test74/build/test.r").exists());
+    }
 }
