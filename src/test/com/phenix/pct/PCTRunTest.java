@@ -401,4 +401,11 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test1", "Hello1");
         expectLog("test2", "Hello2");
     }
+
+    @Test(groups = {"v10"})
+    public void test48() {
+        configureProject("PCTRun/test48/build.xml");
+        executeTarget("test1");
+        expectBuildException("test2", "Invalid env variable");
+    }
 }

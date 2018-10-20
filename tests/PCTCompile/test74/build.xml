@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test74">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db" />
+    <copy file="${DLC}/prolang/convmap/utf8-bas.wbt" tofile="utf8-custom.wbt" />
+    <exec dir="." executable="${DLC}/bin/_dbutil">
+      <arg line="-C wbreak-compiler utf8-custom.wbt 42" />
+      <env key="DLC" value="${DLC}" />
+    </exec>
+    <PCTCreateBase dbName="mydb" destDir="db" dlcHome="${DLC}" wordRules="42">
+      <env key="PROWD42" path="proword.42" />
+    </PCTCreateBase>
+  </target>
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+      <DBConnection dbname="mydb" dbDir="db" readOnly="true" />
+      <fileset dir="src" includes="test.p" />
+      <env key="PROWD42" path="proword.42" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+</project>
