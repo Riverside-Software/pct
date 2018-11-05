@@ -1,4 +1,4 @@
-PCT (Progress Compilation Tools) is a set of [Ant](http://ant.apache.org) tasks for the [OpenEdge](https://www.progress.com/openedge) environment.
+PCT is a set of [Ant](http://ant.apache.org) tasks for the [OpenEdge](https://www.progress.com/openedge) environment.
 
 PCT is distributed under the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
 
