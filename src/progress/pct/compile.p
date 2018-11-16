@@ -119,8 +119,20 @@ DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
+DEFINE VARIABLE majorMinor AS DECIMAL NO-UNDO.
 DEFINE VARIABLE bAbove101 AS LOGICAL NO-UNDO INITIAL TRUE.
-ASSIGN bAbove101 = (DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GT 10.1).
+DEFINE VARIABLE bAboveEq117 AS LOGICAL NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE bAboveEq1173 AS LOGICAL NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE bAboveEq12 AS LOGICAL NO-UNDO INITIAL FALSE.
+
+ASSIGN majorMinor = DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)).
+ASSIGN bAbove101 = majorMinor GT 10.1.
+ASSIGN bAboveEq117 = (majorMinor GE 11.7).
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11 &THEN
+// PROVERSION(1) available since v11
+ASSIGN bAboveEq1173 = (majorMinor GT 11.7) OR ((majorMinor EQ 11.7) AND (INTEGER(ENTRY(3, PROVERSION(1), '.')) GE 3)). /* FIXME Check exact version number */
+&ENDIF
+ASSIGN bAboveEq12 = (majorMinor GE 12).
 
 PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipName  AS CHARACTER NO-UNDO.
@@ -181,11 +193,11 @@ PROCEDURE initModule:
   END.
   COMPILER:MULTI-COMPILE = multiComp.
   IF lOptFullKw THEN
-    ASSIGN cOpts = 'require-full-keywords'.
+    ASSIGN cOpts = 'require-full-keywords' + (IF bAboveEq12 THEN ':warning' ELSE IF bAboveEq1173 THEN ':error' ELSE '').
   IF lOptFldQlf THEN
-    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-field-qualifiers'.
+    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-field-qualifiers' + (IF bAboveEq12 THEN ':warning' ELSE IF bAboveEq1173 THEN ':error' ELSE '').
   IF lOptFullNames THEN
-    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names'.
+    ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names' + (IF bAboveEq12 THEN ':warning' ELSE IF bAboveEq1173 THEN ':error' ELSE '').
 
   IF ProgPerc GT 0 THEN DO:
     ASSIGN iNrSteps = 100 / ProgPerc.
@@ -354,8 +366,11 @@ PROCEDURE compileXref.
   ELSE
     ASSIGN debugListingFile = ?.
 
+/* Before 11.7.3, strict mode compiler was throwing errors. 11.7.3 introduced :warning and :error but that doesn't work
+correctly, so we still stay with the old behavior. I expect OE 12 to fix this issue. */
+/* them into warnings */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
-  IF (cOpts GT "") AND (DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)) GE 11.7) THEN DO:
+  IF (cOpts GT "") AND bAboveEq117 AND (NOT bAboveEq12) THEN DO:
     EMPTY TEMP-TABLE ttWarnings.
     COMPILE VALUE(IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile) SAVE=FALSE OPTIONS cOpts NO-ERROR.
     IF COMPILER:ERROR THEN DO i = 1 TO COMPILER:NUM-MESSAGES:
@@ -376,7 +391,7 @@ PROCEDURE compileXref.
   RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
                  cSaveDir, debugListingFile,
                  IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
-                 preprocessFile, cStrXrefFile, cXrefFile).
+                 preprocessFile, cStrXrefFile, cXrefFile, IF bAboveEq12 THEN cOpts ELSE "").
 
   ASSIGN opError = COMPILER:ERROR.
   IF NOT opError THEN DO:
@@ -395,6 +410,7 @@ PROCEDURE compileXref.
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
         IF bAbove101 THEN DO:
+          IF COMPILER:GET-NUMBER(i) EQ 2411 THEN NEXT.
           /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
           IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
             IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
