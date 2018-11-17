@@ -557,6 +557,10 @@ public abstract class PCT extends Task {
         return version.getrCodeVersion();
     }
 
+    protected DLCVersion getVersion() {
+        return version;
+    }
+
     public int getAntLoggerLever() {
         try {
             List<BuildListener> listeners = getProject().getBuildListeners();

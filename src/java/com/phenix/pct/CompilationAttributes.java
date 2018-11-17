@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.ResourceCollection;
 
 public class CompilationAttributes implements ICompilationAttributes {
@@ -67,9 +66,9 @@ public class CompilationAttributes implements ICompilationAttributes {
     private int fileList = 0;
 
     // Internal use
-    private final Task parent;
+    private final PCT parent;
 
-    public CompilationAttributes(Task parent) {
+    public CompilationAttributes(PCT parent) {
         this.parent = parent;
     }
 
@@ -404,6 +403,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {
+        boolean bAbove12 = parent.getVersion().compareTo(new DLCVersion(12, 0, "0")) >= 0;
         try (FileOutputStream fos = new FileOutputStream(f);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, c);
                 BufferedWriter bw = new BufferedWriter(osw)) {
@@ -421,10 +421,14 @@ public class CompilationAttributes implements ICompilationAttributes {
             bw.newLine();
             bw.write("DEFINE INPUT PARAMETER ipXREF AS CHARACTER NO-UNDO.");
             bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipOptions AS CHARACTER NO-UNDO.");
+            bw.newLine();
 
             bw.write("DO ON STOP UNDO, RETRY: IF RETRY THEN DO: COMPILER:ERROR = TRUE. RETURN. END.");
             bw.newLine();
             bw.write("COMPILE VALUE(ipSrcFile) ");
+            if (bAbove12)
+                bw.write("OPTIONS ipOptions ");
             if (isSaveR())
                 bw.write("SAVE INTO VALUE(ipSaveDir) ");
             bw.write(" DEBUG-LIST VALUE(ipDbg) ");
