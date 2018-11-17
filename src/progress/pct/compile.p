@@ -410,6 +410,7 @@ correctly, so we still stay with the old behavior. I expect OE 12 to fix this is
       OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
         IF bAbove101 THEN DO:
+          /* Pointless message coming from strict mode compiler */
           IF COMPILER:GET-NUMBER(i) EQ 2411 THEN NEXT.
           /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
           IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:

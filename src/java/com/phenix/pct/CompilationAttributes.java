@@ -403,7 +403,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {
-        boolean bAbove1173 = parent.getVersion().compareTo(new DLCVersion(11, 7, "3")) >= 0;
+        boolean bAbove12 = parent.getVersion().compareTo(new DLCVersion(12, 0, "0")) >= 0;
         try (FileOutputStream fos = new FileOutputStream(f);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, c);
                 BufferedWriter bw = new BufferedWriter(osw)) {
@@ -427,7 +427,7 @@ public class CompilationAttributes implements ICompilationAttributes {
             bw.write("DO ON STOP UNDO, RETRY: IF RETRY THEN DO: COMPILER:ERROR = TRUE. RETURN. END.");
             bw.newLine();
             bw.write("COMPILE VALUE(ipSrcFile) ");
-            if (bAbove1173)
+            if (bAbove12)
                 bw.write("OPTIONS ipOptions ");
             if (isSaveR())
                 bw.write("SAVE INTO VALUE(ipSaveDir) ");
