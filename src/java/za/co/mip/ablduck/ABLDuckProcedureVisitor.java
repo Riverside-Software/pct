@@ -57,7 +57,7 @@ public class ABLDuckProcedureVisitor extends ProcedureDocumentationVisitor {
 
         cu.id = "procedure-" + procedureId;
         cu.tagname = "procedure";
-        cu.name = procedureFilename.replace('-', '_'); // Unfortunately - is used for seperating
+        cu.name = procedureFilename.replace('-', '_').replace("\\", "/"); // Unfortunately - is used for seperating
                                                        // file-member etc in the url
         cu.icon = "procedure";
 
