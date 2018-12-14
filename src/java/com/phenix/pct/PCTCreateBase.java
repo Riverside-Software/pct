@@ -65,6 +65,8 @@ public class PCTCreateBase extends PCT {
     private boolean newInstance = false;
     private String numsep = null;
     private String numdec = null;
+    private String cpStream = null;
+    private String cpCase = null;
 
     /**
      * Structure file (.st)
@@ -274,6 +276,20 @@ public class PCTCreateBase extends PCT {
     }
 
     /**
+     * Stream code page (-cpstream attribute)
+     */
+    public void setCpStream(String cpStream) {
+        this.cpStream = cpStream;
+    }
+
+    /**
+     * Case table (-cpcase attribute)
+     */
+    public void setCpCase(String cpCase) {
+        this.cpCase = cpCase;
+    }
+
+    /**
      * Enable new instance of the database
      * 
      * @param isNewInstance
@@ -457,26 +473,8 @@ public class PCTCreateBase extends PCT {
                 // Bug #1245992 : use Project#resolveFile(String)
                 File f = getProject().resolveFile(sc);
                 if (f.isFile() && f.canRead()) {
-                    PCTLoadSchema pls = new PCTLoadSchema();
-                    pls.bindToOwner(this);
+                    PCTLoadSchema pls = createLoadSchemaTask();
                     pls.setSrcFile(f);
-                    pls.setDlcHome(getDlcHome());
-                    pls.setDlcBin(getDlcBin());
-                    pls.addPropath(propath);
-                    pls.setIncludedPL(getIncludedPL());
-                    pls.setFailOnError(failOnError);
-                    pls.setNumDec(numdec);
-                    pls.setNumSep(numsep);
-                    pls.setTempDir(tempDir);
-                    for (Variable var : getEnvironmentVariables()) {
-                        pls.addEnv(var);
-                    }
-
-                    PCTConnection pc = new PCTConnection();
-                    pc.setDbName(dbName);
-                    pc.setDbDir(destDir);
-                    pc.setSingleUser(true);
-                    pls.addDBConnection(pc);
                     pls.execute();
                 } else {
                     throw new BuildException(MessageFormat.format(
@@ -486,27 +484,10 @@ public class PCTCreateBase extends PCT {
         }
 
         if (!schemaResColl.isEmpty()) {
-            PCTLoadSchema pls = new PCTLoadSchema();
-            pls.bindToOwner(this);
-            pls.setDlcHome(getDlcHome());
-            pls.setDlcBin(getDlcBin());
-            pls.addPropath(propath);
-            pls.setIncludedPL(getIncludedPL());
-            pls.setFailOnError(failOnError);
-            pls.setNumDec(numdec);
-            pls.setNumSep(numsep);
-            pls.setTempDir(tempDir);
-            for (Variable var : getEnvironmentVariables()) {
-                pls.addEnv(var);
-            }
+            PCTLoadSchema pls = createLoadSchemaTask();
             for (ResourceCollection fs : schemaResColl) {
                 pls.add(fs);
             }
-            PCTConnection pc = new PCTConnection();
-            pc.setDbName(dbName);
-            pc.setDbDir(destDir);
-            pc.setSingleUser(true);
-            pls.addDBConnection(pc);
             pls.execute();
         }
 
@@ -527,6 +508,14 @@ public class PCTCreateBase extends PCT {
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
                 run.setTempDir(tempDir);
+                if (codepage != null)
+                    run.setCpInternal(codepage);
+                if (cpStream != null)
+                    run.setCpStream(cpStream);
+                if (collation != null)
+                    run.setCpColl(collation);
+                if (cpCase != null)
+                    run.setCpCase(cpCase);
 
                 PCTConnection pc = new PCTConnection();
                 pc.setDbName(dbName);
@@ -536,18 +525,41 @@ public class PCTCreateBase extends PCT {
                 run.execute();
 
                 if (holder.getSchemaFile() != null) {
-                    PCTLoadSchema pls = new PCTLoadSchema();
-                    pls.bindToOwner(this);
+                    PCTLoadSchema pls = createLoadSchemaTask();
                     pls.setSrcFile(holder.getSchemaFile());
-                    pls.setDlcHome(getDlcHome());
-                    pls.setDlcBin(getDlcBin());
-                    pls.addPropath(propath);
-                    pls.addDBConnection(pc);
-                    pls.setTempDir(tempDir);
                     pls.execute();
                 }
             }
         }
+    }
+
+    private PCTLoadSchema createLoadSchemaTask() {
+        PCTLoadSchema task = new PCTLoadSchema();
+        task.bindToOwner(this);
+        task.setDlcHome(getDlcHome());
+        task.setDlcBin(getDlcBin());
+        task.addPropath(propath);
+        task.setIncludedPL(getIncludedPL());
+        task.setFailOnError(failOnError);
+        task.setNumDec(numdec);
+        task.setNumSep(numsep);
+        task.setTempDir(tempDir);
+        task.setCpInternal(codepage);
+        task.setCpStream(cpStream);
+        task.setCpColl(collation);
+        task.setCpCase(cpCase);
+
+        for (Variable var : getEnvironmentVariables()) {
+            task.addEnv(var);
+        }
+
+        PCTConnection pc = new PCTConnection();
+        pc.setDbName(dbName);
+        pc.setDbDir(destDir);
+        pc.setSingleUser(true);
+        task.addDBConnection(pc);
+
+        return task;
     }
 
     /**
