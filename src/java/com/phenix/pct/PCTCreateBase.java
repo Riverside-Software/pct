@@ -44,6 +44,7 @@ public class PCTCreateBase extends PCT {
     private File sourceDb = null;
     private File destDir = null;
     private File structFile = null;
+    private File tempDir = null;
     private int blockSize = DEFAULT_BLOCK_SIZE;
     private boolean noInit = false;
     private String schema = null;
@@ -126,6 +127,13 @@ public class PCTCreateBase extends PCT {
      */
     public void setDestDir(File destDir) {
         this.destDir = destDir;
+    }
+
+    /**
+     * Temp directory (-T attribute) 
+     */
+    public void setTempDir(File tempDir) {
+        this.tempDir = tempDir;
     }
 
     /**
@@ -459,6 +467,7 @@ public class PCTCreateBase extends PCT {
                     pls.setFailOnError(failOnError);
                     pls.setNumDec(numdec);
                     pls.setNumSep(numsep);
+                    pls.setTempDir(tempDir);
                     for (Variable var : getEnvironmentVariables()) {
                         pls.addEnv(var);
                     }
@@ -486,6 +495,7 @@ public class PCTCreateBase extends PCT {
             pls.setFailOnError(failOnError);
             pls.setNumDec(numdec);
             pls.setNumSep(numsep);
+            pls.setTempDir(tempDir);
             for (Variable var : getEnvironmentVariables()) {
                 pls.addEnv(var);
             }
@@ -516,6 +526,7 @@ public class PCTCreateBase extends PCT {
                 run.setIncludedPL(getIncludedPL());
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
+                run.setTempDir(tempDir);
 
                 PCTConnection pc = new PCTConnection();
                 pc.setDbName(dbName);
@@ -532,8 +543,8 @@ public class PCTCreateBase extends PCT {
                     pls.setDlcBin(getDlcBin());
                     pls.addPropath(propath);
                     pls.addDBConnection(pc);
+                    pls.setTempDir(tempDir);
                     pls.execute();
-
                 }
             }
         }
