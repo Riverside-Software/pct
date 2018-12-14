@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="PCTCreateDatabase-test18">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db1" />
+    <mkdir dir="db2" />
+    <mkdir dir="build" />
+    <mkdir dir="tmp" />
+    <chmod dir="." perm="555" />
+  </target>
+
+  <target name="db1">
+    <PCTCreateDatabase dbName="test" destDir="db1" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="db2">
+    <PCTCreateDatabase dbName="test" destDir="db2" dlcHome="${DLC}" schemaFile="schema.df" tempDir="tmp" />
+  </target>
+
+  <target name="test">
+    <PCTCompile destDir="build" dlcHome="${DLC}" tempDir="tmp">
+      <fileset dir="src">
+        <include name="test.p" />
+      </fileset>
+      <PCTConnection dbName="test" dbDir="db2" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>
