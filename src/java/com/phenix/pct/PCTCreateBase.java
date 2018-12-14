@@ -66,6 +66,7 @@ public class PCTCreateBase extends PCT {
     private String numsep = null;
     private String numdec = null;
     private String cpStream = null;
+    private String cpColl = null;
     private String cpCase = null;
 
     /**
@@ -280,6 +281,13 @@ public class PCTCreateBase extends PCT {
      */
     public void setCpStream(String cpStream) {
         this.cpStream = cpStream;
+    }
+
+    /**
+     * Collation table (-cpcoll attribute)
+     */
+    public void setCpColl(String cpColl) {
+        this.cpColl = cpColl;
     }
 
     /**
@@ -508,14 +516,10 @@ public class PCTCreateBase extends PCT {
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
                 run.setTempDir(tempDir);
-                if (codepage != null)
-                    run.setCpInternal(codepage);
-                if (cpStream != null)
-                    run.setCpStream(cpStream);
-                if (collation != null)
-                    run.setCpColl(collation);
-                if (cpCase != null)
-                    run.setCpCase(cpCase);
+                run.setCpInternal(cpInternal);
+                run.setCpStream(cpStream);
+                run.setCpColl(cpColl);
+                run.setCpCase(cpCase);
 
                 PCTConnection pc = new PCTConnection();
                 pc.setDbName(dbName);
@@ -544,9 +548,9 @@ public class PCTCreateBase extends PCT {
         task.setNumDec(numdec);
         task.setNumSep(numsep);
         task.setTempDir(tempDir);
-        task.setCpInternal(codepage);
+        task.setCpInternal(cpInternal);
         task.setCpStream(cpStream);
-        task.setCpColl(collation);
+        task.setCpColl(cpColl);
         task.setCpCase(cpCase);
 
         for (Variable var : getEnvironmentVariables()) {
