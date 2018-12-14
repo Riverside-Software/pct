@@ -5,8 +5,9 @@
   <target name="init">
     <mkdir dir="db1" />
     <mkdir dir="db2" />
-  	<mkdir dir="tmp" />
-  	<chmod dir="." perm="555" />
+    <mkdir dir="build" />
+    <mkdir dir="tmp" />
+    <chmod dir="." perm="555" />
   </target>
 
   <target name="db1">
