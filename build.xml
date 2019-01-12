@@ -183,7 +183,7 @@
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullKeywords="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
@@ -245,7 +245,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win}" />
-    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullKeywords="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
