@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test75">
+  <taskdef resource="PCT.properties" />
+  <DlcHome value="${DLC}" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <!-- DLC should be inherited from DlcHome task -->
+    <PCTCompile graphicalMode="false" destDir="build">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

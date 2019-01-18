@@ -39,6 +39,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void execute() {
         PCT pctTask;
+        checkDlcHome();
         // Handle pct:compile_ext
         if ("pctcompileext".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())
                 || "pct:compile_ext"
@@ -60,9 +61,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
             pctTask.addEnv(var);
         }
         pctTask.bindToOwner(this);
-        if (getDlcHome() != null) {
-            pctTask.setDlcHome(getDlcHome());
-        }
+        pctTask.setDlcHome(getDlcHome());
         pctTask.setIncludedPL(getIncludedPL());
         pctTask.execute();
     }
