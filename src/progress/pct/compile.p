@@ -529,7 +529,7 @@ PROCEDURE importXmlXref.
       ASSIGN ttXrefInc.ttIncName = TRIM(SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1)).
     END.
     ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
-      FOR EACH Class-Ref OF Reference:
+      FOR EACH Class-Ref WHERE Class-Ref.Ref-seq = Reference.Ref-seq AND Class-Ref.Source-guid = Reference.Source-guid:
         DO zz = 1 TO NUM-ENTRIES(Class-Ref.Inherited-list, ' '):
           CREATE ttXrefClasses.
           ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Inherited-list, ' ').
