@@ -70,6 +70,8 @@ public class AnalyticsBuildListener implements BuildListener {
 
     @Override
     public void buildFinished(BuildEvent event) {
+        if (event.getProject().getProperty("pct.skip.analytics") != null)
+            return;
         final StringBuilder sb = new StringBuilder("pct version=\"");
         sb.append(ResourceBundle.getBundle(Version.BUNDLE_NAME).getString("PCTVersion")).append('"');
         for (Entry<String, Integer> entry : taskCount.entrySet()) {
