@@ -20,9 +20,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.Map.Entry;
 
 import org.apache.tools.ant.BuildEvent;
@@ -35,15 +40,13 @@ public class AnalyticsBuildListener implements BuildListener {
     private boolean isPCTTask(Task task) {
         if (task.getTaskType().toLowerCase().startsWith("pct"))
             return true;
-        if ("DlcVersion".equalsIgnoreCase(task.getTaskType())
+        return ("DlcVersion".equalsIgnoreCase(task.getTaskType())
                 || "RestGen".equalsIgnoreCase(task.getTaskType())
                 || "ClassDocumentation".equalsIgnoreCase(task.getTaskType())
                 || "ABLDuck".equalsIgnoreCase(task.getTaskType())
                 || "ProUnit".equalsIgnoreCase(task.getTaskType())
                 || "OEUnit".equalsIgnoreCase(task.getTaskType())
-                || "ABLUnit".equalsIgnoreCase(task.getTaskType()))
-            return true;
-        return false;
+                || "ABLUnit".equalsIgnoreCase(task.getTaskType()));
     }
 
     @Override
@@ -67,24 +70,40 @@ public class AnalyticsBuildListener implements BuildListener {
 
     @Override
     public void buildFinished(BuildEvent event) {
-        StringBuilder sb = new StringBuilder("pct version=\"");
+        if (event.getProject().getProperty("pct.skip.analytics") != null)
+            return;
+        final StringBuilder sb = new StringBuilder("pct version=\"");
         sb.append(ResourceBundle.getBundle(Version.BUNDLE_NAME).getString("PCTVersion")).append('"');
         for (Entry<String, Integer> entry : taskCount.entrySet()) {
             sb.append(',').append(entry.getKey() + "=" + entry.getValue());
         }
 
+        Callable<Void> analytics = new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                try {
+                    final URL url = new URL("http://sonar-analytics.rssw.eu/write?db=sonar");
+                    HttpURLConnection connx = (HttpURLConnection) url.openConnection();
+                    connx.setRequestMethod("POST");
+                    connx.setConnectTimeout(2000);
+                    connx.setDoOutput(true);
+                    DataOutputStream wr = new DataOutputStream(connx.getOutputStream());
+                    wr.writeBytes(sb.toString());
+                    wr.flush();
+                    wr.close();
+                    connx.getResponseCode();
+                } catch (IOException uncaught) {
+                    // No-op
+                }
+                return null;
+            }
+        };
+
         try {
-            final URL url = new URL("http://sonar-analytics.rssw.eu/write?db=sonar");
-            HttpURLConnection connx = (HttpURLConnection) url.openConnection();
-            connx.setRequestMethod("POST");
-            connx.setConnectTimeout(2000);
-            connx.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(connx.getOutputStream());
-            wr.writeBytes(sb.toString());
-            wr.flush();
-            wr.close();
-            connx.getResponseCode();
-        } catch (IOException uncaught) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.invokeAll(Arrays.asList(analytics), 3, TimeUnit.SECONDS);
+            executor.shutdown();
+        } catch (InterruptedException uncaught) {
             // No-op
         }
     }
