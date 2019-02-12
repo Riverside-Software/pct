@@ -25,6 +25,6 @@ Which will give you something like:
 * Fork and clone project on GitHub
 * Modify `pct.build.properties` to match your OpenEdge installation dir
 * Make sure you don’t have PCT.jar in `$ANT_HOME/lib`
-* Execute `ant jar` to build everything (PCT.jar is created in dist/ directory)
+* Execute `ant clean jar` to build everything (PCT.jar is created in dist/ directory)
 * Execute `ant prepare-test` to (re)generate the testbox dir, where tests are executed
-* Execute `ant -file tests.xml` to execute unit tests
+* Execute `ant -DDLC=/path/to/dlc -Dprofiler=false -file tests.xml` to execute unit tests
