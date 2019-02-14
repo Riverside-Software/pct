@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Binary load task
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
@@ -37,10 +37,11 @@ public class PCTBinaryLoad extends PCT {
     private List<FileSet> filesets = new ArrayList<>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
+    private File paramFile = null;
 
     /**
      * Adds a database connection
-     * 
+     *
      * @param dbConn Instance of DBConnection class
      */
     public void addPCTConnection(PCTConnection dbConn) {
@@ -53,7 +54,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Adds a set of files to archive.
-     * 
+     *
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -62,7 +63,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Sets the timeout before indexes are rebuilt (-G parameter)
-     * 
+     *
      * @param timeout Timeout
      */
     public void setIndexRebuildTimeout(int timeout) {
@@ -74,8 +75,17 @@ public class PCTBinaryLoad extends PCT {
     }
 
     /**
+     * Parameter file (-pf attribute)
+     *
+     * @param pf File
+     */
+    public void setParamFile(File pf) {
+        this.paramFile = pf;
+    }
+
+    /**
      * Sets to false if indexes shouldn't be rebuilt
-     * 
+     *
      * @param rebuildIndexes boolean
      */
     public void setRebuildIndexes(boolean rebuildIndexes) {
@@ -84,7 +94,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Do the work
-     * 
+     *
      * @throws BuildException Something went wrong
      */
     @Override
@@ -131,6 +141,10 @@ public class PCTBinaryLoad extends PCT {
             exec.createArg().setValue("indexes"); //$NON-NLS-1$
             exec.createArg().setValue("-G"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(indexRebuildTimeout));
+        }
+        if (this.paramFile != null) {
+            exec.createArg().setValue("-pf"); //$NON-NLS-1$
+            exec.createArg().setValue(this.paramFile.getAbsolutePath());
         }
 
         return exec;
