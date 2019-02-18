@@ -57,7 +57,7 @@ public interface ICompilationAttributes {
 
     /**
      * Switch listing source to PREPROCESS'ed file
-     *  
+     *
      * @param source Can be empty or 'PREPROCESS'
      */
     void setListingSource(String source);
@@ -177,7 +177,7 @@ public interface ICompilationAttributes {
 
     /**
      * Specifies progress percentage
-     * 
+     *
      * @param progPerc int (a value from 0 until 100)
      */
     void setProgPerc(int progPerc);
@@ -197,7 +197,7 @@ public interface ICompilationAttributes {
 
     /**
      * Immediately stop compiling when a compilation error occurs
-     * 
+     *
      * @param stopOnError Boolean
      * @since PCT build #185
      */
@@ -207,4 +207,11 @@ public interface ICompilationAttributes {
      * 1 will display files to be recompiled (and reason). 2 will display all files. 0 doesn't display anything
      */
     void setDisplayFiles(int display);
+
+    /**
+     * Callback class for compilation procedure. Only under OE 11.3+
+     *
+     * @param callback ABL Class
+     */
+    void setCallbackClass(String callback);
 }
