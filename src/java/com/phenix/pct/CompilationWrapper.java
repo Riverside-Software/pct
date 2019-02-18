@@ -76,7 +76,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     /**
      * Add a nested filenamemapper.
-     * 
+     *
      * @param fileNameMapper the mapper to add.
      */
     public void add(FileNameMapper fileNameMapper) {
@@ -85,7 +85,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     /**
      * Define the mapper to map source to destination files.
-     * 
+     *
      * @return a mapper to be configured.
      * @exception BuildException if more than one mapper is defined.
      */
@@ -112,7 +112,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     // ******************************
     // ICompilationAttributes methods
-    
+
     @Override
     public void setMinSize(boolean minSize) {
         compAttributes.setMinSize(minSize);
@@ -300,6 +300,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void setDisplayFiles(int display) {
         compAttributes.setDisplayFiles(display);
+    }
+
+    @Override
+    public void setCallbackClass(String callback) {
+        compAttributes.setCallbackClass(callback);
     }
 
     // End of ICompilationAttributes methods
