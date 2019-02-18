@@ -408,6 +408,10 @@ public class CompilationAttributes implements ICompilationAttributes {
         return fileList;
     }
 
+    public String getCallbackClass() {
+        return callback;
+    }
+
     protected void writeCompilationProcedure(File f, Charset c) {
         boolean bAbove1173 = parent.getVersion().compareTo(new DLCVersion(11, 7, "3")) >= 0;
         try (FileOutputStream fos = new FileOutputStream(f);
