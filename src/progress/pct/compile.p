@@ -15,6 +15,11 @@
  *
  */
 
+/* Callbacks are only supported on 11.3+ */
+ &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+ USING Progress.Lang.Class.
+ &ENDIF
+
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   { pct/v11/xrefd0004.i}
 &ELSEIF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
@@ -114,6 +119,7 @@ DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE cIgnoredIncludes AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
+DEFINE VARIABLE callbackClass AS CHARACTER NO-UNDO.
 
 /* Handle to calling procedure in order to log messages */
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
@@ -121,18 +127,25 @@ ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
 DEFINE VARIABLE majorMinor AS DECIMAL NO-UNDO.
 DEFINE VARIABLE bAbove101 AS LOGICAL NO-UNDO INITIAL TRUE.
+DEFINE VARIABLE bAboveEq113 AS LOGICAL NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE bAboveEq117 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq1173 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq12 AS LOGICAL NO-UNDO INITIAL FALSE.
 
 ASSIGN majorMinor = DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)).
 ASSIGN bAbove101 = majorMinor GT 10.1.
+ASSIGN bAboveEq113 = (majorMinor GE 11.3).
 ASSIGN bAboveEq117 = (majorMinor GE 11.7).
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11 &THEN
 // PROVERSION(1) available since v11
 ASSIGN bAboveEq1173 = (majorMinor GT 11.7) OR ((majorMinor EQ 11.7) AND (INTEGER(ENTRY(3, PROVERSION(1), '.')) GE 3)). /* FIXME Check exact version number */
 &ENDIF
 ASSIGN bAboveEq12 = (majorMinor GE 12).
+
+/* Callbacks are only supported on 11.3+ */
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+DEFINE VARIABLE callback AS rssw.pct.ICompileCallback.
+&ENDIF
 
 PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipName  AS CHARACTER NO-UNDO.
@@ -165,6 +178,7 @@ PROCEDURE setOption.
     WHEN 'FULLNAMES':U        THEN ASSIGN lOptFullNames = (ipValue EQ '1':U).
     WHEN 'FILELIST':U         THEN ASSIGN iFileList = INTEGER(ipValue).
     WHEN 'NUMFILES':U         THEN ASSIGN iTotLines = INTEGER(ipValue).
+    WHEN 'CALLBACKCLASS':U    THEN ASSIGN callbackClass = ipValue.
 
     OTHERWISE RUN logError IN hSrcProc (SUBSTITUTE("Unknown parameter '&1' with value '&2'" ,ipName, ipValue)).
   END CASE.
@@ -173,6 +187,15 @@ END PROCEDURE.
 
 PROCEDURE initModule:
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
+
+  IF (callbackClass > "") AND NOT bAboveEq113 THEN MESSAGE "Callbacks are only supported on 11.3+".
+  /* Callbacks are only supported on 11.3+ */
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+  IF (callbackClass > "") THEN DO:
+      callback = CAST(Class:GetClass(callbackClass):new(), rssw.pct.ICompileCallback).
+      callback:initialize(hSrcProc).
+  END.
+&ENDIF
 
   /* Gets CRC list */
   DEFINE VARIABLE h AS HANDLE NO-UNDO.
@@ -386,10 +409,16 @@ PROCEDURE compileXref.
 &ENDIF
 
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+  IF VALID-OBJECT(callback) THEN callback:beforeCompile(hSrcProc, ipInFile, ipInDir).
+&ENDIF
   RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
                  cSaveDir, debugListingFile,
                  IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
                  preprocessFile, cStrXrefFile, cXrefFile, IF bAboveEq1173 THEN cOpts ELSE "").
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+  IF VALID-OBJECT(callback) THEN callback:afterCompile(hSrcProc, ipInFile, ipInDir).
+&ENDIF
 
   ASSIGN opError = COMPILER:ERROR.
   IF NOT opError THEN DO:
