@@ -1118,7 +1118,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test");
         assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
         assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
-        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // This file shouldn't be there, and is incorrectly created by the compiler
         // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
     }
 
@@ -1182,6 +1182,15 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test");
 
         File f = new File(BASEDIR + "test75/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test76() {
+        configureProject(BASEDIR + "test76/build.xml");
+        executeTarget("test");
+
+        File f = new File(BASEDIR + "test76/build/test.r");
         assertTrue(f.exists());
     }
 
