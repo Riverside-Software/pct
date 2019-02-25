@@ -1,2 +1,2 @@
-MESSAGE "Hello world!".
+MESSAGE "Hello".
 RETURN "0".

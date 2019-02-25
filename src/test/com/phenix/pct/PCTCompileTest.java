@@ -1185,10 +1185,24 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test76() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject(BASEDIR + "test76/build.xml");
-        executeTarget("test");
+        executeTarget("compile");
+        expectLog("testInitialize", "Initialize");
+        expectLog("testBeforeCompile", "Before Compile");
+        expectLog("testAfterCompile", "After Compile");
 
         File f = new File(BASEDIR + "test76/build/test.r");
         assertTrue(f.exists());
