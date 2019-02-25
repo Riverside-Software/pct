@@ -1,39 +1,35 @@
 <?xml version="1.0"?>
-<project name="PCTLoadData-test5">
+<project name="PCTLoadData-test3">
   <taskdef resource="PCT.properties" />
 
   <target name="base">
     <mkdir dir="db" />
-    <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
   </target>
 
   <target name="load1">
     <PCTBinaryLoad dlcHome="${DLC}">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <fileset dir="data">
-          <include name="Tab1.bd"/>
-      </fileset>
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <fileset dir="data" includes="Tab1.bd" />
     </PCTBinaryLoad>
   </target>
 
   <target name="load2">
     <PCTBinaryLoad dlcHome="${DLC}">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <fileset dir="data">
-          <include name="Tab2.bd"/>
-      </fileset>
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <fileset dir="data" includes="Tab2.bd" />
     </PCTBinaryLoad>
   </target>
 
   <target name="test1">
     <PCTRun procedure="src/testTab1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTRun>
   </target>
 
   <target name="test2">
     <PCTRun procedure="src/testTab2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTRun>
   </target>
 

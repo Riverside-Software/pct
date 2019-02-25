@@ -16,13 +16,8 @@
  */
 package com.phenix.pct;
 
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
-
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * Class for testing PCTBinaryLoad task
@@ -43,7 +38,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should load binary data into database and expect "16 20" for test target
      */
-    @Test(groups= {"v10", "win"})
+    @Test(groups = {"v10", "win"})
     public void test2() {
         configureProject("PCTBinaryLoad/test2/build.xml");
         executeTarget("base");
@@ -54,7 +49,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should first load binary data into table Tab1, then in Tab2
      */
-    @Test(groups= {"v10", "win"})
+    @Test(groups = {"v10", "win"})
     public void test3() {
         configureProject("PCTBinaryLoad/test3/build.xml");
         executeTarget("base");
@@ -73,7 +68,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should load binary data into database using a parameter file
      */
-    @Test(groups= {"v10", "win"})
+    @Test(groups = {"v10", "win"})
     public void test4() {
         configureProject("PCTBinaryLoad/test4/build.xml");
         executeTarget("base");
