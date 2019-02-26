@@ -64,6 +64,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean flattenDbg = true;
     private String ignoredIncludes = null;
     private int fileList = 0;
+    private boolean pctRcode = false;
 
     // Internal use
     private final PCT parent;
@@ -262,6 +263,11 @@ public class CompilationAttributes implements ICompilationAttributes {
         this.fileList = display;
     }
 
+    @Override
+    public void setPctRcode(boolean pctRcode){
+        this.pctRcode = pctRcode;
+    }
+
     public List<ResourceCollection> getResources() {
         return resources;
     }
@@ -400,6 +406,10 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public int getFileList() {
         return fileList;
+    }
+
+    public boolean isPctRcode(){
+        return pctRcode;
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {

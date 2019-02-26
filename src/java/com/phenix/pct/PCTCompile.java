@@ -238,6 +238,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FILELIST=" + compAttrs.getFileList());
             bw.newLine();
+            bw.write("PCTRCODE=" + (compAttrs.isPctRcode() ? 1 : 0));
+            bw.newLine();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
         }

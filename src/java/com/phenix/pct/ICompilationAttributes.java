@@ -207,4 +207,9 @@ public interface ICompilationAttributes {
      * 1 will display files to be recompiled (and reason). 2 will display all files. 0 doesn't display anything
      */
     void setDisplayFiles(int display);
+
+    /**
+     * Check if existing RCode was build by PCT
+     */
+    void setPctRcode(boolean pctRcode);
 }

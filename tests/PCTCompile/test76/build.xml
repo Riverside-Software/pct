@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test76">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <delete dir="build" />
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false">
+      <fileset dir="src" includes="*.p" />
+    </PCTCompile>
+    <sleep seconds="1"/>
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false" pctRcode="true">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" outputDir="profiler" coverage="true" /> 
+    </PCTCompile>
+  </target>
+  
+  <target name="test2">
+    <delete dir="build" />
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false">
+      <fileset dir="src" includes="*.p" />
+    </PCTCompile>
+    <delete file="build/test1.r" />
+    <sleep seconds="1"/>
+    <echo file="build/test1.r" message="fake rcode" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" failOnError="false" pctRcode="true">
+      <fileset dir="src" includes="*.p" />
+      <Profiler enabled="${PROFILER}" outputDir="profiler" coverage="true" /> 
+    </PCTCompile>
+  </target>
+  
+</project>
