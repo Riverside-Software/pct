@@ -75,4 +75,14 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
         executeTarget("load");
         expectLog("test", "16 20");
     }
+
+    /**
+     * Should load binary data into database using a parameter file
+     */
+    @Test(groups = {"v10", "win"}, expectedExceptions = BuildException.class)
+    public void test5() {
+        configureProject("PCTBinaryLoad/test5/build.xml");
+        executeTarget("base");
+        executeTarget("load");
+    }
 }
