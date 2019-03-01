@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="PCTLoadData-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTBinaryLoad dlcHome="${DLC}" />
+  </target>
+
+</project>

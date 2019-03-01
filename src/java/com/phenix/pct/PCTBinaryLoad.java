@@ -37,10 +37,11 @@ public class PCTBinaryLoad extends PCT {
     private List<FileSet> filesets = new ArrayList<>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
+    private File paramFile = null;
 
     /**
      * Adds a database connection
-     * 
+     *
      * @param dbConn Instance of DBConnection class
      */
     public void addPCTConnection(PCTConnection dbConn) {
@@ -71,6 +72,15 @@ public class PCTBinaryLoad extends PCT {
         }
 
         this.indexRebuildTimeout = timeout;
+    }
+
+    /**
+     * Parameter file (-pf attribute)
+     *
+     * @param pf File
+     */
+    public void setParamFile(File pf) {
+        this.paramFile = pf;
     }
 
     /**
@@ -131,6 +141,10 @@ public class PCTBinaryLoad extends PCT {
             exec.createArg().setValue("indexes"); //$NON-NLS-1$
             exec.createArg().setValue("-G"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(indexRebuildTimeout));
+        }
+        if (this.paramFile != null) {
+            exec.createArg().setValue("-pf"); //$NON-NLS-1$
+            exec.createArg().setValue(this.paramFile.getAbsolutePath());
         }
 
         return exec;
