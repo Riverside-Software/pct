@@ -15,7 +15,7 @@
  *
  */
 
-CLASS rssw.pct.AbstractCompileCallback IMPLEMENTS rssw.pct.ICompileCallback:
+CLASS rssw.pct.AbstractCompileCallback IMPLEMENTS rssw.pct.ICompileCallback ABSTRACT:
     METHOD PUBLIC VOID initialize(hSrcProc AS HANDLE): END METHOD.
     METHOD PUBLIC VOID beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER): END METHOD.
     METHOD PUBLIC VOID afterCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER): END METHOD.
