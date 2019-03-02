@@ -12,14 +12,14 @@
   <!-- So the session.pf file needs a -cpinternal utf-8 -->
   <target name="load">
     <PCTBinaryLoad dlcHome="${DLC}" paramFile="session.pf">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <fileset dir="data" includes="*.bd" />
     </PCTBinaryLoad>
   </target>
 
   <target name="test">
     <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTRun>
   </target>
 

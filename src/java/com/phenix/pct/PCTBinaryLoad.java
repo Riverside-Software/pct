@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Binary load task
- *
+ * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  * @version $Revision$
  */
@@ -62,7 +62,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Adds a set of files to archive.
-     *
+     * 
      * @param set FileSet
      */
     public void addFileset(FileSet set) {
@@ -71,7 +71,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Sets the timeout before indexes are rebuilt (-G parameter)
-     *
+     * 
      * @param timeout Timeout
      */
     public void setIndexRebuildTimeout(int timeout) {
@@ -93,7 +93,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Sets to false if indexes shouldn't be rebuilt
-     *
+     * 
      * @param rebuildIndexes boolean
      */
     public void setRebuildIndexes(boolean rebuildIndexes) {
@@ -102,7 +102,7 @@ public class PCTBinaryLoad extends PCT {
 
     /**
      * Do the work
-     *
+     * 
      * @throws BuildException Something went wrong
      */
     @Override
@@ -136,7 +136,7 @@ public class PCTBinaryLoad extends PCT {
         for (PCTConnection dbc : dbConnList) {
             dbc.createArguments(exec);
         }
-        
+
         // Binary load
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("load"); //$NON-NLS-1$
