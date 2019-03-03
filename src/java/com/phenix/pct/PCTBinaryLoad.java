@@ -39,12 +39,20 @@ public class PCTBinaryLoad extends PCT {
     private boolean rebuildIndexes = true;
     private File paramFile = null;
 
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
+    public void addPCTConnection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
     /**
      * Adds a database connection
      *
      * @param dbConn Instance of DBConnection class
      */
-    public void addPCTConnection(PCTConnection dbConn) {
+    public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList<>();
         }
@@ -120,6 +128,7 @@ public class PCTBinaryLoad extends PCT {
 
     private ExecTask loadTask(File binaryFile) {
         ExecTask exec = new ExecTask(this);
+        exec.setFailonerror(true);
         File a = getExecPath("_proutil"); //$NON-NLS-1$
         exec.setExecutable(a.toString());
 

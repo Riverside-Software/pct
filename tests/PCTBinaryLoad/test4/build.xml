@@ -2,11 +2,14 @@
 <project name="PCTBinaryLoad-test4">
   <taskdef resource="PCT.properties" />
 
+  <!-- Create empty UTF-8 Database -->
   <target name="base">
     <mkdir dir="db" />
-    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" codepage="utf" />
   </target>
 
+  <!-- *.bd files have been dumped from an UTF-8 database with -cpinternal utf-8 -->
+  <!-- So the session.pf file needs a -cpinternal utf-8 -->
   <target name="load">
     <PCTBinaryLoad dlcHome="${DLC}" paramFile="session.pf">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />

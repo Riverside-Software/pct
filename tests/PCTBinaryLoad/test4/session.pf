@@ -1,4 +1,4 @@
--cpinternal iso8859-1
--cpstream iso8859-1
+-cpinternal utf-8
+-cpstream utf-8
 -yy 1950
 -d dmy
