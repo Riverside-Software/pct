@@ -5,7 +5,7 @@
   <!-- Create empty UTF-8 Database -->
   <target name="base">
     <mkdir dir="db" />
-    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" sourceDb="${DLC}/prolang/utf/empty" cpInternal="UTF-8"/>
+    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" codepage="utf" />
   </target>
 
   <!-- *.bd files have been dumped from an UTF-8 database with -cpinternal utf-8 -->

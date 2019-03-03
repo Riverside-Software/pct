@@ -79,10 +79,10 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should load binary data into database using a parameter file
      */
-    @Test(groups = {"v10", "win"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v10", "win"})
     public void test5() {
         configureProject("PCTBinaryLoad/test5/build.xml");
         executeTarget("base");
-        executeTarget("load");
+        expectBuildException("load", "Load with iso codepage instead of utf");
     }
 }
