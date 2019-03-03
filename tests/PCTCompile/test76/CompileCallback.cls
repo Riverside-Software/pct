@@ -6,26 +6,13 @@ CLASS CompileCallback INHERITS rssw.pct.AbstractCompileCallback:
     END METHOD.
 
     METHOD PUBLIC OVERRIDE VOID beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
-        DEFINE VARIABLE PartOfPath AS CHARACTER NO-UNDO.
-        PartOfPath = getRelativePath(ipInDir).
         OUTPUT TO "src/beforeCompile.txt".
-        PUT UNFORMATTED SUBSTITUTE("Before Compile#&1#&2#&3", hSrcProc:FILE-NAME, ipInFile, PartOfPath).
-        END METHOD.
-
-    METHOD PUBLIC OVERRIDE VOID afterCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
-        DEFINE VARIABLE PartOfPath AS CHARACTER NO-UNDO.
-        PartOfPath = getRelativePath(ipInDir).
-        OUTPUT TO "src/afterCompile.txt".
-        PUT UNFORMATTED SUBSTITUTE("After Compile#&1#&2#&3", hSrcProc:FILE-NAME, ipInFile, PartOfPath).
+        PUT UNFORMATTED SUBSTITUTE("Before Compile#&1#&2#&3", hSrcProc:FILE-NAME, ipInFile, ipInDir).
     END METHOD.
 
-    METHOD PRIVATE CHARACTER getRelativePath(AbsPath AS CHARACTER):
-        DEFINE VARIABLE PartOfPath AS CHARACTER NO-UNDO.
-        DEFINE VARIABLE BeginIndex AS INTEGER NO-UNDO.
-        PartOfPath = REPLACE(AbsPath, "~\", "/").
-        BeginIndex = INDEX(PartOfPath, "/tests/").
-        PartOfPath = SUBSTRING(PartOfPath, BeginIndex).
-        RETURN PartOfPath.
+    METHOD PUBLIC OVERRIDE VOID afterCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
+        OUTPUT TO "src/afterCompile.txt".
+        PUT UNFORMATTED SUBSTITUTE("After Compile#&1#&2#&3", hSrcProc:FILE-NAME, ipInFile, ipInDir).
     END METHOD.
 
 END CLASS.

@@ -4,7 +4,7 @@
 
   <target name="compile">
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" callbackClass="CompileCallback">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" callbackClass="CompileCallback" relativePaths="true">
       <fileset dir="src" includes="test.p" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
