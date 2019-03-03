@@ -77,9 +77,10 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     }
 
     /**
-     * Should load binary data into database using a parameter file
+     * Should load binary data into database using a parameter file.
+     * Only executed on v11 as proutil load doesn't return an error for invalid codepage on v10
      */
-    @Test(groups = {"v10", "win"})
+    @Test(groups = {"v11", "win"})
     public void test5() {
         configureProject("PCTBinaryLoad/test5/build.xml");
         executeTarget("base");
