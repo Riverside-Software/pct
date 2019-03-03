@@ -9,27 +9,27 @@
 
   <target name="load1">
     <PCTBinaryLoad dlcHome="${DLC}">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <fileset dir="data" includes="Tab1.bd" />
     </PCTBinaryLoad>
   </target>
 
   <target name="load2">
     <PCTBinaryLoad dlcHome="${DLC}">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <fileset dir="data" includes="Tab2.bd" />
     </PCTBinaryLoad>
   </target>
 
   <target name="test1">
     <PCTRun procedure="src/testTab1.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTRun>
   </target>
 
   <target name="test2">
     <PCTRun procedure="src/testTab2.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
-      <PCTConnection dbName="test" dbDir="db" singleUser="true" />
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
     </PCTRun>
   </target>
 
