@@ -1199,7 +1199,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
 
         configureProject(BASEDIR + "test76/build.xml");
-        executeTarget("build");
+        executeTarget("compile");
 
         expectLog("testInitialize", "Initialize#pct/pctCompile.p");
         expectLog("testBeforeCompile", "Before Compile#pct/pctCompile.p#test.p#src");
