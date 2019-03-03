@@ -385,14 +385,35 @@ PROCEDURE compileXref.
   END.
 &ENDIF
 
+  DEFINE VARIABLE lUseTempDir AS LOGICAL NO-UNDO.
+  DEFINE VARIABLE cTempDir AS CHARACTER NO-UNDO.
+  /* 
+  cTempDir = Répertoire de compilation temporaire 
+  cSaveDir = Répertoire réel de destination
+  lUseTempDir = use temp dir for class compilation
+  */
+  IF cFileExt = ".cls" THEN DO:
+    cTempDir = "tmpcomp" + STRING(ETIME).
+    lUseTempDir = createDir(SESSION:TEMP-DIRECTORY , cTempDir).
+    cTempDir = SESSION:TEMP-DIRECTORY + '/':U + cTempDir.
+  END.
+
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
   RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
-                 cSaveDir, debugListingFile,
+                 IF lUseTempDir THEN cTempDir ELSE cSaveDir,
+                 debugListingFile,
                  IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
                  preprocessFile, cStrXrefFile, cXrefFile, IF bAboveEq1173 THEN cOpts ELSE "").
 
   ASSIGN opError = COMPILER:ERROR.
   IF NOT opError THEN DO:
+
+    IF lUseTempDir THEN DO:
+      OS-COPY VALUE(cTempDir + '/' + cBase + (IF cBase EQ '' THEN '' ELSE '/') + ipOutFile) 
+              VALUE(outputDir + '/' + cBase + (IF cBase EQ '' THEN '' ELSE '/') + ipOutFile).
+      OS-DELETE VALUE(cTempDir ) RECURSIVE.
+    END.
+
     /* In order to handle <mapper> element */
     IF cRenameFrom NE '' THEN DO:
       OS-COPY VALUE(outputDir + '/' + cRenameFrom) VALUE(outputDir + '/' + ipOutFile).
