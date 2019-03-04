@@ -388,7 +388,9 @@ PROCEDURE compileXref.
 &ENDIF
 
   /* For class, compile in temp dir to avoid parent class rcode */
-  IF cFileExt = ".cls" THEN DO:
+  IF multiComp = TRUE /* true = we probably don't want hierarchie */
+    AND cSaveDir <> ?  /* ? = let OE compile in default dir */
+    AND cFileExt = ".cls" THEN DO:
     cTempDir = "tmpcomp" + STRING(RANDOM ( 0 , 999999 ), "999999" ) + STRING(ETIME).
     lUseTempDir = createDir(SESSION:TEMP-DIRECTORY , cTempDir).
     cTempDir = SESSION:TEMP-DIRECTORY + '/':U + cTempDir.
