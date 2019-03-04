@@ -65,9 +65,9 @@ DEFINE TEMP-TABLE ttErrors NO-UNDO
 
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
-FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
-FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER) FORWARD.
+FUNCTION getTimeStampDF RETURNS DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
+FUNCTION getTimeStampF RETURNS DATETIME (INPUT f AS CHARACTER) FORWARD.
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
@@ -249,6 +249,8 @@ PROCEDURE compileXref.
   DEFINE VARIABLE ProcTS    AS DATETIME   NO-UNDO.
   DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO INITIAL ''.
   DEFINE VARIABLE lWarnings AS LOGICAL NO-UNDO INITIAL FALSE.
+  DEFINE VARIABLE lUseTempDir AS LOGICAL NO-UNDO INITIAL FALSE.
+  DEFINE VARIABLE cTempDir AS CHARACTER NO-UNDO.
 
   /* Output progress */
   IF ProgPerc GT 0 THEN DO:
@@ -385,17 +387,12 @@ PROCEDURE compileXref.
   END.
 &ENDIF
 
-  DEFINE VARIABLE lUseTempDir AS LOGICAL NO-UNDO.
-  DEFINE VARIABLE cTempDir AS CHARACTER NO-UNDO.
-  /* 
-  cTempDir = Répertoire de compilation temporaire 
-  cSaveDir = Répertoire réel de destination
-  lUseTempDir = use temp dir for class compilation
-  */
+  /* For class, compile in temp dir to avoid parent class rcode */
   IF cFileExt = ".cls" THEN DO:
-    cTempDir = "tmpcomp" + STRING(ETIME).
+    cTempDir = "tmpcomp" + STRING(RANDOM ( 0 , 999999 ), "999999" ) + STRING(ETIME).
     lUseTempDir = createDir(SESSION:TEMP-DIRECTORY , cTempDir).
     cTempDir = SESSION:TEMP-DIRECTORY + '/':U + cTempDir.
+    RUN logVerbose IN hSrcProc ("TempDir :" + cTempDir ).
   END.
 
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
@@ -409,8 +406,8 @@ PROCEDURE compileXref.
   IF NOT opError THEN DO:
 
     IF lUseTempDir THEN DO:
-      OS-COPY VALUE(cTempDir + '/' + cBase + (IF cBase EQ '' THEN '' ELSE '/') + ipOutFile) 
-              VALUE(outputDir + '/' + cBase + (IF cBase EQ '' THEN '' ELSE '/') + ipOutFile).
+      OS-COPY VALUE(cTempDir + '/' + ipOutFile) 
+              VALUE(outputDir + '/' + ipOutFile).
       OS-DELETE VALUE(cTempDir ) RECURSIVE.
     END.
 
@@ -449,6 +446,9 @@ PROCEDURE compileXref.
     END.
   END.
   ELSE DO:
+    IF lUseTempDir THEN DO:
+      OS-DELETE VALUE(cTempDir ) RECURSIVE.
+    END.
     RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/':U))).
     EMPTY TEMP-TABLE ttErrors.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
