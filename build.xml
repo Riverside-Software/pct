@@ -303,7 +303,9 @@
       <fileset dir="classDocTemp/v12" includes="**/*.r" />
     </bootstrapLibrary>
     <delete dir="classDocTemp" />
-
+    <zip destfile="${build}/ablduck.zip">
+      <fileset dir="${src.java}/za/co/mip/ablduck/resources" />
+    </zip>
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build-java}">
         <include name="**/*.class" />
@@ -316,6 +318,7 @@
         <include name="pct12.pl" />
         <include name="pct-src.zip" />
       </fileset>
+      <zipfileset dir="${build}" includes="ablduck.zip" prefix="za/co/mip/ablduck/resources" />
       <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
