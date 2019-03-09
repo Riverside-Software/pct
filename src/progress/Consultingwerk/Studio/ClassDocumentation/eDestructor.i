@@ -8,43 +8,30 @@
  *     http://www.apache.org/licenses/LICENSE-2.0                     *
  *                                                                    *
  * Unless required by applicable law or agreed to in writing,         *
- * software distributed under the License is distributed on an        *
+ * software distributed under the License is distributed on an        * 
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       *
  * either express or implied. See the License for the specific        *
  * language governing permissions and limitations under the License.  *
  *                                                                    *
  **********************************************************************/
 /*------------------------------------------------------------------------
-    File        : dsClassDocumentation.i
-    Purpose     : Dataset for Class Documentation
+    File        : eDestructor.i
+    Purpose     : Temp-Table for Destructor
 
     Syntax      :
 
-    Description :
+    Description : 
 
     Author(s)   : Mike Fechner / Consultingwerk Ltd.
-    Created     : Tue Sep 11 05:51:28 CEST 2012
+    Created     : Mon Sep 10 18:59:26 CEST 2012
     Notes       :
   ----------------------------------------------------------------------*/
 
 /* ***************************  Definitions  ************************** */
 
-&SCOPED-DEFINE ACCESS {&ACCESS}
-&SCOPED-DEFINE REFERENCE-ONLY {&REFERENCE-ONLY}
-
-{ Consultingwerk/Studio/ClassDocumentation/eUnit.i }
-{ Consultingwerk/Studio/ClassDocumentation/eInterfaces.i }
-{ Consultingwerk/Studio/ClassDocumentation/eConstructor.i }
-{ Consultingwerk/Studio/ClassDocumentation/eDestructor.i }
-{ Consultingwerk/Studio/ClassDocumentation/eMethod.i }
-{ Consultingwerk/Studio/ClassDocumentation/eParameter.i }
-{ Consultingwerk/Studio/ClassDocumentation/eProperty.i }
-{ Consultingwerk/Studio/ClassDocumentation/eEvent.i }
-{ Consultingwerk/Studio/ClassDocumentation/eUsing.i }
-{ Consultingwerk/Studio/ClassDocumentation/eMember.i }
-{ Consultingwerk/Studio/ClassDocumentation/eTempTable.i }
-{ Consultingwerk/Studio/ClassDocumentation/eDataset.i }
-
-DEFINE {&ACCESS} DATASET dsClassDocumentation {&REFERENCE-ONLY} FOR
-    eUnit, eInterfaces, eConstructor, eDestructor, eMethod, eParameter, eProperty, eEvent, eUsing, eMember, eTempTable, eDataset
+DEFINE {&ACCESS} TEMP-TABLE eDestructor NO-UNDO {&REFERENCE-ONLY} BEFORE-TABLE eDestructorBefore
+    FIELD GUID               AS CHARACTER
+    FIELD DestructorComment AS CLOB COLUMN-CODEPAGE "UTF-8":U 
+    INDEX GUID IS UNIQUE GUID
     .
+    

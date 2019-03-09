@@ -149,7 +149,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             tidx.unique = idx.isUnique();
             tidx.wordIndex = idx.isWordIndex();
             tidx.primary = idx.isPrimary();
-            List<IndexColumn> lst = (List<IndexColumn>) idx.getColumnList();
+            List<IndexColumn> lst = idx.getColumnList();
             for (IndexColumn col : lst) {
                 tidx.fields.add(col.getName());
             }
@@ -317,10 +317,9 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     public boolean visit(DestructorDeclaration decl) {
         if (decl == null)
             return true;
+
         Destructor destructor = new Destructor();
-
         destructor.destructorComment = findPreviousComment(decl);
-
         cu.destructors.add(destructor);
 
         return true;
