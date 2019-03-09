@@ -19,6 +19,7 @@ package za.co.mip.ablduck;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -34,7 +35,7 @@ public class Comment {
     private String returns = "";
     private Boolean isInternal = null;
     private Deprecated deprecated = null;
-    private HashMap<String, String> parameters = new HashMap<>();;
+    private Map<String, String> parameters = new HashMap<>();
 
     public String getComment() {
         return markdown(comment);
@@ -56,7 +57,7 @@ public class Comment {
         return deprecated;
     }
 
-    public HashMap<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 

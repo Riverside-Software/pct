@@ -17,8 +17,8 @@
 package za.co.mip.ablduck;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.rssw.pct.oedoc.ProcedureDocumentationVisitor;
 import eu.rssw.rcode.AccessModifier;
@@ -230,7 +230,7 @@ public class ABLDuckProcedureVisitor extends ProcedureDocumentationVisitor {
     }
 
     public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters,
-            HashMap<String, String> parameterComments) {
+            Map<String, String> parameterComments) {
         List<Parameter> memberParams = null;
 
         if (!parameters.isEmpty()) {

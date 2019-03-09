@@ -19,6 +19,7 @@ package za.co.mip.ablduck;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.openedge.core.runtime.IPropath;
 
@@ -200,7 +201,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         }
 
         // Methods
-        HashMap<String, Integer> methodCounts = new HashMap<>();
+        Map<String, Integer> methodCounts = new HashMap<>();
         for (Method method : classUnit.methods) {
             Member member = new Member();
 
@@ -310,7 +311,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     }
 
     public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters,
-            HashMap<String, String> parameterComments) {
+            Map<String, String> parameterComments) {
         List<Parameter> memberParams = null;
 
         if (!parameters.isEmpty()) {

@@ -247,7 +247,7 @@ public class ABLDuck extends PCT {
 
             data.procedures.add(procedure);
 
-            if (cu.uses != null && cu.uses.size() > 0) {
+            if (cu.uses != null && !cu.uses.isEmpty()) {
                 for (Member member : cu.members) {
                     if (member.datatype != null)
                         member.datatype = determineFullyQualifiedClassName(cu.uses,
@@ -257,11 +257,12 @@ public class ABLDuck extends PCT {
                         member.returns.datatype = determineFullyQualifiedClassName(cu.uses,
                                 member.returns.datatype);
 
-                    if (member.parameters != null)
+                    if (member.parameters != null) {
                         for (Parameter parameter : member.parameters) {
                             parameter.datatype = determineFullyQualifiedClassName(cu.uses,
                                     parameter.datatype);
                         }
+                    }
                 }
             }
         }
@@ -288,7 +289,7 @@ public class ABLDuck extends PCT {
             }
 
             // Add implementers to the interface
-            if (cu.implementations != null && cu.implementations.size() > 0) {
+            if (cu.implementations != null && !cu.implementations.isEmpty()) {
                 for (String i : cu.implementations) {
                     String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
                     CompilationUnit iface = classes.get(fullInterfacePath);
@@ -309,7 +310,7 @@ public class ABLDuck extends PCT {
 
             cu.members.addAll(result.getInheritedmembers());
 
-            if (cu.uses != null && cu.uses.size() > 0) {
+            if (cu.uses != null && !cu.uses.isEmpty()) {
                 for (Member member : cu.members) {
                     if (member.datatype != null)
                         member.datatype = determineFullyQualifiedClassName(cu.uses,
@@ -319,11 +320,12 @@ public class ABLDuck extends PCT {
                         member.returns.datatype = determineFullyQualifiedClassName(cu.uses,
                                 member.returns.datatype);
 
-                    if (member.parameters != null)
+                    if (member.parameters != null) {
                         for (Parameter parameter : member.parameters) {
                             parameter.datatype = determineFullyQualifiedClassName(cu.uses,
                                     parameter.datatype);
                         }
+                    }
                 }
             }
 
@@ -388,19 +390,15 @@ public class ABLDuck extends PCT {
             if (nextClass != null) {
                 for (Member member : nextClass.members) {
                     if (inherits.equals(member.owner) && member.meta.isPrivate == null) {
-                        try {
-                            // Happy with a shallow copy here
-                            Member inheritedMember = (Member) member.clone();
+                        // Happy with a shallow copy here
+                        Member inheritedMember = new Member(member);
 
-                            inheritedMember.id = inheritedMember.id.replace(
-                                    inheritedMember.tagname + "-" + inheritedMember.name,
-                                    inheritedMember.tagname + "-"
-                                            + inheritedMember.owner.replace(".", "_") + "_"
-                                            + inheritedMember.name);
-                            result.addInheritedmember(inheritedMember);
-                        } catch (CloneNotSupportedException e) {
-                            e.printStackTrace();
-                        }
+                        inheritedMember.id = inheritedMember.id.replace(
+                                inheritedMember.tagname + "-" + inheritedMember.name,
+                                inheritedMember.tagname + "-"
+                                        + inheritedMember.owner.replace(".", "_") + "_"
+                                        + inheritedMember.name);
+                        result.addInheritedmember(inheritedMember);
                     }
                 }
 
@@ -487,8 +485,8 @@ public class ABLDuck extends PCT {
     public void createSearch(CompilationUnit cu) {
         Search search = new Search();
         search.name = ("class".equals(cu.tagname)
-                ? cu.name.substring(cu.name.lastIndexOf(".") + 1)
-                : cu.name.substring(cu.name.lastIndexOf("/") + 1));
+                ? cu.name.substring(cu.name.lastIndexOf('.') + 1)
+                : cu.name.substring(cu.name.lastIndexOf('/') + 1));
         search.fullName = cu.name;
         search.icon = ICON_PREFIX + cu.icon;
         search.url = "#!/" + cu.tagname + "/" + cu.name;
@@ -500,11 +498,11 @@ public class ABLDuck extends PCT {
         for (Member member : cu.members) {
             search = new Search();
             search.name = member.name;
-            search.fullName = (cu.tagname == "procedure" ? cu.name : member.owner) + ":"
+            search.fullName = ("procedure".equals(cu.tagname) ? cu.name : member.owner) + ":"
                     + member.name;
             search.icon = ICON_PREFIX + member.tagname;
             search.url = "#!/" + cu.tagname + "/"
-                    + (cu.tagname == "procedure" ? cu.name : member.owner) + "-" + member.tagname
+                    + ("procedure".equals(cu.tagname) ? cu.name : member.owner) + "-" + member.tagname
                     + "-" + member.name;
             search.sort = 3;
             search.meta = member.meta;

@@ -32,7 +32,13 @@ public class TempTable {
     @XmlAttribute
     public String definition;
     @XmlAttribute
-    public boolean noUndo, isNew, isGlobal, isShared;
+    public boolean noUndo;
+    @XmlAttribute
+    public boolean isNew;
+    @XmlAttribute
+    public boolean isGlobal;
+    @XmlAttribute
+    public boolean isShared;
     @XmlAttribute
     public String beforeTable;
     @XmlAttribute

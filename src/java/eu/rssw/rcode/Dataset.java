@@ -35,7 +35,9 @@ public class Dataset {
     public String serialize;
 
     @XmlAttribute
-    public boolean isNew, isShared;
+    public boolean isNew;
+    @XmlAttribute
+    public boolean isShared;
 
     @XmlElement(name = "text")
     public String aceText;

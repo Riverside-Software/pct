@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-public class Member implements Cloneable {
+public class Member {
     @Expose
     public String id;
 
@@ -51,7 +51,17 @@ public class Member implements Cloneable {
     @Expose
     public Meta meta = new Meta();
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public Member(Member clone) {
+        this.id = clone.id;
+        this.name = clone.name;
+        this.owner = clone.owner;
+        this.tagname = clone.tagname;
+        this.datatype = clone.datatype;
+        this.definition = clone.definition;
+        this.comment = clone.comment;
+        this.parameters = clone.parameters;
+        this.returns = clone.returns;
+        this.meta = clone.meta;
     }
+
 }
