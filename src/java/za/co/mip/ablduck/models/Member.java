@@ -51,6 +51,10 @@ public class Member {
     @Expose
     public Meta meta = new Meta();
 
+    public Member() {
+        // No-op
+    }
+
     public Member(Member clone) {
         this.id = clone.id;
         this.name = clone.name;
