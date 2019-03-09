@@ -59,6 +59,8 @@ public class ClassCompilationUnit {
 
     @XmlElement(name = "constructor")
     public List<Constructor> constructors = new ArrayList<>();
+    @XmlElement(name = "destructor")
+    public List<Destructor> destructors = new ArrayList<>();
     @XmlElement(name = "method")
     public List<Method> methods = new ArrayList<>();
     @XmlElement(name = "property")

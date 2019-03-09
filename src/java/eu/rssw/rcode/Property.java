@@ -23,15 +23,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Property {
     @XmlAttribute
-    public String name, dataType;
+    public String name;
     @XmlAttribute
-    public boolean isAbstract, isStatic;
+    public String dataType;
+    @XmlAttribute
+    public boolean isAbstract;
+    @XmlAttribute
+    public boolean isStatic;
+    @XmlAttribute
+    public boolean isOverride;
     @XmlAttribute
     public int extent;
     @XmlAttribute
     public AccessModifier modifier;
     @XmlAttribute
-    public GetSetModifier getModifier = GetSetModifier.NONE, setModifier = GetSetModifier.NONE;
+    public GetSetModifier getModifier = GetSetModifier.NONE;
+    @XmlAttribute
+    public GetSetModifier setModifier = GetSetModifier.NONE;
     @XmlElement(name = "propertyComment")
     public String propertyComment;
 

@@ -29,8 +29,8 @@ import org.testng.annotations.Test;
 import com.google.gson.Gson;
 import com.phenix.pct.BuildFileTestNg;
 
-import za.co.mip.ablduck.models.DataJSObject;
-import za.co.mip.ablduck.models.SourceJSObject;
+import za.co.mip.ablduck.models.CompilationUnit;
+import za.co.mip.ablduck.models.Data;
 
 /**
  * Class for testing ABLDuck task
@@ -47,68 +47,117 @@ public class ABLDuckTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void testDataJSFile() throws IOException {
+    public void checkDataFile() throws IOException {
         String filename = "ABLDuck/test/docs/data.js";
 
         // Does the data js file exist
         File f1 = new File(filename);
         assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
+    public void checkClassCount() throws IOException {
+        String filename = "ABLDuck/test/docs/data.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(15, content.length() - 1);
 
-        DataJSObject dataJSObject = gson.fromJson(content, DataJSObject.class);
+        Data data = gson.fromJson(content, Data.class);
+        assertEquals(data.classes.size(), 2);
+    }
 
-        // Should contain 2 classes
-        assertEquals(dataJSObject.classes.size(), 2);
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
+    public void checkProcedureCount() throws IOException {
+        String filename = "ABLDuck/test/docs/data.js";
 
-        // Should contain 2 classes, 1 property and 2 methods, 1 constructor and 1 event
-        assertEquals(dataJSObject.search.size(), 7);
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(15, content.length() - 1);
+
+        Data data = gson.fromJson(content, Data.class);
+        assertEquals(data.procedures.size(), 1);
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
+    public void checkSearchCount() throws IOException {
+        String filename = "ABLDuck/test/docs/data.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(15, content.length() - 1);
+
+        Data data = gson.fromJson(content, Data.class);
+        assertEquals(data.search.size(), 10);
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void testSourceJSFiles() throws IOException {
-
-        // Does the source js files exist
-        String filename = "ABLDuck/test/docs/output/base.class.js";
+    public void checkBaseClassCreated() throws IOException {
+        String filename = "ABLDuck/test/docs/output/classes/base.class.js";
         File f1 = new File(filename);
         assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
+    public void checkTestClassCreated() throws IOException {
+        String filename = "ABLDuck/test/docs/output/classes/test.js";
+        File f1 = new File(filename);
+        assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
+    public void checkTestProcedureCreated() throws IOException {
+        String filename = "ABLDuck/test/docs/output/procedures/test_p.js";
+        File f1 = new File(filename);
+        assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkBaseClassCreated"})
+    public void checkBaseClassMetadata() throws IOException {
+        String filename = "ABLDuck/test/docs/output/classes/base.class.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
 
-        SourceJSObject js = gson.fromJson(content, SourceJSObject.class);
-
-        // Should contain 2 methods and 1 property
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.members.size(), 3);
-
         assertEquals(js.id, "class-base.class");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "base.class");
-        assertEquals(js.ext, "");
-        assertEquals(js.meta.deprecated.version, "0.0.1");
+        assertEquals(js.inherits, "");
+        assertEquals(js.meta.isDeprecated.version, "0.0.1");
         assertEquals(js.subclasses.size(), 1);
-        assertEquals(js.superclasses.size(), 0);
+        assertEquals(js.superclasses.size(), 1);
+    }
 
-        // Does the source js files exist
-        filename = "ABLDuck/test/docs/output/test.js";
-        f1 = new File(filename);
-        assertTrue(f1.exists());
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkTestClassCreated"})
+    public void checkTestClassMetadata() throws IOException {
+        String filename = "ABLDuck/test/docs/output/classes/test.js";
 
-        content = new String(Files.readAllBytes(Paths.get(filename)));
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
 
-        js = gson.fromJson(content, SourceJSObject.class);
-
-        // Should contain 2 methods 1 property, 1 constructor and 1 event
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.members.size(), 5);
-
         assertEquals(js.id, "class-test");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "test");
-        assertEquals(js.ext, "base.class");
+        assertEquals(js.inherits, "base.class");
         assertEquals(js.subclasses.size(), 0);
         assertEquals(js.superclasses.size(), 2);
-
     }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkTestProcedureCreated"})
+    public void checkTestProcedureMetadata() throws IOException {
+        String filename = "ABLDuck/test/docs/output/procedures/test_p.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf("(") + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.members.size(), 2);
+        assertEquals(js.id, "procedure-test");
+        assertEquals(js.tagname, "procedure");
+        assertEquals(js.name, "test.p");
+        assertEquals(js.parameters.size(), 1);
+        assertEquals(js.meta.isDeprecated.version, "1.0.0");
+    }
+
 }

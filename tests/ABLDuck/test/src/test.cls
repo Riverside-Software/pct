@@ -1,4 +1,4 @@
-/*
+/**
  * Test Class file
  * ===============================
  * This is to test the markdown support

@@ -40,6 +40,8 @@ public class Method {
     public boolean isFinal;
     @XmlAttribute
     public boolean isAbstract;
+    @XmlAttribute
+    public boolean isOverride;
 
     @XmlElement(name = "methodComment")
     public String methodComment;

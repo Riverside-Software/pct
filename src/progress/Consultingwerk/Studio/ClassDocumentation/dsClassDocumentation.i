@@ -35,6 +35,7 @@
 { Consultingwerk/Studio/ClassDocumentation/eUnit.i }
 { Consultingwerk/Studio/ClassDocumentation/eInterfaces.i }
 { Consultingwerk/Studio/ClassDocumentation/eConstructor.i }
+{ Consultingwerk/Studio/ClassDocumentation/eDestructor.i }
 { Consultingwerk/Studio/ClassDocumentation/eMethod.i }
 { Consultingwerk/Studio/ClassDocumentation/eParameter.i }
 { Consultingwerk/Studio/ClassDocumentation/eProperty.i }
@@ -45,5 +46,5 @@
 { Consultingwerk/Studio/ClassDocumentation/eDataset.i }
 
 DEFINE {&ACCESS} DATASET dsClassDocumentation {&REFERENCE-ONLY} FOR
-    eUnit, eInterfaces, eConstructor, eMethod, eParameter, eProperty, eEvent, eUsing, eMember, eTempTable, eDataset
+    eUnit, eInterfaces, eConstructor, eDestructor, eMethod, eParameter, eProperty, eEvent, eUsing, eMember, eTempTable, eDataset
     .

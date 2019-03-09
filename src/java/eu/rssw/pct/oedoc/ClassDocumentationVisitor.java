@@ -30,6 +30,7 @@ import com.openedge.core.runtime.IPropath;
 import com.openedge.pdt.core.ast.ASTNode;
 import com.openedge.pdt.core.ast.ConstructorDeclaration;
 import com.openedge.pdt.core.ast.DatasetDeclaration;
+import com.openedge.pdt.core.ast.DestructorDeclaration;
 import com.openedge.pdt.core.ast.EnumDeclaration;
 import com.openedge.pdt.core.ast.EnumeratorItem;
 import com.openedge.pdt.core.ast.EventDeclaration;
@@ -45,6 +46,7 @@ import com.openedge.pdt.core.ast.TypeName;
 import com.openedge.pdt.core.ast.UsingDeclaration;
 import com.openedge.pdt.core.ast.IndexDeclaration.IndexColumn;
 import com.openedge.pdt.core.ast.model.IASTNode;
+import com.openedge.pdt.core.ast.model.IASTToken;
 import com.openedge.pdt.core.ast.model.IField;
 import com.openedge.pdt.core.ast.model.IIndex;
 import com.openedge.pdt.core.ast.model.IParameter;
@@ -55,6 +57,7 @@ import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Dataset;
+import eu.rssw.rcode.Destructor;
 import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.GetSetModifier;
@@ -123,6 +126,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.beforeTable = node.getBeforeTable();
         tt.xmlNodeName = node.getXmlNodeName();
         tt.serialize = node.getSerializeName();
+        tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
+        tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
+        tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        tt.modifier = AccessModifier.from(node.getAccessModifier());
         String fName = "";
         if (node.getFileName() != null) {
             fName = propath.searchRelative(node.getFileName(), false).toPortableString();
@@ -142,7 +149,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             tidx.unique = idx.isUnique();
             tidx.wordIndex = idx.isWordIndex();
             tidx.primary = idx.isPrimary();
-            List<IndexColumn> lst = (List<IndexColumn>) idx.getColumnList();
+            List<IndexColumn> lst = idx.getColumnList();
             for (IndexColumn col : lst) {
                 tidx.fields.add(col.getName());
             }
@@ -158,6 +165,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         Dataset ds = new Dataset();
         ds.name = node.getName();
         ds.comment = findPreviousComment(node);
+
+        ds.modifier = AccessModifier.from(node.getAccessModifier());
+        ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
+        ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
 
         for (String str : node.getBufferNames()) {
             ds.buffers.add(str);
@@ -216,8 +227,10 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         cu.isFinal = decl.isFinal();
         IASTNode clzNode = decl.getChildFirstLevel(ProgressParserTokenTypes.CLASS);
         if (clzNode != null) {
-            cu.isSerializable = clzNode.getChildFirstLevel(ProgressParserTokenTypes.SERIALIZABLE) != null;
-            cu.useWidgetPool = clzNode.getChildFirstLevel(ProgressParserTokenTypes.USE__WIDGET__POOL) != null;
+            cu.isSerializable = clzNode
+                    .getChildFirstLevel(ProgressParserTokenTypes.SERIALIZABLE) != null;
+            cu.useWidgetPool = clzNode
+                    .getChildFirstLevel(ProgressParserTokenTypes.USE__WIDGET__POOL) != null;
         }
         cu.classComment.addAll(firstComments);
         cu.classComment.add(findPreviousComment(decl));
@@ -241,6 +254,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             prop.isStatic |= (zz == ProgressParserTokenTypes.STATIC);
         }
         prop.isAbstract = decl.isAbstract();
+        prop.isOverride = decl.isOverride();
         prop.dataType = getDataTypeName(decl.getDataType());
         prop.extent = decl.getExtent();
         prop.modifier = AccessModifier.from(decl.getAccessModifier());
@@ -300,6 +314,18 @@ public class ClassDocumentationVisitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(DestructorDeclaration decl) {
+        if (decl == null)
+            return true;
+
+        Destructor destructor = new Destructor();
+        destructor.destructorComment = findPreviousComment(decl);
+        cu.destructors.add(destructor);
+
+        return true;
+    }
+
+    @Override
     public boolean visit(MethodDeclaration decl) {
         if (decl == null)
             return true;
@@ -312,6 +338,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         method.isStatic = decl.isStatic();
         method.isFinal = decl.isFinal();
         method.isAbstract = decl.isAbstract();
+        method.isOverride = decl.isOverride();
         method.methodComment = findPreviousComment(decl);
         cu.methods.add(method);
 
@@ -340,6 +367,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         event.modifier = AccessModifier.from(decl.getAccessModifier());
         event.isStatic = decl.isStatic();
         event.isAbstract = decl.isAbstract();
+        event.isOverride = decl.isOverride();
         if (decl.isDelegate())
             event.delegateName = decl.getDelegateName();
         event.eventComment = findPreviousComment(decl);
@@ -393,6 +421,18 @@ public class ClassDocumentationVisitor extends ASTVisitor {
                     && (n.getHiddenPrevious().getType() == ProgressTokenTypes.ML__COMMENT))
                 return n.getHiddenPrevious().getText();
             n = n.getPrevSibling();
+        }
+
+        // If we find nothing lets try just after, for legacy reasons
+        for (IASTNode nd : node.getChildren()) {
+            if (nd.getType() == ProgressParserTokenTypes.EOS__COLON) {
+                IASTToken commentnode = nd.getHiddenNext();
+                if (commentnode != null
+                        && commentnode.getType() == ProgressTokenTypes.ML__COMMENT) {
+                    return commentnode.getText();
+                }
+                break;
+            }
         }
         return null;
     }

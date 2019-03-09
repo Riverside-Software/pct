@@ -34,8 +34,16 @@ public class Dataset {
     @XmlAttribute
     public String serialize;
 
+    @XmlAttribute
+    public boolean isNew;
+    @XmlAttribute
+    public boolean isShared;
+
     @XmlElement(name = "text")
     public String aceText;
+
+    @XmlAttribute
+    public AccessModifier modifier;
 
     @XmlElement(name = "dsComment")
     public String comment;

@@ -17,13 +17,14 @@
 package za.co.mip.ablduck;
 
 import java.util.List;
-import java.util.ArrayList;
 
-import za.co.mip.ablduck.models.source.MemberObject;
+import za.co.mip.ablduck.models.Member;
+
+import java.util.ArrayList;
 
 public class HierarchyResult {
     private List<String> hierarchy = new ArrayList<>();
-    private List<MemberObject> inheritedmembers = new ArrayList<>();
+    private List<Member> inheritedmembers = new ArrayList<>();
 
     public List<String> getHierarchy() {
         return this.hierarchy;
@@ -33,11 +34,11 @@ public class HierarchyResult {
         this.hierarchy.add(h);
     }
 
-    public List<MemberObject> getInheritedmembers() {
+    public List<Member> getInheritedmembers() {
         return this.inheritedmembers;
     }
 
-    public void addInheritedmember(MemberObject member) {
+    public void addInheritedmember(Member member) {
         this.inheritedmembers.add(member);
     }
 }

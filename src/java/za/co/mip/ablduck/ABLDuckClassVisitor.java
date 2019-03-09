@@ -17,341 +17,321 @@
 package za.co.mip.ablduck;
 
 import java.util.ArrayList;
-
-import org.apache.tools.ant.Task;
-
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.openedge.core.runtime.IPropath;
 
 import eu.rssw.pct.oedoc.ClassDocumentationVisitor;
-
+import eu.rssw.rcode.AccessModifier;
 import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
+import eu.rssw.rcode.Dataset;
+import eu.rssw.rcode.Destructor;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Property;
-import eu.rssw.rcode.Parameter;
-import eu.rssw.rcode.AccessModifier;
-
-import za.co.mip.ablduck.models.SourceJSObject;
-import za.co.mip.ablduck.models.generic.DeprecatedObject;
-import za.co.mip.ablduck.models.source.MemberObject;
-import za.co.mip.ablduck.models.source.ParameterObject;
-import za.co.mip.ablduck.utilities.CommentParser;
-import za.co.mip.ablduck.utilities.CommentParseResult;
+import eu.rssw.rcode.TempTable;
+import eu.rssw.rcode.Using;
+import za.co.mip.ablduck.models.CompilationUnit;
+import za.co.mip.ablduck.models.Member;
+import za.co.mip.ablduck.models.Parameter;
+import za.co.mip.ablduck.models.Return;
 
 public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
-    private CommentParser comments;
 
-    public ABLDuckClassVisitor(IPropath propath, Task ablduck) {
+    public ABLDuckClassVisitor(IPropath propath) {
         super(propath);
-
-        this.comments = new CommentParser(ablduck);
     }
 
-    public SourceJSObject getJSObject() throws IOException {
-        SourceJSObject js = new SourceJSObject();
-        ClassCompilationUnit cu = getClassCompilationUnit();
-        String fullClassName;
+    public CompilationUnit getCompilationUnit() {
+        CompilationUnit cu = new CompilationUnit();
+        ClassCompilationUnit classUnit = getClassCompilationUnit();
 
-        if (cu.packageName != null)
-            fullClassName = cu.packageName + "." + cu.className;
-        else
-            fullClassName = cu.className;
+        String fullyQualifiedClassName = (classUnit.packageName != null
+                ? classUnit.packageName + "."
+                : "") + classUnit.className;
 
-        js.id = "class-" + fullClassName;
-        js.tagname = "class";
-        js.name = fullClassName;
-        js.shortname = cu.className;
-        js.interfaces.addAll(cu.interfaces);
-        js.using.addAll(cu.usings);
-        js.isInterface = cu.isInterface;
+        cu.files = new ArrayList<String>();
 
-        if (cu.isInterface)
-            js.classIcon = "interface";
-        else
-            js.classIcon = "class";
+        cu.uses = new ArrayList<String>();
+        for (Using using : classUnit.usings) {
+            cu.uses.add(using.name);
+        }
 
-        if (cu.inherits != null)
-            js.ext = cu.inherits;
+        cu.id = "class-" + fullyQualifiedClassName;
+        cu.tagname = "class";
+        cu.name = fullyQualifiedClassName;
+
+        cu.inherits = (classUnit.inherits != null ? classUnit.inherits : "");
+
+        cu.superclasses = new ArrayList<String>();
+        cu.subclasses = new ArrayList<String>();
+
+        if (classUnit.isInterface) {
+            cu.icon = "interface";
+            cu.implementers = new ArrayList<String>();
+        } else {
+            cu.icon = "class";
+            cu.implementations = new ArrayList<String>();
+            cu.implementations.addAll(classUnit.interfaces);
+        }
 
         String c = null;
-        if (!cu.classComment.isEmpty()) {
-            for (int i = cu.classComment.size() - 1; i >= 0; i--) {
-                c = cu.classComment.get(i); // Assuming last comment will always be the class
-                                            // comment, will need to cater for license later
+        if (!classUnit.classComment.isEmpty()) {
+            for (int i = classUnit.classComment.size() - 1; i >= 0; i--) {
+                c = classUnit.classComment.get(i); // Assuming last comment will always be the class
+                                                   // comment, will need to cater for license later
                 if (c != null)
                     break;
             }
         }
 
-        try {
-            CommentParseResult commentParseResult = comments.parseComment(c, fullClassName);
+        Comment classComment = parseComment(c);
 
-            if (!commentParseResult.getInternal())
-                commentParseResult.setInternal(cu.className.startsWith("_"));
+        cu.comment = classComment.getComment();
+        cu.author = classComment.getAuthor();
 
-            js.comment = commentParseResult.getComment();
-            js.author = commentParseResult.getAuthor();
+        cu.meta.isInternal = classComment.isInternal();
+        cu.meta.isDeprecated = classComment.getDeprecated();
+        cu.meta.isAbstract = (classUnit.isAbstract ? classUnit.isAbstract : null);
+        cu.meta.isFinal = (classUnit.isFinal ? classUnit.isFinal : null);
 
-            if (commentParseResult.getInternal())
-                js.meta.internal = "This is a private class for internal use by the framework. Don't rely on its existence.";
+        cu.members = new ArrayList<>();
 
-            if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                js.meta.deprecated = new DeprecatedObject();
+        // Constructor
+        Integer constructorCount = 1;
+        for (Constructor constructor : classUnit.constructors) {
+            Member member = new Member();
 
-                js.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                js.meta.deprecated.text = commentParseResult.getDeprecatedText();
-            }
+            member.id = "constructor-" + classUnit.className + constructorCount.toString();
+            member.name = classUnit.className;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "constructor";
 
-        } catch (IOException ex) {
-            throw ex;
-        }
-        
-        Integer constructorCount = 0;
-        for (Constructor constructor : cu.constructors) {
-            MemberObject m = new MemberObject();
-            
+            Comment constructorComment = parseComment(constructor.constrComment);
+
+            member.comment = constructorComment.getComment();
+
+            member.meta.isPrivate = (constructor.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (constructor.modifier == AccessModifier.PROTECTED
+                    ? true
+                    : null);
+            member.meta.isStatic = (constructor.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isInternal = constructorComment.isInternal();
+            member.meta.isDeprecated = constructorComment.getDeprecated();
+
+            member.parameters = addParameters(constructor.parameters,
+                    constructorComment.getParameters());
+
             constructorCount++;
-
-            m.id = "constructor-" + cu.className + constructorCount.toString();
-            m.name = cu.className;
-            m.owner = fullClassName;
-            m.tagname = "constructor";
-            m.signature = constructor.signature;
-            
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(constructor.constrComment,
-                        fullClassName + ":" + cu.className);
-
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
-
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private constructor for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
-            
-            if (constructor.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (constructor.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-            
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : constructor.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
-            
-            js.members.add(m);
+            cu.members.add(member);
         }
 
-        Integer methodCount = 0;
-        String previousMethodName = "";
-        // Members
-        for (Method method : cu.methods) {
-            MemberObject m = new MemberObject();
+        // Destructor
+        for (Destructor destructor : classUnit.destructors) {
+            Member member = new Member();
 
-            if (previousMethodName.equals(method.methodName)) {
-                methodCount++;
-            } else {
+            member.id = "destructor-" + classUnit.className;
+            member.name = classUnit.className;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "destructor";
+
+            Comment constructorComment = parseComment(destructor.destructorComment);
+
+            member.comment = constructorComment.getComment();
+
+            cu.members.add(member);
+        }
+
+        // Events
+        for (Event event : classUnit.events) {
+            Member member = new Member();
+
+            member.id = "event-" + event.eventName;
+            member.name = event.eventName;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "event";
+
+            Comment eventComment = parseComment(event.eventComment);
+
+            member.comment = eventComment.getComment();
+
+            member.meta.isPrivate = (event.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (event.isAbstract ? true : null);
+            member.meta.isOverride = (event.isOverride ? true : null);
+            member.meta.isInternal = eventComment.isInternal();
+            member.meta.isDeprecated = eventComment.getDeprecated();
+
+            member.returns = new Return();
+            member.returns.comment = eventComment.getReturn();
+            member.returns.datatype = "VOID";
+
+            member.parameters = addParameters(event.parameters, eventComment.getParameters());
+
+            cu.members.add(member);
+        }
+
+        // Properties
+        for (Property property : classUnit.properties) {
+            Member member = new Member();
+
+            member.id = "property-" + property.name;
+            member.name = property.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "property";
+            member.datatype = property.dataType;
+
+            Comment propertyComment = parseComment(property.propertyComment);
+
+            member.comment = propertyComment.getComment();
+
+            member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (property.isAbstract ? true : null);
+            member.meta.isOverride = (property.isOverride ? true : null);
+            member.meta.isInternal = propertyComment.isInternal();
+            member.meta.isDeprecated = propertyComment.getDeprecated();
+
+            cu.members.add(member);
+        }
+
+        // Methods
+        Map<String, Integer> methodCounts = new HashMap<>();
+        for (Method method : classUnit.methods) {
+            Member member = new Member();
+
+            Integer methodCount = methodCounts.get(method.methodName);
+            if (methodCount == null) {
                 methodCount = 0;
-                previousMethodName = method.methodName;
+                methodCounts.put(method.methodName, methodCount);
+            } else {
+                methodCount++;
+                methodCounts.put(method.methodName, methodCount);
             }
 
-            if (methodCount == 0)
-                m.id = "method-" + method.methodName;
-            else
-                m.id = "method-" + method.methodName + "-" + methodCount.toString();
+            member.id = "method-" + method.methodName
+                    + (methodCount > 0 ? "-" + methodCount.toString() : "");
 
-            m.name = method.methodName;
-            m.owner = fullClassName;
-            m.tagname = "method";
-            m.signature = method.signature;
+            member.name = method.methodName;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "method";
 
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(method.methodComment,
-                        fullClassName + ":" + method.methodName);
+            Comment methodComment = parseComment(method.methodComment);
 
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(method.methodName.startsWith("_"));
+            member.comment = methodComment.getComment();
 
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
+            member.meta.isPrivate = (method.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isAbstract = (method.isAbstract ? true : null);
+            member.meta.isOverride = (method.isOverride ? true : null);
+            member.meta.isFinal = (method.isFinal ? true : null);
+            member.meta.isInternal = methodComment.isInternal();
+            member.meta.isDeprecated = methodComment.getDeprecated();
 
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private method for internal use by the framework. Don't rely on its existence.";
+            member.returns = new Return();
+            member.returns.comment = methodComment.getReturn();
+            member.returns.datatype = method.returnType;
 
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
+            member.parameters = addParameters(method.parameters, methodComment.getParameters());
 
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
-
-            if (method.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (method.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (method.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (method.isStatic)
-                m.meta.isStatic = true;
-
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : method.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
-
-            js.members.add(m);
+            cu.members.add(member);
         }
 
-        for (Property property : cu.properties) {
-            MemberObject m = new MemberObject();
+        // Temp-Tables
+        for (TempTable tempTable : classUnit.tts) {
+            Member member = new Member();
 
-            m.id = "property-" + property.name;
-            m.name = property.name;
-            m.owner = fullClassName;
-            m.tagname = "property";
-            m.datatype = property.dataType;
+            member.id = "temptable-" + tempTable.name;
+            member.name = tempTable.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "temptable";
+            member.definition = tempTable.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
 
-            try {
-                CommentParseResult commentParseResult = comments.parseComment(
-                        property.propertyComment, fullClassName + ":" + property.name);
+            Comment tempTableComment = parseComment(tempTable.comment);
 
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(property.name.startsWith("_"));
+            member.comment = tempTableComment.getComment();
+            member.meta.isInternal = tempTableComment.isInternal();
+            member.meta.isDeprecated = tempTableComment.getDeprecated();
 
-                m.comment = commentParseResult.getComment();
+            member.meta.isPrivate = (tempTable.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED
+                    ? true
+                    : null);
+            member.meta.isStatic = (tempTable.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isNew = (tempTable.isNew ? true : null);
+            member.meta.isGlobal = (tempTable.isGlobal ? true : null);
+            member.meta.isShared = (tempTable.isShared ? true : null);
+            member.meta.isNoUndo = (tempTable.noUndo ? true : null);
 
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private property for internal use by the framework. Don't rely on its existence.";
-
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
-
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-
-            } catch (IOException ex) {
-                throw ex;
-            }
-
-            if (property.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (property.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (property.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (property.isStatic)
-                m.meta.isStatic = true;
-
-            js.members.add(m);
+            cu.members.add(member);
         }
-        
-        for (Event event : cu.events) {
-            MemberObject m = new MemberObject();
 
-            m.id = "event-" + event.eventName;
-            m.name = event.eventName;
-            m.owner = fullClassName;
-            m.tagname = "event";
-            m.signature = event.signature;
-            
-            CommentParseResult commentParseResult = null;
-            try {
-                commentParseResult = comments.parseComment(event.eventComment,
-                        fullClassName + ":" + event.eventName);
+        // Datasets
+        for (Dataset dataset : classUnit.dss) {
+            Member member = new Member();
 
-                if (!commentParseResult.getInternal())
-                    commentParseResult.setInternal(event.eventName.startsWith("_"));
+            member.id = "dataset-" + dataset.name;
+            member.name = dataset.name;
+            member.owner = fullyQualifiedClassName;
+            member.tagname = "dataset";
+            member.definition = dataset.aceText.replace("\n", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
 
-                m.returnComment = commentParseResult.getReturnComment();
-                m.comment = commentParseResult.getComment();
+            Comment datasetComment = parseComment(dataset.comment);
 
-                if (commentParseResult.getInternal())
-                    m.meta.internal = "This is a private event for internal use by the framework. Don't rely on its existence.";
+            member.comment = datasetComment.getComment();
+            member.meta.isInternal = datasetComment.isInternal();
+            member.meta.isDeprecated = datasetComment.getDeprecated();
 
-                if (!"".equals(commentParseResult.getDeprecatedVersion())) {
-                    m.meta.deprecated = new DeprecatedObject();
+            member.meta.isPrivate = (dataset.modifier == AccessModifier.PRIVATE ? true : null);
+            member.meta.isProtected = (dataset.modifier == AccessModifier.PROTECTED ? true : null);
+            member.meta.isStatic = (dataset.modifier == AccessModifier.STATIC ? true : null);
+            member.meta.isNew = (dataset.isNew ? true : null);
+            member.meta.isShared = (dataset.isShared ? true : null);
 
-                    m.meta.deprecated.version = commentParseResult.getDeprecatedVersion();
-                    m.meta.deprecated.text = commentParseResult.getDeprecatedText();
-                }
-            } catch (IOException ex) {
-                throw ex;
-            }
-            
-            if (event.modifier == AccessModifier.PRIVATE)
-                m.meta.isPrivate = true;
-
-            if (event.modifier == AccessModifier.PROTECTED)
-                m.meta.isProtected = true;
-
-            if (event.isAbstract)
-                m.meta.isAbstract = true;
-
-            if (event.isStatic)
-                m.meta.isStatic = true;
-            
-            m.parameters = new ArrayList<>();
-            for (Parameter parameter : event.parameters) {
-                ParameterObject p = new ParameterObject();
-
-                p.name = parameter.name;
-                p.datatype = parameter.dataType;
-                p.mode = parameter.mode == null ? "" : parameter.mode.toString();
-
-                String paramComment = commentParseResult.getParameterComments().get(parameter.name);
-                if (paramComment != null)
-                    p.comment = paramComment;
-
-                m.parameters.add(p);
-            }
-            
-            js.members.add(m);
+            cu.members.add(member);
         }
-        return js;
+
+        return cu;
+
+    }
+
+    public Comment parseComment(String comment) {
+
+        Comment commentParser = new Comment();
+
+        commentParser.parseComment(comment);
+
+        return commentParser;
+    }
+
+    public List<Parameter> addParameters(List<eu.rssw.rcode.Parameter> parameters,
+            Map<String, String> parameterComments) {
+        List<Parameter> memberParams = null;
+
+        if (!parameters.isEmpty()) {
+            memberParams = new ArrayList<>();
+            for (eu.rssw.rcode.Parameter param : parameters) {
+                Parameter parameter = new Parameter();
+
+                parameter.name = param.name;
+                parameter.datatype = param.dataType;
+                parameter.mode = (param.mode == null ? "" : param.mode.toString());
+
+                if (parameterComments != null)
+                    parameter.comment = parameterComments.get(parameter.name);
+                else
+                    parameter.comment = "";
+
+                memberParams.add(parameter);
+            }
+        }
+
+        return memberParams;
     }
 }
