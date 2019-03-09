@@ -47,13 +47,12 @@ public class ABLDuckTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void didDataFileCreate() throws IOException {
+    public void checkDataFile() throws IOException {
         String filename = "ABLDuck/test/docs/data.js";
 
         // Does the data js file exist
         File f1 = new File(filename);
         assertTrue(f1.exists());
-
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"didDataFileCreate"})
@@ -64,7 +63,6 @@ public class ABLDuckTest extends BuildFileTestNg {
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
-
         assertEquals(data.classes.size(), 2);
     }
 
@@ -76,7 +74,6 @@ public class ABLDuckTest extends BuildFileTestNg {
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
-
         assertEquals(data.procedures.size(), 1);
     }
 
@@ -88,7 +85,6 @@ public class ABLDuckTest extends BuildFileTestNg {
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
-
         assertEquals(data.search.size(), 10);
     }
 
@@ -121,9 +117,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
-
         assertEquals(js.members.size(), 3);
-
         assertEquals(js.id, "class-base.class");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "base.class");
@@ -141,9 +135,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
-
         assertEquals(js.members.size(), 5);
-
         assertEquals(js.id, "class-test");
         assertEquals(js.tagname, "class");
         assertEquals(js.name, "test");
@@ -152,21 +144,18 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.superclasses.size(), 2);
     }
 
-    @Test(groups = {"v11"}, dependsOnMethods = {"checkTestClassCreated"})
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkTestProcedureCreated"})
     public void checkTestProcedureMetadata() throws IOException {
-        String filename = "ABLDuck/test/docs/output/procedure/test_p.js";
+        String filename = "ABLDuck/test/docs/output/procedures/test_p.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         content = content.substring(content.indexOf("(") + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
-
         assertEquals(js.members.size(), 2);
-
         assertEquals(js.id, "procedure-test");
         assertEquals(js.tagname, "procedure");
         assertEquals(js.name, "test.p");
-
         assertEquals(js.parameters.size(), 1);
         assertEquals(js.meta.isDeprecated.version, "1.0.0");
     }
