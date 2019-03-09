@@ -55,7 +55,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertTrue(f1.exists());
     }
 
-    @Test(groups = {"v11"}, dependsOnMethods = {"didDataFileCreate"})
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkClassCount() throws IOException {
         String filename = "ABLDuck/test/docs/data.js";
 
@@ -66,7 +66,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(data.classes.size(), 2);
     }
 
-    @Test(groups = {"v11"}, dependsOnMethods = {"didDataFileCreate"})
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkProcedureCount() throws IOException {
         String filename = "ABLDuck/test/docs/data.js";
 
@@ -77,7 +77,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(data.procedures.size(), 1);
     }
 
-    @Test(groups = {"v11"}, dependsOnMethods = {"didDataFileCreate"})
+    @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkSearchCount() throws IOException {
         String filename = "ABLDuck/test/docs/data.js";
 
