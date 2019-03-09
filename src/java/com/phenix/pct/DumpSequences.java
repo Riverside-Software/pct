@@ -41,8 +41,6 @@ public class DumpSequences extends PCTRun {
     /**
      * Set encoding to be used to dump data. If not set or empty,
      * dump will be done using -cpstream default value.
-     * 
-     * @param encoding
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;

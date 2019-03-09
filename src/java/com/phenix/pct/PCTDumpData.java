@@ -24,7 +24,6 @@ import java.io.File;
  * Dumps data from database
  *
  * @author <a href="mailto:d.knol@steeg-software.nl">Ing. D.G. Knol</a>
- * @version $Revision$
  */
 public class PCTDumpData extends PCTRun {
     private File destDir = null;
@@ -50,8 +49,6 @@ public class PCTDumpData extends PCTRun {
     /**
      * Set encoding to be used to dump data. If not set or empty,
      * dump will be done using -cpstream default value.
-     * 
-     * @param encoding
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;

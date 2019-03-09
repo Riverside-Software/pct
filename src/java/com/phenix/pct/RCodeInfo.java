@@ -60,10 +60,6 @@ public class RCodeInfo {
      * Input stream has to support mark()/reset(). Buffer should be large enough, otherwise this
      * method may throw an IOException. Large enough depends on number of methods and signatures.
      * This will be fixed in later releases.
-     * 
-     * @param input
-     * @throws InvalidRCodeException
-     * @throws IOException
      */
     public RCodeInfo(InputStream input) throws InvalidRCodeException, IOException {
         this.input = input;

@@ -191,10 +191,6 @@ public abstract class BackgroundWorker {
      */
     protected abstract boolean performCustomAction() throws IOException;
 
-    /**
-     * 
-     * @param options
-     */
     public abstract void setCustomOptions(Map<String, String> options);
 
     /**

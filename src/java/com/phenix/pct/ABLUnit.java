@@ -79,8 +79,6 @@ public class ABLUnit extends PCTRun {
 
     /**
      * Log attribute.
-     * 
-     * @param writelog
      */
     public void setWriteLog(boolean writelog) {
         this.writeLog = writelog;

@@ -78,8 +78,6 @@ public class PCTLoadSchema extends PCTRun {
 
     /**
      * Callback class
-     * 
-     * @param callbackClass
      */
     public void setCallbackClass(String callbackClass) {
         this.callbackClass = callbackClass;

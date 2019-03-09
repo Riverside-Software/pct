@@ -51,8 +51,6 @@ public class OutputParameter {
     /**
      * Temporary file where output parameter will be written. ANT reads this file to fill the
      * property
-     * 
-     * @param file
      */
     protected void setTempFileName(File file) {
         this.tempFile = file;
@@ -64,8 +62,6 @@ public class OutputParameter {
 
     /**
      * Variable name in pctinit procedure
-     * 
-     * @param progressVar
      */
     protected void setProgressVar(String progressVar) {
         this.progressVar = progressVar;

@@ -104,8 +104,6 @@ public class PCTNSBroker extends PCTBroker {
 
     /**
      * Server logging level property. No default value. Should be between 1 and 5.
-     * 
-     * @param serverLogLevel
      */
     public void setServerLogLevel(int serverLogLevel) {
         this.serverLogLevel = serverLogLevel;

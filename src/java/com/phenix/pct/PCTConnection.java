@@ -349,7 +349,6 @@ public class PCTConnection extends DataType {
      * separated list, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
      * 
      * @return Connection string
-     * @throws BuildException
      */
     public String createBackgroundConnectString() {
         StringBuilder sb = new StringBuilder(createConnectString());

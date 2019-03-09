@@ -75,8 +75,6 @@ public class Profiler {
 
     /**
      * Defines description for profiler session
-     * 
-     * @param description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -114,8 +112,6 @@ public class Profiler {
 
     /**
      * Defines listing directory
-     * 
-     * @param listings
      */
     public void setListings(File listings) {
         this.listings = listings;
@@ -127,9 +123,6 @@ public class Profiler {
 
     /**
      * Validates object. If background task is set to true, then you can't set outputFile, only outputDir
-     * 
-     * @param backgroundTask
-     * @throws BuildException
      */
     public void validate(boolean backgroundTask) {
         if (!enabled)

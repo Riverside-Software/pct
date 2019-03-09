@@ -132,10 +132,6 @@ public class PCTDumpIncremental extends PCTRun {
         super.addDBConnection(dbConn);
     }
 
-    /**
-     * 
-     * @param dbConn
-     */
     public void addSourceDb(PCTConnection dbConn) {
         PCTAlias alias = new PCTAlias();
         alias.setName("dictdb");

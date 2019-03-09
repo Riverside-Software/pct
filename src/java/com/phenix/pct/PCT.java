@@ -165,7 +165,6 @@ public abstract class PCT extends Task {
     /**
      * Add default pct.pl included in JAR file into PROPATH. Default value is true.
      * 
-     * @param inc
      * @since 0.10
      */
     public final void setIncludedPL(boolean inc) {
@@ -434,7 +433,6 @@ public abstract class PCT extends Task {
      * 
      * @param f File or directory (must not be present)
      * @return Boolean
-     * @throws IOException
      * @since PCT 0.10
      */
     protected boolean extractPL(File f) throws IOException {

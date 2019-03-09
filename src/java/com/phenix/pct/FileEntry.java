@@ -30,8 +30,6 @@ public class FileEntry implements Comparable<FileEntry> {
 
     /**
      * Invalid file entry - Will be skipped in entries list
-     * 
-     * @param tocSize
      */
     public FileEntry(int tocSize) {
         this.tocSize = tocSize;

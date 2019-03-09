@@ -89,8 +89,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Source database name. Leave empty to use emptyX. Not compatible with noInit
-     * 
-     * @param sourceDb
      */
     public void setSourceDb(File sourceDb) {
         this.sourceDb = sourceDb;
@@ -202,8 +200,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Sets the failOnError parameter. Defaults to true.
-     * 
-     * @param failOnError
      */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
@@ -211,8 +207,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Set relative option
-     * 
-     * @param relative
      */
     public void setRelative(boolean relative) {
         this.relative = relative;
@@ -220,8 +214,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Enable LargeFiles
-     * 
-     * @param enableLargeFiles
      */
     public void setLargeFiles(boolean enableLargeFiles) {
         this.enableLargeFiles = enableLargeFiles;
@@ -234,8 +226,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Enable auditing
-     * 
-     * @param auditing
      */
     public void setAuditing(boolean auditing) {
         this.auditing = auditing;
@@ -251,8 +241,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Enable multiTenancy
-     * 
-     * @param multiTenant
      */
     public void setMultiTenant(boolean multiTenant) {
         this.multiTenant = multiTenant;
@@ -299,8 +287,6 @@ public class PCTCreateBase extends PCT {
 
     /**
      * Enable new instance of the database
-     * 
-     * @param isNewInstance
      */
     public void setNewInstance(boolean isNewInstance) {
         this.newInstance = isNewInstance;
