@@ -1185,9 +1185,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         configureProject(BASEDIR + "test76/build.xml");
         executeTarget("compile");
 
-        expectLog("testInitialize", "Initialize#pct/pctCompile.p");
-        expectLog("testBeforeCompile", "Before Compile#pct/pctCompile.p#test.p#src");
-        expectLog("testAfterCompile", "After Compile#pct/pctCompile.p#test.p#src");
+        expectLog("testInitialize", "Initialize#pct/pctBgCompile.p");
+        expectLog("testBeforeCompile", "Before Compile#pct/pctBgCompile.p#test.p#src");
+        expectLog("testAfterCompile", "After Compile#pct/pctBgCompile.p#test.p#src");
 
         File f = new File(BASEDIR + "test76/build/test.r");
         assertTrue(f.exists());
