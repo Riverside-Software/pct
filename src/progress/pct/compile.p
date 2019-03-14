@@ -93,6 +93,8 @@ DEFINE VARIABLE AppStrXrf AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE RunList   AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE Lst       AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE LstPrepro AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE PageSize  AS INTEGER    NO-UNDO.
+DEFINE VARIABLE PageWidth AS INTEGER    NO-UNDO.
 DEFINE VARIABLE PrePro    AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -146,6 +148,8 @@ PROCEDURE setOption.
     WHEN 'RUNLIST':U          THEN ASSIGN RunList = (ipValue EQ '1':U).
     WHEN 'LISTING':U          THEN ASSIGN Lst = (ipValue EQ '1':U).
     WHEN 'LISTINGSOURCE':U    THEN ASSIGN LstPrepro = (ipValue EQ 'PREPROCESSOR':U).
+    WHEN 'PAGESIZE':U         THEN ASSIGN PageSize = INTEGER(ipValue).
+    WHEN 'PAGEWIDTH':U        THEN ASSIGN PageWidth = INTEGER(ipValue).
     WHEN 'PREPROCESS':U       THEN ASSIGN PrePro = (ipValue EQ '1':U).
     WHEN 'PREPROCESSDIR':U    THEN ASSIGN preprocessDir = ipValue.
     WHEN 'DEBUGLISTING':U     THEN ASSIGN DebugLst = (ipValue EQ '1':U).
@@ -388,7 +392,7 @@ PROCEDURE compileXref.
   RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
   RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
                  cSaveDir, debugListingFile,
-                 IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
+                 IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?, PageSize, PageWidth,
                  preprocessFile, cStrXrefFile, cXrefFile, IF bAboveEq1173 THEN cOpts ELSE "").
 
   ASSIGN opError = COMPILER:ERROR.

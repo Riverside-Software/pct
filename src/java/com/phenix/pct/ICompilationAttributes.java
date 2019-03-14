@@ -61,6 +61,16 @@ public interface ICompilationAttributes {
      * @param source Can be empty or 'PREPROCESS'
      */
     void setListingSource(String source);
+    
+    /**
+     * PAGE-SIZE option of COMPILE statement.
+     */
+    void setPageSize(int pageSize);
+    
+    /**
+     * PAGE-WIDTH option of COMPILE statement.
+     */
+    void setPageWidth(int pageWidth);
 
     /**
      * Ignore include files matching this pattern

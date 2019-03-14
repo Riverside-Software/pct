@@ -51,14 +51,16 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('STRINGXREF', IF ENTRY(23, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('APPENDSTRINGXREF', IF ENTRY(24, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('LISTINGSOURCE', ENTRY(26, ipPrm, ';')).
-    RUN setOption IN hComp ('NOPARSE', IF ENTRY(27, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
-    RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('PCTDIR', ENTRY(30, ipPrm, ';')).
-    RUN setOption IN hComp ('FILELIST', ENTRY(31, ipPrm, ';')).
-    RUN setOption IN hComp ('FULLKW', IF ENTRY(32, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('PAGESIZE', ENTRY(27, ipPrm, ';')).
+    RUN setOption IN hComp ('PAGEWIDTH', ENTRY(28, ipPrm, ';')).
+    RUN setOption IN hComp ('NOPARSE', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    ASSIGN lStopOnErr = ENTRY(30, ipPrm, ';') EQ 'true'.
+    RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(31, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('PCTDIR', ENTRY(32, ipPrm, ';')).
+    RUN setOption IN hComp ('FILELIST', ENTRY(33, ipPrm, ';')).
+    RUN setOption IN hComp ('FULLKW', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('FULLNAMES', IF ENTRY(35, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('FIELDQLF', IF ENTRY(36, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
 
     RUN initModule IN hComp.
 
