@@ -144,8 +144,8 @@ ASSIGN bAboveEq12 = (majorMinor GE 12).
 
 /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-DEFINE VARIABLE callback AS rssw.pct.ICompileCallback.
-DEFINE VARIABLE compileAction AS rssw.pct.CompileCallbackAction.
+DEFINE VARIABLE callback AS rssw.pct.ICompileCallback NO-UNDO.
+DEFINE VARIABLE compileAction AS rssw.pct.CompileCallbackAction NO-UNDO.
 ASSIGN compileAction = rssw.pct.CompileCallbackAction:None.
 &ENDIF
 
@@ -190,7 +190,8 @@ END PROCEDURE.
 PROCEDURE initModule:
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
-  IF (callbackClass > "") AND NOT bAboveEq113 THEN MESSAGE "Callbacks are only supported on 11.3+".
+  IF (callbackClass > "") AND NOT bAboveEq113 THEN
+    MESSAGE "Callbacks are only supported on 11.3+".
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
   IF (callbackClass > "") THEN DO:
@@ -396,7 +397,8 @@ PROCEDURE compileXref.
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
   IF VALID-OBJECT(callback) THEN DO:
     compileAction = callback:beforeCompile(hSrcProc, ipInFile, ipInDir).
-    IF (compileAction EQ rssw.pct.CompileCallbackAction:Skip) THEN RETURN.
+    IF (compileAction EQ rssw.pct.CompileCallbackAction:Skip) THEN
+      RETURN.
   END.
 &ENDIF
 
