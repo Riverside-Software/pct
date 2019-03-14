@@ -64,6 +64,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean flattenDbg = true;
     private String ignoredIncludes = null;
     private int fileList = 0;
+    private String callback = null;
 
     // Internal use
     private final PCT parent;
@@ -262,6 +263,11 @@ public class CompilationAttributes implements ICompilationAttributes {
         this.fileList = display;
     }
 
+    @Override
+    public void setCallbackClass(String callback) {
+        this.callback = callback;
+    }
+
     public List<ResourceCollection> getResources() {
         return resources;
     }
@@ -400,6 +406,10 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public int getFileList() {
         return fileList;
+    }
+
+    public String getCallbackClass() {
+        return callback;
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {

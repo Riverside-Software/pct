@@ -238,6 +238,10 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FILELIST=" + compAttrs.getFileList());
             bw.newLine();
+            if (compAttrs.getCallbackClass() != null) {
+                bw.write("CALLBACKCLASS=" + compAttrs.getCallbackClass());
+                bw.newLine();
+            }
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
         }
