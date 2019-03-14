@@ -145,6 +145,8 @@ ASSIGN bAboveEq12 = (majorMinor GE 12).
 /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
 DEFINE VARIABLE callback AS rssw.pct.ICompileCallback.
+DEFINE VARIABLE compileAction AS rssw.pct.CompileCallbackAction.
+ASSIGN compileAction = rssw.pct.CompileCallbackAction:None.
 &ENDIF
 
 PROCEDURE setOption.
@@ -389,6 +391,15 @@ PROCEDURE compileXref.
   ELSE
     ASSIGN debugListingFile = ?.
 
+  RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
+
+&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
+  IF VALID-OBJECT(callback) THEN DO:
+    compileAction = callback:beforeCompile(hSrcProc, ipInFile, ipInDir).
+    IF (compileAction EQ rssw.pct.CompileCallbackAction:Skip) THEN RETURN.
+  END.
+&ENDIF
+
 /* Before 11.7.3, strict mode compiler was throwing errors. 11.7.3 introduced :warning and :error */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.7 &THEN
   IF (cOpts GT "") AND bAboveEq117 AND (NOT bAboveEq1173) THEN DO:
@@ -408,14 +419,11 @@ PROCEDURE compileXref.
   END.
 &ENDIF
 
-  RUN logVerbose IN hSrcProc (SUBSTITUTE("Compiling &1 in directory &2 TO &3", ipInFile, ipInDir, cSaveDir)).
-&IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-  IF VALID-OBJECT(callback) THEN callback:beforeCompile(hSrcProc, ipInFile, ipInDir).
-&ENDIF
   RUN pctcomp.p (IF lRelative THEN ipInFile ELSE ipInDir + '/':U + ipInFile,
                  cSaveDir, debugListingFile,
                  IF Lst AND NOT LstPrepro THEN PCTDir + '/':U + ipInFile ELSE ?,
                  preprocessFile, cStrXrefFile, cXrefFile, IF bAboveEq1173 THEN cOpts ELSE "").
+
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
   IF VALID-OBJECT(callback) THEN callback:afterCompile(hSrcProc, ipInFile, ipInDir).
 &ENDIF

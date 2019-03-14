@@ -18,5 +18,5 @@
 ENUM rssw.pct.CompileCallbackAction:
     DEFINE ENUM None
                 Skip
-                Stop.
+                /* Implementation will come later */ Stop.
 END ENUM.
