@@ -37,7 +37,7 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTCompileExt task
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
@@ -1101,7 +1101,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("test");
         assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
         assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
-        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // This file shouldn't be there, and is incorrectly created by the compiler
         // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
     }
 
@@ -1167,6 +1167,56 @@ public class PCTCompileExtTest extends BuildFileTestNg {
 
         File f = new File(BASEDIR + "test75/build/test.r");
         assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test76() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test76/build.xml");
+        executeTarget("compile");
+
+        expectLog("testInitialize", "Initialize#pct/pctBgCompile.p");
+        expectLog("testBeforeCompile", "Before Compile#pct/pctBgCompile.p#test.p#src");
+        expectLog("testAfterCompile", "After Compile#pct/pctBgCompile.p#test.p#src");
+
+        File f = new File(BASEDIR + "test76/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test77() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMinorVersion() <= 2)
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test77/build.xml");
+        executeTarget("compile");
+
+        File f1 = new File(BASEDIR + "test77/build/test01.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test77/build/test02.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test77/build/excl01.r");
+        assertFalse(f3.exists());
+        File f4 = new File(BASEDIR + "test77/build/excl02.r");
+        assertFalse(f4.exists());
     }
 
     @Test(groups = {"v10"})
@@ -1272,5 +1322,4 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f1.exists());
         assertTrue(f2.exists());
     }
-
 }

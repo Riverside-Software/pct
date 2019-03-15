@@ -329,6 +329,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isRequireFullKeywords())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFullNames())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
+            sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
 
             return sb.toString();
         }
