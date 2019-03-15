@@ -140,6 +140,15 @@ public class PCTBgCompile extends PCTBgRun {
             getOptions().setXCodeSessionKey(null);
         }
 
+        // Verify resource collections
+        for (ResourceCollection rc : compAttrs.getResources()) {
+            if (!rc.isFilesystemOnly()) {
+                cleanup();
+                throw new BuildException(
+                        "PCTCompile only supports file-system resources collections");
+            }
+        }
+
         initializeCompilationUnits();
         compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
         getOptions().addPropath(new Path(getProject(), compDir.getAbsolutePath()));

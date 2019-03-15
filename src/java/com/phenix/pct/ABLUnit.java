@@ -19,6 +19,7 @@ package com.phenix.pct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,15 +51,14 @@ public class ABLUnit extends PCTRun {
     private boolean haltOnFailure;
 
     // Internal use
+    private int jsonID = -1;
     private File json = null;
 
     public ABLUnit() {
         super();
-        try {
-            json = File.createTempFile("ablunit", ".json");
-        } catch (IOException caught) {
-            throw new BuildException(caught);
-        }
+
+        jsonID = PCT.nextRandomInt();
+        json = new File(System.getProperty(PCT.TMPDIR), "ablunit" + jsonID + ".out"); 
     }
 
     /**
@@ -104,7 +104,8 @@ public class ABLUnit extends PCTRun {
     }
 
     private void writeJsonConfigFile() throws IOException {
-        try (JsonWriter writer = new JsonWriter(new FileWriter(json))) {
+        StringWriter strWriter = new StringWriter();
+        try (JsonWriter writer = new JsonWriter(strWriter)) {
             log("JSON file created : " + json, Project.MSG_VERBOSE);
 
             writer.beginObject();
@@ -128,7 +129,6 @@ public class ABLUnit extends PCTRun {
             writer.name("tests").beginArray();
             for (FileSet fs : testFilesets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-
                     File f = new File(fs.getDir(), file);
                     log("Adding '" + f + "' to JSon.", Project.MSG_VERBOSE);
                     writer.beginObject().name("test").value(f.toString());
@@ -148,7 +148,11 @@ public class ABLUnit extends PCTRun {
 
             // Root object
             writer.endObject();
-        } 
+        }
+
+        try (FileWriter writer = new FileWriter(json)) {
+            writer.write(strWriter.toString());
+        }
     }
 
     @Override
@@ -157,12 +161,15 @@ public class ABLUnit extends PCTRun {
         if (destDir != null && !destDir.isDirectory())
             throw new BuildException("Invalid destDir (" + destDir + ")");
 
-        if (testFilesets == null || testFilesets.isEmpty())
+        if (testFilesets == null || testFilesets.isEmpty()) {
+            cleanup();
             throw new BuildException("No fileset found.");
+        }
 
         try {
             writeJsonConfigFile();
         } catch (IOException e) {
+            cleanup();
             throw new BuildException(e);
         }
 
