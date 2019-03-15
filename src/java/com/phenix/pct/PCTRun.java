@@ -445,8 +445,10 @@ public class PCTRun extends PCT implements IRunAttributes {
             }
         }
 
-        if (getDLCMajorVersion() >= 12)
+        if (getDLCMajorVersion() >= 12) {
+            cleanup();
             return;
+        }
 
         // Now read status file
         try (Reader r = new FileReader(status); BufferedReader br = new BufferedReader(r)) {
