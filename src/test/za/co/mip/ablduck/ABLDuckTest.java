@@ -38,6 +38,7 @@ import za.co.mip.ablduck.models.Data;
  * @author <a href="mailto:robertedwardsmail@gmail.com">Robert Edwards</a>
  */
 public class ABLDuckTest extends BuildFileTestNg {
+    private static final String FILENAME = "ABLDuck/test/docs/data.js";
     private Gson gson = new Gson();
 
     @Test(groups = {"v11"})
@@ -47,19 +48,15 @@ public class ABLDuckTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void checkDataFile() throws IOException {
-        String filename = "ABLDuck/test/docs/data.js";
-
+    public void checkDataFile() {
         // Does the data js file exist
-        File f1 = new File(filename);
+        File f1 = new File(FILENAME);
         assertTrue(f1.exists());
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkClassCount() throws IOException {
-        String filename = "ABLDuck/test/docs/data.js";
-
-        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        String content = new String(Files.readAllBytes(Paths.get(FILENAME)));
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
@@ -68,9 +65,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkProcedureCount() throws IOException {
-        String filename = "ABLDuck/test/docs/data.js";
-
-        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        String content = new String(Files.readAllBytes(Paths.get(FILENAME)));
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
@@ -79,31 +74,29 @@ public class ABLDuckTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"}, dependsOnMethods = {"checkDataFile"})
     public void checkSearchCount() throws IOException {
-        String filename = "ABLDuck/test/docs/data.js";
-
-        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        String content = new String(Files.readAllBytes(Paths.get(FILENAME)));
         content = content.substring(15, content.length() - 1);
 
         Data data = gson.fromJson(content, Data.class);
-        assertEquals(data.search.size(), 10);
+        assertEquals(data.search.size(), 14);
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void checkBaseClassCreated() throws IOException {
+    public void checkBaseClassCreated() {
         String filename = "ABLDuck/test/docs/output/classes/base.class.js";
         File f1 = new File(filename);
         assertTrue(f1.exists());
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void checkTestClassCreated() throws IOException {
+    public void checkTestClassCreated() {
         String filename = "ABLDuck/test/docs/output/classes/test.js";
         File f1 = new File(filename);
         assertTrue(f1.exists());
     }
 
     @Test(groups = {"v11"}, dependsOnMethods = {"testGenerateDocs"})
-    public void checkTestProcedureCreated() throws IOException {
+    public void checkTestProcedureCreated() {
         String filename = "ABLDuck/test/docs/output/procedures/test_p.js";
         File f1 = new File(filename);
         assertTrue(f1.exists());
@@ -114,7 +107,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         String filename = "ABLDuck/test/docs/output/classes/base.class.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
-        content = content.substring(content.indexOf("(") + 1, content.length() - 2);
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.members.size(), 3);
@@ -132,7 +125,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         String filename = "ABLDuck/test/docs/output/classes/test.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
-        content = content.substring(content.indexOf("(") + 1, content.length() - 2);
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.members.size(), 5);
@@ -149,10 +142,10 @@ public class ABLDuckTest extends BuildFileTestNg {
         String filename = "ABLDuck/test/docs/output/procedures/test_p.js";
 
         String content = new String(Files.readAllBytes(Paths.get(filename)));
-        content = content.substring(content.indexOf("(") + 1, content.length() - 2);
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
-        assertEquals(js.members.size(), 2);
+        assertEquals(js.members.size(), 6);
         assertEquals(js.id, "procedure-test");
         assertEquals(js.tagname, "procedure");
         assertEquals(js.name, "test.p");
