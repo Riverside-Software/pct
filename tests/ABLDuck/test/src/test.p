@@ -9,8 +9,13 @@
  * @internal
  */
 
+USING Progress.Lang.Class.
+
 DEFINE INPUT PARAMETER ipcMainInput1 AS CHARACTER 	NO-UNDO.
 
+DEFINE TEMP-TABLE tt1 NO-UNDO FIELD fdl1 AS CHARACTER.
+DEFINE TEMP-TABLE tt2 NO-UNDO FIELD fdl1 AS CHARACTER.
+DEFINE DATASET ds1 FOR tt1, tt2.
 
 /**
  * testProcedure comment
@@ -33,6 +38,23 @@ PROCEDURE testProcedure:
 
 END PROCEDURE.
 
+/*
+ testProcedure2 comment
+ This is two paragraphs. _markdown_ is also supported here. Lorem ipsum dolor sit amet,
+ consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+ Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+ Should be ABLDoc format
+ 
+ @param ipcInput1 salkdjsaklds.
+                  Multiline parameter comment... cool
+ @param opcOutput1 someOutput.
+                   Multiline parameter comment... cool
+ */
+PROCEDURE testProcedure2:
+	DEFINE INPUT  PARAMETER ipcInput1  AS CHARACTER 	NO-UNDO.
+	DEFINE OUTPUT PARAMETER opcOutput1 AS CHARACTER 	NO-UNDO.
+
+END PROCEDURE.
 
 /**
  * testFunction comment
@@ -51,4 +73,4 @@ END PROCEDURE.
 FUNCTION testFunction RETURNS CHARACTER
   (INPUT ipcInput1  AS CHARACTER):
 
-END PROCEDURE.
+END FUNCTION.
