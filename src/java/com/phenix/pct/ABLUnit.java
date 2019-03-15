@@ -163,6 +163,7 @@ public class ABLUnit extends PCTRun {
         try {
             writeJsonConfigFile();
         } catch (IOException e) {
+            cleanup();
             throw new BuildException(e);
         }
 
