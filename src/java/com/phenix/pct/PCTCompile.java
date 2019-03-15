@@ -300,9 +300,11 @@ public class PCTCompile extends PCTRun {
 
         // Verify resource collections
         for (ResourceCollection rc : compAttrs.getResources()) {
-            if (!rc.isFilesystemOnly())
+            if (!rc.isFilesystemOnly()) {
+                cleanup();
                 throw new BuildException(
                         "PCTCompile only supports file-system resources collections");
+            }
         }
 
         // Ignore appendStringXref when stringXref is not enabled
