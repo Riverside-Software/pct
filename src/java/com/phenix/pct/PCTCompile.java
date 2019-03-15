@@ -190,10 +190,6 @@ public class PCTCompile extends PCTRun {
                 bw.write("LISTINGSOURCE=" + compAttrs.getListingSource()); //$NON-NLS-1$
                 bw.newLine();
             }
-            bw.write("PAGESIZE=" + compAttrs.getPageSize()); //$NON-NLS-1$
-            bw.newLine();
-            bw.write("PAGEWIDTH=" + compAttrs.getPageWidth()); //$NON-NLS-1$
-            bw.newLine();
             if (compAttrs.getIgnoredIncludes() != null) {
                 bw.write("IGNOREDINCLUDES=" + compAttrs.getIgnoredIncludes()); //$NON-NLS-1$
                 bw.newLine();

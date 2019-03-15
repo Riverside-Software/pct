@@ -41,8 +41,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean runList = false;
     private boolean listing = false;
     private String listingSource = null;
-    private int pageSize = 55;
-    private int pageWidth = 80;
+    private int pageSize = -1;
+    private int pageWidth = -1;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
@@ -115,18 +115,12 @@ public class CompilationAttributes implements ICompilationAttributes {
     
     @Override
     public void setPageSize(int pageSize) {
-        if ((pageSize >= 10) && (pageSize <= 127))
-            this.pageSize = pageSize;
-        else
-            throw new BuildException("Invalid pageSize attribute, value must be between 10 and 127 : " + pageSize);
+        this.pageSize = pageSize;
     }
     
     @Override
     public void setPageWidth(int pageWidth) {
-        if ((pageWidth >= 80) && (pageWidth <= 255))
-            this.pageWidth = pageWidth;
-        else
-            throw new BuildException("Invalid pageWidth attribute, value must be between 80 and 255 : " + pageWidth);
+        this.pageWidth = pageWidth;
     }
 
     @Override
@@ -451,10 +445,6 @@ public class CompilationAttributes implements ICompilationAttributes {
             bw.newLine();
             bw.write("DEFINE INPUT PARAMETER ipListing AS CHARACTER NO-UNDO.");
             bw.newLine();
-            bw.write("DEFINE INPUT PARAMETER ipPageSize AS INTEGER NO-UNDO.");
-            bw.newLine();
-            bw.write("DEFINE INPUT PARAMETER ipPageWidth AS INTEGER NO-UNDO.");
-            bw.newLine();
             bw.write("DEFINE INPUT PARAMETER ipPreprocess AS CHARACTER NO-UNDO.");
             bw.newLine();
             bw.write("DEFINE INPUT PARAMETER ipStrXref AS CHARACTER NO-UNDO.");
@@ -492,8 +482,10 @@ public class CompilationAttributes implements ICompilationAttributes {
             }
             if (!isXcode()) {
                 bw.write("LISTING VALUE(ipListing) ");
-                bw.write("PAGE-SIZE ipPageSize ");
-                bw.write("PAGE-WIDTH ipPageWidth ");
+                if (getPageSize() != -1)
+                    bw.write("PAGE-SIZE " + getPageSize() + " ");
+                if (getPageWidth() != -1)
+                    bw.write("PAGE-WIDTH " + getPageWidth() + " ");
                 bw.write("PREPROCESS VALUE(ipPreprocess) ");
                 bw.write("STRING-XREF VALUE(ipStrXref) ");
                 if (isAppendStringXref())

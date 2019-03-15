@@ -319,8 +319,6 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isAppendStringXref())).append(';');
             sb.append("").append(';'); // Previously saveR
             sb.append(compAttrs.getListingSource()).append(';');
-            sb.append(compAttrs.getPageSize()).append(';');
-            sb.append(compAttrs.getPageWidth()).append(';');
             sb.append(Boolean.toString(compAttrs.isNoParse())).append(';');
             sb.append(Boolean.toString(compAttrs.isStopOnError())).append(';');
             sb.append(Boolean.toString(compAttrs.isFlattenDbg())).append(';');
