@@ -41,6 +41,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean runList = false;
     private boolean listing = false;
     private String listingSource = null;
+    private int pageSize = -1;
+    private int pageWidth = -1;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
@@ -109,6 +111,16 @@ public class CompilationAttributes implements ICompilationAttributes {
             this.listingSource = source;
         else
             throw new BuildException("Invalid listingSource attribute : " + source);
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public void setPageWidth(int pageWidth) {
+        this.pageWidth = pageWidth;
     }
 
     @Override
@@ -300,6 +312,14 @@ public class CompilationAttributes implements ICompilationAttributes {
         return listingSource;
     }
 
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public int getPageWidth() {
+        return pageWidth;
+    }
+
     public boolean isPreprocess() {
         return preprocess;
     }
@@ -462,6 +482,10 @@ public class CompilationAttributes implements ICompilationAttributes {
             }
             if (!isXcode()) {
                 bw.write("LISTING VALUE(ipListing) ");
+                if (getPageSize() != -1)
+                    bw.write("PAGE-SIZE " + getPageSize() + " ");
+                if (getPageWidth() != -1)
+                    bw.write("PAGE-WIDTH " + getPageWidth() + " ");
                 bw.write("PREPROCESS VALUE(ipPreprocess) ");
                 bw.write("STRING-XREF VALUE(ipStrXref) ");
                 if (isAppendStringXref())

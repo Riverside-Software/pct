@@ -63,6 +63,16 @@ public interface ICompilationAttributes {
     void setListingSource(String source);
 
     /**
+     * PAGE-SIZE option of COMPILE statement.
+     */
+    void setPageSize(int pageSize);
+
+    /**
+     * PAGE-WIDTH option of COMPILE statement.
+     */
+    void setPageWidth(int pageWidth);
+
+    /**
      * Ignore include files matching this pattern
      */
     void setIgnoredIncludes(String pattern);
