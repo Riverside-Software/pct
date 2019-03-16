@@ -1235,7 +1235,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(f4.exists());
     }
 
-    @Test(groups = {"v11"})
+    @Test(groups = {"v10"})
     public void test78() {
         char ff = (char) 12;
 

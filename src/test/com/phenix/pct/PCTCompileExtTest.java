@@ -1220,6 +1220,28 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test78() {
+        char ff = (char) 12;
+
+        configureProject(BASEDIR + "test78/build.xml");
+        executeTarget("compile");
+
+        File listing = new File(BASEDIR + "test78/build/.pct/testPage.p");
+        assertTrue(listing.exists(), "Unable to find listing file");
+
+        try {
+            List<String> lines = Files.readLines(listing, Charset.defaultCharset());
+
+            // Test the ASCII code at the defined PAGE-SIZE - 1 (zero based).
+            assertTrue(lines.size() > 10 && lines.get(10).contains(String.valueOf(ff)));
+            // Test the length of the first line containing code.
+            assertTrue(lines.get(4).length() == 90);
+        } catch (IOException e) {
+            Assert.fail("Unable to read file", e);
+        }
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
