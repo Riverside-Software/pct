@@ -155,7 +155,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     public void setPageSize(int pageSize) {
         compAttributes.setPageSize(pageSize);
     }
-    
+
     @Override
     public void setPageWidth(int pageWidth) {
         compAttributes.setPageWidth(pageWidth);

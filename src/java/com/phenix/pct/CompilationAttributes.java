@@ -112,12 +112,12 @@ public class CompilationAttributes implements ICompilationAttributes {
         else
             throw new BuildException("Invalid listingSource attribute : " + source);
     }
-    
+
     @Override
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-    
+
     @Override
     public void setPageWidth(int pageWidth) {
         this.pageWidth = pageWidth;
@@ -311,11 +311,11 @@ public class CompilationAttributes implements ICompilationAttributes {
     public String getListingSource() {
         return listingSource;
     }
-    
+
     public int getPageSize() {
         return pageSize;
     }
-    
+
     public int getPageWidth() {
         return pageWidth;
     }
