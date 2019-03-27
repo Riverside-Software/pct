@@ -37,7 +37,7 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel { branch8: { testBranch('windows', 'OpenEdge-12.0', true, '12.0-Win', 12, 64) },
+ parallel branch8: { testBranch('windows', 'OpenEdge-12.0', true, '12.0-Win', 12, 64) },
     failFast: false
   node('linux') {
     // Wildcards not accepted in unstash...
