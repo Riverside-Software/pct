@@ -44,7 +44,7 @@ stage('Full tests') {
     branch5: { testBranch('linux', 'OpenEdge-11.7', false, '11.7-Linux', 11, 64) },
     branch6: { testBranch('linux', 'OpenEdge-10.2B', false, '10.2-Linux', 10, 32) },
     branch7: { testBranch('linux', 'OpenEdge-12.0', false, '12.0-Linux', 12, 64) },
-    branch8: { testBranch('windows', 'OpenEdge-12.0', false, '12.0-Win', 12, 64) },
+    branch8: { testBranch('windows', 'OpenEdge-12.0', true, '12.0-Win', 12, 64) },
     failFast: false
   node('linux') {
     // Wildcards not accepted in unstash...
@@ -73,7 +73,8 @@ stage('Sonar') {
   node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
     def dlc = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-    unstash name: 'coverage'
+    unstash name: 'coverage-11.7-Win'
+    unstash name: 'coverage-12.0-Win'
     withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
       sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
     }
@@ -96,7 +97,7 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
       stash name: "junit-${label}", includes: 'junitreports-*.zip'
       archiveArtifacts 'emailable-report-*.html'
       if (stashCoverage) {
-        stash name: 'coverage', includes: 'profiler/jacoco.exec,oe-profiler-data.zip'
+        stash name: "coverage-${label}", includes: "profiler/jacoco-${label}.exec,oe-profiler-data-${label}.zip"
       }
     }
   }

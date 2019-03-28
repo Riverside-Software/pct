@@ -408,4 +408,12 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test1");
         expectBuildException("test2", "Invalid env variable");
     }
+
+    @Test(groups = {"v10"})
+    public void test49() {
+        configureProject("PCTRun/test49/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test49/profiler");
+        assertEquals(f.listFiles().length, 1);
+    }
 }
