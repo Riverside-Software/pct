@@ -16,7 +16,7 @@
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.oe.binaries" value="build/build-v11" />
   <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.jacoco.reportPaths" value="profiler/jacoco.exec" />
+  <property name="sonar.jacoco.reportPaths" value="profiler/jacoco-*.exec" />
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
   <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
   <property name="sonar.oe.propath" value="src/progress" />
@@ -37,7 +37,10 @@
     </taskdef>
     <touch file="dictdb.df" />
     <mkdir dir="profiler/progress" />
-    <unzip src="oe-profiler-data.zip" dest="profiler/progress">
+    <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
+      <flattenmapper />
+    </unzip>
+    <unzip src="oe-profiler-data-12.0-Win.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
     <sonar:sonar />

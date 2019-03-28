@@ -72,7 +72,7 @@
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
-    <jacoco:coverage destFile="profiler/jacoco.exec">
+    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES-OS},${EXCLUDES-VERSION}" suiteName="${TESTENV} tests">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
@@ -83,7 +83,7 @@
 
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
-    <zip destFile="oe-profiler-data.zip">
+    <zip destFile="oe-profiler-data-${TESTENV}.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
     <zip destFile="junitreports-${TESTENV}.zip">
