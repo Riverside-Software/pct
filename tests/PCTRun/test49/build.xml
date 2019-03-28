@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test49">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="profiler" />
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
+      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+</project>
