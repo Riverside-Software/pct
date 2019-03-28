@@ -14,7 +14,7 @@
   <property name="sonar.sources" value="src/java,src/progress" />
   <property name="sonar.exclusions" value="src/progress/Consultingwerk/**/*,src/progress/**/dump_inc*.p,src/progress/**/_dmp*.p,src/progress/prodict/**/*,src/progress/adecomm/*,src/progress/web/method/*" />
   <property name="sonar.sourceEncoding" value="iso8859-1" />
-  <property name="sonar.oe.binaries" value="build/build-v11" />
+  <property name="sonar.oe.binaries" value="build/build-v11,build/build-v12" />
   <property name="sonar.java.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPaths" value="profiler/jacoco-11.7-Win.exec,profiler/jacoco-12.0-Win.exec" />
   <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
