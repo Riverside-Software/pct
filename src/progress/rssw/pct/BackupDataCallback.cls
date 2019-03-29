@@ -42,8 +42,10 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
       if not logger:loadException then backupTable (input ?).
       if (decimal(substring(replace(proversion(0), '.', session:numeric-decimal-point), 1, 4)) le 11.6) then
         run pct/v11/restoreTableContent.p (this-object:tblName, this-object:bkupFile).
-      else
+      else if (decimal(substring(replace(proversion(0), '.', session:numeric-decimal-point), 1, 4)) lt 12) then
         run pct/v11/restoreTableContent117.p (this-object:tblName, this-object:bkupFile).
+      else
+        run pct/v12/restoreTableContent.p (this-object:tblName, this-object:bkupFile).
     end.
 
   end method.

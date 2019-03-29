@@ -820,7 +820,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
             return;
@@ -845,7 +845,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
             return;
@@ -871,7 +871,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
             return;
@@ -1174,7 +1174,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
             return;
@@ -1198,7 +1198,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
             return;

@@ -50,7 +50,7 @@ public class ProgressV12 implements ProgressProcedures {
 
     @Override
     public String getLoadSchemaProcedure() {
-        return "pct/loadSch.p";
+        return "pct/v12/loadSch.p";
     }
 
     @Override
