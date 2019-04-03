@@ -145,8 +145,8 @@ ASSIGN bAboveEq12 = (majorMinor GE 12).
 /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
 DEFINE VARIABLE callback AS rssw.pct.ICompileCallback NO-UNDO.
-DEFINE VARIABLE compileAction AS rssw.pct.CompileCallbackAction NO-UNDO.
-ASSIGN compileAction = rssw.pct.CompileCallbackAction:None.
+DEFINE VARIABLE compileAction AS INTEGER NO-UNDO.
+ASSIGN compileAction = 0.
 &ENDIF
 
 PROCEDURE setOption.
@@ -397,7 +397,7 @@ PROCEDURE compileXref.
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
   IF VALID-OBJECT(callback) THEN DO:
     compileAction = callback:beforeCompile(hSrcProc, ipInFile, ipInDir).
-    IF (compileAction EQ rssw.pct.CompileCallbackAction:Skip) THEN
+    IF (compileAction EQ 1) THEN
       RETURN.
   END.
 &ENDIF

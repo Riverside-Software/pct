@@ -17,6 +17,7 @@
 
 INTERFACE rssw.pct.ICompileCallback:
     METHOD PUBLIC VOID initialize(hSrcProc AS HANDLE).
-    METHOD PUBLIC rssw.pct.CompileCallbackAction beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER).
+    // 0 = No action, 1 = Skip file
+    METHOD PUBLIC INTEGER beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER).
     METHOD PUBLIC VOID afterCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER).
 END INTERFACE.
