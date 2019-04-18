@@ -1,0 +1,14 @@
+* text=auto
+
+*.p      text
+*.i      text
+*.w      text
+*.cls    text
+*.xml    text
+*.xpxg   text
+org.eclipse.wst.common.project.facet.core.xml text=crlf
+
+*.r      binary
+*.jar    binary
+*.pl     binary
+*.pxg    binary
