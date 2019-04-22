@@ -5,10 +5,10 @@ CLASS CompileCallback INHERITS rssw.pct.AbstractCompileCallback:
         PUT UNFORMATTED SUBSTITUTE("Initialize#&1", hSrcProc:FILE-NAME).
     END METHOD.
 
-    METHOD PUBLIC OVERRIDE rssw.pct.CompileCallbackAction beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
+    METHOD PUBLIC OVERRIDE INTEGER beforeCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
         OUTPUT TO "src/beforeCompile.txt".
         PUT UNFORMATTED SUBSTITUTE("Before Compile#&1#&2#&3", hSrcProc:FILE-NAME, ipInFile, ipInDir).
-        RETURN rssw.pct.CompileCallbackAction:None.
+        RETURN 0.
     END METHOD.
 
     METHOD PUBLIC OVERRIDE VOID afterCompile(hSrcProc AS HANDLE, ipInFile AS CHARACTER, ipInDir AS CHARACTER):
