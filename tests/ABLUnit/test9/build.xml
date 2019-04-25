@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="ABLUnit-test9">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <ABLUnit dlcHome="${DLC}">
+      <fileset dir="tests" includes="**/*.cls" />
+    </ABLUnit>
+  </target>
+
+</project>
