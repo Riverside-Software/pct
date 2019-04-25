@@ -102,33 +102,37 @@ public abstract class BackgroundWorker {
         while (!end) {
             try {
                 String str = reader.readLine();
-                int idx = str.indexOf(':');
-                String result = (idx == -1 ? str : str.substring(0, idx));
+                if (str != null) {
+                    int idx = str.indexOf(':');
+                    String result = (idx == -1 ? str : str.substring(0, idx));
 
-                if ("OK".equalsIgnoreCase(result)) {
-                    if ("quit".equalsIgnoreCase(result)) {
-                        status = 5;
+                    if ("OK".equalsIgnoreCase(result)) {
+                        if ("quit".equalsIgnoreCase(lastCommand)) {
+                            status = 5;
+                        }
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            customResponse = str.substring(idx + 1);
+                    } else if ("ERR".equalsIgnoreCase(result)) {
+                        err = true;
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            customResponse = str.substring(idx + 1);
+                    } else if ("MSG".equalsIgnoreCase(result)) {
+                        // Everything after MSG: is logged
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            retVals.add(new Message(str.substring(idx + 1)));
+                    } else if ("END".equalsIgnoreCase(result)) {
+                        end = true;
+                        // Standard commands (i.e. sent by this class) cannnot be handled and overridden
+                        if (!isStandardCommand(lastCommand)) {
+                            handleResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                    retVals);
+                        } else {
+                            handleStandardEventResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                    retVals);
+                        }
                     }
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        customResponse = str.substring(idx + 1);
-                } else if ("ERR".equalsIgnoreCase(result)) {
-                    err = true;
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        customResponse = str.substring(idx + 1);
-                } else if ("MSG".equalsIgnoreCase(result)) {
-                    // Everything after MSG: is logged
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        retVals.add(new Message(str.substring(idx + 1)));
-                } else if ("END".equalsIgnoreCase(result)) {
+                } else {
                     end = true;
-                    // Standard commands (i.e. sent by this class) cannnot be handled and overridden
-                    if (!isStandardCommand(lastCommand)) {
-                        handleResponse(lastCommand, lastCommandParameter, err, customResponse,
-                                retVals);
-                    } else {
-                        handleStandardEventResponse(lastCommand, lastCommandParameter, err, customResponse,
-                                retVals);
-                    }
                 }
             } catch (IOException ioe) {
                 parent.log(ioe, Project.MSG_ERR);

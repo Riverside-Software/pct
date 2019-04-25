@@ -13,5 +13,10 @@
 	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/commonmark-0.11.0.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-core-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-1.9.14.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.9.14.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/objenesis-2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
