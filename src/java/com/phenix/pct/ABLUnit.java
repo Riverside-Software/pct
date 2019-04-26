@@ -169,12 +169,11 @@ public class ABLUnit extends PCTRun {
             throw new BuildException("No fileset found.");
         }
         // Display warning message if test directories are not found in PROPATH
+        // Only first entry is tested as all entries have the same basedir in FileSet object
         for (FileSet fs : testFilesets) {
             Iterator<Resource> iter = fs.iterator();
-            while (iter.hasNext()) {
+            if (iter.hasNext()) {
                 FileResource frs = (FileResource) iter.next();
-
-                // Each file is associated with its base directory
                 if (!isDirInPropath(frs.getBaseDir())) {
                     log(MessageFormat.format(Messages.getString("PCTCompile.48"),
                             frs.getBaseDir().getAbsolutePath()), Project.MSG_WARN);
