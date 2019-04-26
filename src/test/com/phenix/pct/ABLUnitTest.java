@@ -18,6 +18,8 @@ package com.phenix.pct;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -107,5 +109,18 @@ public class ABLUnitTest extends BuildFileTestNg {
         Assert.assertFalse(logFile.exists());
         expectBuildException("test2", "Syntax error");
         Assert.assertTrue(logFile.exists());
+    }
+
+    // Test warning message
+    @Test(groups = {"v11"})
+    public void test9() throws XPathExpressionException {
+        configureProject("ABLUnit/test9/build.xml");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("Fileset directory .* not found in PROPATH");
+        rexp.add("QUIT statement found");
+        rexp.add("Total tests run: 2, Failures: 0, Errors: 2");
+        expectLogRegexp("test1", rexp, false);
+
     }
 }

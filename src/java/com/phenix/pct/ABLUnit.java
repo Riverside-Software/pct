@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -31,6 +32,8 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Resource;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.xml.sax.InputSource;
 
 import com.google.gson.stream.JsonWriter;
@@ -164,6 +167,18 @@ public class ABLUnit extends PCTRun {
         if (testFilesets == null || testFilesets.isEmpty()) {
             cleanup();
             throw new BuildException("No fileset found.");
+        }
+        // Display warning message if test directories are not found in PROPATH
+        // Only first entry is tested as all entries have the same basedir in FileSet object
+        for (FileSet fs : testFilesets) {
+            Iterator<Resource> iter = fs.iterator();
+            if (iter.hasNext()) {
+                FileResource frs = (FileResource) iter.next();
+                if (!isDirInPropath(frs.getBaseDir())) {
+                    log(MessageFormat.format(Messages.getString("PCTCompile.48"),
+                            frs.getBaseDir().getAbsolutePath()), Project.MSG_WARN);
+                }
+            }
         }
 
         try {

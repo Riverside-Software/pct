@@ -86,16 +86,6 @@ public class PCTCompile extends PCTRun {
         throw new BuildException("Can't set parameter attribute here");
     }
 
-    private boolean isDirInPropath(File dir) {
-        if (runAttributes.getPropath() == null)
-            return false;
-        for (String str : runAttributes.getPropath().list()) {
-            if (new File(str).equals(dir))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * Generates text file with all files from resource collections
      */
