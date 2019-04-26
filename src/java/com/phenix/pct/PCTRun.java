@@ -817,6 +817,17 @@ public class PCTRun extends PCT implements IRunAttributes {
         }
     }
 
+    protected boolean isDirInPropath(File dir) {
+        if (runAttributes.getPropath() == null)
+            return false;
+        for (String str : runAttributes.getPropath().list()) {
+            if (new File(str).equals(dir))
+                return true;
+        }
+        return false;
+    }
+
+
     /**
      * Escapes a string so it does not accidentally contain Progress escape characters
      * 
