@@ -17,4 +17,9 @@
     </IndexRebuild>
   </target>
 
+  <target name="check">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
 </project>

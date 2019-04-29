@@ -29,7 +29,9 @@ public class IndexRebuildTest extends BuildFileTestNg {
     public void test1() {
         configureProject("IndexRebuild/test1/build.xml");
         executeTarget("init");
+        expectBuildException("check", "No index yet");
         executeTarget("test");
+        executeTarget("check");
     }
 
 }
