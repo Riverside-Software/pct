@@ -1,0 +1,10 @@
+ADD INDEX "CustomerNew1" ON "customer" 
+    INACTIVE
+    DESCRIPTION "XXX"
+    INDEX-FIELD "name" ASCENDING 
+
+ADD INDEX "EmployeeNew1" ON "employee" 
+    INACTIVE
+    DESCRIPTION "XXX"
+    INDEX-FIELD "lastname" ASCENDING
+    

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="IndexRebuild-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dbName="sp2k" dlcHome="${DLC}" />
+    <PCTLoadSchema dlcHome="${DLC}" srcFile="index.df">
+      <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test">
+    <IndexRebuild dbDir="db" dbName="sp2k" dlcHome="${DLC}">
+      <Index table="customer" index="CustomerNew1" />
+      <Index table="employee" index="EmployeeNew1" />
+    </IndexRebuild>
+  </target>
+
+  <target name="check">
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+</project>
