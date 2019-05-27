@@ -83,4 +83,15 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertFalse(f2.exists());
         assertTrue(f3.exists());
     }
+
+    @Test(groups = {"v10"})
+    public void test7() {
+        configureProject("PCTBinaryDump/test7/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTBinaryDump/test7/dump/customer.bd");
+        File f2 = new File("PCTBinaryDump/test7/dump2/list.txt");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+    }
 }
