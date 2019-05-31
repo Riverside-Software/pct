@@ -16,6 +16,10 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertTrue;
+
+import java.io.File;
+
 import org.testng.annotations.Test;
 
 /**
@@ -34,4 +38,14 @@ public class IndexRebuildTest extends BuildFileTestNg {
         executeTarget("check");
     }
 
+    @Test(groups = {"v10"})
+    public void test2() {
+        configureProject("IndexRebuild/test2/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "No index node");
+        executeTarget("test2");
+        File log = new File("IndexRebuild/test2/test.log");
+        assertTrue(log.exists());
+        expectBuildException("test3", "Invalid cpinternal");
+    }
 }
