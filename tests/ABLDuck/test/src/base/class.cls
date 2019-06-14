@@ -18,7 +18,7 @@
  */
 CLASS base.class:
 
-	  /**
+        /**
   	 * Base Key property to store the key
   	 * This is two paragraphs. _markdown_ is also supported here. Lorem ipsum dolor sit amet,
   	 * consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
@@ -32,7 +32,7 @@ CLASS base.class:
   	 */
   	DEFINE PUBLIC    PROPERTY BaseKey            AS LOGICAL    NO-UNDO GET. PRIVATE SET.
 
-  	/**
+    /**
      * Configure this environment
      * This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
      * consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.

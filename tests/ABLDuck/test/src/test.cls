@@ -12,6 +12,7 @@
  *     oTest = NEW test().
  *     MESSAGE oTest:BaseKey.
  *
+ *
  * @author     Robert Edwards  
  */
 CLASS test INHERITS base.class:
