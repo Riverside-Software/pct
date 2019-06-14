@@ -115,6 +115,7 @@ public class PCTIndexRebuild extends PCT {
         try {
             generateIndexFile();
             idxBuildCmdLine().execute();
+            cleanup();
         } catch (IOException caught) {
             cleanup();
             throw new BuildException(caught);
