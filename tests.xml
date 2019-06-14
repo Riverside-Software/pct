@@ -7,6 +7,10 @@
   <property name="PROFILER" value="false" />
   <property name="TESTLIBS" value="${basedir}/lib" />
 
+  <!-- Only used for OE version number -->
+  <taskdef resource="PCT.properties" />
+  <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" bitness="OE_ARCH" />
+
   <!-- Assume version 11 when in local development -->
   <condition property="GROUPS" value="v10,v11">
     <not><isset property="OE_MAJOR_VERSION" /></not>
