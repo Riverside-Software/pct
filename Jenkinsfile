@@ -2,10 +2,10 @@ stage('Class documentation build') {
  node ('windows') {
   checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
 
-  def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc12 = tool name: 'OpenEdge-12.0', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def jdk = tool name: 'JDK8', type: 'hudson.model.JDK'
+  def antHome = tool name: 'Ant 1.9', type: 'ant'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
+  def dlc12 = tool name: 'OpenEdge-12.0', type: 'openedge'
+  def jdk = tool name: 'JDK8', type: 'jdk'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
     bat "${antHome}\\bin\\ant -DDLC11=${dlc11} -DDLC12=${dlc12} classDoc"
@@ -21,14 +21,15 @@ stage('Standard build') {
   sh 'git rev-parse HEAD > head-rev'
   def commit = readFile('head-rev').trim()
 
-  def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-  def dlc10 = tool name: 'OpenEdge-10.2B', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc10_64 = tool name: 'OpenEdge-10.2B-64b', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc11 = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-  def dlc12 = tool name: 'OpenEdge-12.0', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+  def jdk = tool name: 'JDK8', type: 'jdk'
+  def antHome = tool name: 'Ant 1.9', type: 'ant'
+  def dlc10 = tool name: 'OpenEdge-10.2B', type: 'openedge'
+  def dlc10_64 = tool name: 'OpenEdge-10.2B-64b', type: 'openedge'
+  def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
+  def dlc12 = tool name: 'OpenEdge-12.0', type: 'openedge'
 
   unstash name: 'classdoc'
-  withEnv(["TERM=xterm"]) {
+  withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
     sh "${antHome}/bin/ant -DDLC10=${dlc10} -DDLC10-64=${dlc10_64} -DDLC11=${dlc11} -DDLC12=${dlc12} -DGIT_COMMIT=${commit} dist"
   }
   stash name: 'tests', includes: 'dist/testcases.zip,tests.xml'
@@ -71,8 +72,8 @@ stage('Full tests') {
 
 stage('Sonar') {
   node('linux') {
-    def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
-    def dlc = tool name: 'OpenEdge-11.7', type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
+    def antHome = tool name: 'Ant 1.9', type: 'ant'
+    def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
     unstash name: 'coverage-11.7-Win'
     unstash name: 'coverage-12.0-Win'
     withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
@@ -85,10 +86,11 @@ def testBranch(nodeName, dlcVersion, stashCoverage, label, majorVersion, arch) {
   node(nodeName) {
     ws {
       deleteDir()
-      def dlc = tool name: dlcVersion, type: 'jenkinsci.plugin.openedge.OpenEdgeInstallation'
-      def antHome = tool name: 'Ant 1.9', type: 'hudson.tasks.Ant$AntInstallation'
+      def dlc = tool name: dlcVersion, type: 'openedge'
+      def jdk = tool name: 'JDK8', type: 'jdk'
+      def antHome = tool name: 'Ant 1.9', type: 'ant'
       unstash name: 'tests'
-      withEnv(["TERM=xterm"]) {
+      withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
         if (isUnix())
           sh "${antHome}/bin/ant -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -DOE_MAJOR_VERSION=${majorVersion} -DOE_ARCH=${arch} -f tests.xml init dist"
         else
