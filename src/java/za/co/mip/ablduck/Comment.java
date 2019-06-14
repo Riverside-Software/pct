@@ -134,9 +134,12 @@ public class Comment {
         for (Tag tag : resolvedTags) {
             switch (tag.getType().toLowerCase().trim()) {
                 case "param" :
-                    Integer nextSpace = tag.getText().indexOf(' ');
-                    this.parameters.put(tag.getText().substring(0, nextSpace),
-                            tag.getText().substring(nextSpace + 1));
+                    int nextSpace = tag.getText().indexOf(' ');
+                    if (nextSpace == -1)
+                        parameters.put(tag.getText(), "");
+                    else
+                        parameters.put(tag.getText().substring(0, nextSpace),
+                                tag.getText().substring(nextSpace + 1));
                     break;
                 case "return" :
                     this.returns = tag.getText();
@@ -202,18 +205,24 @@ public class Comment {
         if (tagType != null)
             resolvedTags.add(new Tag(tagType, tagText));
 
-        Integer nextSpace;
+        int nextSpace;
         for (Tag tag : resolvedTags) {
             switch (tag.getType().trim()) {
                 case "param" :
                     nextSpace = tag.getText().indexOf(' ');
-                    this.parameters.put(tag.getText().substring(0, nextSpace),
-                            tag.getText().substring(nextSpace + 1));
+                    if (nextSpace == -1)
+                        parameters.put(tag.getText(), "");
+                    else
+                        parameters.put(tag.getText().substring(0, nextSpace),
+                                tag.getText().substring(nextSpace + 1));
                     break;
                 case "deprecated" :
                     nextSpace = tag.getText().indexOf(' ');
-                    this.deprecated = new Deprecated(tag.getText().substring(0, nextSpace),
-                            tag.getText().substring(nextSpace + 1));
+                    if (nextSpace == -1)
+                        deprecated = new Deprecated(tag.getText(), "");
+                    else
+                        deprecated = new Deprecated(tag.getText().substring(0, nextSpace),
+                                tag.getText().substring(nextSpace + 1));
                     break;
                 case "return" :
                     this.returns = tag.getText();
