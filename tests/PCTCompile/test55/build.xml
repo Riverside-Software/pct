@@ -25,11 +25,27 @@
     <mkdir dir="build3" />
     <mkdir dir="xref3" />
     <PCTCompile destDir="build3" dlcHome="${DLC}" xrefDir="xref3">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="**/*.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <!-- In order to force pctBgCompile -->
-      <flattenmapper />
+      <chainedmapper>
+        <flattenmapper />
+        <regexpmapper from="^(.*)\.(.*)$$" to="\1.r"/>
+      </chainedmapper>
+    </PCTCompile>
+  </target>
+
+  <target name="test4">
+    <PCTCompile destDir="src" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <!-- In order to force pctBgCompile -->
+      <chainedmapper>
+        <flattenmapper />
+        <regexpmapper from="^(.*)\.(.*)$$" to="\1.r"/>
+      </chainedmapper>
     </PCTCompile>
   </target>
 
