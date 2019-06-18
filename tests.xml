@@ -46,6 +46,7 @@
     <pathelement location="build/test" />
     <fileset dir="dist" includes="PCT.jar" />
     <fileset dir="lib" includes="*.jar" />
+    <fileset dir="${ant.library.dir}" includes="ant.jar,ant-launcher.jar" />
   </path>
 
   <path id="testng.cp">
