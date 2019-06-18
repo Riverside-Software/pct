@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project name="PCTCompile-test55">
   <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
 
   <target name="test1">
     <mkdir dir="build1" />
@@ -31,7 +32,7 @@
       <!-- In order to force pctBgCompile -->
       <chainedmapper>
         <flattenmapper />
-        <regexpmapper from="^(.*)\.(.*)$$" to="\1.r"/>
+        <rcodemapper />
       </chainedmapper>
     </PCTCompile>
   </target>
@@ -44,7 +45,7 @@
       <!-- In order to force pctBgCompile -->
       <chainedmapper>
         <flattenmapper />
-        <regexpmapper from="^(.*)\.(.*)$$" to="\1.r"/>
+        <rcodemapper />
       </chainedmapper>
     </PCTCompile>
   </target>
