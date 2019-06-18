@@ -404,7 +404,7 @@
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
-      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ini4j-0.5.1.jar,guava.jar,testng-6.13.1.jar,jcommander-1.30.jar,jacocoant.jar,*.pl" prefix="lib" />
+      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ini4j-0.5.1.jar,guava.jar,testng-6.13.1.jar,jcommander-1.30.jar,jacocoant-0.8.4.jar,*.pl" prefix="lib" />
       <zipfileset dir="${dist}" includes="PCT.jar" prefix="dist" />
     </zip>
   </target>

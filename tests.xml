@@ -53,7 +53,7 @@
     <fileset dir="lib" includes="testng-6.13.1.jar,jcommander-1.30.jar" />
   </path>
   <path id="jacoco.cp">
-    <fileset dir="lib" includes="jacocoant.jar" />
+    <fileset dir="lib" includes="jacocoant-0.8.4.jar" />
   </path>
 
   <target name="init">
