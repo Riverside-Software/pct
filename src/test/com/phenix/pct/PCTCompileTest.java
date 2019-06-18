@@ -910,6 +910,8 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test55/build3/test2.r").exists());
 
         executeTarget("test4");
+        assertTrue(new File(BASEDIR + "test55/src/test.p").exists());
+        assertTrue(new File(BASEDIR + "test55/src/subdir/test2.p").exists());
         assertTrue(new File(BASEDIR + "test55/src/test.r").exists());
         assertTrue(new File(BASEDIR + "test55/src/test2.r").exists());
     }
