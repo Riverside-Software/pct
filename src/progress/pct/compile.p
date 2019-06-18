@@ -433,7 +433,8 @@ PROCEDURE compileXref.
   ASSIGN opError = COMPILER:ERROR.
   IF NOT opError THEN DO:
     /* In order to handle <mapper> element */
-    IF cRenameFrom NE '' THEN DO:
+    IF ((cRenameFrom NE '') AND (cRenameFrom NE ipOutFile)) THEN DO:
+      RUN logVerbose IN hSrcProc (SUBSTITUTE("Mapper: renaming &1/&2 to &1/&3", outputDir, cRenameFrom, ipOutFile)).
       OS-COPY VALUE(outputDir + '/' + cRenameFrom) VALUE(outputDir + '/' + ipOutFile).
       OS-DELETE VALUE(outputDir + '/' + cRenameFrom).
     END.
