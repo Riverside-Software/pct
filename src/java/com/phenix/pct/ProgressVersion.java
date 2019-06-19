@@ -30,6 +30,7 @@ public class ProgressVersion extends PCT {
     private String revision;
     private String patchLevel;
     private String rcodeVersion;
+    private String bitness;
 
     public void setMajorVersion(String majorVersion) {
         this.majorVersion = majorVersion;
@@ -59,6 +60,10 @@ public class ProgressVersion extends PCT {
         this.rcodeVersion = rcodeVersion;
     }
 
+    public void setBitness(String bitness) {
+        this.bitness = bitness;
+    }
+
     @Override
     public void execute() {
         checkDlcHome();
@@ -76,6 +81,8 @@ public class ProgressVersion extends PCT {
             getProject().setNewProperty(this.reducedVersion, getReducedVersion());
         if (this.rcodeVersion != null)
             getProject().setNewProperty(this.rcodeVersion, Long.toString(getRCodeVersion()));
+        if (this.bitness != null)
+            getProject().setNewProperty(this.bitness, is64bits() ? "64" : "32");
     }
 
 }

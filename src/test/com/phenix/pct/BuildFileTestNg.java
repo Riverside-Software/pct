@@ -108,7 +108,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertySet(String property) {
-        assertPropertyEquals(property, "true");
+        Assert.assertNotEquals(project.getProperty(property), null);
     }
 
     /**
@@ -117,7 +117,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertyUnset(String property) {
-        assertPropertyEquals(property, null);
+        Assert.assertEquals(project.getProperty(property), null);
     }
 
     /**
