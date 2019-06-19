@@ -10,8 +10,7 @@
   <property name="sonar.sourceEncoding" value="iso8859-1" />
   <property name="sonar.oe.binaries" value="build/build-v11,build/build-v12" />
   <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.jacoco.reportPaths" value="profiler/jacoco-11.7-Win.exec,profiler/jacoco-12.0-Win.exec" />
-  <!-- <property name="sonar.coverage.jacoco.xmlReportPaths" value="profiler/report.xml" /> -->
+  <property name="sonar.coverage.jacoco.xmlReportPaths" value="profiler/report.xml" />
   <property name="sonar.java.libraries" value="lib/ant.jar,lib/ant-launcher.jar,lib/testng-6.13.1.jar,lib/gson-2.2.4.jar,lib/ast.jar,lib/ast-dependencies.jar" />
   <property name="sonar.oe.propath" value="src/progress" />
   <property name="sonar.oe.databases" value="dictdb.df" />
