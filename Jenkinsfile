@@ -77,7 +77,7 @@ stage('Sonar') {
     unstash name: 'coverage-11.7-Win'
     unstash name: 'coverage-12.0-Win'
     withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
-      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.5.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -DSONAR_URL=http://sonar.riverside-software.fr -DBRANCH_NAME=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
+      sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.6.0.1426.jar -lib lib/jacocoant-0.8.4.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -Dsonar.host.url=http://sonar.riverside-software.fr -Dsonar.branch.name=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
     }
   }
 }

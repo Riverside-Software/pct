@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant">
+<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant" xmlns:jacoco="antlib:org.jacoco.ant">
   <property environment="env" />
-  <taskdef resource="net/sf/antcontrib/antlib.xml" />
-  <path id="lib.cp">
-    <filelist dir="lib" files="ant.jar,ant-launcher.jar,testng-6.13.1.jar,gson-2.2.4.jar" />
-  </path>
 
-  <property name="sonar.host.url" value="${SONAR_URL}" />
   <property name="sonar.projectKey" value="eu.rssw.pct:PCT" />
   <property name="sonar.projectName" value="PCT" />
   <property name="sonar.projectVersion" value="212-pre" />
@@ -17,24 +11,36 @@
   <property name="sonar.oe.binaries" value="build/build-v11,build/build-v12" />
   <property name="sonar.java.binaries" value="build/java" />
   <property name="sonar.jacoco.reportPaths" value="profiler/jacoco-11.7-Win.exec,profiler/jacoco-12.0-Win.exec" />
-  <!-- See http://jira.codehaus.org/browse/SONARPLUGINS-1194 -->
-  <pathconvert property="sonar.java.libraries" pathsep="," refid="lib.cp" />
+  <!-- <property name="sonar.coverage.jacoco.xmlReportPaths" value="profiler/report.xml" /> -->
+  <property name="sonar.java.libraries" value="lib/ant.jar,lib/ant-launcher.jar,lib/testng-6.13.1.jar,lib/gson-2.2.4.jar,lib/ast.jar,lib/ast-dependencies.jar" />
   <property name="sonar.oe.propath" value="src/progress" />
   <property name="sonar.oe.databases" value="dictdb.df" />
   <property name="sonar.oe.aliases" value="dictdb,dictdb2" />
   <property name="sonar.oe.dlc" value="${DLC}" />
   <property name="sonar.oe.dlc.propath" value="true" />
   <property name="sonar.oe.coverage.profiler.dirs" value="profiler/progress" />
-
-  <property name="sonar.branch.name" value="${BRANCH_NAME}" />
   <condition property="sonar.branch.target" value="master">
-    <not><equals arg1="${BRANCH_NAME}" arg2="master" /></not>
+    <not><equals arg1="${sonar.branch.name}" arg2="master" /></not>
   </condition>
 
   <target name="sonar">
-    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-      <classpath path="lib/sonarqube-ant-task-*.jar" />
-    </taskdef>
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />
+    <jacoco:report>
+      <executiondata>
+        <fileset dir="profiler" includes="*.exec" />
+      </executiondata>
+      <structure name="PCT">
+        <classfiles>
+          <fileset dir="build/java" />
+        </classfiles>
+        <sourcefiles encoding="iso8859-1">
+          <fileset dir="src/java" />
+        </sourcefiles>
+      </structure>
+      <xml destFile="profiler/report.xml" />
+    </jacoco:report>
+
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml" />
     <touch file="dictdb.df" />
     <mkdir dir="profiler/progress" />
     <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
