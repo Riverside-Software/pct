@@ -50,6 +50,38 @@ public class PCTConnectionTest extends BuildFileTestNg {
         PCTConnection conn = new PCTConnection();
         conn.createArguments(exec);
     }
+    
+    // should allow alias by name without instantiating pctalias
+    @Test(groups = {"v10"})
+    public void addConfiguredPCTAlias() {
+        PCTConnection conn = new PCTConnection();
+
+        if (conn.getAliases().size() > 0) {
+            fail("No aliases should be defined at this time");
+        }
+        
+        conn.addConfiguredPCTAlias("boston");
+        
+        assertTrue(conn.hasNamedAlias("boston"));
+        
+        conn.addConfiguredPCTAlias("miami", true);
+        
+        assertTrue(conn.hasNamedAlias("miami"));
+        
+    }
+    
+    // should fail because alias name is blank
+    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
+    public void addConfiguredPCTAliasErrors() {
+        PCTConnection conn = new PCTConnection();
+
+        if (conn.getAliases().size() > 0) {
+            fail("No aliases should be defined at this time");
+        }
+        
+        conn.addConfiguredPCTAlias("");
+        
+    }    
 
     @Test(groups = {"v10"})
     public void testAliases() {
