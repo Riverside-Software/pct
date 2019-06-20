@@ -204,6 +204,37 @@ public class PCTConnection extends DataType {
             throw new BuildException(MessageFormat.format(
                     Messages.getString("PCTConnection.0"), alias.getName())); //$NON-NLS-1$
     }
+    
+    /**
+     * Adds an alias to the current DB connection.
+     * 
+     * This is here to avoid instantiating PCTAlias
+     * 
+     * @param name Alias name
+     */
+    public void addConfiguredPCTAlias(String name) {
+        addConfiguredPCTAlias(name, false);
+    }    
+    
+    /**
+     * Adds an alias to the current DB connection.
+     * 
+     * This is here to avoid instantiating PCTAlias
+     * 
+     * @param name Alias name
+     * @param noError If alias should be declared with NO-ERROR
+     */
+    public void addConfiguredPCTAlias(String name, boolean noError) {
+        
+        if (name == null || name.isEmpty()) {
+            throw new BuildException(Messages.getString("PCTConnection.2"));
+        }
+        
+        PCTAlias alias = new PCTAlias();
+        alias.setName(name);
+        alias.setNoError(noError);
+        addConfiguredPCTAlias(alias);
+    }
 
     protected PCTConnection getRef() {
         return (PCTConnection) getCheckedRef();
