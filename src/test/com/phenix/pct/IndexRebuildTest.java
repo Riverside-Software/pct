@@ -48,4 +48,20 @@ public class IndexRebuildTest extends BuildFileTestNg {
         assertTrue(log.exists());
         expectBuildException("test3", "Invalid cpinternal");
     }
+
+    @Test(groups = {"v10"})
+    public void test3() {
+        configureProject("IndexRebuild/test3/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "Invalid index node");
+        expectBuildException("test2", "Invalid index node");
+    }
+
+    @Test(groups = {"v10"})
+    public void test4() {
+        configureProject("IndexRebuild/test4/build.xml");
+        executeTarget("init");
+        executeTarget("test1");
+        expectBuildException("test2", "Invalid option value");
+    }
 }

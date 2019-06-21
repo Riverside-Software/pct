@@ -39,7 +39,7 @@ public class PCTIndexRebuild extends PCT {
     private File dbDir = null;
     private String dbName = null;
     private File outputLog = null;
-    private List<Index> indexes = new ArrayList<>();
+    private List<IndexNode> indexes = new ArrayList<>();
     private String cpInternal = null;
     private List<PCTRunOption> options = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class PCTIndexRebuild extends PCT {
         this.cpInternal = cpInternal;
     }
 
-    public void addConfiguredIndex(Index index) {
+    public void addConfiguredIndex(IndexNode index) {
         if ((index.table == null) || index.table.isEmpty())
             throw new BuildException("Invalid index");
         if ((index.index == null) || index.index.isEmpty())
@@ -87,7 +87,6 @@ public class PCTIndexRebuild extends PCT {
 
     public void addOption(PCTRunOption option) {
         options.add(option);
-
     }
 
     
@@ -107,7 +106,7 @@ public class PCTIndexRebuild extends PCT {
         if (indexes.isEmpty())
             throw new BuildException("Index list can't be empty");
 
-        // Update destDir if not defined
+        // Update dbDir if not defined
         if (dbDir == null) {
             dbDir = getProject().getBaseDir();
         }
@@ -126,7 +125,7 @@ public class PCTIndexRebuild extends PCT {
         deleteFile(tmpFile);
     }
 
-    public static class Index {
+    public static class IndexNode {
         private String table;
         private String index;
 
@@ -145,7 +144,7 @@ public class PCTIndexRebuild extends PCT {
                 BufferedWriter bw = new BufferedWriter(w)) {
             bw.write("some");
             bw.newLine();
-            for (Index idx : indexes) {
+            for (IndexNode idx : indexes) {
                 bw.write(idx.table);
                 bw.newLine();
                 bw.write(idx.index);
