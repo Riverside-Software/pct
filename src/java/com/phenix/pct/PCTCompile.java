@@ -166,8 +166,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FAILONERROR=" + (runAttributes.isFailOnError() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("STOPONERROR=" + (compAttrs.isStopOnError() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XCODE=" + (compAttrs.isXcode() ? 1 : 0)); //$NON-NLS-1$

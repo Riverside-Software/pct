@@ -96,7 +96,6 @@ PROCEDURE WriteToSocket:
 
     DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
     DEFINE VARIABLE packet       as longchar no-undo.
-    DEFINE VARIABLE lfirst       as logical  no-undo.
 
     ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
     FOR EACH ttMsgs:
@@ -121,7 +120,7 @@ PROCEDURE ReceiveCommand:
     DEFINE VARIABLE cCmd AS CHARACTER NO-UNDO.
     DEFINE VARIABLE i1   AS INTEGER  NO-UNDO.
     DEFINE VARIABLE mReadBuffer AS MEMPTR NO-UNDO.
-    DEFINE VARIABLE iBytes  AS INTEGER.
+    DEFINE VARIABLE iBytes  AS INTEGER NO-UNDO.
 
     IF NOT SELF:CONNECTED() THEN DO:
         RETURN ERROR "Socket disconnected".
@@ -162,7 +161,6 @@ PROCEDURE executeCmd:
 
     EMPTY TEMP-TABLE ttMsgs.
 
-    DEFINE VARIABLE cRet  AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cPrm  AS CHARACTER  NO-UNDO INITIAL "".
     DEFINE VARIABLE hProc AS HANDLE     NO-UNDO.
     DEFINE VARIABLE idx   AS INTEGER    NO-UNDO.

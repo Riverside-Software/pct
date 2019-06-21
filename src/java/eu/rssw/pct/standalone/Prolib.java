@@ -48,7 +48,7 @@ public class Prolib {
         this.out = out;
     }
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) {
         Prolib main = new Prolib();
         JCommander jc = new JCommander(main);
         jc.addCommand("extract", extract);
@@ -61,13 +61,17 @@ public class Prolib {
             jc.usage();
             System.exit(1);
         }
-
-        if ("list".equals(jc.getParsedCommand()))
-            main.executeList();
-        else if ("extract".equals(jc.getParsedCommand()))
-            main.executeExtract();
-        else if ("compare".equals(jc.getParsedCommand()))
-            main.executeCompare();
+        try {
+            if ("list".equals(jc.getParsedCommand()))
+                main.executeList();
+            else if ("extract".equals(jc.getParsedCommand()))
+                main.executeExtract();
+            else if ("compare".equals(jc.getParsedCommand()))
+                main.executeCompare();
+        } catch (IOException caught) {
+            main.out.println("I/O problem: " + caught.getMessage());
+            System.exit(1);
+        }
     }
 
     public void executeList() throws IOException {

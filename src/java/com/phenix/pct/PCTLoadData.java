@@ -196,7 +196,8 @@ public class PCTLoadData extends PCTRun {
     private static String join(Collection<String> strings) {
         StringBuilder sb = new StringBuilder();
         for (String str : strings) {
-            if (sb.length() > 0) sb.append(',');
+            if (sb.length() > 0)
+                sb.append(',');
             sb.append(str);
         }
 
