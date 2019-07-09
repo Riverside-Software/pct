@@ -307,6 +307,11 @@ public class PCTCompile extends PCTRun {
             compAttrs.setProgPerc(0);
         }
 
+        // Display warning message if xmlXref and stringXref used at the same time
+        if (compAttrs.isXmlXref() && compAttrs.isStringXref()) {
+            log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
+        }
+
         checkDlcHome();
 
         try {
