@@ -75,7 +75,7 @@ public class PCTDynamicRun extends PCTRun {
             writer.name("returnValue").value(status.getAbsolutePath());
             writer.name("propath").beginArray();
 
-            String[] lst = runAttributes.getPropath().list();
+            String[] lst = runAttributes.getPropath() == null ? new String[]{"."} : runAttributes.getPropath().list();
             for (int k = lst.length - 1; k >= 0; k--) {
                 if (runAttributes.useRelativePaths()) {
                     try {

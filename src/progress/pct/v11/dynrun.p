@@ -79,7 +79,7 @@ IF pctVerbose THEN
 
 // Input parameters
 ASSIGN prmEntries = configJson:GetJsonArray("parameters").
-DO zz = 1 TO dbEntries:Length:
+DO zz = 1 TO prmEntries:Length:
   ASSIGN prmEntry = prmEntries:GetJsonObject(zz).
   DO ON ERROR UNDO, LEAVE:
     CREATE ttParams.
