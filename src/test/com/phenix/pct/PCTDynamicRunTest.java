@@ -45,4 +45,10 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         expectLog("test2", "This is dir2");
     }
 
+    @Test(groups = {"v11"})
+    public void test2() {
+        configureProject("PCTDynamicRun/test2/build.xml");
+        expectLog("test", "Output val1 val2");
+    }
+
 }
