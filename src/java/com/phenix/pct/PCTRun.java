@@ -250,6 +250,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setClientMode(String clientMode) {
+        runAttributes.setClientMode(clientMode);
+    }
+
+    @Override
     public void setInputChars(int inputChars) {
         runAttributes.setInputChars(inputChars);
     }

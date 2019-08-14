@@ -522,6 +522,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setClientMode(String clientMode) {
+        throw new BuildException("Can't set clientMode attribute in compilation task");
+    }
+
+    @Override
     public void setParameter(String param) {
         throw new BuildException("Can't set parameter attribute here");
     }

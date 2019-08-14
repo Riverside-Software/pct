@@ -39,7 +39,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTLoadSchema extends PCTRun {
+public class PCTLoadSchema extends PCTDynamicRun {
     private File srcFile = null;
     private List<ResourceCollection> rcs = new ArrayList<>();
     private boolean unfreeze = false;

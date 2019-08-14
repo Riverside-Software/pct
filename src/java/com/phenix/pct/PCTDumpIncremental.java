@@ -28,7 +28,7 @@ import java.io.File;
  * @author Phillip BAIRD
  * @author <a href="g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTDumpIncremental extends PCTRun {
+public class PCTDumpIncremental extends PCTDynamicRun {
     private File destFile = null;
     private File renameFile = null;
     private int activeIndexes = 0;

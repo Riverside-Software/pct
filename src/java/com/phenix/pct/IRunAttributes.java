@@ -239,4 +239,9 @@ public interface IRunAttributes {
      * Name of a file to which to write the output. If the error stream is not also redirected to a file or property, it will appear in this output.
      */
     void setOutput(File output);
+
+    /**
+     * Client mode of ABL session (one of rg, rq, rr, rx)
+     */
+    void setClientMode(String clientMode);
 }

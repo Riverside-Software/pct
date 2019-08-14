@@ -76,6 +76,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private boolean superInit = true;
     private File output;
     private String xCodeSessionKey = null;
+    private String clientMode = null;
 
     public GenericExecuteOptions(Task parent) {
         this.parent = parent;
@@ -333,6 +334,13 @@ public class GenericExecuteOptions implements IRunAttributes {
         this.xCodeSessionKey = xCodeSessionKey;
     }
 
+    public void setClientMode(String clientMode) {
+        if ("rg".equals(clientMode) || "rq".equals(clientMode) || "rr".equals(clientMode) || "rx".equals(clientMode))
+            this.clientMode = clientMode;
+        else
+            throw new BuildException("Invalid client mode: " + clientMode);
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -476,6 +484,10 @@ public class GenericExecuteOptions implements IRunAttributes {
         return xCodeSessionKey;
     }
 
+    public String getClientMode() {
+        return clientMode;
+    }
+
     protected List<String> getCmdLineParameters() {
         List<String> list = new ArrayList<>();
 
@@ -493,6 +505,11 @@ public class GenericExecuteOptions implements IRunAttributes {
         // Quick request
         if (quickRequest) {
             list.add("-q"); //$NON-NLS-1$
+        }
+
+        // Client mode
+        if (clientMode != null) {
+            list.add("-" + clientMode);
         }
 
         // DebugReady

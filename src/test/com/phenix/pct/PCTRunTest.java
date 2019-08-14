@@ -418,6 +418,24 @@ public class PCTRunTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test50() {
+        configureProject("PCTRun/test50/build.xml");
+        executeTarget("init");
+
+        executeTarget("testrr1");
+        expectBuildException("testrr2", "Runtime client");
+        expectBuildException("testrr3", "Runtime client");
+
+        executeTarget("testrx1");
+        executeTarget("testrx2");
+        expectBuildException("testrr3", "Encrypted compiler client");
+
+        executeTarget("testrg1");
+        executeTarget("testrg2");
+        executeTarget("testrg3");
+    }
+
+    @Test(groups = {"v10"})
     public void test51() {
         configureProject("PCTRun/test51/build.xml");
         executeTarget("test");
@@ -426,4 +444,5 @@ public class PCTRunTest extends BuildFileTestNg {
         executeTarget("test2");
         assertEquals(f.listFiles().length, 2);
     }
+
 }

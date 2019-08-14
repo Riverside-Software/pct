@@ -172,6 +172,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setClientMode(String clientMode) {
+        options.setClientMode(clientMode);
+    }
+
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         options.setCompileUnderscore(compUnderscore);
     }
