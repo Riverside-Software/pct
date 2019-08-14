@@ -16,25 +16,10 @@
  */
 package com.phenix.pct;
 
-import java.io.File;
+public class ProgressV121 extends ProgressV12 {
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-/**
- * Class for testing ABLUnit task
- * 
- * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
- */
-public class RestGenTest extends BuildFileTestNg {
-
-    @Test(groups = {"v11", "win", "nov12"})
-    public void test1() {
-        configureProject("RestGen/test1/build.xml");
-        executeTarget("test");
-
-        File paar = new File("RestGen/test1/dist/REST.paar");
-        Assert.assertTrue(paar.exists());
+    @Override
+    public boolean externalJDK() {
+        return true;
     }
-
 }

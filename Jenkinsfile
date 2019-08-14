@@ -41,6 +41,7 @@ stage('Full tests') {
           branch3: { testBranch('linux', 'JDK8', 'Ant 1.9', 'OpenEdge-11.7', false, '11.7-Linux') },
           branch4: { testBranch('linux', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.0', false, '12.0-Linux') },
           branch5: { testBranch('windows', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.0', true, '12.0-Win') },
+          branch6: { testBranch('windows', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.1', true, '12.1-Win') },
           failFast: false
 
   node('linux') {
@@ -50,6 +51,7 @@ stage('Full tests') {
     unstash name: 'junit-11.7-Linux'
     unstash name: 'junit-12.0-Linux'
     unstash name: 'junit-12.0-Win'
+    unstash name: 'junit-12.1-Win'
 
     sh "mkdir junitreports"
     unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
@@ -57,6 +59,7 @@ stage('Full tests') {
     unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
     unzip zipFile: 'junitreports-12.0-Linux.zip', dir: 'junitreports'
     unzip zipFile: 'junitreports-12.0-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-12.1-Win.zip', dir: 'junitreports'
     junit 'junitreports/**/*.xml'
   }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTProxygen-test6">
+  <taskdef resource="PCT.properties" />
+  <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+  <property environment="env" />
+
+  <target name="prepare">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" />
+    </PCTCompile>
+    <!-- Property java.home points to JRE for unknown reason... -->
+    <echo message="Setting JavaCompiler to '${env.JAVA_HOME}\bin\javac'" />
+    <xmltask source="Test1.xpxg.tmpl" dest="Test1.xpxg">
+      <replace path="/:WSAD/:AppObject/:PGGenInfo/:JavaCompiler/text()" withText="${env.JAVA_HOME}\bin\javac" />
+    </xmltask>
+  </target>
+
+  <target name="test1">
+    <mkdir dir="build-pxg1" />
+    <PCTProxygen srcFile="Test1.xpxg" dlcHome="${DLC}" workingDirectory="." />
+  </target>
+</project>

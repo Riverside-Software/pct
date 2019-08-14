@@ -20,9 +20,12 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
+
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTProxygen task
@@ -31,13 +34,13 @@ import org.testng.annotations.Test;
  */
 public class PCTProxygenTest extends BuildFileTestNg {
 
-    @Test(groups = { "v10" }, expectedExceptions = BuildException.class)
+    @Test(groups = { "v10", "nov12" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTProxygen/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = { "v10", "win" })
+    @Test(groups = { "v10", "win", "nov12" })
     public void test2() {
         configureProject("PCTProxygen/test2/build.xml");
         executeTarget("prepare");
@@ -54,7 +57,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = { "v11", "win" })
+    @Test(groups = { "v11", "win", "nov12" })
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
@@ -68,7 +71,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
     
-    @Test(groups = { "v10", "win" })
+    @Test(groups = { "v10", "win", "nov12" })
     public void test4() {
         configureProject("PCTProxygen/test4/build.xml");
         executeTarget("prepare");
@@ -87,6 +90,18 @@ public class PCTProxygenTest extends BuildFileTestNg {
 
     @Test(groups = { "v11", "win" })
     public void test5() {
+        // Old file format, only for 12.0
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() > 12)
+                    || ((version.getMajorVersion() == 12) && (version.getMinorVersion() >= 1)))
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
         configureProject("PCTProxygen/test5/build.xml");
         executeTarget("prepare");
 
@@ -99,5 +114,28 @@ public class PCTProxygenTest extends BuildFileTestNg {
         File f4 = new File("PCTProxygen/test5/build-pxg2/TestImpl.class");
         assertTrue(f3.exists());
         assertTrue(f4.exists());
+    }
+
+    @Test(groups = { "v12", "win" })
+    public void test6() {
+        // New file format in 12.1
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() == 0))
+                return;
+        } catch (IOException e) {
+            return;
+        } catch (InvalidRCodeException e) {
+            return;
+        }
+
+        configureProject("PCTProxygen/test6/build.xml");
+        executeTarget("prepare");
+
+        executeTarget("test1");
+        File f1 = new File("PCTProxygen/test6/build-pxg1/Test.class");
+        File f2 = new File("PCTProxygen/test6/build-pxg1/TestImpl.class");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
     }
 }

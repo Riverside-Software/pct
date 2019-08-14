@@ -143,6 +143,11 @@ public class ProgressV12 implements ProgressProcedures {
         return getString("ProgressV12.16"); //$NON-NLS-1$
     }
 
+    @Override
+    public boolean externalJDK() {
+        return false;
+    }
+
     public String getString(String key) {
         try {
             return RESOURCE_BUNDLE.getString(key);

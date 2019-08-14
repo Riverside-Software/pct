@@ -47,4 +47,5 @@ public abstract interface ProgressProcedures {
     String getOutputParameterCall();
     String getQuit();
     String getXCodeSessionKey();
+    boolean externalJDK();
 }
