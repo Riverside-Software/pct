@@ -421,6 +421,8 @@
         <include name="mockito-core-3.0.0.jar" />
         <include name="objenesis-2.6.jar" />
         <include name="hamcrest-2.1.jar" />
+        <include name="byte-buddy-1.9.14.jar" />
+        <include name="byte-buddy-agent-1.9.14.jar" />
         <include name="*.pl" />
       </zipfileset>
     </zip>
