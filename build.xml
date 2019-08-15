@@ -418,8 +418,8 @@
         <include name="jcommander-1.30.jar" />
         <include name="jacocoant-0.8.4.jar" />
         <include name="xmltask.jar" />
-        <include name="mockito-core-1.10.19.jar" />
-        <include name="objenesis-2.1.jar" />
+        <include name="mockito-core-3.0.0.jar" />
+        <include name="objenesis-2.6.jar" />
         <include name="hamcrest-2.1.jar" />
         <include name="*.pl" />
       </zipfileset>
