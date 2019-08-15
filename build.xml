@@ -102,6 +102,11 @@
     <pathelement location="lib/testng-6.13.1.jar" />
     <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
+    <pathelement location="lib/mockito-core-3.0.0.jar" />
+    <pathelement location="lib/byte-buddy-1.9.14.jar" />
+    <pathelement location="lib/byte-buddy-agent-1.9.14.jar" />
+    <pathelement location="lib/hamcrest-2.1.jar" />
+    <pathelement location="lib/objenesis-2.6.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -404,7 +409,22 @@
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
-      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ini4j-0.5.1.jar,guava.jar,testng-6.13.1.jar,jcommander-1.30.jar,jacocoant-0.8.4.jar,xmltask.jar,*.pl" prefix="lib" />
+      <zipfileset dir="lib" prefix="lib">
+        <include name="ast.jar" />
+        <include name="ast-dependencies.jar" />
+        <include name="ini4j-0.5.1.jar" />
+        <include name="guava.jar" />
+        <include name="testng-6.13.1.jar" />
+        <include name="jcommander-1.30.jar" />
+        <include name="jacocoant-0.8.4.jar" />
+        <include name="xmltask.jar" />
+        <include name="mockito-core-3.0.0.jar" />
+        <include name="objenesis-2.6.jar" />
+        <include name="hamcrest-2.1.jar" />
+        <include name="byte-buddy-1.9.14.jar" />
+        <include name="byte-buddy-agent-1.9.14.jar" />
+        <include name="*.pl" />
+      </zipfileset>
     </zip>
   </target>
 
