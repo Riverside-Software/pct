@@ -33,6 +33,8 @@ import java.util.Base64;
  * @since PCT 0.11
  */
 public class RCodeInfo {
+    private static final int BUFFER_SIZE = System.getProperty("rcodeinfo.buffer_size") != null ? Integer.parseInt(System.getProperty("rcodeinfo.buffer_size")) : 65536;
+
     // Magic numbers
     private static final int MAGIC1 = 0x56CED309;
     private static final int MAGIC2 = 0x09D3CE56; // Bytes swapped
@@ -53,7 +55,7 @@ public class RCodeInfo {
     private long signatureSize;
 
     public RCodeInfo(File file) throws InvalidRCodeException, IOException {
-        this(new BufferedInputStream(new FileInputStream(file), 65536));
+        this(new BufferedInputStream(new FileInputStream(file), BUFFER_SIZE));
     }
 
     /**
