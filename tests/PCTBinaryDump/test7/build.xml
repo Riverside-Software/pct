@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="PCTBinaryDump-test7">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dbName="sp2k" dlcHome="${DLC}" />
+    <mkdir dir="dump" />
+    <mkdir dir="dump2" />
+    <PCTBinaryDump dest="dump" dlcHome="${DLC}">
+      <Option name="-dumplist" value="dump2/list.txt" />
+      <PCTConnection dbName="sp2k" dbDir="db" singleUser="true" />
+    </PCTBinaryDump>
+  </target>
+
+</project>
