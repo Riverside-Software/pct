@@ -416,4 +416,14 @@ public class PCTRunTest extends BuildFileTestNg {
         File f = new File("PCTRun/test49/profiler");
         assertEquals(f.listFiles().length, 1);
     }
+
+    @Test(groups = {"v10"})
+    public void test51() {
+        configureProject("PCTRun/test51/build.xml");
+        executeTarget("test");
+        File f = new File("PCTRun/test51/profiler dir/");
+        assertEquals(f.listFiles().length, 1);
+        executeTarget("test2");
+        assertEquals(f.listFiles().length, 2);
+    }
 }

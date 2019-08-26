@@ -624,7 +624,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                     Writer w = new OutputStreamWriter(os);
                     BufferedWriter bw = new BufferedWriter(w)) {
                 if (runAttributes.getProfiler().getOutputFile() != null) {
-                    bw.write("-FILENAME " + runAttributes.getProfiler().getOutputFile().getAbsolutePath());
+                    bw.write("-FILENAME \"" + runAttributes.getProfiler().getOutputFile().getAbsolutePath() + "\"");
                     bw.newLine();
                 } else {
                     // Assuming nobody will use file names with double quotes in this case... 
