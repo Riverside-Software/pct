@@ -4,7 +4,7 @@ stage('Class documentation build') {
 
   def antHome = tool name: 'Ant 1.9', type: 'ant'
   def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
-  def dlc12 = tool name: 'OpenEdge-12.0', type: 'openedge'
+  def dlc12 = tool name: 'OpenEdge-12.1', type: 'openedge'
   def jdk = tool name: 'JDK8', type: 'jdk'
 
   withEnv(["JAVA_HOME=${jdk}"]) {
@@ -24,7 +24,7 @@ stage('Standard build') {
   def jdk = tool name: 'JDK8', type: 'jdk'
   def antHome = tool name: 'Ant 1.9', type: 'ant'
   def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
-  def dlc12 = tool name: 'OpenEdge-12.0', type: 'openedge'
+  def dlc12 = tool name: 'OpenEdge-12.1', type: 'openedge'
 
   unstash name: 'classdoc'
   withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
@@ -42,6 +42,7 @@ stage('Full tests') {
           branch4: { testBranch('linux', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.0', false, '12.0-Linux') },
           branch5: { testBranch('windows', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.0', true, '12.0-Win') },
           branch6: { testBranch('windows', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.1', true, '12.1-Win') },
+          branch7: { testBranch('linux', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.1', false, '12.1-Linux') },
           failFast: false
 
   node('linux') {
@@ -52,6 +53,7 @@ stage('Full tests') {
     unstash name: 'junit-12.0-Linux'
     unstash name: 'junit-12.0-Win'
     unstash name: 'junit-12.1-Win'
+    unstash name: 'junit-12.1-Linux'
 
     sh "mkdir junitreports"
     unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
@@ -60,6 +62,7 @@ stage('Full tests') {
     unzip zipFile: 'junitreports-12.0-Linux.zip', dir: 'junitreports'
     unzip zipFile: 'junitreports-12.0-Win.zip', dir: 'junitreports'
     unzip zipFile: 'junitreports-12.1-Win.zip', dir: 'junitreports'
+    unzip zipFile: 'junitreports-12.1-Linux.zip', dir: 'junitreports'
     junit 'junitreports/**/*.xml'
   }
 }
