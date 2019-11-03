@@ -43,9 +43,9 @@
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml" />
     <touch file="dictdb.df" />
     <mkdir dir="profiler/progress" />
-   <!-- <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
+    <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
       <flattenmapper />
-    </unzip> -->
+    </unzip>
     <unzip src="oe-profiler-data-12.1-Win.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
