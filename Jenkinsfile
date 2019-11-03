@@ -36,7 +36,7 @@ stage('Standard build') {
 }
 
 stage('Full tests') {
- parallel branch1: { testBranch('windows', 'JDK8', 'Ant 1.9', 'OpenEdge-11.7', false, '11.7-Win') },
+ parallel branch1: { testBranch('windows', 'JDK8', 'Ant 1.9', 'OpenEdge-11.7', true, '11.7-Win') },
           branch2: { testBranch('linux', 'JDK8', 'Ant 1.9', 'OpenEdge-11.6', false, '11.6-Linux') },
           branch3: { testBranch('linux', 'JDK8', 'Ant 1.9', 'OpenEdge-11.7', false, '11.7-Linux') },
           branch4: { testBranch('linux', 'Corretto 8', 'Ant 1.10', 'OpenEdge-12.0', false, '12.0-Linux') },
@@ -71,7 +71,7 @@ stage('Sonar') {
   node('linux') {
     def antHome = tool name: 'Ant 1.9', type: 'ant'
     def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
-    // unstash name: 'coverage-11.7-Win'
+    unstash name: 'coverage-11.7-Win'
     unstash name: 'coverage-12.1-Win'
     withCredentials([string(credentialsId: 'AdminTokenSonarQube', variable: 'SQ_TOKEN')]) {
       sh "${antHome}/bin/ant -lib lib/sonarqube-ant-task-2.6.0.1426.jar -lib lib/jacocoant-0.8.4.jar -f sonar.xml -Dsonar.login=${env.SQ_TOKEN} -Dsonar.host.url=http://sonar.riverside-software.fr -Dsonar.branch.name=${env.BRANCH_NAME} -DDLC=${dlc} sonar"
