@@ -46,7 +46,7 @@
     <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
       <flattenmapper />
     </unzip>
-    <unzip src="oe-profiler-data-12.0-Win.zip" dest="profiler/progress" overwrite="true">
+    <unzip src="oe-profiler-data-12.1-Win.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
     <sonar:sonar />
