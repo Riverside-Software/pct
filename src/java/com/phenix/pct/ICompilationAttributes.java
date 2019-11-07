@@ -224,4 +224,11 @@ public interface ICompilationAttributes {
      * @param callback ABL Class
      */
     void setCallbackClass(String callback);
+
+    /**
+     * json value will display, the errors and warnings in json format
+     *
+     * @param outputType String
+     */
+    void setOutputType(String outputType);
 }

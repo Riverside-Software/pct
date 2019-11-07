@@ -16,7 +16,10 @@
  */
 package com.phenix.pct;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +32,11 @@ import org.apache.tools.ant.ProjectHelper;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class BuildFileTestNg {
     private Project project;
@@ -175,6 +183,21 @@ public class BuildFileTestNg {
                 return;
             }
         }
+    }
+
+    /**
+     * Assert that the content of given filename is identical to the expectedContent
+     */
+    public void expectLogFileContent(String target, String file, String expectedContent) {
+        executeTarget(target);
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(new File(file).getAbsolutePath())));
+            if (!content.equals(expectedContent)) {
+                Assert.fail("Log '" + content + "' doesn't match expected result '" + expectedContent + "'");
+            }
+        } catch (IOException e) {
+            Assert.fail("Error while accessing the file  '" + file +"' with message " + e.getMessage() );
+        }  
     }
 
     /**

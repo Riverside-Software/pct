@@ -60,6 +60,7 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('CALLBACKCLASS', ENTRY(35, ipPrm, ';')).
+    RUN setOption IN hComp ('OUTPUTTYPE', ENTRY(36, ipPrm, ';')).
 
     RUN initModule IN hComp.
 
@@ -111,6 +112,8 @@ PROCEDURE pctCompile:
 
   ASSIGN opOK = (compNotOk EQ 0)
          opMsg = STRING(compOK) + "/" + STRING(compNotOk) + "/" + STRING(skipped).
+  
+  RUN printErrorsWarningsJson IN hComp.
 
 END PROCEDURE.
 

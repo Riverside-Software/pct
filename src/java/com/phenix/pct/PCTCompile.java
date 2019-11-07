@@ -230,6 +230,10 @@ public class PCTCompile extends PCTRun {
                 bw.write("CALLBACKCLASS=" + compAttrs.getCallbackClass());
                 bw.newLine();
             }
+            if (compAttrs.getOutputType() != null) {
+                bw.write("OUTPUTTYPE=" + compAttrs.getOutputType());
+                bw.newLine();
+            }
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
         }

@@ -85,10 +85,12 @@ REPEAT:
       IF StopOnErr THEN LEAVE CompLoop.
     END.
     ELSE IF (iMyComp GT 0) THEN
-      ASSIGN iCompOK = iCompOK + 1. 
+      ASSIGN iCompOK = iCompOK + 1.
   END.
 END.
 INPUT STREAM sFileset CLOSE.
+
+RUN printErrorsWarningsJson IN hComp.
 
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN

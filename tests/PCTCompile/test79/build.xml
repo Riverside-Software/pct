@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test79">
+  <taskdef resource="PCT.properties" />
+
+  <mkdir dir="build" />
+
+  <target name="test1">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json">
+      <fileset dir="src" includes="**/test1.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+   <target name="test2">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="JSON">
+      <fileset dir="src" includes="**/test2.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test3">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json">
+      <fileset dir="src" includes="**/test3.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test4">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json">
+      <fileset dir="." includes="rssw/pct/TestClass2.cls" />
+      <propath location="." />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test5">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="JSON" requireFullKeywords="true">
+      <fileset dir="src" includes="**/test5.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test6">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json" requireFullKeywords="true">
+      <fileset dir="src" includes="**/test6.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
