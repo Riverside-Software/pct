@@ -1,3 +1,0 @@
-INTERFACE rssw.pct.TestClass2:
-    MTHOD PUBLIC VOID method1().
-END INTERFACE.

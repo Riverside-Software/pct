@@ -190,6 +190,13 @@ public class BuildFileTestNg {
      */
     public void expectLogFileContent(String target, String file, String expectedContent) {
         executeTarget(target);
+        this.expectLogFileContent(file, expectedContent);
+    }
+    
+    /**
+     * Compares the content of the file with the expected content.
+     */
+    public void expectLogFileContent(String file, String expectedContent) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(new File(file).getAbsolutePath())));
             if (!content.equals(expectedContent)) {

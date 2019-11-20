@@ -90,7 +90,7 @@ REPEAT:
 END.
 INPUT STREAM sFileset CLOSE.
 
-RUN printErrorsWarningsJson IN hComp.
+RUN printErrorsWarningsJson IN hComp (INPUT iCompOK, INPUT iCompFail).
 
 MESSAGE STRING(iCompOK) + " file(s) compiled".
 IF (iCompFail GE 1) THEN

@@ -82,6 +82,8 @@ DEFINE TEMP-TABLE ttProjectErrors NO-UNDO
   FIELD colNum   AS INTEGER
   FIELD msg      AS CHARACTER.
 
+DEFINE DATASET dsResult FOR ttProjectErrors, ttProjectWarnings.
+
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
@@ -546,22 +548,30 @@ PROCEDURE compileXref.
 END PROCEDURE.
 
 PROCEDURE printErrorsWarningsJson.
-  IF ( outputType EQ 'json' ) THEN DO:
-    DEFINE VARIABLE httProjectErrors    AS HANDLE.
-    DEFINE VARIABLE httProjectWarnings  AS HANDLE.
-    
-    httProjectErrors   = TEMP-TABLE ttProjectErrors:HANDLE.
-    httProjectWarnings = TEMP-TABLE ttProjectWarnings:HANDLE.
 
-    DEFINE VARIABLE ttProjectErrorsFile AS CHARACTER NO-UNDO.
-    ASSIGN ttProjectErrorsFile = PCTDir + '/':U + 'projectErrors.json':U.
+ DEFINE INPUT PARAMETER iCompOK AS INTEGER NO-UNDO.
+ DEFINE INPUT PARAMETER iCompFail AS INTEGER NO-UNDO.
 
-    DEFINE VARIABLE ttProjectWarningsFile AS CHARACTER NO-UNDO.
-    ASSIGN ttProjectWarningsFile = PCTDir + '/':U + 'projectWarnings.json':U.
-    
-    httProjectErrors:WRITE-JSON("file", ttProjectErrorsFile).
-    httProjectWarnings:WRITE-JSON("file", ttProjectWarningsFile).
-  END.
+ IF ( outputType EQ 'json' ) THEN DO:
+
+   DEFINE VARIABLE hResult AS handle NO-UNDO.
+   DEFINE VARIABLE mptr AS MEMPTR NO-UNDO.
+   DEFINE VARIABLE dsJsonObj AS JsonObject NO-UNDO.
+
+   hResult = DATASET dsResult:handle.
+   hResult:WRITE-JSON("memptr", mptr).
+   dsJsonObj = CAST( NEW ObjectModelParser():Parse(mptr),JsonObject).
+   dsJsonObj = dsJsonObj:GetJsonObject("dsResult").
+
+   dsJsonObj:Add("compiledFiles", iCompOK).
+   dsJsonObj:Add("errorFiles", iCompFail).
+
+   DEFINE VARIABLE outFile AS CHARACTER NO-UNDO.
+   ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
+   dsJsonObj:WriteFile(outFile).
+   SET-SIZE(mptr)=0.
+
+ END.
 END PROCEDURE.
 
 PROCEDURE displayCompileErrors PRIVATE:

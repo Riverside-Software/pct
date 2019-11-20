@@ -153,6 +153,14 @@ public class PCTBgCompile extends PCTBgRun {
         if (compAttrs.isXmlXref() && compAttrs.isStringXref()) {
             log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
         }
+        
+        if ( compAttrs.getOutputType() != null &&  !compAttrs.getOutputType().equalsIgnoreCase("json")) {
+            throw new BuildException(Messages.getString("PCTCompile.94"));
+        }
+        
+        if ( compAttrs.getOutputType() != null && compAttrs.getOutputType().equalsIgnoreCase("json")) {
+            log(Messages.getString("PCTCompile.93"), Project.MSG_WARN);
+        }
 
         initializeCompilationUnits();
         compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
@@ -342,7 +350,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isRequireFullNames())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
             sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
-            sb.append(compAttrs.getOutputType() == null ? "" : compAttrs.getOutputType()).append(';');
+            sb.append("").append(';'); // outputType is not supported on multi-threaded environment
 
             return sb.toString();
         }

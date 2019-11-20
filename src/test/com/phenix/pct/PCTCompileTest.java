@@ -1267,19 +1267,32 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"v10"})
     public void test79() {
-        // Files where the  errors and warnings are stored when outputType=json.
-        String errorFile = BASEDIR + "test79/build/.pct/projectErrors.json";
-        String warningFile = BASEDIR + "test79/build/.pct/projectWarnings.json";
+
+        String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
 
         configureProject(BASEDIR + "test79/build.xml");
 
-        expectLogFileContent("test1", errorFile, "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}]}");
-         
-        expectLogFileContent("test2", errorFile, "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test2.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}]}");
+        expectLogFileContent("test1", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
 
-        expectLogFileContent("test3", errorFile, "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"},{\"fileName\":\"src\\/dir1\\/test3.p\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":4,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}]}");
+        expectLogFileContent("test2", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test2.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
 
-        expectLogFileContent("test4", errorFile, "{\"ttProjectErrors\":[{\"fileName\":\"rssw\\/pct\\/TestClass2.cls\",\"mainFileName\":\"rssw\\/pct\\/TestClass2.cls\",\"rowNum\":2,\"colNum\":5,\"msg\":\"** Unable to understand after -- \\\"MTHOD\\\". (247)\"}]}");
+        expectLogFileContent("test3", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"},{\"fileName\":\"src\\/dir1\\/test3.p\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":4,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+
+        expectBuildException("test4", "OutputType value is wrong");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Parameter outputType is not supported on multi-threaded environment");
+        expectLogRegexp("test5", rexp, false);
+
+        expectBuildException("test8", "value of failOnError is true");
+        
+        expectLogFileContent(projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+
 
         // Only work with 11.7+
         try {
@@ -1291,10 +1304,11 @@ public class PCTCompileTest extends BuildFileTestNg {
         } catch (InvalidRCodeException caught) {
             return;
         }
-        expectLogFileContent("test5", warningFile, "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"DEFINE\\\" as \\\"DEF\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"},{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"integer\\\" as \\\"INT\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}]}");
+        expectLogFileContent("test6", projectResultFile,
+                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"DEFINE\\\" as \\\"DEF\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"},{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"integer\\\" as \\\"INT\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
 
-        expectLogFileContent("test6", warningFile, "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test6.i\",\"mainFileName\":\"src\\/dir1\\/test6.p\",\"msg\":\"Cannot reference \\\"VARIABLE\\\" as \\\"VAR\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}]}");
+        expectLogFileContent("test7", projectResultFile,
+                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test6.i\",\"mainFileName\":\"src\\/dir1\\/test6.p\",\"msg\":\"Cannot reference \\\"VARIABLE\\\" as \\\"VAR\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
     }
-
 
 }
