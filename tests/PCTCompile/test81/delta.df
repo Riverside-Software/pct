@@ -1,0 +1,9 @@
+ADD FIELD "InternalName" OF "customer" AS integer 
+  FORMAT "9"
+  INITIAL "0"
+  LABEL "Fld1"
+  POSITION 20
+  SQL-WIDTH 4
+  COLUMN-LABEL "Fld1"
+  ORDER 10
+
