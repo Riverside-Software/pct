@@ -160,7 +160,7 @@ public class PCTBgCompile extends PCTBgRun {
         }
 
         if (compAttrs.getOutputType() != null
-                && !"json".equalsIgnoreCase(compAttrs.getOutputType())) {
+                && "json".equalsIgnoreCase(compAttrs.getOutputType())) {
             log(Messages.getString("PCTCompile.93"), Project.MSG_WARN);
         }
 
