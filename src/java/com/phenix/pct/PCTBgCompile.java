@@ -153,12 +153,14 @@ public class PCTBgCompile extends PCTBgRun {
         if (compAttrs.isXmlXref() && compAttrs.isStringXref()) {
             log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
         }
-        
-        if ( compAttrs.getOutputType() != null &&  !compAttrs.getOutputType().equalsIgnoreCase("json")) {
+
+        if (compAttrs.getOutputType() != null
+                && !"json".equalsIgnoreCase(compAttrs.getOutputType())) {
             throw new BuildException(Messages.getString("PCTCompile.94"));
         }
-        
-        if ( compAttrs.getOutputType() != null && compAttrs.getOutputType().equalsIgnoreCase("json")) {
+
+        if (compAttrs.getOutputType() != null
+                && !"json".equalsIgnoreCase(compAttrs.getOutputType())) {
             log(Messages.getString("PCTCompile.93"), Project.MSG_WARN);
         }
 

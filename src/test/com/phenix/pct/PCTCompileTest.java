@@ -1267,20 +1267,15 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"v10"})
     public void test79() {
-
         String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
 
         configureProject(BASEDIR + "test79/build.xml");
-
         expectLogFileContent("test1", projectResultFile,
                 "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-
         expectLogFileContent("test2", projectResultFile,
                 "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test2.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-
         expectLogFileContent("test3", projectResultFile,
                 "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"},{\"fileName\":\"src\\/dir1\\/test3.p\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":4,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-
         expectBuildException("test4", "OutputType value is wrong");
 
         List<String> rexp = new ArrayList<>();
@@ -1289,10 +1284,8 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLogRegexp("test5", rexp, false);
 
         expectBuildException("test8", "value of failOnError is true");
-        
         expectLogFileContent(projectResultFile,
                 "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-
 
         // Only work with 11.7+
         try {

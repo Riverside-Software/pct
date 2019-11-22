@@ -549,29 +549,28 @@ END PROCEDURE.
 
 PROCEDURE printErrorsWarningsJson.
 
- DEFINE INPUT PARAMETER iCompOK AS INTEGER NO-UNDO.
- DEFINE INPUT PARAMETER iCompFail AS INTEGER NO-UNDO.
+  DEFINE INPUT PARAMETER iCompOK AS INTEGER NO-UNDO.
+  DEFINE INPUT PARAMETER iCompFail AS INTEGER NO-UNDO.
 
- IF ( outputType EQ 'json' ) THEN DO:
+  DEFINE VARIABLE hResult AS handle NO-UNDO.
+  DEFINE VARIABLE mptr AS MEMPTR NO-UNDO.
+  DEFINE VARIABLE dsJsonObj AS JsonObject NO-UNDO.
+  DEFINE VARIABLE outFile AS CHARACTER NO-UNDO.
 
-   DEFINE VARIABLE hResult AS handle NO-UNDO.
-   DEFINE VARIABLE mptr AS MEMPTR NO-UNDO.
-   DEFINE VARIABLE dsJsonObj AS JsonObject NO-UNDO.
+  IF ( outputType EQ 'json' ) THEN DO:
+    hResult = DATASET dsResult:handle.
+    hResult:WRITE-JSON("memptr", mptr).
+    dsJsonObj = CAST( NEW ObjectModelParser():Parse(mptr), JsonObject).
+    dsJsonObj = dsJsonObj:GetJsonObject("dsResult").
 
-   hResult = DATASET dsResult:handle.
-   hResult:WRITE-JSON("memptr", mptr).
-   dsJsonObj = CAST( NEW ObjectModelParser():Parse(mptr),JsonObject).
-   dsJsonObj = dsJsonObj:GetJsonObject("dsResult").
+    dsJsonObj:Add("compiledFiles", iCompOK).
+    dsJsonObj:Add("errorFiles", iCompFail).
 
-   dsJsonObj:Add("compiledFiles", iCompOK).
-   dsJsonObj:Add("errorFiles", iCompFail).
+    ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
+    dsJsonObj:WriteFile(outFile).
+    SET-SIZE(mptr) = 0.
+  END.
 
-   DEFINE VARIABLE outFile AS CHARACTER NO-UNDO.
-   ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
-   dsJsonObj:WriteFile(outFile).
-   SET-SIZE(mptr)=0.
-
- END.
 END PROCEDURE.
 
 PROCEDURE displayCompileErrors PRIVATE:

@@ -226,7 +226,7 @@ public interface ICompilationAttributes {
     void setCallbackClass(String callback);
 
     /**
-     * json value will display, the errors and warnings in json format
+     * json value will display the errors and warnings in json format
      *
      * @param outputType String
      */

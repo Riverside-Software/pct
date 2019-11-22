@@ -33,11 +33,6 @@ import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 public class BuildFileTestNg {
     private Project project;
 
@@ -192,19 +187,22 @@ public class BuildFileTestNg {
         executeTarget(target);
         this.expectLogFileContent(file, expectedContent);
     }
-    
+
     /**
      * Compares the content of the file with the expected content.
      */
     public void expectLogFileContent(String file, String expectedContent) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(new File(file).getAbsolutePath())));
+            String content = new String(
+                    Files.readAllBytes(Paths.get(new File(file).getAbsolutePath())));
             if (!content.equals(expectedContent)) {
-                Assert.fail("Log '" + content + "' doesn't match expected result '" + expectedContent + "'");
+                Assert.fail("Log '" + content + "' doesn't match expected result '"
+                        + expectedContent + "'");
             }
         } catch (IOException e) {
-            Assert.fail("Error while accessing the file  '" + file +"' with message " + e.getMessage() );
-        }  
+            Assert.fail("Error while accessing the file  '" + file + "' with message "
+                    + e.getMessage());
+        }
     }
 
     /**

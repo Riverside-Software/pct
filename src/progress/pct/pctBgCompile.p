@@ -112,7 +112,7 @@ PROCEDURE pctCompile:
 
   ASSIGN opOK = (compNotOk EQ 0)
          opMsg = STRING(compOK) + "/" + STRING(compNotOk) + "/" + STRING(skipped).
-  
+
   RUN printErrorsWarningsJson IN hComp (INPUT compOK, INPUT compNotOk).
 
 END PROCEDURE.
