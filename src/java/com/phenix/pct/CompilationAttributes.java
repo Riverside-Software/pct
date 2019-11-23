@@ -67,6 +67,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private String ignoredIncludes = null;
     private int fileList = 0;
     private String callback = null;
+    private String outputType = null;
 
     // Internal use
     private final PCT parent;
@@ -280,6 +281,11 @@ public class CompilationAttributes implements ICompilationAttributes {
         this.callback = callback;
     }
 
+    @Override
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
+    }
+
     public List<ResourceCollection> getResources() {
         return resources;
     }
@@ -430,6 +436,10 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public String getCallbackClass() {
         return callback;
+    }
+
+    public String getOutputType() {
+        return outputType;
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {

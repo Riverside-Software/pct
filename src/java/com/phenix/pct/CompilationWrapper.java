@@ -320,6 +320,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         compAttributes.setCallbackClass(callback);
     }
 
+    @Override
+    public void setOutputType(String outputType) {
+        compAttributes.setOutputType(outputType);
+    }
+
     // End of ICompilationAttributes methods
     // *************************************
 

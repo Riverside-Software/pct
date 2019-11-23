@@ -1265,4 +1265,43 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
     }
 
+    @Test(groups = {"v10"})
+    public void test79() {
+        String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
+
+        configureProject(BASEDIR + "test79/build.xml");
+        expectLogFileContent("test1", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+        expectLogFileContent("test2", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test2.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+        expectLogFileContent("test3", projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"},{\"fileName\":\"src\\/dir1\\/test3.p\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":4,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+        expectBuildException("test4", "OutputType value is wrong");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Parameter outputType is not supported on multi-threaded environment");
+        expectLogRegexp("test5", rexp, false);
+
+        expectBuildException("test8", "value of failOnError is true");
+        expectLogFileContent(projectResultFile,
+                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+        expectLogFileContent("test6", projectResultFile,
+                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"DEFINE\\\" as \\\"DEF\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"},{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"integer\\\" as \\\"INT\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
+
+        expectLogFileContent("test7", projectResultFile,
+                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test6.i\",\"mainFileName\":\"src\\/dir1\\/test6.p\",\"msg\":\"Cannot reference \\\"VARIABLE\\\" as \\\"VAR\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
+    }
+
 }
