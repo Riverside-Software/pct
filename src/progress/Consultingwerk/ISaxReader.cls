@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright 2013 Consultingwerk Ltd.                                 *
+ * Copyright 2012 Consultingwerk Ltd.                                 *
  *                                                                    *
  * Licensed under the Apache License, Version 2.0 (the "License");    *
  * you may not use this file except in compliance with the License.   *
@@ -21,13 +21,10 @@
     Description : 
     Author(s)   : Mike Fechner / Consultingwerk Ltd.
     Created     : Mon Sep 10 18:46:17 CEST 2012
-    Notes       : This file is also included under a commercial license
-                  in Consultingwerk development tools. Our customers should
-                  be using the version that was shipped with our development
-                  tools as that may be a more recent version of the file.
-                  
-                  Note: This file contains just a subset of the methods
-                  contained in our commercial version
+    Notes       : This interface enforces only the basic handling methods.
+                  For the remaining SAX-READER handlers, a ISaxReaderExt 
+                  Interface should be created (using Interface inheritance, 
+                  OpenEdge 11.0 +).
   ----------------------------------------------------------------------*/
 
 USING Consultingwerk.* FROM PROPATH .  
