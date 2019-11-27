@@ -55,7 +55,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         END.
 
         IF VALID-OBJECT (oBaseTypes) THEN
-            poJson:Add ("BaseTypes":U, oBaseTypes) .
+            poJson:Add ("baseTypes":U, oBaseTypes) .
 
     END METHOD.
 
@@ -91,10 +91,10 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         END.
 
         IF VALID-OBJECT (oInstancePropertiesJson) THEN
-            poJson:Add ("Properties":U, oInstancePropertiesJson) .
+            poJson:Add ("properties":U, oInstancePropertiesJson) .
 
         IF VALID-OBJECT (oStaticPropertiesJson) THEN
-            poJson:Add ("StaticProperties":U, oStaticPropertiesJson) .
+            poJson:Add ("staticProperties":U, oStaticPropertiesJson) .
 
     END METHOD.
 
@@ -112,7 +112,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         oEventsJson = THIS-OBJECT:GetEvents (poType:GetEvents ()) .
 
         IF VALID-OBJECT (oEventsJson) THEN
-            poJson:Add ("Events":U, oEventsJson) .
+            poJson:Add ("events":U, oEventsJson) .
 
     END METHOD.
 
@@ -133,12 +133,12 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         oMethodsJson = THIS-OBJECT:GetMethods (oMethods, FALSE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
-            poJson:Add ("Methods":U, oMethodsJson) .
+            poJson:Add ("methods":U, oMethodsJson) .
 
         oMethodsJson = THIS-OBJECT:GetMethods (oMethods, TRUE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
-            poJson:Add ("StaticMethods":U, oMethodsJson) .
+            poJson:Add ("staticMethods":U, oMethodsJson) .
 
     END METHOD.
 
@@ -149,7 +149,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
      * @param poJsonObject The name of the JSON Array
      */
     METHOD PROTECTED VOID AddTypes (poAssembly AS System.Reflection.Assembly,
-                                    poJsonObject AS JsonObject):
+                                    poJsonObject AS JsonArray):
 
         DEFINE VARIABLE oTypeJson  AS JsonObject      NO-UNDO .
         DEFINE VARIABLE oBaseTypes AS JsonArray       NO-UNDO .
@@ -158,23 +158,23 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         oTypes = poAssembly:GetTypes() .
 
         {Consultingwerk/foreach.i System.Type oType in oTypes '' typeloop}
-            IF poJsonObject:Has (oType:FullName) THEN
-                NEXT typeloop .
+            /* IF poJsonObject:Has (oType:FullName) THEN
+                NEXT typeloop . */
 
             oTypeJson = NEW JsonObject () .
 
             THIS-OBJECT:AddBaseTypes (oType, oTypeJson) .
-            oTypeJson:Add ("Name":U, oType:FullName).
-            oTypeJson:Add ("IsAbstract":U, oType:IsAbstract) .
-            oTypeJson:Add ("IsClass":U, oType:IsClass) .
-            oTypeJson:Add ("IsEnum":U, oType:IsEnum) .
-            oTypeJson:Add ("IsInterface":U, oType:IsInterface) .
+            oTypeJson:Add ("name":U, oType:FullName).
+            oTypeJson:Add ("isAbstract":U, oType:IsAbstract) .
+            oTypeJson:Add ("isClass":U, oType:IsClass) .
+            oTypeJson:Add ("isEnum":U, oType:IsEnum) .
+            oTypeJson:Add ("isInterface":U, oType:IsInterface) .
 
             THIS-OBJECT:AddEvents (oType, oTypeJson) .
             THIS-OBJECT:AddMethods (oType, oTypeJson) .
             THIS-OBJECT:AddProperties (oType, oTypeJson) .
 
-            poJsonObject:Add (oType:FullName, oTypeJson) .
+            poJsonObject:Add (oTypeJson) .
         END .
 
         CATCH rtle AS System.Reflection.ReflectionTypeLoadException:
@@ -192,7 +192,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
      * @param poJsonObject The name of the JSON Array
      */
     METHOD PUBLIC VOID AddTypesFromAssembly (pcAssemblyName AS CHARACTER,
-                                             poJsonObject AS JsonObject):
+                                             poJsonObject AS JsonArray):
 
         DEFINE VARIABLE oAssembly AS System.Reflection.Assembly NO-UNDO .
 

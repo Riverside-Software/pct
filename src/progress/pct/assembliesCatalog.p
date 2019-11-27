@@ -23,7 +23,7 @@ USING Progress.Json.ObjectModel.*            FROM PROPATH.
 
 DEFINE VARIABLE oParser  AS AssemblyParser    NO-UNDO.
 DEFINE VARIABLE oCatalog AS AssembliesCatalog NO-UNDO.
-DEFINE VARIABLE oJson    AS JsonObject        NO-UNDO.
+DEFINE VARIABLE oJson    AS JsonArray        NO-UNDO.
 
 { Consultingwerk/Studio/AssemblyParser/ttAssemblies.i }
 
@@ -33,7 +33,7 @@ MESSAGE "Generating assemblies catalog".
 oParser = NEW AssemblyParser() .
 oParser:GetTable (OUTPUT TABLE ttAssemblies) .
 
-oJson = NEW JsonObject() .
+oJson = NEW JsonArray() .
 oCatalog = NEW AssembliesCatalog() .
 
 FOR EACH ttAssemblies:
