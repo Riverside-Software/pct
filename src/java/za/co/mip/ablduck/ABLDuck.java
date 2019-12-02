@@ -18,10 +18,14 @@ package za.co.mip.ablduck;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -89,6 +93,8 @@ public class ABLDuck extends PCT {
     private Boolean dataFilesOnly = false;
     private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
+    private String encoding = null;
+    private Charset inputCharset = null;
 
     public ABLDuck() {
         super();
@@ -119,6 +125,15 @@ public class ABLDuck extends PCT {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * Codepage to use when reading files
+     * 
+     * @param encoding String
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     /**
@@ -213,7 +228,16 @@ public class ABLDuck extends PCT {
                 String ext = file.getName().substring(extPos);
                 boolean isClass = ".cls".equalsIgnoreCase(ext);
 
-                ICompilationUnit root = astMgr.createAST(file, astContext, monitor,
+                // We use a reader to specify encoding
+                InputStreamReader fsr = null;
+                try {
+                    fsr = new InputStreamReader(new FileInputStream(file), getCharset());
+                } catch (FileNotFoundException e) {
+                    log(e.getMessage(), Project.MSG_WARN);
+                    continue;
+                }
+
+                ICompilationUnit root = astMgr.createAST(fsr, astContext, monitor,
                         IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                 if (isClass) {
                     ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
@@ -342,7 +366,8 @@ public class ABLDuck extends PCT {
             }
 
             File outputFile = new File(baseDir, cu.name + ".js");
-            try (FileWriter file = new FileWriter(outputFile.toString())) {
+            try (OutputStreamWriter file = new OutputStreamWriter(
+                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8);) {
                 file.write("Ext.data.JsonP." + cu.name.replace(".", "_") + "(" + gson.toJson(cu)
                         + ");");
             } catch (IOException ex) {
@@ -362,7 +387,8 @@ public class ABLDuck extends PCT {
 
             String filename = cu.name.replace(".", "_").replace("/", "_");
             File outputFile = new File(baseDir, filename + ".js");
-            try (FileWriter file = new FileWriter(outputFile.toString())) {
+            try (OutputStreamWriter file = new OutputStreamWriter(
+                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8);) {
                 file.write("Ext.data.JsonP." + filename + "(" + gson.toJson(cu) + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
@@ -502,13 +528,36 @@ public class ABLDuck extends PCT {
                     + member.name;
             search.icon = ICON_PREFIX + member.tagname;
             search.url = "#!/" + cu.tagname + "/"
-                    + ("procedure".equals(cu.tagname) ? cu.name : member.owner) + "-" + member.tagname
-                    + "-" + member.name;
+                    + ("procedure".equals(cu.tagname) ? cu.name : member.owner) + "-"
+                    + member.tagname + "-" + member.name;
             search.sort = 3;
             search.meta = member.meta;
 
             data.search.add(search);
         }
+    }
+
+    /**
+     * Get the Charset from encoding parameter
+     * 
+     * @return Charset
+     */
+    protected Charset getCharset() {
+        
+        if (inputCharset != null) {
+            return inputCharset;
+        }
+        
+        try {
+            inputCharset = Charset.forName(this.encoding);
+        } catch (IllegalArgumentException caught) {
+            inputCharset = Charset.defaultCharset();
+        }
+        if (inputCharset == null) {
+            inputCharset = Charset.defaultCharset();
+        }
+
+        return inputCharset;
     }
 
 }
