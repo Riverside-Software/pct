@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -295,7 +296,11 @@ public class ABLDuck extends PCT {
 
             Cls cls = new Cls();
             cls.name = cu.name;
-            cls.inherits = cu.inherits;
+            // Set FullName for inherts classes
+            cls.inherits = determineFullyQualifiedClassName(cu.uses, cu.inherits);
+            if (!cu.inherits.equals(cls.inherits)){
+                cu.inherits = cls.inherits;
+            }
             cls.icon = ICON_PREFIX + cu.icon;
 
             data.classes.add(cls);
@@ -310,12 +315,27 @@ public class ABLDuck extends PCT {
 
             // Add implementers to the interface
             if (cu.implementations != null && !cu.implementations.isEmpty()) {
-                for (String i : cu.implementations) {
-                    String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, i);
+                // TempList to avoid conflict
+                List<String> listNewImplement = new ArrayList<>();
+                Iterator<String> iter = cu.implementations.iterator();
+                
+                while(iter.hasNext()) {
+                    String currentImplement = iter.next();
+                    String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, currentImplement);
                     CompilationUnit iface = classes.get(fullInterfacePath);
                     if (iface != null) {
                         iface.implementers.add(cu.name);
+                        // Set FullName for implemented interfaces
+                        if (!currentImplement.equals(fullInterfacePath)){
+                            iter.remove();
+                            listNewImplement.add(iface.name);
+                        }
                     }
+                }
+                // Adding the Full implement name
+                if (!listNewImplement.isEmpty())
+                {
+                    cu.implementations.addAll(listNewImplement);
                 }
             }
 
