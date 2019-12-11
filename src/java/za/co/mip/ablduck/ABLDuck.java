@@ -19,13 +19,13 @@ package za.co.mip.ablduck;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -228,34 +228,30 @@ public class ABLDuck extends PCT {
                 String ext = file.getName().substring(extPos);
                 boolean isClass = ".cls".equalsIgnoreCase(ext);
 
-                // We use a reader to specify encoding
-                InputStreamReader fsr = null;
-                try {
-                    fsr = new InputStreamReader(new FileInputStream(file), getCharset());
-                } catch (FileNotFoundException e) {
+                try (InputStream input = new FileInputStream(file);
+                        Reader fsr = new InputStreamReader(input, getCharset())) {
+                    ICompilationUnit root = astMgr.createAST(fsr, astContext, monitor,
+                            IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
+                    if (isClass) {
+                        ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
+                        log("Executing AST ClassVisitor " + file.getAbsolutePath(),
+                                Project.MSG_VERBOSE);
+                        root.accept(visitor);
+
+                        CompilationUnit cu = visitor.getCompilationUnit();
+                        classes.put(cu.name, cu);
+                    } else {
+
+                        ABLDuckProcedureVisitor visitor = new ABLDuckProcedureVisitor(dsfiles[i]);
+                        log("Executing AST ProcedureVisitor " + file.getAbsolutePath(),
+                                Project.MSG_VERBOSE);
+                        root.accept(visitor);
+
+                        CompilationUnit cu = visitor.getCompilationUnit();
+                        procedures.put(cu.name, cu);
+                    }
+                } catch (IOException e) {
                     log(e.getMessage(), Project.MSG_WARN);
-                    continue;
-                }
-
-                ICompilationUnit root = astMgr.createAST(fsr, astContext, monitor,
-                        IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
-                if (isClass) {
-                    ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
-                    log("Executing AST ClassVisitor " + file.getAbsolutePath(),
-                            Project.MSG_VERBOSE);
-                    root.accept(visitor);
-
-                    CompilationUnit cu = visitor.getCompilationUnit();
-                    classes.put(cu.name, cu);
-                } else {
-
-                    ABLDuckProcedureVisitor visitor = new ABLDuckProcedureVisitor(dsfiles[i]);
-                    log("Executing AST ProcedureVisitor " + file.getAbsolutePath(),
-                            Project.MSG_VERBOSE);
-                    root.accept(visitor);
-
-                    CompilationUnit cu = visitor.getCompilationUnit();
-                    procedures.put(cu.name, cu);
                 }
             }
         }
@@ -543,18 +539,12 @@ public class ABLDuck extends PCT {
      * @return Charset
      */
     protected Charset getCharset() {
-        
-        if (inputCharset != null) {
-            return inputCharset;
-        }
-        
-        try {
-            inputCharset = Charset.forName(this.encoding);
-        } catch (IllegalArgumentException caught) {
-            inputCharset = Charset.defaultCharset();
-        }
         if (inputCharset == null) {
-            inputCharset = Charset.defaultCharset();
+            try {
+                inputCharset = Charset.forName(this.encoding);
+            } catch (IllegalArgumentException caught) {
+                inputCharset = Charset.defaultCharset();
+            }
         }
 
         return inputCharset;
