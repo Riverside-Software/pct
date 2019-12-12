@@ -363,7 +363,7 @@ public class ABLDuck extends PCT {
 
             File outputFile = new File(baseDir, cu.name + ".js");
             try (OutputStreamWriter file = new OutputStreamWriter(
-                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8);) {
+                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8)) {
                 file.write("Ext.data.JsonP." + cu.name.replace(".", "_") + "(" + gson.toJson(cu)
                         + ");");
             } catch (IOException ex) {
@@ -384,7 +384,7 @@ public class ABLDuck extends PCT {
             String filename = cu.name.replace(".", "_").replace("/", "_");
             File outputFile = new File(baseDir, filename + ".js");
             try (OutputStreamWriter file = new OutputStreamWriter(
-                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8);) {
+                    new FileOutputStream(outputFile.toString()), StandardCharsets.UTF_8)) {
                 file.write("Ext.data.JsonP." + filename + "(" + gson.toJson(cu) + ");");
             } catch (IOException ex) {
                 throw new BuildException(ex);
