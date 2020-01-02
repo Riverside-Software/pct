@@ -32,6 +32,7 @@ import eu.rssw.rcode.Destructor;
 import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Function;
+import eu.rssw.rcode.GetSetModifier;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Procedure;
 import eu.rssw.rcode.Property;
@@ -224,6 +225,50 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
     }
     
+    private static boolean IsPropertyAccessEqualsOrNone(AccessModifier pModifier, GetSetModifier pGetSetModifier) {
+            
+        if (GetSetModifier.PRIVATE.equals(pGetSetModifier) && AccessModifier.PRIVATE.equals(pModifier))
+            return true;
+        
+        else if (GetSetModifier.PROTECTED.equals(pGetSetModifier) && AccessModifier.PROTECTED.equals(pModifier))
+            return true;
+        
+        else if (GetSetModifier.PUBLIC.equals(pGetSetModifier) && AccessModifier.PUBLIC.equals(pModifier))
+            return true;
+        
+        return GetSetModifier.NONE.equals(pGetSetModifier);
+    }
+    
+    private static String getGetSetAccessComment(Property property) {
+        
+        boolean vGetNull = GetSetModifier.NONE.equals(property.getModifier);
+        boolean vSetNull = GetSetModifier.NONE.equals(property.setModifier);
+        boolean vHasModifier = false;
+        
+        String vGetTxt = "";
+        if (!IsPropertyAccessEqualsOrNone(property.modifier , property.getModifier) ) {
+            vGetTxt = property.getModifier.toString().concat(" GET");
+            vHasModifier = true;
+        }
+        else if (!vGetNull)
+            vGetTxt = "GET";
+        
+        String vSetTxt = "";
+        if (!IsPropertyAccessEqualsOrNone(property.modifier , property.setModifier) ) {
+            vSetTxt = property.setModifier.toString().concat(" SET");
+            vHasModifier = true;
+        }
+        else if (!vSetNull) 
+            vSetTxt = "SET";
+        
+        if (vSetTxt.isEmpty() || vGetTxt.isEmpty())
+            return vGetTxt.concat(vSetTxt);
+        else if (vHasModifier)
+            return vGetTxt.concat(" - ").concat(vSetTxt);
+        else 
+            return "";    
+    }
+
     protected static Member readProperty(Property property) {
         Member member = new Member();
 
@@ -232,7 +277,14 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.tagname = "property";
         member.datatype = property.dataType;
 
+        // Add GetSet Modifier info to comment if usefull
+        String vAccessInfo = getGetSetAccessComment(property);
+        Map<String, String> extraTag = new HashMap<String, String>();
+        if (!vAccessInfo.isEmpty())
+            extraTag.put("Modifier", "`" + vAccessInfo + "`");
+        
         Comment propertyComment = parseComment(property.propertyComment);
+        propertyComment.addExtraTag(extraTag);
         member.comment = propertyComment.getComment();
         
         member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? Boolean.TRUE : null);
