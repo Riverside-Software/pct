@@ -59,6 +59,12 @@ public class Comment {
         return parameters;
     }
 
+    public void addExtraTag(Map<String, String> extraTag) {
+        for (Map.Entry<String, String> vTag : extraTag.entrySet()) {
+            this.comment += "### " + vTag.getKey() + ":\n" + vTag.getValue() + "\n";
+        }
+    }
+
     public void parseComment(String comment) {
         if (comment == null || "".equals(comment))
             return;
