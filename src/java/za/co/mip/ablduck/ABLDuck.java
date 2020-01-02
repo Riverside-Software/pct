@@ -169,7 +169,6 @@ public class ABLDuck extends PCT {
 
     @Override
     public void execute() {
-        checkDlcHome();
 
         // Destination directory must exist
         if (this.destDir == null) {
