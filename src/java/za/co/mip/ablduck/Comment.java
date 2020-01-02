@@ -71,7 +71,10 @@ public class Comment {
     }
 
     private void parseABLDocComment(String comment) {
-    	// convert crlf to lf to avoid eol problems
+        // Remove comment characters
+        comment = comment.replaceAll("^/\\*-*", "").replaceAll("-*\\*/$", "");
+
+        // convert crlf to lf to avoid eol problems
         comment = comment.replace("\r\n", "\n");
 
         String[] commentLines = comment.split("\n");
@@ -80,8 +83,7 @@ public class Comment {
         String tagText = null;
         List<Tag> resolvedTags = new ArrayList<>();
 
-        // Assuming the first and last lines are /* */
-        for (int i = 1; i < commentLines.length - 1; i++) {
+        for (int i = 0; i < commentLines.length; i++) {
 
             String commentLine = ltrim(commentLines[i]) + '\n'; // Put this back as we split on it
 
@@ -124,7 +126,10 @@ public class Comment {
                     continue;
                 }
             }
-            tagText += " " + commentLine;
+            if (tagType != null)
+                tagText += " " + commentLine;
+            else
+                this.comment += commentLine;
 
         }
 
@@ -149,8 +154,19 @@ public class Comment {
                 case "author(s)" :
                     this.author = tag.getText();
                     break;
+                case "deprecated" :
+                    nextSpace = tag.getText().indexOf(' ');
+                    if (nextSpace == -1)
+                        deprecated = new Deprecated(tag.getText(), "");
+                    else
+                        deprecated = new Deprecated(tag.getText().substring(0, nextSpace),
+                                tag.getText().substring(nextSpace + 1));
+                    break;
+                case "internal" :
+                    this.isInternal = true;
+                    break;
                 default :
-                    if (!"".equals(tag.getText()))
+                    if (!"".equals(tag.getText().trim().replace("\n", "")))
                         this.comment += "### " + tag.getType() + ":\n" + tag.getText() + "\n";
                     break;
             }
