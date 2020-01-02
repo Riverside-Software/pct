@@ -229,7 +229,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (property.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (property.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (property.isOverride ? Boolean.TRUE : null);
         member.meta.isInternal = propertyComment.isInternal();
@@ -252,7 +252,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (method.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (method.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (method.isOverride ? Boolean.TRUE : null);
         member.meta.isFinal = (method.isFinal ? Boolean.TRUE : null);
@@ -282,7 +282,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (event.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (event.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (event.isOverride ? Boolean.TRUE : null);
         member.meta.isInternal = eventComment.isInternal();
