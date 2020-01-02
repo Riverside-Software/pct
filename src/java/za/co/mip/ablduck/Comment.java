@@ -73,15 +73,18 @@ public class Comment {
     }
 
     private void parseABLDocComment(String comment) {
+        // Remove comment characters
+        comment = comment.replaceAll("^/\\*-*", "").replaceAll("-*\\*/$", "");
+        
         String[] commentLines = comment.split(NEWLINE_SEPARATOR);
 
         String tagType = null;
         String tagText = null;
         List<Tag> resolvedTags = new ArrayList<>();
+        
 
-        // Assuming the first and last lines are /* */
-        for (int i = 1; i < commentLines.length - 1; i++) {
-
+        for (int i = 0; i < commentLines.length ; i++) {
+                        
             String commentLine = ltrim(commentLines[i]) + '\n'; // Put this back as we split on it
 
             // Assuming a line that starts with an @xxx is a token
@@ -123,14 +126,17 @@ public class Comment {
                     continue;
                 }
             }
-            tagText += " " + commentLine;
+            if (tagType != null)
+                tagText += " " + commentLine;
+            else
+                this.comment += commentLine;
 
         }
 
         // Store previous tag if we had one
         if (tagType != null)
             resolvedTags.add(new Tag(tagType, tagText));
-
+        
         for (Tag tag : resolvedTags) {
             switch (tag.getType().toLowerCase().trim()) {
                 case "param" :
@@ -148,12 +154,23 @@ public class Comment {
                 case "author(s)" :
                     this.author = tag.getText();
                     break;
+                case "deprecated" :
+                    nextSpace = tag.getText().indexOf(' ');
+                    if (nextSpace == -1)
+                        deprecated = new Deprecated(tag.getText(), "");
+                    else
+                        deprecated = new Deprecated(tag.getText().substring(0, nextSpace),
+                                tag.getText().substring(nextSpace + 1));
+                    break;
+                case "internal" :
+                    this.isInternal = true;
+                    break;
                 default :
-                    if (!"".equals(tag.getText()))
+                    if (!"".equals(tag.getText().trim().replace("\n", "")))
                         this.comment += "### " + tag.getType() + ":\n" + tag.getText() + "\n";
                     break;
             }
-        }
+        }     
     }
 
     private void parseJavadocComment(String comment) {
