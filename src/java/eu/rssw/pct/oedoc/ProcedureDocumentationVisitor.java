@@ -238,6 +238,8 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
             fld.name = col.getName();
             fld.dataType = getDataTypeName(col.getDataType());
             fld.initialValue = col.getInitial();
+            fld.extent = col.getExtent();
+            fld.format = col.getFormat();
             tt.fields.add(fld);
         }
         for (IIndex idx : node.getIndexes()) {
