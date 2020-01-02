@@ -29,6 +29,7 @@ import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Dataset;
 import eu.rssw.rcode.Destructor;
+import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Function;
 import eu.rssw.rcode.Method;
@@ -72,6 +73,8 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         if (classUnit.isInterface) {
             cu.icon = "interface";
             cu.implementers = new ArrayList<String>();
+        } else if (classUnit.isEnum) {
+            cu.icon = "enum";
         } else {
             cu.icon = "class";
             cu.implementations = new ArrayList<String>();
@@ -128,6 +131,13 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             cu.members.add(member);
         }
         
+        // Enum Member (like Properties)
+        for (EnumMember enumMember : classUnit.enumMembers) {
+            Member member = readEnumMember(enumMember, fullyQualifiedClassName);
+            member.owner = fullyQualifiedClassName;
+            cu.members.add(member);
+        }
+
         // Methods
         Map<String, Integer> methodCounts = new HashMap<>();
         for (Method method : classUnit.methods) {
@@ -228,6 +238,26 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         return member;
     }
 
+    protected static Member readEnumMember(EnumMember enumItem, String enumName) {
+        Member member = new Member();
+
+        // Display enum item like property
+        member.id = "property-" + enumItem.name;
+        member.name = enumItem.name;
+        member.tagname = "property";
+        member.datatype = enumName;
+        member.definition = enumItem.definition;
+        
+        Comment enumItemComment = parseComment(enumItem.comment);
+        // Display enum item definition
+        Map<String, String> extraTag = new HashMap<String, String>();
+        extraTag.put("Definition", "`" + enumItem.definition + "`");
+        enumItemComment.addExtraTag(extraTag);
+        member.comment = enumItemComment.getComment();
+        
+        return member;
+    }
+    
     protected static Member readMethod(Method method, int count) {
         Member member = new Member();
 
