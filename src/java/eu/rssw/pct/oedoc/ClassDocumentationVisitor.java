@@ -129,6 +129,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
         tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        tt.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
         tt.modifier = AccessModifier.from(node.getAccessModifier());
         String fName = "";
         if (node.getFileName() != null) {
@@ -169,6 +170,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         ds.modifier = AccessModifier.from(node.getAccessModifier());
         ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        ds.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
 
         for (String str : node.getBufferNames()) {
             ds.buffers.add(str);

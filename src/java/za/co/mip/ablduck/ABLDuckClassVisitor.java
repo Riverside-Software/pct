@@ -108,7 +108,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         cu.meta.isFinal = (classUnit.isFinal ? classUnit.isFinal : null);
 
         cu.members = new ArrayList<>();
-
+               
         // Constructor
         int constructorCount = 1;
         for (Constructor constructor : classUnit.constructors) {
@@ -137,7 +137,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.owner = fullyQualifiedClassName;
             cu.members.add(member);
         }
-
+        
         // Methods
         Map<String, Integer> methodCounts = new HashMap<>();
         for (Method method : classUnit.methods) {
@@ -213,7 +213,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         return member;
 
     }
-
+    
     protected static Member readProperty(Property property) {
         Member member = new Member();
 
@@ -224,7 +224,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
         Comment propertyComment = parseComment(property.propertyComment);
         member.comment = propertyComment.getComment();
-
+        
         member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? Boolean.TRUE : null);
         member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
@@ -317,7 +317,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (tempTable.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (tempTable.isStatic ? Boolean.TRUE : null);
         member.meta.isNew = (tempTable.isNew ? Boolean.TRUE : null);
         member.meta.isGlobal = (tempTable.isGlobal ? Boolean.TRUE : null);
         member.meta.isShared = (tempTable.isShared ? Boolean.TRUE : null);
@@ -344,7 +344,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (dataset.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (dataset.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (dataset.isStatic ? Boolean.TRUE : null);
         member.meta.isNew = (dataset.isNew ? Boolean.TRUE : null);
         member.meta.isShared = (dataset.isShared ? Boolean.TRUE : null);
 
@@ -394,7 +394,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     }
 
     protected static Comment parseComment(String comment) {
-        Comment commentParser = new Comment();
+        Comment commentParser = new Comment();        
         commentParser.parseComment(comment);
 
         return commentParser;

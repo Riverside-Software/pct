@@ -40,6 +40,8 @@ public class TempTable {
     @XmlAttribute
     public boolean isShared;
     @XmlAttribute
+    public boolean isStatic;
+    @XmlAttribute
     public String beforeTable;
     @XmlAttribute
     public String xmlNodeName;
