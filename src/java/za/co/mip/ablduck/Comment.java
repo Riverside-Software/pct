@@ -61,6 +61,12 @@ public class Comment {
         return parameters;
     }
 
+    public void addExtraTag (Map<String,String> extraTag) {
+        for (Map.Entry<String,String> vTag : extraTag.entrySet()) {
+            this.comment += "### " + vTag.getKey() + ":\n" + vTag.getValue() + "\n";
+        }
+    }
+    
     public void parseComment(String comment) {
         if (comment == null || "".equals(comment))
             return;
@@ -82,7 +88,6 @@ public class Comment {
         String tagText = null;
         List<Tag> resolvedTags = new ArrayList<>();
         
-
         for (int i = 0; i < commentLines.length ; i++) {
                         
             String commentLine = ltrim(commentLines[i]) + '\n'; // Put this back as we split on it
@@ -251,7 +256,7 @@ public class Comment {
                     this.isInternal = true;
                     break;
             }
-        }
+        }        
     }
 
     private String ltrim(String s) {
