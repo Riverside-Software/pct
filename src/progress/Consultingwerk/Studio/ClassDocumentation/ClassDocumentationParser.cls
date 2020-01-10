@@ -306,7 +306,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
 
                 BufferHelper:ParseSaxAttributesToBuffer (BUFFER eDataset:HANDLE, phAttributes, FALSE) .
             END.
-            WHEN "field":U OR WHEN "index":U OR WHEN "ttComment":U or WHEN "dsComment":U THEN DO:
+            WHEN "field":U OR WHEN "index":U OR WHEN "ttComment":U or WHEN "dsComment":U OR WHEN "definition" THEN DO:
                 /* Ignore */
             END.
             WHEN "buffer":U THEN DO:
