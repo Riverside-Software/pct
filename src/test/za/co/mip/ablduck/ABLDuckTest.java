@@ -191,7 +191,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.implementers.size(), 1);
         assertEquals(js.implementers.get(0), "hierarchy.Son");
     }
-    
+
     @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
     public void check2HeaderMetadata() throws IOException {
         String filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader1.js";
@@ -201,7 +201,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.author, "Han Solo\n");
-        
+
         filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader2.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -209,7 +209,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.author, "Han Solo\n");
-        
+
         filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader3.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -217,7 +217,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.author, "Han Solo\n");
-        
+
         filename = "ABLDuck/test2/docs/output/classes/header.EnumHeader1.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -225,7 +225,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.author, "Han Solo\n");
-        
+
         filename = "ABLDuck/test2/docs/output/classes/header.InterfaceHeader1.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -233,7 +233,7 @@ public class ABLDuckTest extends BuildFileTestNg {
 
         js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.author, "Han Solo\n");
-        
+
         filename = "ABLDuck/test2/docs/output/procedures/header_ProcHeader1_p.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -246,7 +246,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.parameters.get(0).name, "pParam1");
         assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
         assertEquals(js.parameters.get(1).name, "pParam2");
-        
+
         filename = "ABLDuck/test2/docs/output/procedures/header_DialogHeader1_w.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -259,7 +259,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.parameters.get(0).name, "pParam1");
         assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
         assertEquals(js.parameters.get(1).name, "pParam2");
-        
+
         filename = "ABLDuck/test2/docs/output/procedures/header_WindowHeader1_w.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -272,5 +272,93 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.parameters.get(0).name, "pParam1");
         assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
         assertEquals(js.parameters.get(1).name, "pParam2");
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2EnumMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/header.EnumHeader1.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+
+        assertEquals(js.superclasses.size(), 2);
+        assertEquals(js.superclasses.get(0), "Progress.Lang.FlagsEnum");
+        assertEquals(js.members.size(), 4);
+        assertEquals(js.members.get(3).comment,
+                "<p>Comment LukeSkywalker</p>\n<h3>Definition:</h3>\n<p><code>LukeSkywalker = Padme, AnakinSkywalker</code></p>\n");
+        assertEquals(js.members.get(3).definition, "LukeSkywalker = Padme, AnakinSkywalker");
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2StaticMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/other.StaticCommentClass.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+
+        assertEquals(js.members.size(), 7);
+
+        assertEquals(js.members.get(0).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(1).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(2).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(3).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(4).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(5).meta.isStatic, Boolean.TRUE);
+        assertEquals(js.members.get(6).meta.isStatic, Boolean.TRUE);
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2TempTableMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/other.TempTableComment.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.members.size(), 6);
+        assertEquals(js.members.get(2).name, "ttSample2");
+        assertEquals(js.members.get(2).definition,
+                "DEFINE TEMP-TABLE ttSample2 NO-UNDO <br>&nbsp;&nbsp;&nbsp;&nbsp;  FIELD champ1 AS CHARACTER<br>&nbsp;&nbsp;&nbsp;&nbsp;  FIELD champ2 AS CHARACTER EXTENT 2<br>&nbsp;&nbsp;&nbsp;&nbsp;  FIELD champ3 AS CHARACTER FORMAT X(3)<br>&nbsp;&nbsp;&nbsp;&nbsp;  FIELD champ4 AS CHARACTER EXTENT 4 FORMAT X(3)<br>&nbsp;&nbsp;&nbsp;&nbsp;  INDEX i1 PRIMARY UNIQUE champ1<br>&nbsp;&nbsp;&nbsp;&nbsp;");
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2PropertyMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/other.PropertyComment.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.members.size(), 12);
+        assertEquals(js.members.get(0).comment, "<p>A simple comment for property1</p>\n");
+        assertEquals(js.members.get(1).comment, "<p>A simple comment for property2</p>\n");
+        assertEquals(js.members.get(2).comment,
+                "<h3>Purpose:</h3>\n<p>Purpose of property3</p>\n<h3>Notes:</h3>\n<p>Note of property3</p>\n");
+        assertEquals(js.members.get(3).comment,
+                "<h2>Purpose</h2>\n<p>The purpose of the property4</p>\n");
+        assertEquals(js.members.get(4).comment,
+                "<h2>Purpose</h2>\n<p>The purpose of the property5</p>\n");
+        assertEquals(js.members.get(4).meta.isInternal, Boolean.TRUE);
+        assertEquals(js.members.get(4).meta.isDeprecated.version, "0.0.1");
+        assertEquals(js.members.get(5).comment, "<p>A simple comment for property6</p>\n");
+        assertEquals(js.members.get(5).meta.isInternal, Boolean.TRUE);
+        assertEquals(js.members.get(5).meta.isDeprecated.version, "0.0.1");
+        assertEquals(js.members.get(6).comment,
+                "<h3>Purpose:</h3>\n<p>Purpose of property7</p>\n<h3>Notes:</h3>\n<p>Note of property7</p>\n");
+        assertEquals(js.members.get(6).meta.isInternal, Boolean.TRUE);
+        assertEquals(js.members.get(6).meta.isDeprecated.version, "0.0.1");
+        assertEquals(js.members.get(7).comment,
+                "<h3>Modifier:</h3>\n<p><code>GET - PROTECTED SET</code></p>\n");
+        assertEquals(js.members.get(8).comment, "<h3>Modifier:</h3>\n<p><code>GET</code></p>\n");
+        assertEquals(js.members.get(9).comment,
+                "<p>Simple comment for property10</p>\n<h3>Modifier:</h3>\n<p><code>PROTECTED GET - SET</code></p>\n");
+        assertEquals(js.members.get(10).comment,
+                "<p>Simple comment for property11</p>\n<h3>Modifier:</h3>\n<p><code>SET</code></p>\n");
+        assertEquals(js.members.get(11).comment,
+                "<h2>Purpose</h2>\n<p>The purpose of the property12</p>\n<h3>Modifier:</h3>\n<p><code>PRIVATE GET - SET</code></p>\n");
     }
 }
