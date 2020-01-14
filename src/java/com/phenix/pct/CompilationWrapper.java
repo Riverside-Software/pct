@@ -296,6 +296,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setRequireReturnValues(boolean requireReturnValues) {
+        compAttributes.setRequireReturnValues(requireReturnValues);
+    }
+
+    @Override
     public void setStopOnError(boolean stopOnError) {
         compAttributes.setStopOnError(stopOnError);
     }

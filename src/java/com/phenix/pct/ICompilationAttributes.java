@@ -198,6 +198,8 @@ public interface ICompilationAttributes {
 
     void setRequireFullNames(boolean requireFullNames);
 
+    void setRequireReturnValues(boolean requireReturnValues);
+
     /**
      * Adds a ResourceCollection to compile
      */

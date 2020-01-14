@@ -60,6 +60,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean requireFullKeywords = false;
     private boolean requireFieldQualifiers = false;
     private boolean requireFullNames = false;
+    private boolean requireReturnValues = false;
     private String languages = null;
     private int growthFactor = -1;
     private int progPerc = 0;
@@ -257,6 +258,11 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     @Override
+    public void setRequireReturnValues(boolean requireReturnValues) {
+        this.requireReturnValues = requireReturnValues;
+    }
+
+    @Override
     public void setStopOnError(boolean stopOnError) {
         this.stopOnError = stopOnError;
     }
@@ -392,6 +398,10 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public boolean isRequireFullNames() {
         return requireFullNames;
+    }
+
+    public boolean isRequireReturnValues() {
+        return requireReturnValues;
     }
 
     public String getLanguages() {

@@ -224,6 +224,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FULLNAMES=" + (compAttrs.isRequireFullNames() ? 1 : 0));
             bw.newLine();
+            bw.write("RETURNVALUES=" + (compAttrs.isRequireReturnValues() ? 1 : 0));
+            bw.newLine();
             bw.write("FILELIST=" + compAttrs.getFileList());
             bw.newLine();
             if (compAttrs.getCallbackClass() != null) {

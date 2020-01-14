@@ -1304,4 +1304,29 @@ public class PCTCompileTest extends BuildFileTestNg {
                 "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test6.i\",\"mainFileName\":\"src\\/dir1\\/test6.p\",\"msg\":\"Cannot reference \\\"VARIABLE\\\" as \\\"VAR\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
     }
 
+    @Test(groups = {"v12"})
+    public void test80() {
+        // Only work with 12.2+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException caught) {
+            return;
+        } catch (InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test80/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test80/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test80/build2/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+    }
+
 }
