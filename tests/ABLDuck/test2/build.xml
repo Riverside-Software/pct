@@ -4,7 +4,7 @@
 
   <target name="test2">
     <ABLDuck destDir="docs" title="ABLDuck Documentation" dataFilesOnly="false">
-      <fileset dir="src" includes="**/*.cls,**/*.p" />
+      <fileset dir="src" includes="**/*.cls,**/*.p,**/*.w" />
     </ABLDuck>
   </target>
 
