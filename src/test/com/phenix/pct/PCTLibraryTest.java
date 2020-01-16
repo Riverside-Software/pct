@@ -36,13 +36,13 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Attribute destFile should always be defined
      */
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTLibrary/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTLibrary/test2/build.xml");
         executeTarget("test");
@@ -51,7 +51,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test3() {
         configureProject("PCTLibrary/test3/build.xml");
         executeTarget("test");
@@ -69,7 +69,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test4() {
         configureProject("PCTLibrary/test4/build.xml");
         executeTarget("test1");
@@ -89,7 +89,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v2.size() == 1);
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test5() {
         configureProject("PCTLibrary/test5/build.xml");
         executeTarget("test");
@@ -101,7 +101,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue((f2.length() < f1.length()));
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test6() {
         configureProject("PCTLibrary/test6/build.xml");
         executeTarget("test");
@@ -118,13 +118,13 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(((FileEntry) v.get(2)).getFileName().startsWith("test"));
     }
 
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test7() {
         configureProject("PCTLibrary/test7/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test8() {
         configureProject("PCTLibrary/test8/build.xml");
         executeTarget("test");
@@ -138,7 +138,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.size() == 2);
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test9() {
         configureProject("PCTLibrary/test9/build.xml");
         executeTarget("test");
@@ -181,7 +181,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(v.contains(new String("éèà.txt")));
     }
 
-    // @Test(groups= {"v10"})
+    // @Test(groups= {"v11"})
     public void test11() {
         configureProject("PCTLibrary/test11/build.xml");
 
@@ -206,7 +206,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(((FileEntry) v2.get(0)).getFileName().startsWith("Twenty"));
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test12() {
         configureProject("PCTLibrary/test12/build.xml");
 
@@ -224,7 +224,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
     /**
      * Checks that a file is added in the library
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test13() {
         configureProject("PCTLibrary/test13/build.xml");
         executeTarget("test1");

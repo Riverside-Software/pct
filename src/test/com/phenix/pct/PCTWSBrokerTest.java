@@ -35,19 +35,19 @@ import java.io.IOException;
  */
 public class PCTWSBrokerTest extends BuildFileTestNg {
 
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void testFailure1() {
         configureProject("PCTWSBroker/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void testFailure2() {
         configureProject("PCTWSBroker/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void testSimplestTest() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test3/build.xml");
         executeTarget("test");
@@ -56,7 +56,7 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertNotNull(ini.get("UBroker.WS.Test"));
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void testLogging() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test4/build.xml");
         executeTarget("test");
@@ -69,7 +69,7 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertNotNull(section.get("srvrLogFile"));
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void testAttributes1() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test5/build.xml");
         executeTarget("test");
@@ -88,7 +88,7 @@ public class PCTWSBrokerTest extends BuildFileTestNg {
         assertEquals(section.get("srvrLogAppend", String.class), "0");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test6() throws InvalidFileFormatException, IOException {
         configureProject("PCTWSBroker/test6/build.xml");
         executeTarget("test");

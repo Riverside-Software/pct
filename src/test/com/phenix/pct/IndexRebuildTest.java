@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  */
 public class IndexRebuildTest extends BuildFileTestNg {
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test1() {
         configureProject("IndexRebuild/test1/build.xml");
         executeTarget("init");
@@ -38,7 +38,7 @@ public class IndexRebuildTest extends BuildFileTestNg {
         executeTarget("check");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test2() {
         configureProject("IndexRebuild/test2/build.xml");
         executeTarget("init");
@@ -49,7 +49,7 @@ public class IndexRebuildTest extends BuildFileTestNg {
         expectBuildException("test3", "Invalid cpinternal");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test3() {
         configureProject("IndexRebuild/test3/build.xml");
         executeTarget("init");
@@ -57,7 +57,7 @@ public class IndexRebuildTest extends BuildFileTestNg {
         expectBuildException("test2", "Invalid index node");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test4() {
         configureProject("IndexRebuild/test4/build.xml");
         executeTarget("init");

@@ -37,7 +37,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no filesets and no connection
      */
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTDumpData/test1/build.xml");
         executeTarget("test");
@@ -46,7 +46,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no filesets (or srcDir) defined
      */
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTDumpData/test2/build.xml");
         executeTarget("test");
@@ -55,7 +55,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTDumpData/test3/build.xml");
         executeTarget("test");
@@ -64,7 +64,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Should dump Tab1 in target directory
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test4() {
         configureProject("PCTDumpData/test4/build.xml");
         executeTarget("prepare");
@@ -78,7 +78,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Should dump _File in target directory
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test5() {
         configureProject("PCTDumpData/test5/build.xml");
         executeTarget("prepare");
@@ -92,7 +92,7 @@ public class PCTDumpDataTest extends BuildFileTestNg {
     /**
      * Tests various encodings
      */
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test6() {
         configureProject("PCTDumpData/test6/build.xml");
         executeTarget("prepare");

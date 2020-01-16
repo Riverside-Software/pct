@@ -11,18 +11,15 @@
   <taskdef resource="PCT.properties" />
   <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" bitness="OE_ARCH" />
 
-  <!-- Assume version 11 when in local development -->
-  <condition property="GROUPS" value="v10,v11">
+  <!-- Assume version 12 when in local development -->
+  <condition property="GROUPS" value="v11,v12">
     <not><isset property="OE_MAJOR_VERSION" /></not>
   </condition>
   <!-- Groups to be executed depending on OpenEdge major version -->
-  <condition property="GROUPS" value="v10">
-    <equals arg1="${OE_MAJOR_VERSION}" arg2="10" />
-  </condition>
-  <condition property="GROUPS" value="v10,v11">
+  <condition property="GROUPS" value="v11">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
   </condition>
-  <condition property="GROUPS" value="v10,v11,v12">
+  <condition property="GROUPS" value="v11,v12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
 
@@ -34,14 +31,7 @@
   <condition property="EXCLUDES-VERSION" value="nov12" else="">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
-  <!-- Only for ProUnit and OEUnit -->
-  <condition property="SIXTYFOUR" value="-64" else="">
-    <and>
-      <equals arg1="${OE_MAJOR_VERSION}" arg2="10" />
-      <equals arg1="${OE_ARCH}" arg2="64" />
-    </and>
-  </condition>
-  <condition property="VERSION" value="dlc${OE_MAJOR_VERSION}${SIXTYFOUR}" else="dlc11">
+  <condition property="VERSION" value="dlc${OE_MAJOR_VERSION}" else="dlc11">
     <isset property="OE_MAJOR_VERSION" />
   </condition>
 

@@ -29,7 +29,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : No database connection defined
      */
-    @Test(groups = {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups = {"v11"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTBinaryLoad/test1/build.xml");
         executeTarget("test");
@@ -38,7 +38,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should load binary data into database and expect "16 20" for test target
      */
-    @Test(groups = {"v10", "win"})
+    @Test(groups = {"v11", "win"})
     public void test2() {
         configureProject("PCTBinaryLoad/test2/build.xml");
         executeTarget("base");
@@ -49,7 +49,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should first load binary data into table Tab1, then in Tab2
      */
-    @Test(groups = {"v10", "win"})
+    @Test(groups = {"v11", "win"})
     public void test3() {
         configureProject("PCTBinaryLoad/test3/build.xml");
         executeTarget("base");
@@ -68,7 +68,7 @@ public class PCTBinaryLoadTest extends BuildFileTestNg {
     /**
      * Should load binary data into database using a parameter file
      */
-    @Test(groups = {"v10", "win"})
+    @Test(groups = {"v11", "win"})
     public void test4() {
         configureProject("PCTBinaryLoad/test4/build.xml");
         executeTarget("base");

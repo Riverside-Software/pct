@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  */
 public class PLFileSetTest extends BuildFileTestNg {
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test1() {
         // Really crude, but we rely on prodict.pl in $DLC/tty
         // Number of files is different in every release

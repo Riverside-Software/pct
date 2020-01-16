@@ -33,6 +33,7 @@ DEFINE TEMP-TABLE Class-ref
 	FIELD Implements-list AS CHARACTER 
 	FIELD Has-use-pool AS LOGICAL 
 	FIELD Is-final AS LOGICAL 
+	FIELD Is-serializable AS LOGICAL 
 	INDEX Class-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq.
 

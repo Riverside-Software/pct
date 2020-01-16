@@ -36,7 +36,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no srcFile and no connection
      */
-    @Test(groups = { "v10" }, expectedExceptions = BuildException.class)
+    @Test(groups = { "v11" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTLoadSchema/test1/build.xml");
         executeTarget("test");
@@ -45,7 +45,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no srcFile defined
      */
-    @Test(groups = { "v10" }, expectedExceptions = BuildException.class)
+    @Test(groups = { "v11" }, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTLoadSchema/test2/build.xml");
         executeTarget("test");
@@ -54,13 +54,13 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     /**
      * Should throw BuildException : no connection defined
      */
-    @Test(groups = { "v10" }, expectedExceptions = BuildException.class)
+    @Test(groups = { "v11" }, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTLoadSchema/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test4() {
         configureProject("PCTLoadSchema/test4/build.xml");
         executeTarget("base");
@@ -83,7 +83,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         expectBuildException("test2", "");
     }
     
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test6() {
         configureProject("PCTLoadSchema/test6/build.xml");
         
@@ -97,7 +97,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertEquals(files.length, 1);
     }
     
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test7() {
         configureProject("PCTLoadSchema/test7/build.xml");
 
@@ -145,14 +145,14 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test9() {
         configureProject("PCTLoadSchema/test9/build.xml");
         executeTarget("base");
         executeTarget("test");
     }
     
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test10() {
         configureProject("PCTLoadSchema/test10/build.xml");
         expectBuildException("base", "002.df is invalid");
@@ -162,7 +162,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test11() {
         configureProject("PCTLoadSchema/test11/build.xml");
         executeTarget("base");
@@ -176,7 +176,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
       executeTarget("test");
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test12() {
         configureProject("PCTLoadSchema/test12/build.xml");
         executeTarget("base");
@@ -219,7 +219,7 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
         assertTrue(f.length() > 10);
     }
 
-    @Test(groups = { "v10" })
+    @Test(groups = { "v11" })
     public void test15() {
       // Empty schema, we shouldn't fail
       configureProject("PCTLoadSchema/test15/build.xml");

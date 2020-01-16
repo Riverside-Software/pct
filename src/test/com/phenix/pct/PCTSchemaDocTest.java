@@ -36,7 +36,7 @@ import org.xml.sax.InputSource;
 public class PCTSchemaDocTest extends BuildFileTestNg {
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test1() throws XPathExpressionException {
         configureProject("PCTSchemaDoc/test1/build.xml");
         executeTarget("test");

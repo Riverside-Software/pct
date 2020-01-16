@@ -22,7 +22,7 @@
  USING Progress.Json.ObjectModel.*.
 
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
-  { pct/v11/xrefd0004.i}
+  { pct/v11/xrefd0005.i}
 &ELSEIF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 10 &THEN
   { pct/v10/xrefd0003.i}
 &ENDIF
@@ -148,14 +148,12 @@ DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
 DEFINE VARIABLE majorMinor AS DECIMAL NO-UNDO.
-DEFINE VARIABLE bAbove101 AS LOGICAL NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE bAboveEq113 AS LOGICAL NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE bAboveEq117 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq1173 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq12 AS LOGICAL NO-UNDO INITIAL FALSE.
 
 ASSIGN majorMinor = DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)).
-ASSIGN bAbove101 = majorMinor GT 10.1.
 ASSIGN bAboveEq113 = (majorMinor GE 11.3).
 ASSIGN bAboveEq117 = (majorMinor GE 11.7).
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11 &THEN
@@ -263,10 +261,12 @@ PROCEDURE initModule:
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names' + (IF bAboveEq1173 THEN ':warning' ELSE '').
   IF lOptRetVals THEN
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-return-values' + (IF bAboveEq1173 THEN ':warning' ELSE '').
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   IF (COMPILER:OPTIONS GT "":U) THEN DO:
     MESSAGE "PCT compiler options are overridden by COMPILER:OPTIONS".
     ASSIGN cOpts = COMPILER:OPTIONS.
   END.
+&ENDIF
 
   IF ProgPerc GT 0 THEN DO:
     ASSIGN iNrSteps = 100 / ProgPerc.
@@ -494,18 +494,16 @@ PROCEDURE compileXref.
     END.
     IF COMPILER:WARNING OR lWarnings THEN DO:
       DO i = 1 TO COMPILER:NUM-MESSAGES:
-        IF bAbove101 THEN DO:
-          /* Pointless message coming from strict mode compiler */
-          IF COMPILER:GET-NUMBER(i) EQ 2411 THEN NEXT.
-          /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
-          IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
-            IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
-              CREATE ttWarnings.
-              ASSIGN ttWarnings.msgNum   = COMPILER:GET-NUMBER(i)
-                     ttWarnings.rowNum   = COMPILER:GET-ROW(i)
-                     ttWarnings.fileName = COMPILER:GET-FILE-NAME(i)
-                     ttWarnings.msg      = REPLACE(COMPILER:GET-MESSAGE(i), '~n', ' ').
-            END.
+        /* Pointless message coming from strict mode compiler */
+        IF COMPILER:GET-NUMBER(i) EQ 2411 THEN NEXT.
+        /* Messages 2363, 3619 and 3623 are in fact warnings (from -checkdbe switch) */
+        IF (COMPILER:GET-MESSAGE-TYPE(i) EQ 2) OR (COMPILER:GET-NUMBER(i) EQ 2363) OR (COMPILER:GET-NUMBER(i) EQ 3619) OR (COMPILER:GET-NUMBER(i) EQ 3623) THEN DO:
+          IF (LOOKUP(STRING(COMPILER:GET-NUMBER(i)), SESSION:SUPPRESS-WARNINGS-LIST) EQ 0) THEN DO:
+            CREATE ttWarnings.
+            ASSIGN ttWarnings.msgNum   = COMPILER:GET-NUMBER(i)
+                   ttWarnings.rowNum   = COMPILER:GET-ROW(i)
+                   ttWarnings.fileName = COMPILER:GET-FILE-NAME(i)
+                   ttWarnings.msg      = REPLACE(COMPILER:GET-MESSAGE(i), '~n', ' ').
           END.
         END.
       END.
@@ -538,15 +536,15 @@ PROCEDURE compileXref.
     DO i = 1 TO COMPILER:NUM-MESSAGES:
       IF COMPILER:GET-NUMBER(i) EQ 198 THEN NEXT.
       FIND ttErrors WHERE ttErrors.fileName EQ COMPILER:GET-FILE-NAME(i)
-                      AND ttErrors.rowNum   EQ (IF bAbove101 THEN COMPILER:GET-ROW(i) ELSE COMPILER:GET-ERROR-ROW(i))
-                      AND ttErrors.colNum   EQ (IF bAbove101 THEN COMPILER:GET-COLUMN(i) ELSE COMPILER:GET-ERROR-COLUMN(i))
+                      AND ttErrors.rowNum   EQ COMPILER:GET-ROW(i)
+                      AND ttErrors.colNum   EQ COMPILER:GET-COLUMN(i)
                     NO-ERROR.
       IF NOT AVAILABLE ttErrors THEN DO:
         CREATE ttErrors.
         ASSIGN ttErrors.intNum   = i
                ttErrors.fileName = COMPILER:GET-FILE-NAME(i)
-               ttErrors.rowNum   = (IF bAbove101 THEN COMPILER:GET-ROW(i) ELSE COMPILER:GET-ERROR-ROW(i))
-               ttErrors.colNum   = (IF bAbove101 THEN COMPILER:GET-COLUMN(i) ELSE COMPILER:GET-ERROR-COLUMN(i)).
+               ttErrors.rowNum   = COMPILER:GET-ROW(i)
+               ttErrors.colNum   = COMPILER:GET-COLUMN(i).
       END.
       ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
@@ -585,6 +583,7 @@ PROCEDURE printErrorsWarningsJson.
   DEFINE INPUT PARAMETER iCompOK AS INTEGER NO-UNDO.
   DEFINE INPUT PARAMETER iCompFail AS INTEGER NO-UNDO.
 
+&IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   DEFINE VARIABLE dsJsonObj AS JsonObject NO-UNDO.
   DEFINE VARIABLE ttErr AS JsonArray NO-UNDO.
   DEFINE VARIABLE ttWarn AS JsonArray NO-UNDO.
@@ -607,6 +606,7 @@ PROCEDURE printErrorsWarningsJson.
     ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
     dsJsonObj:WriteFile(outFile).
   END.
+&ENDIF
 
 END PROCEDURE.
 

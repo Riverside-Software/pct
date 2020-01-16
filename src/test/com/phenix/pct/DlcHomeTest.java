@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
 
 public class DlcHomeTest extends BuildFileTestNg {
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test1() throws XPathExpressionException {
         configureProject("DlcHome/test1/build.xml");
         executeTarget("test");
@@ -31,7 +31,7 @@ public class DlcHomeTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test2() throws XPathExpressionException {
         configureProject("DlcHome/test2/build.xml");
         executeTarget("test");

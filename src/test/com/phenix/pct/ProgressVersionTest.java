@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
  */
 public class ProgressVersionTest extends BuildFileTestNg {
 
-    @Test(groups = {"v10"})
+    @Test(groups = {"v11"})
     public void test1() {
         configureProject("ProgressVersion/test1/build.xml");
         executeTarget("test");

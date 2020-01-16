@@ -34,25 +34,25 @@ import java.io.IOException;
  */
 public class PCTDumpSchemaTest extends BuildFileTestNg {
 
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTDumpSchema/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test2() {
         configureProject("PCTDumpSchema/test2/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v10"}, expectedExceptions = BuildException.class)
+    @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test3() {
         configureProject("PCTDumpSchema/test3/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test4() {
         configureProject("PCTDumpSchema/test4/build.xml");
 
@@ -64,7 +64,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
             fail("Incorrect file");
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test5() {
         configureProject("PCTDumpSchema/test5/build.xml");
 
@@ -76,7 +76,7 @@ public class PCTDumpSchemaTest extends BuildFileTestNg {
             fail("Incorrect file");
     }
 
-    @Test(groups= {"v10"})
+    @Test(groups= {"v11"})
     public void test6() {
         configureProject("PCTDumpSchema/test6/build.xml");
 
