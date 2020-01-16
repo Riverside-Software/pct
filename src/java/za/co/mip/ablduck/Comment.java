@@ -73,7 +73,10 @@ public class Comment {
     }
 
     private void parseABLDocComment(String comment) {
-        String[] commentLines = comment.split(NEWLINE_SEPARATOR);
+    	// convert crlf to lf to avoid eol problems
+        comment = comment.replace("\r\n", "\n");
+
+        String[] commentLines = comment.split("\n");
 
         String tagType = null;
         String tagText = null;
@@ -157,7 +160,10 @@ public class Comment {
     }
 
     private void parseJavadocComment(String comment) {
-        String[] commentLines = comment.split(NEWLINE_SEPARATOR);
+        // convert crlf to lf to avoid eol problems
+        comment = comment.replace("\r\n", "\n");
+
+        String[] commentLines = comment.split("\n");
 
         String tagType = null;
         String tagText = null;
