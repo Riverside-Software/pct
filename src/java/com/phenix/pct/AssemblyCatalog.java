@@ -21,7 +21,7 @@ import org.apache.tools.ant.BuildException;
 import java.io.File;
 
 /**
- * Generates a file containing CRC for each table (multiple databases allowed)
+ * Generates a file with the description of the classes of all assemblies
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
