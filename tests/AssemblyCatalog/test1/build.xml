@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="AssemblyCatalog-test">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <AssemblyCatalog destFile="assemblies.json" dlcHome="${DLC}" assemblies="." />
+  </target>
+
+</project>
