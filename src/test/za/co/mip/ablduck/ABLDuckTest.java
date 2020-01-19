@@ -191,4 +191,86 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.implementers.size(), 1);
         assertEquals(js.implementers.get(0), "hierarchy.Son");
     }
+    
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2HeaderMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader1.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        
+        filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader2.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        
+        filename = "ABLDuck/test2/docs/output/classes/header.ClassHeader3.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        
+        filename = "ABLDuck/test2/docs/output/classes/header.EnumHeader1.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        
+        filename = "ABLDuck/test2/docs/output/classes/header.InterfaceHeader1.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        
+        filename = "ABLDuck/test2/docs/output/procedures/header_ProcHeader1_p.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n");
+        assertEquals(js.parameters.size(), 2);
+        assertEquals(js.parameters.get(0).comment, "The Param 1 comment\n");
+        assertEquals(js.parameters.get(0).name, "pParam1");
+        assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
+        assertEquals(js.parameters.get(1).name, "pParam2");
+        
+        filename = "ABLDuck/test2/docs/output/procedures/header_DialogHeader1_w.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n \n");
+        assertEquals(js.parameters.size(), 2);
+        assertEquals(js.parameters.get(0).comment, "The Param 1 comment\n");
+        assertEquals(js.parameters.get(0).name, "pParam1");
+        assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
+        assertEquals(js.parameters.get(1).name, "pParam2");
+        
+        filename = "ABLDuck/test2/docs/output/procedures/header_WindowHeader1_w.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.author, "Han Solo\n \n");
+        assertEquals(js.parameters.size(), 2);
+        assertEquals(js.parameters.get(0).comment, "The Param 1 comment\n");
+        assertEquals(js.parameters.get(0).name, "pParam1");
+        assertEquals(js.parameters.get(1).comment, "The Param 2 comment\n");
+        assertEquals(js.parameters.get(1).name, "pParam2");
+    }
 }
