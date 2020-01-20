@@ -153,4 +153,42 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.meta.isDeprecated.version, "1.0.0");
     }
 
+    @Test(groups = {"v11"})
+    public void test2GenerateDocs() {
+        configureProject("ABLDuck/test2/build.xml");
+        executeTarget("test2");
+    }
+
+    @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
+    public void check2HierarchyMetadata() throws IOException {
+        String filename = "ABLDuck/test2/docs/output/classes/hierarchy.Father.js";
+
+        String content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.subclasses.size(), 1);
+        assertEquals(js.subclasses.get(0), "hierarchy.Son");
+
+        filename = "ABLDuck/test2/docs/output/classes/hierarchy.Son.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.superclasses.size(), 2);
+        assertEquals(js.superclasses.get(0), "hierarchy.Father");
+        assertEquals(js.superclasses.get(1), "hierarchy.Son");
+        assertEquals(js.implementations.size(), 1);
+        assertEquals(js.implementations.get(0), "hierarchy.IFamily");
+
+        filename = "ABLDuck/test2/docs/output/classes/hierarchy.IFamily.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.implementers.size(), 1);
+        assertEquals(js.implementers.get(0), "hierarchy.Son");
+    }
 }
