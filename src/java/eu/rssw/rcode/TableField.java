@@ -27,4 +27,8 @@ public class TableField {
     public String dataType;
     @XmlAttribute
     public String initialValue;
+    @XmlAttribute
+    public int extent;
+    @XmlAttribute
+    public String format;
 }

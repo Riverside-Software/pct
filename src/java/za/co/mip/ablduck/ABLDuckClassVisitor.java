@@ -29,8 +29,10 @@ import eu.rssw.rcode.ClassCompilationUnit;
 import eu.rssw.rcode.Constructor;
 import eu.rssw.rcode.Dataset;
 import eu.rssw.rcode.Destructor;
+import eu.rssw.rcode.EnumMember;
 import eu.rssw.rcode.Event;
 import eu.rssw.rcode.Function;
+import eu.rssw.rcode.GetSetModifier;
 import eu.rssw.rcode.Method;
 import eu.rssw.rcode.Procedure;
 import eu.rssw.rcode.Property;
@@ -72,6 +74,8 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         if (classUnit.isInterface) {
             cu.icon = "interface";
             cu.implementers = new ArrayList<String>();
+        } else if (classUnit.isEnum) {
+            cu.icon = "enum";
         } else {
             cu.icon = "class";
             cu.implementations = new ArrayList<String>();
@@ -134,6 +138,13 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         // Properties
         for (Property property : classUnit.properties) {
             Member member = readProperty(property);
+            member.owner = fullyQualifiedClassName;
+            cu.members.add(member);
+        }
+
+        // Enum Member (like Properties)
+        for (EnumMember enumMember : classUnit.enumMembers) {
+            Member member = readEnumMember(enumMember, fullyQualifiedClassName);
             member.owner = fullyQualifiedClassName;
             cu.members.add(member);
         }
@@ -214,6 +225,47 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
 
     }
 
+    private static boolean isPropertyAccessEqualsOrNone(AccessModifier pModifier,
+            GetSetModifier pGetSetModifier) {
+        if (GetSetModifier.PRIVATE.equals(pGetSetModifier)
+                && AccessModifier.PRIVATE.equals(pModifier))
+            return true;
+        else if (GetSetModifier.PROTECTED.equals(pGetSetModifier)
+                && AccessModifier.PROTECTED.equals(pModifier))
+            return true;
+        else if (GetSetModifier.PUBLIC.equals(pGetSetModifier)
+                && AccessModifier.PUBLIC.equals(pModifier))
+            return true;
+        return GetSetModifier.NONE.equals(pGetSetModifier);
+    }
+
+    private static String getGetSetAccessComment(Property property) {
+        boolean vGetNull = GetSetModifier.NONE.equals(property.getModifier);
+        boolean vSetNull = GetSetModifier.NONE.equals(property.setModifier);
+        boolean vHasModifier = false;
+
+        String vGetTxt = "";
+        if (!isPropertyAccessEqualsOrNone(property.modifier, property.getModifier)) {
+            vGetTxt = property.getModifier.toString().concat(" GET");
+            vHasModifier = true;
+        } else if (!vGetNull)
+            vGetTxt = "GET";
+
+        String vSetTxt = "";
+        if (!isPropertyAccessEqualsOrNone(property.modifier, property.setModifier)) {
+            vSetTxt = property.setModifier.toString().concat(" SET");
+            vHasModifier = true;
+        } else if (!vSetNull)
+            vSetTxt = "SET";
+
+        if (vSetTxt.isEmpty() || vGetTxt.isEmpty())
+            return vGetTxt.concat(vSetTxt);
+        else if (vHasModifier)
+            return vGetTxt.concat(" - ").concat(vSetTxt);
+        else
+            return "";
+    }
+
     protected static Member readProperty(Property property) {
         Member member = new Member();
 
@@ -222,18 +274,45 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.tagname = "property";
         member.datatype = property.dataType;
 
+        // Add GetSet Modifier info to comment if useful
+        String vAccessInfo = getGetSetAccessComment(property);
+        Map<String, String> extraTag = new HashMap<>();
+        if (!vAccessInfo.isEmpty())
+            extraTag.put("Modifier", "`" + vAccessInfo + "`");
+
         Comment propertyComment = parseComment(property.propertyComment);
+        propertyComment.addExtraTag(extraTag);
         member.comment = propertyComment.getComment();
 
         member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? Boolean.TRUE : null);
         member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (property.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (property.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (property.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (property.isOverride ? Boolean.TRUE : null);
         member.meta.isInternal = propertyComment.isInternal();
         member.meta.isDeprecated = propertyComment.getDeprecated();
+
+        return member;
+    }
+
+    protected static Member readEnumMember(EnumMember enumItem, String enumName) {
+        Member member = new Member();
+
+        // Display enum item like property
+        member.id = "property-" + enumItem.name;
+        member.name = enumItem.name;
+        member.tagname = "property";
+        member.datatype = enumName;
+        member.definition = enumItem.definition;
+
+        Comment enumItemComment = parseComment(enumItem.comment);
+        // Display enum item definition
+        Map<String, String> extraTag = new HashMap<>();
+        extraTag.put("Definition", "`" + enumItem.definition + "`");
+        enumItemComment.addExtraTag(extraTag);
+        member.comment = enumItemComment.getComment();
 
         return member;
     }
@@ -252,7 +331,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (method.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (method.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (method.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (method.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (method.isOverride ? Boolean.TRUE : null);
         member.meta.isFinal = (method.isFinal ? Boolean.TRUE : null);
@@ -282,7 +361,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (event.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (event.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (event.isStatic ? Boolean.TRUE : null);
         member.meta.isAbstract = (event.isAbstract ? Boolean.TRUE : null);
         member.meta.isOverride = (event.isOverride ? Boolean.TRUE : null);
         member.meta.isInternal = eventComment.isInternal();
@@ -317,7 +396,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (tempTable.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (tempTable.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (tempTable.isStatic ? Boolean.TRUE : null);
         member.meta.isNew = (tempTable.isNew ? Boolean.TRUE : null);
         member.meta.isGlobal = (tempTable.isGlobal ? Boolean.TRUE : null);
         member.meta.isShared = (tempTable.isShared ? Boolean.TRUE : null);
@@ -344,7 +423,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.meta.isProtected = (dataset.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
                 : null);
-        member.meta.isStatic = (dataset.modifier == AccessModifier.STATIC ? Boolean.TRUE : null);
+        member.meta.isStatic = (dataset.isStatic ? Boolean.TRUE : null);
         member.meta.isNew = (dataset.isNew ? Boolean.TRUE : null);
         member.meta.isShared = (dataset.isShared ? Boolean.TRUE : null);
 
@@ -394,7 +473,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
     }
 
     protected static Comment parseComment(String comment) {
-        Comment commentParser = new Comment();
+        Comment commentParser = new Comment();        
         commentParser.parseComment(comment);
 
         return commentParser;

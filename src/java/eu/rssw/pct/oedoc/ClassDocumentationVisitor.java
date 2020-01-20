@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -129,6 +130,7 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
         tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        tt.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
         tt.modifier = AccessModifier.from(node.getAccessModifier());
         String fName = "";
         if (node.getFileName() != null) {
@@ -141,6 +143,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
             fld.name = col.getName();
             fld.dataType = getDataTypeName(col.getDataType());
             fld.initialValue = col.getInitial();
+            fld.extent = col.getExtent();
+            fld.format = col.getFormat();
             tt.fields.add(fld);
         }
         for (IIndex idx : node.getIndexes()) {
@@ -169,7 +173,8 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         ds.modifier = AccessModifier.from(node.getAccessModifier());
         ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
-
+        ds.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
+        
         for (String str : node.getBufferNames()) {
             ds.buffers.add(str);
         }
@@ -205,14 +210,30 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         gotEnum = true;
         cu.classComment.addAll(firstComments);
         cu.classComment.add(findPreviousComment(decl));
-
+        // Define the parent to know if it's a flagsEnum or classic Enum
+        if (decl.getChild(ProgressParserTokenTypes.FLAGS) != null) {
+            cu.inherits = "Progress.Lang.FlagsEnum";
+        }
+        else {
+            cu.inherits = "Progress.Lang.Enum";
+        }
         return true;
     }
-
+        
     @Override
     public boolean visit(EnumeratorItem item) {
         EnumMember member = new EnumMember(item.toString());
-        member.comment = findPreviousComment(item);
+        member.comment = item.getComments();
+        
+        // Read enum item value decraration
+        Iterator<IASTNode> iter = item.getChildren().iterator();
+        member.definition = "";
+        while(iter.hasNext()) {
+            IASTNode node1 = iter.next();
+            member.definition += " " + node1.getName();
+        }
+        member.definition = ltrim(member.definition ).replace(" ,", ",");
+
         cu.enumMembers.add(member);
 
         return true;
@@ -447,5 +468,13 @@ public class ClassDocumentationVisitor extends ASTVisitor {
         else
             return typeName.getName();
 
+    }
+
+    private String ltrim(String s) {
+        int i = 0;
+        while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        return s.substring(i);
     }
 }

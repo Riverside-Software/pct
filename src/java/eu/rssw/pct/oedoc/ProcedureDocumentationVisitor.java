@@ -230,6 +230,7 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         tt.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         tt.isGlobal = node.getChild(ProgressParserTokenTypes.GLOBAL) != null;
         tt.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        tt.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
         tt.modifier = AccessModifier.from(node.getAccessModifier());
 
         for (IField col : node.getColumns()) {
@@ -237,6 +238,8 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
             fld.name = col.getName();
             fld.dataType = getDataTypeName(col.getDataType());
             fld.initialValue = col.getInitial();
+            fld.extent = col.getExtent();
+            fld.format = col.getFormat();
             tt.fields.add(fld);
         }
         for (IIndex idx : node.getIndexes()) {
@@ -265,6 +268,7 @@ public class ProcedureDocumentationVisitor extends ASTVisitor {
         ds.modifier = AccessModifier.from(node.getAccessModifier());
         ds.isNew = node.getChild(ProgressParserTokenTypes.NEW) != null;
         ds.isShared = node.getChild(ProgressParserTokenTypes.SHARED) != null;
+        ds.isStatic = node.getChild(ProgressParserTokenTypes.STATIC) != null;
 
         for (String str : node.getBufferNames()) {
             ds.buffers.add(str);

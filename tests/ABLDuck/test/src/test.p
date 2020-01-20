@@ -19,7 +19,7 @@ DEFINE DATASET ds1 FOR tt1, tt2.
 
 /**
  * testProcedure comment
- * This  is two paragraphs. _markdown_ is also supported here. Lorem ipsum dolor sit amet,
+ * This is two paragraphs. _markdown_ is also supported here. Lorem ipsum dolor sit amet,
  * consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
  * Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
  *

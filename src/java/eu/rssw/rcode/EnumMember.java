@@ -26,6 +26,8 @@ public class EnumMember {
     public String name;
     @XmlElement(name = "enumComment")
     public String comment;
+    @XmlElement(name = "definition")
+    public String definition;
 
     public EnumMember() {
         // No-op

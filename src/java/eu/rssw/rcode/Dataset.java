@@ -38,6 +38,8 @@ public class Dataset {
     public boolean isNew;
     @XmlAttribute
     public boolean isShared;
+    @XmlAttribute
+    public boolean isStatic;
 
     @XmlElement(name = "text")
     public String aceText;
