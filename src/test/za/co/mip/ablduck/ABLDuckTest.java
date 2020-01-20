@@ -152,13 +152,13 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.parameters.size(), 1);
         assertEquals(js.meta.isDeprecated.version, "1.0.0");
     }
-    
+
     @Test(groups = {"v11"})
     public void test2GenerateDocs() {
         configureProject("ABLDuck/test2/build.xml");
         executeTarget("test2");
     }
-    
+
     @Test(groups = {"v11"}, dependsOnMethods = {"test2GenerateDocs"})
     public void check2HierarchyMetadata() throws IOException {
         String filename = "ABLDuck/test2/docs/output/classes/hierarchy.Father.js";
@@ -169,7 +169,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         CompilationUnit js = gson.fromJson(content, CompilationUnit.class);
         assertEquals(js.subclasses.size(), 1);
         assertEquals(js.subclasses.get(0), "hierarchy.Son");
-        
+
         filename = "ABLDuck/test2/docs/output/classes/hierarchy.Son.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));
@@ -181,8 +181,7 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.superclasses.get(1), "hierarchy.Son");
         assertEquals(js.implementations.size(), 1);
         assertEquals(js.implementations.get(0), "hierarchy.IFamily");
-        
-        
+
         filename = "ABLDuck/test2/docs/output/classes/hierarchy.IFamily.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));

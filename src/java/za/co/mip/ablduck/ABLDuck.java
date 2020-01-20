@@ -298,7 +298,7 @@ public class ABLDuck extends PCT {
             cls.name = cu.name;
             // Set FullName for inherts classes
             cls.inherits = determineFullyQualifiedClassName(cu.uses, cu.inherits);
-            if (!cu.inherits.equals(cls.inherits)){
+            if (!cu.inherits.equals(cls.inherits)) {
                 cu.inherits = cls.inherits;
             }
             cls.icon = ICON_PREFIX + cu.icon;
@@ -318,23 +318,23 @@ public class ABLDuck extends PCT {
                 // TempList to avoid conflict
                 List<String> listNewImplement = new ArrayList<>();
                 Iterator<String> iter = cu.implementations.iterator();
-                
-                while(iter.hasNext()) {
+
+                while (iter.hasNext()) {
                     String currentImplement = iter.next();
-                    String fullInterfacePath = determineFullyQualifiedClassName(cu.uses, currentImplement);
+                    String fullInterfacePath = determineFullyQualifiedClassName(cu.uses,
+                            currentImplement);
                     CompilationUnit iface = classes.get(fullInterfacePath);
                     if (iface != null) {
                         iface.implementers.add(cu.name);
                         // Set FullName for implemented interfaces
-                        if (!currentImplement.equals(fullInterfacePath)){
+                        if (!currentImplement.equals(fullInterfacePath)) {
                             iter.remove();
                             listNewImplement.add(iface.name);
                         }
                     }
                 }
                 // Adding the Full implement name
-                if (!listNewImplement.isEmpty())
-                {
+                if (!listNewImplement.isEmpty()) {
                     cu.implementations.addAll(listNewImplement);
                 }
             }
