@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -96,6 +97,7 @@ public class ABLDuck extends PCT {
     protected Path propath = null;
     private String encoding = null;
     private Charset inputCharset = null;
+    private File template = null;
 
     public ABLDuck() {
         super();
@@ -168,6 +170,16 @@ public class ABLDuck extends PCT {
         this.dataFilesOnly = dataOnly;
     }
 
+
+    /**
+     * Set the template directory or zip (if null, we use default template)
+     * 
+     * @param templateDir directory of template file
+     */
+    public void setTemplate(File template) {
+        this.template = template;
+    }
+
     @Override
     public void execute() {
         checkDlcHome();
@@ -187,7 +199,15 @@ public class ABLDuck extends PCT {
         if (!this.dataFilesOnly) {
             // Extract template
             try {
-                extractTemplateDirectory(this.destDir);
+                if (template != null && this.template.isDirectory()) {
+                    copyFullRecursive(this.template, this.destDir);
+                }
+                else if (this.template != null && this.template.isFile()) {
+                    unzip(new FileInputStream (this.template), this.destDir);
+                }
+                else {
+                    extractTemplateDirectory(this.destDir);                    
+                }
 
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
                 List<String> files = Arrays.asList("index.html"); // , "template.html",
@@ -448,6 +468,29 @@ public class ABLDuck extends PCT {
             }
         }
         return result;
+    }
+
+    private void copyFullRecursive(File src, File dest) throws IOException
+    {
+
+        if (src.isDirectory())
+        {
+            if (!dest.exists())
+            {
+                dest.mkdirs();
+            }
+
+            File[] list = src.listFiles();
+
+            for (File fic: list)
+            {
+                copyFullRecursive(fic,  new File(dest, fic.getName()));                    
+            }    
+        }
+        else
+        {
+            Files.copy(src.toPath(), dest.toPath() , StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     private void extractTemplateDirectory(File outputDir) throws IOException {
