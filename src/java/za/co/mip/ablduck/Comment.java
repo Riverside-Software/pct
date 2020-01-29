@@ -28,8 +28,6 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import za.co.mip.ablduck.models.Deprecated;
 
 public class Comment {
-    private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
-
     private String comment = "";
     private String author = "";
     private String returns = "";
@@ -73,7 +71,10 @@ public class Comment {
     }
 
     private void parseABLDocComment(String comment) {
-        String[] commentLines = comment.split(NEWLINE_SEPARATOR);
+    	// convert crlf to lf to avoid eol problems
+        comment = comment.replace("\r\n", "\n");
+
+        String[] commentLines = comment.split("\n");
 
         String tagType = null;
         String tagText = null;
@@ -157,7 +158,10 @@ public class Comment {
     }
 
     private void parseJavadocComment(String comment) {
-        String[] commentLines = comment.split(NEWLINE_SEPARATOR);
+        // convert crlf to lf to avoid eol problems
+        comment = comment.replace("\r\n", "\n");
+
+        String[] commentLines = comment.split("\n");
 
         String tagType = null;
         String tagText = null;

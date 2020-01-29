@@ -53,13 +53,23 @@ public class ABLDuckProcedureVisitor extends ProcedureDocumentationVisitor {
         cu.icon = "procedure";
 
         String c = null;
+        String cdefault = null;
         if (!procedureUnit.procComment.isEmpty()) {
             for (int i = procedureUnit.procComment.size() - 1; i >= 0; i--) {
                 // Assuming last comment will always be the class
                 // comment, will need to cater for license later
                 c = procedureUnit.procComment.get(i);
-                if (c != null)
+                // Save the last comment for default) 
+                if (c != null && cdefault == null)
+                    cdefault = c;
+                // Looking for the classic ABL header
+                if (c != null
+                        && c.contains("File")
+                        && c.contains("Created")
+                        && c.contains("Description"))
                     break;
+                else 
+                    c = cdefault;
             }
         }
 
