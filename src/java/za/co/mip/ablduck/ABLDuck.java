@@ -98,6 +98,7 @@ public class ABLDuck extends PCT {
     private String encoding = null;
     private Charset inputCharset = null;
     private File template = null;
+    private File customLink = null;
 
     public ABLDuck() {
         super();
@@ -179,7 +180,16 @@ public class ABLDuck extends PCT {
     public void setTemplate(File template) {
         this.template = template;
     }
-
+    
+    /**
+     * Set a customLink File
+     * 
+     * @param customLink customLinkFile
+     */
+    public void setCustomLink(File customLink) {
+        this.customLink = customLink;
+    }
+    
     @Override
     public void execute() {
 
@@ -208,6 +218,13 @@ public class ABLDuck extends PCT {
                     extractTemplateDirectory(this.destDir);                    
                 }
 
+                // CustomLinkFile
+                String vCustomLink = "resources/customlink.js";
+                if (this.customLink != null && this.customLink.isFile()) {
+                    vCustomLink = this.customLink.getName();
+                    copyFullRecursive(this.customLink,  new File(this.destDir, vCustomLink));     
+                }
+                
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
                 List<String> files = Arrays.asList("index.html"); // , "template.html",
                                                                   // "print-template.html"
@@ -218,6 +235,8 @@ public class ABLDuck extends PCT {
                     replaceTemplateTags("{version}", Version.getPCTVersion(),
                             Paths.get(this.destDir.getAbsolutePath(), file));
                     replaceTemplateTags("{date}", formatter.format(new Date()),
+                            Paths.get(this.destDir.getAbsolutePath(), file));
+                    replaceTemplateTags("{customLinkFile}", vCustomLink,
                             Paths.get(this.destDir.getAbsolutePath(), file));
                 }
             } catch (IOException ex) {
@@ -471,14 +490,14 @@ public class ABLDuck extends PCT {
 
     private void copyFullRecursive(File src, File dest) throws IOException
     {
-
+        
         if (src.isDirectory())
         {
             if (!dest.exists())
             {
                 dest.mkdirs();
             }
-
+            
             File[] list = src.listFiles();
 
             for (File fic: list)
