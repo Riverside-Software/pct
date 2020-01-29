@@ -287,8 +287,9 @@ public class Comment {
         private String text;
 
         public Tag(String type, String text) {
-            this.type = type;
-            this.text = text;
+            // Trim the lasts lf char or lf space lf group
+            this.type = type.replaceAll("\\n*(\\s*\\n*)*$", "");
+            this.text = text.replaceAll("\\n*(\\s*\\n*)*$", "");
         }
 
         public String getType() {
