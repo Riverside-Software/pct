@@ -79,13 +79,23 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         }
 
         String c = null;
+        String cdefault = null;
         if (!classUnit.classComment.isEmpty()) {
             for (int i = classUnit.classComment.size() - 1; i >= 0; i--) {
                 // Assuming last comment will always be the class
                 // comment, will need to cater for license later
                 c = classUnit.classComment.get(i);
-                if (c != null)
+                // Save the last comment for default) 
+                if (c != null && cdefault == null)
+                    cdefault = c;
+                // Looking for the classic ABL class header
+                if (c != null
+                        && c.contains("File")
+                        && c.contains("Created")
+                        && c.contains("Description"))
                     break;
+                else 
+                    c = cdefault;
             }
         }
 
