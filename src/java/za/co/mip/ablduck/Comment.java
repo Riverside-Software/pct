@@ -28,8 +28,6 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import za.co.mip.ablduck.models.Deprecated;
 
 public class Comment {
-    private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
-
     private String comment = "";
     private String author = "";
     private String returns = "";
