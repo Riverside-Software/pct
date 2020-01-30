@@ -112,7 +112,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         cu.meta.isFinal = (classUnit.isFinal ? classUnit.isFinal : null);
 
         cu.members = new ArrayList<>();
-               
+
         // Constructor
         int constructorCount = 1;
         for (Constructor constructor : classUnit.constructors) {
@@ -141,7 +141,7 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
             member.owner = fullyQualifiedClassName;
             cu.members.add(member);
         }
-        
+
         // Enum Member (like Properties)
         for (EnumMember enumMember : classUnit.enumMembers) {
             Member member = readEnumMember(enumMember, fullyQualifiedClassName);
@@ -224,49 +224,46 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         return member;
 
     }
-    
-    private static boolean IsPropertyAccessEqualsOrNone(AccessModifier pModifier, GetSetModifier pGetSetModifier) {
-            
-        if (GetSetModifier.PRIVATE.equals(pGetSetModifier) && AccessModifier.PRIVATE.equals(pModifier))
+
+    private static boolean isPropertyAccessEqualsOrNone(AccessModifier pModifier,
+            GetSetModifier pGetSetModifier) {
+        if (GetSetModifier.PRIVATE.equals(pGetSetModifier)
+                && AccessModifier.PRIVATE.equals(pModifier))
             return true;
-        
-        else if (GetSetModifier.PROTECTED.equals(pGetSetModifier) && AccessModifier.PROTECTED.equals(pModifier))
+        else if (GetSetModifier.PROTECTED.equals(pGetSetModifier)
+                && AccessModifier.PROTECTED.equals(pModifier))
             return true;
-        
-        else if (GetSetModifier.PUBLIC.equals(pGetSetModifier) && AccessModifier.PUBLIC.equals(pModifier))
+        else if (GetSetModifier.PUBLIC.equals(pGetSetModifier)
+                && AccessModifier.PUBLIC.equals(pModifier))
             return true;
-        
         return GetSetModifier.NONE.equals(pGetSetModifier);
     }
-    
+
     private static String getGetSetAccessComment(Property property) {
-        
         boolean vGetNull = GetSetModifier.NONE.equals(property.getModifier);
         boolean vSetNull = GetSetModifier.NONE.equals(property.setModifier);
         boolean vHasModifier = false;
-        
+
         String vGetTxt = "";
-        if (!IsPropertyAccessEqualsOrNone(property.modifier , property.getModifier) ) {
+        if (!isPropertyAccessEqualsOrNone(property.modifier, property.getModifier)) {
             vGetTxt = property.getModifier.toString().concat(" GET");
             vHasModifier = true;
-        }
-        else if (!vGetNull)
+        } else if (!vGetNull)
             vGetTxt = "GET";
-        
+
         String vSetTxt = "";
-        if (!IsPropertyAccessEqualsOrNone(property.modifier , property.setModifier) ) {
+        if (!isPropertyAccessEqualsOrNone(property.modifier, property.setModifier)) {
             vSetTxt = property.setModifier.toString().concat(" SET");
             vHasModifier = true;
-        }
-        else if (!vSetNull) 
+        } else if (!vSetNull)
             vSetTxt = "SET";
-        
+
         if (vSetTxt.isEmpty() || vGetTxt.isEmpty())
             return vGetTxt.concat(vSetTxt);
         else if (vHasModifier)
             return vGetTxt.concat(" - ").concat(vSetTxt);
-        else 
-            return "";    
+        else
+            return "";
     }
 
     protected static Member readProperty(Property property) {
@@ -277,16 +274,16 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.tagname = "property";
         member.datatype = property.dataType;
 
-        // Add GetSet Modifier info to comment if usefull
+        // Add GetSet Modifier info to comment if useful
         String vAccessInfo = getGetSetAccessComment(property);
-        Map<String, String> extraTag = new HashMap<String, String>();
+        Map<String, String> extraTag = new HashMap<>();
         if (!vAccessInfo.isEmpty())
             extraTag.put("Modifier", "`" + vAccessInfo + "`");
-        
+
         Comment propertyComment = parseComment(property.propertyComment);
         propertyComment.addExtraTag(extraTag);
         member.comment = propertyComment.getComment();
-        
+
         member.meta.isPrivate = (property.modifier == AccessModifier.PRIVATE ? Boolean.TRUE : null);
         member.meta.isProtected = (property.modifier == AccessModifier.PROTECTED
                 ? Boolean.TRUE
@@ -309,17 +306,17 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         member.tagname = "property";
         member.datatype = enumName;
         member.definition = enumItem.definition;
-        
+
         Comment enumItemComment = parseComment(enumItem.comment);
         // Display enum item definition
-        Map<String, String> extraTag = new HashMap<String, String>();
+        Map<String, String> extraTag = new HashMap<>();
         extraTag.put("Definition", "`" + enumItem.definition + "`");
         enumItemComment.addExtraTag(extraTag);
         member.comment = enumItemComment.getComment();
-        
+
         return member;
     }
-    
+
     protected static Member readMethod(Method method, int count) {
         Member member = new Member();
 
