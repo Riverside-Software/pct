@@ -489,26 +489,18 @@ public class ABLDuck extends PCT {
         return result;
     }
 
-    private void copyFullRecursive(File src, File dest) throws IOException
-    {
-        
-        if (src.isDirectory())
-        {
-            if (!dest.exists())
-            {
+    private void copyFullRecursive(File src, File dest) throws IOException {
+        if (src.isDirectory()) {
+            if (!dest.exists()) {
                 dest.mkdirs();
             }
-            
-            File[] list = src.listFiles();
 
-            for (File fic: list)
-            {
-                copyFullRecursive(fic,  new File(dest, fic.getName()));                    
-            }    
-        }
-        else
-        {
-            Files.copy(src.toPath(), dest.toPath() , StandardCopyOption.REPLACE_EXISTING);
+            File[] list = src.listFiles();
+            for (File fic : list) {
+                copyFullRecursive(fic, new File(dest, fic.getName()));
+            }
+        } else {
+            Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
