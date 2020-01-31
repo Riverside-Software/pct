@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="ABLUnit-test10">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dlcHome="${DLC}" />
+    <ABLUnit dlcHome="${DLC}">
+      <fileset dir="tests" includes="**/*.p" />
+      <propath location="tests" />
+      <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
+      <option name="-clientlog" value="ablunit.log" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </ABLUnit>
+  </target>
+
+</project>

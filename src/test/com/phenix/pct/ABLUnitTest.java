@@ -16,8 +16,11 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +29,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.tools.ant.BuildException;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xml.sax.InputSource;
 
@@ -36,6 +38,10 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:b.thoral@riverside-software.fr">Bastien THORAL </a>
  */
 public class ABLUnitTest extends BuildFileTestNg {
+    private static final String XPATH_TESTS = "/testsuites/@tests";
+    private static final String XPATH_FAILURES = "/testsuites/@failures";
+    private static final String XPATH_ERRORS = "/testsuites/@errors";
+
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
     // Two test procedures
@@ -46,9 +52,9 @@ public class ABLUnitTest extends BuildFileTestNg {
 
         InputSource inputSource = new InputSource("ABLUnit/test1/results.xml");
         // Should be 6/2/2
-        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "6");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "2");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@errors", inputSource), "2");
+        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "6");
+        assertEquals(xpath.evaluate(XPATH_FAILURES, inputSource), "2");
+        assertEquals(xpath.evaluate(XPATH_ERRORS, inputSource), "2");
     }
 
     // No test, should fail
@@ -65,19 +71,19 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test3/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "3");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@errors", inputSource), "1");
+        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "3");
+        assertEquals(xpath.evaluate(XPATH_FAILURES, inputSource), "1");
+        assertEquals(xpath.evaluate(XPATH_ERRORS, inputSource), "1");
     }
 
     // Test with different path to resultset
     @Test(groups = {"v11", "win"})
-    public void test4() throws XPathExpressionException, FileNotFoundException {
+    public void test4() {
         configureProject("ABLUnit/test4/build.xml");
         executeTarget("test");
 
         File result = new File("ABLUnit/test4/tempDir", "results.xml");
-        Assert.assertTrue(result.exists());
+        assertTrue(result.exists());
     }
 
     // Test with 1 file, 1 case
@@ -87,13 +93,13 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test");
 
         InputSource inputSource = new InputSource("ABLUnit/test6/results.xml");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@tests", inputSource), "1");
-        Assert.assertEquals(xpath.evaluate("/testsuites/@failures", inputSource), "0");
+        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "1");
+        assertEquals(xpath.evaluate(XPATH_FAILURES, inputSource), "0");
     }
 
     // Test haltOnFailure property
     @Test(groups = {"v11"})
-    public void test7() throws XPathExpressionException {
+    public void test7() {
         configureProject("ABLUnit/test7/build.xml");
         executeTarget("test1");
         expectBuildException("test2", "haltOnFailure is true");
@@ -101,19 +107,19 @@ public class ABLUnitTest extends BuildFileTestNg {
 
     // Test writeLog property
     @Test(groups = {"v11"})
-    public void test8() throws XPathExpressionException {
+    public void test8() {
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");
-        Assert.assertFalse(logFile.exists());
+        assertFalse(logFile.exists());
         expectBuildException("test1", "Syntax error");
-        Assert.assertFalse(logFile.exists());
+        assertFalse(logFile.exists());
         expectBuildException("test2", "Syntax error");
-        Assert.assertTrue(logFile.exists());
+        assertTrue(logFile.exists());
     }
 
     // Test warning message
     @Test(groups = {"v11"})
-    public void test9() throws XPathExpressionException {
+    public void test9() {
         configureProject("ABLUnit/test9/build.xml");
 
         List<String> rexp = new ArrayList<>();
@@ -122,5 +128,16 @@ public class ABLUnitTest extends BuildFileTestNg {
         rexp.add("Total tests run: 2, Failures: 0, Errors: 2");
         expectLogRegexp("test1", rexp, false);
 
+    }
+
+    @Test(groups = {"v11"})
+    public void test10() throws XPathExpressionException {
+        configureProject("ABLUnit/test10/build.xml");
+        executeTarget("test1");
+
+        InputSource inputSource = new InputSource("ABLUnit/test10/results.xml");
+        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "3");
+        assertEquals(xpath.evaluate(XPATH_FAILURES, inputSource), "0");
+        assertEquals(xpath.evaluate(XPATH_ERRORS, inputSource), "0");
     }
 }
