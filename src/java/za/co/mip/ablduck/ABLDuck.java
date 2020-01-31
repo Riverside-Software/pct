@@ -171,7 +171,6 @@ public class ABLDuck extends PCT {
         this.dataFilesOnly = dataOnly;
     }
 
-
     /**
      * Set the template directory or zip (if null, we use default template)
      * 
@@ -180,7 +179,7 @@ public class ABLDuck extends PCT {
     public void setTemplate(File template) {
         this.template = template;
     }
-    
+
     /**
      * Set a customLink File
      * 
@@ -189,7 +188,7 @@ public class ABLDuck extends PCT {
     public void setCustomLink(File customLink) {
         this.customLink = customLink;
     }
-    
+
     @Override
     public void execute() {
 
@@ -210,21 +209,19 @@ public class ABLDuck extends PCT {
             try {
                 if (template != null && this.template.isDirectory()) {
                     copyFullRecursive(this.template, this.destDir);
-                }
-                else if (this.template != null && this.template.isFile()) {
-                    unzip(new FileInputStream (this.template), this.destDir);
-                }
-                else {
-                    extractTemplateDirectory(this.destDir);                    
+                } else if (this.template != null && this.template.isFile()) {
+                    unzip(new FileInputStream(this.template), this.destDir);
+                } else {
+                    extractTemplateDirectory(this.destDir);
                 }
 
                 // CustomLinkFile
                 String vCustomLink = "resources/customlink.js";
                 if (this.customLink != null && this.customLink.isFile()) {
                     vCustomLink = this.customLink.getName();
-                    copyFullRecursive(this.customLink,  new File(this.destDir, vCustomLink));     
+                    copyFullRecursive(this.customLink, new File(this.destDir, vCustomLink));
                 }
-                
+
                 Format formatter = new SimpleDateFormat("EEE d MMM yyyy HH:mm:ss");
                 List<String> files = Arrays.asList("index.html"); // , "template.html",
                                                                   // "print-template.html"
