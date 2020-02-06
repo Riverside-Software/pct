@@ -1,29 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="PCT" default="sonar" xmlns:sonar="antlib:org.sonar.ant" xmlns:jacoco="antlib:org.jacoco.ant">
-  <property environment="env" />
+<project name="PCT" default="init-sonar" xmlns:sonar="antlib:org.sonar.ant" xmlns:jacoco="antlib:org.jacoco.ant">
 
-  <property name="sonar.projectKey" value="eu.rssw.pct:PCT" />
-  <property name="sonar.projectName" value="PCT" />
-  <property name="sonar.projectVersion" value="214" />
-  <property name="sonar.sources" value="src/java,src/progress" />
-  <property name="sonar.exclusions" value="src/progress/Consultingwerk/**/*,src/progress/**/dump_inc*.p,src/progress/**/_dmp*.p,src/progress/prodict/**/*,src/progress/adecomm/*,src/progress/web/method/*" />
-  <property name="sonar.sourceEncoding" value="iso8859-1" />
-  <property name="sonar.oe.binaries" value="build/build-v11,build/build-v12" />
-  <property name="sonar.java.source" value="7" />
-  <property name="sonar.java.binaries" value="build/java" />
-  <property name="sonar.coverage.jacoco.xmlReportPaths" value="profiler/report.xml" />
-  <property name="sonar.java.libraries" value="lib/ant.jar,lib/ant-launcher.jar,lib/testng-6.13.1.jar,lib/gson-2.2.4.jar,lib/ast.jar,lib/ast-dependencies.jar" />
-  <property name="sonar.oe.propath" value="src/progress" />
-  <property name="sonar.oe.databases" value="dictdb.df" />
-  <property name="sonar.oe.aliases" value="dictdb,dictdb2" />
-  <property name="sonar.oe.dlc" value="${DLC}" />
-  <property name="sonar.oe.dlc.propath" value="true" />
-  <property name="sonar.oe.coverage.profiler.dirs" value="profiler/progress" />
-  <condition property="sonar.branch.target" value="master">
-    <not><equals arg1="${sonar.branch.name}" arg2="master" /></not>
-  </condition>
-
-  <target name="sonar">
+  <target name="init-sonar">
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />
     <jacoco:report>
       <executiondata>
@@ -40,7 +18,6 @@
       <xml destFile="profiler/report.xml" />
     </jacoco:report>
 
-    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml" />
     <touch file="dictdb.df" />
     <mkdir dir="profiler/progress" />
     <unzip src="oe-profiler-data-11.7-Win.zip" dest="profiler/progress">
@@ -49,8 +26,6 @@
     <unzip src="oe-profiler-data-12.1-Win.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
-    <sonar:sonar />
-    <delete file="dictdb.df" />
   </target>
 
 </project>
