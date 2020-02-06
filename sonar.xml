@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="PCT" default="init-sonar" xmlns:sonar="antlib:org.sonar.ant" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="PCT" default="init-sonar" xmlns:jacoco="antlib:org.jacoco.ant">
 
   <target name="init-sonar">
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" />

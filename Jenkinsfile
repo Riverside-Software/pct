@@ -100,7 +100,7 @@ pipeline {
           def jdk = tool name: 'JDK8', type: 'jdk'
           def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
           withEnv(["JAVA_HOME=${jdk}"]) {
-            sh "${antHome}/bin/ant -file sonar.xml -DDLC=${dlc} init-sonar"
+            sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.4.jar -file sonar.xml -DDLC=${dlc} init-sonar"
           }
           withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
             withSonarQubeEnv('RSSW') {
