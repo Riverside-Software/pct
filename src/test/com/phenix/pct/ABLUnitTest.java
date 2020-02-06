@@ -136,7 +136,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         executeTarget("test1");
 
         InputSource inputSource = new InputSource("ABLUnit/test10/results.xml");
-        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "3");
+        assertEquals(xpath.evaluate(XPATH_TESTS, inputSource), "2");
         assertEquals(xpath.evaluate(XPATH_FAILURES, inputSource), "0");
         assertEquals(xpath.evaluate(XPATH_ERRORS, inputSource), "0");
     }

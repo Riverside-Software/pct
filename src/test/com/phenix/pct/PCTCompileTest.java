@@ -1329,7 +1329,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = {"v11"})
+    // @Test(groups = {"v11"})
     public void test81() {
         configureProject(BASEDIR + "test81/build.xml");
         executeTarget("init");
