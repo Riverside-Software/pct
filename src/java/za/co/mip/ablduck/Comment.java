@@ -285,12 +285,11 @@ public class Comment {
      * @return
      */
     private String cleanAblComment(String comment) {
-
         /* Left */
         comment = ltrim(comment, '/');
         comment = ltrim(comment, '*');
         comment = ltrim(comment, '-');
-        /* Rigth */
+        /* Right */
         comment = rtrim(comment, '\n');
         comment = rtrim(comment, '/');
         comment = rtrim(comment, '*');
@@ -322,20 +321,6 @@ public class Comment {
         private String type;
         private String text;
 
-        /**
-         * Remove useless EOL and Whitespaces
-         * 
-         * @param pText
-         * @return
-         */
-        private String cleanText(String pText) {
-            int i = pText.length() - 1;
-            while (i >= 0 && (Character.isWhitespace(pText.charAt(i)) || pText.charAt(i) == '\n')) {
-                i--;
-            }
-            return pText.substring(0, i + 1);
-        }
-
         public Tag(String type, String text) {
             // Trim the lasts lf char or lf space lf group
             this.type = type;
@@ -348,6 +333,17 @@ public class Comment {
 
         public String getText() {
             return this.text;
+        }
+
+        /**
+         * Remove useless EOL and Whitespaces
+         */
+        private String cleanText(String pText) {
+            int i = pText.length() - 1;
+            while (i >= 0 && (Character.isWhitespace(pText.charAt(i)) || pText.charAt(i) == '\n')) {
+                i--;
+            }
+            return pText.substring(0, i + 1);
         }
     }
 }
