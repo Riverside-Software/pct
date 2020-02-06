@@ -77,12 +77,12 @@ public class Comment {
     }
 
     private void parseABLDocComment(String comment) {
-        // Remove comment characters
-        comment = comment.replaceAll("^/\\*-*", "").replaceAll("-*\\*/$", "");
-
         // convert crlf to lf to avoid eol problems
         comment = comment.replace("\r\n", "\n");
-
+        
+        // Remove comment characters
+        comment = cleanAblComment(comment);
+        
         String[] commentLines = comment.split("\n");
 
         String tagType = null;
@@ -262,6 +262,41 @@ public class Comment {
             }
         }
     }
+    public String ltrim(String s, Character pChar) {
+        int i = 0;
+        while (i < s.length() && s.charAt(i) == pChar) {
+            i++;
+        }
+        return s.substring(i);
+    }
+
+    public String rtrim(String s, Character pChar) {
+        int i = s.length() - 1;
+        while (i >= 0 && s.charAt(i) == pChar) {
+            i--;
+        }
+        return s.substring(0, i + 1);
+    }
+
+    /**
+     * Remove ABL comment characters
+     * 
+     * @param comment
+     * @return
+     */
+    private String cleanAblComment(String comment) {
+        /* Left */
+        comment = ltrim(comment, '/');
+        comment = ltrim(comment, '*');
+        comment = ltrim(comment, '-');
+        /* Right */
+        comment = rtrim(comment, '\n');
+        comment = rtrim(comment, '/');
+        comment = rtrim(comment, '*');
+        comment = rtrim(comment, '-');
+
+        return comment;
+    }
 
     private String ltrim(String s) {
         int i = 0;
@@ -288,8 +323,8 @@ public class Comment {
 
         public Tag(String type, String text) {
             // Trim the lasts lf char or lf space lf group
-            this.type = type.replaceAll("\\n*(\\s*\\n*)*$", "");
-            this.text = text.replaceAll("\\n*(\\s*\\n*)*$", "");
+            this.type = type;
+            this.text = cleanText(text);
         }
 
         public String getType() {
@@ -298,6 +333,17 @@ public class Comment {
 
         public String getText() {
             return this.text;
+        }
+
+        /**
+         * Remove useless EOL and Whitespaces
+         */
+        private String cleanText(String pText) {
+            int i = pText.length() - 1;
+            while (i >= 0 && (Character.isWhitespace(pText.charAt(i)) || pText.charAt(i) == '\n')) {
+                i--;
+            }
+            return pText.substring(0, i + 1);
         }
     }
 }
