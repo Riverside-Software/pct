@@ -174,7 +174,7 @@ public class ABLDuck extends PCT {
     /**
      * Set the template directory or zip (if null, we use default template)
      * 
-     * @param templateDir directory of template file
+     * @param template directory of template file
      */
     public void setTemplate(File template) {
         this.template = template;
