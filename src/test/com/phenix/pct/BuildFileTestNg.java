@@ -15,11 +15,9 @@
  *
  */
 package com.phenix.pct;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -177,31 +175,6 @@ public class BuildFileTestNg {
                 Assert.fail("Log '" + s + "' doesn't match regular expression '" + regExp.toString() + "'");
                 return;
             }
-        }
-    }
-
-    /**
-     * Assert that the content of given filename is identical to the expectedContent
-     */
-    public void expectLogFileContent(String target, String file, String expectedContent) {
-        executeTarget(target);
-        this.expectLogFileContent(file, expectedContent);
-    }
-
-    /**
-     * Compares the content of the file with the expected content.
-     */
-    public void expectLogFileContent(String file, String expectedContent) {
-        try {
-            String content = new String(
-                    Files.readAllBytes(Paths.get(new File(file).getAbsolutePath())));
-            if (!content.equals(expectedContent)) {
-                Assert.fail("Log '" + content + "' doesn't match expected result '"
-                        + expectedContent + "'");
-            }
-        } catch (IOException e) {
-            Assert.fail("Error while accessing the file  '" + file + "' with message "
-                    + e.getMessage());
         }
     }
 

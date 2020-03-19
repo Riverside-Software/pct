@@ -17,9 +17,19 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -27,13 +37,8 @@ import org.testng.annotations.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.google.gson.Gson;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class for testing PCTCompile task
@@ -1268,14 +1273,66 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test79() {
         String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
+        Gson gson = new Gson();
 
         configureProject(BASEDIR + "test79/build.xml");
-        expectLogFileContent("test1", projectResultFile,
-                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-        expectLogFileContent("test2", projectResultFile,
-                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test2.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
-        expectLogFileContent("test3", projectResultFile,
-                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test2.i\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"},{\"fileName\":\"src\\/dir1\\/test3.p\",\"mainFileName\":\"src\\/dir1\\/test3.p\",\"rowNum\":4,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+        executeTarget("test1");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test2");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test2.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test3");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 2);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertEquals(result.ttProjectErrors[1].fileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[1].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[1].rowNum, 4);
+            assertEquals(result.ttProjectErrors[1].colNum, 1);
+            assertEquals(result.ttProjectErrors[1].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
         expectBuildException("test4", "OutputType value is wrong");
 
         List<String> rexp = new ArrayList<>();
@@ -1284,24 +1341,69 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLogRegexp("test5", rexp, false);
 
         expectBuildException("test8", "value of failOnError is true");
-        expectLogFileContent(projectResultFile,
-                "{\"ttProjectErrors\":[{\"fileName\":\"src\\/dir1\\/test1.p\",\"mainFileName\":\"src\\/dir1\\/test1.p\",\"rowNum\":3,\"colNum\":1,\"msg\":\"** Unable to understand after -- \\\"MESSGE\\\". (247)\"}],\"compiledFiles\":0,\"errorFiles\":1}");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
 
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
-        } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
+        } catch (IOException | InvalidRCodeException caught) {
             return;
         }
-        expectLogFileContent("test6", projectResultFile,
-                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"DEFINE\\\" as \\\"DEF\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"},{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test5.p\",\"mainFileName\":\"src\\/dir1\\/test5.p\",\"msg\":\"Cannot reference \\\"integer\\\" as \\\"INT\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
+        executeTarget("test6");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 0);
+            assertNull(result.ttProjectErrors);
+            assertEquals(result.ttProjectWarnings.length, 2);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"DEFINE\" as \"DEF\" due to the \"require-full-keywords\" compiler option. (18494)");
+            assertEquals(result.ttProjectWarnings[1].fileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[1].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[1].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[1].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[1].msg,
+                    "Cannot reference \"integer\" as \"INT\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
 
-        expectLogFileContent("test7", projectResultFile,
-                "{\"ttProjectWarnings\":[{\"msgNum\":18494,\"rowNum\":2,\"fileName\":\"src\\/dir1\\/test6.i\",\"mainFileName\":\"src\\/dir1\\/test6.p\",\"msg\":\"Cannot reference \\\"VARIABLE\\\" as \\\"VAR\\\" due to the \\\"require-full-keywords\\\" compiler option. (18494)\"}],\"compiledFiles\":1,\"errorFiles\":0}");
+        executeTarget("test7");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 0);
+            assertNull(result.ttProjectErrors);
+            assertEquals(result.ttProjectWarnings.length, 1);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test6.i");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test6.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
     }
 
     @Test(groups = {"v12"})
@@ -1351,6 +1453,33 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f5.exists());
         File f6 = new File(BASEDIR + "test81/build3/prgs/Internal.r");
         assertTrue(f6.exists());
+    }
+
+    // Those classes just for the GSON mapping in test79
+    @SuppressWarnings("unused")
+    protected static class ProjectResult {
+        private int compiledFiles;
+        private int errorFiles;
+        private ProjectError[] ttProjectErrors;
+        private ProjectWarning[] ttProjectWarnings;
+    }
+
+    @SuppressWarnings("unused")
+    protected static class ProjectError {
+        private int rowNum;
+        private int colNum;
+        private String fileName;
+        private String mainFileName;
+        private String msg;
+    }
+
+    @SuppressWarnings("unused")
+    protected static class ProjectWarning {
+        private int msgNum;
+        private int rowNum;
+        private String fileName;
+        private String mainFileName;
+        private String msg;
     }
 
 }
