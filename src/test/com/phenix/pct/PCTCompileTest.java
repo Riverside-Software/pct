@@ -1272,6 +1272,15 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"v10"})
     public void test79() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException | InvalidRCodeException caught) {
+            return;
+        }
+
         String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
         Gson gson = new Gson();
 
@@ -1357,14 +1366,6 @@ public class PCTCompileTest extends BuildFileTestNg {
             fail("Caught IOException", caught);
         }
 
-        // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException | InvalidRCodeException caught) {
-            return;
-        }
         executeTarget("test6");
         try (Reader reader = new FileReader(projectResultFile)) {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);

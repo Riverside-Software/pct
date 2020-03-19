@@ -219,6 +219,10 @@ PROCEDURE initModule:
       callback:initialize(hSrcProc).
   END.
 &ENDIF
+  IF (outputType > "") AND (LOOKUP("json", outputType) GT 0) AND NOT bAboveEq117 THEN DO:
+    MESSAGE "JSON outputType is only supported on 11.7+".
+    outputType = "".
+  END.
 
   /* Gets CRC list */
   DEFINE VARIABLE h AS HANDLE NO-UNDO.
@@ -556,23 +560,27 @@ PROCEDURE printErrorsWarningsJson.
   DEFINE INPUT PARAMETER iCompOK AS INTEGER NO-UNDO.
   DEFINE INPUT PARAMETER iCompFail AS INTEGER NO-UNDO.
 
-  DEFINE VARIABLE hResult AS handle NO-UNDO.
-  DEFINE VARIABLE mptr AS MEMPTR NO-UNDO.
   DEFINE VARIABLE dsJsonObj AS JsonObject NO-UNDO.
+  DEFINE VARIABLE ttErr AS JsonArray NO-UNDO.
+  DEFINE VARIABLE ttWarn AS JsonArray NO-UNDO.
   DEFINE VARIABLE outFile AS CHARACTER NO-UNDO.
 
   IF ( outputType EQ 'json' ) THEN DO:
-    hResult = DATASET dsResult:handle.
-    hResult:WRITE-JSON("memptr", mptr).
-    dsJsonObj = CAST( NEW ObjectModelParser():Parse(mptr), JsonObject).
-    dsJsonObj = dsJsonObj:GetJsonObject("dsResult").
-
+    dsJsonObj = NEW JsonObject().
     dsJsonObj:Add("compiledFiles", iCompOK).
     dsJsonObj:Add("errorFiles", iCompFail).
 
+    ttErr = NEW JsonArray().
+    ttWarn = NEW JsonArray().
+    TEMP-TABLE ttProjectErrors:HANDLE:WRITE-JSON("JsonArray", ttErr).
+    TEMP-TABLE ttProjectWarnings:HANDLE:WRITE-JSON("JsonArray", ttWarn).
+    IF (ttErr:Length GT 0) THEN
+        dsJsonObj:ADD("ttProjectErrors", ttErr).
+    IF (ttWarn:Length GT 0) THEN
+        dsJsonObj:ADD("ttProjectWarnings", ttWarn).
+
     ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
     dsJsonObj:WriteFile(outFile).
-    SET-SIZE(mptr) = 0.
   END.
 
 END PROCEDURE.
