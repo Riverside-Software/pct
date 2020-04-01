@@ -283,10 +283,10 @@ public class PCTBgCompile extends PCTBgRun {
                         int numCU = (size > 100 ? 10 : 1);
                         Iterator<CompilationUnit> iter = units.iterator();
                         for (int zz = 0; zz < numCU; zz++) {
-                            sending.add((CompilationUnit) iter.next());
+                            sending.add(iter.next());
                         }
                         for (Iterator<CompilationUnit> iter2 = sending.iterator(); iter2.hasNext();) {
-                            units.remove((CompilationUnit) iter2.next());
+                            units.remove(iter2.next());
                         }
                     } else {
                         noMoreFiles = true;
@@ -363,7 +363,9 @@ public class PCTBgCompile extends PCTBgRun {
                 String customResponse, List<Message> returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
                 String[] str = customResponse.split("/");
-                int ok = 0, notOk = 0, skipped = 0;
+                int ok = 0;
+                int notOk = 0;
+                int skipped = 0;
                 try {
                     ok = Integer.parseInt(str[0]);
                     notOk = Integer.parseInt(str[1]);

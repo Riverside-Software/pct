@@ -1456,6 +1456,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f6.exists());
     }
 
+    @Test(groups = {"v11", "win"})
+    public void test82() {
+        configureProject(BASEDIR + "test82/build.xml");
+        expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
     // Those classes just for the GSON mapping in test79
     @SuppressWarnings("unused")
     protected static class ProjectResult {

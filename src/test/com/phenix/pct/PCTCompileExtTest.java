@@ -1303,6 +1303,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f6.exists());
     }
 
+    @Test(groups = {"v11", "win"})
+    public void test82() {
+        configureProject(BASEDIR + "test82/build.xml");
+        expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
     @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
