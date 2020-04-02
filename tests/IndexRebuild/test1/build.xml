@@ -11,7 +11,7 @@
   </target>
 
   <target name="test">
-    <IndexRebuild dbDir="db" dbName="sp2k" dlcHome="${DLC}">
+    <IndexRebuild dbDir="db" dbName="sp2k" dlcHome="${DLC}" cpInternal="iso8859-1">
       <Index table="customer" index="CustomerNew1" />
       <Index table="employee" index="EmployeeNew1" />
     </IndexRebuild>
