@@ -25,4 +25,15 @@
     </PCTCompile>
   </target>
 
+  <target name="test2">
+    <sleep milliseconds="1000" />
+    <touch file="src/test.p" />
+    <PCTCompile destDir="build2" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <Option name="-swl" value="swl2.txt" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
 </project>

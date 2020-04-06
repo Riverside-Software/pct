@@ -1009,8 +1009,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns2.length() > 0);
         assertTrue(warns2.length() < warns1.length());
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
-        assertTrue(warns3.exists());
-        assertEquals(warns3.length(), 0);
+        // All warnings are ignored, file is not present anymore
+        assertFalse(warns3.exists());
+
+        // Existing file should then be deleted
+        executeTarget("test2");
+        assertFalse(warns2.exists());
     }
 
     @Test(groups = {"v10"})
@@ -1346,7 +1350,7 @@ public class PCTCompileTest extends BuildFileTestNg {
 
         List<String> rexp = new ArrayList<>();
         rexp.add("PCTCompile - Progress Code Compiler");
-        rexp.add("Parameter outputType is not supported on multi-threaded environment");
+        rexp.add("JSON outputType is not supported on multi-threaded environment");
         expectLogRegexp("test5", rexp, false);
 
         expectBuildException("test8", "value of failOnError is true");
@@ -1460,6 +1464,62 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test82() {
         configureProject(BASEDIR + "test82/build.xml");
         expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
+    @Test(groups = {"v10"})
+    public void test83() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException | InvalidRCodeException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test83/build.xml");
+        String projectResultFile = BASEDIR + "test83/build/.pct/project-result.json";
+        Gson gson = new Gson();
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/test2.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in main file at line 1.*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add("1 file\\(s\\) compiled");
+        rexp.add("Failed to compile  1  file\\(s\\)");
+        expectLogRegexp("test", rexp, false);
+
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 1);
+
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/test2.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/test2.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 1);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+
+            assertEquals(result.ttProjectWarnings.length, 1);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/test.i");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/test.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        File warningsFile = new File(BASEDIR + "test83/build/.pct/test.p.warnings");
+        assertTrue(warningsFile.exists());
+        assertTrue(warningsFile.length() > 0);
     }
 
     // Those classes just for the GSON mapping in test79

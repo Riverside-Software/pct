@@ -26,9 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.ResourceCollection;
 
 public class CompilationAttributes implements ICompilationAttributes {
+    protected static final String CONSOLE_OUTPUT_TYPE = "console";
+    protected static final String JSON_OUTPUT_TYPE = "json";
+
     private List<ResourceCollection> resources = new ArrayList<>();
     private File destDir = null;
     private File xRefDir = null;
@@ -448,8 +452,32 @@ public class CompilationAttributes implements ICompilationAttributes {
         return callback;
     }
 
-    public String getOutputType() {
-        return outputType;
+    public List<String> getOutputType() {
+        List<String> retVal = new ArrayList<>();
+        if (outputType != null) {
+            for (String str : outputType.split(",")) {
+                if (CONSOLE_OUTPUT_TYPE.equalsIgnoreCase(str)) {
+                    retVal.add(CONSOLE_OUTPUT_TYPE);
+                } else if (JSON_OUTPUT_TYPE.equalsIgnoreCase(str)) {
+                    retVal.add(JSON_OUTPUT_TYPE);
+                } else {
+                    parent.log("Invalid outputType: '" + str + "'", Project.MSG_WARN);
+                }
+            }
+        }
+        if (retVal.isEmpty())
+            retVal.add(CONSOLE_OUTPUT_TYPE);
+
+        return retVal;
+    }
+
+    public String getOutputTypeAsString() {
+        String retVal = "";
+        for (String str : getOutputType()) {
+            retVal += (retVal.isEmpty() ? "" : ',') + str;
+        }
+
+        return retVal;
     }
 
     protected void writeCompilationProcedure(File f, Charset c) {

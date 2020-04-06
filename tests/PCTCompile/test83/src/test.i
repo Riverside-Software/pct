@@ -1,0 +1,2 @@
+MESSAGE "Hello world".
+DEFINE VAR abc AS INTEGER.

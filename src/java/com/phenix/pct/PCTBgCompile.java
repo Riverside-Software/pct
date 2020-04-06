@@ -154,14 +154,10 @@ public class PCTBgCompile extends PCTBgRun {
             log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
         }
 
-        if (compAttrs.getOutputType() != null
-                && !"json".equalsIgnoreCase(compAttrs.getOutputType())) {
-            throw new BuildException(Messages.getString("PCTCompile.94"));
-        }
-
-        if (compAttrs.getOutputType() != null
-                && "json".equalsIgnoreCase(compAttrs.getOutputType())) {
+        List<String> outputTypes = compAttrs.getOutputType();
+        if (outputTypes.contains(CompilationAttributes.JSON_OUTPUT_TYPE)) {
             log(Messages.getString("PCTCompile.93"), Project.MSG_WARN);
+            outputTypes.remove(CompilationAttributes.JSON_OUTPUT_TYPE);
         }
 
         initializeCompilationUnits();
@@ -352,7 +348,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isRequireFullNames())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
             sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
-            sb.append("").append(';'); // outputType is not supported on multi-threaded environment
+            sb.append(CompilationAttributes.CONSOLE_OUTPUT_TYPE).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireReturnValues())).append(';');
 
             return sb.toString();

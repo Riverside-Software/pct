@@ -139,6 +139,9 @@ DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 DEFINE VARIABLE callbackClass AS CHARACTER NO-UNDO.
 DEFINE VARIABLE outputType AS CHARACTER NO-UNDO.
 
+DEFINE VARIABLE lOutputJson    AS LOGICAL NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lOutputConsole AS LOGICAL NO-UNDO INITIAL FALSE.
+
 /* Handle to calling procedure in order to log messages */
 DEFINE VARIABLE hSrcProc AS HANDLE NO-UNDO.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
@@ -219,9 +222,18 @@ PROCEDURE initModule:
       callback:initialize(hSrcProc).
   END.
 &ENDIF
-  IF (outputType > "") AND (LOOKUP("json", outputType) GT 0) AND NOT bAboveEq117 THEN DO:
-    MESSAGE "JSON outputType is only supported on 11.7+".
-    outputType = "".
+  IF (outputType > "") THEN DO:
+    IF (LOOKUP("json", outputType) GT 0) THEN DO:
+      IF bAboveEq117 THEN DO:
+        lOutputJson = TRUE.
+      END.
+      ELSE DO:
+        MESSAGE "JSON outputType is only supported on 11.7+".
+      END.
+    END.
+    IF (LOOKUP("console", outputType) GT 0) THEN DO:
+      lOutputConsole = TRUE.
+    END.
   END.
 
   /* Gets CRC list */
@@ -300,6 +312,7 @@ PROCEDURE compileXref.
   DEFINE VARIABLE ProcTS    AS DATETIME   NO-UNDO.
   DEFINE VARIABLE cRenameFrom AS CHARACTER NO-UNDO INITIAL ''.
   DEFINE VARIABLE lWarnings AS LOGICAL NO-UNDO INITIAL FALSE.
+  DEFINE VARIABLE lOneWarning AS LOGICAL NO-UNDO INITIAL FALSE.
 
   EMPTY TEMP-TABLE ttWarnings. /* Emptying the temp-table to store warnings for current file*/
   /* Output progress */
@@ -469,7 +482,6 @@ PROCEDURE compileXref.
         RUN ImportXref (INPUT cXrefFile, INPUT PCTDir, INPUT ipInFile) NO-ERROR.
     END.
     IF COMPILER:WARNING OR lWarnings THEN DO:
-      OUTPUT STREAM sWarnings TO VALUE(warningsFile).
       DO i = 1 TO COMPILER:NUM-MESSAGES:
         IF bAbove101 THEN DO:
           /* Pointless message coming from strict mode compiler */
@@ -487,9 +499,9 @@ PROCEDURE compileXref.
         END.
       END.
 
-      IF ( outputType EQ 'json') THEN DO:
+      IF lOutputJson THEN DO:
         FOR EACH ttWarnings:
-          Create ttProjectWarnings.
+          CREATE ttProjectWarnings.
           ASSIGN ttProjectWarnings.msgNum       = ttWarnings.msgNum
                  ttProjectWarnings.rowNum       = ttWarnings.rowNum
                  ttProjectWarnings.fileName     = REPLACE(ttWarnings.fileName, chr(92), '/')
@@ -497,14 +509,16 @@ PROCEDURE compileXref.
                  ttProjectWarnings.mainFileName = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/').
         END.
       END.
-      ELSE DO:
+      IF lOutputConsole THEN DO:
+        OUTPUT STREAM sWarnings TO VALUE(warningsFile).
         FOR EACH ttWarnings:
           PUT STREAM sWarnings UNFORMATTED SUBSTITUTE("[&1] [&3] &2", ttWarnings.rowNum, ttWarnings.msg, ttWarnings.fileName) SKIP.
+          ASSIGN lOneWarning = TRUE.
         END.
+        OUTPUT STREAM sWarnings CLOSE.
       END.
-      OUTPUT STREAM sWarnings CLOSE.
     END.
-    ELSE DO:
+    IF NOT lOneWarning THEN DO:
       OS-DELETE VALUE(warningsFile).
     END.
   END.
@@ -526,17 +540,17 @@ PROCEDURE compileXref.
       ASSIGN ttErrors.msg = ttErrors.msg + (IF ttErrors.msg EQ '' THEN '' ELSE '~n') + COMPILER:GET-MESSAGE(i).
     END.
 
-    IF ( outputType EQ 'json' ) THEN DO:
+    IF lOutputJson THEN DO:
       FOR EACH ttErrors:
-        Create ttProjectErrors.
-         ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, chr(92), '/')
-                ttProjectErrors.mainFileName  = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/')
-                ttProjectErrors.rowNum        = ttErrors.rowNum
-                ttProjectErrors.colNum        = ttErrors.colNum
-                ttProjectErrors.msg           = ttErrors.msg.
+        CREATE ttProjectErrors.
+        ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, chr(92), '/')
+               ttProjectErrors.mainFileName  = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/')
+               ttProjectErrors.rowNum        = ttErrors.rowNum
+               ttProjectErrors.colNum        = ttErrors.colNum
+               ttProjectErrors.msg           = ttErrors.msg.
       END.
     END.
-    ELSE DO:
+    IF lOutputConsole THEN DO:
       RUN logError IN hSrcProc (SUBSTITUTE("Error compiling file '&1' ...", REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/':U))).
       FOR EACH ttErrors:
         RUN displayCompileErrors(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, ttErrors.fileName, ttErrors.rowNum, ttErrors.colNum, ttErrors.msg).
@@ -565,7 +579,7 @@ PROCEDURE printErrorsWarningsJson.
   DEFINE VARIABLE ttWarn AS JsonArray NO-UNDO.
   DEFINE VARIABLE outFile AS CHARACTER NO-UNDO.
 
-  IF ( outputType EQ 'json' ) THEN DO:
+  IF lOutputJson THEN DO:
     dsJsonObj = NEW JsonObject().
     dsJsonObj:Add("compiledFiles", iCompOK).
     dsJsonObj:Add("errorFiles", iCompFail).

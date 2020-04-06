@@ -987,8 +987,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(warns2.length() > 0);
         assertTrue(warns2.length() < warns1.length());
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
-        assertTrue(warns3.exists());
-        assertEquals(warns3.length(), 0);
+        // All warnings are ignored, file is not present anymore
+        assertFalse(warns3.exists());
+
+        // Existing file should then be deleted
+        executeTarget("test2");
+        assertFalse(warns2.exists());
     }
 
     @Test(groups = {"v10"})
@@ -1307,6 +1311,11 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     public void test82() {
         configureProject(BASEDIR + "test82/build.xml");
         expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
+    @Test(groups = {"v10"})
+    public void test83() {
+        // No test case as 'outputType' attribute is not implemented in PCTCompileExt
     }
 
     @Test(groups = {"v10"})
