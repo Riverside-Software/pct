@@ -410,6 +410,8 @@
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
       <zipfileset dir="lib" prefix="lib">
+        <include name="jaxb-*.jar" />
+        <include name="activation-*.jar" />
         <include name="ast.jar" />
         <include name="ast-dependencies.jar" />
         <include name="ini4j-0.5.1.jar" />
