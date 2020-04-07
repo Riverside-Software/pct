@@ -57,7 +57,7 @@ public abstract class PCT extends Task {
 
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
-    private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
+    private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,proxygen.jar,ext/wsdl4j.jar,ext/wsdl4j-*.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar,ext/soap-*.jar"; //$NON-NLS-1$
     private static final Random RANDOM = new Random();
     private static final BuildListener ANALYTICS = new AnalyticsBuildListener();
 
