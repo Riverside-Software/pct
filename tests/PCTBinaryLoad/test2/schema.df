@@ -14,6 +14,12 @@
     COLUMN-LABEL "Fld1"
     ORDER 10
 
+  ADD INDEX "Tab1-PK" ON "Tab1" 
+    AREA "Schema Area"
+    UNIQUE
+    PRIMARY
+    INDEX-FIELD "Fld1" ASCENDING 
+
   ADD TABLE "Tab2"
     AREA "Schema Area"
     LABEL ""
@@ -27,3 +33,9 @@
     POSITION 2
     COLUMN-LABEL "Fld1"
     ORDER 10
+
+  ADD INDEX "Tab2-PK" ON "Tab2" 
+    AREA "Schema Area"
+    UNIQUE
+    PRIMARY
+    INDEX-FIELD "Fld1" ASCENDING 
