@@ -49,7 +49,7 @@ public class AssemblyCatalog extends PCTRun {
             throw new BuildException(Messages.getString("PCTCRC.0")); //$NON-NLS-1$
         }
 
-        this.setProcedure("pct/assembliesCatalog.p"); //$NON-NLS-1$
+        this.setProcedure("Consultingwerk/assembliesCatalog.p"); //$NON-NLS-1$
         this.setParameter(destFile.toString());
         super.execute();
     }

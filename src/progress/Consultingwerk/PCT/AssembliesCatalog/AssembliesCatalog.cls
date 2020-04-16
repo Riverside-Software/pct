@@ -28,8 +28,54 @@ BLOCK-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Json.ObjectModel.* FROM PROPATH .
 USING Progress.Lang.*             FROM PROPATH .
+USING Progress.Util.*             FROM ASSEMBLY.
 
 CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
+
+    DEFINE VARIABLE oObsoleteType  AS System.Type NO-UNDO .
+    DEFINE VARIABLE oStringType    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oBooleanType   AS System.Type NO-UNDO .
+    DEFINE VARIABLE oByteType      AS System.Type NO-UNDO .
+    DEFINE VARIABLE oSByteType     AS System.Type NO-UNDO .
+    DEFINE VARIABLE oDateTimeType  AS System.Type NO-UNDO .
+    DEFINE VARIABLE oDecimalType   AS System.Type NO-UNDO .
+    DEFINE VARIABLE oInt16Type     AS System.Type NO-UNDO .
+    DEFINE VARIABLE oUInt16Type    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oInt32Type     AS System.Type NO-UNDO .
+    DEFINE VARIABLE oUInt32Type    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oInt64Type     AS System.Type NO-UNDO .
+    DEFINE VARIABLE oUInt64Type    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oDoubleType    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oSingleType    AS System.Type NO-UNDO .
+    DEFINE VARIABLE oCharType      AS System.Type NO-UNDO .
+    DEFINE VARIABLE oByteArrayType AS System.Type NO-UNDO .
+
+    /**
+     * Purpose: Constructor for the AssembliesCatalog class
+     * Notes:
+     */
+    CONSTRUCTOR PUBLIC AssembliesCatalog ():
+
+        ASSIGN
+            oObsoleteType  = TypeHelper:GetType("System.ObsoleteAttribute":U)
+            oStringType    = TypeHelper:GetType ("System.String":U, TRUE)
+            oBooleanType   = TypeHelper:GetType ("System.Boolean":U, TRUE)
+            oByteType      = TypeHelper:GetType ("System.Byte":U, TRUE)
+            oSByteType     = TypeHelper:GetType ("System.SByte":U, TRUE)
+            oDateTimeType  = TypeHelper:GetType ("System.DateTime":U, TRUE)
+            oDecimalType   = TypeHelper:GetType ("System.Decimal":U, TRUE)
+            oInt16Type     = TypeHelper:GetType ("System.Int16":U, TRUE)
+            oUInt16Type    = TypeHelper:GetType ("System.UInt16":U, TRUE)
+            oInt32Type     = TypeHelper:GetType ("System.Int32":U, TRUE)
+            oUInt32Type    = TypeHelper:GetType ("System.UInt32":U, TRUE)
+            oInt64Type     = TypeHelper:GetType ("System.Int64":U, TRUE)
+            oUInt64Type    = TypeHelper:GetType ("System.UInt64":U, TRUE)
+            oDoubleType    = TypeHelper:GetType ("System.Double":U, TRUE)
+            oSingleType    = TypeHelper:GetType ("System.Single":U, TRUE)
+            oCharType      = TypeHelper:GetType ("System.Char":U, TRUE)
+            oByteArrayType = TypeHelper:GetType ("System.Byte[]":U, TRUE) .
+
+    END CONSTRUCTOR.
 
     /**
      * Purpose: Processes the base types
@@ -130,12 +176,12 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
         oMethods = poType:GetMethods () .
 
-        oMethodsJson = THIS-OBJECT:GetMethods (oMethods, FALSE) .
+        oMethodsJson = THIS-OBJECT:GetMethods (poType, oMethods, FALSE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
             poJson:Add ("methods":U, oMethodsJson) .
 
-        oMethodsJson = THIS-OBJECT:GetMethods (oMethods, TRUE) .
+        oMethodsJson = THIS-OBJECT:GetMethods (poType, oMethods, TRUE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
             poJson:Add ("staticMethods":U, oMethodsJson) .
@@ -235,17 +281,26 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
     /**
      * Purpose: Returns the JsonArray of the given methods
      * Notes:
+     * @param poType The Type
      * @param poMethods The MethodInfo[]
      * @param plStatic Logical flag indicating if we should be adding static methods or not
      * @return The JsonArray
      */
-    METHOD PROTECTED JsonArray GetMethods (poMethods AS "System.Reflection.MethodInfo[]",
+    METHOD PROTECTED JsonArray GetMethods (poType AS System.Type,
+                                           poMethods AS "System.Reflection.MethodInfo[]",
                                            plStatic AS LOGICAL):
 
-        DEFINE VARIABLE oMethodsJson  AS JsonArray                        NO-UNDO .
-        DEFINE VARIABLE cPrevName     AS CHARACTER                        NO-UNDO .
+        DEFINE VARIABLE oMethodsJson  AS JsonArray                           NO-UNDO .
+        DEFINE VARIABLE oParameters   AS "System.Reflection.ParameterInfo[]" NO-UNDO .
+        DEFINE VARIABLE oAttributes   AS "System.Object[]"                   NO-UNDO .
+        DEFINE VARIABLE cParameters   AS CHARACTER                           NO-UNDO .
+        DEFINE VARIABLE oMethodJson   AS JsonObject                          NO-UNDO .
+        DEFINE VARIABLE oObsoleteJson AS JsonObject                          NO-UNDO .
 
         {Consultingwerk/foreach.i System.Reflection.MethodInfo oMethod in poMethods '' methodloop}
+            IF oMethod:DeclaringType <> poType THEN
+                NEXT methodLoop .
+
             IF oMethod:IsStatic <> plStatic THEN
                 NEXT methodLoop .
 
@@ -255,16 +310,99 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
             IF NOT VALID-OBJECT (oMethodsJson) THEN
                 oMethodsJson = NEW JsonArray () .
 
-            IF cPrevName = oMethod:Name THEN
-                NEXT methodloop .
+            ASSIGN cParameters = "":U
+                   oParameters = oMethod:GetParameters () .
 
-            oMethodsJson:Add (oMethod:Name) .
+            {Consultingwerk/foreach.i System.Reflection.ParameterInfo oParameter IN oParameters}
+                ASSIGN cParameters = cParameters +
+                                     SUBSTITUTE (", &1&2":U,
+                                                 IF oParameter:IsOut THEN "output ":U ELSE "":U,
+                                                 THIS-OBJECT:TypeName(oParameter:ParameterType)) .
+            END .
 
-            ASSIGN cPrevName = oMethod:Name .
+            ASSIGN cParameters = TRIM (TRIM (cParameters, ",":U)) .
+
+            oAttributes = oMethod:GetCustomAttributes (oObsoleteType, TRUE) .
+
+            oMethodJson = NEW JsonObject ().
+            oMethodJson:Add ("name":U, SUBSTITUTE ("&1 (&2)", oMethod:NAME, cParameters)) .
+            IF oAttributes:Length > 0 THEN DO:
+                oObsoleteJson = NEW JsonObject () .
+                oMethodJson:Add ("obsolete":U, oObsoleteJson) .
+                oObsoleteJson:Add ("message":U, CAST (oAttributes:GetValue(0), System.ObsoleteAttribute):Message) .
+                oObsoleteJson:Add ("error":U, CAST (oAttributes:GetValue(0), System.ObsoleteAttribute):IsError) .
+            END.
+            oMethodsJson:Add (oMethodJson) .
+
         END.
 
         RETURN oMethodsJson .
 
     END METHOD.
+
+    /**
+     * Purpose: Converts a System.Type to the corresponding ABL DataType in a Character
+     *          representation
+     * Notes:   Assumes CHARACTER for System.String, not LONGCHAR or BLOB
+     *          Returns BLOB for System.Byte[]
+     * @param poType The System.Type to convert into an ABL DataType
+     * @return The ABL DataType as a CHARACTER Value
+     */
+    METHOD PROTECTED CHARACTER TypeName (poType AS System.Type):
+
+        IF poType:FullName = "System.Object":U THEN
+            RETURN "System.Object":U .
+
+        IF poType:IsAssignableFrom (oStringType) THEN
+            RETURN "CHARACTER":U .
+
+        IF poType:IsAssignableFrom (oBooleanType) THEN
+            RETURN "LOGICAL":U .
+
+        IF poType:IsAssignableFrom (oByteType) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oSByteType) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oDateTimeType) THEN
+            RETURN "DATETIME":U .
+
+        IF poType:IsAssignableFrom (oDecimalType) THEN
+            RETURN "DECIMAL":U .
+
+        IF poType:IsAssignableFrom (oInt16Type) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oUInt16Type) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oInt32Type) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oUInt32Type) THEN
+            RETURN "INTEGER":U .
+
+        IF poType:IsAssignableFrom (oInt64Type) THEN
+            RETURN "INT64":U .
+
+        IF poType:IsAssignableFrom (oUInt64Type) THEN
+            RETURN "INT64":U .
+
+        IF poType:IsAssignableFrom (oDoubleType) THEN
+            RETURN "DECIMAL":U .
+
+        IF poType:IsAssignableFrom (oSingleType) THEN
+            RETURN "DECIMAL":U .
+
+        IF poType:IsAssignableFrom (oCharType) THEN
+            RETURN "CHARACTER":U .
+
+        IF poType:IsAssignableFrom (oByteArrayType) THEN
+            RETURN "MEMPTR":U .
+
+        RETURN poType:FullName .
+
+    END METHOD .
 
 END CLASS.

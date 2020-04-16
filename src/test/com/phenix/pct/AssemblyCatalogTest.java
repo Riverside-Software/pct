@@ -16,8 +16,10 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -56,23 +58,57 @@ public class AssemblyCatalogTest extends BuildFileTestNg {
                 }
             }
             assertNotNull(cls);
+            assertFalse(cls.isAbstract);
             assertTrue(cls.isClass);
             assertFalse(cls.isInterface);
             assertFalse(cls.isEnum);
+            assertNotNull(cls.methods);
+            assertEquals(cls.methods.length, 9);
+            Method obsMethd = null;
+            Method nonObsMethd = null;
+            for (Method m : cls.methods) {
+                if ("MakeRelative (System.Uri)".equals(m.name)) {
+                    obsMethd = m;
+                }
+                if ("IsWellFormedOriginalString ()".equals(m.name)) {
+                    nonObsMethd = m;
+                }
+            }
+            assertNotNull(obsMethd);
+            assertNotNull(obsMethd.obsolete);
+            assertFalse(obsMethd.obsolete.error);
+            assertNotNull(nonObsMethd);
+            assertNull(nonObsMethd.obsolete);
         } catch (IOException caught) {
             fail("Unable to read assemblies.json");
         }
 
     }
 
+    @SuppressWarnings("unused")
     private static class AssemblyClass {
         String name;
         String[] baseTypes;
-        boolean isAbstract, isClass, isEnum, isInterface;
+        boolean isAbstract;
+        boolean isClass;
+        boolean isEnum;
+        boolean isInterface;
         String[] properties;
-        String[] methods;
+        Method[] methods;
         String[] events;
-        String[] staticMethods;
+        Method[] staticMethods;
         String[] staticProperties;
+    }
+
+    @SuppressWarnings("unused")
+    private static class Method {
+        String name;
+        ObsoleteDescription obsolete;
+    }
+
+    @SuppressWarnings("unused")
+    private static class ObsoleteDescription {
+        String message;
+        boolean error;
     }
 }
