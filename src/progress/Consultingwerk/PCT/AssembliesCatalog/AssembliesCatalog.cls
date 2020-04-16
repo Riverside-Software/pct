@@ -176,12 +176,12 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
         oMethods = poType:GetMethods () .
 
-        oMethodsJson = THIS-OBJECT:GetMethods (oMethods, FALSE) .
+        oMethodsJson = THIS-OBJECT:GetMethods (poType, oMethods, FALSE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
             poJson:Add ("methods":U, oMethodsJson) .
 
-        oMethodsJson = THIS-OBJECT:GetMethods (oMethods, TRUE) .
+        oMethodsJson = THIS-OBJECT:GetMethods (poType, oMethods, TRUE) .
 
         IF VALID-OBJECT (oMethodsJson) THEN
             poJson:Add ("staticMethods":U, oMethodsJson) .
@@ -281,11 +281,13 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
     /**
      * Purpose: Returns the JsonArray of the given methods
      * Notes:
+     * @param poType The Type
      * @param poMethods The MethodInfo[]
      * @param plStatic Logical flag indicating if we should be adding static methods or not
      * @return The JsonArray
      */
-    METHOD PROTECTED JsonArray GetMethods (poMethods AS "System.Reflection.MethodInfo[]",
+    METHOD PROTECTED JsonArray GetMethods (poType AS System.Type,
+                                           poMethods AS "System.Reflection.MethodInfo[]",
                                            plStatic AS LOGICAL):
 
         DEFINE VARIABLE oMethodsJson  AS JsonArray                           NO-UNDO .
@@ -296,6 +298,9 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         DEFINE VARIABLE oObsoleteJson AS JsonObject                          NO-UNDO .
 
         {Consultingwerk/foreach.i System.Reflection.MethodInfo oMethod in poMethods '' methodloop}
+            IF oMethod:DeclaringType <> poType THEN
+                NEXT methodLoop .
+
             IF oMethod:IsStatic <> plStatic THEN
                 NEXT methodLoop .
 
