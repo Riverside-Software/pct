@@ -827,9 +827,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
-        } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
+        } catch (IOException | InvalidRCodeException caught) {
             return;
         }
 

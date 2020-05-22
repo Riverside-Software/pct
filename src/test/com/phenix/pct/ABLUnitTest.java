@@ -19,8 +19,10 @@ package com.phenix.pct;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,8 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 import org.xml.sax.InputSource;
+
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing ABLUnit task
@@ -108,12 +112,32 @@ public class ABLUnitTest extends BuildFileTestNg {
     // Test writeLog property
     @Test(groups = {"v11"})
     public void test8() {
+        // Starting from 12.2, syntax errors are caught by ABLUnit
+        DLCVersion version = null;
+        try {
+            version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        } catch (IOException | InvalidRCodeException caught) {
+            fail("Unable to read OE version", caught);
+        }
+        if (version == null) {
+            fail("Unable to read OE version");
+            return;
+        }
+
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");
         assertFalse(logFile.exists());
-        expectBuildException("test1", "Syntax error");
+        if (version.compareTo(new DLCVersion(12, 2, "")) >= 0) {
+            executeTarget("test1");
+        } else {
+            expectBuildException("test1", "Syntax error");
+        }
         assertFalse(logFile.exists());
-        expectBuildException("test2", "Syntax error");
+        if (version.compareTo(new DLCVersion(12, 2, "")) >= 0) {
+            executeTarget("test2");
+        } else {
+            expectBuildException("test2", "Syntax error");
+        }
         assertTrue(logFile.exists());
     }
 
@@ -125,7 +149,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         List<String> rexp = new ArrayList<>();
         rexp.add("Fileset directory .* not found in PROPATH");
         rexp.add("QUIT statement found");
-        rexp.add("Total tests run: 2, Failures: 0, Errors: 2");
+        rexp.add("Total tests run: \\d, Failures: 0, Errors: 2");
         expectLogRegexp("test1", rexp, false);
 
     }
