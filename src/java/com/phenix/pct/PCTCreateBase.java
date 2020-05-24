@@ -36,6 +36,7 @@ import org.apache.tools.ant.types.ResourceCollection;
 public class PCTCreateBase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
+    private static final String DBUTIL = "_dbutil";
     private static final String NEW_INSTANCE_FLAG = "-newinstance";
     private static final String RELATIVE_FLAG = "-relative";
 
@@ -573,7 +574,7 @@ public class PCTCreateBase extends PCT {
         }
         log(MessageFormat.format("Copying DB {1} to {0}", dbName, srcDB.getAbsolutePath()));
 
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.setOutput(new File(destDir, dbName + ".procopy.log"));
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
@@ -603,7 +604,7 @@ public class PCTCreateBase extends PCT {
      */
     private ExecTask structCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.setOutput(new File(destDir, dbName + ".prostrct.log"));
         exec.createArg().setValue("prostrct"); //$NON-NLS-1$
@@ -627,7 +628,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask wordRuleCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -648,7 +649,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask multiTenantCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -668,7 +669,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask enableLargeFilesCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -688,7 +689,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask enableAuditingCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -714,7 +715,7 @@ public class PCTCreateBase extends PCT {
 
     private ExecTask indexRebuildAllCmdLine() {
         ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
+        exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
