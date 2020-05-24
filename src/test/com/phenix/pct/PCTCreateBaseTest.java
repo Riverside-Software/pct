@@ -228,5 +228,12 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         assertTrue(f.exists());
     }
 
+    @Test(groups= {"unix", "v10"})
+    public void test19() {
+        configureProject("PCTCreateBase/test19/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "Invalid structure file");
+        expectBuildException("test2", "Failure during procopy");
+    }
 
 }
