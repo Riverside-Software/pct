@@ -827,7 +827,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             return;
         }
 
@@ -852,8 +852,6 @@ public class PCTCompileTest extends BuildFileTestNg {
                 return;
         } catch (IOException caught) {
             return;
-        } catch (InvalidRCodeException caught) {
-            return;
         }
 
         configureProject(BASEDIR + "test53/build.xml");
@@ -877,8 +875,6 @@ public class PCTCompileTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -952,8 +948,6 @@ public class PCTCompileTest extends BuildFileTestNg {
             if (version.getMajorVersion() < 11)
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -1209,8 +1203,6 @@ public class PCTCompileTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject(BASEDIR + "test76/build.xml");
@@ -1232,8 +1224,6 @@ public class PCTCompileTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 
@@ -1279,7 +1269,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             return;
         }
 
@@ -1418,8 +1408,6 @@ public class PCTCompileTest extends BuildFileTestNg {
                 return;
         } catch (IOException caught) {
             return;
-        } catch (InvalidRCodeException caught) {
-            return;
         }
 
         configureProject(BASEDIR + "test80/build.xml");
@@ -1471,7 +1459,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             return;
         }
 

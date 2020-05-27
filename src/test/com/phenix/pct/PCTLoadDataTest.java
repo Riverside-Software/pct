@@ -24,8 +24,6 @@ import java.io.IOException;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Class for testing PCTLoadData task
  * 
@@ -102,8 +100,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject("PCTLoadData/test6/build.xml");
@@ -135,8 +131,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject("PCTLoadData/test7/build.xml");
@@ -158,8 +152,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject("PCTLoadData/test8/build.xml");
@@ -180,8 +172,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 

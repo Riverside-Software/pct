@@ -19,13 +19,11 @@ package com.phenix.pct;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import org.apache.tools.ant.BuildException;
-import org.testng.annotations.Test;
-
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.tools.ant.BuildException;
+import org.testng.annotations.Test;
 
 /**
  * Class for testing PCTCreateBase task
@@ -174,7 +172,7 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
             if (version.getMajorVersion() >= 12)
                 return;
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             return;
         }
 

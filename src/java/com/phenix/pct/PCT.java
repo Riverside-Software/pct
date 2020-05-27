@@ -43,8 +43,6 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PatternSet;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
  * bin/java/etc are located.
@@ -104,7 +102,7 @@ public abstract class PCT extends Task {
         try {
             version = DLCVersion.getObject(dlcHome);
             log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             throw new BuildException(caught);
         }
 

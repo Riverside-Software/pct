@@ -520,7 +520,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
-    public void test34() throws IOException, InvalidRCodeException {
+    public void test34() {
         configureProject(BASEDIR + "test34/build.xml");
         executeTarget("test");
 
@@ -824,8 +824,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
                 return;
         } catch (IOException caught) {
             return;
-        } catch (InvalidRCodeException caught) {
-            return;
         }
 
         configureProject(BASEDIR + "test52/build.xml");
@@ -848,8 +846,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -874,8 +870,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -1190,8 +1184,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject(BASEDIR + "test76/build.xml");
@@ -1213,8 +1205,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 
@@ -1266,8 +1256,6 @@ public class PCTCompileExtTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 

@@ -25,8 +25,6 @@ import java.io.IOException;
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Class for testing PCTProxygen task
  * 
@@ -98,8 +96,6 @@ public class PCTProxygenTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject("PCTProxygen/test5/build.xml");
@@ -124,8 +120,6 @@ public class PCTProxygenTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 12) && (version.getMinorVersion() == 0))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 

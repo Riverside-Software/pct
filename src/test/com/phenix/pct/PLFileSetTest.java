@@ -23,8 +23,6 @@ import java.io.IOException;
 
 import org.testng.annotations.Test;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Class for testing PLFileSet
  * 
@@ -42,10 +40,8 @@ public class PLFileSetTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
-        
+
         configureProject("PLFileSet/test1/build.xml");
 
         executeTarget("test1");
@@ -71,8 +67,6 @@ public class PLFileSetTest extends BuildFileTestNg {
             if (version.getMajorVersion() != 11)
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 

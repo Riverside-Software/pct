@@ -16,18 +16,16 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertEquals;
 
 /**
  * Class for testing PCTLoadSchema task
@@ -196,8 +194,6 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
                 return;
         } catch (IOException e) {
             return;
-        } catch (InvalidRCodeException e) {
-            return;
         }
 
         configureProject("PCTLoadSchema/test13/build.xml");
@@ -216,8 +212,6 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
             if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 

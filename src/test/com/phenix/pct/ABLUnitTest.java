@@ -34,8 +34,6 @@ import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 import org.xml.sax.InputSource;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Class for testing ABLUnit task
  * 
@@ -116,7 +114,7 @@ public class ABLUnitTest extends BuildFileTestNg {
         DLCVersion version = null;
         try {
             version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             fail("Unable to read OE version", caught);
         }
         if (version == null) {

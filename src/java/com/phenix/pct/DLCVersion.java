@@ -74,12 +74,15 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return new DLCVersion(builder);
     }
 
-    public static DLCVersion getObject(File dir) throws IOException, InvalidRCodeException {
+    public static DLCVersion getObject(File dir) throws IOException {
         Builder builder = new Builder();
 
         // Read version file
         readVersionFile(builder, extractVersionInfo(dir));
-        readArch(builder, new File(dir, "tty/prostart.r"));
+        File prostart = new File(dir, "tty/prostart.r");
+        if (prostart.exists()) {
+            readArch(builder, new File(dir, "tty/prostart.r"));
+        }
 
         return new DLCVersion(builder);
     }
@@ -99,10 +102,14 @@ public class DLCVersion implements Comparable<DLCVersion> {
         }
     }
 
-    private static void readArch(Builder builder, File prostart) throws IOException, InvalidRCodeException {
-        RCodeInfo rci = new RCodeInfo(prostart);
-        builder.rCodeVersion = rci.getVersion();
-        builder.arch = rci.is64bits();
+    private static void readArch(Builder builder, File prostart) throws IOException {
+        try {
+            RCodeInfo rci = new RCodeInfo(prostart);
+            builder.rCodeVersion = rci.getVersion();
+            builder.arch = rci.is64bits();
+        } catch (InvalidRCodeException caught) {
+            throw new IOException(caught);
+        }
     }
 
     private static void extractNewVersion(Builder builder, String str) {
@@ -194,12 +201,16 @@ public class DLCVersion implements Comparable<DLCVersion> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DLCVersion) {
+        if (obj == this) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (this.getClass() == obj.getClass()) {
             DLCVersion other = (DLCVersion) obj;
             return (majorVersion == other.majorVersion) && (minorVersion == other.minorVersion)
                     && (maintenanceVersion.equals(other.maintenanceVersion));
-        }
-        return false;
+        } else
+            return false;
     }
 
     @Override
