@@ -138,6 +138,7 @@ DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 DEFINE VARIABLE callbackClass AS CHARACTER NO-UNDO.
 DEFINE VARIABLE outputType AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cLastIncludeName AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lOutputJson    AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOutputConsole AS LOGICAL NO-UNDO INITIAL FALSE.
@@ -175,7 +176,7 @@ PROCEDURE setOption.
   DEFINE INPUT PARAMETER ipValue AS CHARACTER NO-UNDO.
 
   CASE ipName:
-    when 'OUTPUTDIR':U        THEN ASSIGN DestDir = ipValue.
+    WHEN 'OUTPUTDIR':U        THEN ASSIGN DestDir = ipValue.
     WHEN 'PCTDIR':U           THEN ASSIGN PCTDir = ipValue.
     WHEN 'FORCECOMPILE':U     THEN ASSIGN ForceComp = (ipValue EQ '1':U).
     WHEN 'XCODE':U            THEN ASSIGN lXCode = (ipValue EQ '1':U).
@@ -244,7 +245,7 @@ PROCEDURE initModule:
     RETURN RETURN-VALUE.
 
   /* Checks if valid config */
-  OutputDir = if DestDir ne ? then DestDir else ".".
+  OutputDir = IF DestDir NE ? THEN DestDir ELSE ".".
   IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
   IF NOT FileExists(PCTDir) THEN
@@ -368,7 +369,7 @@ PROCEDURE compileXref.
   ELSE DO:
     /* Does .r file exists ?,
        if DestDir = unknown rcode will be located in the same directory as the source : ipInDir */
-    ASSIGN RCodeTS = getTimeStampDF(if DestDir = ? then ipInDir else OutputDir, ipOutFile).
+    ASSIGN RCodeTS = getTimeStampDF(IF DestDir = ? THEN ipInDir ELSE OutputDir, ipOutFile).
     IF (RCodeTS EQ ?) THEN DO:
       opComp = 1.
     END.
@@ -393,6 +394,10 @@ PROCEDURE compileXref.
   IF (iFileList GT 0) THEN DO:
     IF ((iFileList EQ 1) AND (opComp GT 0) ) OR (iFileList EQ 2) THEN DO:
       RUN logInfo IN hSrcProc (SUBSTITUTE("&1 [&2]", ipInFile, getRecompileLabel(opComp))).
+    END.
+    ELSE IF iFileList EQ 3 THEN DO:
+      /* Message with include file name */
+      RUN logInfo IN hSrcProc (SUBSTITUTE("&1 [&2]", ipInFile, getRecompileLabel(opComp) + IF opComp = 3 THEN " : " + cLastIncludeName ELSE "")).
     END.
   END.
   IF opComp EQ 0 THEN RETURN.
@@ -504,9 +509,9 @@ PROCEDURE compileXref.
           CREATE ttProjectWarnings.
           ASSIGN ttProjectWarnings.msgNum       = ttWarnings.msgNum
                  ttProjectWarnings.rowNum       = ttWarnings.rowNum
-                 ttProjectWarnings.fileName     = REPLACE(ttWarnings.fileName, chr(92), '/')
+                 ttProjectWarnings.fileName     = REPLACE(ttWarnings.fileName, CHR(92), '/')
                  ttProjectWarnings.msg          = ttWarnings.msg
-                 ttProjectWarnings.mainFileName = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/').
+                 ttProjectWarnings.mainFileName = REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/').
         END.
       END.
       IF lOutputConsole THEN DO:
@@ -543,8 +548,8 @@ PROCEDURE compileXref.
     IF lOutputJson THEN DO:
       FOR EACH ttErrors:
         CREATE ttProjectErrors.
-        ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, chr(92), '/')
-               ttProjectErrors.mainFileName  = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/')
+        ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, CHR(92), '/')
+               ttProjectErrors.mainFileName  = REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/')
                ttProjectErrors.rowNum        = ttErrors.rowNum
                ttProjectErrors.colNum        = ttErrors.colNum
                ttProjectErrors.msg           = ttErrors.msg.
@@ -851,7 +856,9 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETI
       END.
     END.
     IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
-      ASSIGN lReturn = TRUE.
+      ASSIGN 
+        lReturn = TRUE
+        cLastIncludeName = IncFile.
       LEAVE FileList.
     END.
   END.

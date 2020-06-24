@@ -258,7 +258,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win-v11}" />
-    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -267,7 +267,7 @@
     </bootstrapCompile>
 
     <mkdir dir="${build-win-v12}" />
-    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
