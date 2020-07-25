@@ -702,7 +702,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     public Collection<DBAlias> getAliases() {
-        return aliases;
+        return aliases == null ? new ArrayList<DBAlias>() : aliases;
     }
 
     /**

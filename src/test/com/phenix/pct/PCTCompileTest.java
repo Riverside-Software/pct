@@ -1508,6 +1508,15 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warningsFile.length() > 0);
     }
 
+    @Test(groups = {"v10"})
+    public void test84() {
+        configureProject(BASEDIR + "test84/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        File f1 = new File(BASEDIR + "test84/build/test.r");
+        assertTrue(f1.exists());
+    }
+
     // Those classes just for the GSON mapping in test79
     @SuppressWarnings("unused")
     protected static class ProjectResult {

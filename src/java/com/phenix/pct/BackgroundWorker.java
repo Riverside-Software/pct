@@ -43,6 +43,7 @@ public abstract class BackgroundWorker {
     private int status;
     private Iterator<PCTConnection> dbConnections;
     private Iterator<String> propath;
+    private Iterator<DBAlias> aliases;
 
     // Dernière commande envoyée
     private String lastCommand;
@@ -70,6 +71,10 @@ public abstract class BackgroundWorker {
 
     public final void setDBConnections(Iterator<PCTConnection> dbConnections) {
         this.dbConnections = dbConnections;
+    }
+
+    public final void setAliases(Iterator<DBAlias> aliases) {
+        this.aliases = aliases;
     }
 
     public final void setPropath(Iterator<String> propath) {
@@ -154,31 +159,38 @@ public abstract class BackgroundWorker {
                 performAction();
             }
         } else if (status == 2) {
-            if (propath.hasNext()) {
-                String s = propath.next();
-                sendCommand("propath", s + File.pathSeparatorChar);
+            if (aliases.hasNext()) {
+                DBAlias alias = aliases.next();
+                sendCommand("alias", alias.getBgRunString());
             } else {
                 status = 3;
                 performAction();
             }
         } else if (status == 3) {
+            if (propath.hasNext()) {
+                String s = propath.next();
+                sendCommand("propath", s + File.pathSeparatorChar);
+            } else {
+                status = 4;
+                performAction();
+            }
+        } else if (status == 4) {
             if (!performCustomAction()) {
-                status = 5;
+                status = 6;
                 sendCommand("quit", "");
                 quit = true;
             }
-
-        } else if (status == 4) {
-            status = 5;
+        } else if (status == 5) {
+            status = 6;
             sendCommand("quit", "");
             quit = true;
-        } else if (status == 5) {
+        } else if (status == 6) {
             // No-op
         }
     }
 
     public final boolean isStandardCommand(String command) {
-        if ("setThreadNumber".equalsIgnoreCase(command) || "connect".equalsIgnoreCase(command)
+        if ("setThreadNumber".equalsIgnoreCase(command) || "connect".equalsIgnoreCase(command) || "alias".equalsIgnoreCase(command)
                 || "propath".equalsIgnoreCase(command) || "quit".equalsIgnoreCase(command)) {
             return true;
         }
@@ -187,7 +199,7 @@ public abstract class BackgroundWorker {
     }
 
     public final void setStatusQuit() {
-        status = 4;
+        status = 5;
     }
 
     /**

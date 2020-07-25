@@ -678,6 +678,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                     final Socket socket = server.accept();
                     final BackgroundWorker status = createOpenEdgeWorker(socket);
                     status.setDBConnections(options.getDBConnections().iterator());
+                    status.setAliases(options.getAliases().iterator());
                     status.setPropath(getPropathAsList().iterator());
                     status.setCustomOptions(null); // TODO
 
