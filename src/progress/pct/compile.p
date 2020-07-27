@@ -138,6 +138,7 @@ DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
 DEFINE VARIABLE callbackClass AS CHARACTER NO-UNDO.
 DEFINE VARIABLE outputType AS CHARACTER NO-UNDO.
+DEFINE VARIABLE cLastIncludeName AS CHARACTER NO-UNDO.
 
 DEFINE VARIABLE lOutputJson    AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lOutputConsole AS LOGICAL NO-UNDO INITIAL FALSE.
@@ -392,7 +393,7 @@ PROCEDURE compileXref.
   END.
   IF (iFileList GT 0) THEN DO:
     IF ((iFileList EQ 1) AND (opComp GT 0) ) OR (iFileList EQ 2) THEN DO:
-      RUN logInfo IN hSrcProc (SUBSTITUTE("&1 [&2]", ipInFile, getRecompileLabel(opComp))).
+      RUN logInfo IN hSrcProc (SUBSTITUTE("&1 [&2&3]", ipInFile, getRecompileLabel(opComp), IF opComp = 3 THEN ": " + cLastIncludeName ELSE "")).
     END.
   END.
   IF opComp EQ 0 THEN RETURN.
@@ -851,7 +852,8 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETI
       END.
     END.
     IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
-      ASSIGN lReturn = TRUE.
+      ASSIGN lReturn = TRUE
+             cLastIncludeName = IncFile.
       LEAVE FileList.
     END.
   END.

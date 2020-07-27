@@ -1316,6 +1316,28 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
+    public void test85() {
+        configureProject(BASEDIR + "test85/build.xml");
+        // First build
+        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler", "test.p [No r-code]",
+                "test2.p [No r-code]", "2 file(s) compiled"});
+        // Second build, nothing compiled
+        expectLog("test1",
+                new String[]{"PCTCompile - Progress Code Compiler", "0 file(s) compiled"});
+
+        // Touch test.p
+        expectLog("test2", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than source]", //
+                "test2.p [R-code older than source]", //
+                "2 file(s) compiled"});
+        // Touch test.i
+        expectLog("test3", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file: test.i]", //
+                "test2.p [R-code older than include file: test2.i]", //
+                "2 file(s) compiled"});
+    }
+
+    @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");
         executeTarget("test");
