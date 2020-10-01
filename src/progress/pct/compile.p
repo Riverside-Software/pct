@@ -88,8 +88,9 @@ DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
 FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT TS AS DATETIME, INPUT d AS CHARACTER) FORWARD.
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
+FUNCTION CheckHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION fileExists RETURNS LOGICAL (INPUT f AS CHARACTER) FORWARD.
 FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 
@@ -99,6 +100,7 @@ DEFINE STREAM sXref2.
 DEFINE STREAM sIncludes.
 DEFINE STREAM sCRC.
 DEFINE STREAM sWarnings.
+DEFINE STREAM sHierarchy.
 
 /* PCTCompile attributes */
 DEFINE VARIABLE OutputDir AS CHARACTER  NO-UNDO.
@@ -286,6 +288,7 @@ FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
     WHEN 3 THEN RETURN 'R-code older than include file'.
     WHEN 4 THEN RETURN 'Table CRC'.
     WHEN 5 THEN RETURN 'XCode or force'.
+    WHEN 6 THEN RETURN 'Hierarchy change'.
     OTHERWISE   RETURN '???'.
   END.
 END FUNCTION.
@@ -386,6 +389,11 @@ PROCEDURE compileXref.
         ELSE DO:
           IF CheckCRC(ipInFile, PCTDir) THEN DO:
             opComp = 4.
+          END.
+          ELSE DO:
+            IF CheckHierarchy(ipInFile, RCodeTS, PCTDir) THEN DO:
+              opComp = 6.
+            END.
           END.
         END.
       END.
@@ -651,7 +659,8 @@ PROCEDURE importXmlXref.
   DEFINE INPUT  PARAMETER pcDir  AS CHARACTER NO-UNDO.
   DEFINE INPUT  PARAMETER pcFile AS CHARACTER NO-UNDO.
 
-  DEFINE VARIABLE zz        AS INTEGER NO-UNDO.
+  DEFINE VARIABLE zz        AS INTEGER   NO-UNDO.
+  DEFINE VARIABLE currCls   AS CHARACTER NO-UNDO.
 
   EMPTY TEMP-TABLE ttXrefInc.
   EMPTY TEMP-TABLE ttXrefCRC.
@@ -659,32 +668,63 @@ PROCEDURE importXmlXref.
 
   DATASET Cross-reference:READ-XML("FILE", pcXref, "EMPTY", ?, ?).
 
-  FOR EACH Reference WHERE LOOKUP(Reference.Reference-Type, 'INCLUDE,CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,CLASS':U) NE 0:
+  FIND FIRST Reference WHERE Reference.Reference-Type EQ 'CLASS' NO-ERROR.
+  IF (AVAILABLE Reference) THEN DO:
+    ASSIGN currCls = Reference.Object-identifier.
+    FOR EACH Class-Ref WHERE Class-Ref.Ref-seq = Reference.Ref-seq AND Class-Ref.Source-guid = Reference.Source-guid:
+      DO zz = 1 TO NUM-ENTRIES(Class-Ref.Inherited-list, ' '):
+        CREATE ttXrefClasses.
+        ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Inherited-list, ' ').
+      END.
+      DO zz = 1 TO NUM-ENTRIES(Class-Ref.Implements-list, ' '):
+        CREATE ttXrefClasses.
+        ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Implements-list, ' ').
+      END.
+    END.
+  END.
+  FOR EACH Reference WHERE LOOKUP(Reference.Reference-Type, 'INCLUDE,CREATE,REFERENCE,ACCESS,UPDATE,SEARCH,INVOKE,NEW':U) NE 0:
     ASSIGN Reference.Object-identifier = TRIM(Reference.Object-identifier).
     IF Reference.Reference-Type EQ 'INCLUDE' THEN DO:
       /* Extract include file name from field (which contains include parameters */
       CREATE ttXrefInc.
       ASSIGN ttXrefInc.ttIncName = TRIM(SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1)).
     END.
-    ELSE IF Reference.Reference-Type EQ 'CLASS' THEN DO:
-      FOR EACH Class-Ref WHERE Class-Ref.Ref-seq = Reference.Ref-seq AND Class-Ref.Source-guid = Reference.Source-guid:
-        DO zz = 1 TO NUM-ENTRIES(Class-Ref.Inherited-list, ' '):
+    ELSE IF Reference.Reference-Type EQ 'INVOKE':U THEN DO:
+      IF (NOT Reference.Object-identifier BEGINS (currCls + ":")) THEN DO:
+        FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ':') - 1) NO-ERROR.
+        IF (NOT AVAILABLE ttXrefClasses) THEN DO:
           CREATE ttXrefClasses.
-          ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Inherited-list, ' ').
+          ASSIGN ttXrefClasses.ttClsName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ':') - 1).
         END.
-        DO zz = 1 TO NUM-ENTRIES(Class-Ref.Implements-list, ' '):
+      END.
+    END.
+    ELSE IF Reference.Reference-Type EQ 'NEW':U THEN DO:
+      IF (NOT Reference.Object-identifier EQ currCls) THEN DO:
+        FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ Reference.Object-identifier NO-ERROR.
+        IF (NOT AVAILABLE ttXrefClasses) THEN DO:
           CREATE ttXrefClasses.
-          ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, Class-Ref.Implements-list, ' ').
+          ASSIGN ttXrefClasses.ttClsName = Reference.Object-identifier.
         END.
       END.
     END.
     ELSE DO:
-      /* Find CRC of each table */
-      CREATE ttXrefCRC.
-      IF (INDEX(Reference.Object-identifier, ' ') GT 0) THEN
-        ASSIGN ttXrefCRC.ttTblName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
-      ELSE
-        ASSIGN ttXrefCRC.ttTblName = Reference.Object-identifier.
+      IF (Reference.Object-Context = 'INHERITED-DATA-MEMBER' OR Reference.Object-Context = 'INHERITED-PROPERTY'
+          OR Reference.Object-Context = 'PUBLIC-DATA-MEMBER' OR Reference.Object-Context = 'PUBLIC-PROPERTY')
+         AND ( NOT Reference.Object-identifier BEGINS (currCls + ":")) THEN DO:
+        FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ':') - 1) NO-ERROR.
+        IF (NOT AVAILABLE ttXrefClasses) THEN DO:
+          CREATE ttXrefClasses.
+          ASSIGN ttXrefClasses.ttClsName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ':') - 1).
+        END.
+      END.
+      ELSE DO:
+        /* Find CRC of each table */
+        CREATE ttXrefCRC.
+        IF (INDEX(Reference.Object-identifier, ' ') GT 0) THEN
+          ASSIGN ttXrefCRC.ttTblName = SUBSTRING(Reference.Object-identifier, 1, INDEX(Reference.Object-identifier, ' ') - 1).
+        ELSE
+          ASSIGN ttXrefCRC.ttTblName = Reference.Object-identifier.
+      END.
     END.
   END.
 
@@ -708,7 +748,8 @@ PROCEDURE importXmlXref.
 
   OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.hierarchy':U).
   FOR EACH ttXrefClasses NO-LOCK:
-    EXPORT ttXrefClasses.ttClsName SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls').
+    IF SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls') GT '' THEN
+      EXPORT ttXrefClasses.ttClsName SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls').
   END.
   OUTPUT CLOSE.
 
@@ -722,9 +763,14 @@ PROCEDURE importXref PRIVATE.
   DEFINE VARIABLE cSearch AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cTmp    AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cTmp2   AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE cTmp3   AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE zz      AS INTEGER    NO-UNDO.
+  DEFINE VARIABLE currCls   AS CHARACTER NO-UNDO.
 
   EMPTY TEMP-TABLE ttXref.
+  EMPTY TEMP-TABLE ttXrefInc.
+  EMPTY TEMP-TABLE ttXrefCRC.
+  EMPTY TEMP-TABLE ttXrefClasses.
 
   INPUT STREAM sXREF FROM VALUE (pcXref).
   INPUT STREAM sXREF2 FROM VALUE (pcXref).
@@ -746,12 +792,61 @@ PROCEDURE importXref PRIVATE.
     IF (ttXref.xRefType EQ 'INCLUDE':U) OR (RunList AND (ttXref.xRefType EQ 'RUN':U)) THEN
       ttXref.xObjID = ENTRY(1, TRIM(ttXref.xObjID), ' ':U).
     ELSE IF (LOOKUP(ttXref.xRefType, 'CREATE,REFERENCE,ACCESS,UPDATE,SEARCH':U) NE 0) THEN DO:
-      /* xObjID may contain DB.Table followed by IndexName or FieldName. We extract table name */
-      IF (INDEX(ttXref.xObjID, ' ') GT 0) THEN
-        ASSIGN ttXref.xObjID = SUBSTRING(ttXref.xObjID, 1, INDEX(ttXref.xObjID, ' ') - 1).
+      IF (ttXref.xObjID BEGINS 'INHERITED-DATA-MEMBER ' OR ttXref.xObjID BEGINS 'INHERITED-PROPERTY '
+          OR ttXref.xObjID BEGINS 'PUBLIC-DATA-MEMBER ' OR ttXref.xObjID BEGINS 'PUBLIC-PROPERTY ') THEN DO:
+         IF (NOT ENTRY(2, ttXref.xObjID, ' ') BEGINS (currCls + ":")) THEN DO:
+           FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ SUBSTRING(ENTRY(2, ttXref.xObjID, ' '), 1, INDEX(ENTRY(2, ttXref.xObjID, ' '), ':') - 1) NO-ERROR.
+           IF (NOT AVAILABLE ttXrefClasses) THEN DO:
+             CREATE ttXrefClasses.
+             ASSIGN ttXrefClasses.ttClsName = SUBSTRING(ENTRY(2, ttXref.xObjID, ' '), 1, INDEX(ENTRY(2, ttXref.xObjID, ' '), ':') - 1).
+           END.
+         END.
+      END.
+      ELSE DO:
+        /* xObjID may contain DB.Table followed by IndexName or FieldName. We extract table name */
+        IF (INDEX(ttXref.xObjID, ' ') GT 0) THEN
+          ASSIGN ttXref.xObjID = SUBSTRING(ttXref.xObjID, 1, INDEX(ttXref.xObjID, ' ') - 1).
+      END.
     END.
-    ELSE IF (LOOKUP(ttXref.xRefType, 'CLASS':U) EQ 0) THEN
-      DELETE ttXref.
+    ELSE IF (ttXref.xRefType EQ 'INVOKE':U) THEN DO:
+      ASSIGN cTmp3 = ENTRY(1, ttXref.xObjID, ',').
+      IF (NOT cTmp3 BEGINS (currCls + ":")) THEN DO:
+        FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ SUBSTRING(cTmp3, 1, INDEX(cTmp3, ':') - 1) NO-ERROR.
+        IF (NOT AVAILABLE ttXrefClasses) THEN DO:
+          CREATE ttXrefClasses.
+          ASSIGN ttXrefClasses.ttClsName = SUBSTRING(cTmp3, 1, INDEX(cTmp3, ':') - 1).
+        END.
+      END.
+    END.
+    ELSE IF (ttXref.xRefType EQ 'NEW':U) THEN DO:
+      ASSIGN cTmp3 = ENTRY(1, ttXref.xObjID, ',').
+      IF (NOT cTmp3 EQ currCls) THEN DO:
+        FIND ttXrefClasses WHERE ttXrefClasses.ttClsName EQ cTmp3 NO-ERROR.
+        IF (NOT AVAILABLE ttXrefClasses) THEN DO:
+          CREATE ttXrefClasses.
+          ASSIGN ttXrefClasses.ttClsName = cTmp3.
+        END.
+      END.
+    END.
+    ELSE IF (ttXref.xRefType EQ 'CLASS':U) THEN DO:
+      ASSIGN currCls = ENTRY(1, ttXref.xObjID).
+      ASSIGN cTmp = ENTRY(2, ttXref.xObjID).
+      IF cTmp BEGINS 'INHERITS ' THEN DO:
+        ASSIGN cTmp = SUBSTRING(cTmp, 10). /* To remove INHERITS */
+        DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+          CREATE ttXrefClasses.
+          ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, cTmp, ' ').
+        END.
+      END.
+      ASSIGN cTmp = ENTRY(3, ttXref.xObjID).
+      IF cTmp BEGINS 'IMPLEMENTS ' THEN DO:
+        ASSIGN cTmp = SUBSTRING(cTmp, 12). /* To remove IMPLEMENTS */
+        DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
+          CREATE ttXrefClasses.
+          ASSIGN ttXrefClasses.ttClsName = ENTRY(zz, cTmp, ' ').
+        END.
+      END.
+    END.
   END.
   DELETE ttXref. /* ttXref is non-undo'able */
   INPUT STREAM sXREF CLOSE.
@@ -776,21 +871,9 @@ PROCEDURE importXref PRIVATE.
   OUTPUT CLOSE.
 
   OUTPUT TO VALUE (pcDir + '/':U + pcFile + '.hierarchy':U).
-  FOR EACH ttXref WHERE ttXref.xRefType EQ 'CLASS':U NO-LOCK:
-    ASSIGN cTmp = ENTRY(2, ttXref.xObjID).
-    IF cTmp BEGINS 'INHERITS ' THEN DO:
-      ASSIGN cTmp = SUBSTRING(cTmp, 10). /* To remove INHERITS */
-      DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
-        EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
-      END.
-    END.
-    ASSIGN cTmp = ENTRY(3, ttXref.xObjID).
-    IF cTmp BEGINS 'IMPLEMENTS ' THEN DO:
-      ASSIGN cTmp = SUBSTRING(cTmp, 12). /* To remove IMPLEMENTS */
-      DO zz = 1 TO NUM-ENTRIES(cTmp, ' '):
-        EXPORT ENTRY(zz, cTmp, ' ') SEARCH(REPLACE(ENTRY(zz, cTmp, ' '), '.', '/') + '.cls').
-      END.
-    END.
+  FOR EACH ttXrefClasses NO-LOCK:
+    IF SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls') GT '' THEN
+      EXPORT ttXrefClasses.ttClsName SEARCH(REPLACE(ttXrefClasses.ttClsName, '.', '/') + '.cls').
   END.
   OUTPUT CLOSE.
 
@@ -825,7 +908,7 @@ FUNCTION getTimeStampF RETURNS DATETIME (INPUT f AS CHARACTER):
   RETURN DATETIME(FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
 END FUNCTION.
 
-FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER).
+FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER):
   DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -862,7 +945,7 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETI
 
 END FUNCTION.
 
-FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
+FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER):
   DEFINE VARIABLE cTab AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE cCRC AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO INITIAL FALSE.
@@ -885,6 +968,38 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER).
   END.
   INPUT STREAM sCRC CLOSE.
   RETURN lRet.
+
+END FUNCTION.
+
+FUNCTION checkHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER):
+  DEFINE VARIABLE clsName     AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE clsFullPath AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO INITIAL FALSE.
+
+  /* Small workaround when compiling classes */
+  FILE-INFO:FILE-NAME = d + '/':U + f + '.hierarchy':U.
+  IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
+    RETURN lReturn.
+  END.
+
+  INPUT STREAM sHierarchy FROM VALUE (d + '/':U + f + '.hierarchy':U).
+  FileList:
+  REPEAT:
+    IMPORT STREAM sHierarchy clsName clsFullPath.
+    FIND TimeStamps WHERE TimeStamps.ttFile EQ clsName NO-LOCK NO-ERROR.
+    IF (NOT AVAILABLE TimeStamps) THEN DO:
+      CREATE TimeStamps.
+      ASSIGN TimeStamps.ttFile = clsName
+             TimeStamps.ttFullPath = SEARCH(REPLACE(clsName, '.', '/') + '.cls').
+      ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+    END.
+    IF ((TimeStamps.ttFullPath NE clsFullPath) OR (ts LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
+      ASSIGN lReturn = TRUE.
+      LEAVE FileList.
+    END.
+  END.
+  INPUT STREAM sHierarchy CLOSE.
+  RETURN lReturn.
 
 END FUNCTION.
 

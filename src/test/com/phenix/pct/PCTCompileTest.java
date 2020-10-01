@@ -573,7 +573,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(lineProcessor2.getResult());
     }
 
-    private final static class Test35LineProcessor implements LineProcessor<Boolean> {
+    private static final class Test35LineProcessor implements LineProcessor<Boolean> {
         private boolean retVal = false;
         private int zz = 0;
 
@@ -1539,6 +1539,121 @@ public class PCTCompileTest extends BuildFileTestNg {
                 "2 file(s) compiled"});
     }
 
+    @Test(groups = {"v10"})
+    public void test86() {
+        configureProject(BASEDIR + "test86/build.xml");
+        executeTarget("test1");
+        test86Sub(new File(BASEDIR, "test86/build1"));
+        executeTarget("test2");
+        test86Sub(new File(BASEDIR, "test86/build2"));
+
+        executeTarget("touch");
+        executeTarget("test1");
+        executeTarget("test2");
+        test86Sub2(new File(BASEDIR, "test86/build1"));
+        test86Sub2(new File(BASEDIR, "test86/build2"));
+    }
+
+    private static void test86Sub(File dir) {
+        File f1 = new File(dir, "eu/rssw/pct/A.r");
+        assertTrue(f1.exists());
+        File f2 = new File(dir, "eu/rssw/pct/B.r");
+        assertTrue(f2.exists());
+        File f3 = new File(dir, "eu/rssw/pct/X.r");
+        assertTrue(f3.exists());
+        File f4 = new File(dir, "eu/rssw/pct/Y.r");
+        assertTrue(f4.exists());
+        File f5 = new File(dir, "eu/rssw/pct/Z.r");
+        assertTrue(f5.exists());
+        File f6 = new File(dir, "eu/rssw/pct/M.r");
+        assertTrue(f6.exists());
+        File f7 = new File(dir, "eu/rssw/pct/proc.r");
+        assertTrue(f7.exists());
+        File f8 = new File(dir, "eu/rssw/pct/proc2.r");
+        assertTrue(f8.exists());
+        File f9 = new File(dir, "eu/rssw/pct/proc3.r");
+        assertTrue(f9.exists());
+
+        File h1 = new File(dir, ".pct/eu/rssw/pct/A.cls.hierarchy");
+        assertTrue(h1.exists());
+        assertTrue(h1.length() == 0);
+        File h2 = new File(dir, ".pct/eu/rssw/pct/B.cls.hierarchy");
+        assertTrue(h2.exists());
+        assertTrue(h2.length() == 0);
+        File h3 = new File(dir, ".pct/eu/rssw/pct/X.cls.hierarchy");
+        assertTrue(h3.exists());
+        assertTrue(h3.length() == 0);
+        File h4 = new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy");
+        assertTrue(h4.exists());
+        assertTrue(h4.length() > 0);
+        File h5 = new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy");
+        assertTrue(h5.exists());
+        assertTrue(h5.length() > 0);
+        File h6 = new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy");
+        assertTrue(h6.exists());
+        assertTrue(h6.length() > 0);
+        File h7 = new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy");
+        assertTrue(h7.exists());
+        assertTrue(h7.length() > 0);
+        File h8 = new File(dir, ".pct/eu/rssw/pct/proc2.p.hierarchy");
+        assertTrue(h8.exists());
+        assertTrue(h8.length() > 0);
+        File h9 = new File(dir, ".pct/eu/rssw/pct/proc3.p.hierarchy");
+        assertTrue(h9.exists());
+        assertTrue(h9.length() > 0);
+
+        LineProcessor<Integer> proc = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy"), Charset.defaultCharset(), proc);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc.getResult(), Integer.valueOf(1));
+        LineProcessor<Integer> proc2 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy"), Charset.defaultCharset(), proc2);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc2.getResult(), Integer.valueOf(4));
+        LineProcessor<Integer> proc3 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy"), Charset.defaultCharset(), proc3);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc3.getResult(), Integer.valueOf(1));
+        LineProcessor<Integer> proc4 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy"), Charset.defaultCharset(), proc4);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc4.getResult(), Integer.valueOf(1));
+    }
+
+    private static void test86Sub2(File dir) {
+        assertTrue(new File(dir, "eu/rssw/pct/X.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/Y.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/Z.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/proc.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/proc3.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+    }
+
+    private static final class Test86LineProcessor implements LineProcessor<Integer> {
+        private int retVal = 0;
+
+        @Override
+        public Integer getResult() {
+            return retVal;
+        }
+
+        @Override
+        public boolean processLine(String arg0) throws IOException {
+            retVal++;
+            return true;
+        }
+    }
     // Those classes just for the GSON mapping in test79
     @SuppressWarnings("unused")
     protected static class ProjectResult {
