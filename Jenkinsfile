@@ -68,18 +68,14 @@ pipeline {
         unstash name: 'junit-11.7-Win'
         unstash name: 'junit-11.6-Linux'
         unstash name: 'junit-11.7-Linux'
-        unstash name: 'junit-12.1-Win'
         unstash name: 'junit-12.2-Win'
-        unstash name: 'junit-12.1-Linux'
         unstash name: 'junit-12.2-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-11.6-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-12.1-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-12.1-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports'
         junit 'junitreports/**/*.xml'
       }
