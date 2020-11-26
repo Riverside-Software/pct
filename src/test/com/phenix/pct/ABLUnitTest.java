@@ -110,7 +110,6 @@ public class ABLUnitTest extends BuildFileTestNg {
     // Test writeLog property
     @Test(groups = {"v11"})
     public void test8() {
-        // Starting from 12.2, syntax errors are caught by ABLUnit
         DLCVersion version = null;
         try {
             version = DLCVersion.getObject(new File(System.getProperty("DLC")));
@@ -125,13 +124,16 @@ public class ABLUnitTest extends BuildFileTestNg {
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");
         assertFalse(logFile.exists());
-        if (version.compareTo(new DLCVersion(12, 2, "")) >= 0) {
+        // Starting from 12.2 and 11.7.8, syntax errors are silently caught by ABLUnit
+        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
+                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
             executeTarget("test1");
         } else {
             expectBuildException("test1", "Syntax error");
         }
         assertFalse(logFile.exists());
-        if (version.compareTo(new DLCVersion(12, 2, "")) >= 0) {
+        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
+                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
             executeTarget("test2");
         } else {
             expectBuildException("test2", "Syntax error");
