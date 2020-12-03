@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ DEFINE VARIABLE cOptions  AS CHARACTER  NO-UNDO INITIAL '':U.
 DEFINE VARIABLE CurrentFS AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE cFileExt  AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE BaseName  AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE RCodeName AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE RCodeTS   AS INTEGER    NO-UNDO.
 DEFINE VARIABLE ProcTS    AS INTEGER    NO-UNDO.

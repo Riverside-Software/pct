@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -104,8 +104,6 @@ public class PCTNSBroker extends PCTBroker {
 
     /**
      * Server logging level property. No default value. Should be between 1 and 5.
-     * 
-     * @param serverLogLevel
      */
     public void setServerLogLevel(int serverLogLevel) {
         this.serverLogLevel = serverLogLevel;

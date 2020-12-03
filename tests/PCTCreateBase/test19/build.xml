@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test19">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db" />
+  </target>
+
+  <target name="test1">
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" structFile="test1.st" />
+  </target>
+
+  <target name="test2">
+    <sports2000 dlcHome="${DLC}" destDir="db" dbName="sp2k" />
+    <PCTCreateBase structFile="test2.st" dbName="test2" destDir="db" dlcHome="${DLC}" sourceDb="db/sp2k" />
+  </target>
+
+</project>

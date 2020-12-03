@@ -109,9 +109,9 @@ CLASS Consultingwerk.Util.ClassHelper:
         ASSIGN cExtension = ENTRY (NUM-ENTRIES (cShortFileName, ".":U), cShortFileName, ".":U) .                    
 
         IF cExtension = "R":U THEN DO:
-            RCODE-INFO:FILE-NAME = pcFileName . 
+            RCODE-INFORMATION:FILE-NAME = pcFileName . 
             
-            IF NOT RCODE-INFO:IS-CLASS THEN 
+            IF NOT RCODE-INFORMATION:IS-CLASS THEN 
                 RETURN ? . 
         END.             
         ELSE IF NOT cExtension = "CLS":U THEN 
@@ -229,9 +229,9 @@ CLASS Consultingwerk.Util.ClassHelper:
         DO i = 0 TO oFiles:LongLength - 1:
             ASSIGN cFile = UNBOX(oFiles:GetValue (i)) .
 
-            RCODE-INFO:FILE-NAME = cFile . 
+            RCODE-INFORMATION:FILE-NAME = cFile . 
         
-            IF RCODE-INFO:IS-CLASS THEN DO:
+            IF RCODE-INFORMATION:IS-CLASS THEN DO:
                 ASSIGN cClassName = SUBSTRING (cFile, LENGTH (cRootDir) + 2) 
                        cClassName = REPLACE (SUBSTRING (cClassName, 1, LENGTH (cClassName) - 2), "~\":U, ".":U)
                        NO-ERROR .
@@ -373,9 +373,9 @@ CLASS Consultingwerk.Util.ClassHelper:
             
             ASSIGN cFile = ttFileNames.FileName .
 
-            RCODE-INFO:FILE-NAME = cFile . 
+            RCODE-INFORMATION:FILE-NAME = cFile . 
         
-            IF RCODE-INFO:IS-CLASS THEN DO:
+            IF RCODE-INFORMATION:IS-CLASS THEN DO:
                 
                 /* Mike Fechner, Consultingwerk Ltd. 04.09.2013
                    Is there a faster way to exclude .NET dependent 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-2018 Riverside Software
+ * Copyright 2011-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,8 +34,18 @@ public class Dataset {
     @XmlAttribute
     public String serialize;
 
+    @XmlAttribute
+    public boolean isNew;
+    @XmlAttribute
+    public boolean isShared;
+    @XmlAttribute
+    public boolean isStatic;
+
     @XmlElement(name = "text")
     public String aceText;
+
+    @XmlAttribute
+    public AccessModifier modifier;
 
     @XmlElement(name = "dsComment")
     public String comment;

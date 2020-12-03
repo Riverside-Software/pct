@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -86,16 +86,6 @@ public class PCTCompile extends PCTRun {
         throw new BuildException("Can't set parameter attribute here");
     }
 
-    private boolean isDirInPropath(File dir) {
-        if (runAttributes.getPropath() == null)
-            return false;
-        for (String str : runAttributes.getPropath().list()) {
-            if (new File(str).equals(dir))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * Generates text file with all files from resource collections
      */
@@ -176,8 +166,6 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FORCECOMPILE=" + (compAttrs.isForceCompile() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
-            bw.write("FAILONERROR=" + (runAttributes.isFailOnError() ? 1 : 0)); //$NON-NLS-1$
-            bw.newLine();
             bw.write("STOPONERROR=" + (compAttrs.isStopOnError() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("XCODE=" + (compAttrs.isXcode() ? 1 : 0)); //$NON-NLS-1$
@@ -236,7 +224,15 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("FULLNAMES=" + (compAttrs.isRequireFullNames() ? 1 : 0));
             bw.newLine();
+            bw.write("RETURNVALUES=" + (compAttrs.isRequireReturnValues() ? 1 : 0));
+            bw.newLine();
             bw.write("FILELIST=" + compAttrs.getFileList());
+            bw.newLine();
+            if (compAttrs.getCallbackClass() != null) {
+                bw.write("CALLBACKCLASS=" + compAttrs.getCallbackClass());
+                bw.newLine();
+            }
+            bw.write("OUTPUTTYPE=" + compAttrs.getOutputTypeAsString());
             bw.newLine();
         } catch (IOException ioe) {
             throw new BuildException(Messages.getString("PCTCompile.3"), ioe); //$NON-NLS-1$
@@ -296,9 +292,11 @@ public class PCTCompile extends PCTRun {
 
         // Verify resource collections
         for (ResourceCollection rc : compAttrs.getResources()) {
-            if (!rc.isFilesystemOnly())
+            if (!rc.isFilesystemOnly()) {
+                cleanup();
                 throw new BuildException(
                         "PCTCompile only supports file-system resources collections");
+            }
         }
 
         // Ignore appendStringXref when stringXref is not enabled
@@ -311,6 +309,11 @@ public class PCTCompile extends PCTRun {
         if ((compAttrs.getProgPerc() < 0) || (compAttrs.getProgPerc() > 100)) {
             log(MessageFormat.format(Messages.getString("PCTCompile.91"), compAttrs.getProgPerc()), Project.MSG_WARN); //$NON-NLS-1$
             compAttrs.setProgPerc(0);
+        }
+
+        // Display warning message if xmlXref and stringXref used at the same time
+        if (compAttrs.isXmlXref() && compAttrs.isStringXref()) {
+            log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
         }
 
         checkDlcHome();

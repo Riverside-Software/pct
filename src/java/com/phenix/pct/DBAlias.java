@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 package com.phenix.pct;
 
 /**
- * Alias object on PCTRun
+ * Alias object for external DB connections (i.e. when not using DbConnection object)
+ * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class DBAlias {
     private String name = null;
-    private String value = null;
+    private String db = null;
     private boolean noError = false;
 
     /**
@@ -33,8 +34,12 @@ public class DBAlias {
         this.name = name;
     }
 
+    public void setTargetDb(String db) {
+        this.db = db;
+    }
+
     public void setValue(String value) {
-        this.value = value;
+        this.db = value;
     }
 
     /**
@@ -62,6 +67,10 @@ public class DBAlias {
     }
 
     public String getValue() {
-        return value;
+        return db;
+    }
+
+    protected String getBgRunString() {
+        return name + "|" + db + "|" + (noError ? 1 : 0);
     }
 }

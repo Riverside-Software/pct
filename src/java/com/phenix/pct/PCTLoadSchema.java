@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import java.util.List;
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTLoadSchema extends PCTRun {
+public class PCTLoadSchema extends PCTDynamicRun {
     private File srcFile = null;
     private List<ResourceCollection> rcs = new ArrayList<>();
     private boolean unfreeze = false;
@@ -78,8 +78,6 @@ public class PCTLoadSchema extends PCTRun {
 
     /**
      * Callback class
-     * 
-     * @param callbackClass
      */
     public void setCallbackClass(String callbackClass) {
         this.callbackClass = callbackClass;

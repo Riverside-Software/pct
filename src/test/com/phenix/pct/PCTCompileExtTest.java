@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTCompileExt task
- * 
+ *
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class PCTCompileExtTest extends BuildFileTestNg {
@@ -520,7 +520,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v10"})
-    public void test34() throws IOException, InvalidRCodeException {
+    public void test34() {
         configureProject(BASEDIR + "test34/build.xml");
         executeTarget("test");
 
@@ -820,11 +820,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -845,11 +843,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -871,11 +867,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -906,6 +900,14 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("test3");
         assertFalse(new File(BASEDIR + "test55/build3/.pct").exists());
         assertTrue(new File(BASEDIR + "test55/xref3/test.p.inc").exists());
+        assertTrue(new File(BASEDIR + "test55/build3/test.r").exists());
+        assertTrue(new File(BASEDIR + "test55/build3/test2.r").exists());
+
+        executeTarget("test4");
+        assertTrue(new File(BASEDIR + "test55/src/test.p").exists());
+        assertTrue(new File(BASEDIR + "test55/src/subdir/test2.p").exists());
+        assertTrue(new File(BASEDIR + "test55/src/test.r").exists());
+        assertTrue(new File(BASEDIR + "test55/src/test2.r").exists());
     }
 
     @Test(groups = {"v10"})
@@ -979,8 +981,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(warns2.length() > 0);
         assertTrue(warns2.length() < warns1.length());
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
-        assertTrue(warns3.exists());
-        assertEquals(warns3.length(), 0);
+        // All warnings are ignored, file is not present anymore
+        assertFalse(warns3.exists());
+
+        // Existing file should then be deleted
+        executeTarget("test2");
+        assertFalse(warns2.exists());
     }
 
     @Test(groups = {"v10"})
@@ -1101,7 +1107,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("test");
         assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
         assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
-        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // This file shouldn't be there, and is incorrectly created by the compiler
         // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
     }
 
@@ -1140,6 +1146,195 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         executeTarget("db");
         // STOP condition raised by warning 4516 has to be trapped
         executeTarget("build");
+    }
+
+    // ResultProperty is meaningless in multi-threaded builds
+    @Test(enabled=false, groups = {"v10"})
+    public void test73() {
+        configureProject(BASEDIR + "test73/build.xml");
+        executeTarget("test1");
+        assertPropertyEquals("test73Result1", "10");
+        executeTarget("test2");
+        assertPropertyEquals("test73Result2", "0");
+    }
+
+    @Test(groups = {"v10"})
+    public void test74() {
+        configureProject(BASEDIR + "test74/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test74/build/test.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test75() {
+        configureProject(BASEDIR + "test75/build.xml");
+        executeTarget("test");
+
+        File f = new File(BASEDIR + "test75/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test76() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test76/build.xml");
+        executeTarget("compile");
+
+        expectLog("testInitialize", "Initialize#pct/pctBgCompile.p");
+        expectLog("testBeforeCompile", "Before Compile#pct/pctBgCompile.p#test.p#src");
+        expectLog("testAfterCompile", "After Compile#pct/pctBgCompile.p#test.p#src");
+
+        File f = new File(BASEDIR + "test76/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test77() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test77/build.xml");
+        executeTarget("compile");
+
+        File f1 = new File(BASEDIR + "test77/build/test01.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test77/build/test02.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test77/build/excl01.r");
+        assertFalse(f3.exists());
+        File f4 = new File(BASEDIR + "test77/build/excl02.r");
+        assertFalse(f4.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test78() {
+        char ff = (char) 12;
+
+        configureProject(BASEDIR + "test78/build.xml");
+        executeTarget("compile");
+
+        File listing = new File(BASEDIR + "test78/build/.pct/testPage.p");
+        assertTrue(listing.exists(), "Unable to find listing file");
+
+        try {
+            List<String> lines = Files.readLines(listing, Charset.defaultCharset());
+
+            // Test the ASCII code at the defined PAGE-SIZE - 1 (zero based).
+            assertTrue(lines.size() > 10 && lines.get(10).contains(String.valueOf(ff)));
+            // Test the length of the first line containing code.
+            assertTrue(lines.get(4).length() == 90);
+        } catch (IOException e) {
+            Assert.fail("Unable to read file", e);
+        }
+    }
+
+    @Test(groups = {"v10"})
+    public void test79() {
+        // No test case as 'outputType' attribute is not implemented in PCTCompileExt
+    }
+
+    @Test(groups = {"v12"})
+    public void test80() {
+        // Only work with 12.2+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test80/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test80/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test80/build2/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+    }
+
+    // @Test(groups = {"v11"})
+    public void test81() {
+        configureProject(BASEDIR + "test81/build.xml");
+        executeTarget("init");
+
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test81/build1/rssw/Class1.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test81/build1/prgs/Internal.r");
+        assertTrue(f2.exists());
+
+        executeTarget("test2");
+        File f3 = new File(BASEDIR + "test81/build2/rssw/Class1.r");
+        assertTrue(f3.exists());
+        File f4 = new File(BASEDIR + "test81/build2/prgs/Internal.r");
+        assertTrue(f4.exists());
+
+        executeTarget("test3");
+        File f5 = new File(BASEDIR + "test81/build3/rssw/Class1.r");
+        assertTrue(f5.exists());
+        File f6 = new File(BASEDIR + "test81/build3/prgs/Internal.r");
+        assertTrue(f6.exists());
+    }
+
+    @Test(groups = {"v11", "win"})
+    public void test82() {
+        configureProject(BASEDIR + "test82/build.xml");
+        expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
+    @Test(groups = {"v10"})
+    public void test83() {
+        // No test case as 'outputType' attribute is not implemented in PCTCompileExt
+    }
+
+    @Test(groups = {"v10"})
+    public void test84() {
+        configureProject(BASEDIR + "test84/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        File f1 = new File(BASEDIR + "test84/build/test.r");
+        assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test85() {
+        configureProject(BASEDIR + "test85/build.xml");
+        // First build
+        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler", "test.p [No r-code]",
+                "test2.p [No r-code]", "2 file(s) compiled"});
+        // Second build, nothing compiled
+        expectLog("test1",
+                new String[]{"PCTCompile - Progress Code Compiler", "0 file(s) compiled"});
+
+        // Touch test.p
+        expectLog("test2", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than source]", //
+                "test2.p [R-code older than source]", //
+                "2 file(s) compiled"});
+        // Touch test.i
+        expectLog("test3", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file: test.i]", //
+                "test2.p [R-code older than include file: test2.i]", //
+                "2 file(s) compiled"});
     }
 
     @Test(groups = {"v10"})
@@ -1245,5 +1440,4 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f1.exists());
         assertTrue(f2.exists());
     }
-
 }

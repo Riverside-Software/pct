@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,8 +157,7 @@ public class PCTXCode extends PCT {
                     writer.newLine();
 
                     if (overwrite) {
-                        if (!trgFile.delete())
-                            throw new BuildException(Messages.getString("PCTXCode.7"));
+                        Files.deleteIfExists(trgFile.toPath());
                     }
                 }
             }

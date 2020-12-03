@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ public class DumpSequences extends PCTRun {
     /**
      * Set encoding to be used to dump data. If not set or empty,
      * dump will be done using -cpstream default value.
-     * 
-     * @param encoding
      */
     public void setEncoding(String encoding) {
         this.encoding = encoding;

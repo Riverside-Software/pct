@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 
 using Progress.Lang.Class.
 
-define variable callback    as rssw.pct.ILoadDataCallback.
+define variable callback    as rssw.pct.ILoadDataCallback no-undo.
 define variable callbackCls as character no-undo.
 define variable cTbl        as character no-undo.
-define variable bkupFile    as character no-undo.
-define variable delCount    as integer   no-undo.
 
 { prodict/dictvar11.i NEW }
 { prodict/user/uservar117.i NEW }
@@ -54,7 +52,7 @@ if not available dictdb._file then do:
   return '2'.
 end.
 
-define variable logger as rssw.pct.LoadDataLogger.
+define variable logger as rssw.pct.LoadDataLogger no-undo.
 logger = new rssw.pct.LoadDataLogger().
 assign dictMonitor = logger.
 

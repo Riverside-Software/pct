@@ -1,0 +1,1 @@
+ASSIGN propath = "src," + PROPATH.

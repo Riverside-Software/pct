@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="ProgressVersion-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <ProgressVersion dlcHome="${DLC}" majorVersion="major" minorVersion="minor" revision="revision" patchLevel="patch" fullVersion="full" reducedVersion="reduced" rcodeVersion="rcode" bitness="arch" />
+    <!-- Just to make them visible in the emailable-report file -->
+    <echo message="OpenEdge ${major}.${minor} ${arch} bits - Java ${ant.java.version} - Ant ${ant.version}" />
+  </target>
+
+</project>

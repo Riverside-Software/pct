@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.phenix.pct;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,8 +43,6 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PatternSet;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
 /**
  * Base class for creating tasks involving Progress. It does basic work on guessing where various
  * bin/java/etc are located.
@@ -55,7 +55,7 @@ public abstract class PCT extends Task {
 
     // Bug #1114731 : only a few files from $DLC/java/ext are used for proxygen's classpath
     // Files found in $DLC/properties/JavaTool.properties
-    private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,ext/wsdl4j.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar"; //$NON-NLS-1$
+    private static final String JAVA_CP = "progress.zip,progress.jar,messages.jar,proxygen.zip,proxygen.jar,ext/wsdl4j.jar,ext/wsdl4j-*.jar,prowin.jar,ext/xercesImpl.jar,ext/xmlParserAPIs.jar,ext/soap.jar,ext/soap-*.jar"; //$NON-NLS-1$
     private static final Random RANDOM = new Random();
     private static final BuildListener ANALYTICS = new AnalyticsBuildListener();
 
@@ -63,6 +63,8 @@ public abstract class PCT extends Task {
     private File dlcBin = null;
     private File dlcJava = null;
     private File pdsHome = null;
+    private File jdk = null;
+    private File jre = null;
     private boolean includedPL = true;
 
     // Internal use
@@ -100,11 +102,15 @@ public abstract class PCT extends Task {
         try {
             version = DLCVersion.getObject(dlcHome);
             log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
-        } catch (IOException | InvalidRCodeException caught) {
+        } catch (IOException caught) {
             throw new BuildException(caught);
         }
 
-        if (version.compareTo(new DLCVersion(11, 7, "0")) >= 0)
+        if (version.compareTo(new DLCVersion(12, 1, "0")) >= 0)
+            this.pp = new ProgressV121();
+        else if (version.compareTo(new DLCVersion(12, 0, "0")) >= 0)
+            this.pp = new ProgressV12();
+        else if (version.compareTo(new DLCVersion(11, 7, "0")) >= 0)
             this.pp = new ProgressV117();
         else if (version.compareTo(new DLCVersion(11, 4, "0")) >= 0)
             this.pp = new ProgressV114();
@@ -119,6 +125,29 @@ public abstract class PCT extends Task {
         else
             throw new BuildException("Invalid Progress version : " + version.toString());
         log("Using object : " + pp.getClass().getName(), Project.MSG_VERBOSE);
+
+        if (pp.externalJDK()) {
+            try (InputStream input = new FileInputStream (new File(dlcHome, "properties/java.properties"))) {
+                Properties props = new Properties();
+                props.load(input);
+                String str = props.getProperty("JAVA_HOME");
+                if (str == null)
+                    log("No JAVA_HOME property", Project.MSG_ERR);
+                else {
+                    jdk  = new File(str);
+                    jre = new File(jdk, "jre");
+                    if (!jdk.exists())
+                        log("JAVA_HOME '" + jdk.getAbsolutePath() + "' directory doesn't exist")
+                        ;
+                }
+            } catch (IOException uncaught) {
+                log("Unable to open file $DLC/properties/java.properties", Project.MSG_ERR);
+            }
+        } else {
+            jdk = new File(dlcHome, "jdk");
+            jre = new File(dlcHome, "jre");
+        }
+        
     }
 
     public void setPdsHome(File pdsHome) {
@@ -163,7 +192,6 @@ public abstract class PCT extends Task {
     /**
      * Add default pct.pl included in JAR file into PROPATH. Default value is true.
      * 
-     * @param inc
      * @since 0.10
      */
     public final void setIncludedPL(boolean inc) {
@@ -210,15 +238,15 @@ public abstract class PCT extends Task {
     }
 
     protected final File getJRE() {
-        return new File(dlcHome, "jre");
+        return jre;
     }
 
     protected final File getJDK() {
-        return new File(dlcHome, "jdk");
+        return jdk;
     }
 
     protected final File getJDKBin() {
-        return new File(getJDK(), "bin");
+        return new File(jdk, "bin");
     }
 
     protected final File getPdsHome() {
@@ -432,7 +460,6 @@ public abstract class PCT extends Task {
      * 
      * @param f File or directory (must not be present)
      * @return Boolean
-     * @throws IOException
      * @since PCT 0.10
      */
     protected boolean extractPL(File f) throws IOException {
@@ -555,6 +582,10 @@ public abstract class PCT extends Task {
      */
     protected long getRCodeVersion() {
         return version.getrCodeVersion();
+    }
+
+    protected DLCVersion getVersion() {
+        return version;
     }
 
     public int getAntLoggerLever() {

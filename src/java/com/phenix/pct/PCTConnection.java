@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ public class PCTConnection extends DataType {
     private File paramFile = null;
     private Boolean singleUser = null;
     private Boolean readOnly = null;
+    private String passphrase = null;
     private Map<String, PCTAlias> aliases = null;
 
     /**
@@ -170,6 +171,13 @@ public class PCTConnection extends DataType {
      */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    /**
+     * If true, append -Passphrase to connection string
+     */
+    public void setPassphrase(String passphrase) {
+        this.passphrase = passphrase;
     }
 
     /**
@@ -314,6 +322,10 @@ public class PCTConnection extends DataType {
             }
         }
 
+        if (passphrase != null) {
+            list.add("-KeyStorePassPhrase");
+            list.add(passphrase);
+        }
 
         if ((userName != null) && (userName.trim().length() > 0)) {
             list.add("-U"); //$NON-NLS-1$
@@ -349,7 +361,6 @@ public class PCTConnection extends DataType {
      * separated list, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
      * 
      * @return Connection string
-     * @throws BuildException
      */
     public String createBackgroundConnectString() {
         StringBuilder sb = new StringBuilder(createConnectString());

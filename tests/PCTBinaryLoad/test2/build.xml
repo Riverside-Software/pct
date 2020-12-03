@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTBinaryLoad-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateDatabase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+  </target>
+
+  <target name="load">
+    <PCTBinaryLoad dlcHome="${DLC}">
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+      <fileset dir="data" includes="*.bd" />
+    </PCTBinaryLoad>
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="src/test.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
+      <DBConnection dbName="test" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>

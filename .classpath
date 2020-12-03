@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="build/java" path="src/java"/>
-	<classpathentry kind="src" output="build/java" path="build/javadoc"/>
 	<classpathentry kind="src" output="build/test" path="src/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-src.jar"/>
-	<classpathentry kind="lib" path="lib/testng-6.3.1.jar" sourcepath="lib/testng-src.jar"/>
+	<classpathentry kind="lib" path="lib/testng-6.13.1.jar" sourcepath="lib/testng-6.13.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/ast.jar"/>
 	<classpathentry kind="lib" path="lib/ast-dependencies.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-4.7-complete.jar"/>
-	<classpathentry kind="lib" path="lib/commonmark-0.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/commonmark-0.11.0.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-core-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-1.9.14.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.9.14.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/objenesis-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api-2.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

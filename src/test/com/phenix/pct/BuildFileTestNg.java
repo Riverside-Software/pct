@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  */
 package com.phenix.pct;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertySet(String property) {
-        assertPropertyEquals(property, "true");
+        Assert.assertNotEquals(project.getProperty(property), null);
     }
 
     /**
@@ -117,7 +118,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertyUnset(String property) {
-        assertPropertyEquals(property, null);
+        Assert.assertEquals(project.getProperty(property), null);
     }
 
     /**

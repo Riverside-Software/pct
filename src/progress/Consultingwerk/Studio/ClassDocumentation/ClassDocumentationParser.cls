@@ -133,6 +133,9 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
             WHEN "constrComment":U THEN
                 ASSIGN eConstructor.ConstructorComment = lcCharacterData
                        lExpectingCharacter             = FALSE.
+            WHEN "destructorComment":U THEN
+                ASSIGN eDestructor.DestructorComment   = lcCharacterData
+                       lExpectingCharacter             = FALSE.
             WHEN "comment":U OR WHEN "methodComment":U THEN DO:
                 CASE cCommentFor:
                     WHEN "M":U THEN DO:
@@ -206,7 +209,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
             END.
             WHEN "classComment":U THEN
                 ASSIGN lExpectingCharacter = TRUE .
-            WHEN "constrComment":U OR WHEN "comment":U OR WHEN "propertyComment":U OR
+            WHEN "constrComment":U OR WHEN "destructorComment":U OR WHEN "comment":U OR WHEN "propertyComment":U OR
             WHEN "eventComment":U OR WHEN "methodComment":U OR WHEN "text":U THEN DO:
                 ASSIGN lExpectingCharacter = TRUE
                        lcCharacterData     = "":U .
@@ -219,6 +222,12 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
                        lcCharacterData      = "":U .
 
                 BufferHelper:ParseSaxAttributesToBuffer (BUFFER eConstructor:HANDLE, phAttributes, FALSE) .
+            END.
+            WHEN "destructor":U THEN DO:
+                CREATE eDestructor.
+                ASSIGN eDestructor.GUID    = GUID
+                       iParameterSequence   = 0
+                       lcCharacterData      = "":U .
             END.
             WHEN "method":U THEN DO:
                 CREATE eMethod .
@@ -297,7 +306,7 @@ CLASS Consultingwerk.Studio.ClassDocumentation.ClassDocumentationParser
 
                 BufferHelper:ParseSaxAttributesToBuffer (BUFFER eDataset:HANDLE, phAttributes, FALSE) .
             END.
-            WHEN "field":U OR WHEN "index":U OR WHEN "ttComment":U or WHEN "dsComment":U THEN DO:
+            WHEN "field":U OR WHEN "index":U OR WHEN "ttComment":U or WHEN "dsComment":U OR WHEN "definition" THEN DO:
                 /* Ignore */
             END.
             WHEN "buffer":U THEN DO:

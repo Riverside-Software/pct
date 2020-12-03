@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ PROCEDURE getCRC.
     DEFINE VARIABLE i       AS INTEGER    NO-UNDO.
     DEFINE VARIABLE h_file  AS HANDLE     NO-UNDO.
     DEFINE VARIABLE hQuery  AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hQuery2 AS HANDLE     NO-UNDO.
-    DEFINE VARIABLE hBuffer AS HANDLE     NO-UNDO.
     DEFINE VARIABLE hFld1   AS HANDLE     NO-UNDO.
     DEFINE VARIABLE hFld2   AS HANDLE     NO-UNDO.
 

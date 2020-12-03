@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -277,12 +277,12 @@ public class PCTLibrary extends PCT {
 
             // Creates shared library if name defined
             if (sharedFile != null) {
-                if (sharedFile.exists()) {
-                    if (!sharedFile.delete()) {
-                        log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
-                                destFile.getAbsolutePath()), Project.MSG_VERBOSE);
-                        throw new BuildException("Can't create memory-mapped library");
-                    }
+                try {
+                    Files.deleteIfExists(sharedFile.toPath());
+                } catch (IOException caught) {
+                    log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
+                            sharedFile.getAbsolutePath()), Project.MSG_VERBOSE);
+                    throw new BuildException("Can't create memory-mapped library", caught);
                 }
                 log(MessageFormat
                         .format(Messages.getString("PCTLibrary.8"), sharedFile.getAbsolutePath()));
@@ -300,10 +300,7 @@ public class PCTLibrary extends PCT {
             }
 
             if (deleteTempFile) {
-                if (!destFile.delete()) {
-                    log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
-                            destFile.getAbsolutePath()), Project.MSG_VERBOSE);
-                }
+                deleteFile(destFile);
             }
         } catch (BuildException be) {
             cleanup();

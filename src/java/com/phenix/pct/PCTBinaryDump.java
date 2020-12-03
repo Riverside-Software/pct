@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ public class PCTBinaryDump extends PCT {
     private List<Pattern> patterns = new ArrayList<>();
     private File dest = null;
     private Path propath = null;
+    private List<PCTRunOption> options = null;
 
     private int tblListID = -1;
     private File tblListFile = null;
@@ -129,6 +130,13 @@ public class PCTBinaryDump extends PCT {
         this.dest = dest;
     }
 
+    public void addOption(PCTRunOption option) {
+        if (options == null) {
+            options = new ArrayList<>();
+        }
+        options.add(option);
+    }
+
     /**
      * Do the work
      * 
@@ -203,6 +211,17 @@ public class PCTBinaryDump extends PCT {
 
         // Output directory
         exec.createArg().setValue(dest.getAbsolutePath());
+
+        if (options != null) {
+            for (PCTRunOption opt : options) {
+                if (opt.getName() == null) {
+                    throw new BuildException("PCTRun.8"); //$NON-NLS-1$
+                }
+                exec.createArg().setValue(opt.getName());
+                if (opt.getValue() != null)
+                    exec.createArg().setValue(opt.getValue());
+            }
+        }
 
         return exec;
     }

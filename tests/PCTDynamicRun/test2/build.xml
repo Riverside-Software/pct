@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="PCTDynamicRun-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDynRun procedure="test.p" dlcHome="${DLC}">
+      <Parameter name="prm1" value="val1" />
+      <Parameter name="prm2" value="val2" />
+      <OutputParameter name="dynrun2" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+    <echo message="Output ${dynrun2}" />
+  </target>
+
+</project>

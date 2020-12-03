@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,13 +37,23 @@ public class PCTBinaryLoad extends PCT {
     private List<FileSet> filesets = new ArrayList<>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
+    private File paramFile = null;
+    private List<PCTRunOption> options = null;
+
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
+
+    public void addPCTConnection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
 
     /**
      * Adds a database connection
-     * 
+     *
      * @param dbConn Instance of DBConnection class
      */
-    public void addPCTConnection(PCTConnection dbConn) {
+    public void addDBConnection(PCTConnection dbConn) {
         if (this.dbConnList == null) {
             this.dbConnList = new ArrayList<>();
         }
@@ -74,12 +84,28 @@ public class PCTBinaryLoad extends PCT {
     }
 
     /**
+     * Parameter file (-pf attribute)
+     *
+     * @param pf File
+     */
+    public void setParamFile(File pf) {
+        this.paramFile = pf;
+    }
+
+    /**
      * Sets to false if indexes shouldn't be rebuilt
      * 
      * @param rebuildIndexes boolean
      */
     public void setRebuildIndexes(boolean rebuildIndexes) {
         this.rebuildIndexes = rebuildIndexes;
+    }
+
+    public void addOption(PCTRunOption option) {
+        if (options == null) {
+            options = new ArrayList<>();
+        }
+        options.add(option);
     }
 
     /**
@@ -110,6 +136,7 @@ public class PCTBinaryLoad extends PCT {
 
     private ExecTask loadTask(File binaryFile) {
         ExecTask exec = new ExecTask(this);
+        exec.setFailonerror(true);
         File a = getExecPath("_proutil"); //$NON-NLS-1$
         exec.setExecutable(a.toString());
 
@@ -131,6 +158,21 @@ public class PCTBinaryLoad extends PCT {
             exec.createArg().setValue("indexes"); //$NON-NLS-1$
             exec.createArg().setValue("-G"); //$NON-NLS-1$
             exec.createArg().setValue(Integer.toString(indexRebuildTimeout));
+        }
+        if (this.paramFile != null) {
+            exec.createArg().setValue("-pf"); //$NON-NLS-1$
+            exec.createArg().setValue(this.paramFile.getAbsolutePath());
+        }
+
+        if (options != null) {
+            for (PCTRunOption opt : options) {
+                if (opt.getName() == null) {
+                    throw new BuildException("PCTRun.8"); //$NON-NLS-1$
+                }
+                exec.createArg().setValue(opt.getName());
+                if (opt.getValue() != null)
+                    exec.createArg().setValue(opt.getValue());
+            }
         }
 
         return exec;

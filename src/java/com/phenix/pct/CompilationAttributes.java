@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,10 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.ResourceCollection;
 
 public class CompilationAttributes implements ICompilationAttributes {
+    protected static final String CONSOLE_OUTPUT_TYPE = "console";
+    protected static final String JSON_OUTPUT_TYPE = "json";
+
     private List<ResourceCollection> resources = new ArrayList<>();
     private File destDir = null;
     private File xRefDir = null;
@@ -42,6 +45,8 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean runList = false;
     private boolean listing = false;
     private String listingSource = null;
+    private int pageSize = -1;
+    private int pageWidth = -1;
     private boolean preprocess = false;
     private boolean debugListing = false;
     private boolean keepXref = false;
@@ -59,17 +64,20 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean requireFullKeywords = false;
     private boolean requireFieldQualifiers = false;
     private boolean requireFullNames = false;
+    private boolean requireReturnValues = false;
     private String languages = null;
     private int growthFactor = -1;
     private int progPerc = 0;
     private boolean flattenDbg = true;
     private String ignoredIncludes = null;
     private int fileList = 0;
+    private String callback = null;
+    private String outputType = null;
 
     // Internal use
-    private final Task parent;
+    private final PCT parent;
 
-    public CompilationAttributes(Task parent) {
+    public CompilationAttributes(PCT parent) {
         this.parent = parent;
     }
 
@@ -109,6 +117,16 @@ public class CompilationAttributes implements ICompilationAttributes {
             this.listingSource = source;
         else
             throw new BuildException("Invalid listingSource attribute : " + source);
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public void setPageWidth(int pageWidth) {
+        this.pageWidth = pageWidth;
     }
 
     @Override
@@ -244,6 +262,11 @@ public class CompilationAttributes implements ICompilationAttributes {
     }
 
     @Override
+    public void setRequireReturnValues(boolean requireReturnValues) {
+        this.requireReturnValues = requireReturnValues;
+    }
+
+    @Override
     public void setStopOnError(boolean stopOnError) {
         this.stopOnError = stopOnError;
     }
@@ -261,6 +284,16 @@ public class CompilationAttributes implements ICompilationAttributes {
     @Override
     public void setDisplayFiles(int display) {
         this.fileList = display;
+    }
+
+    @Override
+    public void setCallbackClass(String callback) {
+        this.callback = callback;
+    }
+
+    @Override
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
     }
 
     public List<ResourceCollection> getResources() {
@@ -293,6 +326,14 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public String getListingSource() {
         return listingSource;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public int getPageWidth() {
+        return pageWidth;
     }
 
     public boolean isPreprocess() {
@@ -363,6 +404,10 @@ public class CompilationAttributes implements ICompilationAttributes {
         return requireFullNames;
     }
 
+    public boolean isRequireReturnValues() {
+        return requireReturnValues;
+    }
+
     public String getLanguages() {
         return languages;
     }
@@ -403,7 +448,40 @@ public class CompilationAttributes implements ICompilationAttributes {
         return fileList;
     }
 
+    public String getCallbackClass() {
+        return callback;
+    }
+
+    public List<String> getOutputType() {
+        List<String> retVal = new ArrayList<>();
+        if (outputType != null) {
+            for (String str : outputType.split(",")) {
+                if (CONSOLE_OUTPUT_TYPE.equalsIgnoreCase(str)) {
+                    retVal.add(CONSOLE_OUTPUT_TYPE);
+                } else if (JSON_OUTPUT_TYPE.equalsIgnoreCase(str)) {
+                    retVal.add(JSON_OUTPUT_TYPE);
+                } else {
+                    parent.log("Invalid outputType: '" + str + "'", Project.MSG_WARN);
+                }
+            }
+        }
+        if (retVal.isEmpty())
+            retVal.add(CONSOLE_OUTPUT_TYPE);
+
+        return retVal;
+    }
+
+    public String getOutputTypeAsString() {
+        String retVal = "";
+        for (String str : getOutputType()) {
+            retVal += (retVal.isEmpty() ? "" : ',') + str;
+        }
+
+        return retVal;
+    }
+
     protected void writeCompilationProcedure(File f, Charset c) {
+        boolean bAbove1173 = parent.getVersion().compareTo(new DLCVersion(11, 7, "3")) >= 0;
         try (FileOutputStream fos = new FileOutputStream(f);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, c);
                 BufferedWriter bw = new BufferedWriter(osw)) {
@@ -421,10 +499,14 @@ public class CompilationAttributes implements ICompilationAttributes {
             bw.newLine();
             bw.write("DEFINE INPUT PARAMETER ipXREF AS CHARACTER NO-UNDO.");
             bw.newLine();
+            bw.write("DEFINE INPUT PARAMETER ipOptions AS CHARACTER NO-UNDO.");
+            bw.newLine();
 
             bw.write("DO ON STOP UNDO, RETRY: IF RETRY THEN DO: COMPILER:ERROR = TRUE. RETURN. END.");
             bw.newLine();
             bw.write("COMPILE VALUE(ipSrcFile) ");
+            if (bAbove1173)
+                bw.write("OPTIONS ipOptions ");
             if (isSaveR())
                 bw.write("SAVE INTO VALUE(ipSaveDir) ");
             bw.write(" DEBUG-LIST VALUE(ipDbg) ");
@@ -448,6 +530,10 @@ public class CompilationAttributes implements ICompilationAttributes {
             }
             if (!isXcode()) {
                 bw.write("LISTING VALUE(ipListing) ");
+                if (getPageSize() != -1)
+                    bw.write("PAGE-SIZE " + getPageSize() + " ");
+                if (getPageWidth() != -1)
+                    bw.write("PAGE-WIDTH " + getPageWidth() + " ");
                 bw.write("PREPROCESS VALUE(ipPreprocess) ");
                 bw.write("STRING-XREF VALUE(ipStrXref) ");
                 if (isAppendStringXref())

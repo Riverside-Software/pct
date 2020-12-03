@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test76">
+  <taskdef resource="PCT.properties" />
+
+  <target name="compile">
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" callbackClass="CompileCallback" relativePaths="true">
+      <fileset dir="src" includes="test.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="testInitialize">
+    <PCTRun procedure="src/testInitialize.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+
+  <target name="testBeforeCompile">
+    <PCTRun procedure="src/testBeforeCompile.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+
+  <target name="testAfterCompile">
+    <PCTRun procedure="src/testAfterCompile.p" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1" />
+  </target>
+
+</project>

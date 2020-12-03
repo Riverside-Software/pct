@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,6 +43,12 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         expectLogRegexp("test1", rexp, true);
 
         expectLog("test2", "This is dir2");
+    }
+
+    @Test(groups = {"v11"})
+    public void test2() {
+        configureProject("PCTDynamicRun/test2/build.xml");
+        expectLog("test", "Output val1 val2");
     }
 
 }

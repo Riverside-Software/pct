@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class Prolib {
         this.out = out;
     }
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(String[] args) {
         Prolib main = new Prolib();
         JCommander jc = new JCommander(main);
         jc.addCommand("extract", extract);
@@ -61,25 +61,29 @@ public class Prolib {
             jc.usage();
             System.exit(1);
         }
-
-        if ("list".equals(jc.getParsedCommand()))
-            main.executeList();
-        else if ("extract".equals(jc.getParsedCommand()))
-            main.executeExtract();
-        else if ("compare".equals(jc.getParsedCommand()))
-            main.executeCompare();
+        try {
+            if ("list".equals(jc.getParsedCommand()))
+                main.executeList();
+            else if ("extract".equals(jc.getParsedCommand()))
+                main.executeExtract();
+            else if ("compare".equals(jc.getParsedCommand()))
+                main.executeCompare();
+        } catch (IOException caught) {
+            main.out.println("I/O problem: " + caught.getMessage());
+            System.exit(1);
+        }
     }
 
     public void executeList() throws IOException {
         PLReader reader = new PLReader(list.lib);
-        out.printf("%6s %33s %10s %s%n", "CRC", "MD5", "Size", "File");
+        out.printf("%6s %44s %10s %s%n", "CRC", "Digest", "Size", "File");
         for (FileEntry entry : reader.getFileList()) {
             try {
                 RCodeInfo info = new RCodeInfo(reader.getInputStream(entry));
-                out.printf("%6d %33s %10d %s%n", info.getCRC(), info.getMD5(),
+                out.printf("%6d %44s %10d %s%n", info.getCRC(), info.getRcodeDigest(),
                         entry.getSize(), entry.getFileName());
             } catch (InvalidRCodeException caught) {
-                out.printf("%6s %33s %10d %s%n", "-", "-", entry.getSize(),
+                out.printf("%6s %44s %10d %s%n", "-", "-", entry.getSize(),
                         entry.getFileName());
             }
         }
@@ -120,7 +124,7 @@ public class Prolib {
                     RCodeInfo info1 = new RCodeInfo(lib1.getInputStream(entry1));
                     RCodeInfo info2 = new RCodeInfo(lib2.getInputStream(list2.get(idx)));
                     if ((info1.getCRC() == info2.getCRC())
-                            && (info1.getMD5().equals(info2.getMD5()))) {
+                            && (info1.getRcodeDigest().equals(info2.getRcodeDigest()))) {
                         if (compare.showIdenticals)
                             out.println("I " + entry1.getFileName());
                     } else {

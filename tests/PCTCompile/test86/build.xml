@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test86">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build1" />
+    <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}" keepXref="true" xmlXref="false">
+      <fileset dir="src" includes="**/*.cls,**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true" xmlXref="true">
+      <fileset dir="src" includes="**/*.cls,**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="touch">
+    <sleep seconds="5" />
+    <touch file="src/eu/rssw/pct/X.cls" />
+  </target>
+
+</project>

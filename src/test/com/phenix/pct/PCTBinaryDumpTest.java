@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -82,5 +82,16 @@ public class PCTBinaryDumpTest extends BuildFileTestNg {
         assertTrue(f1.exists());
         assertFalse(f2.exists());
         assertTrue(f3.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test7() {
+        configureProject("PCTBinaryDump/test7/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("PCTBinaryDump/test7/dump/Customer.bd");
+        File f2 = new File("PCTBinaryDump/test7/dump2/list.txt");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
     }
 }

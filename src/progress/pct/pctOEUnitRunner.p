@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ DEFINE STREAM sParams.
 DEFINE VARIABLE reportFormat AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE hasErrors AS LOGICAL NO-UNDO INITIAL FALSE. 
-DEFINE VARIABLE i AS INTEGER NO-UNDO.
 
 /* Checks for valid parameters */
 IF (SESSION:PARAMETER EQ ?) THEN
@@ -67,8 +66,6 @@ PROCEDURE RunClassAsTest PRIVATE:
   DEFINE INPUT PARAMETER classFile AS CHARACTER NO-UNDO.
       
   DEFINE VARIABLE test AS Object NO-UNDO.
-  DEFINE VARIABLE errors AS List NO-UNDO.
-  DEFINE VARIABLE err AS Progress.Lang.Error NO-UNDO.
   
   test = Instance:FromFile(classFile).
   

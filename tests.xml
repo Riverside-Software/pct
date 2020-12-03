@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <project name="PCT-Tests" xmlns:jacoco="antlib:org.jacoco.ant">
 
   <!-- Default values when using command line -->
@@ -7,6 +6,10 @@
   <property name="DLC" value="${env.DLC}" />
   <property name="PROFILER" value="false" />
   <property name="TESTLIBS" value="${basedir}/lib" />
+
+  <!-- Only used for OE version number -->
+  <taskdef resource="PCT.properties" />
+  <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" bitness="OE_ARCH" />
 
   <!-- Assume version 11 when in local development -->
   <condition property="GROUPS" value="v10,v11">
@@ -19,9 +22,17 @@
   <condition property="GROUPS" value="v10,v11">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
   </condition>
+  <condition property="GROUPS" value="v10,v11,v12">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
+  </condition>
+
   <!-- Excluded group depending on OS -->
-  <condition property="EXCLUDES" value="unix" else="win">
+  <condition property="EXCLUDES-OS" value="unix" else="win">
     <os family="windows" />
+  </condition>
+  <!-- Excluded group depending on version -->
+  <condition property="EXCLUDES-VERSION" value="nov12" else="">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
   <!-- Only for ProUnit and OEUnit -->
   <condition property="SIXTYFOUR" value="-64" else="">
@@ -38,13 +49,14 @@
     <pathelement location="build/test" />
     <fileset dir="dist" includes="PCT.jar" />
     <fileset dir="lib" includes="*.jar" />
+    <fileset dir="${ant.library.dir}" includes="ant.jar,ant-launcher.jar" />
   </path>
 
   <path id="testng.cp">
-    <fileset dir="lib" includes="testng-6.3.1.jar" />
+    <fileset dir="lib" includes="testng-6.13.1.jar,jcommander-1.30.jar" />
   </path>
   <path id="jacoco.cp">
-    <fileset dir="lib" includes="jacocoant.jar" />
+    <fileset dir="lib" includes="jacocoant-0.8.4.jar" />
   </path>
 
   <target name="init">
@@ -56,6 +68,8 @@
     <!-- Only in testXX, test cases with number greater than 100 are reserved for PCTCompileExt -->
     <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="PCTCompile" value="PCTCompileExt" />
     <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="pct:compile" value="pct:compile_ext" />
+    <echo message="Using Ant '${ant.version}' in '${ant.home}'" />
+    <echo message="Using Java ${ant.java.version} - Java home: ${java.home}" />
   </target>
 
   <target name="test">
@@ -64,8 +78,8 @@
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
-    <jacoco:coverage destFile="profiler/jacoco.exec">
-      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES}" suiteName="${TESTENV} tests">
+    <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
+      <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES-OS},${EXCLUDES-VERSION}" suiteName="${TESTENV} tests">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
         <classpath refid="test.run.cp" />
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
@@ -75,7 +89,7 @@
 
   <target name="dist" depends="test">
     <copy file="test-output/emailable-report.html" tofile="emailable-report-${TESTENV}.html" />
-    <zip destFile="oe-profiler-data.zip">
+    <zip destFile="oe-profiler-data-${TESTENV}.zip">
       <fileset dir="testbox" includes="**/profiler*.out" />
     </zip>
     <zip destFile="junitreports-${TESTENV}.zip">

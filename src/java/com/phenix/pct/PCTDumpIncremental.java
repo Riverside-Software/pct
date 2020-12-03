@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.io.File;
  * @author Phillip BAIRD
  * @author <a href="g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTDumpIncremental extends PCTRun {
+public class PCTDumpIncremental extends PCTDynamicRun {
     private File destFile = null;
     private File renameFile = null;
     private int activeIndexes = 0;
@@ -132,10 +132,6 @@ public class PCTDumpIncremental extends PCTRun {
         super.addDBConnection(dbConn);
     }
 
-    /**
-     * 
-     * @param dbConn
-     */
     public void addSourceDb(PCTConnection dbConn) {
         PCTAlias alias = new PCTAlias();
         alias.setName("dictdb");

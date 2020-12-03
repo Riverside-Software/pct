@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -96,7 +96,6 @@ PROCEDURE WriteToSocket:
 
     DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
     DEFINE VARIABLE packet       as longchar no-undo.
-    DEFINE VARIABLE lfirst       as logical  no-undo.
 
     ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
     FOR EACH ttMsgs:
@@ -121,7 +120,7 @@ PROCEDURE ReceiveCommand:
     DEFINE VARIABLE cCmd AS CHARACTER NO-UNDO.
     DEFINE VARIABLE i1   AS INTEGER  NO-UNDO.
     DEFINE VARIABLE mReadBuffer AS MEMPTR NO-UNDO.
-    DEFINE VARIABLE iBytes  AS INTEGER.
+    DEFINE VARIABLE iBytes  AS INTEGER NO-UNDO.
 
     IF NOT SELF:CONNECTED() THEN DO:
         RETURN ERROR "Socket disconnected".
@@ -162,7 +161,6 @@ PROCEDURE executeCmd:
 
     EMPTY TEMP-TABLE ttMsgs.
 
-    DEFINE VARIABLE cRet  AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cPrm  AS CHARACTER  NO-UNDO INITIAL "".
     DEFINE VARIABLE hProc AS HANDLE     NO-UNDO.
     DEFINE VARIABLE idx   AS INTEGER    NO-UNDO.
@@ -319,6 +317,20 @@ PROCEDURE Connect :
         ASSIGN dbNum = dbNum + 1.
     END.
       
+END PROCEDURE.
+
+/* Handle aliases */
+PROCEDURE alias:
+    DEFINE INPUT  PARAMETER cPrm AS CHARACTER   NO-UNDO.
+    DEFINE OUTPUT PARAMETER opOK AS LOGICAL     NO-UNDO.
+    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
+
+    IF (ENTRY(3, cPrm, '|') EQ '1') THEN
+        CREATE ALIAS VALUE(ENTRY(1, cPrm, '|')) FOR DATABASE VALUE(ENTRY(2, cPrm, '|')).
+    ELSE
+        CREATE ALIAS VALUE(ENTRY(1, cPrm, '|')) FOR DATABASE VALUE(ENTRY(2, cPrm, '|')) NO-ERROR.
+    ASSIGN opOk = TRUE.
+
 END PROCEDURE.
 
 PROCEDURE setThreadNumber:

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -72,14 +72,15 @@ public class ProUnit extends PCTRun {
         this.compatibility = compatibility;
     }
 
-    public void execute() throws BuildException {
+    @Override
+    public void execute() {
         // This parameter is mandatory (to get a return-value)
         StringBuilder sb = new StringBuilder("-runningAnt=true");
         String proc = "startProUnitBatch.p";
 
         if ((xmlProject == null) || !xmlProject.isFile()) {
             throw new BuildException(MessageFormat.format(
-                    Messages.getString("ProUnit.0"), new Object[]{"project"})); //$NON-NLS-1$ //$NON-NLS-2$
+                    Messages.getString("ProUnit.0"), "project")); //$NON-NLS-1$ //$NON-NLS-2$
         } else {
             sb.append(" -projectFile=").append(xmlProject);
         }

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test80">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="build1" />
+    <PCTCompile destDir="build1" dlcHome="${DLC}" requireReturnValues="false">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="build2" />
+    <PCTCompile destDir="build2" dlcHome="${DLC}" requireReturnValues="true">
+      <fileset dir="src" includes="*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

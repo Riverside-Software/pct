@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-2018 Riverside Software
+ * Copyright 2011-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,11 +34,22 @@ public class TempTable {
     @XmlAttribute
     public boolean noUndo;
     @XmlAttribute
+    public boolean isNew;
+    @XmlAttribute
+    public boolean isGlobal;
+    @XmlAttribute
+    public boolean isShared;
+    @XmlAttribute
+    public boolean isStatic;
+    @XmlAttribute
     public String beforeTable;
     @XmlAttribute
     public String xmlNodeName;
     @XmlAttribute
     public String serialize;
+
+    @XmlAttribute
+    public AccessModifier modifier;
 
     @XmlElement(name = "text")
     public String aceText;
@@ -71,6 +82,12 @@ public class TempTable {
         sb.append('\n');
         for (TableField fld : fields) {
             sb.append("  FIELD ").append(fld.name).append(" AS ").append(fld.dataType);
+            if (fld.extent > 0) {
+                sb.append(" EXTENT ").append(fld.extent);
+            }
+            if (fld.format != null && !fld.format.isEmpty()) {
+                sb.append(" FORMAT ").append(fld.format);
+            }
             if (fld.initialValue != null)
                 sb.append(" INITIAL ").append(fld.initialValue);
             sb.append('\n');

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 public class RCodeInfoTest extends BuildFileTestNg {
 
     /**
-     * Compares CRC using RCodeInfo and RCODE-INFO:CRC-VALUE
+     * Compares CRC and MD5 using RCodeInfo and RCODE-INFO:CRC-VALUE
      */
     @Test(groups = { "v10" })
     public void test1() throws IOException, InvalidRCodeException {
@@ -62,8 +62,8 @@ public class RCodeInfoTest extends BuildFileTestNg {
 
         assertEquals(Long.parseLong(crc1), file1.getCRC());
         assertEquals(Long.parseLong(crc2), file2.getCRC());
-        assertEquals(md5_1, file1.getMD5());
-        assertEquals(md5_2, file2.getMD5());
+        assertEquals(md5_1, file1.getRcodeDigest());
+        assertEquals(md5_2, file2.getRcodeDigest());
     }
 
 }

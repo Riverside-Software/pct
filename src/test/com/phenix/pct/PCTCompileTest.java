@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,9 +17,19 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -27,13 +37,8 @@ import org.testng.annotations.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.google.gson.Gson;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class for testing PCTCompile task
@@ -568,7 +573,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(lineProcessor2.getResult());
     }
 
-    private final static class Test35LineProcessor implements LineProcessor<Boolean> {
+    private static final class Test35LineProcessor implements LineProcessor<Boolean> {
         private boolean retVal = false;
         private int zz = 0;
 
@@ -820,11 +825,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -845,11 +848,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -871,11 +872,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Only work with 11.7+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 6)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -906,6 +905,14 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test3");
         assertFalse(new File(BASEDIR + "test55/build3/.pct").exists());
         assertTrue(new File(BASEDIR + "test55/xref3/test.p.inc").exists());
+        assertTrue(new File(BASEDIR + "test55/build3/test.r").exists());
+        assertTrue(new File(BASEDIR + "test55/build3/test2.r").exists());
+
+        executeTarget("test4");
+        assertTrue(new File(BASEDIR + "test55/src/test.p").exists());
+        assertTrue(new File(BASEDIR + "test55/src/subdir/test2.p").exists());
+        assertTrue(new File(BASEDIR + "test55/src/test.r").exists());
+        assertTrue(new File(BASEDIR + "test55/src/test2.r").exists());
     }
 
     @Test(groups = {"v10"})
@@ -941,8 +948,6 @@ public class PCTCompileTest extends BuildFileTestNg {
             if (version.getMajorVersion() < 11)
                 return;
         } catch (IOException caught) {
-            return;
-        } catch (InvalidRCodeException caught) {
             return;
         }
 
@@ -996,8 +1001,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(warns2.length() > 0);
         assertTrue(warns2.length() < warns1.length());
         File warns3 = new File(BASEDIR + "test62/build3/.pct/test.p.warnings");
-        assertTrue(warns3.exists());
-        assertEquals(warns3.length(), 0);
+        // All warnings are ignored, file is not present anymore
+        assertFalse(warns3.exists());
+
+        // Existing file should then be deleted
+        executeTarget("test2");
+        assertFalse(warns2.exists());
     }
 
     @Test(groups = {"v10"})
@@ -1118,7 +1127,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         executeTarget("test");
         assertTrue(new File(BASEDIR + "test68/src1/rssw/pct/ITest.r").exists());
         assertTrue(new File(BASEDIR + "test68/build-impl/rssw/pct/TestImpl.r").exists());
-        // This file shouldn't be there, and is incorrectly created by the compiler 
+        // This file shouldn't be there, and is incorrectly created by the compiler
         // assertFalse(new File(BASEDIR + "test68/build-impl/rssw/pct/ITest.r").exists());
     }
 
@@ -1158,4 +1167,518 @@ public class PCTCompileTest extends BuildFileTestNg {
         // STOP condition raised by warning 4516 has to be trapped
         executeTarget("build");
     }
+
+    @Test(groups = {"v10"})
+    public void test73() {
+        configureProject(BASEDIR + "test73/build.xml");
+        executeTarget("test1");
+        assertPropertyEquals("test73Result1", "10");
+        executeTarget("test2");
+        assertPropertyEquals("test73Result2", "0");
+    }
+
+    @Test(groups = {"v10"})
+    public void test74() {
+        configureProject(BASEDIR + "test74/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        assertTrue(new File(BASEDIR + "test74/build/test.r").exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test75() {
+        configureProject(BASEDIR + "test75/build.xml");
+        executeTarget("test");
+
+        File f = new File(BASEDIR + "test75/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test76() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test76/build.xml");
+        executeTarget("compile");
+
+        expectLog("testInitialize", "Initialize#pct/pctCompile.p");
+        expectLog("testBeforeCompile", "Before Compile#pct/pctCompile.p#test.p#src");
+        expectLog("testAfterCompile", "After Compile#pct/pctCompile.p#test.p#src");
+
+        File f = new File(BASEDIR + "test76/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups = {"v11"})
+    public void test77() {
+        // Only work with 11.3+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException e) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test77/build.xml");
+        executeTarget("compile");
+
+        File f1 = new File(BASEDIR + "test77/build/test01.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test77/build/test02.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test77/build/excl01.r");
+        assertFalse(f3.exists());
+        File f4 = new File(BASEDIR + "test77/build/excl02.r");
+        assertFalse(f4.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test78() {
+        char ff = (char) 12;
+
+        configureProject(BASEDIR + "test78/build.xml");
+        executeTarget("compile");
+
+        File listing = new File(BASEDIR + "test78/build/.pct/testPage.p");
+        assertTrue(listing.exists(), "Unable to find listing file");
+
+        try {
+            List<String> lines = Files.readLines(listing, Charset.defaultCharset());
+
+            // Test the ASCII code at the defined PAGE-SIZE - 1 (zero based).
+            assertTrue(lines.size() > 10 && lines.get(10).contains(String.valueOf(ff)));
+            // Test the length of the first line containing code.
+            assertTrue(lines.get(4).length() == 90);
+        } catch (IOException e) {
+            Assert.fail("Unable to read file", e);
+        }
+    }
+
+    @Test(groups = {"v10"})
+    public void test79() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
+        Gson gson = new Gson();
+
+        configureProject(BASEDIR + "test79/build.xml");
+        executeTarget("test1");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test2");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test2.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test3");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 2);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertEquals(result.ttProjectErrors[1].fileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[1].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.ttProjectErrors[1].rowNum, 4);
+            assertEquals(result.ttProjectErrors[1].colNum, 1);
+            assertEquals(result.ttProjectErrors[1].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        expectBuildException("test4", "OutputType value is wrong");
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("JSON outputType is not supported on multi-threaded environment");
+        expectLogRegexp("test5", rexp, false);
+
+        expectBuildException("test8", "value of failOnError is true");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 0);
+            assertEquals(result.errorFiles, 1);
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 3);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+            assertNull(result.ttProjectWarnings);
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test6");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 0);
+            assertNull(result.ttProjectErrors);
+            assertEquals(result.ttProjectWarnings.length, 2);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"DEFINE\" as \"DEF\" due to the \"require-full-keywords\" compiler option. (18494)");
+            assertEquals(result.ttProjectWarnings[1].fileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[1].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.ttProjectWarnings[1].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[1].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[1].msg,
+                    "Cannot reference \"integer\" as \"INT\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        executeTarget("test7");
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 0);
+            assertNull(result.ttProjectErrors);
+            assertEquals(result.ttProjectWarnings.length, 1);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test6.i");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test6.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+    }
+
+    @Test(groups = {"v12"})
+    public void test80() {
+        // Only work with 12.2+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test80/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test80/build1/test.r");
+        assertTrue(f1.exists());
+
+        executeTarget("test2");
+        File f2 = new File(BASEDIR + "test80/build2/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+    }
+
+    // @Test(groups = {"v11"})
+    public void test81() {
+        configureProject(BASEDIR + "test81/build.xml");
+        executeTarget("init");
+
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test81/build1/rssw/Class1.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test81/build1/prgs/Internal.r");
+        assertTrue(f2.exists());
+
+        executeTarget("test2");
+        File f3 = new File(BASEDIR + "test81/build2/rssw/Class1.r");
+        assertTrue(f3.exists());
+        File f4 = new File(BASEDIR + "test81/build2/prgs/Internal.r");
+        assertTrue(f4.exists());
+
+        executeTarget("test3");
+        File f5 = new File(BASEDIR + "test81/build3/rssw/Class1.r");
+        assertTrue(f5.exists());
+        File f6 = new File(BASEDIR + "test81/build3/prgs/Internal.r");
+        assertTrue(f6.exists());
+    }
+
+    @Test(groups = {"v11", "win"})
+    public void test82() {
+        configureProject(BASEDIR + "test82/build.xml");
+        expectBuildException("test", "Crashed process should lead to build failure");
+    }
+
+    @Test(groups = {"v10"})
+    public void test83() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test83/build.xml");
+        String projectResultFile = BASEDIR + "test83/build/.pct/project-result.json";
+        Gson gson = new Gson();
+
+        List<String> rexp = new ArrayList<>();
+        rexp.add("PCTCompile - Progress Code Compiler");
+        rexp.add("Error compiling file 'src/test2.p' \\.\\.\\.");
+        rexp.add(" \\.\\.\\. in main file at line 1.*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add(".*");
+        rexp.add("1 file\\(s\\) compiled");
+        rexp.add("Failed to compile  1  file\\(s\\)");
+        expectLogRegexp("test", rexp, false);
+
+        try (Reader reader = new FileReader(projectResultFile)) {
+            ProjectResult result = gson.fromJson(reader, ProjectResult.class);
+            assertEquals(result.compiledFiles, 1);
+            assertEquals(result.errorFiles, 1);
+
+            assertEquals(result.ttProjectErrors.length, 1);
+            assertEquals(result.ttProjectErrors[0].fileName, "src/test2.p");
+            assertEquals(result.ttProjectErrors[0].mainFileName, "src/test2.p");
+            assertEquals(result.ttProjectErrors[0].rowNum, 1);
+            assertEquals(result.ttProjectErrors[0].colNum, 1);
+            assertEquals(result.ttProjectErrors[0].msg,
+                    "** Unable to understand after -- \"MESSGE\". (247)");
+
+            assertEquals(result.ttProjectWarnings.length, 1);
+            assertEquals(result.ttProjectWarnings[0].fileName, "src/test.i");
+            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/test.p");
+            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
+            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
+            assertEquals(result.ttProjectWarnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+        } catch (IOException caught) {
+            fail("Caught IOException", caught);
+        }
+
+        File warningsFile = new File(BASEDIR + "test83/build/.pct/test.p.warnings");
+        assertTrue(warningsFile.exists());
+        assertTrue(warningsFile.length() > 0);
+    }
+
+    @Test(groups = {"v10"})
+    public void test84() {
+        configureProject(BASEDIR + "test84/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        File f1 = new File(BASEDIR + "test84/build/test.r");
+        assertTrue(f1.exists());
+    }
+
+    @Test(groups = {"v10"})
+    public void test85() {
+        configureProject(BASEDIR + "test85/build.xml");
+        // First build
+        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler", "test.p [No r-code]",
+                "test2.p [No r-code]", "2 file(s) compiled"});
+        // Second build, nothing compiled
+        expectLog("test1",
+                new String[]{"PCTCompile - Progress Code Compiler", "0 file(s) compiled"});
+
+        // Touch test.p
+        expectLog("test2", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than source]", //
+                "test2.p [R-code older than source]", //
+                "2 file(s) compiled"});
+        // Touch test.i
+        expectLog("test3", new String[]{"PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file: test.i]", //
+                "test2.p [R-code older than include file: test2.i]", //
+                "2 file(s) compiled"});
+    }
+
+    @Test(groups = {"v10"})
+    public void test86() {
+        configureProject(BASEDIR + "test86/build.xml");
+        executeTarget("test1");
+        test86Sub(new File(BASEDIR, "test86/build1"));
+        executeTarget("test2");
+        test86Sub(new File(BASEDIR, "test86/build2"));
+
+        executeTarget("touch");
+        executeTarget("test1");
+        executeTarget("test2");
+        test86Sub2(new File(BASEDIR, "test86/build1"));
+        test86Sub2(new File(BASEDIR, "test86/build2"));
+    }
+
+    private static void test86Sub(File dir) {
+        File f1 = new File(dir, "eu/rssw/pct/A.r");
+        assertTrue(f1.exists());
+        File f2 = new File(dir, "eu/rssw/pct/B.r");
+        assertTrue(f2.exists());
+        File f3 = new File(dir, "eu/rssw/pct/X.r");
+        assertTrue(f3.exists());
+        File f4 = new File(dir, "eu/rssw/pct/Y.r");
+        assertTrue(f4.exists());
+        File f5 = new File(dir, "eu/rssw/pct/Z.r");
+        assertTrue(f5.exists());
+        File f6 = new File(dir, "eu/rssw/pct/M.r");
+        assertTrue(f6.exists());
+        File f7 = new File(dir, "eu/rssw/pct/proc.r");
+        assertTrue(f7.exists());
+        File f8 = new File(dir, "eu/rssw/pct/proc2.r");
+        assertTrue(f8.exists());
+        File f9 = new File(dir, "eu/rssw/pct/proc3.r");
+        assertTrue(f9.exists());
+
+        File h1 = new File(dir, ".pct/eu/rssw/pct/A.cls.hierarchy");
+        assertTrue(h1.exists());
+        assertTrue(h1.length() == 0);
+        File h2 = new File(dir, ".pct/eu/rssw/pct/B.cls.hierarchy");
+        assertTrue(h2.exists());
+        assertTrue(h2.length() == 0);
+        File h3 = new File(dir, ".pct/eu/rssw/pct/X.cls.hierarchy");
+        assertTrue(h3.exists());
+        assertTrue(h3.length() == 0);
+        File h4 = new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy");
+        assertTrue(h4.exists());
+        assertTrue(h4.length() > 0);
+        File h5 = new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy");
+        assertTrue(h5.exists());
+        assertTrue(h5.length() > 0);
+        File h6 = new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy");
+        assertTrue(h6.exists());
+        assertTrue(h6.length() > 0);
+        File h7 = new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy");
+        assertTrue(h7.exists());
+        assertTrue(h7.length() > 0);
+        File h8 = new File(dir, ".pct/eu/rssw/pct/proc2.p.hierarchy");
+        assertTrue(h8.exists());
+        assertTrue(h8.length() > 0);
+        File h9 = new File(dir, ".pct/eu/rssw/pct/proc3.p.hierarchy");
+        assertTrue(h9.exists());
+        assertTrue(h9.length() > 0);
+
+        LineProcessor<Integer> proc = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy"), Charset.defaultCharset(), proc);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc.getResult(), Integer.valueOf(1));
+        LineProcessor<Integer> proc2 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy"), Charset.defaultCharset(), proc2);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc2.getResult(), Integer.valueOf(4));
+        LineProcessor<Integer> proc3 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy"), Charset.defaultCharset(), proc3);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc3.getResult(), Integer.valueOf(1));
+        LineProcessor<Integer> proc4 = new Test86LineProcessor();
+        try {
+            Files.readLines(new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy"), Charset.defaultCharset(), proc4);
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
+        assertEquals(proc4.getResult(), Integer.valueOf(1));
+    }
+
+    private static void test86Sub2(File dir) {
+        assertTrue(new File(dir, "eu/rssw/pct/X.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/Y.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/Z.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/proc.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+        assertTrue(new File(dir, "eu/rssw/pct/proc3.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
+    }
+
+    private static final class Test86LineProcessor implements LineProcessor<Integer> {
+        private int retVal = 0;
+
+        @Override
+        public Integer getResult() {
+            return retVal;
+        }
+
+        @Override
+        public boolean processLine(String arg0) throws IOException {
+            retVal++;
+            return true;
+        }
+    }
+    // Those classes just for the GSON mapping in test79
+    @SuppressWarnings("unused")
+    protected static class ProjectResult {
+        private int compiledFiles;
+        private int errorFiles;
+        private ProjectError[] ttProjectErrors;
+        private ProjectWarning[] ttProjectWarnings;
+    }
+
+    @SuppressWarnings("unused")
+    protected static class ProjectError {
+        private int rowNum;
+        private int colNum;
+        private String fileName;
+        private String mainFileName;
+        private String msg;
+    }
+
+    @SuppressWarnings("unused")
+    protected static class ProjectWarning {
+        private int msgNum;
+        private int rowNum;
+        private String fileName;
+        private String mainFileName;
+        private String msg;
+    }
+
 }

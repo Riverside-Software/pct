@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="PCTDumpIncremental-test8">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateDatabase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="sp2k.df" structFile="sp2k.st" />
+    <PCTCreateDatabase dbName="test2" destDir="db" dlcHome="${DLC}" schemaFile="sp2k.df" structFile="sp2k.st" />
+    <exec executable="${DLC}/bin/_dbutil" dir="db" inputstring="Admin!234&#xA;Admin!234&#xA;">
+      <arg line="test1 -C enableencryption" />
+    </exec>
+  </target>
+
+  <target name="test">
+    <mkdir dir="incr" />
+    <mkdir dir="profiler" />
+    <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}">
+      <SourceDb dbName="test1" dbDir="db" singleUser="true" passphrase="Admin!234" />
+      <TargetDb dbName="test2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDumpIncremental>
+  </target>
+
+</project>

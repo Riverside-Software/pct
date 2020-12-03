@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-2018 Riverside Software
+ * Copyright 2011-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -59,6 +59,8 @@ public class ClassCompilationUnit {
 
     @XmlElement(name = "constructor")
     public List<Constructor> constructors = new ArrayList<>();
+    @XmlElement(name = "destructor")
+    public List<Destructor> destructors = new ArrayList<>();
     @XmlElement(name = "method")
     public List<Method> methods = new ArrayList<>();
     @XmlElement(name = "property")

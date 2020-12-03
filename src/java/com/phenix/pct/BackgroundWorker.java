@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ public abstract class BackgroundWorker {
     private int status;
     private Iterator<PCTConnection> dbConnections;
     private Iterator<String> propath;
+    private Iterator<DBAlias> aliases;
 
     // Dernière commande envoyée
     private String lastCommand;
@@ -70,6 +71,10 @@ public abstract class BackgroundWorker {
 
     public final void setDBConnections(Iterator<PCTConnection> dbConnections) {
         this.dbConnections = dbConnections;
+    }
+
+    public final void setAliases(Iterator<DBAlias> aliases) {
+        this.aliases = aliases;
     }
 
     public final void setPropath(Iterator<String> propath) {
@@ -102,33 +107,37 @@ public abstract class BackgroundWorker {
         while (!end) {
             try {
                 String str = reader.readLine();
-                int idx = str.indexOf(':');
-                String result = (idx == -1 ? str : str.substring(0, idx));
+                if (str != null) {
+                    int idx = str.indexOf(':');
+                    String result = (idx == -1 ? str : str.substring(0, idx));
 
-                if ("OK".equalsIgnoreCase(result)) {
-                    if ("quit".equalsIgnoreCase(result)) {
-                        status = 5;
+                    if ("OK".equalsIgnoreCase(result)) {
+                        if ("quit".equalsIgnoreCase(lastCommand)) {
+                            status = 5;
+                        }
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            customResponse = str.substring(idx + 1);
+                    } else if ("ERR".equalsIgnoreCase(result)) {
+                        err = true;
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            customResponse = str.substring(idx + 1);
+                    } else if ("MSG".equalsIgnoreCase(result)) {
+                        // Everything after MSG: is logged
+                        if ((idx != -1) && (idx < (str.length() - 1)))
+                            retVals.add(new Message(str.substring(idx + 1)));
+                    } else if ("END".equalsIgnoreCase(result)) {
+                        end = true;
+                        // Standard commands (i.e. sent by this class) cannnot be handled and overridden
+                        if (!isStandardCommand(lastCommand)) {
+                            handleResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                    retVals);
+                        } else {
+                            handleStandardEventResponse(lastCommand, lastCommandParameter, err, customResponse,
+                                    retVals);
+                        }
                     }
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        customResponse = str.substring(idx + 1);
-                } else if ("ERR".equalsIgnoreCase(result)) {
-                    err = true;
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        customResponse = str.substring(idx + 1);
-                } else if ("MSG".equalsIgnoreCase(result)) {
-                    // Everything after MSG: is logged
-                    if ((idx != -1) && (idx < (str.length() - 1)))
-                        retVals.add(new Message(str.substring(idx + 1)));
-                } else if ("END".equalsIgnoreCase(result)) {
+                } else {
                     end = true;
-                    // Standard commands (i.e. sent by this class) cannnot be handled and overridden
-                    if (!isStandardCommand(lastCommand)) {
-                        handleResponse(lastCommand, lastCommandParameter, err, customResponse,
-                                retVals);
-                    } else {
-                        handleStandardEventResponse(lastCommand, lastCommandParameter, err, customResponse,
-                                retVals);
-                    }
                 }
             } catch (IOException ioe) {
                 parent.log(ioe, Project.MSG_ERR);
@@ -150,31 +159,38 @@ public abstract class BackgroundWorker {
                 performAction();
             }
         } else if (status == 2) {
-            if (propath.hasNext()) {
-                String s = propath.next();
-                sendCommand("propath", s + File.pathSeparatorChar);
+            if (aliases.hasNext()) {
+                DBAlias alias = aliases.next();
+                sendCommand("alias", alias.getBgRunString());
             } else {
                 status = 3;
                 performAction();
             }
         } else if (status == 3) {
+            if (propath.hasNext()) {
+                String s = propath.next();
+                sendCommand("propath", s + File.pathSeparatorChar);
+            } else {
+                status = 4;
+                performAction();
+            }
+        } else if (status == 4) {
             if (!performCustomAction()) {
-                status = 5;
+                status = 6;
                 sendCommand("quit", "");
                 quit = true;
             }
-
-        } else if (status == 4) {
-            status = 5;
+        } else if (status == 5) {
+            status = 6;
             sendCommand("quit", "");
             quit = true;
-        } else if (status == 5) {
+        } else if (status == 6) {
             // No-op
         }
     }
 
     public final boolean isStandardCommand(String command) {
-        if ("setThreadNumber".equalsIgnoreCase(command) || "connect".equalsIgnoreCase(command)
+        if ("setThreadNumber".equalsIgnoreCase(command) || "connect".equalsIgnoreCase(command) || "alias".equalsIgnoreCase(command)
                 || "propath".equalsIgnoreCase(command) || "quit".equalsIgnoreCase(command)) {
             return true;
         }
@@ -183,7 +199,7 @@ public abstract class BackgroundWorker {
     }
 
     public final void setStatusQuit() {
-        status = 4;
+        status = 5;
     }
 
     /**
@@ -191,10 +207,6 @@ public abstract class BackgroundWorker {
      */
     protected abstract boolean performCustomAction() throws IOException;
 
-    /**
-     * 
-     * @param options
-     */
     public abstract void setCustomOptions(Map<String, String> options);
 
     /**

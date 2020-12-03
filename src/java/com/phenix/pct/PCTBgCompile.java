@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -140,6 +140,26 @@ public class PCTBgCompile extends PCTBgRun {
             getOptions().setXCodeSessionKey(null);
         }
 
+        // Verify resource collections
+        for (ResourceCollection rc : compAttrs.getResources()) {
+            if (!rc.isFilesystemOnly()) {
+                cleanup();
+                throw new BuildException(
+                        "PCTCompile only supports file-system resources collections");
+            }
+        }
+
+        // Display warning message if xmlXref and stringXref used at the same time
+        if (compAttrs.isXmlXref() && compAttrs.isStringXref()) {
+            log(Messages.getString("PCTCompile.92"), Project.MSG_WARN); //$NON-NLS-1$
+        }
+
+        List<String> outputTypes = compAttrs.getOutputType();
+        if (outputTypes.contains(CompilationAttributes.JSON_OUTPUT_TYPE)) {
+            log(Messages.getString("PCTCompile.93"), Project.MSG_WARN);
+            outputTypes.remove(CompilationAttributes.JSON_OUTPUT_TYPE);
+        }
+
         initializeCompilationUnits();
         compAttrs.writeCompilationProcedure(new File(compDir, "pctcomp.p"), getCharset());
         getOptions().addPropath(new Path(getProject(), compDir.getAbsolutePath()));
@@ -259,10 +279,10 @@ public class PCTBgCompile extends PCTBgRun {
                         int numCU = (size > 100 ? 10 : 1);
                         Iterator<CompilationUnit> iter = units.iterator();
                         for (int zz = 0; zz < numCU; zz++) {
-                            sending.add((CompilationUnit) iter.next());
+                            sending.add(iter.next());
                         }
                         for (Iterator<CompilationUnit> iter2 = sending.iterator(); iter2.hasNext();) {
-                            units.remove((CompilationUnit) iter2.next());
+                            units.remove(iter2.next());
                         }
                     } else {
                         noMoreFiles = true;
@@ -327,6 +347,9 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isRequireFullKeywords())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFullNames())).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
+            sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
+            sb.append(CompilationAttributes.CONSOLE_OUTPUT_TYPE).append(';');
+            sb.append(Boolean.toString(compAttrs.isRequireReturnValues())).append(';');
 
             return sb.toString();
         }
@@ -336,7 +359,9 @@ public class PCTBgCompile extends PCTBgRun {
                 String customResponse, List<Message> returnValues) {
             if ("pctCompile".equalsIgnoreCase(command)) {
                 String[] str = customResponse.split("/");
-                int ok = 0, notOk = 0, skipped = 0;
+                int ok = 0;
+                int notOk = 0;
+                int skipped = 0;
                 try {
                     ok = Integer.parseInt(str[0]);
                     notOk = Integer.parseInt(str[1]);

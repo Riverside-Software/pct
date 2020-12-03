@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="PCT" default="dist">
+<project name="PCT" default="dist" xmlns:if="ant:if" xmlns:unless="ant:unless">
 
   <property environment="env" />
 
@@ -9,10 +9,11 @@
       <isset property="DLC10" />
       <isset property="DLC10-64" />
       <isset property="DLC11" />
+      <isset property="DLC12" />
     </and>
   </condition>
 
-  <property name="pct.release" value="210.pre" />
+  <property name="pct.release" value="216.pre" />
   <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
@@ -22,12 +23,13 @@
 
   <property name="build" location="build" />
   <property name="build-java" location="build/java" />
-  <property name="build-javadoc" location="build/javadoc" />
   <property name="build-test" location="build/test" />
   <property name="build-v10" location="build/build-v10" />
   <property name="build-v10-64" location="build/build-v10-64" />
   <property name="build-v11" location="build/build-v11" />
-  <property name="build-win" location="build/windows" />
+  <property name="build-v12" location="build/build-v12" />
+  <property name="build-win-v11" location="build/windows-v11" />
+  <property name="build-win-v12" location="build/windows-v12" />
   <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
@@ -49,6 +51,12 @@
     <include name="pct/v11/*.p" />
     <include name="rssw/**/*.cls" />
   </fileset>
+  <fileset id="fs.v12" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <exclude name="pct/pctOEUnitRunner.p" />
+    <include name="pct/v12/*.p" />
+    <include name="rssw/**/*.cls" />
+  </fileset>
   <fileset id="fs.classDoc" dir="${src.progress}">
     <include name="Consultingwerk/**/*.cls" />
     <include name="Consultingwerk/**/*.p" />
@@ -56,22 +64,25 @@
   
   <!-- Different propath depending on version -->
   <path id="pp.v8">
-        <pathelement location="${src.progress}" />
+    <pathelement location="${src.progress}" />
   </path>
   <path id="pp.v9">
-        <pathelement location="${src.progress}" />
+    <pathelement location="${src.progress}" />
   </path>
   <path id="pp.v10">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc10.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc10.pl" />
   </path>
   <path id="pp.v10-64">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc10-64.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc10-64.pl" />
   </path>
   <path id="pp.v11">
-        <pathelement location="${src.progress}" />
-        <pathelement location="lib/OEUnit_dlc11.pl" />
+    <pathelement location="${src.progress}" />
+    <pathelement location="lib/OEUnit_dlc11.pl" />
+  </path>
+  <path id="pp.v12">
+    <pathelement location="${src.progress}" />
   </path>
 
   <!-- Classpath for PCT compilation -->
@@ -83,16 +94,19 @@
     <pathelement location="lib/ast-dependencies.jar" />
 
     <!-- ABLDuck classes -->
-    <pathelement location="lib/antlr-runtime-4.7.jar"/>
-    <pathelement location="lib/commonmark-0.9.0.jar"/>
-    <pathelement location="${build-javadoc}" />
+    <pathelement location="lib/commonmark-0.11.0.jar"/>
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
     <pathelement location="${build-java}" />
-    <pathelement location="lib/testng-6.3.1.jar" />
+    <pathelement location="lib/testng-6.13.1.jar" />
     <pathelement location="lib/ini4j-0.5.1.jar" />
     <pathelement location="lib/guava.jar" />
+    <pathelement location="lib/mockito-core-3.0.0.jar" />
+    <pathelement location="lib/byte-buddy-1.9.14.jar" />
+    <pathelement location="lib/byte-buddy-agent-1.9.14.jar" />
+    <pathelement location="lib/hamcrest-2.1.jar" />
+    <pathelement location="lib/objenesis-2.6.jar" />
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -101,18 +115,19 @@
     </tstamp>
 
     <mkdir dir="${build-java}" />
-    <mkdir dir="${build-javadoc}" />
     <mkdir dir="${build-test}" />
     <mkdir dir="${build-v10}" />
     <mkdir dir="${build-v10-64}" />
     <mkdir dir="${build-v11}" />
     <mkdir dir="${doc}" />
+    <mkdir dir="${build-v12}" />
     <mkdir dir="${dist}" />
 
     <!-- Checking v10 and v11 availability -->
     <available file="${DLC10}/version" property="dlc.v10.present" />
     <available file="${DLC10-64}/version" property="dlc.v10-64.present" />
     <available file="${DLC11}/version" property="dlc.v11.present" />
+    <available file="${DLC12}/version" property="dlc.v12.present" />
 
     <echo message="Version tag : ${pct.version.string}" />
     <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version.string}</echo>
@@ -124,19 +139,6 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <!-- Generate javadoc classes from the antlr grammar files -->
-    <java jar="lib/antlr-4.7-complete.jar" fork="true">
-      <arg line="${src.java}/za/co/mip/ablduck/javadoc/JavadocParser.g4 ${src.java}/za/co/mip/ablduck/javadoc/JavadocLexer.g4"/>
-      <arg line="-o ${build-javadoc}/za/co/mip/ablduck/javadoc"/>
-      <arg line="-listener -no-visitor -encoding UTF-8"/>
-      <arg line="-package za.co.mip.ablduck.javadoc"/>
-    </java>
-
-    <javac srcdir="${build-javadoc}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
-      <include name="za/co/mip/**/*.java" />
-      <classpath refid="pct.compil" />
-    </javac>
-
     <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
@@ -183,7 +185,7 @@
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullKeywords="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
@@ -207,6 +209,7 @@
     <echo message="Checking v10 in ${DLC10}" />
     <echo message="Checking v10-64 in ${DLC10-64}" />
     <echo message="Checking v11 in ${DLC11}" />
+    <echo message="Checking v12 in ${DLC12}" />
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v10.present" />
@@ -238,29 +241,52 @@
       <param name="xmlxref" value="true" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v12.present" />
+      <param name="dlcHome" value="${DLC12}" />
+      <param name="buildDir" value="${build-v12}" />
+      <param name="libName" value="pct12.pl" />
+      <param name="fsid" value="fs.v12" />
+      <param name="propid" value="pp.v12" />
+      <param name="xmlxref" value="true" />
+    </antcall>
+
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
     </zip>
   </target>
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
-    <mkdir dir="${build-win}" />
-    <bootstrapCompile destdir="${build-win}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullKeywords="true" requireFullNames="true" requireFieldQualifiers="true">
+    <mkdir dir="${build-win-v11}" />
+    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
       </propath>
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
+
+    <mkdir dir="${build-win-v12}" />
+    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+
     <zip destFile="${dist}/classDoc.zip">
-      <fileset dir="${build-win}" />
+      <zipfileset dir="${build-win-v11}" prefix="v11" includes="**/*.r" />
+      <zipfileset dir="${build-win-v12}" prefix="v12" includes="**/*.r" />
     </zip>
   </target>
 
   <target name="fakeClassDoc" unless="classDocOK">
     <echo message="Generating fake classDoc.zip file" />
+    <echo file="${dist}/empty.txt" />
     <zip destFile="${dist}/classDoc.zip" whenEmpty="create">
-      <fileset dir="." includes="leave.it.empty" />
+      <zipfileset dir="${dist}" includes="empty.txt" prefix="v11" />
+      <zipfileset dir="${dist}" includes="empty.txt" prefix="v12" />
     </zip>
   </target>
 
@@ -269,16 +295,22 @@
       <resourceexists><file file="${dist}/classDoc.zip" /></resourceexists>
     </condition>
     <antcall target="fakeClassDoc" />
-    <!--  Updating pct11.pl with rcode compiled on Windows -->
+
+    <!--  Updating pct11.pl and pct12.pl with rcode compiled on Windows -->
     <mkdir dir="classDocTemp" />
     <copy todir="classDocTemp">
-      <zipfileset src="dist/classDoc.zip" includes="**/*.r" />
+      <zipfileset src="dist/classDoc.zip" />
     </copy>
-    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined">
-      <fileset dir="classDocTemp" />
+    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined" if:true="${dlc.v11.present}">
+      <fileset dir="classDocTemp/v11" includes="**/*.r" />
+    </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct12.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
+      <fileset dir="classDocTemp/v12" includes="**/*.r" />
     </bootstrapLibrary>
     <delete dir="classDocTemp" />
-
+    <zip destfile="${build}/ablduck.zip">
+      <fileset dir="${src.java}/za/co/mip/ablduck/resources" />
+    </zip>
     <jar jarfile="${dist}/PCT.jar">
       <fileset dir="${build-java}">
         <include name="**/*.class" />
@@ -288,18 +320,22 @@
         <include name="pct10.pl" />
         <include name="pct10-64.pl" />
         <include name="pct11.pl" />
+        <include name="pct12.pl" />
         <include name="pct-src.zip" />
       </fileset>
+      <zipfileset dir="${build}" includes="ablduck.zip" prefix="za/co/mip/ablduck/resources" />
       <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
         <include name="za/co/mip/ablduck/resources/ablduck.zip" />
       </fileset>
       <zipfileset src="lib/gson-2.2.4.jar" />
+      <zipfileset src="lib/jaxb-api-2.3.1.jar" />
+      <zipfileset src="lib/jaxb-core-2.3.0.1.jar" />
+      <zipfileset src="lib/jaxb-impl-2.3.2.jar" />
 
       <!-- ABLDuck classes -->
-      <zipfileset src="lib/antlr-runtime-4.7.jar"/>
-      <zipfileset src="lib/commonmark-0.9.0.jar"/>
+      <zipfileset src="lib/commonmark-0.11.0.jar"/>
 
       <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
       <manifest>
@@ -345,7 +381,7 @@
   </target>
 
   <target name="javadoc" depends="build" description="Javadoc generation">
-    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8">
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8" additionalParam="-Xdoclint:all,-missing">
       <packageset dir="${src.java}" />
       <classpath>
         <path refid="pct.compil" />
@@ -376,8 +412,23 @@
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
       <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
-      <zipfileset dir="lib" includes="ast.jar,ast-dependencies.jar,ant.jar,ant-apache-regexp.jar,ant-launcher.jar,antlr4-runtime-4.5.jar,ini4j-0.5.1.jar,guava.jar,jakarta-regexp-1.5.jar,testng-6.3.1.jar,jacocoant.jar,*.pl" prefix="lib" />
-      <zipfileset dir="${dist}" includes="PCT.jar" prefix="dist" />
+      <zipfileset dir="lib" prefix="lib">
+        <include name="activation-*.jar" />
+        <include name="ast.jar" />
+        <include name="ast-dependencies.jar" />
+        <include name="ini4j-0.5.1.jar" />
+        <include name="guava.jar" />
+        <include name="testng-6.13.1.jar" />
+        <include name="jcommander-1.30.jar" />
+        <include name="jacocoant-0.8.4.jar" />
+        <include name="xmltask.jar" />
+        <include name="mockito-core-3.0.0.jar" />
+        <include name="objenesis-2.6.jar" />
+        <include name="hamcrest-2.1.jar" />
+        <include name="byte-buddy-1.9.14.jar" />
+        <include name="byte-buddy-agent-1.9.14.jar" />
+        <include name="*.pl" />
+      </zipfileset>
     </zip>
   </target>
 

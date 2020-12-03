@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project name="PCTCompile-test55">
   <taskdef resource="PCT.properties" />
+  <typedef resource="types.properties" />
 
   <target name="test1">
     <mkdir dir="build1" />
@@ -25,11 +26,27 @@
     <mkdir dir="build3" />
     <mkdir dir="xref3" />
     <PCTCompile destDir="build3" dlcHome="${DLC}" xrefDir="xref3">
-      <fileset dir="src" includes="*.p" />
+      <fileset dir="src" includes="**/*.p" />
       <propath location="src" />
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <!-- In order to force pctBgCompile -->
-      <flattenmapper />
+      <chainedmapper>
+        <flattenmapper />
+        <rcodemapper />
+      </chainedmapper>
+    </PCTCompile>
+  </target>
+
+  <target name="test4">
+    <PCTCompile destDir="src" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <!-- In order to force pctBgCompile -->
+      <chainedmapper>
+        <flattenmapper />
+        <rcodemapper />
+      </chainedmapper>
     </PCTCompile>
   </target>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +37,10 @@ public class PLReader {
     private static final int MAGIC = 0xd707;
     private static final int MAGIC_V11 = 0xd70b;
     private static final int MAGIC_V11_MM = 0xd70c;
-//    private static final int MAGIC_SIZE = 2;
     private static final int ENCODING_OFFSET = 0x02;
     private static final int ENCODING_SIZE = 20;
     private static final int FILE_LIST_OFFSET = 0x1e;
     private static final int FILE_LIST_OFFSET_V11 = 0x22;
-    // private static final int RECORD_MIN_SIZE = 29;
-    // private static final int RECORD_MAX_SIZE = RECORD_MIN_SIZE + 255;
 
     private File pl;
     private List<FileEntry> files = null;
@@ -132,7 +130,7 @@ public class PLReader {
         try {
             return Charset.forName(sbEncoding.toString());
         } catch (IllegalArgumentException iae) {
-            return Charset.forName("US-ASCII");
+            return StandardCharsets.US_ASCII;
         }
     }
 

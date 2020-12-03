@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTLoadData task
@@ -98,11 +96,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 
@@ -131,11 +127,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 
@@ -154,11 +148,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 
@@ -177,11 +169,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         // Only work with 11.3+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMinorVersion() <= 2)
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
                 return;
         } catch (IOException e) {
-            return;
-        } catch (InvalidRCodeException e) {
             return;
         }
 

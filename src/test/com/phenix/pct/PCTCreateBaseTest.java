@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package com.phenix.pct;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
-
-import java.io.File;
 
 /**
  * Class for testing PCTCreateBase task
@@ -166,6 +167,15 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
 
     @Test(groups = {"v11", "unix"})
     public void test14() {
+        // Not valid anymore on v12+, all databases have large files enabled
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if (version.getMajorVersion() >= 12)
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
         configureProject("PCTCreateBase/test14/build.xml");
         
         executeTarget("test");
@@ -204,4 +214,24 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         File f4 = new File("PCTCreateBase/test17/build2/test.r");
         assertTrue(f4.exists());
     }
+
+    @Test(groups= {"unix", "v10"})
+    public void test18() {
+        configureProject("PCTCreateBase/test18/build.xml");
+        executeTarget("init");
+        expectBuildException("db1", "Temp dir not writable");
+        executeTarget("db2");
+        executeTarget("test");
+        File f = new File("PCTCreateBase/test18/build/test.r");
+        assertTrue(f.exists());
+    }
+
+    @Test(groups= {"unix", "v10"})
+    public void test19() {
+        configureProject("PCTCreateBase/test19/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "Invalid structure file");
+        expectBuildException("test2", "Failure during procopy");
+    }
+
 }

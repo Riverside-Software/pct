@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Mapper;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.util.FileNameMapper;
 
 public class CompilationWrapper extends PCT implements IRunAttributes, ICompilationAttributes {
@@ -37,7 +38,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void execute() {
+        // Assert DLC correctly set in parent task
+        checkDlcHome();
+
         PCT pctTask;
+        checkDlcHome();
         // Handle pct:compile_ext
         if ("pctcompileext".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())
                 || "pct:compile_ext"
@@ -55,10 +60,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
             ((PCTCompile) pctTask).setRunAttributes(runAttributes);
             ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
         }
-        pctTask.bindToOwner(this);
-        if (getDlcHome() != null) {
-            pctTask.setDlcHome(getDlcHome());
+        for (Variable var : getEnvironmentVariables()) {
+            pctTask.addEnv(var);
         }
+        pctTask.bindToOwner(this);
+        pctTask.setDlcHome(getDlcHome());
         pctTask.setIncludedPL(getIncludedPL());
         pctTask.execute();
     }
@@ -73,7 +79,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     /**
      * Add a nested filenamemapper.
-     * 
+     *
      * @param fileNameMapper the mapper to add.
      */
     public void add(FileNameMapper fileNameMapper) {
@@ -82,7 +88,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     /**
      * Define the mapper to map source to destination files.
-     * 
+     *
      * @return a mapper to be configured.
      * @exception BuildException if more than one mapper is defined.
      */
@@ -109,7 +115,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     // ******************************
     // ICompilationAttributes methods
-    
+
     @Override
     public void setMinSize(boolean minSize) {
         compAttributes.setMinSize(minSize);
@@ -143,6 +149,16 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void setListingSource(String source) {
         compAttributes.setListingSource(source);
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        compAttributes.setPageSize(pageSize);
+    }
+
+    @Override
+    public void setPageWidth(int pageWidth) {
+        compAttributes.setPageWidth(pageWidth);
     }
 
     @Override
@@ -280,6 +296,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setRequireReturnValues(boolean requireReturnValues) {
+        compAttributes.setRequireReturnValues(requireReturnValues);
+    }
+
+    @Override
     public void setStopOnError(boolean stopOnError) {
         compAttributes.setStopOnError(stopOnError);
     }
@@ -297,6 +318,16 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void setDisplayFiles(int display) {
         compAttributes.setDisplayFiles(display);
+    }
+
+    @Override
+    public void setCallbackClass(String callback) {
+        compAttributes.setCallbackClass(callback);
+    }
+
+    @Override
+    public void setOutputType(String outputType) {
+        compAttributes.setOutputType(outputType);
     }
 
     // End of ICompilationAttributes methods
@@ -488,6 +519,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     @Override
     public void setXCodeSessionKey(String xCodeSessionKey) {
         runAttributes.setXCodeSessionKey(xCodeSessionKey);
+    }
+
+    @Override
+    public void setClientMode(String clientMode) {
+        throw new BuildException("Can't set clientMode attribute in compilation task");
     }
 
     @Override

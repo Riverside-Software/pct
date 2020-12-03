@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -169,6 +169,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     @Override
     public void setXCodeSessionKey(String xCodeSessionKey) {
         options.setXCodeSessionKey(xCodeSessionKey);
+    }
+
+    @Override
+    public void setClientMode(String clientMode) {
+        options.setClientMode(clientMode);
     }
 
     @Override
@@ -641,8 +646,6 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
     /**
      * Listener thread
-     * 
-     * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
      */
     private class ListenerThread extends Thread {
         // Timeout for accept method -- 5 seconds should be enough
@@ -666,7 +669,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
          */
         @Override
         public void run() {
-            int acceptedThreads = 0, deadThreads = 0;
+            int acceptedThreads = 0;
+            int deadThreads = 0;
             ThreadGroup group = new ThreadGroup("PCT");
 
             while (acceptedThreads + deadThreads < numThreads) {
@@ -674,6 +678,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                     final Socket socket = server.accept();
                     final BackgroundWorker status = createOpenEdgeWorker(socket);
                     status.setDBConnections(options.getDBConnections().iterator());
+                    status.setAliases(options.getAliases().iterator());
                     status.setPropath(getPropathAsList().iterator());
                     status.setCustomOptions(null); // TODO
 
@@ -685,8 +690,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                                     status.performAction();
                                     status.listen();
                                 }
-                            } catch (IOException ioe) {
-
+                            } catch (IOException caught) {
+                                setBuildException(caught);
                             }
                         }
                     };
@@ -695,6 +700,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                 } catch (IOException caught) {
                     // Thrown by accept(), so process didn't reach the listener
                     deadThreads++;
+                    setBuildException(caught);
                 }
             }
             try {
@@ -703,8 +709,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                         group.wait();
                     }
                 }
-            } catch (InterruptedException ie) {
-                System.out.println("interrupted");
+            } catch (InterruptedException caught) {
+                setBuildException(caught);
             }
 
         }

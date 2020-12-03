@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2019 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ PROCEDURE setOptions:
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
     /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG) */
+    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG), callbackClass (CHAR) */
     RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('XCODE', IF ENTRY(4, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('FORCECOMPILE', IF ENTRY(6, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
@@ -59,6 +59,9 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('FULLKW', IF ENTRY(32, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+    RUN setOption IN hComp ('CALLBACKCLASS', ENTRY(35, ipPrm, ';')).
+    RUN setOption IN hComp ('OUTPUTTYPE', ENTRY(36, ipPrm, ';')).
+    RUN setOption IN hComp ('RETURNVALUES', ENTRY(37, ipPrm, ';')).
 
     RUN initModule IN hComp.
 
@@ -110,6 +113,8 @@ PROCEDURE pctCompile:
 
   ASSIGN opOK = (compNotOk EQ 0)
          opMsg = STRING(compOK) + "/" + STRING(compNotOk) + "/" + STRING(skipped).
+
+  RUN printErrorsWarningsJson IN hComp (INPUT compOK, INPUT compNotOk).
 
 END PROCEDURE.
 

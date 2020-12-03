@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2018 Riverside Software
+ * Copyright 2005-2020 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -250,6 +250,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setClientMode(String clientMode) {
+        runAttributes.setClientMode(clientMode);
+    }
+
+    @Override
     public void setInputChars(int inputChars) {
         runAttributes.setInputChars(inputChars);
     }
@@ -411,6 +416,13 @@ public class PCTRun extends PCT implements IRunAttributes {
                 throw new BuildException("Unable to extract pct.pl.");
             }
 
+            // OE12 ? Define failOnError and resultProperty
+            if (getDLCMajorVersion() >= 12) {
+                exec.setFailonerror(runAttributes.isFailOnError());
+                if (runAttributes.getResultProperty() != null)
+                    exec.setResultProperty(runAttributes.getResultProperty());
+            }
+
             exec.execute();
         } catch (BuildException be) {
             cleanup();
@@ -436,6 +448,11 @@ public class PCTRun extends PCT implements IRunAttributes {
                     throw new BuildException(ioe);
                 }
             }
+        }
+
+        if (getDLCMajorVersion() >= 12) {
+            cleanup();
+            return;
         }
 
         // Now read status file
@@ -612,7 +629,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                     Writer w = new OutputStreamWriter(os);
                     BufferedWriter bw = new BufferedWriter(w)) {
                 if (runAttributes.getProfiler().getOutputFile() != null) {
-                    bw.write("-FILENAME " + runAttributes.getProfiler().getOutputFile().getAbsolutePath());
+                    bw.write("-FILENAME \"" + runAttributes.getProfiler().getOutputFile().getAbsolutePath() + "\"");
                     bw.newLine();
                 } else {
                     // Assuming nobody will use file names with double quotes in this case... 
@@ -804,6 +821,17 @@ public class PCTRun extends PCT implements IRunAttributes {
             this.internalPropath.addFilelist(list);
         }
     }
+
+    protected boolean isDirInPropath(File dir) {
+        if (runAttributes.getPropath() == null)
+            return false;
+        for (String str : runAttributes.getPropath().list()) {
+            if (new File(str).equals(dir))
+                return true;
+        }
+        return false;
+    }
+
 
     /**
      * Escapes a string so it does not accidentally contain Progress escape characters
