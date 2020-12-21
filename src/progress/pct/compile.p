@@ -263,6 +263,10 @@ PROCEDURE initModule:
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-full-names' + (IF bAboveEq1173 THEN ':warning' ELSE '').
   IF lOptRetVals THEN
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-return-values' + (IF bAboveEq1173 THEN ':warning' ELSE '').
+  IF (COMPILER:OPTIONS GT "":U) THEN DO:
+    MESSAGE "PCT compiler options are overridden by COMPILER:OPTIONS".
+    ASSIGN cOpts = COMPILER:OPTIONS.
+  END.
 
   IF ProgPerc GT 0 THEN DO:
     ASSIGN iNrSteps = 100 / ProgPerc.

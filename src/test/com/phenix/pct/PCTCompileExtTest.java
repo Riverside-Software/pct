@@ -1337,6 +1337,30 @@ public class PCTCompileExtTest extends BuildFileTestNg {
                 "2 file(s) compiled"});
     }
 
+    @Test(groups = {"v11"})
+    public void test87() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test87/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test87/build1/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+
+        expectBuildException("test2", "Require full keywords");
+    }
+
+
     @Test(groups = {"v10"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");

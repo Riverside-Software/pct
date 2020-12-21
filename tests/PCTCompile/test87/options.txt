@@ -1,0 +1,1 @@
+require-full-keywords:error

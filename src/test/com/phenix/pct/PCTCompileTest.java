@@ -1640,6 +1640,29 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(dir, "eu/rssw/pct/proc3.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
     }
 
+    @Test(groups = {"v11"})
+    public void test87() {
+        // Only work with 11.7+
+        try {
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+                return;
+        } catch (IOException caught) {
+            return;
+        }
+
+        configureProject(BASEDIR + "test87/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test87/build1/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+
+        expectBuildException("test2", "Require full keywords");
+    }
+
     private static final class Test86LineProcessor implements LineProcessor<Integer> {
         private int retVal = 0;
 
