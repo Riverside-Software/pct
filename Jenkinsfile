@@ -53,7 +53,6 @@ pipeline {
     stage('Unit tests') {
       steps {
         parallel branch1: { testBranch('windows', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win') },
-                 branch2: { testBranch('linux', 'JDK8', 'Ant 1.10', 'OpenEdge-11.6', false, '11.6-Linux') },
                  branch3: { testBranch('linux', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux') },
                  branch5: { testBranch('windows', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win') },
                  branch8: { testBranch('linux', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux') },
@@ -66,14 +65,12 @@ pipeline {
       steps {
         // Wildcards not accepted in unstash...
         unstash name: 'junit-11.7-Win'
-        unstash name: 'junit-11.6-Linux'
         unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Win'
         unstash name: 'junit-12.2-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-11.6-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports'
