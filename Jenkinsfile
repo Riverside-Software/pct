@@ -19,7 +19,7 @@ pipeline {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
           def dlc12 = tool name: 'OpenEdge-12.2', type: 'openedge'
-          def jdk = tool name: 'JDK8', type: 'jdk'
+          def jdk = tool name: 'Corretto 11', type: 'jdk'
 
           withEnv(["JAVA_HOME=${jdk}"]) {
             bat "${antHome}\\bin\\ant -DDLC11=${dlc11} -DDLC12=${dlc12} classDoc"
@@ -37,7 +37,7 @@ pipeline {
         script {
           sh 'git rev-parse HEAD > head-rev'
           def commit = readFile('head-rev').trim()
-          def jdk = tool name: 'JDK8', type: 'jdk'
+          def jdk = tool name: 'Corretto 11', type: 'jdk'
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
           def dlc12 = tool name: 'OpenEdge-12.2', type: 'openedge'
@@ -88,7 +88,7 @@ pipeline {
         unstash name: 'coverage-12.2-Win'
         script {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
-          def jdk = tool name: 'JDK8', type: 'jdk'
+          def jdk = tool name: 'Corretto 11', type: 'jdk'
           def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
           withEnv(["JAVA_HOME=${jdk}"]) {
             sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.4.jar -file sonar.xml -DDLC=${dlc} init-sonar"
