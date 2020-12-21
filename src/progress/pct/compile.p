@@ -82,8 +82,6 @@ DEFINE TEMP-TABLE ttProjectErrors NO-UNDO
   FIELD colNum   AS INTEGER
   FIELD msg      AS CHARACTER.
 
-DEFINE DATASET dsResult FOR ttProjectErrors, ttProjectWarnings.
-
 DEFINE SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
@@ -598,9 +596,9 @@ PROCEDURE printErrorsWarningsJson.
     TEMP-TABLE ttProjectErrors:HANDLE:WRITE-JSON("JsonArray", ttErr).
     TEMP-TABLE ttProjectWarnings:HANDLE:WRITE-JSON("JsonArray", ttWarn).
     IF (ttErr:Length GT 0) THEN
-        dsJsonObj:ADD("ttProjectErrors", ttErr).
+        dsJsonObj:ADD("errors", ttErr).
     IF (ttWarn:Length GT 0) THEN
-        dsJsonObj:ADD("ttProjectWarnings", ttWarn).
+        dsJsonObj:ADD("warnings", ttWarn).
 
     ASSIGN outFile = PCTDir + '/':U + 'project-result.json':U.
     dsJsonObj:WriteFile(outFile).

@@ -1282,14 +1282,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1299,14 +1299,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test2.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test2.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1316,20 +1316,20 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 2);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 2);
+            assertEquals(result.errors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertEquals(result.ttProjectErrors[1].fileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[1].mainFileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[1].rowNum, 4);
-            assertEquals(result.ttProjectErrors[1].colNum, 1);
-            assertEquals(result.ttProjectErrors[1].msg,
+            assertEquals(result.errors[1].fileName, "src/dir1/test3.p");
+            assertEquals(result.errors[1].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.errors[1].rowNum, 4);
+            assertEquals(result.errors[1].colNum, 1);
+            assertEquals(result.errors[1].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1346,14 +1346,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1363,19 +1363,19 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 0);
-            assertNull(result.ttProjectErrors);
-            assertEquals(result.ttProjectWarnings.length, 2);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
+            assertNull(result.errors);
+            assertEquals(result.warnings.length, 2);
+            assertEquals(result.warnings[0].fileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[0].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
                     "Cannot reference \"DEFINE\" as \"DEF\" due to the \"require-full-keywords\" compiler option. (18494)");
-            assertEquals(result.ttProjectWarnings[1].fileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[1].mainFileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[1].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[1].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[1].msg,
+            assertEquals(result.warnings[1].fileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[1].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[1].msgNum, 18494);
+            assertEquals(result.warnings[1].rowNum, 2);
+            assertEquals(result.warnings[1].msg,
                     "Cannot reference \"integer\" as \"INT\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
@@ -1386,13 +1386,13 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 0);
-            assertNull(result.ttProjectErrors);
-            assertEquals(result.ttProjectWarnings.length, 1);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test6.i");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test6.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
+            assertNull(result.errors);
+            assertEquals(result.warnings.length, 1);
+            assertEquals(result.warnings[0].fileName, "src/dir1/test6.i");
+            assertEquals(result.warnings[0].mainFileName, "src/dir1/test6.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
                     "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
@@ -1484,20 +1484,20 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 1);
 
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/test2.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/test2.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 1);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/test2.p");
+            assertEquals(result.errors[0].mainFileName, "src/test2.p");
+            assertEquals(result.errors[0].rowNum, 1);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
 
-            assertEquals(result.ttProjectWarnings.length, 1);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/test.i");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/test.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
+            assertEquals(result.warnings.length, 1);
+            assertEquals(result.warnings[0].fileName, "src/test.i");
+            assertEquals(result.warnings[0].mainFileName, "src/test.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
                     "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
@@ -1654,13 +1654,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             return true;
         }
     }
+
     // Those classes just for the GSON mapping in test79
     @SuppressWarnings("unused")
     protected static class ProjectResult {
         private int compiledFiles;
         private int errorFiles;
-        private ProjectError[] ttProjectErrors;
-        private ProjectWarning[] ttProjectWarnings;
+        private ProjectError[] errors;
+        private ProjectWarning[] warnings;
     }
 
     @SuppressWarnings("unused")
