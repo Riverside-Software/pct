@@ -37,8 +37,6 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.8" />
-  <property name="javac.target" value="1.8" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v10" dir="${src.progress}">
@@ -139,7 +137,7 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <include name="eu/rssw/pct/**/*.java" />
@@ -353,7 +351,7 @@
   </target>
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
-    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
