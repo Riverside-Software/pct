@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="PCTVersion-test2">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTVersion property="pct.version" />
+    <echo message="Current PCT version: ${pct.version}" />
+  </target>
+
+</project>
