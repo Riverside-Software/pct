@@ -91,6 +91,10 @@ END.
 // Output parameters
 ASSIGN outprmEntries = configJson:GetJsonArray("output").
 
+IF configJson:getLogical("super") THEN DO:
+  SESSION:ADD-SUPER-PROCEDURE(THIS-PROCEDURE).
+END.
+
 // Execute procedure
 IF pctVerbose THEN
   MESSAGE "RUN " + configJson:getCharacter("procedure").

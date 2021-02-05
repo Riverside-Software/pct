@@ -71,6 +71,7 @@ public class PCTDynamicRun extends PCTRun {
         try (JsonWriter writer = new JsonWriter(new FileWriter(jsonConfig))) {
             writer.beginObject();
             writer.name("verbose").value(isVerbose());
+            writer.name("super").value(runAttributes.isSuperInit());
             writer.name("procedure").value(runAttributes.getProcedure());
             writer.name("returnValue").value(status.getAbsolutePath());
             writer.name("propath").beginArray();
