@@ -124,9 +124,10 @@ public class ABLUnitTest extends BuildFileTestNg {
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");
         assertFalse(logFile.exists());
-        // Starting from 12.2 and 11.7.8, syntax errors are silently caught by ABLUnit
-        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
-                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
+
+        // No failure will happen in 11.7.5 to 11.7.9 (fixed in 11.7.10) and 12.2.0 to 12.2.3 (fixed in 12.2.4)
+        // Expectation is that a correct version is used. Yes, I don't want to spend time on outdated versions.
+        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
             executeTarget("test1");
         } else {
             expectBuildException("test1", "Syntax error");
