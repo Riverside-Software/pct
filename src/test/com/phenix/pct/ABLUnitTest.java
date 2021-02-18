@@ -133,8 +133,7 @@ public class ABLUnitTest extends BuildFileTestNg {
             expectBuildException("test1", "Syntax error");
         }
         assertFalse(logFile.exists());
-        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
-                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
+        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
             executeTarget("test2");
         } else {
             expectBuildException("test2", "Syntax error");
