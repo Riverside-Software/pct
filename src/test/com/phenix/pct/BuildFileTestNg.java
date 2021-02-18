@@ -98,7 +98,7 @@ public class BuildFileTestNg {
     public void expectSpecificBuildException(String target, String cause, String msg) {
         try {
             executeTarget(target);
-        } catch (org.apache.tools.ant.BuildException ex) {
+        } catch (BuildException ex) {
             buildException = ex;
             if ((null != msg) && (!ex.getMessage().equals(msg))) {
                 fail("Should throw BuildException because '" + cause + "' with message '" + msg
@@ -163,6 +163,22 @@ public class BuildFileTestNg {
     }
 
     /**
+     * Runs a target, wait for a build exception, and expect specific log output
+     */
+    public void expectLogAndBuildException(String target, String[] expectedLog) {
+        try {
+            executeTarget(target);
+        } catch (BuildException ex) {
+            buildException = ex;
+            for (int zz = 0; zz < expectedLog.length; zz++) {
+                assertEquals(logBuffer.get(zz), expectedLog[zz]);
+            }
+            return;
+        }
+        fail("Should throw BuildException");
+    }
+
+    /**
      * Assert that the given messages were the only ones logged with a priority &lt;= INFO when
      * running the given target.
      */
@@ -211,7 +227,7 @@ public class BuildFileTestNg {
      * 
      * @param filename name of project file to run
      */
-    public void configureProject(String filename) throws BuildException {
+    public void configureProject(String filename) {
         configureProject(filename, Project.MSG_DEBUG);
     }
 
@@ -220,7 +236,7 @@ public class BuildFileTestNg {
      * 
      * @param filename name of project file to run
      */
-    public void configureProject(String filename, int logLevel) throws BuildException {
+    public void configureProject(String filename, int logLevel) {
         logBuffer = new ArrayList<>();
         fullLogBuffer = new ArrayList<>();
         project = new Project();

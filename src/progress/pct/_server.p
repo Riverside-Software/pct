@@ -18,7 +18,7 @@
 /**
  * This is a stripped down and customized version of _server.p used in OEA.
  */
- 
+
 DEFINE VARIABLE hSocket AS HANDLE  NO-UNDO.
 DEFINE VARIABLE aOk     AS LOGICAL NO-UNDO.
 DEFINE VARIABLE aResp   AS LOGICAL NO-UNDO.
@@ -36,7 +36,8 @@ DEFINE VARIABLE currentMsg   AS INTEGER    NO-UNDO INITIAL 0.
 DEFINE VARIABLE dbNum        AS INTEGER    NO-UNDO INITIAL 1.
 
 ASSIGN portNumber = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'portNumber').
-IF (portNumber EQ ?) THEN RETURN '17'.
+IF (portNumber EQ ?) THEN
+    RETURN '17'.
 
 /* PROCEDURE GetCurrentProcessId EXTERNAL "KERNEL32.DLL":
     DEFINE RETURN PARAMETER intProcessHandle AS LONG.
@@ -56,17 +57,18 @@ DO WHILE aOk:
     IF VALID-HANDLE(hSocket) THEN DO:
         ASSIGN aResp = FALSE.
         WAIT-FOR READ-RESPONSE OF hSocket PAUSE 10.
-        IF NOT aResp THEN LEAVE EternalLoop.
+        IF NOT aResp THEN
+            LEAVE EternalLoop.
     END.
 END.
 RETURN '0'.
 
 /* Connects ANT session */
 PROCEDURE ConnectToServer.
-    
+
     DEFINE VARIABLE packet       AS LONGCHAR    NO-UNDO.
     DEFINE VARIABLE packetBuffer AS MEMPTR      NO-UNDO.
-    
+
     ASSIGN aOk = hSocket:CONNECT("-H localhost -S " + portNumber) NO-ERROR.
     if NOT aOK THEN DO:
         RETURN ERROR "Connection to ANT failed on port " + portNumber.
@@ -76,7 +78,7 @@ PROCEDURE ConnectToServer.
         packet = STRING(threadNumber) + "~n".
         COPY-LOB FROM packet TO packetBuffer.
         hSocket:WRITE(packetBuffer, 1, GET-SIZE(packetBuffer)).
-        SET-SIZE(packetBuffer) = 0.    
+        SET-SIZE(packetBuffer) = 0.
     END.
 
 END PROCEDURE.
@@ -97,9 +99,9 @@ PROCEDURE WriteToSocket:
     DEFINE VARIABLE packetBuffer AS MEMPTR   NO-UNDO.
     DEFINE VARIABLE packet       as longchar no-undo.
 
-    ASSIGN packet = (IF plok THEN "OK" ELSE "ERR") + ":" + pcResp + "~n".
+    ASSIGN packet = SUBSTITUTE("&1:&2~n", IF plok THEN "OK" ELSE "ERR", pcResp).
     FOR EACH ttMsgs:
-    ASSIGN packet = packet + "MSG:" + STRING(ttMsgs.level) + ":" + ttMsgs.msgLine + "~n".
+      ASSIGN packet = packet + SUBSTITUTE("MSG:&1:&2~n", ttMsgs.level, ttMsgs.msgLine).
     END.
     ASSIGN packet = packet + "END~n".
 
@@ -113,7 +115,7 @@ PROCEDURE WriteToSocket:
             RUN Quit("").
         END.
     END.
-END.
+END PROCEDURE.
 
 /* Respond to events from ANT */
 PROCEDURE ReceiveCommand:
@@ -156,8 +158,6 @@ END PROCEDURE.
  * call the appropriate procedure */
 PROCEDURE executeCmd:
     DEFINE INPUT PARAMETER cCmd AS CHARACTER NO-UNDO.
-    
-    /* LOG-MANAGER:WRITE-MESSAGE(STRING(pid) + " -- Executing " + cCmd). */
 
     EMPTY TEMP-TABLE ttMsgs.
 
@@ -191,7 +191,7 @@ PROCEDURE executeCmd:
         RUN writeToSocket(FALSE, "").
         RETURN ''.
     END.
-        
+
     DEFINE VARIABLE lOK  AS LOGICAL   NO-UNDO.
     DEFINE VARIABLE cMsg AS CHARACTER NO-UNDO.
 
@@ -204,9 +204,9 @@ PROCEDURE executeCmd:
         END.
         RUN VALUE(cCmd) IN hProc (INPUT cPrm, OUTPUT lOK, OUTPUT cMsg).
     END.
-        
+
     RUN WriteToSocket(lOK, cMsg).
-    
+
 END PROCEDURE.
 
 PROCEDURE log PRIVATE:
@@ -218,37 +218,37 @@ PROCEDURE log PRIVATE:
     ASSIGN ttMsgs.msgNum  = currentMsg
            ttMsgs.level   = ipLvl
            ttMsgs.msgLine = ipMsg.
-END.
+END PROCEDURE.
 
 PROCEDURE logError:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     RUN log (ipMsg, 0).
-END.
+END PROCEDURE.
 
 PROCEDURE logWarning:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     RUN log (ipMsg, 1).
-END.
+END PROCEDURE.
 
 PROCEDURE logInfo:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     RUN log (ipMsg, 2).
-END.
+END PROCEDURE.
 
 PROCEDURE logVerbose:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     RUN log (ipMsg, 3).
-END.
+END PROCEDURE.
 
 PROCEDURE logDebug:
     DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
 
     RUN log (ipMsg, 4).
-END.
+END PROCEDURE.
 
 /* Commands to be executed from executeCmd */
 /* Each command should have an input param as char (command parameters) and */
@@ -316,7 +316,7 @@ PROCEDURE Connect :
         END.
         ASSIGN dbNum = dbNum + 1.
     END.
-      
+
 END PROCEDURE.
 
 /* Handle aliases */
@@ -361,7 +361,7 @@ PROCEDURE launch:
     ELSE DO:
         ASSIGN opOk = TRUE.
     END.
-  
+
 END PROCEDURE.
 
 

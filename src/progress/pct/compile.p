@@ -618,7 +618,8 @@ PROCEDURE displayCompileErrors PRIVATE:
   DEFINE INPUT  PARAMETER pcMsg     AS CHARACTER  NO-UNDO.
 
   DEFINE VARIABLE i       AS INTEGER    NO-UNDO .
-  DEFINE VARIABLE c       AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE c1      AS CHARACTER  NO-UNDO.
+  DEFINE VARIABLE c2      AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE bit     AS INTEGER    NO-UNDO.
   DEFINE VARIABLE memvar  AS MEMPTR     NO-UNDO.
   DEFINE VARIABLE include AS LOGICAL    NO-UNDO.
@@ -630,23 +631,24 @@ PROCEDURE displayCompileErrors PRIVATE:
   bit = GET-BYTE (memvar, 1).
   SET-SIZE(memvar) = 0.
 
-  IF (include) THEN
-    RUN logError IN hSrcProc (SUBSTITUTE(" ... in file '&1' at line &2 column &3", REPLACE(pcFile, CHR(92), '/'), piRow, piColumn)).
-  ELSE
-    RUN logError IN hSrcProc (SUBSTITUTE(" ... in main file at line &2 column &3", pcInit, piRow, piColumn, pcFile)).
+  ASSIGN c2 = IF include THEN " ... in file '&1'" ELSE " ... in main file".
+  IF (piRow GT 0) THEN
+    ASSIGN c2 = c2 + " at line &2 column &3".
+  RUN logError IN hSrcProc (SUBSTITUTE(c2, REPLACE(pcFile, CHR(92), '/'), piRow, piColumn)).
 
   IF (bit NE 17) AND (bit NE 19) THEN DO:
-    INPUT STREAM sXref FROM VALUE(pcFile).
-    DO i = 1 TO piRow - 1:
-      IMPORT STREAM sXref UNFORMATTED ^.
+    IF (piRow GT 0) THEN DO:
+      INPUT STREAM sXref FROM VALUE(pcFile).
+      DO i = 1 TO piRow - 1:
+        IMPORT STREAM sXref UNFORMATTED ^.
+      END.
+      IMPORT STREAM sXref UNFORMATTED c1.
+      RUN logError IN hSrcProc (INPUT ' ' + c1).
+      RUN logError IN hSrcProc (INPUT FILL('-':U, (IF piColumn EQ ? THEN 0 ELSE piColumn) - 1) + '-^').
+      INPUT STREAM sXref CLOSE.
     END.
-    IMPORT STREAM sXref UNFORMATTED c.
-    RUN logError IN hSrcProc (INPUT ' ' + c).
-    RUN logError IN hSrcProc (INPUT FILL('-':U, piColumn - 1) + '-^').
     RUN logError IN hSrcProc (INPUT pcMsg).
     RUN logError IN hSrcProc (INPUT '').
-
-    INPUT STREAM sXref CLOSE.
   END.
   ELSE DO:
     RUN logError IN hSrcProc (INPUT pcMsg).

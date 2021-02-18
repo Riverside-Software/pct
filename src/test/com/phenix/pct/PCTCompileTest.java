@@ -1663,6 +1663,21 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectBuildException("test2", "Require full keywords");
     }
 
+    @Test(groups = {"v11"})
+    public void test88() {
+        configureProject(BASEDIR + "test88/build.xml");
+        executeTarget("init");
+        expectLogAndBuildException("test", new String[]{"PCTCompile - Progress Code Compiler",
+                "Error compiling file 'src/test1.p' ...", " ... in main file",
+                "** WARNING--TRANSACTION keyword given within actual transaction level. (214)", "",
+                " ... in main file at line 14 column 3"});
+
+        File f1 = new File(BASEDIR + "test88/build/test1.r");
+        assertFalse(f1.exists());
+        File f2 = new File(BASEDIR + "test88/build/test2.r");
+        assertTrue(f2.exists());
+    }
+
     private static final class Test86LineProcessor implements LineProcessor<Integer> {
         private int retVal = 0;
 
