@@ -1404,7 +1404,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         // Only work with 12.2+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
                 return;
         } catch (IOException caught) {
             return;
