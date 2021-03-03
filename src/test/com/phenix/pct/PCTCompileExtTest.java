@@ -20,6 +20,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import org.testng.annotations.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+import com.phenix.pct.PCTCompileTest.Test80LineProcessor;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
@@ -1253,7 +1255,7 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         // Only work with 12.2+
         try {
             DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
                 return;
         } catch (IOException caught) {
             return;
@@ -1269,6 +1271,12 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
         assertTrue(f3.exists());
+
+        try {
+            assertTrue(Files.readLines(f3, Charset.defaultCharset(), new Test80LineProcessor()));
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
     }
 
     // @Test(groups = {"v11"})
