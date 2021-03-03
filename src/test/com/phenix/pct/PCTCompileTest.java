@@ -1420,6 +1420,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
         assertTrue(f3.exists());
+
+        try {
+            assertTrue(Files.readLines(f3, Charset.defaultCharset(), new Test80LineProcessor()));
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
     }
 
     // @Test(groups = {"v11"})
@@ -1676,6 +1682,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertFalse(f1.exists());
         File f2 = new File(BASEDIR + "test88/build/test2.r");
         assertTrue(f2.exists());
+    }
+
+    static final class Test80LineProcessor implements LineProcessor<Boolean> {
+        private boolean rslt = true;
+        private int numLines;
+
+        @Override
+        public Boolean getResult() {
+            return rslt && (numLines == 2);
+        }
+
+        @Override
+        public boolean processLine(String str) throws IOException {
+            numLines++;
+            rslt &= str.endsWith(" (19822)");
+            return true;
+        }
     }
 
     private static final class Test86LineProcessor implements LineProcessor<Integer> {
