@@ -73,6 +73,9 @@ public class AnalyticsBuildListener implements BuildListener {
         if (event.getProject().getProperty("pct.skip.analytics") != null)
             return;
         final StringBuilder sb = new StringBuilder("pct version=\"");
+        if (event.getProject().getBuildListeners().stream()
+                .anyMatch(listener -> listener.getClass().getName().startsWith("org.gradle.")))
+            sb.append("gradle-");
         sb.append(ResourceBundle.getBundle(Version.BUNDLE_NAME).getString("PCTVersion")).append('"');
         for (Entry<String, Integer> entry : taskCount.entrySet()) {
             sb.append(',').append(entry.getKey() + "=" + entry.getValue());
