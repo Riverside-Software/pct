@@ -17,10 +17,13 @@
 package com.phenix.pct;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.selectors.BaseExtendSelector;
+
+import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Selector for rcode
@@ -86,16 +89,16 @@ public class RCodeSelector extends BaseExtendSelector {
         RCodeInfo file2;
         try {
             file1 = new RCodeInfo(file);
-        } catch (Exception e) {
-            log(MessageFormat.format("Source {0} is an invalid rcode -- {1}", filename, e.getMessage()));
+        } catch (InvalidRCodeException | IOException caught) {
+            log(MessageFormat.format("Source {0} is an invalid rcode -- {1}", filename, caught.getMessage()));
             return true;
         }
         
         if (reader == null) {
             try {
                 file2 = new RCodeInfo(new File(dir, filename));
-            } catch (Exception e) {
-                log(MessageFormat.format("Target {0} is an invalid rcode -- {1}", filename, e.getMessage()));
+            } catch (InvalidRCodeException | IOException caught) {
+                log(MessageFormat.format("Target {0} is an invalid rcode -- {1}", filename, caught.getMessage()));
                 return true;
             }
         } else {
@@ -107,8 +110,8 @@ public class RCodeSelector extends BaseExtendSelector {
             try {
                 // PLReader returns a ByteArrayInputStream object, so no need to wrap in a BufferedInputStream
                 file2 = new RCodeInfo(reader.getInputStream(e));
-            } catch (Exception e2) {
-                log(MessageFormat.format("PLTarget {0} is an invalid rcode -- {1}", filename, e2.getMessage()));
+            } catch (InvalidRCodeException | IOException caught) {
+                log(MessageFormat.format("PLTarget {0} is an invalid rcode -- {1}", filename, caught.getMessage()));
                 return true;
             }
         }
