@@ -76,12 +76,12 @@ public class OutputParameter {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof OutputParameter))
+        if ((obj == null) || (propertyName == null)) {
             return false;
-        if (propertyName == null)
-            return false;
-
-        return propertyName.equals(((OutputParameter) obj).getName());
+        }
+        if (this.getClass() == obj.getClass())
+            return propertyName.equals(((OutputParameter) obj).getName());
+        return false;
     }
 
     /**

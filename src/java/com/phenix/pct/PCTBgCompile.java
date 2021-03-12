@@ -398,7 +398,7 @@ public class PCTBgCompile extends PCTBgRun {
             if (obj == null)
                 return false;
 
-            if (obj instanceof CompilationUnit) {
+            if (this.getClass() == obj.getClass()) {
                 CompilationUnit other = (CompilationUnit) obj;
                 return id == other.id;
             } else {
