@@ -1376,7 +1376,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertEquals(result.warnings[1].msgNum, 18494);
             assertEquals(result.warnings[1].rowNum, 2);
             assertEquals(result.warnings[1].msg,
-                    "Cannot reference \"integer\" as \"INT\" due to the \"require-full-keywords\" compiler option. (18494)");
+                    "Cannot reference \"integer\" as \"INTE\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1393,7 +1393,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertEquals(result.warnings[0].msgNum, 18494);
             assertEquals(result.warnings[0].rowNum, 2);
             assertEquals(result.warnings[0].msg,
-                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+                    "Cannot reference \"VARIABLE\" as \"VARI\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1504,7 +1504,7 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertEquals(result.warnings[0].msgNum, 18494);
             assertEquals(result.warnings[0].rowNum, 2);
             assertEquals(result.warnings[0].msg,
-                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+                    "Cannot reference \"VARIABLE\" as \"VARI\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
