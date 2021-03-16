@@ -41,7 +41,7 @@ DEFINE TEMP-TABLE ttObjEncPolicyVersions NO-UNDO
     FIELD pol-version AS INTEGER
     FIELD pol-state   AS CHAR
     FIELD pol-cipher  AS CHAR
-    INDEX idx-name IS UNIQUE seq-num pol-version DESCENDING.
+    INDEX idx-name IS UNIQUE seq-num pol-version DESC.
 
 DEFINE DATASET dsObjAttrs FOR ttObjAttrs, ttObjEncPolicyVersions.
 

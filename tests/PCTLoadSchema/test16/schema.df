@@ -1,0 +1,45 @@
+# BEGIN Pre_Deploy_Section
+
+ADD TABLE "Tab1"
+  AREA "Schema Area"
+  LABEL ""
+  DESCRIPTION ""
+  DUMP-NAME "Tab1"
+
+# END Pre_Deploy_Section
+
+# BEGIN Trigger_Section
+
+ADD TABLE "Tab2"
+  AREA "Schema Area"
+  LABEL ""
+  DESCRIPTION ""
+  DUMP-NAME "Tab2"
+
+# END Trigger_Section
+
+# BEGIN Post_Deploy_Section
+
+ADD TABLE "Tab3"
+  AREA "Schema Area"
+  LABEL ""
+  DESCRIPTION ""
+  DUMP-NAME "Tab3"
+
+# END Post_Deploy_Section
+
+# BEGIN Offline_Section
+
+ADD TABLE "Tab4"
+  AREA "Schema Area"
+  LABEL ""
+  DESCRIPTION ""
+  DUMP-NAME "Tab4"
+
+# END Offline_Section
+
+.
+PSC
+cpstream=ISO8859-15
+.
+0000000000

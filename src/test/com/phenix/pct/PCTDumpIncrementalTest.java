@@ -22,6 +22,7 @@ import static org.testng.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -247,4 +248,24 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         assertTrue(f1.length() > f2.length());
     }
 
+    /**
+     * Test renameFile attribute on tables
+     */
+    @Test(groups= {"v12"})
+    public void test9() {
+        // Only work with 12.4+
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 3))
+            return;
+
+        configureProject("PCTDumpIncremental/test9/build.xml");
+        executeTarget("base");
+        executeTarget("test");
+
+        File f1 = new File("PCTDumpIncremental/test9/incr/incremental1.df");
+        File f2 = new File("PCTDumpIncremental/test9/incr/incremental2.df");
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f1.length() < f2.length());
+    }
 }

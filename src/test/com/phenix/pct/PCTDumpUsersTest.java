@@ -92,11 +92,9 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
 
     // Quick'n'dirty method to count number of users in dump file
     private int countUsers(File f) {
-        BufferedReader reader = null;
         int count = 0;
 
-        try {
-            reader = new BufferedReader(new FileReader(f));
+        try (FileReader r1 = new FileReader(f); BufferedReader reader = new BufferedReader(r1)) {
             String str = reader.readLine();
 
             while ((str != null) && !".".equals(str)) {
@@ -104,12 +102,7 @@ public class PCTDumpUsersTest extends BuildFileTestNg {
                 str = reader.readLine();
             }
         } catch (IOException uncaught) {
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException uncaught) {
-
-            }
+            // No-op
         }
 
         return count;

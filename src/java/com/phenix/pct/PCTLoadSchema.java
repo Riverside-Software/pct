@@ -48,6 +48,10 @@ public class PCTLoadSchema extends PCTDynamicRun {
     private boolean inactiveIndexes = false;
     private String callbackClass = "";
     private String analyzerClass = "";
+    private boolean preDeploySection = false;
+    private boolean triggerSection = false;
+    private boolean postDeploySection = false;
+    private boolean offlineSection = false;
 
     // Internal use
     private int fsListId = -1;
@@ -85,6 +89,22 @@ public class PCTLoadSchema extends PCTDynamicRun {
 
     public void setAnalyzerClass(String analyzerClass) {
         this.analyzerClass = analyzerClass;
+    }
+
+    public void setPreDeploySection(boolean preDeploySection) {
+        this.preDeploySection = preDeploySection;
+    }
+
+    public void setTriggerSection(boolean triggerSection) {
+        this.triggerSection = triggerSection;
+    }
+
+    public void setPostDeploySection(boolean postDeploySection) {
+        this.postDeploySection = postDeploySection;
+    }
+
+    public void setOfflineSection(boolean offlineSection) {
+        this.offlineSection = offlineSection;
     }
 
     /**
@@ -160,8 +180,12 @@ public class PCTLoadSchema extends PCTDynamicRun {
             addParameter(new RunParameter("callbackClass", callbackClass)); //$NON-NLS-1$
             addParameter(new RunParameter("analyzerClass", analyzerClass)); //$NON-NLS-1$
             addParameter(new RunParameter("inactiveIdx", Boolean.toString(inactiveIndexes))); //$NON-NLS-1$
-            addParameter(new RunParameter(
-                    "commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
+            addParameter(new RunParameter("preDeploySection", preDeploySection ? "yes" : "no"));
+            addParameter(new RunParameter("triggerSection", triggerSection ? "yes" : "no"));
+            addParameter(new RunParameter("postDeploySection", postDeploySection ? "yes" : "no"));
+            addParameter(new RunParameter("offlineSection", offlineSection ? "yes" : "no"));
+            addParameter(
+                    new RunParameter("commitWhenErrors", Boolean.toString(this.commitWhenErrors))); //$NON-NLS-1$
             super.execute();
         } catch (BuildException caught) {
             cleanup();

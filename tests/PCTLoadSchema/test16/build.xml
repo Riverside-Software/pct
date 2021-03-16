@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<project name="PCTLoadSchema-test16">
+  <taskdef resource="PCT.properties" />
+
+  <target name="prepare">
+    <mkdir dir="db" />
+    <PCTCreateDatabase dbName="db1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateDatabase dbName="db2" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateDatabase dbName="db3" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateDatabase dbName="db4" destDir="db" dlcHome="${DLC}" />
+  	<PCTCreateDatabase dbName="db5" destDir="db" dlcHome="${DLC}" />
+  	<PCTCreateDatabase dbName="db6" destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="load">
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" preDeploySection="true">
+      <DBConnection dbName="db1" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" triggerSection="true">
+      <DBConnection dbName="db2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" postDeploySection="true">
+      <DBConnection dbName="db3" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" offlineSection="true">
+      <DBConnection dbName="db4" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}">
+      <DBConnection dbName="db5" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+    <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" triggerSection="true" offlineSection="true">
+      <DBConnection dbName="db6" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test">
+    <PCTRun procedure="testdb1.p" dlcHome="${DLC}">
+      <DBConnection dbName="db1" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+    <PCTRun procedure="testdb2.p" dlcHome="${DLC}">
+      <DBConnection dbName="db2" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+    <PCTRun procedure="testdb3.p" dlcHome="${DLC}">
+      <DBConnection dbName="db3" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+    <PCTRun procedure="testdb4.p" dlcHome="${DLC}">
+      <DBConnection dbName="db4" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+    <PCTRun procedure="testdb5.p" dlcHome="${DLC}">
+      <DBConnection dbName="db5" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+    <PCTRun procedure="testdb6.p" dlcHome="${DLC}">
+      <DBConnection dbName="db6" dbDir="db" singleUser="true" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+</project>

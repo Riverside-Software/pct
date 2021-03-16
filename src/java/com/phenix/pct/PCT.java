@@ -105,7 +105,9 @@ public abstract class PCT extends Task {
             throw new BuildException("Unable to read DLC version file in '" + dlcHome.toString() + "'");
         }
 
-        if (version.compareTo(new DLCVersion(12, 1, "0")) >= 0)
+        if (version.compareTo(new DLCVersion(12, 4, "0")) >= 0)
+            this.pp = new ProgressV124();
+        else if (version.compareTo(new DLCVersion(12, 1, "0")) >= 0)
             this.pp = new ProgressV121();
         else if (version.compareTo(new DLCVersion(12, 0, "0")) >= 0)
             this.pp = new ProgressV12();
