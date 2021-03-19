@@ -20,7 +20,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
@@ -168,16 +167,11 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
     @Test(groups = {"v11", "unix"})
     public void test14() {
         // Not valid anymore on v12+, all databases have large files enabled
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMajorVersion() >= 12)
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if (version.getMajorVersion() >= 12)
             return;
-        }
 
         configureProject("PCTCreateBase/test14/build.xml");
-        
         executeTarget("test");
         executeTarget("verify");
     }

@@ -19,10 +19,8 @@ package com.phenix.pct;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,16 +108,7 @@ public class ABLUnitTest extends BuildFileTestNg {
     // Test writeLog property
     @Test(groups = {"v11"})
     public void test8() {
-        DLCVersion version = null;
-        try {
-            version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        } catch (IOException caught) {
-            fail("Unable to read OE version", caught);
-        }
-        if (version == null) {
-            fail("Unable to read OE version");
-            return;
-        }
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
 
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");

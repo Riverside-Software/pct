@@ -20,7 +20,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
@@ -89,14 +88,10 @@ public class PCTProxygenTest extends BuildFileTestNg {
     @Test(groups = { "v11", "win" })
     public void test5() {
         // Old file format, only for 12.0
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() > 12)
-                    || ((version.getMajorVersion() == 12) && (version.getMinorVersion() >= 1)))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() > 12)
+                || ((version.getMajorVersion() == 12) && (version.getMinorVersion() >= 1)))
             return;
-        }
 
         configureProject("PCTProxygen/test5/build.xml");
         executeTarget("prepare");
@@ -114,14 +109,9 @@ public class PCTProxygenTest extends BuildFileTestNg {
 
     @Test(groups = { "v12", "win" })
     public void test6() {
-        // New file format in 12.1
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() == 0))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() == 0))
             return;
-        }
 
         configureProject("PCTProxygen/test6/build.xml");
         executeTarget("prepare");

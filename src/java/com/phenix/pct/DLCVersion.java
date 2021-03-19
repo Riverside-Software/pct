@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 import com.phenix.pct.RCodeInfo.InvalidRCodeException;
 
 public class DLCVersion implements Comparable<DLCVersion> {
+    public static final DLCVersion UNKNOWN_VERSION = new DLCVersion(0, 0, "");
+
     private static final String MAIN_PATTERN = "(?:[a-zA-Z]+\\s+)+((\\d+)(?:[A-Z0-9\\u002E])*)\\s+as of(.*)";
     private static final String V11_PATTERN = "\\d+(?:\\u002E(\\d+)(?:\\u002E(\\d+)(?:\\u002E(\\d+))?)?)?[a-zA-Z]*";
     private static final String OLD_PATTERN = "\\d+\\u002E(\\d+)([A-Z])([A-Z0-9]*)";
@@ -74,14 +76,18 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return new DLCVersion(builder);
     }
 
-    public static DLCVersion getObject(File dir) throws IOException {
+    public static DLCVersion getObject(File dir) {
         Builder builder = new Builder();
 
-        // Read version file
-        readVersionFile(builder, extractVersionInfo(dir));
-        File prostart = new File(dir, "tty/prostart.r");
-        if (prostart.exists()) {
-            readArch(builder, new File(dir, "tty/prostart.r"));
+        try {
+            // Read version file
+            readVersionFile(builder, extractVersionInfo(dir));
+            File prostart = new File(dir, "tty/prostart.r");
+            if (prostart.exists()) {
+                readArch(builder, new File(dir, "tty/prostart.r"));
+            }
+        } catch (IOException caught) {
+            return UNKNOWN_VERSION;
         }
 
         return new DLCVersion(builder);

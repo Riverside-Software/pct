@@ -22,7 +22,6 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
@@ -188,13 +187,9 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     @Test(groups = { "v11" })
     public void test13() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadSchema/test13/build.xml");
         executeTarget("base");
@@ -207,13 +202,9 @@ public class PCTLoadSchemaTest extends BuildFileTestNg {
     @Test(groups = { "v11" })
     public void test14() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadSchema/test14/build.xml");
         executeTarget("base");

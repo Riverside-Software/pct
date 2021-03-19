@@ -820,13 +820,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test52() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test52/build.xml");
         executeTarget("test1");
@@ -843,13 +839,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test53() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test53/build.xml");
         executeTarget("db");
@@ -867,13 +859,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test54() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test54/build.xml");
         executeTarget("db");
@@ -1180,13 +1168,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test76() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject(BASEDIR + "test76/build.xml");
         executeTarget("compile");
@@ -1202,13 +1186,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test77() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject(BASEDIR + "test77/build.xml");
         executeTarget("compile");
@@ -1253,13 +1233,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v12"})
     public void test80() {
         // Only work with 12.2+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
             return;
-        }
 
         configureProject(BASEDIR + "test80/build.xml");
         executeTarget("test1");
@@ -1348,13 +1324,9 @@ public class PCTCompileExtTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test87() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test87/build.xml");
         executeTarget("test1");

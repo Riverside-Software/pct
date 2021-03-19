@@ -19,7 +19,6 @@ package com.phenix.pct;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
@@ -94,13 +93,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     @Test(groups= {"v11"})
     public void test6() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadData/test6/build.xml");
         executeTarget("base");
@@ -125,13 +120,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     @Test(groups= {"v11"})
     public void test7() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadData/test7/build.xml");
         executeTarget("base");
@@ -146,13 +137,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     @Test(groups= {"v11"})
     public void test8() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadData/test8/build.xml");
         executeTarget("base");
@@ -167,13 +154,9 @@ public class PCTLoadDataTest extends BuildFileTestNg {
     @Test(groups= {"v11"})
     public void test9() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject("PCTLoadData/test9/build.xml");
         // Configure database

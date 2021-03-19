@@ -19,7 +19,6 @@ package com.phenix.pct;
 import static org.testng.Assert.assertEquals;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.testng.annotations.Test;
 
@@ -34,13 +33,9 @@ public class PLFileSetTest extends BuildFileTestNg {
     public void test1() {
         // Really crude, but we rely on prodict.pl in $DLC/tty
         // Number of files is different in every release
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMajorVersion() != 10)
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if (version.getMajorVersion() != 10)
             return;
-        }
 
         configureProject("PLFileSet/test1/build.xml");
 
@@ -62,13 +57,9 @@ public class PLFileSetTest extends BuildFileTestNg {
         DLCVersion version = null;
         // Really crude, but we rely on prodict.pl in $DLC/tty
         // Number of files is different in every release
-        try {
-            version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMajorVersion() != 11)
-                return;
-        } catch (IOException e) {
+        version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if (version.getMajorVersion() != 11)
             return;
-        }
 
         configureProject("PLFileSet/test2/build.xml");
 
