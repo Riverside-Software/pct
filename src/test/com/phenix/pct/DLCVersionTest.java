@@ -18,6 +18,8 @@ package com.phenix.pct;
 
 import static org.testng.Assert.assertEquals;
 
+import java.io.File;
+
 import org.testng.annotations.Test;
 
 /**
@@ -165,6 +167,12 @@ public class DLCVersionTest {
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
         assertEquals("0", version.getPatchVersion());
+    }
+
+    @Test(groups = {"v10"})
+    public void test15() {
+        DLCVersion version = DLCVersion.getObject(new File("/invalid_path"));
+        assertEquals(version, DLCVersion.UNKNOWN_VERSION);
     }
 
 }
