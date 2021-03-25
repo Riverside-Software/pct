@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -76,12 +76,12 @@ public class OutputParameter {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof OutputParameter))
+        if ((obj == null) || (propertyName == null)) {
             return false;
-        if (propertyName == null)
-            return false;
-
-        return propertyName.equals(((OutputParameter) obj).getName());
+        }
+        if (this.getClass() == obj.getClass())
+            return propertyName.equals(((OutputParameter) obj).getName());
+        return false;
     }
 
     /**

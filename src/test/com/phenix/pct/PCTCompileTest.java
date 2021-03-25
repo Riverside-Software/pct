@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -823,13 +823,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test52() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test52/build.xml");
         executeTarget("test1");
@@ -846,13 +842,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test53() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test53/build.xml");
         executeTarget("db");
@@ -870,13 +862,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test54() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test54/build.xml");
         executeTarget("db");
@@ -943,13 +931,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         expectLog("test-de-2", new String[] { "DE1-DE1-DE1", "14", "DE2-DE2-DE2", "14"});
 
         // Warning 4788 is only generated in version 11+, not on v10
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if (version.getMajorVersion() < 11)
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if (version.getMajorVersion() < 11)
             return;
-        }
 
         // Make sure there are two warnings, and each warning is on a single line
         // As promsgs 4788 contains %r
@@ -1197,13 +1181,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test76() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject(BASEDIR + "test76/build.xml");
         executeTarget("compile");
@@ -1219,13 +1199,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test77() {
         // Only work with 11.3+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException e) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        }
 
         configureProject(BASEDIR + "test77/build.xml");
         executeTarget("compile");
@@ -1265,13 +1241,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test79() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         String projectResultFile = BASEDIR + "test79/build/.pct/project-result.json";
         Gson gson = new Gson();
@@ -1282,14 +1254,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1299,14 +1271,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test2.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test2.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1316,20 +1288,20 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 2);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test2.i");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 2);
+            assertEquals(result.errors[0].fileName, "src/dir1/test2.i");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertEquals(result.ttProjectErrors[1].fileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[1].mainFileName, "src/dir1/test3.p");
-            assertEquals(result.ttProjectErrors[1].rowNum, 4);
-            assertEquals(result.ttProjectErrors[1].colNum, 1);
-            assertEquals(result.ttProjectErrors[1].msg,
+            assertEquals(result.errors[1].fileName, "src/dir1/test3.p");
+            assertEquals(result.errors[1].mainFileName, "src/dir1/test3.p");
+            assertEquals(result.errors[1].rowNum, 4);
+            assertEquals(result.errors[1].colNum, 1);
+            assertEquals(result.errors[1].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1346,14 +1318,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 0);
             assertEquals(result.errorFiles, 1);
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/dir1/test1.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 3);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].mainFileName, "src/dir1/test1.p");
+            assertEquals(result.errors[0].rowNum, 3);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
-            assertNull(result.ttProjectWarnings);
+            assertNull(result.warnings);
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1363,20 +1335,20 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 0);
-            assertNull(result.ttProjectErrors);
-            assertEquals(result.ttProjectWarnings.length, 2);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
+            assertNull(result.errors);
+            assertEquals(result.warnings.length, 2);
+            assertEquals(result.warnings[0].fileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[0].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
                     "Cannot reference \"DEFINE\" as \"DEF\" due to the \"require-full-keywords\" compiler option. (18494)");
-            assertEquals(result.ttProjectWarnings[1].fileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[1].mainFileName, "src/dir1/test5.p");
-            assertEquals(result.ttProjectWarnings[1].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[1].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[1].msg,
-                    "Cannot reference \"integer\" as \"INT\" due to the \"require-full-keywords\" compiler option. (18494)");
+            assertEquals(result.warnings[1].fileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[1].mainFileName, "src/dir1/test5.p");
+            assertEquals(result.warnings[1].msgNum, 18494);
+            assertEquals(result.warnings[1].rowNum, 2);
+            assertEquals(result.warnings[1].msg,
+                    "Cannot reference \"integer\" as \"INTE\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1386,14 +1358,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             ProjectResult result = gson.fromJson(reader, ProjectResult.class);
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 0);
-            assertNull(result.ttProjectErrors);
-            assertEquals(result.ttProjectWarnings.length, 1);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/dir1/test6.i");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/dir1/test6.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
-                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+            assertNull(result.errors);
+            assertEquals(result.warnings.length, 1);
+            assertEquals(result.warnings[0].fileName, "src/dir1/test6.i");
+            assertEquals(result.warnings[0].mainFileName, "src/dir1/test6.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VARI\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1402,13 +1374,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v12"})
     public void test80() {
         // Only work with 12.2+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 2))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
             return;
-        }
 
         configureProject(BASEDIR + "test80/build.xml");
         executeTarget("test1");
@@ -1420,6 +1388,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         File f3 = new File(BASEDIR + "test80/build2/.pct/test.p.warnings");
         assertTrue(f3.exists());
+
+        try {
+            assertTrue(Files.readLines(f3, Charset.defaultCharset(), new Test80LineProcessor()));
+        } catch (IOException caught) {
+            fail("Unable to read file", caught);
+        }
     }
 
     // @Test(groups = {"v11"})
@@ -1455,13 +1429,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     @Test(groups = {"v10"})
     public void test83() {
         // Only work with 11.7+
-        try {
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
-                return;
-        } catch (IOException caught) {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
             return;
-        }
 
         configureProject(BASEDIR + "test83/build.xml");
         String projectResultFile = BASEDIR + "test83/build/.pct/project-result.json";
@@ -1484,21 +1454,21 @@ public class PCTCompileTest extends BuildFileTestNg {
             assertEquals(result.compiledFiles, 1);
             assertEquals(result.errorFiles, 1);
 
-            assertEquals(result.ttProjectErrors.length, 1);
-            assertEquals(result.ttProjectErrors[0].fileName, "src/test2.p");
-            assertEquals(result.ttProjectErrors[0].mainFileName, "src/test2.p");
-            assertEquals(result.ttProjectErrors[0].rowNum, 1);
-            assertEquals(result.ttProjectErrors[0].colNum, 1);
-            assertEquals(result.ttProjectErrors[0].msg,
+            assertEquals(result.errors.length, 1);
+            assertEquals(result.errors[0].fileName, "src/test2.p");
+            assertEquals(result.errors[0].mainFileName, "src/test2.p");
+            assertEquals(result.errors[0].rowNum, 1);
+            assertEquals(result.errors[0].colNum, 1);
+            assertEquals(result.errors[0].msg,
                     "** Unable to understand after -- \"MESSGE\". (247)");
 
-            assertEquals(result.ttProjectWarnings.length, 1);
-            assertEquals(result.ttProjectWarnings[0].fileName, "src/test.i");
-            assertEquals(result.ttProjectWarnings[0].mainFileName, "src/test.p");
-            assertEquals(result.ttProjectWarnings[0].msgNum, 18494);
-            assertEquals(result.ttProjectWarnings[0].rowNum, 2);
-            assertEquals(result.ttProjectWarnings[0].msg,
-                    "Cannot reference \"VARIABLE\" as \"VAR\" due to the \"require-full-keywords\" compiler option. (18494)");
+            assertEquals(result.warnings.length, 1);
+            assertEquals(result.warnings[0].fileName, "src/test.i");
+            assertEquals(result.warnings[0].mainFileName, "src/test.p");
+            assertEquals(result.warnings[0].msgNum, 18494);
+            assertEquals(result.warnings[0].rowNum, 2);
+            assertEquals(result.warnings[0].msg,
+                    "Cannot reference \"VARIABLE\" as \"VARI\" due to the \"require-full-keywords\" compiler option. (18494)");
         } catch (IOException caught) {
             fail("Caught IOException", caught);
         }
@@ -1640,6 +1610,57 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(dir, "eu/rssw/pct/proc3.r").lastModified() > new File(dir, "eu/rssw/pct/M.r").lastModified());
     }
 
+    @Test(groups = {"v11"})
+    public void test87() {
+        // Only work with 11.7+
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 6))
+            return;
+
+        configureProject(BASEDIR + "test87/build.xml");
+        executeTarget("test1");
+        File f1 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f1.exists());
+        File f2 = new File(BASEDIR + "test87/build1/test.r");
+        assertTrue(f2.exists());
+        File f3 = new File(BASEDIR + "test87/build1/.pct/test.p.warnings");
+        assertTrue(f3.exists());
+
+        expectBuildException("test2", "Require full keywords");
+    }
+
+    @Test(groups = {"v11"})
+    public void test88() {
+        configureProject(BASEDIR + "test88/build.xml");
+        executeTarget("init");
+        expectLogAndBuildException("test", new String[]{"PCTCompile - Progress Code Compiler",
+                "Error compiling file 'src/test1.p' ...", " ... in main file",
+                "** WARNING--TRANSACTION keyword given within actual transaction level. (214)", "",
+                " ... in main file at line 14 column 3"});
+
+        File f1 = new File(BASEDIR + "test88/build/test1.r");
+        assertFalse(f1.exists());
+        File f2 = new File(BASEDIR + "test88/build/test2.r");
+        assertTrue(f2.exists());
+    }
+
+    static final class Test80LineProcessor implements LineProcessor<Boolean> {
+        private boolean rslt = true;
+        private int numLines;
+
+        @Override
+        public Boolean getResult() {
+            return rslt && (numLines == 2);
+        }
+
+        @Override
+        public boolean processLine(String str) throws IOException {
+            numLines++;
+            rslt &= str.endsWith(" (19822)");
+            return true;
+        }
+    }
+
     private static final class Test86LineProcessor implements LineProcessor<Integer> {
         private int retVal = 0;
 
@@ -1654,13 +1675,14 @@ public class PCTCompileTest extends BuildFileTestNg {
             return true;
         }
     }
+
     // Those classes just for the GSON mapping in test79
     @SuppressWarnings("unused")
     protected static class ProjectResult {
         private int compiledFiles;
         private int errorFiles;
-        private ProjectError[] ttProjectErrors;
-        private ProjectWarning[] ttProjectWarnings;
+        private ProjectError[] errors;
+        private ProjectWarning[] warnings;
     }
 
     @SuppressWarnings("unused")

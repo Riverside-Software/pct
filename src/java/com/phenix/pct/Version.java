@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,13 +26,23 @@ public class Version extends Task {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
+    private String property = null;
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
     @Override
     public void execute() {
-        String str = "PCT Version : " + RESOURCE_BUNDLE.getString("PCTVersion");
-        Echo echo = new Echo();
-        echo.bindToOwner(this);
-        echo.setMessage(str);
-        echo.execute();
+        String str = RESOURCE_BUNDLE.getString("PCTVersion");
+        if (property != null) {
+            getProject().setNewProperty(property, str);
+        } else {
+            Echo echo = new Echo();
+            echo.bindToOwner(this);
+            echo.setMessage("PCT Version : " + str);
+            echo.execute();
+        }
     }
 
     public static String getPCTVersion() {

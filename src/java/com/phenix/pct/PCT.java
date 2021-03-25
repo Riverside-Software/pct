@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -99,11 +99,10 @@ public abstract class PCT extends Task {
             }
         }
 
-        try {
-            version = DLCVersion.getObject(dlcHome);
-            log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
-        } catch (IOException caught) {
-            throw new BuildException(caught);
+        version = DLCVersion.getObject(dlcHome);
+        log("OpenEdge version found : " + version.getFullVersion(), Project.MSG_VERBOSE);
+        if (version == DLCVersion.UNKNOWN_VERSION) {
+            throw new BuildException("Unable to read DLC version file in '" + dlcHome.toString() + "'");
         }
 
         if (version.compareTo(new DLCVersion(12, 1, "0")) >= 0)

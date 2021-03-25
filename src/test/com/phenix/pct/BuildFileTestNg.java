@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +16,15 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+
 import java.io.File;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +34,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
 
@@ -92,15 +98,15 @@ public class BuildFileTestNg {
     public void expectSpecificBuildException(String target, String cause, String msg) {
         try {
             executeTarget(target);
-        } catch (org.apache.tools.ant.BuildException ex) {
+        } catch (BuildException ex) {
             buildException = ex;
             if ((null != msg) && (!ex.getMessage().equals(msg))) {
-                Assert.fail("Should throw BuildException because '" + cause + "' with message '"
-                        + msg + "' (actual message '" + ex.getMessage() + "' instead)");
+                fail("Should throw BuildException because '" + cause + "' with message '" + msg
+                        + "' (actual message '" + ex.getMessage() + "' instead)");
             }
             return;
         }
-        Assert.fail("Should throw BuildException because: " + cause);
+        fail("Should throw BuildException because: " + cause);
     }
 
     /**
@@ -109,7 +115,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertySet(String property) {
-        Assert.assertNotEquals(project.getProperty(property), null);
+        assertNotEquals(project.getProperty(property), null);
     }
 
     /**
@@ -118,7 +124,7 @@ public class BuildFileTestNg {
      * @param property property name
      */
     public void assertPropertyUnset(String property) {
-        Assert.assertEquals(project.getProperty(property), null);
+        assertEquals(project.getProperty(property), null);
     }
 
     /**
@@ -129,12 +135,20 @@ public class BuildFileTestNg {
      */
     public void assertPropertyEquals(String property, String value) {
         String result = project.getProperty(property);
-        Assert.assertEquals(result, value, "property " + property);
+        assertEquals(result, value, "property " + property);
+    }
+
+    public void assertPropertyMatches(String property, String pattern) {
+        String result = project.getProperty(property);
+        assertTrue(result.matches(pattern),
+                MessageFormat.format(
+                        "Property ''{0}'' with value ''{1}'' doesn''t match pattern ''{2}''",
+                        property, result, pattern));
     }
 
     /**
-     * Assert that the given message has been logged with a priority &lt;= INFO when running
-     * the given target.
+     * Assert that the given message has been logged with a priority &lt;= INFO when running the
+     * given target.
      */
     public void expectLog(String target, String log) {
         executeTarget(target);
@@ -145,18 +159,34 @@ public class BuildFileTestNg {
             }
         }
         if (!found)
-            Assert.fail("Message not found");
+            fail("Message not found");
     }
 
     /**
-     * Assert that the given messages were the only ones logged with a priority &lt;= INFO
-     * when running the given target.
+     * Runs a target, wait for a build exception, and expect specific log output
+     */
+    public void expectLogAndBuildException(String target, String[] expectedLog) {
+        try {
+            executeTarget(target);
+        } catch (BuildException ex) {
+            buildException = ex;
+            for (int zz = 0; zz < expectedLog.length; zz++) {
+                assertEquals(logBuffer.get(zz), expectedLog[zz]);
+            }
+            return;
+        }
+        fail("Should throw BuildException");
+    }
+
+    /**
+     * Assert that the given messages were the only ones logged with a priority &lt;= INFO when
+     * running the given target.
      */
     public void expectLog(String target, String[] expectedLog) {
         executeTarget(target);
-        Assert.assertEquals(logBuffer.size(), expectedLog.length);
+        assertEquals(logBuffer.size(), expectedLog.length);
         for (int zz = 0; zz < expectedLog.length; zz++) {
-            Assert.assertEquals(logBuffer.get(zz), expectedLog[zz]);
+            assertEquals(logBuffer.get(zz), expectedLog[zz]);
         }
     }
 
@@ -166,13 +196,14 @@ public class BuildFileTestNg {
         for (String s : logBuffer) {
             if (!iter.hasNext()) {
                 if (strict) {
-                    Assert.fail("Not enough regexp, current line '" + s + "'");
+                    fail("Not enough regexp, current line '" + s + "'");
                 }
                 return;
             }
             java.util.regex.Pattern regExp = java.util.regex.Pattern.compile(iter.next());
             if (!regExp.matcher(s).matches()) {
-                Assert.fail("Log '" + s + "' doesn't match regular expression '" + regExp.toString() + "'");
+                fail("Log '" + s + "' doesn't match regular expression '" + regExp.toString()
+                        + "'");
                 return;
             }
         }
@@ -187,7 +218,7 @@ public class BuildFileTestNg {
      */
     public URL getResource(String resource) {
         URL url = getClass().getResource(resource);
-        Assert.assertNotNull(url, "Could not find resource :" + resource);
+        assertNotNull(url, "Could not find resource :" + resource);
         return url;
     }
 
@@ -196,7 +227,7 @@ public class BuildFileTestNg {
      * 
      * @param filename name of project file to run
      */
-    public void configureProject(String filename) throws BuildException {
+    public void configureProject(String filename) {
         configureProject(filename, Project.MSG_DEBUG);
     }
 
@@ -205,7 +236,7 @@ public class BuildFileTestNg {
      * 
      * @param filename name of project file to run
      */
-    public void configureProject(String filename, int logLevel) throws BuildException {
+    public void configureProject(String filename, int logLevel) {
         logBuffer = new ArrayList<>();
         fullLogBuffer = new ArrayList<>();
         project = new Project();

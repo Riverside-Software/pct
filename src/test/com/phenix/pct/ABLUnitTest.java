@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@ package com.phenix.pct;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,30 +108,21 @@ public class ABLUnitTest extends BuildFileTestNg {
     // Test writeLog property
     @Test(groups = {"v11"})
     public void test8() {
-        DLCVersion version = null;
-        try {
-            version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        } catch (IOException caught) {
-            fail("Unable to read OE version", caught);
-        }
-        if (version == null) {
-            fail("Unable to read OE version");
-            return;
-        }
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
 
         configureProject("ABLUnit/test8/build.xml");
         File logFile = new File("ABLUnit/test8/temp/ablunit.log");
         assertFalse(logFile.exists());
-        // Starting from 12.2 and 11.7.8, syntax errors are silently caught by ABLUnit
-        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
-                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
+
+        // No failure will happen in 11.7.5 to 11.7.9 (fixed in 11.7.10) and 12.2.0 to 12.2.3 (fixed in 12.2.4)
+        // Expectation is that a correct version is used. Yes, I don't want to spend time on outdated versions.
+        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
             executeTarget("test1");
         } else {
             expectBuildException("test1", "Syntax error");
         }
         assertFalse(logFile.exists());
-        if ((version.compareTo(new DLCVersion(12, 2, "")) >= 0) || ((version.getMajorVersion() == 11)
-                && (version.compareTo(new DLCVersion(11, 7, "8")) >= 0))) {
+        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
             executeTarget("test2");
         } else {
             expectBuildException("test2", "Syntax error");

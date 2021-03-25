@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -73,6 +73,9 @@ public class AnalyticsBuildListener implements BuildListener {
         if (event.getProject().getProperty("pct.skip.analytics") != null)
             return;
         final StringBuilder sb = new StringBuilder("pct version=\"");
+        if (event.getProject().getBuildListeners().stream()
+                .anyMatch(listener -> listener.getClass().getName().startsWith("org.gradle.")))
+            sb.append("gradle-");
         sb.append(ResourceBundle.getBundle(Version.BUNDLE_NAME).getString("PCTVersion")).append('"');
         for (Entry<String, Integer> entry : taskCount.entrySet()) {
             sb.append(',').append(entry.getKey() + "=" + entry.getValue());

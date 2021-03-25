@@ -13,7 +13,7 @@
     </and>
   </condition>
 
-  <property name="pct.release" value="216.pre" />
+  <property name="pct.release" value="219-pre" />
   <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
@@ -37,8 +37,6 @@
   <property name="debug" value="true" />
   <property name="deprecation" value="true" />
   <property name="optimize" value="false" />
-  <property name="javac.source" value="1.7" />
-  <property name="javac.target" value="1.7" />
 
   <!-- Different filesets depending on version -->
   <fileset id="fs.v10" dir="${src.progress}">
@@ -92,7 +90,7 @@
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
-
+    <pathelement location="lib/jaxb-api-2.3.1.jar" />
     <!-- ABLDuck classes -->
     <pathelement location="lib/commonmark-0.11.0.jar"/>
   </path>
@@ -139,7 +137,7 @@
   </target>
 
   <target name="build" depends="init" description="Java source files compilation">
-    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />
       <include name="eu/rssw/pct/**/*.java" />
@@ -353,7 +351,7 @@
   </target>
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
-    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" source="${javac.source}" target="${javac.target}" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
+    <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="org/ini4j/**/*.java" />
       <include name="com/phenix/pct/*.java" />
       <include name="net/cordova/prounit/*.java" />

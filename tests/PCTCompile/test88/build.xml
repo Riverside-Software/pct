@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test88">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="build" />
+  </target>
+
+  <target name="test">
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
+      <filelist dir="src" files="test1.p,test2.p" />
+      <propath location="src" />
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

@@ -1,2 +1,2 @@
 MESSAGE "Hello world".
-DEF VARIABLE abc AS INT.
+DEF VARIABLE abc AS INTE.

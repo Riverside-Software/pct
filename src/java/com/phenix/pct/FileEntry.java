@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -95,7 +95,10 @@ public class FileEntry implements Comparable<FileEntry> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FileEntry)
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() == obj.getClass())
             return fileName.equals(((FileEntry) obj).getFileName());
         return false;
     }

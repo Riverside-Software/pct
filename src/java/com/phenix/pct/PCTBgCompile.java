@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -398,7 +398,7 @@ public class PCTBgCompile extends PCTBgRun {
             if (obj == null)
                 return false;
 
-            if (obj instanceof CompilationUnit) {
+            if (this.getClass() == obj.getClass()) {
                 CompilationUnit other = (CompilationUnit) obj;
                 return id == other.id;
             } else {
