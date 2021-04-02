@@ -6,7 +6,7 @@ ROUTINE-LEVEL ON ERROR UNDO, THROW.
 //BLOCK-LEVEL ON ERROR UNDO, THROW.
 /* ^^^ these statements only affect the blocks in THIS procedure 
  * The ROUTINE-LEVEL and BLOCK-LEVEL statements only affect the function of 
- * blocks within this procedure.  Downstream to not inherit the behavior.  
+ * blocks within this procedure.  Downstream do not inherit the behavior.  
  * see: -undothrow 1 or -undothrow 2 to affect session-level error-handling 
  */
  
