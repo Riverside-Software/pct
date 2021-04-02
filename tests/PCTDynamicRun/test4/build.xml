@@ -18,8 +18,9 @@
 		<PCTDynRun procedure="test.p" dlcHome="${DLC}">
 			<!-- There should be an option on PCTRun to control the undothrow status -->
 			<!-- Main issue with this flag: it changes behavior of customer code and may cause un-expected behavior -->
+			<!-- 
 			<Option name="-undothrow" value="2" />
-
+             -->
 			<dbconnection dbName="sp2k"
 			              dbDir="db"
 			              singleUser="true"
