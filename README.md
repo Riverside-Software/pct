@@ -10,5 +10,5 @@ Documentation is available [in the Wiki pages](https://github.com/Riverside-Soft
 
 ### What's next
 
-* Need to assess the quality of your source code ? Find bugs, vulnerabilities and code smells ? Then try the [CABL](https://github.com/Riverside-Software/sonar-openedge) for [SonarQube](http://www.sonarqube.org).
+* Need to assess the quality of your source code ? Find bugs, vulnerabilities and code smells ? Then try [CABL](https://riverside-software.fr/progress-openedge-abl-features-for-cleaner-and-safer-code) for [SonarQube](http://www.sonarqube.org).
 * Working with [OpenEdge WebClient](https://www.progress.com/support/openedge/webclient-executables)? Then you may want to use [PDO](http://riverside-software.fr/trial.html) to build and distribute applications in a completely automated way.
