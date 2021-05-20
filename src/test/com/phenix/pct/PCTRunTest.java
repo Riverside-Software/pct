@@ -445,4 +445,11 @@ public class PCTRunTest extends BuildFileTestNg {
         assertEquals(f.listFiles().length, 2);
     }
 
+    @Test(groups = {"v11"})
+    public void test52() {
+        configureProject("PCTRun/test52/build.xml");
+        expectLog("test1", "----");
+        expectLog("test2", "-- --");
+        expectLog("test3", "--xx--");
+    }
 }

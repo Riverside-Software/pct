@@ -632,7 +632,7 @@ public class GenericExecuteOptions implements IRunAttributes {
         }
 
         // Parameter
-        if (parameter != null) {
+        if ((parameter != null) && !parameter.isEmpty()) {
             list.add("-param"); //$NON-NLS-1$
             list.add(parameter);
         }

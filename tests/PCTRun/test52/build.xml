@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test52">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <!-- Issue can't be reproduced when profiler is activated... -->
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" parameter="" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" parameter=" " />
+  </target>
+
+  <target name="test3">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" parameter="xx" />
+  </target>
+
+</project>
