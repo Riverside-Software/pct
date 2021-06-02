@@ -22,6 +22,7 @@ Which will give you something like:
 
 ## How to build PCT ?
 
+* JDK 11 is required
 * Modify `pct.build.properties` to match your OpenEdge installation dir
 * Make sure you don’t have PCT.jar in `$ANT_HOME/lib`
 * Execute `ant clean jar` (or `ant clean classDoc jar` if you want to test ClassDocumentation on Windows) to build everything (PCT.jar is created in dist/ directory)
