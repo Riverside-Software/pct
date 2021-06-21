@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2019 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  */
 
 ENUM rssw.pct.CompileCallbackAction:
-    DEFINE ENUM None
-                Skip
-                /* Implementation will come later */ Stop.
+  DEFINE ENUM None
+              Skip
+              /* Implementation will come later */ Stop.
 END ENUM.

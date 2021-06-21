@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="PCTDynamicRun-test4">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDynRun procedure="test.p" dlcHome="${DLC}" mainCallback="Test4Callback">
+      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+  </target>
+
+</project>

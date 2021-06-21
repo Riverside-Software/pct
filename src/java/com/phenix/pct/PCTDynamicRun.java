@@ -62,11 +62,6 @@ public class PCTDynamicRun extends PCTRun {
         throw new UnsupportedOperationException("No -ininame attribute in this mode");
     }
 
-    @Override
-    public void setMainCallback(String mainCallback) {
-        throw new UnsupportedOperationException("No callback attribute in this mode");
-    }
-
     private void writeJsonConfigFile() throws IOException {
         try (JsonWriter writer = new JsonWriter(new FileWriter(jsonConfig))) {
             writer.beginObject();
@@ -74,6 +69,7 @@ public class PCTDynamicRun extends PCTRun {
             writer.name("super").value(runAttributes.isSuperInit());
             writer.name("procedure").value(runAttributes.getProcedure());
             writer.name("returnValue").value(status.getAbsolutePath());
+            writer.name("callback").value(runAttributes.getMainCallback());
             writer.name("propath").beginArray();
 
             String[] lst = runAttributes.getPropath() == null ? new String[]{"."} : runAttributes.getPropath().list();

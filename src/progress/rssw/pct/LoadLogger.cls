@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2019 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Lang.*.
-USING OpenEdge.DataAdmin.Binding.IDataDefinitionLoader FROM PROPATH. 
 
 CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
   DEFINE PUBLIC PROPERTY numErrors   AS INTEGER NO-UNDO INITIAL 0 GET. PRIVATE SET.
@@ -42,7 +41,7 @@ CLASS rssw.pct.LoadLogger INHERITS rssw.pct.AbstractLoadLogger:
     DEFINE VARIABLE zz AS INTEGER NO-UNDO.
 
     DO zz = 1 TO pError:NumMessages:
-        THIS-OBJECT:AddError(pError:GetMessage(zz)).
+      THIS-OBJECT:AddError(pError:GetMessage(zz)).
     END.
 
   END METHOD.

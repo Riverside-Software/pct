@@ -1,10 +1,12 @@
 USING Progress.Json.ObjectModel.JsonArray.
 USING Progress.Json.ObjectModel.JsonObject.
 USING Progress.Json.ObjectModel.ObjectModelParser.
+USING rssw.pct.IMainCallback.
 
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 DEFINE NEW SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
+DEFINE NEW SHARED VARIABLE mainCallback AS IMainCallback NO-UNDO.
 DEFINE VARIABLE noErrorOnQuit AS LOGICAL NO-UNDO.
 
 DEFINE VARIABLE i AS INTEGER NO-UNDO INITIAL ?.
@@ -88,6 +90,11 @@ DO zz = 1 TO prmEntries:Length:
   END.
 END.
 
+if (configJson:getCharacter("callback") GT "":U) THEN DO:
+  mainCallback = DYNAMIC-NEW configJson:getCharacter("callback") ().
+  mainCallback:initialize().
+END.
+
 // Output parameters
 ASSIGN outprmEntries = configJson:GetJsonArray("output").
 
@@ -105,6 +112,8 @@ DO ON QUIT UNDO, RETRY:
     IF noErrorOnQuit THEN i = 0. ELSE i = 66.
     LEAVE RunBlock.
   END.
+  IF VALID-OBJECT(mainCallback) THEN
+    mainCallback:beforeRun().
   IF (outprmEntries:Length EQ 0) THEN
     RUN VALUE(configJson:getCharacter("procedure")) NO-ERROR.
   ELSE IF (outprmEntries:Length EQ 1) THEN
@@ -118,6 +127,8 @@ IF (i EQ ?) THEN
   ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, " ")) NO-ERROR.
 IF (i EQ ?) THEN
   ASSIGN i = 1.
+IF VALID-OBJECT(mainCallback) THEN
+  mainCallback:afterRun(i).
 RUN returnValue(i).
 
 IF (outprmEntries:Length GE 1) THEN

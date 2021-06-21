@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2019 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
-USING Progress.Lang.* FROM PROPATH.
 USING OpenEdge.DataAdmin.Binding.IDataDefinitionLoader FROM PROPATH.
 USING OpenEdge.DataAdmin.Binding.DataDefinitionOptions FROM PROPATH.
 
 CLASS rssw.pct.LoadOptions INHERITS DataDefinitionOptions:
 
-  CONSTRUCTOR PUBLIC LoadOptions (logger AS OpenEdge.DataAdmin.Binding.IDataDefinitionLoader):
+  CONSTRUCTOR PUBLIC LoadOptions (logger AS IDataDefinitionLoader):
     SUPER (logger).
   END CONSTRUCTOR.
 

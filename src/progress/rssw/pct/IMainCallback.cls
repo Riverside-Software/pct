@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2019 Riverside Software
+ * Copyright 2005-2021 Riverside Software
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
  */
 
 INTERFACE rssw.pct.IMainCallback:
-    METHOD PUBLIC VOID initialize().
-    METHOD PUBLIC VOID beforeRun().
-    METHOD PUBLIC VOID afterRun(retVal AS INTEGER).
-    METHOD PUBLIC VOID log(msg AS CHARACTER).
+  METHOD PUBLIC VOID initialize().
+  METHOD PUBLIC VOID beforeRun().
+  METHOD PUBLIC VOID afterRun(retVal AS INTEGER).
+  METHOD PUBLIC VOID log(msg AS CHARACTER).
 END INTERFACE.
