@@ -9,7 +9,7 @@
 
   <!-- Only used for OE version number -->
   <taskdef resource="PCT.properties" />
-  <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" patchLevel="OE_PATCH" bitness="OE_ARCH" />
+  <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" shortVersion="OE_VERSION" bitness="OE_ARCH" />
 
   <!-- Assume version 12 when in local development -->
   <condition property="GROUPS" value="v11,v12">
@@ -60,7 +60,7 @@
     <replace dir="testbox/PCTCompileExt" includes="test??/build.xml" token="pct:compile" value="pct:compile_ext" />
     <echo message="Using Ant '${ant.version}' in '${ant.home}'" />
     <echo message="Using Java ${ant.java.version} - Java home: ${java.home}" />
-    <echo message="Using OpenEdge ${OE_MAJOR_VERSION}.${OE_MINOR_VERSION}.${OE_PATCH}" />
+    <echo message="Using OpenEdge ${OE_VERSION}" />
   </target>
 
   <target name="test">

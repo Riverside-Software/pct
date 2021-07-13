@@ -24,7 +24,7 @@ package com.phenix.pct;
  */
 public class ProgressVersion extends PCT {
     private String fullVersion;
-    private String reducedVersion;
+    private String shortVersion;
     private String majorVersion;
     private String minorVersion;
     private String revision;
@@ -52,8 +52,12 @@ public class ProgressVersion extends PCT {
         this.fullVersion = fullVersion;
     }
 
-    public void setReducedVersion(String reducedVersion) {
-        this.reducedVersion = reducedVersion;
+    public void setReducedVersion(String shortVersion) {
+        setShortVersion(shortVersion);
+    }
+
+    public void setShortVersion(String shortVersion) {
+        this.shortVersion = shortVersion;
     }
 
     public void setRCodeVersion(String rcodeVersion) {
@@ -77,8 +81,8 @@ public class ProgressVersion extends PCT {
             getProject().setNewProperty(this.patchLevel, getDLCPatchLevel());
         if (this.fullVersion != null)
             getProject().setNewProperty(this.fullVersion, getFullVersion());
-        if (this.reducedVersion != null)
-            getProject().setNewProperty(this.reducedVersion, getReducedVersion());
+        if (this.shortVersion != null)
+            getProject().setNewProperty(this.shortVersion, getShortVersion());
         if (this.rcodeVersion != null)
             getProject().setNewProperty(this.rcodeVersion, Long.toString(getRCodeVersion()));
         if (this.bitness != null)

@@ -559,12 +559,12 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * Returns reduced version
+     * Returns short version
      * 
      * @return 10.0B02 for example
      */
-    protected String getReducedVersion() {
-        return version.getFullVersion();
+    protected String getShortVersion() {
+        return version.getShortVersion();
     }
 
     /**

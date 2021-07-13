@@ -36,6 +36,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
     private final int majorVersion;
     private final int minorVersion;
     private final String fullVersion;
+    private final String shortVersion;
     private final String maintenanceVersion;
     private final String patchVersion;
     private final String date;
@@ -53,10 +54,12 @@ public class DLCVersion implements Comparable<DLCVersion> {
         this.rCodeVersion = -1;
         this.arch = false;
         this.fullVersion = major + "." + minor + maintenance;
+        this.shortVersion = fullVersion;
     }
 
     private DLCVersion(Builder builder) {
         fullVersion = builder.fullVersion;
+        shortVersion = builder.shortVersion;
         date = builder.date;
         majorVersion = builder.major;
         minorVersion = builder.minor;
@@ -97,6 +100,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
         Matcher m = Pattern.compile(MAIN_PATTERN).matcher(str);
         if (m.matches()) {
             builder.fullVersion = m.group(0);
+            builder.shortVersion = m.group(1);
             builder.date = m.group(3);
             builder.major = Integer.parseInt(m.group(2));
             if (builder.major >= 11)
@@ -152,6 +156,10 @@ public class DLCVersion implements Comparable<DLCVersion> {
         return fullVersion;
     }
 
+    public String getShortVersion() {
+        return shortVersion;
+    }
+
     public int getMajorVersion() {
         return majorVersion;
     }
@@ -199,6 +207,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
         int major;
         int minor;
         String fullVersion;
+        String shortVersion;
         String maintenance;
         String patch;
         String date;

@@ -34,7 +34,7 @@ public class ProgressVersionTest extends BuildFileTestNg {
         assertPropertySet("revision");
         assertPropertySet("patch");
         assertPropertySet("full");
-        assertPropertySet("reduced");
+        assertPropertySet("short");
         assertPropertySet("rcode");
         assertPropertySet("arch");
     }
