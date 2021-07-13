@@ -30,7 +30,7 @@ public class ProgressV11 implements ProgressProcedures {
 
     @Override
     public String getDynamicRunProcedure() {
-        return "pct/v11/dynrun.p";
+        return "pct/dynrun.p";
     }
 
     @Override
