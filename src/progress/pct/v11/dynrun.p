@@ -136,7 +136,7 @@ IF (outprmEntries:Length GE 1) THEN
 IF (outprmEntries:Length GE 2) THEN
   RUN writeOutputParam (out2, outprmEntries:getCharacter(2)).
 
-QUIT.    
+QUIT.
 
 PROCEDURE returnValue PRIVATE.
   DEFINE INPUT PARAMETER retVal AS INTEGER NO-UNDO.
