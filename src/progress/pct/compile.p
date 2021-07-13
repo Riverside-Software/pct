@@ -262,7 +262,7 @@ PROCEDURE initModule:
   IF lOptRetVals THEN
     ASSIGN cOpts = cOpts + (IF cOpts EQ '' THEN '' ELSE ',') + 'require-return-values' + (IF bAboveEq1173 THEN ':warning' ELSE '').
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
-  IF (COMPILER:OPTIONS GT "":U) THEN DO:
+  IF bAboveEq117 AND (COMPILER:OPTIONS GT "":U) THEN DO:
     MESSAGE "PCT compiler options are overridden by COMPILER:OPTIONS".
     ASSIGN cOpts = COMPILER:OPTIONS.
   END.
