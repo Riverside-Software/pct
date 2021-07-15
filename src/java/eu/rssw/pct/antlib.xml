@@ -38,4 +38,5 @@
   <typedef name="db_connection_set" classname="com.phenix.pct.DBConnectionSet" />
   <typedef name="dbConnectionSet" classname="com.phenix.pct.DBConnectionSet" />
   <typedef name="natural" classname="com.phenix.pct.NaturalComparator" />
+  <typedef name="json_doc" classname="eu.rssw.pct.oedoc.JsonDocumentation" />
 </antlib>
