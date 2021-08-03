@@ -11,7 +11,7 @@
     </and>
   </condition>
 
-  <property name="pct.release" value="219" />
+  <property name="pct.release" value="220-pre" />
   <property name="pct.version.string" value="pct-${pct.release}-${env.BRANCH_NAME}-${GIT_COMMIT}" />
 
   <!-- Some directories definitions -->
