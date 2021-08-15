@@ -3,7 +3,7 @@
 .
 PSC
 filename=Tab2
-records=0000000000003
+records=0000000000002
 ldbname=ged
 timestamp=2005/08/08-15:15:15
 numformat=44,46

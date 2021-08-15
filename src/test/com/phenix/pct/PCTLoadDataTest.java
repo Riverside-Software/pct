@@ -16,6 +16,7 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
@@ -66,6 +67,10 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         executeTarget("base");
         executeTarget("load");
         expectLog("test", "16 20");
+        File dotD = new File("PCTLoadData/test4/data/Tab1.d");
+        assertTrue(dotD.exists()); // Just to be sure we're in the right dir
+        File dotE = new File("PCTLoadData/test4/data/Tab1.e");
+        assertFalse(dotE.exists());
     }
 
     /**
