@@ -20,9 +20,10 @@ pipeline {
           def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
           def dlc12 = tool name: 'OpenEdge-12.2', type: 'openedge'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
+          def version = readFile('version.txt').trim()
 
           withEnv(["JAVA_HOME=${jdk}"]) {
-            bat "${antHome}\\bin\\ant -DDLC11=${dlc11} -DDLC12=${dlc12} classDoc"
+            bat "${antHome}\\bin\\ant -Dpct.release=${version} -DDLC11=${dlc11} -DDLC12=${dlc12} classDoc"
           }
         }
         stash name: 'classdoc', includes: 'dist/classDoc.zip'
@@ -41,8 +42,10 @@ pipeline {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
           def dlc12 = tool name: 'OpenEdge-12.2', type: 'openedge'
+          def version = readFile('version.txt').trim()
+
           withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
-            sh "${antHome}/bin/ant -DDLC11=${dlc11} -DDLC12=${dlc12} -DGIT_COMMIT=${commit} dist"
+            sh "${antHome}/bin/ant -Dpct.release=${version} -DDLC11=${dlc11} -DDLC12=${dlc12} -DGIT_COMMIT=${commit} dist"
           }
         }
         stash name: 'tests', includes: 'dist/PCT.jar,dist/testcases.zip,tests.xml'
@@ -87,16 +90,35 @@ pipeline {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
           def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
+          def version = readFile('version.txt').trim()
+
           withEnv(["JAVA_HOME=${jdk}"]) {
             sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.4.jar -file sonar.xml -DDLC=${dlc} init-sonar"
           }
           withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin", "JAVA_HOME=${jdk}"]) {
             withSonarQubeEnv('RSSW') {
               if ('master' == env.BRANCH_NAME) {
-                sh "sonar-scanner -Dsonar.oe.dlc=${dlc} -Dsonar.branch.name=$BRANCH_NAME"
+                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.branch.name=$BRANCH_NAME"
               } else {
-                sh "sonar-scanner -Dsonar.oe.dlc=${dlc} -Dsonar.pullrequest.branch=$BRANCH_NAME -Dsonar.pullrequest.base=master -Dsonar.pullrequest.key=0"
+                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.pullrequest.branch=$BRANCH_NAME -Dsonar.pullrequest.base=master -Dsonar.pullrequest.key=0"
               }
+            }
+          }
+        }
+      }
+    }
+
+    stage('Maven Central') {
+      agent { label 'linux' }
+      steps {
+        script {
+          def jdk = tool name: 'Corretto 11', type: 'jdk'
+          def mvn = tool name: 'Maven 3', type: 'maven'
+          def version = readFile('version.txt').trim()
+
+          withEnv(["MAVEN_HOME=${mvn}", "JAVA_HOME=${jdk}", "VERSION=${version}"]) {
+            if (!version.endsWith('-pre')) {
+              echo "./mvncentral.sh"
             }
           }
         }

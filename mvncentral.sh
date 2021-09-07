@@ -11,6 +11,6 @@
 # 3/ When script is executed, go to https://oss.sonatype.org/#stagingRepositories, then close and release the staging repository
 # 4/ It then takes a few minutes before artifacts are visible in Maven Central
 
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT.jar -Pgpg
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-sources.jar -Dclassifier=sources -Pgpg
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-javadoc.jar -Dclassifier=javadoc -Pgpg
+$MAVEN_HOME/bin/mvn gpg:sign-and-deploy-file -DVERSION=$VERSION -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT.jar -Pgpg
+$MAVEN_HOME/bin/mvn gpg:sign-and-deploy-file -DVERSION=$VERSION -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-sources.jar -Dclassifier=sources -Pgpg
+$MAVEN_HOME/bin/mvn gpg:sign-and-deploy-file -DVERSION=$VERSION -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-javadoc.jar -Dclassifier=javadoc -Pgpg
