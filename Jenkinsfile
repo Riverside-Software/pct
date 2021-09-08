@@ -119,9 +119,13 @@ pipeline {
           def mvn = tool name: 'Maven 3', type: 'maven'
           def version = readFile('version.txt').trim()
 
-          withEnv(["MAVEN_HOME=${mvn}", "JAVA_HOME=${jdk}", "VERSION=${version}"]) {
+          // When script is executed, go to https://oss.sonatype.org/#stagingRepositories, then close and release the staging repository
+          // It then takes a few minutes before artifacts are visible in Maven Central
+          withEnv(["MAVEN_HOME=${mvn}", "JAVA_HOME=${jdk}"]) {
             if (!version.endsWith('-pre')) {
-              sh "./mvncentral.sh"
+              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT.jar -Pgpg"
+              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-sources.jar -Dclassifier=sources -Pgpg"
+              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=dist/PCT-javadoc.jar -Dclassifier=javadoc -Pgpg"
             }
           }
         }
