@@ -12,7 +12,7 @@ pipeline {
 
   stages {
     stage('Class documentation build') {
-      agent { label 'windows' }
+      agent { label 'Windows-Office' }
       steps {
         checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
         script {
@@ -31,7 +31,7 @@ pipeline {
     }
 
     stage('Standard build') {
-      agent { label 'linux' }
+      agent { label 'Linux-Office' }
       steps {
         checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
         unstash name: 'classdoc'
@@ -55,17 +55,17 @@ pipeline {
 
     stage('Unit tests') {
       steps {
-        parallel branch1: { testBranch('windows', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win') },
-                 branch3: { testBranch('linux', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux') },
-                 branch5: { testBranch('windows', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win') },
-                 branch8: { testBranch('linux', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux') },
-                 branch9: { testBranch('windows', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.4', false, '12.4-Win') },
+        parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win') },
+                 branch3: { testBranch('Linux-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux') },
+                 branch5: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win') },
+                 branch8: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux') },
+                 branch9: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.4', false, '12.4-Win') },
                  failFast: false
       }
     }
 
     stage('Unit tests reports') {
-      agent { label 'linux' }
+      agent { label 'Linux-Office' }
       steps {
         // Wildcards not accepted in unstash...
         unstash name: 'junit-11.7-Win'
@@ -85,7 +85,7 @@ pipeline {
     }
 
     stage('Sonar') {
-      agent { label 'linux' }
+      agent { label 'Linux-Office' }
       steps {
         unstash name: 'coverage-11.7-Win'
         unstash name: 'coverage-12.2-Win'
@@ -112,7 +112,7 @@ pipeline {
     }
 
     stage('Maven Central') {
-      agent { label 'linux' }
+      agent { label 'Linux-Office' }
       steps {
         script {
           def jdk = tool name: 'Corretto 11', type: 'jdk'
