@@ -121,7 +121,7 @@ pipeline {
 
           withEnv(["MAVEN_HOME=${mvn}", "JAVA_HOME=${jdk}", "VERSION=${version}"]) {
             if (!version.endsWith('-pre')) {
-              echo "./mvncentral.sh"
+              sh "./mvncentral.sh"
             }
           }
         }
