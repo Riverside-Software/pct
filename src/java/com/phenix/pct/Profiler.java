@@ -31,7 +31,10 @@ public class Profiler {
     private boolean coverage = false;
     private boolean statistics = false;
     private String description = "Default description";
-    private File outputFile = null, outputDir = null;
+    private String tracing;
+    private String traceFilter;
+    private File outputFile = null;
+    private File outputDir = null;
     private File listings = null;
 
     /**
@@ -119,6 +122,22 @@ public class Profiler {
 
     public File getListings() {
         return listings;
+    }
+
+    public void setTracing(String tracing) {
+        this.tracing = tracing;
+    }
+
+    public String getTracing() {
+        return tracing;
+    }
+
+    public void setTraceFilter(String traceFilter) {
+        this.traceFilter = traceFilter;
+    }
+
+    public String getTraceFilter() {
+        return traceFilter;
     }
 
     /**

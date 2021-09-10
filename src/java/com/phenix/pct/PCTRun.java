@@ -650,6 +650,14 @@ public class PCTRun extends PCT implements IRunAttributes {
                     bw.write("-LISTINGS \"" + runAttributes.getProfiler().getListings().getAbsolutePath() + "\"");
                     bw.newLine();
                 }
+                if (runAttributes.getProfiler().getTracing() != null) {
+                    bw.write("-TRACING \"" + runAttributes.getProfiler().getTracing() + "\"");
+                    bw.newLine();
+                }
+                if (runAttributes.getProfiler().getTraceFilter() != null) {
+                    bw.write("-TRACE-FILTER \"" + runAttributes.getProfiler().getTraceFilter() + "\"");
+                    bw.newLine();
+                }
                 bw.write("-DESCRIPTION \"" + runAttributes.getProfiler().getDescription() + "\"");
                 bw.newLine();
             } catch (IOException caught) {
