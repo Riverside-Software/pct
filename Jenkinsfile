@@ -96,7 +96,7 @@ pipeline {
           def version = readFile('version.txt').trim()
 
           withEnv(["JAVA_HOME=${jdk}"]) {
-            sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.4.jar -file sonar.xml -DDLC=${dlc} init-sonar"
+            sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.7.jar -file sonar.xml -DDLC=${dlc} init-sonar"
           }
           withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin", "JAVA_HOME=${jdk}"]) {
             withSonarQubeEnv('RSSW') {

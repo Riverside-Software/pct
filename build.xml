@@ -381,7 +381,7 @@
         <include name="guava-30.1.1-jre.jar" />
         <include name="testng-6.13.1.jar" />
         <include name="jcommander-1.30.jar" />
-        <include name="jacocoant-0.8.4.jar" />
+        <include name="jacocoant-0.8.7.jar" />
         <include name="xmltask.jar" />
         <include name="mockito-core-3.0.0.jar" />
         <include name="objenesis-2.6.jar" />
