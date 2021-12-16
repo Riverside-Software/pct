@@ -161,7 +161,7 @@ public class PLReader {
             fc.read(b1, offset + 1);
             int fNameSize = (int) b1.get(0) & 0xFF;
             if (fNameSize == 0)
-                return new FileEntry(29);
+                return new FileEntry(version == 1 ? 29 : 49);
             ByteBuffer b2 = ByteBuffer.allocate(fNameSize);
             fc.read(b2, offset + 2);
             b2.position(0);
