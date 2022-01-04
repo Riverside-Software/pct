@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test89">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <mkdir dir="build" />
+    <PCTCompile destDir="build"
+                failOnError="false"
+                displayFiles="1">
+      <propath location="src" />
+      <fileset dir="src" includes="**/*.cls" />
+    </PCTCompile>
+    <sleep seconds="1" /> <!-- otherwise we're too fast for the unit test -->
+  </target>
+
+</project>

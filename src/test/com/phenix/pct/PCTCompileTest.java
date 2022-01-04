@@ -1649,6 +1649,32 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test89() throws IOException {
+        configureProject(BASEDIR + "test89/build.xml");
+
+        // Compile everything
+        Files.copy(new File(BASEDIR + "test89/src/inc/ttTable1.i"),
+                new File(BASEDIR + "test89/src/inc/ttTable-comp.i"));
+        executeTarget("test");
+
+        // Save the last modified date of our child class
+        File f1 = new File(BASEDIR + "test89/build/cls/someChildClass.r");
+        long lastModTime = f1.lastModified();
+
+        // Do an incremental compile with a new include for the parent class
+        // This would have previously skipped compiling the child class because the child was only
+        // checking if the
+        // parent class had changed and not whether an include referenced by the parent class
+        // changed.
+        // The child class needs to be compiled since it references a table from an include in the
+        // parent class.
+        Files.copy(new File(BASEDIR + "test89/src/inc/ttTable2.i"),
+                new File(BASEDIR + "test89/src/inc/ttTable-comp.i"));
+        executeTarget("test");
+        assertNotEquals(f1.lastModified(), lastModTime);
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

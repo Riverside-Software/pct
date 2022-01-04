@@ -997,7 +997,7 @@ FUNCTION checkHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATET
              TimeStamps.ttFullPath = SEARCH(REPLACE(clsName, '.', '/') + '.cls').
       ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
     END.
-    IF ((TimeStamps.ttFullPath NE clsFullPath) OR (ts LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
+    IF ((TimeStamps.ttFullPath NE clsFullPath) OR (ts LT TimeStamps.ttMod) OR CheckIncludes(REPLACE(clsName, '.', '/') + '.cls', ts, d)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
       ASSIGN lReturn = TRUE.
       LEAVE FileList.
     END.
