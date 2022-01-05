@@ -8,5 +8,6 @@
 /test-output/
 /classDocTemp/
 /profiler/
+.builder/
 pom.xml.asc
 src/java/com/phenix/pct/PCT.properties

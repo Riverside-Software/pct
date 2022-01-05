@@ -1,0 +1,11 @@
+{
+  "progressVersion": "12.2",
+  "graphicalMode": false,
+  "sourceDirectories": ["src/progress"],
+  "propath": ["src/progress"],
+  "buildDirectory": "build/build-v12",
+  "dumpFiles": [""],
+  "numThreads": 2,
+  "dbConnections": [""],
+  "aliases": "" 
+}
