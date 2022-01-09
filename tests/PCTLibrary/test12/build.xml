@@ -4,19 +4,19 @@
 
   <target name="build">
     <mkdir dir="build" />
-    <PCTCompile destDir="build" cpinternal="1252" cpstream="1252" cpcoll="basic" dlcHome="${DLC}">
+    <PCTCompile destDir="build" cpinternal="1252" cpstream="1252" cpcase="basic" cpcoll="basic" dlcHome="${DLC}">
       <fileset dir="src" includes="test1252.p" />
     </PCTCompile>
-    <PCTCompile destDir="build" cpinternal="1254" cpstream="1254" cpcoll="turkish" dlcHome="${DLC}">
+    <PCTCompile destDir="build" cpinternal="1254" cpstream="1254" cpcase="basic" cpcoll="turkish" dlcHome="${DLC}">
       <fileset dir="src" includes="test1254.p" />
     </PCTCompile>
-    <PCTCompile destDir="build" cpinternal="ibm862" cpstream="ibm862" cpcoll="hebrew" dlcHome="${DLC}">
+    <PCTCompile destDir="build" cpinternal="ibm862" cpstream="ibm862" cpcase="basic" cpcoll="hebrew" dlcHome="${DLC}">
       <fileset dir="src" includes="testibm862.p" />
     </PCTCompile>
-    <PCTCompile destDir="build" cpinternal="iso8859-1" cpstream="iso8859-1" cpcoll="basic" dlcHome="${DLC}">
+    <PCTCompile destDir="build" cpinternal="iso8859-1" cpstream="iso8859-1" cpcase="basic" cpcoll="basic" dlcHome="${DLC}">
       <fileset dir="src" includes="test8859.p" />
     </PCTCompile>
-    <PCTCompile destDir="build" cpinternal="utf-8" cpstream="utf-8" cpcoll="basic" dlcHome="${DLC}">
+    <PCTCompile destDir="build" cpinternal="utf-8" cpstream="utf-8" cpcase="basic" cpcoll="basic" dlcHome="${DLC}">
       <fileset dir="src" includes="testutf8.p" />
     </PCTCompile>
     <mkdir dir="dist" />

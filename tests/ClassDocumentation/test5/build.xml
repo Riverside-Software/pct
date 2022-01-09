@@ -10,7 +10,7 @@
     <ClassDocumentation destDir="doc" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.cls" />
     </ClassDocumentation>
-    <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" cpInternal="utf-8" cpStream="utf-8">
+    <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" cpInternal="utf-8" cpStream="utf-8" cpCase="basic">
       <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </HTMLDocumentation>
   </target>

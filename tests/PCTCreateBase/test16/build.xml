@@ -4,8 +4,8 @@
 
   <target name="test">
     <mkdir dir="db" />
-    <PCTCreateBase dbName="db1" destDir="db" dlcHome="${DLC}" cpInternal="utf-8" codepage="utf" collation="_tran" />
-    <PCTCreateBase dbName="db2" destDir="db" dlcHome="${DLC}" cpInternal="utf-8" codepage="utf" collation="ICU-fr" />
+    <PCTCreateBase dbName="db1" destDir="db" dlcHome="${DLC}" cpInternal="utf-8" cpCase="basic" codepage="utf" collation="_tran" />
+    <PCTCreateBase dbName="db2" destDir="db" dlcHome="${DLC}" cpInternal="utf-8" cpCase="basic" codepage="utf" collation="ICU-fr" />
   </target>
 
   <target name="verify">

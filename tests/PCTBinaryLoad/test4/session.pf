@@ -1,4 +1,5 @@
 -cpinternal utf-8
 -cpstream utf-8
+-cpcase basic
 -yy 1950
 -d dmy
