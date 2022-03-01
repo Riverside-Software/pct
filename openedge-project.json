@@ -1,11 +1,12 @@
 {
-  "progressVersion": "12.2",
+  "version": "12.2",
   "graphicalMode": false,
-  "sourceDirectories": ["src/progress"],
-  "propath": ["src/progress"],
-  "buildDirectory": "build/build-v12",
-  "dumpFiles": [""],
-  "numThreads": 2,
-  "dbConnections": [""],
+  "extraParameters": "",
+  "buildPath": [
+    { "type": "source", "path": "src/progress", "pct": "target/xref" }
+  ],
+  "dumpFiles": [ "empty.df" ],
+  "numThreads": 1,
+  "dbConnections": ["-db target/db/empty -RO"],
   "aliases": "" 
 }
