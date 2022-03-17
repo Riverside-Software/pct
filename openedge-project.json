@@ -3,7 +3,7 @@
   "graphicalMode": false,
   "extraParameters": "",
   "buildPath": [
-    { "type": "source", "path": "src/progress", "pct": "target/xref" }
+    { "type": "source", "path": "src/progress" }
   ],
   "dumpFiles": [ "empty.df" ],
   "numThreads": 1,
