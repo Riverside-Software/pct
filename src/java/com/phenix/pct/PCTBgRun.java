@@ -648,9 +648,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      * Listener thread
      */
     private class ListenerThread extends Thread {
-        // Timeout for accept method -- 5 seconds should be enough
-        // Increase it if you're doing some debugging
-        private static final int TIMEOUT = 5000;
+        // Timeout for accept method -- 30 seconds should be enough.
+        private static final int TIMEOUT = 30000;
 
         private ServerSocket server = null;
 
