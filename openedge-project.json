@@ -21,9 +21,9 @@
   "profiles": [
     {
       "name": "v11",
+      "inherits": "default",
       "value": {
         "version": "11.7",
-        "graphicalMode": false,
         "buildPath": [
           {
             "type": "source",
@@ -32,14 +32,9 @@
             "excludes": "Consultingwerk/**,pct/v10/**,pct/v12/**,pct/v102b/**,pct/pctOEUnitRunner.p"
           }
         ],
-        "dumpFiles": [
-          "empty.df"
-        ],
-        "numThreads": 1,
         "dbConnections": [
           "-db target/db/empty11 -ld empty -RO"
-        ],
-        "aliases": "empty,dictdb2"
+        ]
       }
     }
   ]
