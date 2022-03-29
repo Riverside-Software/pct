@@ -3,10 +3,44 @@
   "graphicalMode": false,
   "extraParameters": "",
   "buildPath": [
-    { "type": "source", "path": "src/progress" }
+    {
+      "type": "source",
+      "path": "src/progress",
+      "build": "build/build-v12",
+      "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v102b/**,pct/pctOEUnitRunner.p"
+    }
   ],
-  "dumpFiles": [ "empty.df" ],
+  "dumpFiles": [
+    "empty.df"
+  ],
   "numThreads": 1,
-  "dbConnections": ["-db target/db/empty -RO"],
-  "aliases": "" 
+  "dbConnections": [
+    "-db target/db/empty12 -ld empty -RO"
+  ],
+  "aliases": "empty,dictdb2",
+  "profiles": [
+    {
+      "name": "v11",
+      "value": {
+        "version": "11.7",
+        "graphicalMode": false,
+        "buildPath": [
+          {
+            "type": "source",
+            "path": "src/progress",
+            "build": "build/build-v11",
+            "excludes": "Consultingwerk/**,pct/v10/**,pct/v12/**,pct/v102b/**,pct/pctOEUnitRunner.p"
+          }
+        ],
+        "dumpFiles": [
+          "empty.df"
+        ],
+        "numThreads": 1,
+        "dbConnections": [
+          "-db target/db/empty11 -ld empty -RO"
+        ],
+        "aliases": "empty,dictdb2"
+      }
+    }
+  ]
 }

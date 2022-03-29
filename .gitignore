@@ -13,3 +13,4 @@ pom.xml.asc
 src/java/com/phenix/pct/PCT.properties
 *.r
 target/
+profile.json
