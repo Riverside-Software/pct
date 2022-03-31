@@ -1,5 +1,7 @@
 {
-  "version": "12.2",
+  "name": "PCT",
+  "version": "221-pre",
+  "oeversion": "12.2",
   "graphicalMode": false,
   "extraParameters": "",
   "buildPath": [
@@ -7,7 +9,7 @@
       "type": "source",
       "path": "src/progress",
       "build": "build/build-v12",
-      "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v102b/**,pct/pctOEUnitRunner.p"
+      "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v102b/**,pct/pctOEUnitRunner.p,pct/v12/loadSch124.p"
     }
   ],
   "dumpFiles": [
@@ -23,7 +25,7 @@
       "name": "v11",
       "inherits": "default",
       "value": {
-        "version": "11.7",
+        "oeversion": "11.7",
         "buildPath": [
           {
             "type": "source",
