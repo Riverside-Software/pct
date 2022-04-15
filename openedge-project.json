@@ -1,6 +1,7 @@
 {
   "name": "PCT",
   "version": "221-pre",
+  "charset": "utf-8",
   "oeversion": "12.2",
   "graphicalMode": false,
   "extraParameters": "",
