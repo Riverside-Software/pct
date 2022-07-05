@@ -13,14 +13,10 @@
       "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v102b/**,pct/pctOEUnitRunner.p,pct/v12/loadSch124.p"
     }
   ],
-  "dumpFiles": [
-    "empty.df"
-  ],
   "numThreads": 1,
   "dbConnections": [
-    "-db target/db/empty12 -ld empty -RO"
+    { "name": "empty", "connect": "-db target/db/empty12 -ld empty -RO", "dumpFile": "empty.df", "aliases": [ "empty2" ] }
   ],
-  "aliases": "empty,dictdb2",
   "profiles": [
     {
       "name": "v11",
@@ -36,7 +32,7 @@
           }
         ],
         "dbConnections": [
-          "-db target/db/empty11 -ld empty -RO"
+          { "name": "empty", "connect": "-db target/db/empty11 -ld empty -RO", "dumpFile": "empty.df", "aliases": [ "empty2" ] }
         ]
       }
     }

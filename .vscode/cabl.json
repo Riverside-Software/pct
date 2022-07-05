@@ -1,0 +1,502 @@
+{
+  "activeRules": [
+    {
+      "name": "MyCustomScript",
+      "class": "eu.rssw.antlr.proparse.checks.GroovyPathTemplate",
+      "parameters": [
+        {
+          "name": "script",
+          "value": "foobar.groovy"
+        }
+      ]
+    },
+    {
+      "name": "AbbreviatedKeywords",
+      "class": "eu.rssw.antlr.proparse.checks.AbbreviatedKeywords",
+      "parameters": [
+        {
+          "name": "excludedKeywords",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "AbbreviatedTableName",
+      "class": "eu.rssw.antlr.proparse.checks.AbbreviatedTableName"
+    },
+    {
+      "name": "BackslashCurlyBrace",
+      "class": "eu.rssw.antlr.proparse.checks.BackslashCurlyBrace"
+    },
+    {
+      "name": "BackslashInIncludeFile",
+      "class": "eu.rssw.antlr.proparse.checks.BackslashInIncludeFile"
+    },
+    {
+      "name": "BackslashInString",
+      "class": "eu.rssw.antlr.proparse.checks.BackslashInString"
+    },
+    {
+      "name": "BlockLabel",
+      "class": "eu.rssw.antlr.proparse.checks.BlockLabel"
+    },
+    {
+      "name": "BufferUsage",
+      "class": "eu.rssw.antlr.proparse.checks.BufferUsage",
+      "parameters": [
+        {
+          "name": "skipInMainBlock",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "ClassNameCasing",
+      "class": "eu.rssw.antlr.proparse.checks.ClassNameCasing"
+    },
+    {
+      "name": "ClassNamingConvention",
+      "class": "eu.rssw.antlr.proparse.checks.ClassNamingConvention",
+      "parameters": [
+        {
+          "name": "format",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "ClassNoPackage",
+      "class": "eu.rssw.antlr.proparse.checks.ClassNoPackage"
+    },
+    {
+      "name": "ColonTTrim",
+      "class": "eu.rssw.antlr.proparse.checks.ColonTTrim"
+    },
+    {
+      "name": "ColonForBlock",
+      "class": "eu.rssw.antlr.proparse.checks.ColonForBlock"
+    },
+    {
+      "name": "CommentedOutCode",
+      "class": "eu.rssw.antlr.proparse.checks.CommentedOutCode",
+      "parameters": [
+        {
+          "name": "minTokens",
+          "value": 0
+        },
+        {
+          "name": "ignoreSingleLineComments",
+          "value": false
+        },
+        {
+          "name": "ignoreJavadocComments",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "CompileTimeArguments",
+      "class": "eu.rssw.antlr.proparse.checks.CompileTimeArguments"
+    },
+    {
+      "name": "DefaultImplementationForProperty",
+      "class": "eu.rssw.antlr.proparse.checks.DefaultImplementationForProperty"
+    },
+    {
+      "name": "DefaultWidgetName",
+      "class": "eu.rssw.antlr.proparse.checks.DefaultWidgetName",
+      "parameters": [
+        {
+          "name": "exclusion",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "DisableTriggers",
+      "class": "eu.rssw.antlr.proparse.checks.DisableTriggers"
+    },
+    {
+      "name": "DosKeyword",
+      "class": "eu.rssw.antlr.proparse.checks.DosKeyword"
+    },
+    {
+      "name": "DotComment",
+      "class": "eu.rssw.antlr.proparse.checks.DotComment"
+    },
+    {
+      "name": "DuplicateCase",
+      "class": "eu.rssw.antlr.proparse.checks.DuplicateCase"
+    },
+    {
+      "name": "EmptyBlock",
+      "class": "eu.rssw.antlr.proparse.checks.EmptyBlock",
+      "parameters": [
+        {
+          "name": "returnOnly",
+          "value": false
+        },
+        {
+          "name": "allowCommentInEmptyIfElse",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "EmptyFieldsList",
+      "class": "eu.rssw.antlr.proparse.checks.EmptyFieldsList"
+    },
+    {
+      "name": "EmptyStatement",
+      "class": "eu.rssw.antlr.proparse.checks.EmptyStatement",
+      "parameters": [
+        {
+          "name": "allowEmptyThenWithElse",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "EndType",
+      "class": "eu.rssw.antlr.proparse.checks.EndType"
+    },
+    {
+      "name": "ErrorHandlingDirective",
+      "class": "eu.rssw.antlr.proparse.checks.ErrorHandlingDirective"
+    },
+    {
+      "name": "ExpressionNoEffect",
+      "class": "eu.rssw.antlr.proparse.checks.ExpressionNoEffect",
+      "parameters": [
+        {
+          "name": "reportComHandleAttributes",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "FindFirst",
+      "class": "eu.rssw.antlr.proparse.checks.FindFirst",
+      "parameters": [
+        {
+          "name": "scanCanFind",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "FindNoError",
+      "class": "eu.rssw.antlr.proparse.checks.FindNoError"
+    },
+    {
+      "name": "GlobalDefine",
+      "class": "eu.rssw.antlr.proparse.checks.GlobalDefine",
+      "parameters": [
+        {
+          "name": "excludedFiles",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "GlobalSharedVariable",
+      "class": "eu.rssw.antlr.proparse.checks.GlobalSharedVariable"
+    },
+    {
+      "name": "HiddenVariable",
+      "class": "eu.rssw.antlr.proparse.checks.HiddenVariable"
+    },
+    {
+      "name": "I18NLength",
+      "class": "eu.rssw.antlr.proparse.checks.I18NLength"
+    },
+    {
+      "name": "IncludeNameCasing",
+      "class": "eu.rssw.antlr.proparse.checks.IncludeNameCasing"
+    },
+    {
+      "name": "IndentationCheck",
+      "class": "eu.rssw.antlr.proparse.checks.IndentationCheck"
+    },
+    {
+      "name": "ExtraCharactersInIdentifier",
+      "class": "eu.rssw.antlr.proparse.checks.ExtraCharactersInIdentifier"
+    },
+    {
+      "name": "InvalidUseIndex",
+      "class": "eu.rssw.antlr.proparse.checks.InvalidUseIndex"
+    },
+    {
+      "name": "LogRethrowException",
+      "class": "eu.rssw.antlr.proparse.checks.LogRethrowException",
+      "parameters": [
+        {
+          "name": "exceptionName",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "NestedComments",
+      "class": "eu.rssw.antlr.proparse.checks.NestedComments"
+    },
+    {
+      "name": "NestedDo",
+      "class": "eu.rssw.antlr.proparse.checks.NestedDo"
+    },
+    {
+      "name": "NoInitialDefaultValue",
+      "class": "eu.rssw.antlr.proparse.checks.NoInitialDefaultValue"
+    },
+    {
+      "name": "NoReturnInFinally",
+      "class": "eu.rssw.antlr.proparse.checks.NoReturnInFinally"
+    },
+    {
+      "name": "NoReturnInFuncOrMethod",
+      "class": "eu.rssw.antlr.proparse.checks.NoReturnInFuncOrMethod"
+    },
+    {
+      "name": "NoRoutineInLoop",
+      "class": "eu.rssw.antlr.proparse.checks.NoRoutineInLoop",
+      "parameters": [
+        {
+          "name": "safeRoutines",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "NoRoutineInWhere",
+      "class": "eu.rssw.antlr.proparse.checks.NoRoutineInWhere",
+      "parameters": [
+        {
+          "name": "safeRoutines",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "NoUndo",
+      "class": "eu.rssw.antlr.proparse.checks.NoUndo",
+      "parameters": [
+        {
+          "name": "requireExplicitNoUndo",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "NoWait",
+      "class": "eu.rssw.antlr.proparse.checks.NoWait",
+      "parameters": [
+        {
+          "name": "reportOnTT",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "OfLink",
+      "class": "eu.rssw.antlr.proparse.checks.OfLink"
+    },
+    {
+      "name": "OneStatementPerLine",
+      "class": "eu.rssw.antlr.proparse.checks.OneStatementPerLine",
+      "parameters": [
+        {
+          "name": "allowSimpleIf",
+          "value": false
+        },
+        {
+          "name": "allowDoOn",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "OutdatedDigest",
+      "class": "eu.rssw.antlr.proparse.checks.OutdatedDigest"
+    },
+    {
+      "name": "PublicVariable",
+      "class": "eu.rssw.antlr.proparse.checks.PublicVariable"
+    },
+    {
+      "name": "ReadkeyKeyword",
+      "class": "eu.rssw.antlr.proparse.checks.ReadkeyKeyword"
+    },
+    {
+      "name": "RecidKeyword",
+      "class": "eu.rssw.antlr.proparse.checks.RecidKeyword"
+    },
+    {
+      "name": "RedundantCatch",
+      "class": "eu.rssw.antlr.proparse.checks.RedundantCatch"
+    },
+    {
+      "name": "ReturnError",
+      "class": "eu.rssw.antlr.proparse.checks.ReturnError"
+    },
+    {
+      "name": "SerializableError",
+      "class": "eu.rssw.antlr.proparse.checks.SerializableError"
+    },
+    {
+      "name": "ShareLock",
+      "class": "eu.rssw.antlr.proparse.checks.ShareLock",
+      "parameters": [
+        {
+          "name": "findMethods",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "SharedVariable",
+      "class": "eu.rssw.antlr.proparse.checks.SharedVariable"
+    },
+    {
+      "name": "SortAccessAnalyzer",
+      "class": "eu.rssw.antlr.proparse.checks.SortAccessAnalyzer"
+    },
+    {
+      "name": "SortAccessWholeIndexAnalyzer",
+      "class": "eu.rssw.antlr.proparse.checks.SortAccessWholeIndexAnalyzer"
+    },
+    {
+      "name": "SplitCommaSeparatedStrings",
+      "class": "eu.rssw.antlr.proparse.checks.SplitCommaSeparatedStrings"
+    },
+    {
+      "name": "StatementOrder",
+      "class": "eu.rssw.antlr.proparse.checks.StatementOrder",
+      "parameters": [
+        {
+          "name": "reportOnlyInMainFile",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "SubstituteLongChar",
+      "class": "eu.rssw.antlr.proparse.checks.SubstituteLongChar"
+    },
+    {
+      "name": "SubstituteParameters",
+      "class": "eu.rssw.antlr.proparse.checks.SubstituteParameters"
+    },
+    {
+      "name": "TableScanAndWhere",
+      "class": "eu.rssw.antlr.proparse.checks.TableScanAndWhere"
+    },
+    {
+      "name": "TempTableSortAccessWholeIndexAnalyzer",
+      "class": "eu.rssw.antlr.proparse.checks.TempTableSortAccessWholeIndexAnalyzer"
+    },
+    {
+      "name": "TempTableWholeIndexAnalyzer",
+      "class": "eu.rssw.antlr.proparse.checks.TempTableWholeIndexAnalyzer"
+    },
+    {
+      "name": "ToDoTracker",
+      "class": "eu.rssw.antlr.proparse.checks.ToDoTracker"
+    },
+    {
+      "name": "TooManyParameters",
+      "class": "eu.rssw.antlr.proparse.checks.TooManyParameters",
+      "parameters": [
+        {
+          "name": "numParameters",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "name": "UndefinedNamedInclude",
+      "class": "eu.rssw.antlr.proparse.checks.UndefinedNamedInclude"
+    },
+    {
+      "name": "UndoWithoutOption",
+      "class": "eu.rssw.antlr.proparse.checks.UndoWithoutOption"
+    },
+    {
+      "name": "UnixKeyword",
+      "class": "eu.rssw.antlr.proparse.checks.UnixKeyword"
+    },
+    {
+      "name": "UnquotedParameterOsCommand",
+      "class": "eu.rssw.antlr.proparse.checks.UnquotedParameterOsCommand"
+    },
+    {
+      "name": "UnusedBuffer",
+      "class": "eu.rssw.antlr.proparse.checks.UnusedBuffer"
+    },
+    {
+      "name": "UnusedParameter",
+      "class": "eu.rssw.antlr.proparse.checks.UnusedParameter",
+      "parameters": [
+        {
+          "name": "skipOutputParamWithInitialValue",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "UnusedVariable",
+      "class": "eu.rssw.antlr.proparse.checks.UnusedVariable",
+      "parameters": [
+        {
+          "name": "skipSharedVars",
+          "value": false
+        },
+        {
+          "name": "skipVarInFrames",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "UseIndex",
+      "class": "eu.rssw.antlr.proparse.checks.UseIndex",
+      "parameters": [
+        {
+          "name": "reportOnFirstLast",
+          "value": false
+        }
+      ]
+    },
+    {
+      "name": "UsingStars",
+      "class": "eu.rssw.antlr.proparse.checks.UsingStars"
+    },
+    {
+      "name": "VariableAssignedButNotRead",
+      "class": "eu.rssw.antlr.proparse.checks.VariableAssignedButNotRead"
+    },
+    {
+      "name": "VariableOverflow",
+      "class": "eu.rssw.antlr.proparse.checks.VariableOverflow"
+    },
+    {
+      "name": "VariableReadButNotAssigned",
+      "class": "eu.rssw.antlr.proparse.checks.VariableReadButNotAssigned"
+    },
+    {
+      "name": "WhereCanDo",
+      "class": "eu.rssw.antlr.proparse.checks.WhereCanDo"
+    },
+    {
+      "name": "WholeIndexAnalyzer",
+      "class": "eu.rssw.antlr.proparse.checks.WholeIndexAnalyzer"
+    },
+    {
+      "name": "WorkTableKeyword",
+      "class": "eu.rssw.antlr.proparse.checks.WorkTableKeyword"
+    },
+    {
+      "name": "WrongAssignWhen",
+      "class": "eu.rssw.antlr.proparse.checks.WrongAssignWhen"
+    }
+  ]
+}
