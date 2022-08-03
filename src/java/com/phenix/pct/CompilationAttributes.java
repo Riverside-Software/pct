@@ -61,6 +61,7 @@ public class CompilationAttributes implements ICompilationAttributes {
     private boolean saveR = true;
     private boolean stopOnError = false;
     private boolean xmlXref = false;
+    private boolean altXmlXrefName = false;
     private boolean requireFullKeywords = false;
     private boolean requireFieldQualifiers = false;
     private boolean requireFullNames = false;
@@ -199,6 +200,10 @@ public class CompilationAttributes implements ICompilationAttributes {
     @Override
     public void setXmlXref(boolean xmlXref) {
         this.xmlXref = xmlXref;
+    }
+
+    public void setAlternateXmlXrefName(boolean altXmlXrefName) {
+        this.altXmlXrefName = altXmlXrefName;
     }
 
     @Override
@@ -390,6 +395,10 @@ public class CompilationAttributes implements ICompilationAttributes {
 
     public boolean isXmlXref() {
         return xmlXref;
+    }
+
+    public boolean isAltXmlXrefName() {
+        return altXmlXrefName;
     }
 
     public boolean isRequireFullKeywords() {

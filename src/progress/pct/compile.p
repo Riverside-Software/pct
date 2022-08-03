@@ -119,6 +119,7 @@ DEFINE VARIABLE DebugLst  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE keepXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE multiComp AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXmlXref  AS LOGICAL    NO-UNDO INITIAL FALSE.
+DEFINE VARIABLE lAltXmlXrefName  AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE lXCode    AS LOGICAL    NO-UNDO.
 DEFINE VARIABLE lRelative AS LOGICAL    NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE ProgPerc  AS INTEGER    NO-UNDO INITIAL 0.
@@ -194,6 +195,7 @@ PROCEDURE setOption.
     WHEN 'RELATIVE':U         THEN ASSIGN lRelative = (ipValue EQ '1':U).
     WHEN 'PROGPERC':U         THEN ASSIGN ProgPerc = INTEGER(ipValue).
     WHEN 'XMLXREF':U          THEN ASSIGN lXmlXref = (ipValue EQ '1':U).
+    WHEN 'ALTXMLXREFNAME':U   THEN ASSIGN lAltXmlXrefName = (ipValue EQ '1':U).
     WHEN 'IGNOREDINCLUDES':U  THEN ASSIGN cignoredIncludes = REPLACE(TRIM(ipValue), '~\':U, '/':U).
     WHEN 'FULLKW':U           THEN ASSIGN lOptFullKW = (ipValue EQ '1':U).
     WHEN 'FIELDQLF':U         THEN ASSIGN lOptFldQlf = (ipValue EQ '1':U).
@@ -408,7 +410,15 @@ PROCEDURE compileXref.
   END.
   IF opComp EQ 0 THEN RETURN.
 
-  ASSIGN cXrefFile = PCTDir + '/':U + ipInFile + '.xref':U.
+  ASSIGN cXrefFile = PCTDir + '/':U + ipInFile.
+  IF (lAltXmlXrefName AND lXmlXref) THEN DO:
+    IF R-INDEX(cXrefFile, '.') GT 0 THEN
+      ASSIGN cXrefFile = SUBSTRING(cXrefFile, 1, R-INDEX(cXrefFile, '.') - 1).
+    ASSIGN cXrefFile = cXrefFile + ".xref.xml".
+  END.
+  ELSE
+    ASSIGN cXrefFile = cXrefFile + '.xref':U.
+
   ASSIGN warningsFile = PCTDir + '/':U + ipInFile + '.warnings':U.
   ASSIGN cStrXrefFile = (IF StrXref AND AppStrXrf
                            THEN PCTDir + '/strings.xref':U

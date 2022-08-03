@@ -1649,6 +1649,21 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test89() {
+        configureProject(BASEDIR + "test89/build.xml");
+        executeTarget("init");
+        executeTarget("test");
+        executeTarget("test2");
+
+        assertTrue(new File(BASEDIR + "test89/build/.pct/test1.p.xref").exists());
+        assertTrue(new File(BASEDIR + "test89/build/.pct/test2.p.xref").exists());
+        assertTrue(new File(BASEDIR + "test89/build/.pct/dir1/test3.p.xref").exists());
+        assertTrue(new File(BASEDIR + "test89/build2/.pct/test1.xref.xml").exists());
+        assertTrue(new File(BASEDIR + "test89/build2/.pct/test2.xref.xml").exists());
+        assertTrue(new File(BASEDIR + "test89/build2/.pct/dir1/test3.xml.xref").exists());
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

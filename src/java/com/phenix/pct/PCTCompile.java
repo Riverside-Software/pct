@@ -200,6 +200,8 @@ public class PCTCompile extends PCTRun {
             bw.newLine();
             bw.write("XMLXREF=" + (compAttrs.isXmlXref() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
+            bw.write("ALTXMLXREFNAME=" + (compAttrs.isAltXmlXrefName() ? 1 : 0)); //$NON-NLS-1$
+            bw.newLine();
             bw.write("NOPARSE=" + (compAttrs.isNoParse() ? 1 : 0)); //$NON-NLS-1$
             bw.newLine();
             bw.write("STRINGXREF=" + (compAttrs.isStringXref() ? 1 : 0)); //$NON-NLS-1$

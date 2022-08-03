@@ -231,6 +231,10 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         compAttributes.setXmlXref(xmlXref);
     }
 
+    public void setAlternateXmlXrefName(boolean altXmlXref) {
+        compAttributes.setAlternateXmlXrefName(altXmlXref);
+    }
+
     @Override
     public void setXRefDir(File xrefDir) {
         compAttributes.setXRefDir(xrefDir);
