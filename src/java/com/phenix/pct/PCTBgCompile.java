@@ -350,6 +350,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
             sb.append(CompilationAttributes.CONSOLE_OUTPUT_TYPE).append(';');
             sb.append(Boolean.toString(compAttrs.isRequireReturnValues())).append(';');
+            sb.append(Boolean.toString(compAttrs.isAltXmlXrefName())).append(';');
 
             return sb.toString();
         }
