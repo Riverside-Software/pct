@@ -55,11 +55,11 @@ pipeline {
 
     stage('Unit tests') {
       steps {
-        parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win') },
-                 branch3: { testBranch('Linux-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux') },
-                 branch5: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win') },
-                 branch8: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux') },
-                 branch9: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.4', false, '12.4-Win') },
+        parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
+                 branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
+                 branch4: { testBranch('Linux-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
+                 branch5: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
+                 branch6: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
                  failFast: false
       }
     }
@@ -72,14 +72,14 @@ pipeline {
         unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Win'
         unstash name: 'junit-12.2-Linux'
-        unstash name: 'junit-12.4-Win'
+        unstash name: 'junit-12.6-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-12.4-Win.zip', dir: 'junitreports'
+        unzip zipFile: 'junitreports-12.6-Linux.zip', dir: 'junitreports'
         junit 'junitreports/**/*.xml'
       }
     }
@@ -134,7 +134,7 @@ pipeline {
   }
 }
 
-def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, label) {
+def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, label, docker) {
   node(nodeName) {
     ws {
       deleteDir()
@@ -143,9 +143,9 @@ def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, labe
       def antHome = tool name: antVersion, type: 'ant'
       unstash name: 'tests'
       withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
-        if (isUnix())
-          sh "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
-        else
+        if (isUnix()) {
+          sh "docker run -u 1001:1 -v ${env.WORKSPACE}:/pct -w /pct ${docker} /opt/progress/dlc/ant/bin/ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
+        } else
           bat "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
       }
       stash name: "junit-${label}", includes: 'junitreports-*.zip'
