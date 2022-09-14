@@ -16,18 +16,6 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.taskdefs.Parallel;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Environment.Variable;
-import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.FileUtils;
-
-import com.phenix.pct.BackgroundWorker.Message;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +28,17 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.ExecTask;
+import org.apache.tools.ant.taskdefs.Parallel;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.Environment.Variable;
+import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
+
+import com.phenix.pct.BackgroundWorker.Message;
 
 /**
  * Run a background Progress procedure.
@@ -471,24 +470,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         if (charset != null) {
             return charset;
         }
-
-        String zz = readCharset();
-        try {
-            if (zz != null) {
-                if ("1252".equals(zz))
-                    zz = "windows-1252";
-                if ("big-5".equalsIgnoreCase(zz))
-                    zz = "Big5";
-                charset = Charset.forName(zz);
-            }
-        } catch (IllegalArgumentException caught) {
-            log(MessageFormat.format(Messages.getString("PCTCompile.46"), zz), Project.MSG_INFO); //$NON-NLS-1$
-            charset = Charset.defaultCharset();
-        }
-        if (charset == null) {
-            log(Messages.getString("PCTCompile.47"), Project.MSG_VERBOSE); //$NON-NLS-1$
-            charset = Charset.defaultCharset();
-        }
+        charset = getCharset(readCharset());
 
         return charset;
     }

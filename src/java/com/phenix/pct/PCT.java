@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -604,6 +605,44 @@ public abstract class PCT extends Task {
         } catch (Exception e) {
             // if unable to determine level - just return default value
             return 2;
+        }
+    }
+
+    /**
+     * Returns charset to be used when writing files in Java to be read by Progress session (thus
+     * according to cpstream, parameter files, ...) and dealing with OE encodings (such as undefined
+     * or 1252)
+     */
+    protected Charset getCharset(String zz) {
+        if ("1250".equals(zz)) // Central Europe
+            zz = "windows-1250";
+        else if ("1251".equals(zz)) // Cyrillic
+            zz = "windows-1251";
+        else if ("1252".equals(zz)) // Western Europe
+            zz = "windows-1252";
+        else if ("1253".equals(zz)) // Greek
+            zz = "windows-1253";
+        else if ("1254".equals(zz)) // Turkish
+            zz = "windows-1254";
+        else if ("1255".equals(zz)) // Hebrew
+            zz = "windows-1255";
+        else if ("1256".equals(zz)) // Arabic
+            zz = "windows-1256";
+        else if ("1257".equals(zz)) // Baltic
+            zz = "windows-1257";
+        else if ("1258".equals(zz)) // Vietnamese
+            zz = "windows-1258";
+        else if ("big-5".equalsIgnoreCase(zz))
+            zz = "Big5";
+        try {
+            if (zz == null) {
+                log(Messages.getString("PCTCompile.47"), Project.MSG_VERBOSE); //$NON-NLS-1$
+                return Charset.defaultCharset();
+            }
+            return Charset.forName(zz);
+        } catch (IllegalArgumentException caught) {
+            log(MessageFormat.format(Messages.getString("PCTCompile.46"), zz), Project.MSG_INFO); //$NON-NLS-1$
+            return Charset.defaultCharset();
         }
     }
 
