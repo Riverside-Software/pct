@@ -67,16 +67,16 @@ IF lUnfreeze THEN DO:
    hQuery:QUERY-PREPARE("for each _file where _file-number > 0 " +
                         "and _File-Number < 32768 " +
                         "and _frozen = yes").
-   hQuery:QUERY-OPEN.
+   hQuery:QUERY-OPEN().
    hQuery:GET-FIRST().
    DO TRANSACTION WHILE NOT hQuery:QUERY-OFF-END:
       hQuery:GET-CURRENT(EXCLUSIVE-LOCK).
       CREATE ttUnfrozen.
       ASSIGN ttUnfrozen.cTable = hBuffer:BUFFER-FIELD("_file-name"):BUFFER-VALUE
              hBuffer:BUFFER-FIELD("_frozen"):BUFFER-VALUE = FALSE.
-      hQuery:GET-NEXT.
+      hQuery:GET-NEXT().
    END.
-   hQuery:QUERY-CLOSE.   
+   hQuery:QUERY-CLOSE().   
 END.
 
 IF VALID-OBJECT(callback) THEN
@@ -150,13 +150,13 @@ IF VALID-OBJECT(callback) THEN
 IF lUnfreeze THEN DO:
    FOR EACH ttUnfrozen:
       hQuery:QUERY-PREPARE("for each _file where _file-name = '" + ttUnfrozen.cTable + "'").
-      hQuery:QUERY-OPEN.
-      hQuery:GET-FIRST.
+      hQuery:QUERY-OPEN().
+      hQuery:GET-FIRST().
       IF NOT hQuery:QUERY-OFF-END THEN DO TRANSACTION:
          hQuery:GET-CURRENT(EXCLUSIVE-LOCK).
          hBuffer:BUFFER-FIELD("_frozen"):BUFFER-VALUE = TRUE.
       END.
-      hQuery:QUERY-CLOSE.
+      hQuery:QUERY-CLOSE().
    END.
    DELETE OBJECT hQuery.
    DELETE OBJECT hBuffer.

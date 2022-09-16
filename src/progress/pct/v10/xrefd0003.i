@@ -1,5 +1,5 @@
 
-DEFINE TEMP-TABLE Source
+DEFINE TEMP-TABLE Source NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD File-num AS INTEGER 
@@ -8,7 +8,7 @@ DEFINE TEMP-TABLE Source
 	INDEX source-guid IS UNIQUE PRIMARY 
 		Source-guid File-num.
 
-DEFINE TEMP-TABLE Reference
+DEFINE TEMP-TABLE Reference NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD File-num AS INTEGER 
@@ -28,7 +28,7 @@ DEFINE TEMP-TABLE Reference
 	INDEX Reference_source-guid IS UNIQUE PRIMARY 
 		Source-guid File-num Ref-seq.
 
-DEFINE TEMP-TABLE Class-ref
+DEFINE TEMP-TABLE Class-ref NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
@@ -39,7 +39,7 @@ DEFINE TEMP-TABLE Class-ref
 	INDEX Class-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq.
 
-DEFINE TEMP-TABLE String-ref
+DEFINE TEMP-TABLE String-ref NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
@@ -49,7 +49,7 @@ DEFINE TEMP-TABLE String-ref
 	INDEX String-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq.
 
-DEFINE TEMP-TABLE Parameter-ref
+DEFINE TEMP-TABLE Parameter-ref NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
@@ -67,7 +67,7 @@ DEFINE TEMP-TABLE Parameter-ref
 	INDEX Parameter-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq Order.
 
-DEFINE TEMP-TABLE Dataset-ref
+DEFINE TEMP-TABLE Dataset-ref NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD Dataset-guid AS CHARACTER 
@@ -80,7 +80,7 @@ DEFINE TEMP-TABLE Dataset-ref
 	INDEX Dataset-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Dataset-guid Ref-seq.
 
-DEFINE TEMP-TABLE Relation
+DEFINE TEMP-TABLE Relation NO-UNDO
 	NAMESPACE-URI "uri:schemas-progress-com:XREFD:0003" 
 	FIELD Source-guid AS CHARACTER 
 	FIELD Dataset-guid AS CHARACTER 

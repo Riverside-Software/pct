@@ -1,5 +1,5 @@
 
-DEFINE TEMP-TABLE Source
+DEFINE TEMP-TABLE Source NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD File-num AS INTEGER 
 	FIELD File-name AS CHARACTER 
@@ -7,7 +7,7 @@ DEFINE TEMP-TABLE Source
 	INDEX source-guid IS UNIQUE PRIMARY 
 		Source-guid File-num.
 
-DEFINE TEMP-TABLE Reference
+DEFINE TEMP-TABLE Reference NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD File-num AS INTEGER 
 	FIELD Ref-seq AS INTEGER 
@@ -26,7 +26,7 @@ DEFINE TEMP-TABLE Reference
 	INDEX Reference_source-guid IS UNIQUE PRIMARY 
 		Source-guid File-num Ref-seq.
 
-DEFINE TEMP-TABLE Class-ref
+DEFINE TEMP-TABLE Class-ref NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
 	FIELD Inherited-list AS CHARACTER 
@@ -37,7 +37,7 @@ DEFINE TEMP-TABLE Class-ref
 	INDEX Class-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq.
 
-DEFINE TEMP-TABLE String-ref
+DEFINE TEMP-TABLE String-ref NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
 	FIELD Max-length AS INTEGER 
@@ -46,7 +46,7 @@ DEFINE TEMP-TABLE String-ref
 	INDEX String-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq.
 
-DEFINE TEMP-TABLE Parameter-ref
+DEFINE TEMP-TABLE Parameter-ref NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
 	FIELD Order AS INTEGER 
@@ -63,7 +63,7 @@ DEFINE TEMP-TABLE Parameter-ref
 	INDEX Parameter-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Ref-seq Order.
 
-DEFINE TEMP-TABLE Dataset-ref
+DEFINE TEMP-TABLE Dataset-ref NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Dataset-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
@@ -75,7 +75,7 @@ DEFINE TEMP-TABLE Dataset-ref
 	INDEX Dataset-ref_source-guid IS UNIQUE PRIMARY 
 		Source-guid Dataset-guid Ref-seq.
 
-DEFINE TEMP-TABLE Relation
+DEFINE TEMP-TABLE Relation NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Dataset-guid AS CHARACTER 
 	FIELD Relation-name AS CHARACTER 
@@ -86,7 +86,7 @@ DEFINE TEMP-TABLE Relation
 	INDEX Relation-guid IS PRIMARY 
 		Source-guid Dataset-guid.
 
-DEFINE TEMP-TABLE Interface-ref
+DEFINE TEMP-TABLE Interface-ref NO-UNDO
 	FIELD Source-guid AS CHARACTER 
 	FIELD Ref-seq AS INTEGER 
 	FIELD Inherited-list AS CHARACTER 
