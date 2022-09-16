@@ -128,9 +128,6 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
         if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 2))
             return;
-        // Issue fixed in 12.5, so can't reproduce test case
-        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() >= 5))
-            return;
 
         configureProject("PCTLoadData/test7/build.xml");
         executeTarget("base");
@@ -208,7 +205,11 @@ public class PCTLoadDataTest extends BuildFileTestNg {
         // Should fail, because errorTolerance is only 30
         expectBuildException("load5", "Should fail");
         // Should fail, because errorTolerance is 60, but numsep is incorrect
+        // Issue fixed in 12.5, so can't reproduce test case
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() >= 5))
+            return;
         expectBuildException("load6", "Should fail");
-    }    
-    
+    }
+
 }
