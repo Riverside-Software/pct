@@ -116,13 +116,15 @@ public class ABLUnitTest extends BuildFileTestNg {
 
         // No failure will happen in 11.7.5 to 11.7.9 (fixed in 11.7.10) and 12.2.0 to 12.2.3 (fixed in 12.2.4)
         // Expectation is that a correct version is used. Yes, I don't want to spend time on outdated versions.
-        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 7)
+                && (Integer.parseInt(version.getMaintenanceVersion()) < 10)) {
             executeTarget("test1");
         } else {
             expectBuildException("test1", "Syntax error");
         }
         assertFalse(logFile.exists());
-        if (version.getMajorVersion() == 11) { // Until 11.7.10 is released
+        if ((version.getMajorVersion() == 11) && (version.getMinorVersion() <= 7)
+                && (Integer.parseInt(version.getMaintenanceVersion()) < 10)) {
             executeTarget("test2");
         } else {
             expectBuildException("test2", "Syntax error");

@@ -239,9 +239,16 @@ public class DLCVersion implements Comparable<DLCVersion> {
     @Override
     public int compareTo(DLCVersion other) {
         if ((majorVersion - other.majorVersion) != 0)
-            return (majorVersion - other.majorVersion);
+            return majorVersion - other.majorVersion;
         if ((minorVersion - other.minorVersion) != 0)
-            return (minorVersion - other.minorVersion);
-        return maintenanceVersion.compareTo(other.maintenanceVersion);
+            return minorVersion - other.minorVersion;
+        try {
+            // First, try to compare numeric values ; if not applicable, try string comparison
+            int maint = Integer.parseInt(maintenanceVersion);
+            int otherMaint = Integer.parseInt(other.maintenanceVersion);
+            return maint - otherMaint;
+        } catch (NumberFormatException uncaught) {
+            return maintenanceVersion.compareTo(other.maintenanceVersion);
+        }
     }
 }

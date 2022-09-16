@@ -213,6 +213,10 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
     public void test18() {
         configureProject("PCTCreateBase/test18/build.xml");
         executeTarget("init");
+        // Early exit - Unit tests in Docker are using root, thus can write everywhere
+        File tmpDir = new File("PCTCreateBase/test18/tmp");
+        if (tmpDir.canWrite())
+            return;
         expectBuildException("db1", "Temp dir not writable");
         executeTarget("db2");
         executeTarget("test");
