@@ -342,7 +342,7 @@
   </target>
 
   <target name="javadoc" depends="build" description="Javadoc generation">
-    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8" additionalParam="-Xdoclint:all,-missing">
+    <javadoc destdir="${doc}" useexternalfile="yes" charset="utf-8" encoding="utf-8" additionalParam="-Xdoclint:all,-missing" source="1.8">
       <packageset dir="${src.java}" />
       <classpath>
         <path refid="pct.compil" />
