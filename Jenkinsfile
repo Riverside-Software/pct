@@ -57,9 +57,9 @@ pipeline {
       steps {
         parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
-                 branch4: { testBranch('Linux-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
-                 branch5: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
-                 branch6: { testBranch('Linux-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
+                 branch4: { testBranch('Linux-Office02', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
+                 branch5: { testBranch('Linux-Office02', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
+                 branch6: { testBranch('Linux-Office02', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
                  failFast: false
       }
     }
@@ -144,7 +144,7 @@ def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, labe
       unstash name: 'tests'
       withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
         if (isUnix()) {
-          sh "docker run -u 1001:1 -v ${env.WORKSPACE}:/pct -w /pct ${docker} /opt/progress/dlc/ant/bin/ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
+          sh "podman run --rm -v ${env.WORKSPACE}:/pct:z -w /pct ${docker} /opt/progress/dlc/ant/bin/ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
         } else
           bat "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
       }
