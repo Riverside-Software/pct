@@ -1675,6 +1675,18 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertNotEquals(f1.lastModified(), lastModTime);
     }
 
+    @Test(groups = {"v11"}, enabled = false)
+    public void test90() throws IOException {
+        configureProject(BASEDIR + "test90/build.xml");
+        executeTarget("init");
+        executeTarget("test01");
+        assertTrue(new File(BASEDIR, "test90/build01/test01.r").exists());
+        executeTarget("test02");
+        assertTrue(new File(BASEDIR, "test90/build02/test01.r").exists());
+        executeTarget("test03");
+        assertTrue(new File(BASEDIR, "test90/build03/test01.r").exists());
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

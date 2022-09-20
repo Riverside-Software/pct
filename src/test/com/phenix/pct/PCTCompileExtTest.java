@@ -1356,6 +1356,18 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
 
+    @Test(groups = {"v11"}, enabled = false)
+    public void test90() throws IOException {
+        configureProject(BASEDIR + "test90/build.xml");
+        executeTarget("init");
+        executeTarget("test01");
+        assertTrue(new File(BASEDIR, "test90/build01/test01.r").exists());
+        executeTarget("test02");
+        assertTrue(new File(BASEDIR, "test90/build02/test01.r").exists());
+        executeTarget("test03");
+        assertTrue(new File(BASEDIR, "test90/build03/test01.r").exists());
+    }
+
     @Test(groups = {"v11"})
     public void test101() {
         configureProject(BASEDIR + "test101/build.xml");

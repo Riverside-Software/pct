@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test90">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="db" />
+    <sports2000 destDir="db" dbName="mydb" dlcHome="${DLC}" />
+    <PCTRun dlcHome="${DLC}" procedure="createUser.p">
+      <DBConnection dbDir="db" dbName="mydb" singleUser="true" />
+    </PCTRun>
+  </target>
+
+  <target name="test01">
+    <PCTCompile destDir="build01" dlcHome="${DLC}">
+      <propath location="src" />
+      <fileset dir="src" includes="**/*.p" />
+      <DBConnection dbDir="db" dbName="mydb" singleUser="true" username="test01" password="test01" />
+    </PCTCompile>
+  </target>
+
+  <target name="test02">
+    <PCTCompile destDir="build02" dlcHome="${DLC}">
+      <propath location="src" />
+      <fileset dir="src" includes="**/*.p" />
+      <DBConnection dbDir="db" dbName="mydb" singleUser="true" username="test'02" password="test02" />
+    </PCTCompile>
+  </target>
+
+  <target name="test03">
+    <PCTCompile destDir="build03" dlcHome="${DLC}">
+      <propath location="src" />
+      <fileset dir="src" includes="**/*.p" />
+      <DBConnection dbDir="db" dbName="mydb" singleUser="true" username="'test03'" password="'test03'" />
+    </PCTCompile>
+  </target>
+
+</project>
