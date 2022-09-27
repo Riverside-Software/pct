@@ -4,7 +4,7 @@
 
   <target name="test1">
     <mkdir dir="build" />
-    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
+    <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" cpinternal="1256" cpstream="1256" numThreads="10" >
       <fileset dir="src">
         <include name="test.p" />
       </fileset>
