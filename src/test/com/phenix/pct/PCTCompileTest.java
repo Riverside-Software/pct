@@ -1687,6 +1687,22 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR, "test90/build03/test01.r").exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test91() throws IOException {
+        configureProject(BASEDIR + "test91/build.xml");
+        executeTarget("build");
+        assertTrue(new File(BASEDIR, "test91/build/src/test1.r").exists());
+        assertTrue(new File(BASEDIR, "test91/build/src/test2.r").exists());
+
+        // Check that source files are not overwritten by preprocessor
+        List<String> lines01 = Files.readLines(new File(BASEDIR, "test91/src/test1.p"),
+                Charset.defaultCharset());
+        assertTrue(lines01.stream().filter(it -> it.trim().length() > 0).count() > 0);
+        List<String> lines02 = Files.readLines(new File(BASEDIR, "test91/src/test2.p"),
+                Charset.defaultCharset());
+        assertTrue(lines02.stream().filter(it -> it.trim().length() > 0).count() > 0);
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

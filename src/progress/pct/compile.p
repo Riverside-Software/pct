@@ -427,6 +427,11 @@ PROCEDURE compileXref.
   END.
   ELSE
     ASSIGN preprocessFile = ?.
+  // Check we don't overwrite source file (as preprocess file name doesn't use specific extension)
+  IF ((ipInDir + '/':U + ipInFile) = preprocessFile) THEN DO:
+    MESSAGE SUBSTITUTE("Preprocessor disabled for &1 as it would overwrite source file", preprocessFile).
+    preprocessFile = ?.
+  END.
 
   IF debugLst AND NOT (cFile BEGINS '_') THEN DO:
     IF flattenDbg THEN
