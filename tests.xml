@@ -51,6 +51,9 @@
 
   <target name="init">
     <unzip src="dist/testcases.zip" dest="." />
+    <touch> <!-- Make sure all timestamps are set to 'now' -->
+      <fileset dir="." />
+    </touch>
     <mkdir dir="testbox/PCTCompileExt" />
     <copy todir="testbox/PCTCompileExt">
       <fileset dir="testbox/PCTCompile" />
