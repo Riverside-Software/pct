@@ -68,6 +68,7 @@ import eu.rssw.pct.elements.IParameter;
 import eu.rssw.pct.elements.IPropertyElement;
 import eu.rssw.pct.elements.ITableElement;
 import eu.rssw.pct.elements.ITypeInfo;
+import eu.rssw.pct.elements.PrimitiveDataType;
 
 /**
  * Generate JSON documentation from OpenEdge classes
@@ -307,6 +308,10 @@ public class JsonDocumentation extends PCT {
         for (IPropertyElement prop : info.getProperties()) {
             ofile.beginObject();
             ofile.name("name").value(prop.getName());
+            ofile.name("type").value(
+                    prop.getVariable().getDataType().getPrimitive() == PrimitiveDataType.CLASS
+                            ? prop.getVariable().getDataType().getClassName()
+                            : prop.getVariable().getDataType().getPrimitive().getSignature());
             ofile.name("modifier").value(getModifier(prop));
             writeComments(ofile, getJavadoc(prop, unit));
             ofile.endObject();
@@ -331,7 +336,11 @@ public class JsonDocumentation extends PCT {
             throws IOException {
         ofile.beginObject();
         ofile.name("name").value(methd.getName());
-        ofile.name("returnType").value(methd.getReturnTypeName());
+        ofile.name("signature").value(methd.getSignature());
+        ofile.name("returnType")
+                .value(methd.getReturnType().getPrimitive() == PrimitiveDataType.CLASS
+                        ? methd.getReturnType().getClassName()
+                        : methd.getReturnType().getPrimitive().getSignature());
         ofile.name("abstract").value(methd.isAbstract());
         ofile.name("static").value(methd.isStatic());
         ofile.name("extent").value(methd.getExtent());
@@ -350,17 +359,20 @@ public class JsonDocumentation extends PCT {
                 case TABLE :
                 case BUFFER_TEMP_TABLE :
                     ofile.name("type").value(
-                            "TABLE" + (prm.getABLDataType() == DataType.HANDLE ? "-HANDLE" : ""));
+                            "TABLE" + (prm.getDataType() == DataType.HANDLE ? "-HANDLE" : ""));
                     break;
                 case DATASET :
                     ofile.name("type").value(
-                            "DATASET" + (prm.getABLDataType() == DataType.HANDLE ? "-HANDLE" : ""));
+                            "DATASET" + (prm.getDataType() == DataType.HANDLE ? "-HANDLE" : ""));
                     break;
                 case BROWSE :
                     ofile.name("type").value("BROWSE");
                     break;
                 default :
-                    ofile.name("type").value(prm.getDataType());
+                    ofile.name("type")
+                            .value(prm.getDataType().getPrimitive() == PrimitiveDataType.CLASS
+                                    ? prm.getDataType().getClassName()
+                                    : prm.getDataType().getPrimitive().getSignature());
             }
             ofile.endObject();
         }
@@ -402,10 +414,11 @@ public class JsonDocumentation extends PCT {
     }
 
     private List<String> getJavadoc(ITableElement elem, ParseUnit unit) {
-        Predicate<JPNode> p1 = node -> node.getNodeType() == ABLNodeType.DEFINE
-                && node.getState2() == ABLNodeType.TEMPTABLE.getType();
-        Predicate<JPNode> p2 = node -> node.getFirstDirectChild(ABLNodeType.ID) != null
-                && elem.getName().equalsIgnoreCase(node.getFirstDirectChild(ABLNodeType.ID).getText());
+        Predicate<JPNode> p1 = node -> node.isStateHead()
+                && (node.getNodeType() == ABLNodeType.DEFINE)
+                && (node.asIStatement().getNodeType2() == ABLNodeType.TEMPTABLE);
+        Predicate<JPNode> p2 = node -> node.findDirectChild(ABLNodeType.ID) != null
+                && elem.getName().equalsIgnoreCase(node.findDirectChild(ABLNodeType.ID).getText());
         JPNode ttNode = unit.getTopNode().query2(p1.and(p2)).stream().findFirst().orElse(null);
         if (ttNode != null) {
             return getJavadoc(ttNode);
@@ -516,7 +529,7 @@ public class JsonDocumentation extends PCT {
             log("Dumping schema for database #" + cnt + " - " + conn.getDbName(), Project.MSG_INFO);
             File outFile = dumpSchema(conn);
             dbs[cnt++] = new DatabaseWrapper(
-                    DumpFileUtils.getDatabaseDescription(outFile, conn.getDbName()));
+                    DumpFileUtils.getDatabaseDescription(outFile.toPath(), conn.getDbName()));
         }
 
         Schema schema = new Schema(dbs);

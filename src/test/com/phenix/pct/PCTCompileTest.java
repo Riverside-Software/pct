@@ -525,7 +525,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"})
-    public void test34() throws IOException, InvalidRCodeException {
+    public void test34() throws IOException {
         configureProject(BASEDIR + "test34/build.xml");
         executeTarget("test");
 
