@@ -176,9 +176,8 @@
         <include name="**/*.r" />
       </fileset>
     </bootstrapLibrary>
-
     <delete>
-      <fileset dir="${basedir}" includes="empty*.*" />
+      <fileset dir="${basedir}" includes="empty*.*" excludes="empty.df" />
     </delete>
   </target>
 
