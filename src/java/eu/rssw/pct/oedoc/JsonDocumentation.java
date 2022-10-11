@@ -530,6 +530,7 @@ public class JsonDocumentation extends PCT {
             File outFile = dumpSchema(conn);
             dbs[cnt++] = new DatabaseWrapper(
                     DumpFileUtils.getDatabaseDescription(outFile.toPath(), conn.getDbName()));
+            outFile.delete();
         }
 
         Schema schema = new Schema(dbs);
@@ -567,9 +568,12 @@ public class JsonDocumentation extends PCT {
         }
         PCTDumpSchema run = new PCTDumpSchema();
         run.bindToOwner(this);
-        run.setDlcHome(getDlcHome());
-        run.setCpStream("utf-8");
         run.setDestFile(outFile);
+        run.setDlcHome(getDlcHome());
+        run.setCpInternal("utf-8");
+        run.setCpStream("utf-8");
+        run.setCpCase("basic");
+        run.setCpColl("basic");
         run.addDBConnection(conn);
         run.execute();
 
