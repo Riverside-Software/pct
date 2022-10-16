@@ -6,7 +6,7 @@ PCT has been designed and written by Gilles QUERRET ([Riverside Software](http:/
 
 ### Documentation ###
 
-Documentation is available [in the Wiki pages](https://github.com/Riverside-Software/pct/wiki)
+Documentation is available [in the Wiki pages](https://wiki.rssw.eu/pct/)
 
 ### What's next
 
