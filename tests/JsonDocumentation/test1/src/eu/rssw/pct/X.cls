@@ -37,7 +37,9 @@ class eu.rssw.pct.X serializable use-widget-pool:
 { eu/rssw/pct/inc2.i }
   define dataset ds1 for tt1.
   define dataset ds2 for tt2.
-  define dataset ds3 for tt1, tt2.
+  define buffer btt1 for tt1.
+  define buffer btt2 for tt2.
+  define dataset ds3 for btt1, btt2.
 { eu/rssw/pct/inc3.i }
 
   define public event isSomething signature void (piCustNum as integer). 
