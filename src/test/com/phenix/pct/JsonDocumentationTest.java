@@ -100,4 +100,32 @@ public class JsonDocumentationTest extends BuildFileTestNg {
         }
     }
 
+    @Test(groups = {"v12"})
+    public void test4() {
+        // Only work with 12.5+
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 4))
+            return;
+
+        configureProject("JsonDocumentation/test4/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("JsonDocumentation/test4/doc/out.json");
+        assertTrue(f1.exists());
+        Gson gson = new Gson();
+        try (Reader r = new FileReader(f1); JsonReader reader = new JsonReader(r)) {
+            JsonArray array = gson.fromJson(reader, JsonArray.class);
+            assertEquals(array.size(), 1);
+            JsonObject firstObj = gson.fromJson(array.get(0), JsonObject.class);
+            assertEquals(firstObj.get("className").getAsString(), "rssw.TestGenerics");
+            // assertEquals(firstObj.getAsJsonArray("comments").size(), 16);
+            JsonArray methods = firstObj.getAsJsonArray("methods");
+            JsonObject firstMethod = methods.get(0).getAsJsonObject();
+            assertEquals(firstMethod.get("name").getAsString(), "foobar");
+            assertEquals(firstMethod.get("returnType").getAsString(), "Progress.Collections.List<Progress.Lang.Object>");
+            assertEquals(firstMethod.get("signature").getAsString(), "foobar(ILProgress.Collections.List<Progress.Lang.Object>)");
+        } catch (IOException caught) {
+            fail("Unable to read out.json", caught);
+        }
+    }
 }
