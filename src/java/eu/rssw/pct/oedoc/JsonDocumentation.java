@@ -38,6 +38,7 @@ import org.apache.tools.ant.types.Path;
 import org.prorefactor.core.ABLNodeType;
 import org.prorefactor.core.JPNode;
 import org.prorefactor.core.ProToken;
+import org.prorefactor.core.nodetypes.IStatement;
 import org.prorefactor.core.schema.IDatabase;
 import org.prorefactor.core.schema.ISchema;
 import org.prorefactor.core.schema.Schema;
@@ -272,7 +273,9 @@ public class JsonDocumentation extends PCT {
         List<JPNode> lst = unit.getTopNode().queryStateHead(ABLNodeType.CLASS);
         if (!lst.isEmpty()) {
             useWidgetPool = !lst.get(0).queryCurrentStatement(ABLNodeType.USEWIDGETPOOL).isEmpty();
+            writeDeprecatedInfo(lst.get(0).asIStatement(), ofile);
         }
+        
         ofile.name("useWidgetPool").value(useWidgetPool);
         ofile.name("interfaces").beginArray();
         for (String str : info.getInterfaces()) {
@@ -314,6 +317,10 @@ public class JsonDocumentation extends PCT {
                             : prop.getVariable().getDataType().getPrimitive().getSignature());
             ofile.name("modifier").value(getModifier(prop));
             writeComments(ofile, getJavadoc(prop, unit));
+            Variable v = unit.getRootScope().lookupVariable(prop.getName());
+            if ((v != null) && (v.getDefineNode() != null)
+                    && v.getDefineNode().getStatement().isIStatement())
+                writeDeprecatedInfo(v.getDefineNode().getStatement().asIStatement(), ofile);
             ofile.endObject();
         }
         ofile.endArray();
@@ -346,7 +353,11 @@ public class JsonDocumentation extends PCT {
         ofile.name("extent").value(methd.getExtent());
         ofile.name("modifier").value(getModifier(methd));
 
-        List<String> comments = getJavadoc(methd, unit);
+        Routine routine = getRoutine(methd, unit);
+        List<String> comments = getJavadoc(routine, unit);
+        if ((routine != null) && (routine.getDefineNode() != null)
+                && routine.getDefineNode().isIStatement())
+            writeDeprecatedInfo(routine.getDefineNode().asIStatement(), ofile);
         writeComments(ofile, comments);
 
         ofile.name("parameters").beginArray();
@@ -426,20 +437,27 @@ public class JsonDocumentation extends PCT {
             return new ArrayList<>();
     }
 
-    private List<String> getJavadoc(IMethodElement elem, ParseUnit unit) {
+    private Routine getRoutine(IMethodElement elem, ParseUnit unit) {
         List<Routine> list = unit.getRootScope().lookupRoutines(elem.getName());
         if (list.isEmpty()) {
-            return new ArrayList<>();
+            return null;
         } else if (list.size() == 1) {
-            return getJavadoc(list.get(0).getDefineNode().getStatement());
+            return list.get(0);
         } else {
             String sig = elem.getSignature();
             for (Routine r : list) {
                 if (r.getSignature().equalsIgnoreCase(sig))
-                    return getJavadoc(r.getDefineNode().getStatement());
+                    return r;
             }
-            return new ArrayList<>();
+            return null;
         }
+    }
+
+    private List<String> getJavadoc(Routine routine, ParseUnit unit) {
+        if (routine == null)
+            return new ArrayList<>();
+        else
+            return getJavadoc(routine.getDefineNode().getStatement());
     }
 
     private List<String> getJavadoc(IPropertyElement elem, ParseUnit unit) {
@@ -448,6 +466,45 @@ public class JsonDocumentation extends PCT {
             return new ArrayList<>();
         else
             return getJavadoc(v.getDefineNode().getStatement());
+    }
+
+    private void writeDeprecatedInfo(IStatement stmt, JsonWriter writer) throws IOException {
+        List<String> annotations = stmt.getAnnotations();
+        if (annotations == null)
+            return;
+        for (String ann : annotations) {
+            if ("@Deprecated".equalsIgnoreCase(ann)) {
+                writer.name("deprecated").beginObject().name("message").value("").endObject();
+                return;
+            } else if (ann.startsWith("@Deprecated(")) {
+                writer.name("deprecated").beginObject();
+                String since = "";
+                String message = "";
+                for (String str : ann.substring(ann.indexOf('(') + 1, ann.lastIndexOf(')'))
+                        .split(",")) {
+                    if ((str.indexOf('=') > -1) && "since"
+                            .equalsIgnoreCase(str.substring(0, str.indexOf('=')).trim())) {
+                        since = str.substring(str.indexOf('=') + 1).trim();
+                    } else if ((str.indexOf('=') > -1) && "message"
+                            .equalsIgnoreCase(str.substring(0, str.indexOf('=')).trim())) {
+                        message = str.substring(str.indexOf('=') + 1).trim();
+                    }
+                }
+                writer.name("message").value(dequote(message.trim()));
+                if (!since.trim().isEmpty())
+                    writer.name("since").value(dequote(since.trim()));
+                writer.endObject();
+                return;
+            }
+        }
+    }
+
+    private String dequote(String str) {
+        if ((str.length() > 1) && (str.charAt(0) == '\'') && (str.charAt(str.length() - 1) == '\''))
+            return str.substring(1, str.length() - 1);
+        if ((str.length() > 1) && (str.charAt(0) == '"') && (str.charAt(str.length() - 1) == '"'))
+            return str.substring(1, str.length() - 1);
+        return str;
     }
 
     private List<String> getJavadoc(JPNode stmt) {

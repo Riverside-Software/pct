@@ -16,6 +16,7 @@
  * @author     Robert Edwards
  * @deprecated 0.0.1  Use {@link test Test} class instead.   
  */
+@Deprecated(message='invalid', since='0.0.1').
 CLASS base.class:
 
         /**
@@ -66,6 +67,7 @@ CLASS base.class:
   	 * @param ipoObject      The instance object of the service to register
   	 * @return               Returns true if application is **successfully** registered
   	 */
+  	@Deprecated(message='Use base.class-method-configureEnvironment configureEnvironment instead', since='0.0.1').
   	METHOD PROTECTED LOGICAL registerApplicationService
   	  (INPUT ipcServiceCode AS CHARACTER,
   	   INPUT ipoObject      AS Progress.Lang.Object):
