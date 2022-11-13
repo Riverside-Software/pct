@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/database-parser-2.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/openedge-checks-2.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/proparse-2.18.0-SNAPSHOT.jar"/>
+    <classpathentry kind="lib" path="lib/antlr4-runtime-4.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

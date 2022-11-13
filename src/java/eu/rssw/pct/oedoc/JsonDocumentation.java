@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -237,20 +239,29 @@ public class JsonDocumentation extends PCT {
             for (FileSet fs : filesets) {
                 String[] dsfiles = fs.getDirectoryScanner(this.getProject()).getIncludedFiles();
                 for (int i = 0; i < dsfiles.length; i++) {
-                    File file = new File(fs.getDir(this.getProject()), dsfiles[i]);
-                    log("ProParse: " + dsfiles[i], Project.MSG_DEBUG);
-                    ParseUnit unit = new ParseUnit(file, dsfiles[i], session);
-                    unit.treeParser01();
-                    if (session.getTypeInfo(unit.getClassName()) != null) {
-                        writeClass(writer, session.getTypeInfo(unit.getClassName()), unit);
-                    } else {
-                        writeProcedure(dsfiles[i], writer, unit);
-                    }
+                    parseAndWriteUnit(new File(fs.getDir(this.getProject()), dsfiles[i]), session, writer);
                 }
             }
             writer.endArray();
         } catch (IOException caught) {
             throw new BuildException(caught);
+        }
+    }
+
+    private void parseAndWriteUnit(File file, RefactorSession session, JsonWriter writer)
+            throws IOException {
+        log("Proparse: " + file.getName(), Project.MSG_DEBUG);
+        try {
+            ParseUnit unit = new ParseUnit(file, file.getName(), session);
+            unit.treeParser01();
+            if (session.getTypeInfo(unit.getClassName()) != null) {
+                writeClass(writer, session.getTypeInfo(unit.getClassName()), unit);
+            } else {
+                writeProcedure(file.getName(), writer, unit);
+            }
+        } catch (UncheckedIOException | ParseCancellationException caught) {
+            log("Unable to attach comments from " + file.getName() + " - Proparse error: "
+                    + caught.getMessage(), Project.MSG_INFO);
         }
     }
 
