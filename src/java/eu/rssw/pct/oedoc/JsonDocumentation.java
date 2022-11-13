@@ -260,7 +260,7 @@ public class JsonDocumentation extends PCT {
                 writeProcedure(file.getName(), writer, unit);
             }
         } catch (UncheckedIOException | ParseCancellationException caught) {
-            log("Unable to attach comments from " + file.getName() + " - Proparse error: "
+            log("Unable to attach comments from " + file.getAbsolutePath() + " - Proparse error: "
                     + caught.getMessage(), Project.MSG_INFO);
         }
     }
