@@ -25,11 +25,11 @@ import org.apache.tools.ant.BuildException;
 import org.testng.annotations.Test;
 
 /**
- * Class for testing PCTCreateBase task
+ * Class for testing PCTCreateDatabase task
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
-public class PCTCreateBaseTest extends BuildFileTestNg {
+public class PCTCreateDatabaseTest extends BuildFileTestNg {
 
     @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
     public void test1() {
@@ -230,6 +230,22 @@ public class PCTCreateBaseTest extends BuildFileTestNg {
         executeTarget("init");
         expectBuildException("test1", "Invalid structure file");
         expectBuildException("test2", "Failure during procopy");
+    }
+
+    @Test(groups= {"v11"})
+    public void test20() {
+        configureProject("PCTCreateBase/test20/build.xml");
+        executeTarget("base");
+        expectBuildException("test1", "No CDC");
+        executeTarget("test2");
+    }
+
+    @Test(groups= {"v11"})
+    public void test21() {
+        configureProject("PCTCreateBase/test21/build.xml");
+        executeTarget("base");
+        expectBuildException("test1", "No Table Partitioning");
+        executeTarget("test2");
     }
 
 }

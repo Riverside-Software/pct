@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="PCTCreateBase-test21">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" tablePartitioning="true" />
+  </target>
+
+  <target name="test1">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <DBConnection dbName="test1" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile destDir="build" dlcHome="${DLC}">
+      <fileset dir="src" includes="*.p" />
+      <DBConnection dbName="test2" dbDir="db" singleUser="true" />
+    </PCTCompile>
+  </target>
+
+</project>

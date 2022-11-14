@@ -62,6 +62,10 @@ public class PCTCreateBase extends PCT {
     private boolean auditing = false;
     private String auditArea = null;
     private String auditIndexArea = null;
+    private boolean tablePartitioning = false;
+    private boolean cdc = false;
+    private String cdcArea = null;
+    private String cdcIndexArea = null;
     private String collation = null;
     private String cpInternal = null;
     private boolean newInstance = false;
@@ -246,6 +250,22 @@ public class PCTCreateBase extends PCT {
      */
     public void setMultiTenant(boolean multiTenant) {
         this.multiTenant = multiTenant;
+    }
+
+    public void setTablePartitioning(boolean tablePartitioning) {
+        this.tablePartitioning = tablePartitioning;
+    }
+
+    public void setCDC(boolean cdc) {
+        this.cdc = cdc;
+    }
+
+    public void setCdcArea(String cdcArea) {
+        this.cdcArea = cdcArea;
+    }
+
+    public void setCdcIndexArea(String cdcIndexArea) {
+        this.cdcIndexArea = cdcIndexArea;
     }
 
     /**
@@ -451,6 +471,18 @@ public class PCTCreateBase extends PCT {
         // Enable auditing
         if ((getDLCMajorVersion() >= 10) && (auditing)) {
             exec = enableAuditingCmdLine();
+            exec.execute();
+        }
+
+        // Enable Table Partitioning
+        if ((getDLCMajorVersion() >= 10) && tablePartitioning) {
+            exec = tablePartitioningCmdLine();
+            exec.execute();
+        }
+
+        // Enable CDC
+        if ((getDLCMajorVersion() >= 10) && cdc) {
+            exec = enableCDCCmdLine();
             exec.execute();
         }
 
@@ -662,6 +694,26 @@ public class PCTCreateBase extends PCT {
         return exec;
     }
 
+    private ExecTask tablePartitioningCmdLine() {
+        ExecTask exec = new ExecTask(this);
+        exec.setExecutable(getExecPath(DBUTIL).toString());
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("enabletablepartitioning"); //$NON-NLS-1$
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }
+
     private ExecTask multiTenantCmdLine() {
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath(DBUTIL).toString());
@@ -715,6 +767,30 @@ public class PCTCreateBase extends PCT {
             exec.createArg().setValue("indexarea"); //$NON-NLS-1$
             exec.createArg().setValue(auditIndexArea); //$NON-NLS-1$
         }
+
+        Environment.Variable var = new Environment.Variable();
+        var.setKey("DLC"); //$NON-NLS-1$
+        var.setValue(getDlcHome().toString());
+        exec.addEnv(var);
+
+        for (Variable var2 : getEnvironmentVariables()) {
+            exec.addEnv(var2);
+        }
+
+        return exec;
+    }
+
+    private ExecTask enableCDCCmdLine() {
+        ExecTask exec = new ExecTask(this);
+        exec.setExecutable(getExecPath(DBUTIL).toString());
+        exec.setDir(destDir);
+        exec.createArg().setValue(dbName);
+        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        exec.createArg().setValue("enablecdc"); //$NON-NLS-1$
+        exec.createArg().setValue("area"); //$NON-NLS-1$
+        exec.createArg().setValue(cdcArea); //$NON-NLS-1$
+        exec.createArg().setValue("indexarea"); //$NON-NLS-1$
+        exec.createArg().setValue(cdcIndexArea); //$NON-NLS-1$
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
