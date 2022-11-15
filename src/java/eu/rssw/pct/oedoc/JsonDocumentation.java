@@ -484,10 +484,10 @@ public class JsonDocumentation extends PCT {
         if (annotations == null)
             return;
         for (String ann : annotations) {
-            if ("@Deprecated".equalsIgnoreCase(ann)) {
+            if ("@deprecated".equalsIgnoreCase(ann)) {
                 writer.name("deprecated").beginObject().name("message").value("").endObject();
                 return;
-            } else if (ann.startsWith("@Deprecated(")) {
+            } else if (ann.toLowerCase().startsWith("@deprecated(")) {
                 writer.name("deprecated").beginObject();
                 String since = "";
                 String message = "";
