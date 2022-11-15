@@ -126,7 +126,7 @@ public class JsonDocumentationTest extends BuildFileTestNg {
             assertEquals(firstMethod.get("returnType").getAsString(),
                     "Progress.Collections.List<Progress.Lang.Object>");
             assertEquals(firstMethod.get("signature").getAsString(),
-                    "foobar(ILProgress.Collections.List<Progress.Lang.Object>)");
+                    "foobar(IZProgress.Collections.List<Progress.Lang.Object>)");
 
             JsonObject secondObj = gson.fromJson(array.get(1), JsonObject.class);
             assertEquals(secondObj.get("className").getAsString(), "rssw.X");
