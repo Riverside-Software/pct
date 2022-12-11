@@ -51,6 +51,7 @@ public class PCTConnection extends DataType {
     private Boolean readOnly = null;
     private String passphrase = null;
     private Map<String, PCTAlias> aliases = null;
+    private List<PCTRunOption> options = null;
 
     /**
      * Database physical name (<CODE>-db</CODE> parameter)
@@ -187,6 +188,13 @@ public class PCTConnection extends DataType {
      */
     public void setSingleUser(boolean singleUser) {
         this.singleUser = singleUser;
+    }
+
+    public void addOption(PCTRunOption option) {
+        if (options == null) {
+            options = new ArrayList<>();
+        }
+        options.add(option);
     }
 
     /**
@@ -333,6 +341,17 @@ public class PCTConnection extends DataType {
             if ((password != null) && (password.trim().length() > 0)) {
                 list.add("-P"); //$NON-NLS-1$
                 list.add(password);
+            }
+        }
+
+        if (options != null) {
+            for (PCTRunOption opt : options) {
+                if (opt.getName() == null) {
+                    throw new BuildException("PCTRun.8"); //$NON-NLS-1$
+                }
+                list.add(opt.getName());
+                if (opt.getValue() != null)
+                    list.add(opt.getValue());
             }
         }
 

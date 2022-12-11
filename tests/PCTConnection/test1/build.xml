@@ -37,4 +37,8 @@
 	
   <DBConnection id="db8" refid="db6"  />
 
+  <DBConnection id="db9" dbName="foo" dbDir="db">
+    <Option name="-foo" value="bar" />
+  </DBConnection>	
+
 </project>
