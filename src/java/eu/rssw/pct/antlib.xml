@@ -6,7 +6,7 @@
   <taskdef name="run" classname="com.phenix.pct.PCTRun" />
   <taskdef name="dynrun" classname="com.phenix.pct.PCTDynamicRun" />
   <taskdef name="compile_ext" classname="com.phenix.pct.CompilationWrapper" />
-  <taskdef name="db_create" classname="com.phenix.pct.PCTCreateBase" />
+  <taskdef name="db_create" classname="com.phenix.pct.PCTCreateDatabase" />
   <taskdef name="schema_load" classname="com.phenix.pct.PCTLoadSchema" />
   <taskdef name="schema_dump" classname="com.phenix.pct.PCTDumpSchema" />
   <taskdef name="data_load" classname="com.phenix.pct.PCTLoadData" />

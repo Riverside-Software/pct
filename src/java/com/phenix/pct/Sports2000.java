@@ -60,7 +60,7 @@ public class Sports2000 extends PCT {
      * @param overwrite "true|false|on|off|yes|no"
      */
     public void setOverwrite(boolean overwrite) {
-        log(Messages.getString("PCTCreateBase.1")); //$NON-NLS-1$
+        log(Messages.getString("PCTCreateDatabase.1")); //$NON-NLS-1$
         this.overwrite = overwrite;
     }
 
@@ -80,7 +80,7 @@ public class Sports2000 extends PCT {
 
         // Checking length of the database name
         if (dbName.length() > DB_NAME_MAX_LENGTH) {
-            throw new BuildException(Messages.getString("PCTCreateBase.4")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCreateDatabase.4")); //$NON-NLS-1$
         }
 
         // Update destDir if not defined

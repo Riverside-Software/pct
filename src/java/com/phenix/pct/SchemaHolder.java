@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.Collection;
 
 /**
- * Schema holders class. Used as a nested element of PCTCreateBase.
+ * Schema holders class. Used as a nested element of PCTCreateDatabase.
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  * @version $Revision$

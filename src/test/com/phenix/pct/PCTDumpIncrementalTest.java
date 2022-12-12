@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 
 /**
  * Class for testing PCTDumpIncremental task Assertion - following classes should work properly :
- * PCTCreateBase PCTCompile PCTLoadSchema
+ * PCTCreateDatabase PCTCompile PCTLoadSchema
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */

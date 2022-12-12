@@ -34,7 +34,7 @@ import org.apache.tools.ant.types.ResourceCollection;
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
-public class PCTCreateBase extends PCT {
+public class PCTCreateDatabase extends PCT {
     private static final int DEFAULT_BLOCK_SIZE = 8;
     private static final int DB_NAME_MAX_LENGTH = 11;
     private static final String DBUTIL = "_dbutil";
@@ -115,7 +115,7 @@ public class PCTCreateBase extends PCT {
      * @param noSchema "true|false|on|off|yes|no"
      */
     public void setNoSchema(boolean noSchema) {
-        this.log(Messages.getString("PCTCreateBase.0")); //$NON-NLS-1$
+        this.log(Messages.getString("PCTCreateDatabase.0")); //$NON-NLS-1$
     }
 
     /**
@@ -382,12 +382,12 @@ public class PCTCreateBase extends PCT {
 
         // Checking there is at least an init or a structure creation
         if ((structFile == null) && noInit) {
-            throw new BuildException(Messages.getString("PCTCreateBase.2")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCreateDatabase.2")); //$NON-NLS-1$
         }
 
         // Checking dbName is defined
         if (dbName == null) {
-            throw new BuildException(Messages.getString("PCTCreateBase.3")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCreateDatabase.3")); //$NON-NLS-1$
         }
 
         // If schema holders defined, then no Progress schema can be loaded
@@ -408,7 +408,7 @@ public class PCTCreateBase extends PCT {
 
         // Checking length of the database name
         if (dbName.length() > DB_NAME_MAX_LENGTH) {
-            throw new BuildException(Messages.getString("PCTCreateBase.4")); //$NON-NLS-1$
+            throw new BuildException(Messages.getString("PCTCreateDatabase.4")); //$NON-NLS-1$
         }
 
         // Check collation
@@ -421,7 +421,7 @@ public class PCTCreateBase extends PCT {
             File collDF = new File(srcDir, collation + ".df"); //$NON-NLS-1$          
             if (!collDF.exists())
                 throw new BuildException(MessageFormat.format(
-                        Messages.getString("PCTCreateBase.90"), collDF.getAbsolutePath()));
+                        Messages.getString("PCTCreateDatabase.90"), collDF.getAbsolutePath()));
             if (schema != null)
                 schema = schema + "," + collDF.getAbsolutePath();
             else
@@ -430,11 +430,11 @@ public class PCTCreateBase extends PCT {
 
         // NoInit and sourceDb are mutually exclusive
         if (noInit && (sourceDb != null)) {
-            throw new BuildException(Messages.getString("PCTCreateBase.7"));
+            throw new BuildException(Messages.getString("PCTCreateDatabase.7"));
         }
         // Codepage and sourceDb are mutually exclusive
         if ((codepage != null) && (sourceDb != null)) {
-            throw new BuildException(Messages.getString("PCTCreateBase.8"));
+            throw new BuildException(Messages.getString("PCTCreateDatabase.8"));
         }
 
         // Checks if DB already exists
@@ -447,7 +447,7 @@ public class PCTCreateBase extends PCT {
         if (structFile != null) {
             if (!structFile.exists())
                 throw new BuildException(MessageFormat.format(
-                        Messages.getString("PCTCreateBase.6"), structFile.getAbsolutePath()));
+                        Messages.getString("PCTCreateDatabase.6"), structFile.getAbsolutePath()));
             log(MessageFormat.format("Creating {0} database structure", dbName));
             createDatabaseStructure();
         }
@@ -504,7 +504,7 @@ public class PCTCreateBase extends PCT {
                     pls.execute();
                 } else {
                     throw new BuildException(MessageFormat.format(
-                            Messages.getString("PCTCreateBase.5"), f));
+                            Messages.getString("PCTCreateDatabase.5"), f));
                 }
             }
         }
