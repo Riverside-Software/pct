@@ -33,9 +33,14 @@ pipeline {
     stage('Standard build') {
       agent { label 'Linux-Office' }
       steps {
-        checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
-        unstash name: 'classdoc'
         script {
+          checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
+          // Ugly workaround: sonar-scanner requires the master branch to be present, but Jenkins only fetches the current branch
+          // An extra checkout is then done with a different refspec.
+          // There's probably a better way to do that, but no time for that (today)
+          checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/master:refs/remotes/origin/master']] ])
+
+          unstash name: 'classdoc'
           sh 'git rev-parse HEAD > head-rev'
           def commit = readFile('head-rev').trim()
           def jdk = tool name: 'Corretto 11', type: 'jdk'
