@@ -248,4 +248,12 @@ public class PCTCreateDatabaseTest extends BuildFileTestNg {
         executeTarget("test2");
     }
 
+    @Test(groups= {"v11"})
+    public void test22() {
+        configureProject("PCTCreateDatabase/test22/build.xml");
+        executeTarget("base");
+        expectBuildException("test2", "TDE Activated");
+        executeTarget("test1");
+    }
+
 }

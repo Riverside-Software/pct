@@ -60,6 +60,9 @@ public class PCTCreateDatabase extends PCT {
     private boolean enableLargeFiles = false;
     private boolean multiTenant = false;
     private boolean auditing = false;
+    private boolean encryption = false;
+    private String adminPassPhrase = null;
+    private String userPassPhrase = null;
     private String auditArea = null;
     private String auditIndexArea = null;
     private boolean tablePartitioning = false;
@@ -243,6 +246,21 @@ public class PCTCreateDatabase extends PCT {
 
     public void setAuditIndexArea(String area) {
         this.auditIndexArea = area;
+    }
+
+    /**
+     * Enable TDE
+     */
+    public void setEncryption(boolean encryption) {
+        this.encryption = encryption;
+    }
+
+    public void setAdminPassPhrase(String passPhrase) {
+        this.adminPassPhrase = passPhrase;
+    }
+
+    public void setUserPassPhrase(String passPhrase) {
+        this.userPassPhrase = passPhrase;
     }
 
     /**
@@ -523,6 +541,12 @@ public class PCTCreateDatabase extends PCT {
             exec.execute();
         }
 
+        // TDE as the last step
+        if ((getDLCMajorVersion() >= 11) && encryption) {
+            exec = encryptionCmdLine();
+            exec.execute();
+        }
+
         if (holders != null) {
             for (SchemaHolder holder : holders) {
                 PCTRun run = new PCTRun();
@@ -673,14 +697,12 @@ public class PCTCreateDatabase extends PCT {
         }
     }
 
-    private ExecTask wordRuleCmdLine() {
+    private ExecTask baseDbUtilCmdLine() {
         ExecTask exec = new ExecTask(this);
         exec.setExecutable(getExecPath(DBUTIL).toString());
         exec.setDir(destDir);
         exec.createArg().setValue(dbName);
         exec.createArg().setValue("-C"); //$NON-NLS-1$
-        exec.createArg().setValue("word-rules"); //$NON-NLS-1$
-        exec.createArg().setValue(String.valueOf(wordRule));
 
         Environment.Variable envVar = new Environment.Variable();
         envVar.setKey("DLC"); //$NON-NLS-1$
@@ -690,76 +712,49 @@ public class PCTCreateDatabase extends PCT {
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
         }
+
+        return exec;
+    }
+
+    private ExecTask wordRuleCmdLine() {
+        ExecTask exec = baseDbUtilCmdLine();
+        exec.createArg().setValue("word-rules"); //$NON-NLS-1$
+        exec.createArg().setValue(String.valueOf(wordRule));
 
         return exec;
     }
 
     private ExecTask tablePartitioningCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("enabletablepartitioning"); //$NON-NLS-1$
 
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
+        return exec;
+    }
 
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
+    private ExecTask encryptionCmdLine() {
+        ExecTask exec = baseDbUtilCmdLine();
+        exec.createArg().setValue("enableencryption"); //$NON-NLS-1$
+        exec.setInputString(adminPassPhrase + "\n" + adminPassPhrase + "\n" + userPassPhrase + "\n" + userPassPhrase + "\n");
 
         return exec;
     }
 
     private ExecTask multiTenantCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("enablemultitenancy"); //$NON-NLS-1$
-
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
-
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
 
         return exec;
     }
 
     private ExecTask enableLargeFilesCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("enablelargefiles"); //$NON-NLS-1$
-
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
-
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
 
         return exec;
     }
 
     private ExecTask enableAuditingCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("enableauditing"); //$NON-NLS-1$
         exec.createArg().setValue("area"); //$NON-NLS-1$
         exec.createArg().setValue(auditArea); //$NON-NLS-1$
@@ -768,48 +763,22 @@ public class PCTCreateDatabase extends PCT {
             exec.createArg().setValue(auditIndexArea); //$NON-NLS-1$
         }
 
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
-
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
-
         return exec;
     }
 
     private ExecTask enableCDCCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("enablecdc"); //$NON-NLS-1$
         exec.createArg().setValue("area"); //$NON-NLS-1$
         exec.createArg().setValue(cdcArea); //$NON-NLS-1$
         exec.createArg().setValue("indexarea"); //$NON-NLS-1$
         exec.createArg().setValue(cdcIndexArea); //$NON-NLS-1$
 
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
-
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
-
         return exec;
     }
 
     private ExecTask indexRebuildAllCmdLine() {
-        ExecTask exec = new ExecTask(this);
-        exec.setExecutable(getExecPath(DBUTIL).toString());
-        exec.setDir(destDir);
-        exec.createArg().setValue(dbName);
-        exec.createArg().setValue("-C"); //$NON-NLS-1$
+        ExecTask exec = baseDbUtilCmdLine();
         exec.createArg().setValue("idxbuild"); //$NON-NLS-1$
         exec.createArg().setValue("all"); //$NON-NLS-1$
         if (cpInternal != null) {
@@ -821,15 +790,6 @@ public class PCTCreateDatabase extends PCT {
             exec.createArg().setValue("BASIC");
         else
             exec.createArg().setValue(collation);
-
-        Environment.Variable envVar = new Environment.Variable();
-        envVar.setKey("DLC"); //$NON-NLS-1$
-        envVar.setValue(getDlcHome().toString());
-        exec.addEnv(envVar);
-
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
-        }
 
         return exec;
     }

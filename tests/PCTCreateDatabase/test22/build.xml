@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="PCTCreateDatabase-test22">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="test2" destDir="db" dlcHome="${DLC}" structFile="db.st" encryption="true" adminpassphrase="Admin#234" userpassphrase="User#234" />
+  </target>
+
+  <target name="test1">
+    <PCTRun dlcHome="${DLC}" procedure="src/test.p">
+      <DBConnection dbName="test1" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <PCTRun dlcHome="${DLC}" procedure="src/test.p">
+      <DBConnection dbName="test2" dbDir="db" singleUser="true" />
+    </PCTRun>
+  </target>
+
+</project>
