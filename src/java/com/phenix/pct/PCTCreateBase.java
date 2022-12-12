@@ -571,8 +571,8 @@ public class PCTCreateBase extends PCT {
         task.setCpColl(cpColl);
         task.setCpCase(cpCase);
 
-        for (Variable var : getEnvironmentVariables()) {
-            task.addEnv(var);
+        for (Variable envVar : getEnvironmentVariables()) {
+            task.addEnv(envVar);
         }
 
         PCTConnection pc = new PCTConnection();
@@ -618,10 +618,10 @@ public class PCTCreateBase extends PCT {
         if (relative)
             exec.createArg().setValue(RELATIVE_FLAG);
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -655,10 +655,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("-blocksize"); //$NON-NLS-1$
         exec.createArg().setValue(Integer.toString(blocks[blockSize]));
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -682,10 +682,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("word-rules"); //$NON-NLS-1$
         exec.createArg().setValue(String.valueOf(wordRule));
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -702,10 +702,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("enabletablepartitioning"); //$NON-NLS-1$
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -722,10 +722,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("enablemultitenancy"); //$NON-NLS-1$
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -742,10 +742,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("-C"); //$NON-NLS-1$
         exec.createArg().setValue("enablelargefiles"); //$NON-NLS-1$
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -768,10 +768,10 @@ public class PCTCreateBase extends PCT {
             exec.createArg().setValue(auditIndexArea); //$NON-NLS-1$
         }
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -792,10 +792,10 @@ public class PCTCreateBase extends PCT {
         exec.createArg().setValue("indexarea"); //$NON-NLS-1$
         exec.createArg().setValue(cdcIndexArea); //$NON-NLS-1$
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
@@ -822,10 +822,10 @@ public class PCTCreateBase extends PCT {
         else
             exec.createArg().setValue(collation);
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         for (Variable var2 : getEnvironmentVariables()) {
             exec.addEnv(var2);
