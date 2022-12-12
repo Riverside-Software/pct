@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="PCTDumpIncremental-test10">
+  <taskdef resource="PCT.properties" />
+
+  <target name="base">
+    <mkdir dir="db" />
+    <PCTCreateBase dbName="dest1" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
+    <PCTCreateBase dbName="dest2" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" structFile="db.st" encryption="true" adminpassphrase="Admin#234" userpassphrase="User#234" />
+    <PCTCreateBase dbName="src1" destDir="db" dlcHome="${DLC}" />
+    <PCTCreateBase dbName="src2" destDir="db" dlcHome="${DLC}" structFile="db.st" encryption="true" adminpassphrase="Admin#234" userpassphrase="User#234" />
+  </target>
+
+  <target name="test01">
+    <PCTDumpIncremental destFile="incr01.df" dlcHome="${DLC}">
+      <SourceDb dbName="src1" dbDir="db" singleUser="true" />
+      <TargetDb dbName="dest1" dbDir="db" singleUser="true" />
+    </PCTDumpIncremental>
+  </target>
+
+  <target name="test02">
+    <PCTDumpIncremental destFile="incr02.df" dlcHome="${DLC}">
+      <SourceDb dbName="src1" dbDir="db" singleUser="true" />
+      <TargetDb dbName="dest2" dbDir="db" singleUser="true" passphraseCmdLine="${DLC}/bin/_progres -b -p ./passphrase.p" />
+    </PCTDumpIncremental>
+  </target>
+
+  <target name="test03">
+    <PCTDumpIncremental destFile="incr03.df" dlcHome="${DLC}">
+      <SourceDb dbName="src2" dbDir="db" singleUser="true" passphraseCmdLine="${DLC}/bin/_progres -b -p ./passphrase.p" />
+      <TargetDb dbName="dest1" dbDir="db" singleUser="true" />
+    </PCTDumpIncremental>
+  </target>
+
+  <target name="test04">
+    <PCTDumpIncremental destFile="incr04.df" dlcHome="${DLC}">
+      <SourceDb dbName="src2" dbDir="db" singleUser="true" passphraseCmdLine="${DLC}/bin/_progres -b -p ./passphrase.p" />
+      <TargetDb dbName="dest2" dbDir="db" singleUser="true" passphraseCmdLine="${DLC}/bin/_progres -b -p ./passphrase.p" />
+    </PCTDumpIncremental>
+  </target>
+
+</project>

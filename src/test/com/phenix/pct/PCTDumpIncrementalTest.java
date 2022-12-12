@@ -16,13 +16,13 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -268,4 +268,30 @@ public class PCTDumpIncrementalTest extends BuildFileTestNg {
         assertTrue(f2.exists());
         assertTrue(f1.length() < f2.length());
     }
+
+    @Test(groups = {"v11"})
+    public void test10() {
+        configureProject("PCTDumpIncremental/test10/build.xml");
+        executeTarget("base");
+        executeTarget("test01");
+        executeTarget("test04");
+
+        File f1 = new File("PCTDumpIncremental/test10/incr01.df");
+        assertTrue(f1.exists());
+        assertTrue(f1.length() > 0);
+        File f2 = new File("PCTDumpIncremental/test10/incr04.df");
+        assertTrue(f2.exists());
+        assertEquals(f2.length(), f1.length());
+
+        expectBuildException("test02", "Encryption");
+        assertTrue(searchInList(getLogBuffer(), "Source db does not have encryption enabled"));
+        File f3 = new File("PCTDumpIncremental/test10/incr02.df");
+        assertEquals(f3.length(), 0);
+
+        expectBuildException("test03", "Encryption");
+        assertTrue(searchInList(getLogBuffer(), "The target database does not have encryption enabled."));
+        File f4 = new File("PCTDumpIncremental/test10/incr03.df");
+        assertEquals(f4.length(), 0);
+    }
+
 }
