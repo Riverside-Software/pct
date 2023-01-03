@@ -43,6 +43,7 @@ public class AnalyticsBuildListener implements BuildListener {
         return ("DlcVersion".equalsIgnoreCase(task.getTaskType())
                 || "RestGen".equalsIgnoreCase(task.getTaskType())
                 || "ClassDocumentation".equalsIgnoreCase(task.getTaskType())
+                || "JsonDocumentation".equalsIgnoreCase(task.getTaskType())
                 || "ABLDuck".equalsIgnoreCase(task.getTaskType())
                 || "ProUnit".equalsIgnoreCase(task.getTaskType())
                 || "OEUnit".equalsIgnoreCase(task.getTaskType())
