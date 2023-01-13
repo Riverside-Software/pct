@@ -1,16 +1,6 @@
 {
   "activeRules": [
     {
-      "name": "MyCustomScript",
-      "class": "eu.rssw.antlr.proparse.checks.GroovyPathTemplate",
-      "parameters": [
-        {
-          "name": "script",
-          "value": "foobar.groovy"
-        }
-      ]
-    },
-    {
       "name": "AbbreviatedKeywords",
       "class": "eu.rssw.antlr.proparse.checks.AbbreviatedKeywords",
       "parameters": [
@@ -82,11 +72,11 @@
       "parameters": [
         {
           "name": "minTokens",
-          "value": 0
+          "value": 20
         },
         {
           "name": "ignoreSingleLineComments",
-          "value": false
+          "value": true
         },
         {
           "name": "ignoreJavadocComments",
