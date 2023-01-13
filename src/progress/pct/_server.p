@@ -64,7 +64,7 @@ END.
 RETURN '0'.
 
 /* Connects ANT session */
-PROCEDURE ConnectToServer.
+PROCEDURE ConnectToServer:
 
     DEFINE VARIABLE packet       AS LONGCHAR    NO-UNDO.
     DEFINE VARIABLE packetBuffer AS MEMPTR      NO-UNDO.

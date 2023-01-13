@@ -15,12 +15,34 @@
  *
  */
 
-CLASS rssw.pct.AbstractLoadCallback IMPLEMENTS rssw.pct.ILoadCallback:
-  METHOD PUBLIC VOID beforeUnfreeze(): END METHOD.
-  METHOD PUBLIC VOID beforeFileList(): END METHOD.
-  METHOD PUBLIC VOID beforeFile(file AS CHARACTER): END METHOD.
-  METHOD PUBLIC VOID afterFile(file AS CHARACTER, logger AS rssw.pct.LoadLogger): END METHOD.
-  METHOD PUBLIC VOID afterFileList(): END METHOD.
-  METHOD PUBLIC VOID beforeRefreeze(): END METHOD.
-  METHOD PUBLIC VOID afterRefreeze(): END METHOD.
-END CLASS.
+class rssw.pct.AbstractLoadCallback implements rssw.pct.ILoadCallback:
+
+  method public void beforeUnfreeze():
+    // No-op
+  end method.
+
+  method public void beforeFileList():
+    // No-op
+  end method.
+
+  method public void beforeFile(file as character):
+    // No-op
+  end method.
+
+  method public void afterFile(file as character, logger as rssw.pct.LoadLogger):
+    // No-op
+  end method.
+
+  method public void afterFileList():
+    // No-op
+  end method.
+
+  method public void beforeRefreeze():
+    // No-op
+  end method.
+
+  method public void afterRefreeze():
+    // No-op
+  end method.
+
+end class.
