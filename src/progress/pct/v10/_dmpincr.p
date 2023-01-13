@@ -5,14 +5,14 @@
 *                                                                    *
 *********************************************************************/
 
-/* _dmpincr.p - phase 2 of incremental .df maker 
+/* _dmpincr.p - phase 2 of incremental .df maker
 
    DICTDB  is the current database
    DICTDB2 is the database chosen to compare against
 
    The aim is to produce a database like DICTDB.  So this .df file will be
    run against a database like DICTDB2 to create a database like DICTDB.
-   
+
 */
 
 /*
@@ -43,10 +43,10 @@ changes:  user_env[19]
 History:
     gfs         12/05/94    fixed problem with drop field if in pri indx
     hutegger    94/02/24    code-page - support and trailer-info added
-    laurief     03/31/98    BUG 97-08-14-029 see note below    
+    laurief     03/31/98    BUG 97-08-14-029 see note below
     mcmann      04/24/98    Added output of POSITION (_field-rpos).
     mcmann      05/07/98    Added logic to skip "default" indices 98-05-06-041
-    laurief     06/02/98    Added database names to screen display and 
+    laurief     06/02/98    Added database names to screen display and
                             combined thw two separate frames into one that can
                             be viewed in three-d.
     mcmann      06/18/99    Added third parameter to call of _dmpdefs.p
@@ -68,16 +68,16 @@ History:
     McMann      08/08/02    Eliminated any sequences whose name begins "$" - Peer Direct
     McMann      09/13/02    Added logic to put inactive on non-unique indices if the record
                             is inactive 20020913-002
-    McMann      02/24/03    Added LOB support    
-    P. Kullman  09/22/03    Changed call to _dmpisub.p from _dmpincr.p 12796                        
+    McMann      02/24/03    Added LOB support
+    P. Kullman  09/22/03    Changed call to _dmpisub.p from _dmpincr.p 12796
     McMann      10/17/03    Add NO-LOCK statement to _Db find in support of on-line schema add
     K. McIntosh 07/26/04    Added CLOB support for incremental dump
     kmcintos    09/16/05    Fixed problems with renaming indexed and non
-                               indexed fields (Supporting changes in 
+                               indexed fields (Supporting changes in
                                dump/_dmputil.p) 20040402-004.
     fernando    06/12/06    Support for int64 - allow int->int64 type change
     fernando    08/16/06    raw comparison when checking if char values are different - 20060301-002
-    fernando    02/27/2007  Added case for critical field change - OE00147106   
+    fernando    02/27/2007  Added case for critical field change - OE00147106
     fernando    08/10/2007  Close error stream when area mismatch error is detected - OE00136202
     fernando    11/12/07    Ignore blank -sa fields during incremental - OE00150364
     fernando    11/24/08    Handle clob field differences - OE00177533
@@ -128,11 +128,11 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 31 NO-UNDO INITIAL [
   /* 1*/ "(initializing)",
   /* 2*/ "", /* See Below */
   /* 3*/ "WARNING: The ",
-  /* 4*/ " file AREA has",     
-  /* 5*/ "changed.  The incremental dump utility cannot be used to",   
+  /* 4*/ " file AREA has",
+  /* 5*/ "changed.  The incremental dump utility cannot be used to",
   /* 6*/ "change database AREAS.  Create AREAS with the ""prostrct""",
-  /* 7*/ "utility and move tables with the ""proutil tablemove""",    
-  /* 8*/ "utility.  See the {&PRO_DISPLAY_NAME} Database Administration Guide and", 
+  /* 7*/ "utility and move tables with the ""proutil tablemove""",
+  /* 8*/ "utility.  See the {&PRO_DISPLAY_NAME} Database Administration Guide and",
   /* 9*/ "Reference for details.",
   /*10*/ "WARNING: The index ",
   /*11*/ " in database ",
@@ -143,20 +143,20 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 31 NO-UNDO INITIAL [
   /*16*/ "with the ""proutil idxmove"" utility.  See the {&PRO_DISPLAY_NAME}",
   /*17*/ "Database Administration Guide and Reference for details.",
   /*18*/ "WARNING: The .df contains at least one new definition of an unique",
-  /*19*/ "index that has been created as inactive.  Remember to use", 
+  /*19*/ "index that has been created as inactive.  Remember to use",
   /*20*/ """proutil -C idxbuild"" to activate this index.",
   /*21*/ " AREA does not exist",
   /*22*/ "in the target database.  This area must be created before",
-  /*23*/ "loading this .df or an error will result.  The new index",       
+  /*23*/ "loading this .df or an error will result.  The new index",
   /*24*/ " is in this AREA.  See the ""PROSTRUCT""",
   /*25*/ "entry in the {&PRO_DISPLAY_NAME} Database Administration Guide and",
   /*26*/ "Reference for details.",
   /*27*/ "Warnings have been written to a file called "{&errFileName}"",
-  /*28*/ "located in your current working directory.  Please check",   
+  /*28*/ "located in your current working directory.  Please check",
   /*29*/ "this file prior to loading this incremental .df.  Failure",
   /*30*/ "to do so could result in errors or other undesirable results.",
   /*31*/ "loading this .df or an error will result.  The new table"
-]. 
+].
 
 new_lang[2] = "The incremental definitions file will contain at least "
             + "one new definition of an  unique index. "
@@ -181,10 +181,10 @@ FORM
   idx2    LABEL "INDEX"                 COLON 50 FORMAT "x(27)" SKIP
   seq     LABEL "SEQ"                   COLON 10 FORMAT "x(27)"
   seq2    LABEL "SEQ"                   COLON 50 FORMAT "x(27)" SKIP
-  HEADER 
+  HEADER
     " Press " +
     KBLABEL("STOP") + " to terminate the dump." FORMAT "x(50)"
-  WITH FRAME seeking 
+  WITH FRAME seeking
   &IF "{&WINDOW-SYSTEM}" <> "TTY" &THEN VIEW-AS DIALOG-BOX THREE-D &ENDIF
   SIDE-LABELS WIDTH 80
   ROW 4 COLUMN 1 USE-TEXT.
@@ -209,7 +209,7 @@ DEFINE WORKFILE drop-list NO-UNDO
 DEFINE WORKFILE drop-temp-idx NO-UNDO
     FIELD temp-name LIKE _Index._Index-name
     FIELD fil-name  LIKE _File._File-name.
-   
+
 /* Persistent procedure library */
 RUN prodict/dump/_dmputil.p PERSISTENT SET h_dmputil.
 
@@ -222,7 +222,7 @@ FUNCTION fileAreaMatch RETURNS LOGICAL (INPUT db1FileNo AS INT,
 FUNCTION indexAreaMatch RETURNS LOGICAL(INPUT db1IndexNo AS INT,
                                         INPUT db2IndexNo AS INT,
                                         INPUT db1recid   AS RECID,
-                                        INPUT db2recid   AS RECID) IN h_dmputil.                                        
+                                        INPUT db2recid   AS RECID) IN h_dmputil.
 FUNCTION inprimary RETURNS LOGICAL (INPUT p_db1PrimeIndex AS RECID,
                                     INPUT p_db1RecId      AS RECID)
                                     IN h_dmputil.
@@ -258,10 +258,10 @@ IF p-batchmode THEN DO:
   RUN load_Rename_Definitions IN h_dmputil.
 END.  /* batchmode */
 
-IF  user_env[5] = "" 
- OR user_env[5] = ?  THEN assign user_env[5] = "<internal defaults apply>". 
+IF  user_env[5] = ""
+ OR user_env[5] = ?  THEN assign user_env[5] = "<internal defaults apply>".
 
-IF  user_env[5] = "<internal defaults apply>" 
+IF  user_env[5] = "<internal defaults apply>"
  THEN OUTPUT STREAM ddl TO VALUE(user_env[2]) NO-ECHO NO-MAP
             NO-CONVERT.
  ELSE OUTPUT STREAM ddl TO VALUE(user_env[2]) NO-ECHO NO-MAP
@@ -302,10 +302,10 @@ DO ON STOP UNDO, LEAVE:
                            INPUT DICTDB2._File._Db-recid) THEN DO:
         s_errorsLogged = TRUE.
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-        p-log-line = new_lang[3] + '"' + DICTDB2._File._File-Name + '"' + 
+        p-log-line = new_lang[3] + '"' + DICTDB2._File._File-Name + '"' +
                      new_lang[4].  /* 02/01/29 vap (IZ# 1525) */
         PUT STREAM err-log UNFORMATTED p-log-line SKIP.
-        DO i = 5 TO 8:          
+        DO i = 5 TO 8:
             PUT STREAM err-log UNFORMATTED new_lang[i] SKIP.
         END.
         PUT STREAM err-log UNFORMATTED new_lang[9] SKIP(1).
@@ -319,14 +319,14 @@ DO ON STOP UNDO, LEAVE:
 
   /* build list of new or renamed files */
   FOR EACH DICTDB._File WHERE DICTDB._File._Db-recid = drec_db
-                          AND (DICTDB._File._Owner = "PUB" OR 
-                               DICTDB._File._Owner = "_FOREIGN")      
+                          AND (DICTDB._File._Owner = "PUB" OR
+                               DICTDB._File._Owner = "_FOREIGN")
                           AND DICTDB._File._Tbl-type = "T":
-     
+
     FIND FIRST DICTDB2._File WHERE DICTDB2._File._Db-recid = RECID(database2)
-                               AND DICTDB2._File._File-name = 
+                               AND DICTDB2._File._File-name =
                                    DICTDB._File._File-name
-                               AND (DICTDB2._File._Owner = "PUB" OR 
+                               AND (DICTDB2._File._Owner = "PUB" OR
                                     DICTDB2._File._Owner = "_FOREIGN")
                                     NO-ERROR.
     IF NOT p-batchmode THEN /* 02/01/29 vap (IZ# 1525) */
@@ -336,8 +336,8 @@ DO ON STOP UNDO, LEAVE:
     IF AVAILABLE DICTDB2._File THEN
       table-list.t2-name = DICTDB._File._File-name.
   END.
-  
-  /* look for matches for renamed files with user input.  A prompt 
+
+  /* look for matches for renamed files with user input.  A prompt
      is given for each file in DICTDB2 that's not in DICTDB but only when
      there is also a file in DICTDB that's not in DICTDB2.  The 2nd list
      is the potential values to rename to.
@@ -374,10 +374,10 @@ DO ON STOP UNDO, LEAVE:
                     table-list.t1-name = p-foo AND
                     table-list.t2-name = ?
                     NO-ERROR.
-         IF AVAILABLE(table-list) THEN          
+         IF AVAILABLE(table-list) THEN
            ASSIGN table-list.t2-name = missing.name.
          /* tablemove check */ /* peterk fix 12796*/
-         RUN prodict/dump/_dmpisub.p(INPUT "table_check,":U + p-foo + 
+         RUN prodict/dump/_dmpisub.p(INPUT "table_check,":U + p-foo +
                                             ",":U + missing.name,
                                      INPUT-OUTPUT p-foo2,
                                      OUTPUT       ans).   /* dummy var */
@@ -387,7 +387,7 @@ DO ON STOP UNDO, LEAVE:
   END.
   IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("WAIT").
-  
+
   /* handle deleted files */
   ans = FALSE.
   FOR EACH missing:
@@ -401,7 +401,7 @@ DO ON STOP UNDO, LEAVE:
     DELETE missing.
   END.
   IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
+
   /* handle renamed files */
   ans = FALSE.
   FOR EACH table-list WHERE table-list.t1-name <> table-list.t2-name
@@ -444,15 +444,15 @@ DO ON STOP UNDO, LEAVE:
             new_lang[31]                                           SKIP
             '"' + DICTDB._File._File-name + '"' + new_lang[24]     SKIP
             new_lang[25]                                           SKIP
-            new_lang[26]                                           SKIP(1).      
+            new_lang[26]                                           SKIP(1).
          OUTPUT STREAM err-log CLOSE.
-       END.         
+       END.
     RUN "prodict/dump/_dmpdefs.p" ("t",RECID(DICTDB._File),"Y").
     IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY DICTDB._File._File-name @ fil2 WITH FRAME seeking.
     DELETE table-list.
   END.
-  
+
   /* handle potentially altered files */
   FOR EACH table-list:
     IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
@@ -465,7 +465,7 @@ DO ON STOP UNDO, LEAVE:
     FIND DICTDB2._File WHERE DICTDB2._File._Db-recid = RECID(database2)
       AND DICTDB2._File._File-name = table-list.t2-name
       AND (DICTDB2._File._Owner = "PUB" OR DICTDB2._File._Owner = "_FOREIGN").
-  
+
     /* clean out working storage */
     FOR EACH field-list:
       DELETE field-list.
@@ -474,7 +474,7 @@ DO ON STOP UNDO, LEAVE:
       DELETE index-list.
     END.
 
-  
+
     /* write out appropriate file definition changes */
     ASSIGN
       j      = 1
@@ -537,8 +537,8 @@ DO ON STOP UNDO, LEAVE:
       j = j + 1
       ddl[j] = "  FILE-MISC26 " + c.
     IF DICTDB._File._Hidden <> DICTDB2._File._Hidden THEN DO:
-        IF DICTDB._File._Hidden THEN 
-          ASSIGN j = j + 1    
+        IF DICTDB._File._Hidden THEN
+          ASSIGN j = j + 1
                  ddl[j] = "  HIDDEN ".
         ELSE
           ASSIGN j = j + 1
@@ -547,7 +547,7 @@ DO ON STOP UNDO, LEAVE:
     IF DICTDB._File._Frozen <> DICTDB2._File._Frozen AND NOT DICTDB2._File._Frozen THEN
         ASSIGN j = j + 1
                ddl[j] = "  FROZEN".
-  
+
     /* deal with file triggers */
     /* 1st, find ones to be deleted */
     FOR EACH DICTDB2._File-trig OF DICTDB2._File:
@@ -561,42 +561,42 @@ DO ON STOP UNDO, LEAVE:
     END.
     /* now record updated or new ones */
     FOR EACH DICTDB._File-trig OF DICTDB._File:
-      FIND DICTDB2._File-trig OF DICTDB2._File 
+      FIND DICTDB2._File-trig OF DICTDB2._File
         WHERE DICTDB2._File-trig._Event = DICTDB._File-trig._Event NO-ERROR.
-      IF AVAILABLE DICTDB2._File-trig AND 
+      IF AVAILABLE DICTDB2._File-trig AND
         DICTDB2._File-trig._Override = DICTDB._File-trig._Override AND
         DICTDB2._File-trig._Proc-name = DICTDB._File-trig._Proc-name AND
         DICTDB2._File-trig._Trig-CRC = DICTDB._File-trig._Trig-CRC THEN
         NEXT.
-        
+
       RUN dctquot IN h_dmputil (DICTDB._File-trig._Event,'"',OUTPUT c).
       j = j + 1.
       ddl[j] = "  TABLE-TRIGGER " + c +
-               (IF DICTDB._File-trig._Override THEN " OVERRIDE " 
+               (IF DICTDB._File-trig._Override THEN " OVERRIDE "
                                                ELSE " NO-OVERRIDE ").
       RUN dctquot IN h_dmputil (DICTDB._File-trig._Proc-name,'"',OUTPUT c).
-      ddl[j] = ddl[j] + "PROCEDURE " + c + " CRC """ 
-               + (IF DICTDB._File-trig._Trig-CRC = ? 
+      ddl[j] = ddl[j] + "PROCEDURE " + c + " CRC """
+               + (IF DICTDB._File-trig._Trig-CRC = ?
                   THEN "?" ELSE STRING(DICTDB._File-trig._Trig-CRC))
                + """".
     END.
-  
+
     /* don't write out ddl[1] if j = 1 (i.e., we only have table header) */
-    IF j > 1 THEN 
+    IF j > 1 THEN
       DO i = 1 TO j + 1:
         IF ddl[i] = "" THEN  /* this puts an extra skip after the last one */
           PUT STREAM ddl UNFORMATTED SKIP(1).
         ELSE
           PUT STREAM ddl UNFORMATTED ddl[i] SKIP.
       END.
-  
+
     /* build missing field list for rename/delete determination */
     FOR EACH DICTDB2._Field OF DICTDB2._File BY DICTDB2._Field._field-rpos:
-      FIND FIRST DICTDB._Field OF DICTDB._File 
+      FIND FIRST DICTDB._Field OF DICTDB._File
         WHERE DICTDB._Field._Field-name = DICTDB2._Field._Field-name NO-ERROR.
       IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB2._Field._Field-name @ fld WITH FRAME seeking.
-      IF AVAILABLE DICTDB._Field THEN DO: 
+      IF AVAILABLE DICTDB._Field THEN DO:
           /* OE00147106
              If the type or extent changed we need to give the user
              the option of selecting another field in case the original
@@ -609,7 +609,7 @@ DO ON STOP UNDO, LEAVE:
                  is not a change that require a field to be recreated,
                  so don't need to check in those cases.
               */
-              IF NOT(DICTDB._Field._Dtype = 41 AND DICTDB2._Field._Dtype = 4) 
+              IF NOT(DICTDB._Field._Dtype = 41 AND DICTDB2._Field._Dtype = 4)
                   AND NOT (DICTDB._Field._Dtype = DICTDB2._Field._Dtype AND
                   DICTDB._Field._Dtype = 34) THEN DO:
                   /* create a missing record with crit = yes - special case */
@@ -624,7 +624,7 @@ DO ON STOP UNDO, LEAVE:
       CREATE missing.
       missing.name = DICTDB2._Field._Field-name.
     END.
-  
+
     /* build field rename list */
     FOR EACH DICTDB._Field OF DICTDB._File BY DICTDB._Field._field-rpos:
       FIND FIRST DICTDB2._Field OF DICTDB2._File
@@ -637,7 +637,7 @@ DO ON STOP UNDO, LEAVE:
         ASSIGN field-list.f2-name = DICTDB._Field._Field-name.
     END.
 
-    /* look for matches for renamed fields with user input.  A prompt 
+    /* look for matches for renamed fields with user input.  A prompt
        is given for each field in DICTDB2 that's not in DICTDB but only when
        there is also a field in DICTDB that's not in DICTDB2.  The 2nd list
        is the potential values to rename to.
@@ -668,7 +668,7 @@ DO ON STOP UNDO, LEAVE:
               (INPUT "f",INPUT-OUTPUT missing.name,OUTPUT ans).
         /* we always delete the missing record if crit = yes */
         IF missing.name = ? OR missing.crit THEN DELETE missing.
-        IF ans = ? THEN DO:    
+        IF ans = ? THEN DO:
           HIDE FRAME seeking NO-PAUSE.
           user_path = "".
           RETURN.
@@ -702,15 +702,15 @@ DO ON STOP UNDO, LEAVE:
     END.
     IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
       run adecomm/_setcurs.p ("WAIT").
-  
+
     /* We use to handle deleted fields here but now it's done after
        index stuff.  See below.
      */
-    
+
     /* handle renamed fields */
     ans = FALSE.
     FOR EACH field-list
-      WHERE field-list.f1-name <> field-list.f2-name 
+      WHERE field-list.f1-name <> field-list.f2-name
         AND field-list.f2-name <> ?:
       FIND FIRST DICTDB._Field OF DICTDB._File
         WHERE DICTDB._Field._Field-name = field-list.f1-name.
@@ -733,7 +733,7 @@ DO ON STOP UNDO, LEAVE:
         '" TO "' field-list.f1-name '"' SKIP.
     END.
     IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
+
     ASSIGN i-to-int64 = 0.
 
     /* handle new or potentially altered fields */
@@ -748,13 +748,13 @@ DO ON STOP UNDO, LEAVE:
       ASSIGN l = AVAILABLE DICTDB2._Field
              to-int64 = FALSE.
 
-      /* 20060220-021 
+      /* 20060220-021
          In 10.1A, SQL timestamp is now datetime, in which case it's not a
          difference, so we need to check if the dype if 34.
       */
       IF l THEN DO:
         IF DICTDB._Field._Data-type <> DICTDB2._Field._Data-type THEN DO:
-            
+
            /* check if this is a change from integer to int64 */
            ASSIGN to-int64 = (DICTDB._Field._Dtype = 41 AND DICTDB2._Field._Dtype = 4).
 
@@ -774,13 +774,13 @@ DO ON STOP UNDO, LEAVE:
            IF DICTDB._Field._Data-type = "CLOB" THEN DO:
                /* OE00177533 - if a clob field, check if there was a change
                   in codepage or collation */
-               IF (DICTDB._Field._Charset NE DICTDB2._Field._Charset) OR 
+               IF (DICTDB._Field._Charset NE DICTDB2._Field._Charset) OR
                    (DICTDB._Field._Collation NE DICTDB2._Field._Collation) THEN
                    ans = TRUE.
            END.
         END.
       END.
-      
+
       IF l AND (ans OR DICTDB._Field._Extent <> DICTDB2._Field._Extent) THEN DO:
 
         /* If DICTDB2 field is part of a primary index, we cannot simply drop it.
@@ -789,7 +789,7 @@ DO ON STOP UNDO, LEAVE:
          */
         IF inprimary(INPUT DICTDB2._File._Prime-Index,
                      INPUT RECID(DICTDB2._Field)) THEN DO:
-          
+
           /* field is part of primary index, don't DROP*/
           RUN tmp-name IN h_dmputil (INPUT DICTDB2._Field._Field-name,
                                      OUTPUT tmp_Field-name).
@@ -797,25 +797,25 @@ DO ON STOP UNDO, LEAVE:
             'RENAME FIELD "' DICTDB2._Field._Field-name
             '" OF "' DICTDB2._File._File-name
             '" TO "' tmp_Field-name '"' SKIP.
-          CREATE missing. 
+          CREATE missing.
           ASSIGN missing.name = tmp_Field-name. /*record name to 'DROP' later*/
-                            l = false.          
+                            l = false.
         END.
         ELSE IF inindex(INPUT RECID(DICTDB2._File),
                         INPUT RECID(DICTDB2._Field)) THEN  DO:
-        
+
           RUN tmp-name IN h_dmputil (INPUT DICTDB2._Field._Field-name,
                                      OUTPUT tmp_Field-name).
           PUT STREAM ddl UNFORMATTED
             'RENAME FIELD "' DICTDB2._Field._Field-name
             '" OF "' DICTDB2._File._File-name
             '" TO "' tmp_Field-name '"' SKIP.
-          CREATE missing. 
+          CREATE missing.
           ASSIGN missing.name = tmp_Field-name. /*record name to 'DROP' later*/
-                            l = false.     
+                            l = false.
         END.
         ELSE DO: /* is not in a primary index, we can DROP it now */
-        
+
           /* We need to know it has been dropped in case it is a component *
            * of an index.  In that case, we don't want to drop the index   *
            * because dropping the field accomplished that.                 *
@@ -839,26 +839,26 @@ DO ON STOP UNDO, LEAVE:
                       + '" OF "' + DICTDB._File._File-name + '"'
                       + (IF l AND NOT to-int64 THEN "" ELSE " AS " + DICTDB._Field._Data-type).
       RUN dctquot IN h_dmputil (DICTDB._Field._Desc,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Desc,"NE",DICTDB2._Field._Desc,"RAW") THEN 
+      IF NOT l OR COMPARE(DICTDB._Field._Desc,"NE",DICTDB2._Field._Desc,"RAW") THEN
            ddl[2] = "  DESCRIPTION " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Format,'"',OUTPUT c).
-      IF NOT l OR COMPARE(DICTDB._Field._Format,"NE",DICTDB2._Field._Format,"RAW") THEN 
+      IF NOT l OR COMPARE(DICTDB._Field._Format,"NE",DICTDB2._Field._Format,"RAW") THEN
         ddl[3] = "  FORMAT " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Format-SA,'"',OUTPUT c).
-      IF NOT l OR 
+      IF NOT l OR
           /* ignore this field if they are a combination of ? and empty strings */
-          (CHECK_SA_FIELDS(DICTDB._Field._Format-SA,DICTDB2._Field._Format-SA) AND 
+          (CHECK_SA_FIELDS(DICTDB._Field._Format-SA,DICTDB2._Field._Format-SA) AND
           COMPARE(DICTDB._Field._Format-SA,"NE",DICTDB2._Field._Format-SA,"RAW")) THEN
         ddl[4] = "  FORMAT-SA " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Initial,'"',OUTPUT c).
-      IF NOT l OR DICTDB._Field._Field-rpos <> DICTDB2._Field._Field-rpos THEN 
-        ddl[5] = "  POSITION " + STRING(DICTDB._Field._Field-rpos).       
+      IF NOT l OR DICTDB._Field._Field-rpos <> DICTDB2._Field._Field-rpos THEN
+        ddl[5] = "  POSITION " + STRING(DICTDB._Field._Field-rpos).
       IF NOT l OR COMPARE(DICTDB._Field._Initial,"NE",DICTDB2._Field._Initial,"RAW") THEN
         ddl[6] = "  INITIAL " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Initial-SA,'"',OUTPUT c).
-      IF NOT l OR 
+      IF NOT l OR
            /* ignore this field if they are a combination of ? and empty strings */
-           (CHECK_SA_FIELDS(DICTDB._Field._Initial-SA,DICTDB2._Field._Initial-SA) AND 
+           (CHECK_SA_FIELDS(DICTDB._Field._Initial-SA,DICTDB2._Field._Initial-SA) AND
              COMPARE(DICTDB._Field._Initial-SA,"NE",DICTDB2._Field._Initial-SA,"RAW")) THEN
         ddl[7] = "  INITIAL-SA " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Help,'"',OUTPUT c).
@@ -871,18 +871,18 @@ DO ON STOP UNDO, LEAVE:
       IF NOT l OR COMPARE(DICTDB._Field._Label,"NE",DICTDB2._Field._Label,"RAW") THEN
         ddl[10] = "  LABEL " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Label-SA,'"',OUTPUT c).
-      IF NOT l OR 
+      IF NOT l OR
              /* ignore this field if they are a combination of ? and empty strings */
-             (CHECK_SA_FIELDS(DICTDB._Field._Label-SA,DICTDB2._Field._Label-SA) AND 
+             (CHECK_SA_FIELDS(DICTDB._Field._Label-SA,DICTDB2._Field._Label-SA) AND
              COMPARE(DICTDB._Field._Label-SA,"NE",DICTDB2._Field._Label-SA,"RAW")) THEN
         ddl[11] = "  LABEL-SA " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Col-label,'"',OUTPUT c).
       IF NOT l OR COMPARE(DICTDB._Field._Col-label,"NE",DICTDB2._Field._Col-label,"RAW") THEN
         ddl[12] = "  COLUMN-LABEL " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Col-label-SA,'"',OUTPUT c).
-      IF NOT l OR 
+      IF NOT l OR
               /* ignore this field if they are a combination of ? and empty strings */
-              (CHECK_SA_FIELDS(DICTDB._Field._Col-label-SA,DICTDB2._Field._Col-label-SA) AND 
+              (CHECK_SA_FIELDS(DICTDB._Field._Col-label-SA,DICTDB2._Field._Col-label-SA) AND
                COMPARE(DICTDB._Field._Col-label-SA,"NE",DICTDB2._Field._Col-label-SA,"RAW")) THEN
         ddl[13] = "  COLUMN-LABEL-SA " + c.
       RUN dctquot IN h_dmputil (DICTDB._Field._Can-Read,'"',OUTPUT c).
@@ -922,7 +922,7 @@ DO ON STOP UNDO, LEAVE:
                                 AND DICTDB._Storageobject._Object-number = DICTDB._Field._Fld-stlen
                               NO-LOCK.
         FIND DICTDB._Area WHERE DICTDB._Area._Area-number = DICTDB._StorageObject._Area-number NO-LOCK.
-        
+
         ASSIGN ddl[25] = "  LOB-AREA " + DICTDB._Area._Area-name
                ddl[26] = "  LOB-BYTES "+ STRING(DICTDB._Field._Width)
                ddl[27] = "  LOB-SIZE " + DICTDB._Field._Fld-Misc2[1].
@@ -943,7 +943,7 @@ DO ON STOP UNDO, LEAVE:
            DICTDB._Field._Attributes1  <> DICTDB2._Field._Attributes1 THEN DO:
 
           IF DICTDB._Field._Attributes1 = 1 AND DICTDB2._Field._Attributes1 = 2 THEN DO:
-             /* OE00177533 - can't change it from 2 to 1 in the target db 
+             /* OE00177533 - can't change it from 2 to 1 in the target db
                if the codepage of the db and column are not the same */
              IF UPPER(DICTDB2._Field._Charset) EQ UPPER(DICTDB2._Db._db-xl-name) THEN
                  ddl[27] = "  CLOB-TYPE "      + STRING(DICTDB._Field._Attributes1).
@@ -955,24 +955,24 @@ DO ON STOP UNDO, LEAVE:
         FIND DICTDB._storageobject WHERE DICTDB._Storageobject._Db-recid = RECID(DICTDB._Db)
                                 AND DICTDB._Storageobject._Object-type = 3
                                 AND DICTDB._Storageobject._Object-number = DICTDB._Field._Fld-stlen
-                                NO-LOCK. 
+                                NO-LOCK.
         FIND DICTDB2._storageobject WHERE DICTDB2._Storageobject._Db-recid = RECID(DICTDB2._Db)
                                 AND DICTDB2._Storageobject._Object-type = 3
                                 AND DICTDB2._Storageobject._Object-number = DICTDB2._Field._Fld-stlen
                                 NO-LOCK.
         IF DICTDB._StorageObject._Area-number <> DICTDB2._StorageObject._Area-number THEN DO:
           OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-   
+
           PUT STREAM err-log UNFORMATTED "Warning: Blob Field " +
-                 '"' + DICTDB._Field._Field-name + '"' + new_lang[11] + 
+                 '"' + DICTDB._Field._Field-name + '"' + new_lang[11] +
                  '"' + LDBNAME("DICTDB") + '"'     SKIP
                  "and Blob Field " + '"' + DICTDB2._Field._Field-name + '"' +
                  new_lang[11] + '"' + LDBNAME("DICTDB2") + '"'   SKIP
                 "are not in the same area." SKIP(1).
           OUTPUT STREAM err-log CLOSE.
-          
+
           ASSIGN s_errorsLogged = TRUE.
-        END.        
+        END.
       END.
       ELSE IF NOT l OR DICTDB._Field._Width <> DICTDB2._Field._Width THEN
         ddl[25] = "  MAX-WIDTH " + STRING(DICTDB._Field._Width).
@@ -983,7 +983,7 @@ DO ON STOP UNDO, LEAVE:
       IF l THEN
         FOR EACH DICTDB2._Field-trig OF DICTDB2._Field:
           FIND DICTDB._Field-trig OF DICTDB._Field
-            WHERE DICTDB._Field-trig._Event = DICTDB2._Field-trig._Event 
+            WHERE DICTDB._Field-trig._Event = DICTDB2._Field-trig._Event
                   NO-ERROR.
           IF NOT AVAILABLE DICTDB._Field-trig THEN DO:
             RUN dctquot IN h_dmputil (DICTDB2._Field-trig._Event,'"',OUTPUT c).
@@ -993,26 +993,26 @@ DO ON STOP UNDO, LEAVE:
         END.
       /* now record updated or new ones */
       FOR EACH DICTDB._Field-trig OF DICTDB._Field:
-        FIND DICTDB2._Field-trig OF DICTDB2._Field 
+        FIND DICTDB2._Field-trig OF DICTDB2._Field
           WHERE DICTDB2._Field-trig._Event = DICTDB._Field-trig._Event NO-ERROR.
-        IF AVAILABLE DICTDB2._Field-trig AND 
+        IF AVAILABLE DICTDB2._Field-trig AND
           DICTDB2._Field-trig._Override = DICTDB._Field-trig._Override AND
           DICTDB2._Field-trig._Proc-name = DICTDB._Field-trig._Proc-name AND
           DICTDB2._Field-trig._Trig-CRC = DICTDB._Field-trig._Trig-CRC THEN
           NEXT.
-          
+
         RUN dctquot IN h_dmputil (DICTDB._Field-trig._Event,'"',OUTPUT c).
-        j = j + 1. 
+        j = j + 1.
         ddl[j] = "  FIELD-TRIGGER " + c +
-                 (IF DICTDB._Field-trig._Override THEN " OVERRIDE " 
+                 (IF DICTDB._Field-trig._Override THEN " OVERRIDE "
                                                   ELSE " NO-OVERRIDE ").
         RUN dctquot IN h_dmputil (DICTDB._Field-trig._Proc-name,'"',OUTPUT c).
-        ddl[j] = ddl[j] + "PROCEDURE " + c + " CRC """ 
-                 + (IF DICTDB._Field-trig._Trig-CRC = ? 
+        ddl[j] = ddl[j] + "PROCEDURE " + c + " CRC """
+                 + (IF DICTDB._Field-trig._Trig-CRC = ?
                     THEN "?" ELSE STRING(DICTDB._Field-trig._Trig-CRC))
                  + """".
-      END. 
-  
+      END.
+
       /* don't write out header or anything unless there's values to output */
       l = FALSE.
       DO i = 2 TO j WHILE NOT l:
@@ -1020,21 +1020,21 @@ DO ON STOP UNDO, LEAVE:
       END.
       IF l THEN DO i = 1 TO j:
         /* if ddl[i] = "" this doesn't do anything */
-        PUT STREAM ddl UNFORMATTED ddl[i] SKIP.  
+        PUT STREAM ddl UNFORMATTED ddl[i] SKIP.
       END.
       ELSE IF to-int64 AND ddl[1] <> "" THEN /* write the type change from int to int64 */
-          PUT STREAM ddl UNFORMATTED ddl[1] SKIP(1).  
+          PUT STREAM ddl UNFORMATTED ddl[1] SKIP(1).
 
       IF l THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-    END.         /* end FOR EACH field-list */  
-  
+    END.         /* end FOR EACH field-list */
+
     /* note that there is no user interface for resolving renamed
     indexes.  this is because we can completely match indexes by their
     component lists, which are invariant once the index is created.  */
     ASSIGN
       pri1   = ""
       pri2   = "".
-  
+
     /* build index component match list */
     FOR EACH DICTDB2._Index OF DICTDB2._File:
       IF DICTDB2._Index._Index-name = "default" OR
@@ -1061,7 +1061,7 @@ DO ON STOP UNDO, LEAVE:
       IF DICTDB2._File._Prime-Index = RECID(DICTDB2._Index) THEN pri2 = c.
     END.
     FOR EACH DICTDB._Index OF DICTDB._File:
-      IF DICTDB._Index._Index-name = "default" OR 
+      IF DICTDB._Index._Index-name = "default" OR
          DICTDB._Index._Index-name = "sql-default" THEN NEXT.
       IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY DICTDB._Index._Index-name @ idx WITH FRAME seeking.
@@ -1070,7 +1070,7 @@ DO ON STOP UNDO, LEAVE:
       FOR EACH DICTDB._Index-field OF DICTDB._Index,
         DICTDB._Field OF DICTDB._Index-field:
         FIND FIRST field-list
-          WHERE field-list.f1-name = DICTDB._Field._Field-name NO-ERROR.  
+          WHERE field-list.f1-name = DICTDB._Field._Field-name NO-ERROR.
         c = c + ","
           + STRING(DICTDB._Field._dtype) + ","
           + STRING(DICTDB._Index-field._Ascending,"+/-")
@@ -1084,9 +1084,9 @@ DO ON STOP UNDO, LEAVE:
         index-list.i1-i2   = TRUE.
       IF DICTDB._File._Prime-Index = RECID(DICTDB._Index) THEN pri1 = c.
     END.
-    
+
     FOR EACH index-list WHERE index-list.i1-i2:
-      FIND FIRST index-alt WHERE NOT index-alt.i1-i2 
+      FIND FIRST index-alt WHERE NOT index-alt.i1-i2
                              AND index-alt.i1-name = index-list.i1-name NO-LOCK NO-ERROR.
       IF AVAILABLE index-alt AND index-list.i1-comp <> index-alt.i1-comp THEN DO:
 
@@ -1094,12 +1094,12 @@ DO ON STOP UNDO, LEAVE:
            if we processed a int->int64 change for the current table
         */
         IF i-to-int64 NE 0 THEN DO:
-       
+
             ASSIGN numEntries = NUM-ENTRIES(index-list.i1-comp)
                    i-to-int64 = 0
                    num-diff = 0.
-    
-            /* if the number of entries is different, then there were field deleted or added to the 
+
+            /* if the number of entries is different, then there were field deleted or added to the
                index, so we just process it as usual .
             */
             IF numEntries EQ NUM-ENTRIES(index-alt.i1-comp) THEN DO:
@@ -1108,15 +1108,15 @@ DO ON STOP UNDO, LEAVE:
                 ELSE REPEAT i = 2 TO numEntries BY 2:
                     IF ENTRY(i + 1, index-list.i1-comp) NE ENTRY(i + 1, index-alt.i1-comp) THEN DO:
                        num-diff = num-diff + 1.
-                       /* if anything other than data type is different, we have to recreate it, so 
-                          leave now 
+                       /* if anything other than data type is different, we have to recreate it, so
+                          leave now
                        */
                        LEAVE.
                     END.
-    
+
                     IF ENTRY(i, index-list.i1-comp) NE ENTRY(i, index-alt.i1-comp) THEN DO:
                         ASSIGN num-diff = num-diff + 1.
-    
+
                         /* check if we are going from int->int64 */
                         IF ENTRY(i, index-list.i1-comp) = "41" AND
                            ENTRY(i, index-alt.i1-comp) = "4"  THEN
@@ -1125,19 +1125,19 @@ DO ON STOP UNDO, LEAVE:
                             LEAVE.
                     END.
                 END.
-    
+
                 /* if the only changes are from int->int64, then we are all set */
                 IF num-diff EQ i-to-int64 THEN DO:
                     /* primary is also ok, so make them the same so we don't try to update it later */
                     IF pri1 = index-list.i1-comp AND pri2 = index-alt.i1-comp THEN
                        ASSIGN pri1 = pri2.
-    
+
                     DELETE index-alt.
                     DELETE index-list.
-                    
+
                     NEXT. /* go to the next index */
                 END.
-    
+
             END.
         END.
 
@@ -1151,13 +1151,13 @@ DO ON STOP UNDO, LEAVE:
     END.
 
     /* find all unchanged or renamed indexes by comparing idx comp lists */
-    FOR EACH index-list WHERE index-list.i1-i2:    
+    FOR EACH index-list WHERE index-list.i1-i2:
       IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY index-list.i2-name @ idx WITH FRAME seeking.
       FIND FIRST index-alt WHERE NOT index-alt.i1-i2
         AND index-list.i1-comp = index-alt.i1-comp NO-ERROR.
       IF NOT AVAILABLE index-alt THEN NEXT.
-     /* Determine if area has changed and issue warning if so */        
+     /* Determine if area has changed and issue warning if so */
       FIND DICTDB._Index WHERE
            DICTDB._Index._Index-name = index-list.i1-name AND
            DICTDB._Index._File-recid = RECID(DICTDB._File) NO-ERROR.
@@ -1170,28 +1170,28 @@ DO ON STOP UNDO, LEAVE:
                             INPUT RECID(DICTDB._Db),
                             INPUT RECID(DICTDB2._DB)) THEN DO:
         ASSIGN s_errorsLogged = TRUE.
-            
+
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-            
+
         PUT STREAM err-log UNFORMATTED new_lang[10] +
-                 '"' + DICTDB._Index._Index-name + '"' + new_lang[11] + 
+                 '"' + DICTDB._Index._Index-name + '"' + new_lang[11] +
                  '"' + LDBNAME("DICTDB") + '"'     SKIP
                  new_lang[12] + DICTDB2._Index._Index-name + '"' +
                  new_lang[11] + '"' + LDBNAME("DICTDB2") + '"'   SKIP.
-        DO i = 13 TO 16:          
+        DO i = 13 TO 16:
           PUT STREAM err-log UNFORMATTED new_lang[i] SKIP.
         END.
-            
-        PUT STREAM err-log UNFORMATTED new_lang[17] SKIP(1).            
+
+        PUT STREAM err-log UNFORMATTED new_lang[17] SKIP(1).
         OUTPUT STREAM err-log CLOSE.
-      END.            
+      END.
       ASSIGN index-list.i2-name = index-alt.i1-name.
-      DELETE index-alt. 
+      DELETE index-alt.
     END.
 
    /* Now all index-list records where i1-i2 is false represent
       indexes in db2 that will not be renamed, therefore they will
-      be deleted.   
+      be deleted.
     */
 
     /* check deactivation on unchanged indexes */
@@ -1210,7 +1210,7 @@ DO ON STOP UNDO, LEAVE:
           '" OF "' DICTDB._File._File-name '"' SKIP.
         IF DICTDB._Index._Desc <> DICTDB2._Index._Desc THEN DO:
           PUT STREAM ddl CONTROL "  DESCRIPTION ".
-          EXPORT STREAM ddl DICTDB._Index._Desc SKIP(1).         
+          EXPORT STREAM ddl DICTDB._Index._Desc SKIP(1).
         END.
       END.
       ELSE IF DICTDB._Index._Desc <> DICTDB2._Index._Desc THEN DO:
@@ -1218,11 +1218,11 @@ DO ON STOP UNDO, LEAVE:
           'UPDATE INDEX "' DICTDB._Index._Index-name
                '" OF "' DICTDB._File._File-name '"' SKIP.
         PUT STREAM ddl CONTROL "  DESCRIPTION ".
-        EXPORT STREAM ddl DICTDB._Index._Desc SKIP(1).        
-      END. 
+        EXPORT STREAM ddl DICTDB._Index._Desc SKIP(1).
+      END.
       DELETE index-list.
     END.
-  
+
     /* handle renamed indexes */
     ans = FALSE.
     FOR EACH index-list WHERE index-list.i2-name <> ?:
@@ -1235,7 +1235,7 @@ DO ON STOP UNDO, LEAVE:
       IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
         DISPLAY index-list.i1-name @ idx2 WITH FRAME seeking.
       RUN Check_Index_Conflict IN h_dmputil (INPUT index-list.i1-name,
-          INPUT DICTDB._File._File-name).     
+          INPUT DICTDB._File._File-name).
       PUT STREAM ddl UNFORMATTED
         'RENAME INDEX "' index-list.i2-name
         '" TO "' index-list.i1-name
@@ -1255,11 +1255,11 @@ DO ON STOP UNDO, LEAVE:
                '" OF "' DICTDB._File._File-name '"' SKIP.
         PUT STREAM ddl CONTROL "  DESCRIPTION ".
         EXPORT STREAM ddl DICTDB._Index._Desc SKIP(1).
-      END. 
+      END.
       DELETE index-list.
     END.
     IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
+
     /* check if unique indexes to be created as inactive */
     FOR EACH index-list WHERE index-list.i1-i2,
       EACH DICTDB._Index OF DICTDB._File
@@ -1274,20 +1274,20 @@ DO ON STOP UNDO, LEAVE:
         iact = p-index-mode NE "0":U.
 
       IF iact THEN DO:
-        ASSIGN s_errorsLogged = TRUE.         
+        ASSIGN s_errorsLogged = TRUE.
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-         
+
         PUT STREAM err-log UNFORMATTED
              new_lang[18]                                  SKIP
              new_lang[19]                                  SKIP
              new_lang[20]                                  SKIP(1).
-         
+
         OUTPUT STREAM err-log CLOSE.
-      END. 
+      END.
       iact = NOT iact.
       LEAVE. /* we only need to ask once */
     END.
-  
+
     /* handle new indexes */
     FOR EACH index-list WHERE index-list.i1-i2,
         DICTDB._Index OF DICTDB._File
@@ -1303,9 +1303,9 @@ DO ON STOP UNDO, LEAVE:
          (INDEX(index-list.i1-comp,drop-list.f1-name) > 0  OR
           INDEX(index-list.i1-comp,drop-list.f2-name) > 0) AND
          DICTDB._File._File-Name = drop-list.file-name NO-ERROR.
-      IF NOT AVAIL drop-list THEN      
+      IF NOT AVAIL drop-list THEN
         RUN Check_Index_Conflict IN h_dmputil (INPUT index-list.i1-name,
-          INPUT DICTDB._File._File-name).      
+          INPUT DICTDB._File._File-name).
       PUT STREAM ddl UNFORMATTED "ADD "
         'INDEX "' DICTDB._Index._Index-Name
         '" ON "' DICTDB._File._File-name '"' SKIP.
@@ -1323,9 +1323,9 @@ DO ON STOP UNDO, LEAVE:
       FIND DICTDB2._Area WHERE
            DICTDB2._Area._Area-name = DICTDB._Area._Area-name NO-ERROR.
       IF NOT AVAIL DICTDB2._Area THEN DO:
-        ASSIGN s_errorsLogged = TRUE.        
+        ASSIGN s_errorsLogged = TRUE.
         OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
-         
+
         PUT STREAM err-log UNFORMATTED new_lang[3] +
              '"' + DICTDB._Area._Area-name + '"' + new_lang[21]     SKIP
              new_lang[22]                                           SKIP
@@ -1333,21 +1333,21 @@ DO ON STOP UNDO, LEAVE:
              '"' + DICTDB._Index._Index-name + '"' + new_lang[24]   SKIP
              new_lang[25]                                           SKIP
              new_lang[26]                                           SKIP(1).
-      
+
         OUTPUT STREAM err-log CLOSE.
-      END.         
+      END.
       PUT STREAM ddl UNFORMATTED
          "  AREA " '"' DICTDB._Area._Area-name '"' SKIP.
 
-      IF DICTDB._Index._Unique THEN DO:     
+      IF DICTDB._Index._Unique THEN DO:
         PUT STREAM ddl UNFORMATTED "  UNIQUE" SKIP.
         IF NOT (DICTDB._Index._Active AND (IF iact = ? THEN TRUE ELSE iact)) THEN
         PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
       END.
       ELSE IF NOT DICTDB._Index._Active OR p-index-mode EQ "2":U THEN
           PUT STREAM ddl UNFORMATTED "  INACTIVE" SKIP.
-      
-      IF DICTDB._Index._Wordidx = 1 THEN 
+
+      IF DICTDB._Index._Wordidx = 1 THEN
         PUT STREAM ddl UNFORMATTED "  WORD" SKIP.
       IF DICTDB._Index._Desc <> ? AND DICTDB._Index._Desc <> '' THEN DO:
         PUT STREAM ddl CONTROL "  DESCRIPTION ".
@@ -1363,7 +1363,7 @@ DO ON STOP UNDO, LEAVE:
       END.
       PUT STREAM ddl UNFORMATTED SKIP(1).
     END.
-  
+
     /* set primary index */
     RELEASE DICTDB._Index.
     IF DICTDB._File._Prime-Index <> ? THEN
@@ -1387,7 +1387,7 @@ DO ON STOP UNDO, LEAVE:
          (INDEX(index-list.i1-comp,drop-list.f1-name) > 0  OR
           INDEX(index-list.i1-comp,drop-list.f2-name) > 0) AND
          DICTDB._File._File-Name = drop-list.file-name NO-ERROR.
-      IF AVAIL drop-list THEN DO:        
+      IF AVAIL drop-list THEN DO:
          DELETE index-list.
              NEXT.
       END.
@@ -1414,11 +1414,11 @@ DO ON STOP UNDO, LEAVE:
     END.
     IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
 
-    /* handle deleted fields.  
-       Do this after index deletes since fields cannot be dropped when they 
-       belong to a primary index.  This is not done for fields that were 
-       dropped but replaced with another field (different data type or extent) 
-       but with the same name.  This still has to be done above so we can add 
+    /* handle deleted fields.
+       Do this after index deletes since fields cannot be dropped when they
+       belong to a primary index.  This is not done for fields that were
+       dropped but replaced with another field (different data type or extent)
+       but with the same name.  This still has to be done above so we can add
        the new field without conflict.
     */
     FIND FIRST missing NO-ERROR.
@@ -1433,18 +1433,18 @@ DO ON STOP UNDO, LEAVE:
       DELETE missing.
     END.
     IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
-  
+
+
     DO ON ERROR UNDO,LEAVE ON ENDKEY UNDO,LEAVE:
       HIDE MESSAGE.
     END.
   END.  /* end FOR EACH potentially altered file */
-  
+
   IF NOT p-batchmode THEN DO: /* 02/01/29 vap (IZ# 1525) */
     DISPLAY "" @ fil "" @ fld "" @ idx WITH FRAME seeking.
     DISPLAY "" @ fil2 "" @ fld2 "" @ idx2 WITH FRAME seeking.
   END.
-  
+
   /* build missing sequence list for rename/delete determination */
   FOR EACH DICTDB2._Sequence
     WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
@@ -1458,7 +1458,7 @@ DO ON STOP UNDO, LEAVE:
     CREATE missing.
     missing.name = DICTDB2._Sequence._Seq-name.
   END.
-  
+
   /* build list of new or renamed sequences */
   FOR EACH DICTDB._Sequence
     WHERE DICTDB._Sequence._Db-recid = drec_db
@@ -1473,8 +1473,8 @@ DO ON STOP UNDO, LEAVE:
     IF AVAILABLE DICTDB2._Sequence THEN
       seq-list.s2-name = DICTDB._Sequence._Seq-name.
   END.
-  
-  /* look for matches for renamed sequences with user input.  A prompt 
+
+  /* look for matches for renamed sequences with user input.  A prompt
      is given for each seq in DICTDB2 that's not in DICTDB but only when
      there is also a seq in DICTDB that's not in DICTDB2.  The 2nd list
      is the potential values to rename to.
@@ -1510,7 +1510,7 @@ DO ON STOP UNDO, LEAVE:
                     seq-list.s1-name = p-foo AND
                     seq-list.s2-name = ?
                     NO-ERROR.
-         IF AVAILABLE(seq-list) THEN          
+         IF AVAILABLE(seq-list) THEN
            ASSIGN seq-list.s2-name = missing.name.
          DELETE missing.
       END.  /* p-foo NE ? */
@@ -1518,7 +1518,7 @@ DO ON STOP UNDO, LEAVE:
   END.  /* FOR EACH missing */
   IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
     run adecomm/_setcurs.p ("WAIT").
-  
+
   /* handle deleted sequences */
   ans = FALSE.
   FOR EACH missing:
@@ -1532,7 +1532,7 @@ DO ON STOP UNDO, LEAVE:
     DELETE missing.
   END.
   IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
+
   /* handle renamed sequences */
   ans = FALSE.
   FOR EACH seq-list
@@ -1548,89 +1548,89 @@ DO ON STOP UNDO, LEAVE:
     END.
   END.
   IF ans THEN PUT STREAM ddl UNFORMATTED SKIP(1).
-  
-  /* handle new or potentially altered sequences.  
-     We can't use dumpdefs here like we do with files because it wasn't 
+
+  /* handle new or potentially altered sequences.
+     We can't use dumpdefs here like we do with files because it wasn't
      made to handle individual sequences - it would dump them all.
      Some day!
   */
   FOR EACH seq-list:
     IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY seq-list.s1-name @ seq WITH FRAME seeking.
-  
+
     FIND DICTDB._Sequence WHERE DICTDB._Sequence._Db-recid = drec_db
       AND DICTDB._Sequence._Seq-name = seq-list.s1-name.
     FIND DICTDB2._Sequence WHERE DICTDB2._Sequence._Db-recid = RECID(database2)
       AND DICTDB2._Sequence._Seq-name = seq-list.s2-name NO-ERROR.
-  
+
     IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
       DISPLAY seq-list.s1-name @ seq2 WITH FRAME seeking.
-  
+
     /* If l is true we're updateing otherwise we're adding */
     l = AVAILABLE DICTDB2._Sequence.
-  
+
     /* write out appropriate seq definition changes */
     ASSIGN
       j      = 1
       ddl    = ""
       ddl[1] = (IF l THEN "UPDATE" ELSE "ADD")
                + ' SEQUENCE "' + DICTDB._Sequence._Seq-name + '"'.
-      IF NOT l OR 
-               DICTDB._Sequence._Seq-init <> DICTDB2._Sequence._Seq-init THEN 
+      IF NOT l OR
+               DICTDB._Sequence._Seq-init <> DICTDB2._Sequence._Seq-init THEN
         ASSIGN
           j = j + 1
           ddl[j] = "  INITIAL " + (IF DICTDB._Sequence._Seq-init = ? THEN "?"
                    ELSE STRING(DICTDB._Sequence._Seq-init)).
-      IF NOT l OR 
-               DICTDB._Sequence._Seq-incr <> DICTDB2._Sequence._Seq-incr THEN 
+      IF NOT l OR
+               DICTDB._Sequence._Seq-incr <> DICTDB2._Sequence._Seq-incr THEN
         ASSIGN
           j = j + 1
-          ddl[j] = "  INCREMENT " + (IF DICTDB._Sequence._Seq-incr = ? THEN "?" 
+          ddl[j] = "  INCREMENT " + (IF DICTDB._Sequence._Seq-incr = ? THEN "?"
                    ELSE STRING(DICTDB._Sequence._Seq-incr)).
-      IF NOT l OR 
-               DICTDB._Sequence._Cycle-OK <> DICTDB2._Sequence._Cycle-OK THEN 
+      IF NOT l OR
+               DICTDB._Sequence._Cycle-OK <> DICTDB2._Sequence._Cycle-OK THEN
         ASSIGN
           j = j + 1
-          ddl[j] = "  CYCLE-ON-LIMIT " + 
+          ddl[j] = "  CYCLE-ON-LIMIT " +
                    (IF DICTDB._Sequence._Cycle-OK THEN "yes" ELSE "no").
-      IF NOT l OR DICTDB._Sequence._Seq-min <> DICTDB2._Sequence._Seq-min THEN 
+      IF NOT l OR DICTDB._Sequence._Seq-min <> DICTDB2._Sequence._Seq-min THEN
         ASSIGN
           j = j + 1
-          ddl[j] = "  MIN-VAL " + (IF DICTDB._Sequence._Seq-min = ? THEN "?" 
+          ddl[j] = "  MIN-VAL " + (IF DICTDB._Sequence._Seq-min = ? THEN "?"
                    ELSE STRING(DICTDB._Sequence._Seq-min)).
-      IF NOT l OR DICTDB._Sequence._Seq-max <> DICTDB2._Sequence._Seq-max THEN 
+      IF NOT l OR DICTDB._Sequence._Seq-max <> DICTDB2._Sequence._Seq-max THEN
         ASSIGN
           j = j + 1
-          ddl[j] = "  MAX-VAL " + (IF DICTDB._Sequence._Seq-max = ? THEN "?" 
+          ddl[j] = "  MAX-VAL " + (IF DICTDB._Sequence._Seq-max = ? THEN "?"
                    ELSE STRING(DICTDB._Sequence._Seq-max)).
-  
+
       /* don't write out ddl[1] if j = 1 (i.e., we only have seq header) */
-      IF j > 1 THEN 
+      IF j > 1 THEN
         DO i = 1 TO j + 1:
           IF ddl[i] = "" THEN  /* this puts an extra skip after the last one */
             PUT STREAM ddl UNFORMATTED SKIP(1).
           ELSE
             PUT STREAM ddl UNFORMATTED ddl[i] SKIP.
         END.
-  
+
   END.  /* end FOR EACH new or potentially altered sequence */
-  
+
   /* Sync up the auto-connect records.  If there's any auto-connect records
      in either database, drop all the ones in DICTDB2 and add what's in
      DICTDB.  Since there's no data associated with these, we can drop with
-     a clear conscience.   This is easier than trying to compare the 
+     a clear conscience.   This is easier than trying to compare the
      differences.
   */
-  FOR EACH DICTDB2._Db WHERE DICTDB2._Db._Db-name <> ? AND 
+  FOR EACH DICTDB2._Db WHERE DICTDB2._Db._Db-name <> ? AND
                              NOT DICTDB2._Db._Db-slave AND  /* not foreign db */
                              NOT DICTDB2._Db._Db-local NO-LOCK:
-     PUT STREAM ddl UNFORMATTED 
+     PUT STREAM ddl UNFORMATTED
         'DROP DATABASE "' DICTDB2._Db._Db-name '"' SKIP(1).
   END.
-  FOR EACH DICTDB._Db WHERE DICTDB._Db._Db-name <> ? AND 
+  FOR EACH DICTDB._Db WHERE DICTDB._Db._Db-name <> ? AND
                             NOT DICTDB._Db._Db-slave AND  /* not foreign db */
                             NOT DICTDB._Db._Db-local NO-LOCK:
-     PUT STREAM ddl UNFORMATTED 
+     PUT STREAM ddl UNFORMATTED
         'ADD DATABASE "' DICTDB._Db._Db-name '" TYPE PROGRESS' SKIP.
      PUT STREAM ddl UNFORMATTED 'DBNAME "' DICTDB._Db._Db-addr '"' SKIP.
      IF DICTDB._Db._Db-comm <> "" THEN
@@ -1646,7 +1646,7 @@ DO ON STOP UNDO, LEAVE:
     &seek-stream  = "ddl"
     &stream       = "STREAM ddl "
     }  /* adds trailer with code-page-entrie to end of file */
-    
+
   stopped = false.
 END. /* on stop */
 
@@ -1657,7 +1657,7 @@ IF NOT p-batchmode AND NOT stopped AND s_errorsLogged THEN
            new_lang[29] SKIP
            new_lang[30]
    VIEW-AS ALERT-BOX INFORMATION BUTTONS OK.
-   
+
 IF NOT p-batchmode THEN  /* 02/01/29 vap (IZ# 1525) */
   IF stopped THEN
      MESSAGE "Dump terminated."
@@ -1678,8 +1678,8 @@ RETURN "SEEK=" + STRING(iSeek).
 FUNCTION CHECK_SA_FIELDS RETURNS LOGICAL (INPUT c1 AS CHAR, INPUT c2 AS CHAR) :
 
     /* ignore this field if they are a combination of ? and empty strings */
-    RETURN 
-            ( NOT (c1 EQ '' AND c2 EQ ?) AND 
+    RETURN
+            ( NOT (c1 EQ '' AND c2 EQ ?) AND
               NOT (c1 EQ ? AND c2 EQ '')).
 
 END FUNCTION.

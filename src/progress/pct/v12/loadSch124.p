@@ -78,7 +78,7 @@ IF lUnfreeze THEN DO:
              hBuffer:BUFFER-FIELD("_frozen"):BUFFER-VALUE = FALSE.
       hQuery:GET-NEXT.
    END.
-   hQuery:QUERY-CLOSE().   
+   hQuery:QUERY-CLOSE().
 END.
 
 IF VALID-OBJECT(callback) THEN
@@ -142,8 +142,8 @@ REPEAT:
       END.
 
     END FINALLY.
-  END. 
-  
+  END.
+
 
   DELETE OBJECT logger.
   DELETE OBJECT dictOpts.

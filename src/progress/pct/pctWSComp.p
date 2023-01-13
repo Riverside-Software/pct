@@ -144,16 +144,16 @@ PROCEDURE PCTWSComp.
     DEFINE INPUT  PARAMETER pcOutFile AS CHARACTER  NO-UNDO.
     DEFINE INPUT  PARAMETER pcOptions AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER plOK      AS LOGICAL    NO-UNDO.
-    
+
     DEFINE VARIABLE cBase    AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cFile    AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cOutFile AS CHARACTER  NO-UNDO.
     DEFINE VARIABLE cRetVal  AS CHARACTER  NO-UNDO.
-    
+
     RUN adecomm/_osprefx.p(INPUT pcInFile, OUTPUT cBase, OUTPUT cFile).
     ASSIGN plOK = createDir(pcOutDir, cBase).
     IF (NOT plOK) THEN RETURN.
-    
+
     ASSIGN cOutFile = pcOutDir + '/':U + pcOutFile.
     RUN webutil/e4gl-gen.p(pcInDir + '/':U + pcInFile, INPUT-OUTPUT pcOptions, INPUT-OUTPUT cOutFile).
     ASSIGN cRetVal = RETURN-VALUE
@@ -161,9 +161,9 @@ PROCEDURE PCTWSComp.
     IF (NOT plOK) THEN DO:
         MESSAGE cRetVal.
     END.
-    
-END PROCEDURE.    
-    
+
+END PROCEDURE.
+
 FUNCTION getTimeStampDF RETURNS INTEGER(INPUT d AS CHARACTER, INPUT f AS CHARACTER):
     RETURN getTimeStampF(d + '/':U + f).
 END FUNCTION.
@@ -197,7 +197,7 @@ FUNCTION createDir RETURNS LOGICAL (INPUT base AS CHARACTER, INPUT d AS CHARACTE
     ASSIGN d = REPLACE(d, CHR(92), '/':U).
     DO i = 1 TO NUM-ENTRIES(d, '/':U):
         ASSIGN c = c + '/':U + ENTRY(i, d, '/':U).
-        
+
         FIND ttDirs WHERE ttDirs.baseDir EQ base
                       AND ttDirs.dirName EQ c
                     NO-LOCK NO-ERROR.

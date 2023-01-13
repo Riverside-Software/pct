@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
- 
+
 DEFINE TEMP-TABLE CRCList NO-UNDO
   FIELD ttTable AS CHARACTER
   FIELD ttCRC   AS CHARACTER

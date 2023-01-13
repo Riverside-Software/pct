@@ -1,96 +1,96 @@
 
 DEFINE TEMP-TABLE Source NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD File-num AS INTEGER 
-	FIELD File-name AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	INDEX source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD File-num AS INTEGER
+	FIELD File-name AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	INDEX source-guid IS UNIQUE PRIMARY
 		Source-guid File-num.
 
 DEFINE TEMP-TABLE Reference NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD File-num AS INTEGER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD Line-num AS INTEGER 
-	FIELD Reference-type AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Object-identifier AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Object-context AS CHARACTER 
-	FIELD Access-mode AS CHARACTER 
-	FIELD Data-member-ref AS CHARACTER 
-	FIELD Temp-ref AS CHARACTER 
-	FIELD Detail AS CHARACTER 
-	FIELD Is-static AS LOGICAL 
-	FIELD Is-abstract AS LOGICAL 
-	INDEX Reference_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD File-num AS INTEGER
+	FIELD Ref-seq AS INTEGER
+	FIELD Line-num AS INTEGER
+	FIELD Reference-type AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Object-identifier AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Object-context AS CHARACTER
+	FIELD Access-mode AS CHARACTER
+	FIELD Data-member-ref AS CHARACTER
+	FIELD Temp-ref AS CHARACTER
+	FIELD Detail AS CHARACTER
+	FIELD Is-static AS LOGICAL
+	FIELD Is-abstract AS LOGICAL
+	INDEX Reference_source-guid IS UNIQUE PRIMARY
 		Source-guid File-num Ref-seq.
 
 DEFINE TEMP-TABLE Class-ref NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD Inherited-list AS CHARACTER 
-	FIELD Implements-list AS CHARACTER 
-	FIELD Has-use-pool AS LOGICAL 
-	FIELD Is-final AS LOGICAL 
-	FIELD Is-serializable AS LOGICAL 
-	INDEX Class-ref_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Ref-seq AS INTEGER
+	FIELD Inherited-list AS CHARACTER
+	FIELD Implements-list AS CHARACTER
+	FIELD Has-use-pool AS LOGICAL
+	FIELD Is-final AS LOGICAL
+	FIELD Is-serializable AS LOGICAL
+	INDEX Class-ref_source-guid IS UNIQUE PRIMARY
 		Source-guid Ref-seq.
 
 DEFINE TEMP-TABLE String-ref NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD Max-length AS INTEGER 
-	FIELD Justification AS CHARACTER 
-	FIELD Translatable AS LOGICAL 
-	INDEX String-ref_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Ref-seq AS INTEGER
+	FIELD Max-length AS INTEGER
+	FIELD Justification AS CHARACTER
+	FIELD Translatable AS LOGICAL
+	INDEX String-ref_source-guid IS UNIQUE PRIMARY
 		Source-guid Ref-seq.
 
 DEFINE TEMP-TABLE Parameter-ref NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD Order AS INTEGER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Parameter-mode AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Parameter-name AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Parameter-type AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Dimension AS INTEGER 
-	FIELD Is-append AS LOGICAL 
-	FIELD Dataset-guid AS CHARACTER 
-	INDEX Parameter-ref_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Ref-seq AS INTEGER
+	FIELD Order AS INTEGER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Parameter-mode AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Parameter-name AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Parameter-type AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Dimension AS INTEGER
+	FIELD Is-append AS LOGICAL
+	FIELD Dataset-guid AS CHARACTER
+	INDEX Parameter-ref_source-guid IS UNIQUE PRIMARY
 		Source-guid Ref-seq Order.
 
 DEFINE TEMP-TABLE Dataset-ref NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Dataset-guid AS CHARACTER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD N-uri AS CHARACTER 
-	FIELD N-prefix AS CHARACTER 
-	FIELD Is-reference AS LOGICAL 
-	FIELD Buffer-list AS CHARACTER 
-	FIELD Data-links AS INTEGER 
-	INDEX Dataset-ref_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Dataset-guid AS CHARACTER
+	FIELD Ref-seq AS INTEGER
+	FIELD N-uri AS CHARACTER
+	FIELD N-prefix AS CHARACTER
+	FIELD Is-reference AS LOGICAL
+	FIELD Buffer-list AS CHARACTER
+	FIELD Data-links AS INTEGER
+	INDEX Dataset-ref_source-guid IS UNIQUE PRIMARY
 		Source-guid Dataset-guid Ref-seq.
 
 DEFINE TEMP-TABLE Relation NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Dataset-guid AS CHARACTER 
-	FIELD Relation-name AS CHARACTER 
-		XML-NODE-TYPE "ATTRIBUTE" 
-	FIELD Parent-buffer-name AS CHARACTER 
-	FIELD Child-buffer-name AS CHARACTER 
-	FIELD Relation-list AS CHARACTER 
-	INDEX Relation-guid IS PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Dataset-guid AS CHARACTER
+	FIELD Relation-name AS CHARACTER
+		XML-NODE-TYPE "ATTRIBUTE"
+	FIELD Parent-buffer-name AS CHARACTER
+	FIELD Child-buffer-name AS CHARACTER
+	FIELD Relation-list AS CHARACTER
+	INDEX Relation-guid IS PRIMARY
 		Source-guid Dataset-guid.
 
 DEFINE TEMP-TABLE Interface-ref NO-UNDO
-	FIELD Source-guid AS CHARACTER 
-	FIELD Ref-seq AS INTEGER 
-	FIELD Inherited-list AS CHARACTER 
-	INDEX Interface-ref_source-guid IS UNIQUE PRIMARY 
+	FIELD Source-guid AS CHARACTER
+	FIELD Ref-seq AS INTEGER
+	FIELD Inherited-list AS CHARACTER
+	INDEX Interface-ref_source-guid IS UNIQUE PRIMARY
 		Source-guid Ref-seq.
 
 DEFINE DATASET Cross-reference

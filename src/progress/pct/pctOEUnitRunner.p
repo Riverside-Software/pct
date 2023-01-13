@@ -33,7 +33,7 @@ DEFINE STREAM sParams.
 
 DEFINE VARIABLE reportFormat AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cLine     AS CHARACTER  NO-UNDO.
-DEFINE VARIABLE hasErrors AS LOGICAL NO-UNDO INITIAL FALSE. 
+DEFINE VARIABLE hasErrors AS LOGICAL NO-UNDO INITIAL FALSE.
 
 /* Checks for valid parameters */
 IF (SESSION:PARAMETER EQ ?) THEN
@@ -46,7 +46,7 @@ MESSAGE "Out directory : " + ENTRY(2,SESSION:PARAMETER).
 
 reportFormat = ENTRY(3,SESSION:PARAMETER).
 
-/* Read file */  
+/* Read file */
 INPUT STREAM sParams FROM VALUE(ENTRY(1,SESSION:PARAMETER)).
 REPEAT:
     IMPORT STREAM sParams UNFORMATTED cLine.
@@ -60,15 +60,15 @@ RETURN (IF hasErrors THEN '10' ELSE '0').
 /*----------------------------------------------------------------------------
     Run a single test class and record the results using the SureFire xml
     format.
-  ----------------------------------------------------------------------------*/ 
+  ----------------------------------------------------------------------------*/
 PROCEDURE RunClassAsTest PRIVATE:
   DEFINE INPUT PARAMETER className AS CHARACTER NO-UNDO.
   DEFINE INPUT PARAMETER classFile AS CHARACTER NO-UNDO.
-      
+
   DEFINE VARIABLE test AS Object NO-UNDO.
-  
+
   test = Instance:FromFile(classFile).
-  
+
   DEFINE VARIABLE runner AS OEUnitRunner NO-UNDO.
   runner = NEW OEUnitRunner().
 
@@ -77,26 +77,26 @@ PROCEDURE RunClassAsTest PRIVATE:
   IF runner:Results:GetStatus() EQ TestResult:StatusPassed OR runner:Results:GetStatus() EQ TestResult:StatusFailed THEN DO:
      IF runner:Results:GetStatus() EQ TestResult:StatusFailed THEN
         MESSAGE "  > At least one failure.".
-        
+
       /* If OK, log the results */
       DEFINE VARIABLE reporter AS BaseReporter NO-UNDO.
-      
-      IF OPSYS = "WIN32" THEN 
+
+      IF OPSYS = "WIN32" THEN
         className = "~\" + className.
-      ELSE 
+      ELSE
         className = "/" + className.
-        
+
       CASE reportFormat:
-          WHEN 'SUREFIRE':U THEN DO: 
+          WHEN 'SUREFIRE':U THEN DO:
               reporter = NEW SureFireReporter(ENTRY(2,SESSION:PARAMETER)).
           END.
-          WHEN 'JUNIT':U THEN DO: 
+          WHEN 'JUNIT':U THEN DO:
               reporter = NEW JUnitReporter(ENTRY(2,SESSION:PARAMETER) + className + ".xml").
           END.
-          WHEN 'CSV':U THEN DO: 
+          WHEN 'CSV':U THEN DO:
               reporter = NEW CSVReporter(ENTRY(2,SESSION:PARAMETER) + className + ".csv").
           END.
-          WHEN 'TEXT':U THEN DO: 
+          WHEN 'TEXT':U THEN DO:
               reporter = NEW TextReporter(ENTRY(2,SESSION:PARAMETER) + className + ".txt").
           END.
           OTHERWISE DO:
@@ -119,7 +119,7 @@ PROCEDURE RunClassAsTest PRIVATE:
     DELETE OBJECT test NO-ERROR.
     DELETE OBJECT runner NO-ERROR.
     IF reporter NE ? THEN
-        DELETE OBJECT reporter NO-ERROR.    
+        DELETE OBJECT reporter NO-ERROR.
   END FINALLY.
-    
+
 END PROCEDURE.

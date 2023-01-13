@@ -6,13 +6,13 @@
 *********************************************************************/
 
 
-/*--------------------------------------------------------------------   
+/*--------------------------------------------------------------------
 
 File: prodict/dump_inc.p
 
 Description:
-    Batch-mode incremental .df maker 
-    DICTDB  is the current database 
+    Batch-mode incremental .df maker
+    DICTDB  is the current database
             (it's the first connected database, "master")
     DICTDB2 is the database chosen to compare against (second connected,
             (it's the second connected database, "slave")
@@ -29,9 +29,9 @@ Usage:
               DUMP_INC_RENAMEFILE DUMP_INC_DEBUG
 
        $DLC/bin/_progres -b -db master \
-                            -db slave  \ 
+                            -db slave  \
                             -p prodict/dump_inc.p > /tmp/dump_inc.log
-    
+
 Environment Variables:
     DUMP_INC_DFFILE          : name of file to dump to
     DUMP_INC_CODEPAGE        : output codepage
@@ -44,7 +44,7 @@ Environment Variables:
                                                 and important warnings)
                                             1 = all the above plus all warnings
                                             2 = all the above plus config info
-    
+
 History
     Gary C    01/06/21  This FILE created, author of the original idea
     vap       02/01/29  patched accordingly to changed specs
@@ -57,8 +57,8 @@ Code-page - support:
 
 rename field support
   The rename-file parameter is used to identify tables, database fields
-  and sequences that have changed names. The format of the file is a comma 
-  seperated list that identifies the renamed object, its old name and the new 
+  and sequences that have changed names. The format of the file is a comma
+  seperated list that identifies the renamed object, its old name and the new
   name. When an object is found missing, this file is checked to determine if
   it was renamed.  If no matching entry is found, then the object
   If rename-file is ? or "", then all missing objects are deleted.
@@ -73,7 +73,7 @@ Silent Icremental dump process:
 
   This is an example on how to call this proc persistently to set the
   newly added option of silent dump and to catch any errors:
-    
+
 routine-level on error undo, throw.
 define variable h as handle no-undo.
 
@@ -87,13 +87,13 @@ run setRenameFilename in h("r.rf").
 run setDebugMode in h(1).
 run setSilent in h(yes).
 RUN doDumpIncr IN h.
-delete procedure h. 
+delete procedure h.
 
 catch e as Progress.Lang.AppError :
     message e:ReturnValue
-    view-as  alert-box .  
+    view-as  alert-box .
 end catch.
---------------------------------------------------------------------*/        
+--------------------------------------------------------------------*/
 /*h-*/
 
 /* Definitions */ /*-------------------------------------------------------*/
@@ -114,7 +114,7 @@ DEFINE VARIABLE del-df-file  AS LOGICAL   NO-UNDO.
 DEFINE VARIABLE foo          AS CHARACTER NO-UNDO.
 DEFINE VARIABLE setincrdmpSilent        AS LOGICAL   NO-UNDO INIT NO.
 
-DEFINE STREAM err-log. 
+DEFINE STREAM err-log.
 
 { prodict/user/uservar11.i NEW }
 { prodict/user/userhue.i NEW }
@@ -127,8 +127,8 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 06 NO-UNDO INITIAL [
   /*03*/ ?  /* see below */ ,
   /*04*/ "Using default value of ~"&1~" for &2." ,
   /*05*/ ?  /* see below */ ,
-  /*06*/ ?  /* see below */ 
-]. 
+  /*06*/ ?  /* see below */
+].
 new_lang[03] = "WARNING: Rename file ~"&1~" doesn~'t exist or is unreadable," +
                " ignoring.".
 new_lang[05] = "WARNING: ~"&1~" is not valid codepage. " +
@@ -237,7 +237,7 @@ ELSE DO:
 END.  /* index-mode EQ "":U */
 
 /* user_env[19] will be changed BY _dmpincr.p */
-ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U + 
+ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U +
                       STRING(debug-mode)
        user_env[02] = df-file-name
        user_env[05] = code-page.
@@ -279,8 +279,8 @@ END. /* end of doDumpIncr */
 /* mainline code **********************************************************/
 
 IF NOT SESSION:BATCH-MODE THEN DO:
- if not THIS-PROCEDURE:persistent THEN 
-  MESSAGE SUBSTITUTE(new_lang[01], "{0}":U) 
+ if not THIS-PROCEDURE:persistent THEN
+  MESSAGE SUBSTITUTE(new_lang[01], "{0}":U)
           VIEW-AS ALERT-BOX ERROR BUTTONS OK.
   RETURN.
 END.  /* NOT SESSION:BATCH-MODE */
@@ -308,7 +308,7 @@ END FUNCTION.  /* getEnvironment() */
 FUNCTION getEnvironmentInt RETURNS INTEGER (INPUT pcVariableName AS CHARACTER).
   DEFINE VARIABLE iReturnValue AS INTEGER   NO-UNDO.
   DEFINE VARIABLE cValue       AS CHARACTER NO-UNDO.
-  
+
   ASSIGN cValue       = getEnvironment(pcVariableName)
          iReturnValue = INTEGER(cValue) NO-ERROR.
 

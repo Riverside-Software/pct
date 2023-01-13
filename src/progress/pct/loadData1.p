@@ -24,6 +24,6 @@ if (dynamic-function('getParameter' in source-procedure, input 'callbackClass') 
     message "Callbacks are only supported on 11.3+".
 end.
 
-run prodict/load_d.p (tableList, srcDir + '/'). 
+run prodict/load_d.p (tableList, srcDir + '/').
 
 return "0":U.

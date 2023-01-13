@@ -41,7 +41,7 @@ DO TRANSACTION ON ERROR UNDO, RETRY:
         MESSAGE "Unable to create _db record".
         RETURN '1'.
     END.
-    
+
     bDB:BUFFER-CREATE().
     ASSIGN bDB:BUFFER-FIELD('_Db-name'):BUFFER-VALUE      = shName
            bDB:BUFFER-FIELD('_Db-addr'):BUFFER-VALUE      = shName

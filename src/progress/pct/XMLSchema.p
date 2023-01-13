@@ -242,7 +242,7 @@ REPEAT:
         xText:NODE-VALUE = hTableDesc:BUFFER-VALUE.
         xTable:APPEND-CHILD(xText).
     END.
-    
+
     /* Searching area number */
     qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfFileNum:BUFFER-VALUE) + ' AND _Object-type EQ 1').
     qStorage:QUERY-OPEN().
@@ -253,7 +253,7 @@ REPEAT:
         qStorage:GET-NEXT(NO-LOCK).
     END.
     qStorage:QUERY-CLOSE().
-    
+
     /* Parsing table's fields */
     ASSIGN cQuery = 'FOR EACH _Field WHERE _Field._File-recid = '
            cQuery = cQuery + STRING (hBFile:RECID) + ' BY _Field._Order'.
@@ -286,7 +286,7 @@ REPEAT:
         hField:GET-NEXT(NO-LOCK).
     END.
     hField:QUERY-CLOSE().
-    
+
     /* Parsing table's triggers */
     ASSIGN cQuery = 'FOR EACH _File-Trig WHERE _File-Trig._File-recid = ' + STRING (hBFile:RECID).
     hTrig:QUERY-PREPARE(cQuery).
@@ -321,7 +321,7 @@ REPEAT:
             xText:NODE-VALUE = hIndexDesc:BUFFER-VALUE.
             xIndex:APPEND-CHILD(xText).
         END.
-        
+
         /* Searching area number */
         qStorage:QUERY-PREPARE('FOR EACH _StorageObject WHERE _Object-Number EQ ' + STRING(bfIdxNum:BUFFER-VALUE) + ' AND _Object-type EQ 2').
         qStorage:QUERY-OPEN().

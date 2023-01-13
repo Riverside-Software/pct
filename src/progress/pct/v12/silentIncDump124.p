@@ -30,8 +30,8 @@ RUN setRemoveEmptyDFfile IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDU
 RUN setDumpSection IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'dumpSection') EQ "true").
 RUN setSilent IN h(yes).
 RUN doDumpIncr IN h.
-DELETE PROCEDURE h. 
+DELETE PROCEDURE h.
 
 CATCH e AS Progress.Lang.AppError :
-    MESSAGE e:ReturnValue.  
+    MESSAGE e:ReturnValue.
 END CATCH.

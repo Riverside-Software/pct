@@ -29,8 +29,8 @@ RUN setDebugMode IN h (INTEGER(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDU
 RUN setRemoveEmptyDFfile IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'removeEmptyDFfile') EQ "true").
 RUN setSilent IN h(yes).
 RUN doDumpIncr IN h.
-DELETE PROCEDURE h. 
+DELETE PROCEDURE h.
 
 CATCH e AS Progress.Lang.AppError :
-    MESSAGE e:ReturnValue.  
+    MESSAGE e:ReturnValue.
 END CATCH.

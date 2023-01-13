@@ -6,13 +6,13 @@
 *********************************************************************/
 
 
-/*--------------------------------------------------------------------   
+/*--------------------------------------------------------------------
 
 File: prodict/dump_inc.p
 
 Description:
-    Batch-mode incremental .df maker 
-    DICTDB  is the current database 
+    Batch-mode incremental .df maker
+    DICTDB  is the current database
             (it's the first connected database, "master")
     DICTDB2 is the database chosen to compare against (second connected,
             (it's the second connected database,
@@ -29,12 +29,12 @@ Usage:
               DUMP_INC_RENAMEFILE DUMP_INC_DEBUG
 
        $DLC/bin/_progres -b -db master \
-                            -db slave  \ 
+                            -db slave  \
                             -p prodict/dump_inc.p > /tmp/dump_inc.log
     DataServer Usage:
 
        $DLC/bin/_progres -b -db master \
-                            -db slave  \ 
+                            -db slave  \
                             -p prodict/dump_inc.p > /tmp/dump_inc.log
 
        SHDBNAME1=/dlc/schema-holder1.db
@@ -46,7 +46,7 @@ Usage:
 
        NOTE: If -db parameters are not set at run-time, environment variables must be set to make up for them.
              If -db parameters are set at run-time, they are used for defaulting when certain environment variables is not set.
-    
+
 
 Environment Variables:
     DUMP_INC_DFFILE          : name of file to dump to
@@ -60,7 +60,7 @@ Environment Variables:
                                                 and important warnings)
                                             1 = all the above plus all warnings
                                             2 = all the above plus config info
-    
+
 History
     Gary C    01/06/21  This FILE created, author of the original idea
     vap       02/01/29  patched accordingly to changed specs
@@ -74,8 +74,8 @@ Code-page - support:
 
 rename field support
   The rename-file parameter is used to identify tables, database fields
-  and sequences that have changed names. The format of the file is a comma 
-  seperated list that identifies the renamed object, its old name and the new 
+  and sequences that have changed names. The format of the file is a comma
+  seperated list that identifies the renamed object, its old name and the new
   name. When an object is found missing, this file is checked to determine if
   it was renamed.  If no matching entry is found, then the object
   If rename-file is ? or "", then all missing objects are deleted.
@@ -90,7 +90,7 @@ Silent Icremental dump process:
 
   This is an example on how to call this proc persistently to set the
   newly added option of silent dump and to catch any errors:
-    
+
 routine-level on error undo, throw.
 define variable h as handle no-undo.
 
@@ -104,13 +104,13 @@ run setRenameFilename in h("r.rf").
 run setDebugMode in h(1).
 run setSilent in h(yes).
 RUN doDumpIncr IN h.
-delete procedure h. 
+delete procedure h.
 
 catch e as Progress.Lang.AppError :
     message e:ReturnValue
-    view-as  alert-box .  
+    view-as  alert-box .
 end catch.
---------------------------------------------------------------------*/        
+--------------------------------------------------------------------*/
 /*h-*/
 
 /* Definitions */ /*-------------------------------------------------------*/
@@ -147,7 +147,7 @@ DEFINE VARIABLE ds_dbname2   AS CHARACTER INITIAL "" NO-UNDO.
 DEFINE VARIABLE user-dbtype2 AS CHARACTER INITIAL ? NO-UNDO.
 DEFINE VARIABLE ds_alias     AS CHARACTER INITIAL ? NO-UNDO.
 DEFINE VARIABLE sav_dictdb   AS CHARACTER INITIAL ? NO-UNDO.
-DEFINE VARIABLE sav_dictdb2  AS CHARACTER INITIAL ? NO-UNDO. 
+DEFINE VARIABLE sav_dictdb2  AS CHARACTER INITIAL ? NO-UNDO.
 DEFINE VARIABLE shdb1-id     AS RECID     INITIAL ? NO-UNDO.
 DEFINE VARIABLE dictdb-id    AS RECID     INITIAL ? NO-UNDO.
 DEFINE VARIABLE shdb2-id     AS RECID     INITIAL ? NO-UNDO.
@@ -156,7 +156,7 @@ DEFINE VARIABLE dictdb2-id   AS RECID     INITIAL ? NO-UNDO.
 DEFINE VARIABLE errcode      AS INTEGER   INITIAL 0 NO-UNDO.
 /* For DataServer Use */
 
-DEFINE STREAM err-log. 
+DEFINE STREAM err-log.
 
 { prodict/user/uservar114.i NEW }
 { prodict/user/userhue.i NEW }
@@ -169,9 +169,9 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 24 NO-UNDO INITIAL [
   /*03*/ ?  /* see below */ ,
   /*04*/ "Using default value of ~"&1~" for &2." ,
   /*05*/ ?  /* see below */ ,
-  /*06*/ ?  /* see below */, 
+  /*06*/ ?  /* see below */,
   /*07*/ "First connected database that defines the new baseline definitions for incremental dump is required.",
-  /*08*/ "Second connected database that defines old comparative definitions for incremental dump is required.", 
+  /*08*/ "Second connected database that defines old comparative definitions for incremental dump is required.",
   /*09*/ "Resource failure.  Aborting operations.",
   /*10*/ "Unable to connect to logical database ~"&1~".",
   /*11*/ "  Reason for failure: ~&1~"",
@@ -188,7 +188,7 @@ DEFINE VARIABLE new_lang AS CHARACTER EXTENT 24 NO-UNDO INITIAL [
   /*22*/ ?,
   /*23*/ "~nStarting Incremental dump at ~"&1~" ...",
   /*24*/ ?
-]. 
+].
 new_lang[03] = "WARNING: Rename file ~"&1~" doesn~'t exist or is unreadable," +
                " ignoring.".
 new_lang[05] = "WARNING: ~"&1~" is not valid codepage. " +
@@ -199,7 +199,7 @@ new_lang[12] = "You can set a DataServer incremental dump to two logical databas
                "Or, you can set one database to a logical database and the other to the PROGRESS schema in the " +
                "same schema holder database.  But you must select at least one database in which your schemas " +
                "can be found.".
-new_lang[16] = "There is already a logical database ~"&1~" opened in another schema holder: ~"&2~".  " + 
+new_lang[16] = "There is already a logical database ~"&1~" opened in another schema holder: ~"&2~".  " +
                "Aborting operations: Logical database can only associated with one schema holder in a session.".
 
 new_lang[18] = "Conflict with settings:  You must either set MSS environment variables or " +
@@ -330,7 +330,7 @@ ELSE DO:
 END.  /* index-mode EQ "":U */
 
 /* user_env[19] will be changed BY _dmpincr.p */
-ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U + 
+ASSIGN user_env[19] = rename-file + ",":U + STRING(index-mode) + ",":U +
                       STRING(debug-mode) + ",":U + STRING(setincrdmpSilent)
        user_env[02] = df-file-name
        user_env[05] = code-page.
@@ -341,7 +341,7 @@ IF debug-mode GT 1 THEN DO:
   PUT STREAM err-log UNFORMATTED "DUMP_INC_INDEXMODE  = ":U index-mode SKIP.
   PUT STREAM err-log UNFORMATTED "DUMP_INC_RENAMEFILE = ":U rename-file SKIP.
   PUT STREAM err-log UNFORMATTED "DUMP_INC_DEBUG      = ":U debug-mode SKIP.
-  IF user-dbtype1 <> "PROGRESS" THEN DO: 
+  IF user-dbtype1 <> "PROGRESS" THEN DO:
     PUT STREAM err-log UNFORMATTED "SHDBNAME1           = ":U ds_shname1 SKIP.
     PUT STREAM err-log UNFORMATTED "MSSDBNAME1          = ":U ds_mssname1 SKIP.
     PUT STREAM err-log UNFORMATTED "ORADBNAME1          = ":U ds_oraname1 SKIP.
@@ -383,7 +383,7 @@ IF  s_DbRecId = ? THEN DO:
         CREATE ALIAS "DICTDB2":U FOR DATABASE VALUE(LDBNAME(2)).
         s_DbType2 = "PROGRESS".
     END.
-    ELSE DO : 
+    ELSE DO :
         s_DbType2 = "PROGRESS".
         s_DbType1 = "PROGRESS".
     END.
@@ -415,8 +415,8 @@ END. /* end of doDumpIncr */
 /* mainline code **********************************************************/
 
 IF NOT SESSION:BATCH-MODE THEN DO:
- if not THIS-PROCEDURE:persistent THEN 
-  MESSAGE SUBSTITUTE(new_lang[01], "{0}":U) 
+ if not THIS-PROCEDURE:persistent THEN
+  MESSAGE SUBSTITUTE(new_lang[01], "{0}":U)
           VIEW-AS ALERT-BOX ERROR BUTTONS OK.
   RETURN.
 END.  /* NOT SESSION:BATCH-MODE */
@@ -463,13 +463,13 @@ IF debug-mode GT 0 THEN DO:
 
   /* PROGRESS determines normal legacy execution from here on */
   ASSIGN user-dbtype1 = "PROGRESS"
-         user-dbtype2 = "PROGRESS". 
+         user-dbtype2 = "PROGRESS".
 
-  IF ds_mssname1 <> "" THEN 
+  IF ds_mssname1 <> "" THEN
     ASSIGN user-dbtype1 = "MSS"
              ds_dbname1 = ds_mssname1.
 
-  IF ds_mssname2 <> "" THEN 
+  IF ds_mssname2 <> "" THEN
     ASSIGN user-dbtype2 = "MSS"
              ds_dbname2 = ds_mssname2.
 
@@ -478,7 +478,7 @@ IF debug-mode GT 0 THEN DO:
       PUT STREAM err-log UNFORMATTED new_lang[18] SKIP.
     RETURN.
   END.
-  ELSE IF ds_oraname1 <> "" THEN 
+  ELSE IF ds_oraname1 <> "" THEN
     ASSIGN user-dbtype1 = "ORACLE"
              ds_dbname1 = ds_oraname1.
 
@@ -488,53 +488,53 @@ IF debug-mode GT 0 THEN DO:
       PUT STREAM err-log UNFORMATTED new_lang[18] SKIP.
     RETURN.
   END.
-  ELSE IF ds_oraname2 <> "" THEN 
+  ELSE IF ds_oraname2 <> "" THEN
     ASSIGN user-dbtype2 = "ORACLE"
              ds_dbname2 = ds_oraname2.
 
   IF LDBNAME(1) <> ? THEN DO:
     IF ds_shname1 = "" THEN DO:
-      IF ds_dbname1 <> "" OR CAPS(ds_dbname1) = CAPS("<none>") THEN 
+      IF ds_dbname1 <> "" OR CAPS(ds_dbname1) = CAPS("<none>") THEN
         ds_shname1 = LDBNAME(1). /* For now, assume logical db is in connected sh */
     END.
     ELSE DO:
       IF ds_shname1 <> LDBNAME(1) THEN DO:
         sav_dictdb = LDBNAME(1).
-        IF debug-mode GT 0 THEN 
+        IF debug-mode GT 0 THEN
           PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[19], LDBNAME(1), ds_shname1) SKIP.
       END.
-    END. 
+    END.
   END.
   ELSE IF user-dbtype1 = "PROGRESS" OR ds_shname1 = "" THEN DO:
-    IF debug-mode GT 0 THEN 
+    IF debug-mode GT 0 THEN
       PUT STREAM err-log UNFORMATTED new_lang[07] SKIP.
-    IF user-dbtype2 <> "PROGRESS" AND ds_shname1 <> "" THEN 
+    IF user-dbtype2 <> "PROGRESS" AND ds_shname1 <> "" THEN
       rtconnect1 = yes. /* ok to not have LDBNAME(1) when one or more db's is foreign */
-    ELSE 
+    ELSE
       RETURN.
   END.
- 
+
   IF ds_shname1 <> "" AND ds_dbname1 = "" THEN user-dbtype1 = "". /* Need to search for db type */
 
   IF LDBNAME(2) <> ? THEN DO:
     IF ds_shname2 = "" THEN DO:
-      IF ds_dbname2 <> "" OR CAPS(ds_dbname2) = CAPS("<none>") THEN 
+      IF ds_dbname2 <> "" OR CAPS(ds_dbname2) = CAPS("<none>") THEN
         ds_shname2 = LDBNAME(2). /* For now, assume logical db is in connected sh */
     END.
     ELSE DO:
       IF ds_shname2 <> LDBNAME(2) THEN DO:
            sav_dictdb2 = LDBNAME(2).
-           IF debug-mode GT 0 THEN 
+           IF debug-mode GT 0 THEN
              PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[20], LDBNAME(2), ds_shname2) SKIP.
       END.
     END.
   END.
   ELSE IF user-dbtype2 = "PROGRESS" OR ds_shname2 = "" THEN DO:
-    IF debug-mode GT 0 THEN 
+    IF debug-mode GT 0 THEN
       PUT STREAM err-log UNFORMATTED new_lang[08] SKIP.
     RETURN.
   END.
- 
+
   IF ds_shname2 <> "" AND ds_dbname2 = "" THEN user-dbtype2 = "". /* Need to search for db type */
 
   /* Connect any unconnected schema holder databases */
@@ -549,7 +549,7 @@ IF debug-mode GT 0 THEN DO:
       RETURN.
     END.
     ELSE
-      rtconnect1 = yes. /* Reuse run-time connect flag if LDBNAME(1) is successful */ 
+      rtconnect1 = yes. /* Reuse run-time connect flag if LDBNAME(1) is successful */
   END.
 
   IF user-dbtype2 <> "PROGRESS" AND NOT CONNECTED(ds_shname2) THEN DO:
@@ -579,12 +579,12 @@ IF debug-mode GT 0 THEN DO:
                                   INPUT-OUTPUT user-dbtype1 /* Logical database type */,
                                   OUTPUT shdb1-id           /* RECID of DICTDB */,
                                   OUTPUT dictdb-id          /* RECID of DICTDB logical db */,
-                                  OUTPUT errcode            /* Error Code */).  
-    
+                                  OUTPUT errcode            /* Error Code */).
+
     IF errcode > 0 THEN DO:
       ASSIGN dictdb-id = ?.
       CASE errcode:
-        WHEN 1 THEN DO: 
+        WHEN 1 THEN DO:
           IF debug-mode GT 0 THEN
             PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[15], ds_dbname1, ds_shname1) SKIP.
         END.
@@ -609,9 +609,9 @@ IF debug-mode GT 0 THEN DO:
          IF CAPS(ds_dbname1) = CAPS("<none>") THEN DO:
           drec_db = shdb1-id.
           s_DbType1 = "PROGRESS".
-        END. 
+        END.
         ELSE DO:
-          IF debug-mode GT 0 THEN 
+          IF debug-mode GT 0 THEN
             PUT STREAM err-log UNFORMATTED new_lang[17] SKIP.
           RETURN.
         END.
@@ -640,12 +640,12 @@ IF debug-mode GT 0 THEN DO:
                                   INPUT-OUTPUT user-dbtype2 /* Logical database type */,
                                   OUTPUT shdb2-id           /* RECID of DICTDB2 */,
                                   OUTPUT dictdb2-id         /* RECID of DICTDB2 logical db */,
-                                  OUTPUT errcode            /* Error Code */).  
-    
+                                  OUTPUT errcode            /* Error Code */).
+
     IF errcode > 0 THEN DO:
       ASSIGN dictdb2-id = ?.
       CASE errcode:
-        WHEN 1 THEN DO: 
+        WHEN 1 THEN DO:
           IF debug-mode GT 0 THEN
             PUT STREAM err-log UNFORMATTED SUBSTITUTE(new_lang[15], ds_dbname2, ds_shname2) SKIP.
         END.
@@ -712,7 +712,7 @@ END FUNCTION.  /* getEnvironment() */
 FUNCTION getEnvironmentInt RETURNS INTEGER (INPUT pcVariableName AS CHARACTER).
   DEFINE VARIABLE iReturnValue AS INTEGER   NO-UNDO.
   DEFINE VARIABLE cValue       AS CHARACTER NO-UNDO.
-  
+
   ASSIGN cValue       = getEnvironment(pcVariableName)
          iReturnValue = INTEGER(cValue) NO-ERROR.
 

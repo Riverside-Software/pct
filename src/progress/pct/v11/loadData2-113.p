@@ -29,7 +29,7 @@ do on error undo, retry:
   if valid-object(callback) then callback:onError("Error trapped").
   return '20'.
  end.
- 
+
 assign cTbl = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName').
 assign callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass').
 if (callbackCls > "") then do:
@@ -56,7 +56,7 @@ define variable logger as rssw.pct.LoadDataLogger no-undo.
 logger = new rssw.pct.LoadDataLogger().
 assign dictMonitor = logger.
 
-if valid-object(callback) then callback:beforeLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')).  
+if valid-object(callback) then callback:beforeLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')).
 assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName')
        user_env[2] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
        user_env[3] = "NO-MAP"

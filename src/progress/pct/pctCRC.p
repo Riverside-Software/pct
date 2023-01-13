@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
- 
+
 DEFINE INPUT-OUTPUT PARAMETER TABLE-HANDLE hCRC.
 
 DEFINE VARIABLE i       AS INTEGER    NO-UNDO.

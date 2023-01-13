@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
- 
+
 PROCEDURE getCRC.
     DEFINE INPUT  PARAMETER cPrm  AS CHARACTER  NO-UNDO.
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL    NO-UNDO.
@@ -48,5 +48,5 @@ PROCEDURE getCRC.
         DELETE OBJECT h_File.
     END.
 
-    ASSIGN opOK = TRUE.    
+    ASSIGN opOK = TRUE.
 END PROCEDURE.
