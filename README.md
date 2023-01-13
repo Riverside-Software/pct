@@ -12,3 +12,9 @@ Documentation is available [in the Wiki pages](https://wiki.rssw.eu/pct/)
 
 * Need to assess the quality of your source code ? Find bugs, vulnerabilities and code smells ? Then try [CABL](https://riverside-software.fr/progress-openedge-abl-features-for-cleaner-and-safer-code) for [SonarQube](http://www.sonarqube.org).
 * Working with [OpenEdge WebClient](https://www.progress.com/support/openedge/webclient-executables)? Then you may want to use [PDO](https://pdo.riverside-software.fr) to build and distribute applications in a completely automated way.
+
+### Status
+
+![Build Status](https://ci.rssw.eu/job/PCT/job/main/badge/icon)
+
+![Current Quality Gate](https://sonar.riverside-software.fr/api/project_badges/quality_gate?project=eu.rssw.pct%3APCT)
