@@ -35,10 +35,10 @@ pipeline {
       steps {
         script {
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
-          // Ugly workaround: sonar-scanner requires the master branch to be present, but Jenkins only fetches the current branch
+          // Ugly workaround: sonar-scanner requires the main branch to be present, but Jenkins only fetches the current branch
           // An extra checkout is then done with a different refspec.
           // There's probably a better way to do that, but no time for that (today)
-          checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/master:refs/remotes/origin/master']] ])
+          checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/main:refs/remotes/origin/main']] ])
 
           unstash name: 'classdoc'
           sh 'git rev-parse HEAD > head-rev'
@@ -105,10 +105,10 @@ pipeline {
           }
           withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin", "JAVA_HOME=${jdk}"]) {
             withSonarQubeEnv('RSSW') {
-              if ('master' == env.BRANCH_NAME) {
+              if ('main' == env.BRANCH_NAME) {
                 sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.branch.name=$BRANCH_NAME"
               } else {
-                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.pullrequest.branch=$BRANCH_NAME -Dsonar.pullrequest.base=master -Dsonar.pullrequest.key=0"
+                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.pullrequest.branch=$BRANCH_NAME -Dsonar.pullrequest.base=main -Dsonar.pullrequest.key=0"
               }
             }
           }

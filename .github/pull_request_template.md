@@ -15,7 +15,7 @@ Please delete options that are not relevant.
 
 # Checklist:
 
-- [ ] My branch is started from the latest commit in master
+- [ ] My branch is started from the latest commit in main
 - [ ] My commit history is clean
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
