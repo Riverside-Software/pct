@@ -22,7 +22,8 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
   define stream sBackup.
 
   method public override void initialize(tableName as character):
-    if num-entries(tableName) > 1 then undo, throw new Progress.Lang.AppError("BackupDataCallback can only handle one table").
+    if num-entries(tableName) > 1 then
+      undo, throw new Progress.Lang.AppError("BackupDataCallback can only handle one table").
     this-object:tblName = tableName.
   end method.
 
@@ -64,7 +65,8 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
     hQuery:query-open().
     repeat transaction:
       hQuery:get-next(exclusive-lock).
-      IF hQuery:query-off-end then leave.
+      if hQuery:query-off-end then
+        leave.
       if (ipFileName > '') then 
         put stream sBackup unformatted exportRecord(input hFile, input " ") skip.
       hFile:buffer-delete().

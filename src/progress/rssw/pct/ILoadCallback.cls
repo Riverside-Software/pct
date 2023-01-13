@@ -15,12 +15,12 @@
  *
  */
 
-INTERFACE rssw.pct.ILoadCallback:
-  METHOD PUBLIC VOID beforeUnfreeze().
-  METHOD PUBLIC VOID beforeFileList().
-  METHOD PUBLIC VOID beforeFile(file AS CHARACTER).
-  METHOD PUBLIC VOID afterFile(file AS CHARACTER, logger AS rssw.pct.LoadLogger).
-  METHOD PUBLIC VOID afterFileList().
-  METHOD PUBLIC VOID beforeRefreeze().
-  METHOD PUBLIC VOID afterRefreeze().
-END INTERFACE.
+interface rssw.pct.ILoadCallback:
+  method public void beforeUnfreeze().
+  method public void beforeFileList().
+  method public void beforeFile(file as character).
+  method public void afterFile(file as character, logger as rssw.pct.LoadLogger).
+  method public void afterFileList().
+  method public void beforeRefreeze().
+  method public void afterRefreeze().
+end interface.

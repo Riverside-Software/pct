@@ -15,13 +15,13 @@
  *
  */
 
-INTERFACE rssw.pct.ILoadDataCallback:
-  METHOD PUBLIC VOID initialize(tableName as character).
-  METHOD PUBLIC VOID onError(msg as character).
-  METHOD PUBLIC VOID beforePurge().
-  METHOD PUBLIC VOID afterPurge(delCount as integer).
-  METHOD PUBLIC VOID beforeSequenceValuesBackup().
-  METHOD PUBLIC VOID afterSequenceValuesBackup().
-  METHOD PUBLIC VOID beforeLoad(file AS CHARACTER).
-  METHOD PUBLIC VOID afterLoad(file AS CHARACTER, logger AS rssw.pct.LoadDataLogger).
-END INTERFACE.
+interface rssw.pct.ILoadDataCallback:
+  method public void initialize(tableName as character).
+  method public void onError(msg as character).
+  method public void beforePurge().
+  method public void afterPurge(delCount as integer).
+  method public void beforeSequenceValuesBackup().
+  method public void afterSequenceValuesBackup().
+  method public void beforeLoad(file as character).
+  method public void afterLoad(file as character, logger as rssw.pct.LoadDataLogger).
+end interface.

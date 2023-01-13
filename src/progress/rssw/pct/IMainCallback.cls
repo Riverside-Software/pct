@@ -15,9 +15,9 @@
  *
  */
 
-INTERFACE rssw.pct.IMainCallback:
-  METHOD PUBLIC VOID initialize().
-  METHOD PUBLIC VOID beforeRun().
-  METHOD PUBLIC VOID afterRun(retVal AS INTEGER).
-  METHOD PUBLIC VOID log(msg AS CHARACTER).
-END INTERFACE.
+interface rssw.pct.IMainCallback:
+  method public void initialize().
+  method public void beforeRun().
+  method public void afterRun(retVal as integer).
+  method public void log(msg as character).
+end interface.
