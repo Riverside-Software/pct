@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.rmi.server.UID;
-import java.util.Random;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -68,7 +67,7 @@ public class PCTWSBroker extends PCTBroker {
     public PCTWSBroker() {
         super();
 
-        tmpFileID = new Random().nextInt() & 0xffff;
+        tmpFileID = PCT.nextRandomInt();
         tmpFile = new File(System.getProperty(PCT.TMPDIR), "pct_delta" + tmpFileID + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
