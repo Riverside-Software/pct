@@ -28,6 +28,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
@@ -46,12 +49,15 @@ import com.phenix.pct.BackgroundWorker.Message;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public abstract class PCTBgRun extends PCT implements IRunAttributes {
+    private static final long DEFAULT_TIMEOUT = 30L * 60L; // 30 minutes
+
     protected Path internalPropath = null;
 
     // Attributes
     private int numThreads = 1;
     private GenericExecuteOptions options;
-    
+    private long timeout = DEFAULT_TIMEOUT;
+
     // Internal use : throw BuildException
     private boolean buildException;
     private Throwable buildExceptionSource;
@@ -336,6 +342,10 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         if (numThreads <= 0)
             throw new IllegalArgumentException("Invalid numThreads parameter");
         this.numThreads = numThreads;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 
     public GenericExecuteOptions getOptions() {
@@ -650,50 +660,38 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
          */
         @Override
         public void run() {
-            int acceptedThreads = 0;
-            int deadThreads = 0;
-            ThreadGroup group = new ThreadGroup("PCT");
-
-            while (acceptedThreads + deadThreads < numThreads) {
-                try {
-                    final Socket socket = server.accept();
+            ExecutorService group = Executors.newFixedThreadPool(numThreads);
+            for (int zz = 0; zz < numThreads; zz++) {
+                group.execute(() -> {
+                    final Socket socket;
+                    try {
+                        socket = server.accept();
+                    } catch (IOException caught) {
+                        setBuildException(caught);
+                        return;
+                    }
                     final BackgroundWorker status = createOpenEdgeWorker(socket);
                     status.setDBConnections(options.getDBConnections().iterator());
                     status.setAliases(options.getAliases().iterator());
                     status.setPropath(getPropathAsList().iterator());
-                    status.setCustomOptions(null); // TODO
 
-                    Runnable r = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                while (!status.quit) {
-                                    status.performAction();
-                                    status.listen();
-                                }
-                            } catch (IOException caught) {
-                                setBuildException(caught);
-                            }
+                    try {
+                        while (!status.quit) {
+                            status.performAction();
+                            status.listen();
                         }
-                    };
-                    new Thread(group, r).start();
-                    acceptedThreads++;
-                } catch (IOException caught) {
-                    // Thrown by accept(), so process didn't reach the listener
-                    deadThreads++;
-                    setBuildException(caught);
-                }
-            }
-            try {
-                synchronized (group) {
-                    while (group.activeCount() > 0) {
-                        group.wait();
+                    } catch (IOException caught) {
+                        setBuildException(caught);
                     }
-                }
+                });
+            }
+            group.shutdown();
+            try {
+                group.awaitTermination(timeout, TimeUnit.SECONDS);
             } catch (InterruptedException caught) {
                 setBuildException(caught);
+                Thread.currentThread().interrupt();
             }
-
         }
     }
 }
