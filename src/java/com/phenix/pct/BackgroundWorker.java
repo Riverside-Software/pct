@@ -207,7 +207,9 @@ public abstract class BackgroundWorker {
      */
     protected abstract boolean performCustomAction() throws IOException;
 
-    public abstract void setCustomOptions(Map<String, String> options);
+    public void setCustomOptions(Map<String, String> options) {
+        // No-op
+    }
 
     /**
      * This is where you can handle responses from the Progress process

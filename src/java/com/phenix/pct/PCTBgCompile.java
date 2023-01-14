@@ -23,7 +23,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -304,11 +303,6 @@ public class PCTBgCompile extends PCTBgRun {
             } else {
                 return false;
             }
-        }
-
-        @Override
-        public void setCustomOptions(Map<String, String> options) {
-            // No-op
         }
 
         private String getOptions() {

@@ -16,15 +16,14 @@
  */
 package com.phenix.pct;
 
-import org.apache.tools.ant.BuildException;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.tools.ant.BuildException;
 
 /**
  * Generates a file containing CRC for each table (multiple databases allowed)
@@ -69,10 +68,6 @@ public class PCTBgCRC extends PCTBgRun {
                 setStatusQuit();
             }
             return false;
-        }
-
-        public void setCustomOptions(Map<String, String> options) {
-            // No-op
         }
 
         public void handleResponse(String command, String parameter, boolean err, String customResponse, List<Message> returnValues) {
