@@ -24,6 +24,8 @@ import org.apache.tools.ant.types.ArchiveScanner;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.resources.FileProvider;
 
+import eu.rssw.pct.FileEntry;
+import eu.rssw.pct.PLReader;
 
 public class PLScanner extends ArchiveScanner {
 
@@ -38,7 +40,7 @@ public class PLScanner extends ArchiveScanner {
             throw new BuildException("Only file provider resources are supported");
         }
 
-        PLReader reader = new PLReader(srcFile);
+        PLReader reader = new PLReader(srcFile.toPath());
 
         for (FileEntry entry : reader.getFileList()) {
             Resource r = new PLResource(srcFile, entry);

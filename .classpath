@@ -10,7 +10,6 @@
 	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar" sourcepath="lib/ant-src.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.13.1.jar" sourcepath="lib/testng-6.13.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="lib" path="lib/guava-30.1.1-jre.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/ast.jar"/>
@@ -24,7 +23,7 @@
 	<classpathentry kind="lib" path="lib/objenesis-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-api-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.30.jar"/>
-	<classpathentry kind="lib" path="lib/rcode-reader-2.18.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/rcode-reader-2.19.3.jar"/>
 	<classpathentry kind="lib" path="lib/database-parser-2.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/openedge-checks-2.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/proparse-2.18.0-SNAPSHOT.jar"/>

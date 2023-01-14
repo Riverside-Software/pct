@@ -18,12 +18,14 @@ package com.phenix.pct;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+import eu.rssw.pct.RCodeInfo;
+import eu.rssw.pct.RCodeInfo.InvalidRCodeException;
 
 public class DLCVersion implements Comparable<DLCVersion> {
     public static final DLCVersion UNKNOWN_VERSION = new DLCVersion(0, 0, "");
@@ -114,7 +116,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
 
     private static void readArch(Builder builder, File prostart) throws IOException {
         try {
-            RCodeInfo rci = new RCodeInfo(prostart);
+            RCodeInfo rci = new RCodeInfo(new FileInputStream(prostart));
             builder.rCodeVersion = rci.getVersion();
             builder.arch = rci.is64bits();
         } catch (InvalidRCodeException caught) {

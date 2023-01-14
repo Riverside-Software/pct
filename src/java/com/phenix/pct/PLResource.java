@@ -24,6 +24,9 @@ import java.io.InputStream;
 import org.apache.tools.ant.types.resources.ArchiveResource;
 import org.apache.tools.ant.types.resources.FileResource;
 
+import eu.rssw.pct.FileEntry;
+import eu.rssw.pct.PLReader;
+
 public class PLResource extends ArchiveResource {
     private FileEntry e;
 
@@ -39,8 +42,8 @@ public class PLResource extends ArchiveResource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        FileResource res = (FileResource) this.getArchive();
-        return new PLReader(res.getFile()).getInputStream(e);
+        FileResource res = (FileResource) getArchive();
+        return new PLReader(res.getFile().toPath()).getInputStream(e);
     }
 
     private void setEntry(FileEntry e) {

@@ -63,15 +63,15 @@
   <!-- Classpath for PCT compilation -->
   <path id="pct.compil">
     <pathelement location="lib/ant.jar" />
-    <pathelement location="lib/jcommander-1.30.jar" />
     <pathelement location="lib/gson-2.2.4.jar" />
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
     <pathelement location="lib/jaxb-api-2.3.1.jar" />
+    <pathelement location="lib/rcode-reader-2.19.3.jar"/>
     <!-- ABLDuck classes -->
     <pathelement location="lib/commonmark-0.11.0.jar"/>
     <pathelement location="lib/database-parser-2.17.0.jar"/>
-    <pathelement location="lib/rcode-reader-2.18.0-SNAPSHOT.jar"/>
+    <pathelement location="lib/rcode-reader-2.19.3.jar"/>
     <pathelement location="lib/openedge-checks-2.17.0.jar"/>
     <pathelement location="lib/proparse-2.18.0-SNAPSHOT.jar"/>
     <pathelement location="lib/guava-30.1.1-jre.jar"/>
@@ -88,6 +88,7 @@
     <pathelement location="lib/byte-buddy-agent-1.9.14.jar" />
     <pathelement location="lib/hamcrest-2.1.jar" />
     <pathelement location="lib/objenesis-2.6.jar" />
+    <pathelement location="lib/rcode-reader-2.19.3.jar"/>
   </path>
   
   <target name="init" description="Initialize PCT builder" depends="init-properties">
@@ -136,18 +137,7 @@
         <include name="**/*.properties" />
         <exclude name="com/phenix/pct/*Test.class" />
       </fileset>
-    </jar>
-    <jar jarfile="${dist}/prolib.jar">
-      <zipfileset src="lib/jcommander-1.30.jar" />
-      <fileset dir="${build-java}">
-        <include name="eu/rssw/pct/standalone/**/*.class" />
-        <include name="com/phenix/pct/PLReader*.class" />
-        <include name="com/phenix/pct/FileEntry.class" />
-        <include name="com/phenix/pct/RCodeInfo*.class" />
-      </fileset>
-      <manifest>
-        <attribute name="Main-Class" value="eu.rssw.pct.standalone.Prolib" />
-      </manifest>
+      <zipfileset src="lib/rcode-reader-2.19.3.jar" />
     </jar>
   </target>
 
@@ -288,7 +278,7 @@
       <zipfileset src="lib/guava-30.1.1-jre.jar" />
       <zipfileset src="lib/antlr4-runtime-4.10.1.jar" />
       <zipfileset src="lib/proparse-2.18.0-SNAPSHOT.jar" />
-      <zipfileset src="lib/rcode-reader-2.18.0-SNAPSHOT.jar" />
+      <zipfileset src="lib/rcode-reader-2.19.3.jar" />
       <zipfileset src="lib/database-parser-2.17.0.jar" />
       <zipfileset src="lib/openedge-checks-2.17.0.jar" />
       <zipfileset src="lib/slf4j-api-1.7.30.jar" />

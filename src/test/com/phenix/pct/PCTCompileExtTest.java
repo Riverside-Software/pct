@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -35,7 +36,9 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.phenix.pct.PCTCompileTest.Test80LineProcessor;
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+
+import eu.rssw.pct.RCodeInfo;
+import eu.rssw.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing PCTCompileExt task
@@ -1064,17 +1067,24 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR + "test66/build-v6underline/v9.r").exists());
         assertTrue(new File(BASEDIR + "test66/build-v6revvideo/v9.r").exists());
 
-        RCodeInfo rci0 = new RCodeInfo(new File(BASEDIR + "test66/build/v9.r"));
-        RCodeInfo rci1 = new RCodeInfo(new File(BASEDIR + "test66/build/v6.r"));
-        RCodeInfo rci2 = new RCodeInfo(new File(BASEDIR + "test66/build-v6/v9.r"));
+        RCodeInfo rci0 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build/v9.r")));
+        RCodeInfo rci1 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build/v6.r")));
+        RCodeInfo rci2 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build-v6/v9.r")));
         assertEquals(rci1.getRCodeSize(), rci2.getRCodeSize());
 
-        RCodeInfo rci3 = new RCodeInfo(new File(BASEDIR + "test66/build/ul.r"));
-        RCodeInfo rci4 = new RCodeInfo(new File(BASEDIR + "test66/build-v6underline/v9.r"));
+        RCodeInfo rci3 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build/ul.r")));
+        RCodeInfo rci4 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build-v6underline/v9.r")));
         assertEquals(rci3.getRCodeSize(), rci4.getRCodeSize());
 
-        RCodeInfo rci5 = new RCodeInfo(new File(BASEDIR + "test66/build/rv.r"));
-        RCodeInfo rci6 = new RCodeInfo(new File(BASEDIR + "test66/build-v6revvideo/v9.r"));
+        RCodeInfo rci5 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build/rv.r")));
+        RCodeInfo rci6 = new RCodeInfo(
+                new FileInputStream(new File(BASEDIR + "test66/build-v6revvideo/v9.r")));
         assertEquals(rci5.getRCodeSize(), rci6.getRCodeSize());
 
         assertNotEquals(rci0.getRCodeSize(), rci1.getRCodeSize());

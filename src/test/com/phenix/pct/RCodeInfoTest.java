@@ -20,12 +20,15 @@ import static org.testng.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.testng.annotations.Test;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+import eu.rssw.pct.RCodeInfo;
+import eu.rssw.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Class for testing RCodeInfo class
@@ -38,32 +41,37 @@ public class RCodeInfoTest extends BuildFileTestNg {
     /**
      * Compares CRC and MD5 using RCodeInfo and RCODE-INFO:CRC-VALUE
      */
-    @Test(groups = { "v11" })
+    @Test(groups = {"v11"})
     public void test1() throws IOException, InvalidRCodeException {
-        String md5_1, md5_2, crc1, crc2;
+        String digest1;
+        String digest2;
+        String crc1;
+        String crc2;
 
         configureProject("RCodeInfo/test1/build.xml");
         executeTarget("test");
 
-        BufferedReader br = new BufferedReader(new FileReader(new File(
-                "RCodeInfo/test1/build/test1.crc")));
-        crc1 = br.readLine();
-        md5_1 = br.readLine();
-        br.close();
+        try (BufferedReader reader = Files
+                .newBufferedReader(Paths.get("RCodeInfo/test1/build/test1.crc"))) {
+            crc1 = reader.readLine();
+            digest1 = reader.readLine();
+        }
 
-        BufferedReader br2 = new BufferedReader(new FileReader(new File(
-                "RCodeInfo/test1/build/test2.crc")));
-        crc2 = br2.readLine();
-        md5_2 = br2.readLine();
-        br2.close();
+        try (BufferedReader reader = Files
+                .newBufferedReader(Paths.get("RCodeInfo/test1/build/test2.crc"))) {
+            crc2 = reader.readLine();
+            digest2 = reader.readLine();
+        }
 
-        RCodeInfo file1 = new RCodeInfo(new File("RCodeInfo/test1/build/test1.r"));
-        RCodeInfo file2 = new RCodeInfo(new File("RCodeInfo/test1/build/test2.r"));
+        RCodeInfo file1 = new RCodeInfo(
+                new FileInputStream(new File("RCodeInfo/test1/build/test1.r")));
+        RCodeInfo file2 = new RCodeInfo(
+                new FileInputStream(new File("RCodeInfo/test1/build/test2.r")));
 
-        assertEquals(Long.parseLong(crc1), file1.getCRC());
-        assertEquals(Long.parseLong(crc2), file2.getCRC());
-        assertEquals(md5_1, file1.getRcodeDigest());
-        assertEquals(md5_2, file2.getRcodeDigest());
+        assertEquals(Long.parseLong(crc1), file1.getCrc());
+        assertEquals(Long.parseLong(crc2), file2.getCrc());
+        assertEquals(digest1, file1.getDigest());
+        assertEquals(digest2, file2.getDigest());
     }
 
 }

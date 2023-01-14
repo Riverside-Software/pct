@@ -17,13 +17,17 @@
 package com.phenix.pct;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.selectors.BaseExtendSelector;
 
-import com.phenix.pct.RCodeInfo.InvalidRCodeException;
+import eu.rssw.pct.FileEntry;
+import eu.rssw.pct.PLReader;
+import eu.rssw.pct.RCodeInfo;
+import eu.rssw.pct.RCodeInfo.InvalidRCodeException;
 
 /**
  * Selector for rcode
@@ -68,7 +72,7 @@ public class RCodeSelector extends BaseExtendSelector {
             setError("Invalid comparison mode");
         
         if ((lib != null) && (reader == null)) {
-            reader = new PLReader(lib);
+            reader = new PLReader(lib.toPath());
         }
     }
 
@@ -88,7 +92,7 @@ public class RCodeSelector extends BaseExtendSelector {
         RCodeInfo file1;
         RCodeInfo file2;
         try {
-            file1 = new RCodeInfo(file);
+            file1 = new RCodeInfo(new FileInputStream(file));
         } catch (InvalidRCodeException | IOException caught) {
             log(MessageFormat.format("Source {0} is an invalid rcode -- {1}", filename, caught.getMessage()));
             return true;
@@ -96,7 +100,7 @@ public class RCodeSelector extends BaseExtendSelector {
         
         if (reader == null) {
             try {
-                file2 = new RCodeInfo(new File(dir, filename));
+                file2 = new RCodeInfo(new FileInputStream(new File(dir, filename)));
             } catch (InvalidRCodeException | IOException caught) {
                 log(MessageFormat.format("Target {0} is an invalid rcode -- {1}", filename, caught.getMessage()));
                 return true;
@@ -118,11 +122,11 @@ public class RCodeSelector extends BaseExtendSelector {
 
         switch (mode) {
             case MODE_CRC: 
-                log(MessageFormat.format("CRC {2} File1 {0} File2 {1}", file1.getCRC(), file2.getCRC(), filename), Project.MSG_VERBOSE);
-                return (file1.getCRC() != file2.getCRC());
+                log(MessageFormat.format("CRC {2} File1 {0} File2 {1}", file1.getCrc(), file2.getCrc(), filename), Project.MSG_VERBOSE);
+                return (file1.getCrc() != file2.getCrc());
             case MODE_MD5:
-                log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getRcodeDigest(), file2.getRcodeDigest(), filename), Project.MSG_VERBOSE);
-                return !file1.getRcodeDigest().equals(file2.getRcodeDigest());
+                log(MessageFormat.format("MD5 {2} File1 {0} File2 {1}", file1.getDigest(), file2.getDigest(), filename), Project.MSG_VERBOSE);
+                return !file1.getDigest().equals(file2.getDigest());
             default:
                 return true;
         }
