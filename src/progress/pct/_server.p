@@ -250,6 +250,15 @@ PROCEDURE logDebug:
     RUN log (ipMsg, 4).
 END PROCEDURE.
 
+PROCEDURE logInFirstThread:
+    DEFINE INPUT  PARAMETER ipMsg AS CHARACTER   NO-UNDO.
+    DEFINE INPUT  PARAMETER ipLvl AS INTEGER     NO-UNDO.
+
+    IF (threadNumber EQ 1) THEN
+        RUN log(ipMsg, ipLvl).
+END PROCEDURE.
+
+
 /* Commands to be executed from executeCmd */
 /* Each command should have an input param as char (command parameters) and */
 /* an output param as logical, to tell ANT if command was executed successfully or not */
@@ -274,8 +283,8 @@ PROCEDURE propath:
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL   NO-UNDO.
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
-    ASSIGN opOK = TRUE.
     IF cPrm <> "" THEN PROPATH = cPrm + PROPATH.
+    ASSIGN opOK = TRUE.
 
 END PROCEDURE.
 
@@ -292,6 +301,7 @@ PROCEDURE Connect :
     DEFINE VARIABLE zz         AS INTEGER     NO-UNDO.
 
     ASSIGN connectStr = ENTRY(1, cPrm, '|').
+    RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
     CONNECT VALUE(connectStr) NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opok = FALSE.
@@ -309,6 +319,7 @@ PROCEDURE Connect :
                 LEAVE DbAliases.
             END.
 
+            RUN logInFirstThread (SUBSTITUTE("Creating alias &1 for database &2", ENTRY(1, ENTRY(zz, cPrm, '|')), LDBNAME(dbNum)), 3).
             IF ENTRY(2, ENTRY(zz, cPrm, '|')) EQ '1' THEN
                 CREATE ALIAS VALUE(ENTRY(1, ENTRY(zz, cPrm, '|'))) FOR DATABASE VALUE(LDBNAME(dbNum)) NO-ERROR.
             ELSE
@@ -353,6 +364,7 @@ PROCEDURE launch:
     DEFINE OUTPUT PARAMETER opOK  AS LOGICAL   NO-UNDO.
     DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
+    RUN logInFirstThread ("PROPATH : " + PROPATH, 3).
     RUN VALUE(cPrm) PERSISTENT NO-ERROR.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opOK = FALSE.

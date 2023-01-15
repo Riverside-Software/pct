@@ -313,7 +313,7 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isXcode())).append(';');
             sb.append("").append(';');
             sb.append(Boolean.toString(compAttrs.isForceCompile())).append(';');
-            sb.append(Boolean.toString(false /* FIXME noCompile */)).append(';');
+            sb.append(Boolean.toString(false)).append(';'); // Previously noCompile
             sb.append(Boolean.toString(compAttrs.isKeepXref())).append(';');
             sb.append("").append(';'); // Previously languages
             sb.append("").append(';'); // Previously growth factor
@@ -372,6 +372,8 @@ public class PCTBgCompile extends PCTBgRun {
                     if (compAttrs.isStopOnError())
                         setStatusQuit();
                 }
+            } else {
+                logMessages(returnValues);
             }
         }
     }

@@ -225,11 +225,11 @@ public abstract class BackgroundWorker {
 
     public final void handleStandardEventResponse(String command, String parameter, boolean err,
             String customResponse, List<Message> returnValues) {
+        parent.logMessages(returnValues);
         if ("connect".equalsIgnoreCase(command) && err) {
-            parent.logMessages(returnValues);
             parent.setBuildException(new BuildException(command + "(" + parameter + ") : " + customResponse));
             setStatusQuit();
-        }        
+        }
     }
 
     public static final class Message {

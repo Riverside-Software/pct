@@ -35,7 +35,6 @@ PROCEDURE setOptions:
     RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('XCODE', IF ENTRY(4, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('FORCECOMPILE', IF ENTRY(6, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('NOCOMPILE', IF ENTRY(7, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
     RUN setOption IN hComp ('RELATIVE', IF ENTRY(14, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
