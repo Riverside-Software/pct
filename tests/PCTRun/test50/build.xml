@@ -17,57 +17,57 @@
   <target name="testrr1">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rr">
       <propath location="build" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrr2">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rr">
       <propath location="xcode" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrr3">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rr">
       <propath location="src" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
 
   <target name="testrx1">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rx">
       <propath location="build" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrx2">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rx">
       <propath location="xcode" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrx3">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rx">
       <propath location="src" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
 
   <target name="testrg1">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rx">
       <propath location="build" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrg2">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rx">
       <propath location="xcode" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
   <target name="testrg3">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" clientMode="rg">
       <propath location="src" />
-      <Profiler enabled="true" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTRun-test50" enabled="true" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
 

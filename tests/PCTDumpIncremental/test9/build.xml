@@ -14,12 +14,12 @@
     <PCTIncrementalDump destFile="incr/incremental1.df" dlcHome="${DLC}" removeEmptyDFFile="false" dumpSection="false">
       <SourceDb dbName="test1" dbDir="db" singleUser="true" />
       <TargetDb dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTIncrementalDump>
     <PCTIncrementalDump destFile="incr/incremental2.df" dlcHome="${DLC}" removeEmptyDFFile="false" dumpSection="true">
       <SourceDb dbName="test1" dbDir="db" singleUser="true" />
       <TargetDb dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTIncrementalDump>
   </target>
 

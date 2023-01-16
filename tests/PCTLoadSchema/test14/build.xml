@@ -30,21 +30,21 @@
   <target name="test1">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
 
   <target name="test2">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
 
   <target name="test3">
     <PCTRun procedure="test.p" dlcHome="${DLC}">
       <PCTConnection dbName="test3" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
 </project>

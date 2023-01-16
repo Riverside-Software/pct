@@ -9,13 +9,13 @@
       <fileset dir="src">
         <include name="test.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" minSize="true">
       <fileset dir="src">
         <include name="test.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

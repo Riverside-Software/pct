@@ -8,13 +8,13 @@
     <PCTCompile destDir="build1" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test59" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile destDir="build2" dlcHome="${DLC}">
       <Option name="-checkdbe" />
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test59" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 </project>

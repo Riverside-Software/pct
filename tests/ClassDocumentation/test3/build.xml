@@ -14,7 +14,7 @@
       </propath>
     </ClassDocumentation>
     <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" title="ClassDocumentation reference" templateDir="templates">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="ClassDocumentation-test3" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </HTMLDocumentation>
     <copy todir="html/resources">
       <fileset dir="templates/resources" />

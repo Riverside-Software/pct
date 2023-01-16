@@ -13,14 +13,14 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test28" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="true" destDir="build-gui" dlcHome="${DLC}" preprocessDir="src-gui">
       <fileset dir="src" includes="**/*.p" />
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test28" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -30,14 +30,14 @@
         <pathelement location="build-tty" />
       </propath>
       <OutputParameter name="test28-tty" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test28" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="test.r" dlcHome="${DLC}">
       <propath>
         <pathelement location="build-gui" />
       </propath>
       <OutputParameter name="test28-gui" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test28" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
 </project>

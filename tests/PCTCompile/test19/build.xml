@@ -9,7 +9,7 @@
       <fileset dir="src">
         <include name="test.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test19" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
   <target name="test2">
@@ -19,7 +19,7 @@
       <fileset dir="src">
         <include name="test.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test19" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

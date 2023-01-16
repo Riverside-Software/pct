@@ -12,7 +12,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test37" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
       <fileset dir="src" includes="myclass1.cls" />
@@ -20,7 +20,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test37" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
       <fileset dir="src" includes="myclass2.cls" />
@@ -28,7 +28,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test37" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

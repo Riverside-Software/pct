@@ -32,7 +32,7 @@
         <pathelement location="xcode/dir1" />
         <pathelement location="xcode/dir2" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDynamicRun-test3" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDynRun>
     <echo message="Output ${dynrun1}" />
   </target>

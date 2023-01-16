@@ -8,7 +8,7 @@
     <mkdir dir="build" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" cpstream="utf-8" cpinternal="utf-8">
       <fileset dir="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test26" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

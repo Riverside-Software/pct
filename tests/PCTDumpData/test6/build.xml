@@ -13,15 +13,15 @@
     <mkdir dir="dump/utf8" />
     <PCTDumpData dlcHome="${DLC}" destDir="dump/8859-1" tables="_File" encoding="" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpData>
     <PCTDumpData dlcHome="${DLC}" destDir="dump/8859-15" tables="_File" encoding="" cpinternal="iso8859-15" cpstream="iso8859-15">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpData>
     <PCTDumpData dlcHome="${DLC}" destDir="dump/utf8" tables="_File" encoding="utf-8" cpinternal="iso8859-15" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpData>
   </target>
 

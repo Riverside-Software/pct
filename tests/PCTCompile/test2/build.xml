@@ -4,7 +4,7 @@
 
   <target name="test">
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test2" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

@@ -8,7 +8,7 @@
     <!-- DLC should be inherited from DlcHome task -->
     <PCTCompile graphicalMode="false" destDir="build">
       <fileset dir="src" includes="*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test75" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

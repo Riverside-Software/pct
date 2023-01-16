@@ -13,7 +13,7 @@
         <include name="*.p" />
       </fileset>
       <PCTConnection dbName="test" dbDir="." singleUser="true" logicalName="abc" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test15" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -23,7 +23,7 @@
         <include name="*.p" />
       </fileset>
       <PCTConnection dbName="test" dbDir="." singleUser="true" logicalName="abc" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test15" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

@@ -6,7 +6,7 @@
     <mkdir dir="build" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="false" listing="false" preprocess="false" debugListing="false">
       <fileset dir="src" includes="**/*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test20" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -16,7 +16,7 @@
     <touch file="src/dir1/dir2/test.p" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true">
       <fileset dir="src" includes="**/*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test20" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -27,7 +27,7 @@
     <mkdir dir="debug" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" keepXref="true" listing="true" preprocess="true" debugListing="true" debugListingDir="debug">
       <fileset dir="src" includes="**/*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test20" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

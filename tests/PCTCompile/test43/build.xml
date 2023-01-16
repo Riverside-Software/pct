@@ -10,14 +10,14 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test43" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" noparse="true" debugListing="true" preprocess="true">
       <fileset dir="src" includes="test.p" />
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test43" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -28,14 +28,14 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test43" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" noparse="true" debugListing="true" preprocess="true">
       <fileset dir="src" includes="test.p" />
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test43" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

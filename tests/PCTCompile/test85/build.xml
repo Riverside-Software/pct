@@ -6,7 +6,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" displayFiles="1">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test85" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -17,7 +17,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" displayFiles="1">
       <filelist dir="src" files="test.p,test2.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test85" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -28,7 +28,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" displayFiles="1">
       <filelist dir="src" files="test.p,test2.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test85" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

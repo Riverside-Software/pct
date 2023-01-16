@@ -7,7 +7,7 @@
     <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" schemaFile="schema.df"/>
     <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
     <mkdir dir="db2" />
     <PCTCreateBase dbName="test" destDir="db2" dlcHome="${DLC}" schemaFile="schema.df"/>
@@ -16,42 +16,42 @@
   <target name="load1"> <!-- this target should fail, because errorTolerance is 0% and records already exist -->
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="Tab1" errorTolerance="0" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load2"> <!-- this target should run successful, because errorTolerance is 100% -->
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="Tab1" errorTolerance="100" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load3"> <!-- this target should fail, because errorTolerance is 0% and records already exist -->
     <PCTLoadData dlcHome="${DLC}" srcDir="data" errorTolerance="0" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load4"> <!-- this target should run successful, because errorTolerance is 100% -->
     <PCTLoadData dlcHome="${DLC}" srcDir="data" errorTolerance="100" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load5"> <!-- this target should fail, because errorTolerance is 30% and Tab2.d has 40% of errors -->
     <PCTLoadData dlcHome="${DLC}" srcDir="data2" errorTolerance="30" numsep="44" numdec="46" centuryYearOffset="1950">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load6"> <!-- this target should fail, because errorTolerance is 30% and Tab2.d has 40% of errors -->
     <PCTLoadData dlcHome="${DLC}" srcDir="data2" errorTolerance="60" numsep="46" numdec="44" centuryYearOffset="1950">
       <PCTConnection dbName="test" dbDir="db2" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 

@@ -14,32 +14,32 @@
   <target name="load-noerror">
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" dateFormat="dmy">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
     <PCTLoadData dlcHome="${DLC}" errorTolerance="0" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" dateFormat="dmy">
       <DBConnection dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load-error1">
     <PCTLoadData dlcHome="${DLC}" errorTolerance="30" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" silent="true" dateFormat="dmy">
       <DBConnection dbName="test3" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load-error2">
     <PCTLoadData dlcHome="${DLC}" errorTolerance="60" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" silent="true" dateFormat="dmy">
       <DBConnection dbName="test4" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
   <target name="load-error3">
     <PCTLoadData dlcHome="${DLC}" errorTolerance="30" silent="true" srcFile="data/Tab3.d" table="tab1" numsep="44" numdec="46" dateFormat="dmy" centuryYearOffset="1920">
       <DBConnection dbName="test5" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 

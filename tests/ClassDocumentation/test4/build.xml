@@ -15,7 +15,7 @@
       </propath>
     </ClassDocumentation>
     <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" cpInternal="utf-8" cpStream="utf-8" cpCase="basic">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="ClassDocumentation-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </HTMLDocumentation>
   </target>
 

@@ -20,7 +20,7 @@
       <DBConnection dbname="mydb" dbDir="db" readOnly="true" />
       <fileset dir="src" includes="test.p" />
       <env key="PROWD42" path="proword.42" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test74" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 </project>

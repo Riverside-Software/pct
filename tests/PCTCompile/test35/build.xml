@@ -14,7 +14,7 @@
       <fileset dir="src" includes="**/*.p" />
       <propath location="src" />
       <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test35" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -23,7 +23,7 @@
       <fileset dir="src" includes="**/*.p" />
       <propath location="src" />
       <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test35" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

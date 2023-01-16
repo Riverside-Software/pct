@@ -7,7 +7,7 @@
     <mkdir dir="debugListing" />
     <PCTCompile graphicalMode="false" destDir="build" debugListingDir="debugListing" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test34" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

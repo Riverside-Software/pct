@@ -10,7 +10,7 @@
       <propath location="tests" />
       <DBConnection dbDir="db" dbName="sports2000" singleUser="true" />
       <option name="-clientlog" value="ablunit.log" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="ABLUnit-test10" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </ABLUnit>
   </target>
 

@@ -5,7 +5,7 @@
   <target name="test">
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test39" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

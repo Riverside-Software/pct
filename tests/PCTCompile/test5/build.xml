@@ -8,7 +8,7 @@
       <fileset dir="src">
         <include name="wizz~~'~.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

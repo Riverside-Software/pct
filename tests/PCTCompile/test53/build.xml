@@ -13,7 +13,7 @@
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
       <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test53" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -22,7 +22,7 @@
     <PCTCompile destDir="build2" dlcHome="${DLC}" requireFullNames="true">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test53" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <DBConnection dbName="sp2k" dbDir="db" singleUser="true" />
     </PCTCompile>
   </target>

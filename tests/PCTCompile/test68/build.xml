@@ -6,14 +6,14 @@
     <PCTCompile destDir="src1" dlcHome="${DLC}">
       <fileset dir="src1" includes="**/*.cls" />
       <propath location="src1" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test68" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <mkdir dir="build-impl" />
     <PCTCompile destDir="build-impl" dlcHome="${DLC}">
       <fileset dir="src2" includes="**/*.cls" />
       <propath location="src1" />
       <propath location="build-impl" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test68" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

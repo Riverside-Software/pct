@@ -7,7 +7,7 @@
     <PCTCompile destDir="build1" dlcHome="${DLC}" requireFullKeywords="false">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test52" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -16,7 +16,7 @@
     <PCTCompile destDir="build2" dlcHome="${DLC}" requireFullKeywords="true">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test52" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

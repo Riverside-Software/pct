@@ -7,7 +7,7 @@
       <propath>
         <pathelement location="${DLC}/src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTWSComp-test2" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTWSComp>
   </target>
 

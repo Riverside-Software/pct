@@ -5,13 +5,13 @@
   <target name="test">
     <mkdir dir="profiler dir" />
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" coverage="true" outputDir="profiler dir" />
+      <Profiler description="PCTRun-test51" enabled="true" coverage="true" outputDir="profiler dir" />
     </PCTRun>
   </target>
 
   <target name="test2">
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" coverage="true" outputFile="profiler dir/test.prof" />
+      <Profiler description="PCTRun-test51" enabled="true" coverage="true" outputFile="profiler dir/test.prof" />
     </PCTRun>
   </target>
 

@@ -12,14 +12,14 @@
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
   <target name="update">
     <PCTLoadSchema graphicalMode="false" srcFile="update.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
@@ -28,7 +28,7 @@
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test14" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

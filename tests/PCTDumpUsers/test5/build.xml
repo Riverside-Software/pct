@@ -9,7 +9,7 @@
     <fixcrlf file="basic_user.d" />
     <PCTLoadUsers srcFile="basic_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpUsers-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadUsers>
   </target>
 
@@ -23,7 +23,7 @@
     <mkdir dir="foo" />
     <PCTDumpUsers destFile="foo/_user.d" dlcHome="${DLC}" cpinternal="iso8859-1" cpstream="iso8859-1">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpUsers-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpUsers>
   </target>
 

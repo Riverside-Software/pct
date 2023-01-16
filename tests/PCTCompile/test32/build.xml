@@ -11,7 +11,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test32" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
 
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" stringXref="true" appendStringXref="true">
@@ -19,7 +19,7 @@
       <propath>
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test32" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

@@ -11,7 +11,7 @@
         <pathelement location="build" />
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test41" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <!-- Method definition update -->
     <sleep milliseconds="1000" />
@@ -24,7 +24,7 @@
         <pathelement location="build" />
         <pathelement location="src" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test41" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

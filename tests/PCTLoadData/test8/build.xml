@@ -11,7 +11,7 @@
   <target name="load1">
     <PCTLoadData dlcHome="${DLC}" errorTolerance="0" srcFile="data/Tab1.d" table="tab1" numsep="46" numdec="44" centuryYearOffset="1920">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test8" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
@@ -19,7 +19,7 @@
   <target name="load2">
     <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="46" numdec="44" centuryYearOffset="1920">
       <DBConnection dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test8" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>

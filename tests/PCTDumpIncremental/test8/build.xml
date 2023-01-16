@@ -17,7 +17,7 @@
     <PCTDumpIncremental destFile="incr/incremental1.df" dlcHome="${DLC}">
       <SourceDb dbName="test1" dbDir="db" singleUser="true" passphrase="Admin!234" />
       <TargetDb dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test8" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
   </target>
 

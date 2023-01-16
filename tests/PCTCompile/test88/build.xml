@@ -10,7 +10,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
       <filelist dir="src" files="test1.p,test2.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test88" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

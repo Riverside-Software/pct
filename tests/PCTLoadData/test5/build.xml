@@ -11,7 +11,7 @@
     <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <Table name="Tab1" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 
@@ -19,7 +19,7 @@
     <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <Table name="Tab2" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 

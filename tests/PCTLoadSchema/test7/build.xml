@@ -7,7 +7,7 @@
     <PCTCreateBase dbName="test" destDir="db" dlcHome="${DLC}" />
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test7" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

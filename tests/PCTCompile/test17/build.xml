@@ -17,7 +17,7 @@
       <fileset dir="src">
         <include name="xcode/*.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test17" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -27,7 +27,7 @@
       <fileset dir="src">
         <include name="xcode/*.p" />
       </fileset>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test17" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 </project>

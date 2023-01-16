@@ -6,7 +6,7 @@
     <mkdir dir="build" />
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <filelist dir="src" files="test1.p,test3.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -14,7 +14,7 @@
     <mkdir dir="build2" />
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}">
       <zipfileset src="tests.zip" includes="*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -23,7 +23,7 @@
     <filelist id="foobar" dir="src" files="test2.p" />
     <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}">
       <filelist refid="foobar" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -31,7 +31,7 @@
     <mkdir dir="build4" />
     <PCTCompile graphicalMode="false" destDir="build4" dlcHome="${DLC}">
       <dirset dir="." includes="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -41,7 +41,7 @@
       <filelist dir="src" files="test1.p" />
       <fileset dir="src" includes="*2.p" />
       <filelist dir="src" files="test3.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -51,7 +51,7 @@
       <first>
         <filelist dir="src" files="test1.p,test3.p,test4.p" />
       </first>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -62,7 +62,7 @@
         <filelist dir="src" files="test2.p,test3.p,test1.p" />
         <reverse xmlns="antlib:org.apache.tools.ant.types.resources.comparators" />
       </sort>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -73,7 +73,7 @@
         <fileset dir="src" includes="*.p" />
         <natural xmlns="antlib:eu.rssw.pct" />
       </sort>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test30" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

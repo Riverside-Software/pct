@@ -12,7 +12,7 @@
   <target name="test">
     <PCTCompile graphicalMode="false" destDir="build" dlcHome="${DLC}" xcode="true">
       <fileset dir="xrc" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test38" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

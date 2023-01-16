@@ -10,7 +10,7 @@
   <target name="test">
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" callbackClass="MyLogger">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test13" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

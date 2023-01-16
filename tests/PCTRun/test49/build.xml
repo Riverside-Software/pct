@@ -6,16 +6,16 @@
     <mkdir dir="profiler" />
     <ProgressVersion dlcHome="${DLC}" shortVersion="short" />
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" coverage="false" outputFile="profiler/profiler-${short}.out" />
+      <Profiler description="PCTRun-test49" enabled="true" coverage="false" outputFile="profiler/profiler-${short}.out" />
     </PCTRun>
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" coverage="true" outputFile="profiler/profiler-coverage-${short}.out" />
+      <Profiler description="PCTRun-test49" enabled="true" coverage="true" outputFile="profiler/profiler-coverage-${short}.out" />
     </PCTRun>
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" statistics="true" outputFile="profiler/profiler-statistics-${short}.out" />
+      <Profiler description="PCTRun-test49" enabled="true" statistics="true" outputFile="profiler/profiler-statistics-${short}.out" />
     </PCTRun>
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <Profiler enabled="true" traceFilter="*" outputFile="profiler/profiler-tracestart-${short}.out" />
+      <Profiler description="PCTRun-test49" enabled="true" traceFilter="*" outputFile="profiler/profiler-tracestart-${short}.out" />
     </PCTRun>
   </target>
 

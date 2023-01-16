@@ -8,12 +8,12 @@
 
     <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
       <fileset dir="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test40" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
 
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" keepXref="true">
       <fileset dir="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test40" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

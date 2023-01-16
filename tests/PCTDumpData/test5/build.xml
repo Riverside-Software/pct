@@ -11,7 +11,7 @@
     <mkdir dir="dump" />
     <PCTDumpData dlcHome="${DLC}" destDir="dump" tables="_File">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpData-test5" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpData>
   </target>
 

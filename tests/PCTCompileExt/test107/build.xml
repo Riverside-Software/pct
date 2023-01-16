@@ -7,7 +7,7 @@
   	<mkdir dir="profiler" />
     <PCTCompileExt graphicalMode="false" destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*" />
-      <Profiler enabled="${PROFILER}" outputDir="profiler" coverage="true" />  
+      <Profiler description="PCTCompileExt-test107" enabled="${PROFILER}" outputDir="profiler" coverage="true" />  
     </PCTCompileExt>
   </target>
 

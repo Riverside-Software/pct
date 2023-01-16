@@ -7,7 +7,7 @@
     <PCTDumpUsers dlcHome="${DLC}" destFile="foo/dump.df">
       <PCTConnection dbName="test1" dbDir="db" singleUser="true" />
       <PCTConnection dbName="test2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpUsers-test3" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpUsers>
   </target>
 

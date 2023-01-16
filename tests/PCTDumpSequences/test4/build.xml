@@ -11,7 +11,7 @@
     <mkdir dir="sandbox" />
     <PCTDumpSequences dlcHome="${DLC}" destDir="sandbox">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpSequences-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpSequences>
   </target>
 

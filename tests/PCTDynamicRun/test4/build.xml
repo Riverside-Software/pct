@@ -4,7 +4,7 @@
 
   <target name="test">
     <PCTDynRun procedure="test.p" dlcHome="${DLC}" mainCallback="Test4Callback">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDynamicRun-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDynRun>
   </target>
 

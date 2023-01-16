@@ -11,16 +11,16 @@
     <mkdir dir="foo" />
     <PCTDumpSchema destFile="foo/files1.df" dlcHome="${DLC}" tables="Tab1,Tab2">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpSchema-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpSchema>
     <PCTDumpSchema destFile="foo/files2.df" dlcHome="${DLC}" tables="Tab3,Tab2">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpSchema-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpSchema>
     <PCTDumpSchema destFile="foo/files3.df" dlcHome="${DLC}" tables="Tab3">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
       <table name="Tab1" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpSchema-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpSchema>
   </target>
 

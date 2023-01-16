@@ -10,7 +10,7 @@
   <target name="load">
     <PCTLoadData dlcHome="${DLC}" srcDir="data" numsep="44" numdec="46" centuryYearOffset="1920" dateFormat="dmy">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test4" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadData>
   </target>
 

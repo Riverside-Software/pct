@@ -27,7 +27,7 @@
         <pathelement location="dir1" />
         <pathelement location="dir2" />
       </propath>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDynamicRun-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDynRun>
     <echo message="Output ${dynrun1}" />
   </target>

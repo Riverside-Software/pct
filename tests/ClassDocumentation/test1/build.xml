@@ -19,10 +19,10 @@
       </propath>
     </ClassDocumentation>
     <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </HTMLDocumentation>
     <XMLDocumentation dlcHome="${DLC}" sourceDir="doc" destFile="xml/test1.xml">
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </XMLDocumentation>
   </target>
 

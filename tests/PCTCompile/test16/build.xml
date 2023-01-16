@@ -19,15 +19,15 @@
     <mkdir dir="build3" />
     <PCTCompile graphicalMode="false" destDir="build1" dlcHome="${DLC}">
       <fileset dir="src/xcode1" includes="*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build2" dlcHome="${DLC}" xcode="true">
       <fileset dir="src/xcode1" includes="*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
     <PCTCompile graphicalMode="false" destDir="build3" dlcHome="${DLC}" xcode="true" xcodekey="pct">
       <fileset dir="src/xcode2" includes="*.p" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

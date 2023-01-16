@@ -7,7 +7,7 @@
     <pct:compile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test57" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </pct:compile>
   </target>
 

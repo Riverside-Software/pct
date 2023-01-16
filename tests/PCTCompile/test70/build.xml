@@ -7,7 +7,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test70" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <flattenmapper />
       <!--
       Just changing the case will never work 

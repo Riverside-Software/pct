@@ -8,7 +8,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json">
       <fileset dir="src" includes="**/test1.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -16,7 +16,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="JSON">
       <fileset dir="src" includes="**/test2.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -24,7 +24,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json">
       <fileset dir="src" includes="**/test3.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -32,7 +32,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" outputType="josn">
       <fileset dir="src" includes="**/test3.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -40,7 +40,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" numThreads="2" outputType="json">
       <fileset dir="src" includes="**/test7.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -48,7 +48,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="JSON" requireFullKeywords="true">
       <fileset dir="src" includes="**/test5.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -56,7 +56,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="json" requireFullKeywords="true">
       <fileset dir="src" includes="**/test6.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 
@@ -64,7 +64,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="true" outputType="json" >
       <fileset dir="src" includes="**/test1.p" />
       <propath location="src"/>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test79" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

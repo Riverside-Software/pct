@@ -7,7 +7,7 @@
     <sports2000 destDir="db" dlcHome="${DLC}" />
     <PCTSchemaDoc file="doc.xml" dlcHome="${DLC}">
       <PCTConnection dbName="sports2000" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTSchemaDoc-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTSchemaDoc>
   </target>
 

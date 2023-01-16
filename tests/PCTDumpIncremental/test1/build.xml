@@ -16,20 +16,20 @@
       <PCTConnection dbName="test2" dbDir="." singleUser="true">
         <PCTAlias name="dictdb2" />
       </PCTConnection>
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
   </target>
 
   <target name="test2">
     <PCTLoadSchema srcFile="incr/incremental.df" dlcHome="${DLC}">
       <PCTConnection dbName="test2" dbDir="." singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <mkdir dir="build" />
     <PCTCompile destDir="build" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.p" />
       <PCTConnection dbName="test2" dbDir="." singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

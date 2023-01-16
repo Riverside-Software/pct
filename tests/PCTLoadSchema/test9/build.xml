@@ -9,7 +9,7 @@
     <PCTLoadSchema dlcHome="${DLC}">
       <PCTConnection dbName="test" dbDir="db" singleUser="true" />
 	  <fileset dir="." includes="*.df" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 

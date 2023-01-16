@@ -8,7 +8,7 @@
     <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true" failOnError="false" outputType="console,json" requireFullKeywords="true">
       <fileset dir="src" includes="*.p" />
       <propath location="src" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTCompile-test83" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTCompile>
   </target>
 

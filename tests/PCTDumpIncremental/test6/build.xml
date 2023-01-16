@@ -13,7 +13,7 @@
     <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="true" dlcHome="${DLC}">
       <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
       <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
   </target>
 
@@ -21,7 +21,7 @@
     <PCTDumpIncremental destFile="incr/incremental.df" removeEmptyDFFile="false" dlcHome="${DLC}">
       <SourceDb dbName="sports1" dbDir="db" singleUser="true" />
       <TargetDb dbName="sports2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTDumpIncremental-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTDumpIncremental>
   </target>
 

@@ -15,54 +15,54 @@
   <target name="load">
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" preDeploySection="true">
       <DBConnection dbName="db1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" triggerSection="true">
       <DBConnection dbName="db2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" postDeploySection="true">
       <DBConnection dbName="db3" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" offlineSection="true">
       <DBConnection dbName="db4" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}">
       <DBConnection dbName="db5" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
     <PCTLoadSchema srcFile="schema.df" dlcHome="${DLC}" triggerSection="true" offlineSection="true">
       <DBConnection dbName="db6" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTLoadSchema>
   </target>
 
   <target name="test">
     <PCTRun procedure="testdb1.p" dlcHome="${DLC}">
       <DBConnection dbName="db1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="testdb2.p" dlcHome="${DLC}">
       <DBConnection dbName="db2" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="testdb3.p" dlcHome="${DLC}">
       <DBConnection dbName="db3" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="testdb4.p" dlcHome="${DLC}">
       <DBConnection dbName="db4" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="testdb5.p" dlcHome="${DLC}">
       <DBConnection dbName="db5" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
     <PCTRun procedure="testdb6.p" dlcHome="${DLC}">
       <DBConnection dbName="db6" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadSchema-test16" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
     </PCTRun>
   </target>
 

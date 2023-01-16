@@ -7,7 +7,7 @@
     <PCTCreateBase dbName="test1" destDir="db" dlcHome="${DLC}" schemaFile="schema.df" />
     <PCTLoadData dlcHome="${DLC}" errorTolerance="0" srcFile="data/init.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" silent="true">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
@@ -15,7 +15,7 @@
   <target name="load1">
     <PCTLoadData dlcHome="${DLC}" callbackClass="MyLogger" errorTolerance="0" srcFile="data/v1.d" table="tab1" numsep="46" numdec="44" centuryYearOffset="1920" tempDir="." silent="true">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
@@ -23,7 +23,7 @@
   <target name="load2">
     <PCTLoadData dlcHome="${DLC}" callbackClass="MyLogger" errorTolerance="20" srcFile="data/v2.d" table="tab1" numsep="44" numdec="46" centuryYearOffset="1920" tempDir="." silent="true">
       <DBConnection dbName="test1" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test9" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>

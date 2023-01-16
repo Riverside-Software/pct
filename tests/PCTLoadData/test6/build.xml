@@ -10,7 +10,7 @@
   <target name="load-replace">
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callbackClass="rssw.pct.BackupDataCallback" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
@@ -18,7 +18,7 @@
   <target name="load-append">
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab1.d" table="tab1" numsep="44" numdec="46" callbackClass="MyLogger" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
@@ -26,7 +26,7 @@
   <target name="load-error">
     <PCTLoadData dlcHome="${DLC}" srcFile="data/Tab2.d" table="tab1" numsep="44" numdec="46" callbackClass="MyLogger" centuryYearOffset="1920">
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
-      <Profiler enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+      <Profiler description="PCTLoadData-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
       <Option name="-d" value="dmy" />
     </PCTLoadData>
   </target>
