@@ -105,11 +105,7 @@ pipeline {
           }
           withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin", "JAVA_HOME=${jdk}"]) {
             withSonarQubeEnv('RSSW') {
-              if ('main' == env.BRANCH_NAME) {
-                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.branch.name=$BRANCH_NAME"
-              } else {
-                sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc} -Dsonar.pullrequest.branch=$BRANCH_NAME -Dsonar.pullrequest.base=main -Dsonar.pullrequest.key=0"
-              }
+              sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc}"
             }
           }
         }
