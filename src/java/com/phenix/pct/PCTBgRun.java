@@ -76,7 +76,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         super();
 
         options = new GenericExecuteOptions(this);
-        options.setProcedure("pct/_server.p");
+        options.setProcedure("pct/server.p");
 
         // Nom de la PL à créer
         plID = PCT.nextRandomInt();
@@ -87,7 +87,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
 
     protected void setRunAttributes(GenericExecuteOptions attrs) {
         this.options = attrs;
-        options.setProcedure("pct/_server.p");
+        options.setProcedure("pct/server.p");
     }
 
     /**
