@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import org.apache.tools.ant.types.Path;
  * @version $Revision$
  */
 public class PCTBinaryDump extends PCT {
-    private List<PCTConnection> dbConnList = null;
+    private PCTConnection connection = null;
     private List<Pattern> patterns = new ArrayList<>();
     private File dest = null;
     private Path propath = null;
@@ -88,11 +87,10 @@ public class PCTBinaryDump extends PCT {
     }
 
     /**
-     * Adds a database connection
-     * 
-     * @param dbConn Instance of DBConnection class
+     * Add a database connection
      * @deprecated
      */
+    @Deprecated
     public void addPCTConnection(PCTConnection dbConn) {
         addDBConnection(dbConn);
     }
@@ -103,11 +101,10 @@ public class PCTBinaryDump extends PCT {
     }
 
     public void addDBConnection(PCTConnection dbConn) {
-        if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList<>();
+        if (this.connection != null) {
+            throw new BuildException(Messages.getString("PCTBinaryLoad.2")); //$NON-NLS-1$
         }
-
-        this.dbConnList.add(dbConn);
+        this.connection = dbConn;
     }
 
     public void addConfiguredInclude(Pattern inc) {
@@ -144,17 +141,10 @@ public class PCTBinaryDump extends PCT {
      */
     @Override
     public void execute() {
-
         checkDlcHome();
-        if (dbConnList == null) {
+        if (connection == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
         }
-
-        if (dbConnList.size() > 1) {
-            throw new BuildException(MessageFormat.format(
-                    Messages.getString("PCTBinaryLoad.2"), "1")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
         if (dest == null) {
             throw new BuildException(Messages.getString("PCTBinaryDump.0")); //$NON-NLS-1$
         }
@@ -190,17 +180,13 @@ public class PCTBinaryDump extends PCT {
         else
             executable = getExecPath("_proutil"); //$NON-NLS-1$
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         exec.setExecutable(executable.toString());
-
-        // Database connections
-        for (PCTConnection dbc : dbConnList) {
-            dbc.createArguments(exec);
-        }
+        connection.createArguments(exec);
 
         // Binary dump
         exec.createArg().setValue("-C"); //$NON-NLS-1$
@@ -233,11 +219,7 @@ public class PCTBinaryDump extends PCT {
         exec.setProcedure("pct/pctBinaryDump.p"); //$NON-NLS-1$
         exec.setGraphicalMode(false);
         exec.addPropath(propath);
-
-        // Database connections
-        for (PCTConnection dbc : dbConnList) {
-            exec.addDBConnection(dbc);
-        }
+        exec.addDBConnection(connection);
 
         StringBuilder sb = new StringBuilder();
         sb.append(tblListFile.getAbsolutePath());
@@ -263,8 +245,11 @@ public class PCTBinaryDump extends PCT {
     }
 
     public static class Include extends Pattern {
+        // Nothing
     }
+
     public static class Exclude extends Pattern {
+        // Nothing
     }
 
 }

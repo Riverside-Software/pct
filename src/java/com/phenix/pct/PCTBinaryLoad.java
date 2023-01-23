@@ -16,15 +16,13 @@
  */
 package com.phenix.pct;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.FileSet;
-
-import java.io.File;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Binary load task
@@ -33,32 +31,32 @@ import java.util.List;
  * @version $Revision$
  */
 public class PCTBinaryLoad extends PCT {
-    private List<PCTConnection> dbConnList = null;
+    private PCTConnection connection = null;
     private List<FileSet> filesets = new ArrayList<>();
     private int indexRebuildTimeout = 0;
     private boolean rebuildIndexes = true;
     private File paramFile = null;
     private List<PCTRunOption> options = null;
 
-    public void addDB_Connection(PCTConnection dbConn) {
-        addDBConnection(dbConn);
-    }
-
+    /**
+     * Add a database connection
+     * @deprecated
+     */
+    @Deprecated
     public void addPCTConnection(PCTConnection dbConn) {
         addDBConnection(dbConn);
     }
 
-    /**
-     * Adds a database connection
-     *
-     * @param dbConn Instance of DBConnection class
-     */
-    public void addDBConnection(PCTConnection dbConn) {
-        if (this.dbConnList == null) {
-            this.dbConnList = new ArrayList<>();
-        }
+    // Variation pour antlib
+    public void addDB_Connection(PCTConnection dbConn) {
+        addDBConnection(dbConn);
+    }
 
-        this.dbConnList.add(dbConn);
+    public void addDBConnection(PCTConnection dbConn) {
+        if (this.connection != null) {
+            throw new BuildException(Messages.getString("PCTBinaryLoad.2")); //$NON-NLS-1$
+        }
+        this.connection = dbConn;
     }
 
     /**
@@ -116,13 +114,8 @@ public class PCTBinaryLoad extends PCT {
     @Override
     public void execute() {
         checkDlcHome();
-        if (this.dbConnList == null) {
+        if (connection == null) {
             throw new BuildException(Messages.getString("PCTBinaryLoad.1")); //$NON-NLS-1$
-        }
-
-        if (this.dbConnList.size() > 1) {
-            throw new BuildException(MessageFormat.format(
-                    Messages.getString("PCTBinaryLoad.2"), "1")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         for (FileSet fs : filesets) {
@@ -139,11 +132,7 @@ public class PCTBinaryLoad extends PCT {
         exec.setFailonerror(true);
         File a = getExecPath("_proutil"); //$NON-NLS-1$
         exec.setExecutable(a.toString());
-
-        // Database connections
-        for (PCTConnection dbc : dbConnList) {
-            dbc.createArguments(exec);
-        }
+        connection.createArguments(exec);
 
         // Binary load
         exec.createArg().setValue("-C"); //$NON-NLS-1$
