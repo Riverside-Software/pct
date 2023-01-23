@@ -64,4 +64,18 @@ public class IndexRebuildTest extends BuildFileTestNg {
         executeTarget("test1");
         expectBuildException("test2", "Invalid option value");
     }
+
+    @Test(groups = {"v11"})
+    public void test5() {
+        configureProject("IndexRebuild/test5/build.xml");
+        executeTarget("init");
+        executeTarget("test1");
+        expectBuildException("test1-fail", "Invalid passphrase");
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            executeTarget("test2-win");
+        } else {
+            executeTarget("test2-unix");
+        }
+    }
+
 }

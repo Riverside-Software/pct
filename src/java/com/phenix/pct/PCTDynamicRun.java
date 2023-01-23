@@ -94,6 +94,15 @@ public class PCTDynamicRun extends PCTRun {
             for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
                 writer.beginObject();
                 writer.name("connect").value(dbc.createConnectString());
+                if (dbc.hasCmdLinePassphrase()) {
+                    writer.name("passphrase").value("cmdline");
+                    writer.name("cmd").value(dbc.getPassphraseCmdLine());
+                } else if (dbc.hasEnvPassphrase()) {
+                    writer.name("passphrase").value("env");
+                    writer.name("env").value(dbc.getPassphraseEnvVar());
+                } else {
+                    writer.name("passphrase").value("none");
+                }
                 writer.name("aliases").beginArray();
 
                 Collection<PCTAlias> aliases = dbc.getAliases();

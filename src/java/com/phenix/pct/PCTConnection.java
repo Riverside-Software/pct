@@ -49,6 +49,8 @@ public class PCTConnection extends DataType {
     private File paramFile = null;
     private Boolean singleUser = null;
     private Boolean readOnly = null;
+    private String passphraseEnvVar = null;
+    private String passphraseCmdLine = null;
     private Map<String, PCTAlias> aliases = new HashMap<>();
     private List<PCTRunOption> options = null;
 
@@ -174,6 +176,20 @@ public class PCTConnection extends DataType {
     }
 
     /**
+     * The passphrase will be read from this environment variable
+     */
+    public void setPassphraseEnvVar(String passphrase) {
+        this.passphraseEnvVar = passphrase;
+    }
+
+    /**
+     * The passphrase will be read from the output of this command line
+     */
+    public void setPassphraseCmdLine(String passphraseCmdLine) {
+        this.passphraseCmdLine = passphraseCmdLine;
+    }
+
+    /**
      * If true, opens the database in single-user mode
      * 
      * @param singleUser true|false|on|off|yes|no
@@ -211,6 +227,16 @@ public class PCTConnection extends DataType {
 
     protected PCTConnection getRef() {
         return (PCTConnection) getCheckedRef();
+    }
+
+    public boolean hasCmdLinePassphrase() {
+        return (Boolean.TRUE.equals(singleUser) || Boolean.TRUE.equals(readOnly))
+                && (passphraseCmdLine != null) && !passphraseCmdLine.trim().isEmpty();
+    }
+
+    public boolean hasEnvPassphrase() {
+        return (Boolean.TRUE.equals(singleUser) || Boolean.TRUE.equals(readOnly))
+                && (passphraseEnvVar != null) && !passphraseEnvVar.trim().isEmpty();
     }
 
     /**
@@ -278,13 +304,10 @@ public class PCTConnection extends DataType {
             list.add(logicalName);
         }
 
-        if (singleUser != null) {
-            if (singleUser) {
-                list.add("-1"); //$NON-NLS-1$    
-            }
-            else {
-                list.remove("-1");
-         }
+        if (Boolean.TRUE.equals(singleUser)) {
+            list.add("-1"); //$NON-NLS-1$
+        } else {
+            list.remove("-1");
         }
 
         if (cacheFile != null) {
@@ -356,13 +379,20 @@ public class PCTConnection extends DataType {
 
     /**
      * Return a string which could be used to connect a database from a background worker. Pipe
-     * separated list, first entry is connection string, followed by aliases. Aliases are
+     * separated list, first entry is connection string, second entry contains passphrase mode,
+     * third entry is the value of the passphrase mode, then followed by aliases. Aliases are
      * comma-separated lists, first entry is alias name, second is 1 if NO-ERROR, 0 w/o no-error
      * 
      * @return Connection string
      */
     public String createBackgroundConnectString() {
-        StringBuilder sb = new StringBuilder(createConnectString());
+        StringBuilder sb = new StringBuilder(createConnectString()).append('|');
+        if (hasCmdLinePassphrase())
+            sb.append("cmdline|").append(passphraseCmdLine);
+        else if (hasEnvPassphrase())
+            sb.append("env|").append(passphraseEnvVar);
+        else
+            sb.append("|");
         if (hasAliases()) {
             for (PCTAlias alias : getAliases()) {
                 sb.append('|').append(alias.getName()).append(',')
@@ -419,4 +449,11 @@ public class PCTConnection extends DataType {
         }
     }
 
+    public String getPassphraseEnvVar() {
+        return passphraseEnvVar;
+    }
+
+    public String getPassphraseCmdLine() {
+        return passphraseCmdLine;
+    }
 }

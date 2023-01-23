@@ -23,7 +23,9 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,6 +38,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
+
+import com.google.common.io.Files;
 
 public class BuildFileTestNg {
     private Project project;
@@ -58,6 +62,14 @@ public class BuildFileTestNg {
      */
     public Project getProject() {
         return project;
+    }
+
+    public List<String> getLogBuffer() {
+        return logBuffer;
+    }
+
+    public List<String> getFullLogBuffer() {
+        return fullLogBuffer;
     }
 
     public BuildException getBuildException() {
@@ -247,6 +259,23 @@ public class BuildFileTestNg {
         project.addBuildListener(new AntTestListener(logLevel));
         ProjectHelper.configureProject(project, antFile);
 
+    }
+
+    protected static boolean searchInList(List<String> log, String pattern) {
+        for (String str : log) {
+            if (str.contains(pattern))
+                return true;
+        }
+        return false;
+    }
+
+    protected static boolean searchInFile(File file, String pattern) {
+        try {
+            return searchInList(Files.readLines(file, StandardCharsets.UTF_8), pattern);
+        } catch (IOException caught) {
+            System.out.println("ERR");
+            return false;
+        }
     }
 
     /**

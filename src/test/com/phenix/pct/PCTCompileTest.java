@@ -1713,6 +1713,23 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(lines02.stream().filter(it -> it.trim().length() > 0).count() > 0);
     }
 
+    @Test(groups = {"v11"})
+    public void test92() throws IOException {
+        configureProject(BASEDIR + "test92/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "No passphrase");
+        executeTarget("test2");
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            executeTarget("test3-win");
+        } else {
+            executeTarget("test3-unix");
+        }
+        assertTrue(new File(BASEDIR, "test92/build2/customer.r").exists());
+        assertTrue(new File(BASEDIR, "test92/build2/item.r").exists());
+        assertTrue(new File(BASEDIR, "test92/build3/customer.r").exists());
+        assertTrue(new File(BASEDIR, "test92/build3/item.r").exists());
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

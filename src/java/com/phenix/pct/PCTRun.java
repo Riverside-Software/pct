@@ -641,9 +641,16 @@ public class PCTRun extends PCT implements IRunAttributes {
             // Defines database connections and aliases
             int dbNum = 1;
             for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
-                String connect = dbc.createConnectString();
-                bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
-                        connect));
+                if (dbc.hasCmdLinePassphrase()) {
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getConnectPassphraseCmdLineString(),
+                            dbc.createConnectString(), dbc.getPassphraseCmdLine()));
+                } else if (dbc.hasEnvPassphrase()) {
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getConnectPassphraseEnvString(),
+                            dbc.createConnectString(), dbc.getPassphraseEnvVar()));
+                } else {
+                    bw.write(MessageFormat.format(this.getProgressProcedures().getConnectString(),
+                            dbc.createConnectString()));
+                }
 
                 Collection<PCTAlias> aliases = dbc.getAliases();
                 if (aliases != null) {

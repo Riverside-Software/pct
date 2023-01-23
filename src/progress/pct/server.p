@@ -299,10 +299,31 @@ PROCEDURE Connect :
     /* Each alias is comma separated list, alias name and 1 if no-error, 0 w/o no-error */
     DEFINE VARIABLE connectStr AS CHARACTER   NO-UNDO.
     DEFINE VARIABLE zz         AS INTEGER     NO-UNDO.
+    DEFINE VARIABLE osCmdOut   AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE passMode   AS CHARACTER   NO-UNDO.
+    DEFINE VARIABLE passValue  AS CHARACTER   NO-UNDO.
 
-    ASSIGN connectStr = ENTRY(1, cPrm, '|').
-    RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
-    CONNECT VALUE(connectStr) NO-ERROR.
+    ASSIGN connectStr = ENTRY(1, cPrm, '|')
+           passMode   = ENTRY(2, cPrm, '|')
+           passValue  = ENTRY(3, cPrm, '|').
+    IF (passMode EQ 'cmdline') THEN DO:
+      RUN logInFirstThread ("Executing passphrase command line: " + passValue, 3).
+      INPUT THROUGH VALUE(passValue).
+      IMPORT UNFORMATTED osCmdOut.
+      INPUT CLOSE.
+    END.
+    IF (passMode EQ 'cmdline') THEN DO:
+      RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
+      CONNECT VALUE(connectStr + ' -KeyStorePassPhrase "' + osCmdOut + '"') NO-ERROR.
+    END.
+    ELSE IF (passMode EQ 'env') THEN DO:
+      RUN logInFirstThread ("Trying to connect to : " + connectStr + " with passphrase from " + passValue, 3).
+      CONNECT VALUE(connectStr + ' -KeyStorePassPhrase "' + OS-GETENV(passValue) + '"') NO-ERROR.
+    END.
+    ELSE DO:
+      RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
+      CONNECT VALUE(connectStr) NO-ERROR.
+    END.
     IF ERROR-STATUS:ERROR THEN DO:
         ASSIGN opok = FALSE.
         RUN logError (ERROR-STATUS:GET-MESSAGE(1)).
@@ -311,7 +332,7 @@ PROCEDURE Connect :
         ASSIGN opOk = TRUE.
 
         DbAliases:
-        DO zz = 2 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
+        DO zz = 4 TO NUM-ENTRIES(cPrm, '|') ON ERROR UNDO DbAliases, RETRY DbAliases:
             IF RETRY THEN DO:
                 RUN logError('Unable to create alias ' + ENTRY(1, ENTRY(zz, cPrm, '|'))).
                 ASSIGN opOK = FALSE.

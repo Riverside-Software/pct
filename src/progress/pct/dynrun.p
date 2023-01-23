@@ -33,6 +33,7 @@ DEFINE VARIABLE zz AS INTEGER     NO-UNDO.
 DEFINE VARIABLE xx AS INTEGER     NO-UNDO.
 DEFINE VARIABLE out1 AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE out2 AS CHARACTER   NO-UNDO.
+DEFINE VARIABLE osCmdOut AS CHARACTER NO-UNDO.
 
 ASSIGN jsonParser = NEW ObjectModelParser().
 ASSIGN configJson = CAST(jsonParser:ParseFile(SESSION:PARAMETER), JsonObject).
@@ -43,9 +44,27 @@ ASSIGN pctVerbose = configJson:getLogical("verbose").
 ASSIGN dbEntries = configJson:GetJsonArray("databases").
 DO zz = 1 TO dbEntries:Length:
   ASSIGN dbEntry = dbEntries:GetJsonObject(zz).
-  IF pctVerbose THEN
-    MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
-  CONNECT VALUE(dbEntry:getCharacter("connect")) NO-ERROR.
+  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
+    MESSAGE "Executing passphrase command line: " + dbEntry:getCharacter("cmd").
+    INPUT THROUGH VALUE(dbEntry:getCharacter("cmd")).
+    IMPORT UNFORMATTED osCmdOut.
+    INPUT CLOSE.
+  END.
+  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
+    IF pctVerbose THEN
+      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
+    CONNECT VALUE(SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), osCmdOut)) NO-ERROR.
+  END.
+  ELSE IF (dbEntry:getCharacter("passphrase") EQ "env") THEN DO:
+    IF pctVerbose THEN
+      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "' with passphrase from " + dbEntry:getCharacter("env") + " environment variable".
+    CONNECT VALUE(SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), OS-GETENV(dbEntry:getCharacter("env")))) NO-ERROR.
+  END.
+  ELSE DO:
+    IF pctVerbose THEN
+      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
+    CONNECT VALUE(dbEntry:getCharacter("connect")) NO-ERROR.
+  END.
   IF ERROR-STATUS:ERROR THEN DO:
     MESSAGE "Unable to connect to '" + dbEntry:getCharacter("connect") + "'".
     DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:

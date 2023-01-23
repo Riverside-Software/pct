@@ -452,4 +452,36 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test2", "-- --");
         expectLog("test3", "--xx--");
     }
+
+    @Test(groups = {"v11"})
+    public void test53() {
+        final String USER_PASSPHRASE = "User#234";
+        configureProject("PCTRun/test53/build.xml");
+        executeTarget("init");
+        expectBuildException("test1", "No passphrase");
+        assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+        assertFalse(searchInFile(new File("test1.txt"), USER_PASSPHRASE));
+        executeTarget("test2");
+        assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+        assertFalse(searchInFile(new File("test2.txt"), USER_PASSPHRASE));
+        expectBuildException("test3", "Wrong env passphrase");
+        assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+        assertFalse(searchInFile(new File("test3.txt"), USER_PASSPHRASE));
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            executeTarget("test4-win");
+            assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+            assertFalse(searchInFile(new File("test4.txt"), USER_PASSPHRASE));
+            expectBuildException("test5-win", "Wrong command line passphrase");
+            assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+            assertFalse(searchInFile(new File("test5.txt"), USER_PASSPHRASE));
+        } else {
+            executeTarget("test4-unix");
+            assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+            assertFalse(searchInFile(new File("test4.txt"), USER_PASSPHRASE));
+            expectBuildException("test5-unix", "Wrong command line passphrase");
+            assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
+            assertFalse(searchInFile(new File("test5.txt"), USER_PASSPHRASE));
+        }
+    }
+
 }

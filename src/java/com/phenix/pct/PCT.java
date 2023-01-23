@@ -16,11 +16,13 @@
  */
 package com.phenix.pct;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
@@ -30,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -724,6 +727,26 @@ public abstract class PCT extends Task {
         } catch (IOException caught) {
             log(MessageFormat.format(Messages.getString("PCTRun.5"), file.getAbsolutePath()),
                     Project.MSG_VERBOSE);
+        }
+    }
+
+    protected String getPassphraseFromCmdLine(String cmdLine) {
+        ProcessBuilder pb = new ProcessBuilder() //
+                .command(cmdLine.split(" ")) //
+                .directory(getProject().getBaseDir()) //
+                .redirectOutput(ProcessBuilder.Redirect.PIPE) //
+                .redirectError(ProcessBuilder.Redirect.INHERIT);
+        try {
+            Process process = pb.start();
+            process.waitFor(30, TimeUnit.SECONDS);
+            BufferedReader stdOut = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            return stdOut.readLine();
+        } catch (IOException caught) {
+            throw new BuildException(caught);
+        } catch (InterruptedException caught) {
+            Thread.currentThread().interrupt();
+            return "";
         }
     }
 

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project name="IndexRebuild-test5">
+  <taskdef resource="PCT.properties" />
+  <property environment="env" />
+
+  <target name="init">
+    <mkdir dir="db" />
+    <PCTCreateDatabase dbName="sp2k" destDir="db" codepage="utf" dlcHome="${DLC}" schemaFile="sp2k.df,index.df" structFile="sp2k.st" encryption="true" adminpassphrase="${env.ADMIN_PASSPHRASE}" userpassphrase="${env.USER_PASSPHRASE}" />
+  </target>
+
+  <target name="test1">
+    <IndexRebuild passphraseEnvVar="USER_PASSPHRASE" dbDir="db" dbName="sp2k" dlcHome="${DLC}" cpInternal="utf-8">
+      <Index table="customer" index="CustomerNew1" />
+      <Index table="employee" index="EmployeeNew1" />
+      <Option name="-thread" value="1" />
+    </IndexRebuild>
+  </target>
+
+  <target name="test1-fail">
+    <IndexRebuild passphraseEnvVar="WRONG_PASSPHRASE" dbDir="db" dbName="sp2k" dlcHome="${DLC}" cpInternal="utf-8">
+      <Index table="customer" index="CustomerNew1" />
+      <Index table="employee" index="EmployeeNew1" />
+      <Option name="-thread" value="1" />
+    </IndexRebuild>
+  </target>
+
+  <target name="test2-win">
+    <IndexRebuild passphraseCmdLine="${DLC}\bin\_progres -b -p ${basedir}\passphrase.p" dbDir="db" dbName="sp2k" dlcHome="${DLC}" cpInternal="utf-8">
+      <Index table="customer" index="CustomerNew1" />
+      <Index table="employee" index="EmployeeNew1" />
+      <Option name="-thread" value="1" />
+    </IndexRebuild>
+  </target>
+
+  <target name="test2-unix">
+    <IndexRebuild passphraseCmdLine="${DLC}/bin/_progres -b -p ${basedir}/passphrase.p" dbDir="db" dbName="sp2k" dlcHome="${DLC}" cpInternal="utf-8">
+      <Index table="customer" index="CustomerNew1" />
+      <Index table="employee" index="EmployeeNew1" />
+      <Option name="-thread" value="1" />
+    </IndexRebuild>
+  </target>
+
+</project>

@@ -25,13 +25,15 @@ import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 
 /**
- * Class for creating Progress databases
+ * IndexRebuild task
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET </a>
  */
 public class PCTIndexRebuild extends PCT {
     private File dbDir = null;
     private String dbName = null;
+    private String passphraseEnvVar = null;
+    private String passphraseCmdLine = null;
     private File outputLog = null;
     private List<IndexNode> indexes = new ArrayList<>();
     private String cpInternal = null;
@@ -53,6 +55,14 @@ public class PCTIndexRebuild extends PCT {
 
     public void setOutputLog(File outputLog) {
         this.outputLog = outputLog;
+    }
+
+    public void setPassphraseEnvVar(String passphrase) {
+        this.passphraseEnvVar = passphrase;
+    }
+
+    public void setPassphraseCmdLine(String passphraseCmdLine) {
+        this.passphraseCmdLine = passphraseCmdLine;
     }
 
     /**
@@ -89,6 +99,8 @@ public class PCTIndexRebuild extends PCT {
         }
         if (indexes.isEmpty())
             throw new BuildException("Index list can't be empty");
+        if ((passphraseCmdLine != null) && (passphraseEnvVar != null))
+            throw new BuildException("Unable to define passphraseCmdLine and passphraseEnvVar");
 
         // Update dbDir if not defined
         if (dbDir == null) {
@@ -150,12 +162,22 @@ public class PCTIndexRebuild extends PCT {
             exec.createArg().setValue("-cpinternal");
             exec.createArg().setValue(cpInternal);
         }
-        exec.setInputString(generateInputString());
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(getDlcHome().toString());
-        exec.addEnv(var);
+        if ((passphraseEnvVar != null) || (passphraseCmdLine != null)) {
+            exec.createArg().setValue("-Passphrase");
+            if (passphraseEnvVar != null) {
+                exec.setInputString(System.getenv(passphraseEnvVar) + System.lineSeparator() + generateInputString());
+            } else {
+                exec.setInputString(getPassphraseFromCmdLine(passphraseCmdLine) + System.lineSeparator() + generateInputString());
+            }
+        } else {
+            exec.setInputString(generateInputString());
+        }
+
+        Environment.Variable envVar = new Environment.Variable();
+        envVar.setKey("DLC"); //$NON-NLS-1$
+        envVar.setValue(getDlcHome().toString());
+        exec.addEnv(envVar);
 
         return exec;
     }

@@ -79,6 +79,16 @@ public class ProgressV12 implements ProgressProcedures {
     }
 
     @Override
+    public String getConnectPassphraseCmdLineString() {
+        return getString("ProgressV12.17"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getConnectPassphraseEnvString() {
+        return getString("ProgressV12.18"); //$NON-NLS-1$
+    }
+
+    @Override
     public String getAliasString() {
         return getString("ProgressV12.2"); //$NON-NLS-1$
     }
