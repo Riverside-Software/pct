@@ -304,10 +304,12 @@ public class PCTConnection extends DataType {
             list.add(logicalName);
         }
 
-        if (Boolean.TRUE.equals(singleUser)) {
-            list.add("-1"); //$NON-NLS-1$
-        } else {
-            list.remove("-1");
+        if (singleUser != null) {
+            if (singleUser) {
+                list.add("-1"); //$NON-NLS-1$
+            } else {
+                list.remove("-1");
+            }
         }
 
         if (cacheFile != null) {
