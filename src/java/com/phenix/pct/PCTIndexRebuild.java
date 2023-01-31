@@ -16,13 +16,7 @@
  */
 package com.phenix.pct;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,15 +37,6 @@ public class PCTIndexRebuild extends PCT {
     private String cpInternal = null;
     private List<PCTRunOption> options = new ArrayList<>();
 
-    // Internal use
-    private int tmpId;
-    private File tmpFile;
-
-    public PCTIndexRebuild() {
-        tmpId = PCT.nextRandomInt();
-        tmpFile = new File(System.getProperty(PCT.TMPDIR), "idxbuild" + tmpId + ".txt");
-    }
-
     /**
      * Database name
      */
@@ -69,7 +54,7 @@ public class PCTIndexRebuild extends PCT {
     public void setOutputLog(File outputLog) {
         this.outputLog = outputLog;
     }
-    
+
     /**
      * Internal code page (-cpinternal attribute)
      */
@@ -89,7 +74,6 @@ public class PCTIndexRebuild extends PCT {
         options.add(option);
     }
 
-    
     /**
      * Do the work
      * 
@@ -111,18 +95,7 @@ public class PCTIndexRebuild extends PCT {
             dbDir = getProject().getBaseDir();
         }
 
-        try {
-            generateIndexFile();
-            idxBuildCmdLine().execute();
-        } catch (IOException caught) {
-            throw new BuildException(caught);
-        } finally {
-            cleanup();
-        }
-    }
-
-    protected void cleanup() {
-        deleteFile(tmpFile);
+        idxBuildCmdLine().execute();
     }
 
     public static class IndexNode {
@@ -137,26 +110,18 @@ public class PCTIndexRebuild extends PCT {
             this.index = index;
         }
     }
-    
-    private void generateIndexFile() throws IOException {
-        try (OutputStream os = new FileOutputStream(tmpFile);
-                Writer w = new OutputStreamWriter(os);
-                BufferedWriter bw = new BufferedWriter(w)) {
-            bw.write("some");
-            bw.newLine();
-            for (IndexNode idx : indexes) {
-                bw.write(idx.table);
-                bw.newLine();
-                bw.write(idx.index);
-                bw.newLine();
-            }
-            bw.write("!");
-            bw.newLine();
-            bw.write("y");
-            bw.newLine();
-            bw.write("y");
-            bw.newLine();
-        }  
+
+    private String generateInputString() {
+        StringBuilder sb = new StringBuilder("some").append(System.lineSeparator());
+        for (IndexNode idx : indexes) {
+            sb.append(idx.table).append(System.lineSeparator());
+            sb.append(idx.index).append(System.lineSeparator());
+        }
+        sb.append("!").append(System.lineSeparator());
+        sb.append("y").append(System.lineSeparator());
+        sb.append("y").append(System.lineSeparator());
+
+        return sb.toString();
     }
 
     /**
@@ -173,10 +138,10 @@ public class PCTIndexRebuild extends PCT {
         exec.createArg().setValue(db.getAbsolutePath());
         exec.createArg().setValue("-C");
         exec.createArg().setValue("idxbuild");
-        if (outputLog != null)
+        if (outputLog != null) {
             exec.setOutput(outputLog.getAbsoluteFile());
-        exec.setInput(tmpFile);
-        for (PCTRunOption option: options) {
+        }
+        for (PCTRunOption option : options) {
             exec.createArg().setValue(option.getName());
             if (option.getValue() != null)
                 exec.createArg().setValue(option.getValue());
@@ -185,6 +150,7 @@ public class PCTIndexRebuild extends PCT {
             exec.createArg().setValue("-cpinternal");
             exec.createArg().setValue(cpInternal);
         }
+        exec.setInputString(generateInputString());
 
         Environment.Variable var = new Environment.Variable();
         var.setKey("DLC"); //$NON-NLS-1$
