@@ -135,14 +135,9 @@ pipeline {
   }
 
   post {
-    failure {
+    changed {
       script {
-        mail body: "Check console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT build failure in Jenkins - Branch ${BRANCH_NAME}"
-      }
-    }
-    fixed {
-      script {
-        mail body: "Console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT build is back to normal - Branch ${BRANCH_NAME}"
+        mail body: "Check console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT Build Status Changed - Branch ${BRANCH_NAME}"
       }
     }
   }
