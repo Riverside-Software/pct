@@ -163,9 +163,9 @@ public class PCTIndexRebuild extends PCT {
             exec.createArg().setValue(cpInternal);
         }
 
-        if ((passphraseEnvVar != null) || (passphraseCmdLine != null)) {
+        if (hasCmdLinePassphrase() || hasEnvPassphrase()) {
             exec.createArg().setValue("-Passphrase");
-            if (passphraseEnvVar != null) {
+            if (hasEnvPassphrase()) {
                 exec.setInputString(System.getenv(passphraseEnvVar) + System.lineSeparator() + generateInputString());
             } else {
                 exec.setInputString(getPassphraseFromCmdLine(passphraseCmdLine) + System.lineSeparator() + generateInputString());
@@ -180,6 +180,14 @@ public class PCTIndexRebuild extends PCT {
         exec.addEnv(envVar);
 
         return exec;
+    }
+
+    private boolean hasCmdLinePassphrase() {
+        return (passphraseCmdLine != null) && !passphraseCmdLine.trim().isEmpty();
+    }
+
+    private boolean hasEnvPassphrase() {
+        return (passphraseEnvVar != null) && !passphraseEnvVar.trim().isEmpty();
     }
 
 }
