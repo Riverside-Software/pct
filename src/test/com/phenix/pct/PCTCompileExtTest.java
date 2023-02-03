@@ -1425,14 +1425,11 @@ public class PCTCompileExtTest extends BuildFileTestNg {
         configureProject(BASEDIR + "test92/build.xml");
         executeTarget("init");
         expectBuildException("test1", "No passphrase");
-        executeTarget("test2");
         if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             executeTarget("test3-win");
         } else {
             executeTarget("test3-unix");
         }
-        assertTrue(new File(BASEDIR, "test92/build2/customer.r").exists());
-        assertTrue(new File(BASEDIR, "test92/build2/item.r").exists());
         assertTrue(new File(BASEDIR, "test92/build3/customer.r").exists());
         assertTrue(new File(BASEDIR, "test92/build3/item.r").exists());
     }

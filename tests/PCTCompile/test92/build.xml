@@ -17,14 +17,6 @@
     </PCTCompile>
   </target>
 
-  <target name="test2">
-    <PCTCompile destDir="build2" graphicalMode="false" dlcHome="${DLC}">
-      <fileset dir="src" includes="*.p" />
-      <DBConnection dbName="test" dbDir="db" readOnly="true" passphraseEnvVar="USER_PASSPHRASE" />
-      <Profiler description="PCTCompile-test92" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
-    </PCTCompile>
-  </target>
-
   <target name="test3-win">
     <PCTCompile destDir="build3" graphicalMode="false" dlcHome="${DLC}">
       <fileset dir="src" includes="*.p" />

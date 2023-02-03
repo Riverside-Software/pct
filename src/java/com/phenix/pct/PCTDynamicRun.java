@@ -97,9 +97,6 @@ public class PCTDynamicRun extends PCTRun {
                 if (dbc.hasCmdLinePassphrase()) {
                     writer.name("passphrase").value("cmdline");
                     writer.name("cmd").value(dbc.getPassphraseCmdLine());
-                } else if (dbc.hasEnvPassphrase()) {
-                    writer.name("passphrase").value("env");
-                    writer.name("env").value(dbc.getPassphraseEnvVar());
                 } else {
                     writer.name("passphrase").value("none");
                 }

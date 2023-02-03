@@ -49,7 +49,6 @@ public class PCTConnection extends DataType {
     private File paramFile = null;
     private Boolean singleUser = null;
     private Boolean readOnly = null;
-    private String passphraseEnvVar = null;
     private String passphraseCmdLine = null;
     private Map<String, PCTAlias> aliases = new HashMap<>();
     private List<PCTRunOption> options = null;
@@ -176,13 +175,6 @@ public class PCTConnection extends DataType {
     }
 
     /**
-     * The passphrase will be read from this environment variable
-     */
-    public void setPassphraseEnvVar(String passphrase) {
-        this.passphraseEnvVar = passphrase;
-    }
-
-    /**
      * The passphrase will be read from the output of this command line
      */
     public void setPassphraseCmdLine(String passphraseCmdLine) {
@@ -232,11 +224,6 @@ public class PCTConnection extends DataType {
     public boolean hasCmdLinePassphrase() {
         return (Boolean.TRUE.equals(singleUser) || Boolean.TRUE.equals(readOnly))
                 && (passphraseCmdLine != null) && !passphraseCmdLine.trim().isEmpty();
-    }
-
-    public boolean hasEnvPassphrase() {
-        return (Boolean.TRUE.equals(singleUser) || Boolean.TRUE.equals(readOnly))
-                && (passphraseEnvVar != null) && !passphraseEnvVar.trim().isEmpty();
     }
 
     /**
@@ -391,8 +378,6 @@ public class PCTConnection extends DataType {
         StringBuilder sb = new StringBuilder(createConnectString()).append('|');
         if (hasCmdLinePassphrase())
             sb.append("cmdline|").append(passphraseCmdLine);
-        else if (hasEnvPassphrase())
-            sb.append("env|").append(passphraseEnvVar);
         else
             sb.append("|");
         if (hasAliases()) {
@@ -449,10 +434,6 @@ public class PCTConnection extends DataType {
         } else {
             return dbName;
         }
-    }
-
-    public String getPassphraseEnvVar() {
-        return passphraseEnvVar;
     }
 
     public String getPassphraseCmdLine() {

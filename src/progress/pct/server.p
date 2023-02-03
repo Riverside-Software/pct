@@ -316,10 +316,6 @@ PROCEDURE Connect :
       RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
       CONNECT VALUE(connectStr + ' -KeyStorePassPhrase "' + osCmdOut + '"') NO-ERROR.
     END.
-    ELSE IF (passMode EQ 'env') THEN DO:
-      RUN logInFirstThread ("Trying to connect to : " + connectStr + " with passphrase from " + passValue, 3).
-      CONNECT VALUE(connectStr + ' -KeyStorePassPhrase "' + OS-GETENV(passValue) + '"') NO-ERROR.
-    END.
     ELSE DO:
       RUN logInFirstThread ("Trying to connect to : " + connectStr, 3).
       CONNECT VALUE(connectStr) NO-ERROR.

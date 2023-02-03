@@ -32,7 +32,6 @@ import org.apache.tools.ant.types.Environment;
 public class PCTIndexRebuild extends PCT {
     private File dbDir = null;
     private String dbName = null;
-    private String passphraseEnvVar = null;
     private String passphraseCmdLine = null;
     private File outputLog = null;
     private List<IndexNode> indexes = new ArrayList<>();
@@ -55,10 +54,6 @@ public class PCTIndexRebuild extends PCT {
 
     public void setOutputLog(File outputLog) {
         this.outputLog = outputLog;
-    }
-
-    public void setPassphraseEnvVar(String passphrase) {
-        this.passphraseEnvVar = passphrase;
     }
 
     public void setPassphraseCmdLine(String passphraseCmdLine) {
@@ -99,8 +94,6 @@ public class PCTIndexRebuild extends PCT {
         }
         if (indexes.isEmpty())
             throw new BuildException("Index list can't be empty");
-        if ((passphraseCmdLine != null) && (passphraseEnvVar != null))
-            throw new BuildException("Unable to define passphraseCmdLine and passphraseEnvVar");
 
         // Update dbDir if not defined
         if (dbDir == null) {
@@ -163,13 +156,9 @@ public class PCTIndexRebuild extends PCT {
             exec.createArg().setValue(cpInternal);
         }
 
-        if (hasCmdLinePassphrase() || hasEnvPassphrase()) {
+        if (hasCmdLinePassphrase()) {
             exec.createArg().setValue("-Passphrase");
-            if (hasEnvPassphrase()) {
-                exec.setInputString(System.getenv(passphraseEnvVar) + System.lineSeparator() + generateInputString());
-            } else {
-                exec.setInputString(getPassphraseFromCmdLine(passphraseCmdLine) + System.lineSeparator() + generateInputString());
-            }
+            exec.setInputString(getPassphraseFromCmdLine(passphraseCmdLine) + System.lineSeparator() + generateInputString());
         } else {
             exec.setInputString(generateInputString());
         }
@@ -184,10 +173,6 @@ public class PCTIndexRebuild extends PCT {
 
     private boolean hasCmdLinePassphrase() {
         return (passphraseCmdLine != null) && !passphraseCmdLine.trim().isEmpty();
-    }
-
-    private boolean hasEnvPassphrase() {
-        return (passphraseEnvVar != null) && !passphraseEnvVar.trim().isEmpty();
     }
 
 }

@@ -55,11 +55,6 @@ DO zz = 1 TO dbEntries:Length:
       MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
     CONNECT VALUE(SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), osCmdOut)) NO-ERROR.
   END.
-  ELSE IF (dbEntry:getCharacter("passphrase") EQ "env") THEN DO:
-    IF pctVerbose THEN
-      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "' with passphrase from " + dbEntry:getCharacter("env") + " environment variable".
-    CONNECT VALUE(SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), OS-GETENV(dbEntry:getCharacter("env")))) NO-ERROR.
-  END.
   ELSE DO:
     IF pctVerbose THEN
       MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".

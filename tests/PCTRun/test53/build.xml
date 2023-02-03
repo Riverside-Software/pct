@@ -18,24 +18,6 @@
     </PCTRun>
   </target>
 
-  <target name="test2">
-    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <DBConnection dbName="test" dbDir="db" singleUser="true" passphraseEnvVar="USER_PASSPHRASE" />
-      <option name="-clientlog" value="test2.txt" />
-      <option name="-logentrytypes" value="4GLTrace:4,DB.Connects:4" />
-      <Profiler description="PCTRun-test53" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
-    </PCTRun>
-  </target>
-
-  <target name="test3">
-    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
-      <DBConnection dbName="test" dbDir="db" singleUser="true" passphraseEnvVar="WRONG_PASSPHRASE" />
-      <option name="-clientlog" value="test3.txt" />
-      <option name="-logentrytypes" value="4GLTrace:4,DB.Connects:4" />
-      <Profiler description="PCTRun-test53" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
-    </PCTRun>
-  </target>
-
   <target name="test4-win">
     <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}">
       <DBConnection dbName="test" dbDir="db" singleUser="true" passphraseCmdLine="${DLC}\bin\_progres -b -p passphrase.p" />

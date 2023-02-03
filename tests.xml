@@ -79,7 +79,6 @@
         <jvmarg line="-DDLC=&quot;${DLC}&quot; -DPROFILER=${PROFILER} -DTESTLIBS=${TESTLIBS} -DVERSION=${VERSION}" />
         <env key="ADMIN_PASSPHRASE" value="Admin#234" />
         <env key="USER_PASSPHRASE" value="User#234" />
-        <env key="WRONG_PASSPHRASE" value="User#235" />
       </testng>
     </jacoco:coverage>
   </target>

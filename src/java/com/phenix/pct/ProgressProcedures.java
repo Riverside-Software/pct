@@ -35,7 +35,6 @@ public abstract interface ProgressProcedures {
     String getCallbackString();
     String getConnectString();
     String getConnectPassphraseCmdLineString();
-    String getConnectPassphraseEnvString();
     String getAliasString();
     String getDBAliasString();
     String getPropathString();

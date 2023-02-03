@@ -89,12 +89,6 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         expectBuildException("test1", "No passphrase");
         assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
         assertFalse(searchInFile(new File("test1.txt"), USER_PASSPHRASE));
-        executeTarget("test2");
-        assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
-        assertFalse(searchInFile(new File("test2.txt"), USER_PASSPHRASE));
-        expectBuildException("test3", "Wrong env passphrase");
-        assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));
-        assertFalse(searchInFile(new File("test3.txt"), USER_PASSPHRASE));
         if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             executeTarget("test4-win");
             assertFalse(searchInList(getLogBuffer(), USER_PASSPHRASE));

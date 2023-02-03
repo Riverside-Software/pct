@@ -79,11 +79,6 @@ public class ProgressV10 implements ProgressProcedures {
     }
 
     @Override
-    public String getConnectPassphraseEnvString() {
-        throw new UnsupportedOperationException("Not supported");
-    }
-
-    @Override
     public String getAliasString() {
         return getString("ProgressV10.2"); //$NON-NLS-1$
     }

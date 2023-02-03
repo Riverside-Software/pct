@@ -69,8 +69,6 @@ public class IndexRebuildTest extends BuildFileTestNg {
     public void test5() {
         configureProject("IndexRebuild/test5/build.xml");
         executeTarget("init");
-        executeTarget("test1");
-        expectBuildException("test1-fail", "Invalid passphrase");
         if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             executeTarget("test2-win");
         } else {
