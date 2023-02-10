@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2000,2011,2020 by Progress Software Corporation. All *
+* Copyright (C) 2000,2011,2020,2021 by Progress Software Corporation. All *
 * rights reserved. Prior versions of this work may contain portions  *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -28,6 +28,7 @@ Date Created: 10/04/99
                                  are members of an index 20040402-004.
               07/12/11 rkamboj   Fixed no record found issue for _Area.
               12/18/20 tmasood   Dump the data to correct stream.
+              08/03/21 tmasood   Generate incrdump.e in temp-dir if write access are not provided
 -----------------------------------------------------------------------------*/
 
 
@@ -63,6 +64,7 @@ DEFINE VARIABLE debug-mode  AS INTEGER   NO-UNDO. /* 02/01/29 vap (IZ# 1525) */
 DEFINE VARIABLE rename-file AS CHARACTER NO-UNDO  /* 02/01/29 vap (IZ# 1525) */
                             INITIAL ?.
 DEFINE VARIABLE setincrdmpSilent AS LOGICAL  NO-UNDO INITIAL FALSE.
+DEFINE SHARED VARIABLE errFileName  AS CHARACTER NO-UNDO.
 
 /* 02/01/29 vap (IZ# 1525) */
 /* LANGUAGE DEPENDENCIES START */ /*----------------------------------------*/
@@ -383,7 +385,7 @@ PROCEDURE set_Variables:
   DEFINE INPUT PARAMETER pcSilentincr AS LOGICAL   NO-UNDO.
   ASSIGN rename-file = pcRenameFile
          debug-mode = piDebugMode
-	 setincrdmpSilent =  pcSilentincr.
+         setincrdmpSilent =  pcSilentincr.
   RETURN "":U.
 END PROCEDURE.  /* set_Variables */
 
@@ -518,7 +520,7 @@ PROCEDURE load_Rename_Definitions:
     INPUT CLOSE.
 
     IF debug-mode GT 1 THEN DO:
-      OUTPUT STREAM err-log TO {&errFileName} APPEND NO-ECHO.
+      OUTPUT STREAM err-log TO errFileName APPEND NO-ECHO.
       FOR EACH B_RenameTable:
         DISPLAY STREAM err-log B_RenameTable WITH TITLE "Rename Table":U .
         DOWN.
