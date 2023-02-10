@@ -15,7 +15,7 @@
  *
  */
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW.
+BLOCK-LEVEL ON ERROR UNDO, THROW.
 
 DEFINE VARIABLE h AS HANDLE NO-UNDO.
 
@@ -30,7 +30,3 @@ RUN setRemoveEmptyDFfile IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDU
 RUN setSilent IN h(yes).
 RUN doDumpIncr IN h.
 DELETE PROCEDURE h.
-
-CATCH e AS Progress.Lang.AppError :
-    MESSAGE e:ReturnValue.
-END CATCH.

@@ -15,7 +15,7 @@
  *
  */
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW.
+BLOCK-LEVEL ON ERROR UNDO, THROW.
 
 DEFINE VARIABLE h AS HANDLE NO-UNDO.
 
@@ -31,7 +31,3 @@ RUN setDumpSection IN h (DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, IN
 RUN setSilent IN h(yes).
 RUN doDumpIncr IN h.
 DELETE PROCEDURE h.
-
-CATCH e AS Progress.Lang.AppError :
-    MESSAGE e:ReturnValue.
-END CATCH.

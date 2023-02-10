@@ -3,7 +3,7 @@ USING Progress.Json.ObjectModel.JsonObject.
 USING Progress.Json.ObjectModel.ObjectModelParser.
 USING rssw.pct.IMainCallback.
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW.
+BLOCK-LEVEL ON ERROR UNDO, THROW.
 
 DEFINE NEW SHARED VARIABLE pctVerbose AS LOGICAL NO-UNDO.
 DEFINE NEW SHARED VARIABLE mainCallback AS IMainCallback NO-UNDO.
@@ -29,11 +29,10 @@ DEFINE VARIABLE dbEntry   AS CLASS JsonObject NO-UNDO.
 DEFINE VARIABLE prmEntries AS CLASS JsonArray NO-UNDO.
 DEFINE VARIABLE prmEntry   AS CLASS JsonObject NO-UNDO.
 DEFINE VARIABLE outprmEntries AS CLASS JsonArray NO-UNDO.
-DEFINE VARIABLE zz AS INTEGER     NO-UNDO.
-DEFINE VARIABLE xx AS INTEGER     NO-UNDO.
+DEFINE VARIABLE zz   AS INTEGER     NO-UNDO.
+DEFINE VARIABLE zz2  AS INTEGER     NO-UNDO.
 DEFINE VARIABLE out1 AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE out2 AS CHARACTER   NO-UNDO.
-DEFINE VARIABLE osCmdOut AS CHARACTER NO-UNDO.
 
 ASSIGN jsonParser = NEW ObjectModelParser().
 ASSIGN configJson = CAST(jsonParser:ParseFile(SESSION:PARAMETER), JsonObject).
@@ -42,46 +41,16 @@ ASSIGN pctVerbose = configJson:getLogical("verbose").
 
 // DB connections + aliases
 ASSIGN dbEntries = configJson:GetJsonArray("databases").
-DO zz = 1 TO dbEntries:Length:
+DO zz = 1 TO dbEntries:Length ON ERROR UNDO, THROW:
   ASSIGN dbEntry = dbEntries:GetJsonObject(zz).
-  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
-    MESSAGE "Executing passphrase command line: " + dbEntry:getCharacter("cmd").
-    INPUT THROUGH VALUE(dbEntry:getCharacter("cmd")).
-    IMPORT UNFORMATTED osCmdOut.
-    INPUT CLOSE.
-  END.
-  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
-    IF pctVerbose THEN
-      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
-    CONNECT VALUE(SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), osCmdOut)) NO-ERROR.
-  END.
-  ELSE DO:
-    IF pctVerbose THEN
-      MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
-    CONNECT VALUE(dbEntry:getCharacter("connect")) NO-ERROR.
-  END.
-  IF ERROR-STATUS:ERROR THEN DO:
-    MESSAGE "Unable to connect to '" + dbEntry:getCharacter("connect") + "'".
-    DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-      MESSAGE ERROR-STATUS:GET-MESSAGE(i).
+  RUN dbConnect (dbEntry).
+  CATCH pErr AS Progress.Lang.Error:
+    // TODO Some messages are just warnings. Example: 512 is for no-integrity mode
+    DO zz2 = 1 TO pErr:NumMessages:
+      MESSAGE pErr:GetMessage(zz2).
     END.
     RUN returnValue(14).
     QUIT.
-  END.
-  DO xx = 1 TO dbEntry:getJsonArray("aliases"):Length:
-    IF pctVerbose THEN
-      MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx),
-                         zz, LDBNAME(zz)).
-    CREATE ALIAS VALUE(dbEntry:getJsonArray("aliases"):getCharacter(xx)) FOR DATABASE VALUE(LDBNAME(zz)) NO-ERROR.
-    IF ERROR-STATUS:ERROR THEN DO:
-      MESSAGE SUBSTITUTE("Unable to create alias '&1' for database '&2'",
-                         dbEntry:getJsonArray("aliases"):getCharacter(xx), LDBNAME(zz)).
-      DO i = 1 TO ERROR-STATUS:NUM-MESSAGES:
-        MESSAGE ERROR-STATUS:GET-MESSAGE(i).
-      END.
-      RUN returnValue(15).
-      QUIT.
-    END.
   END.
 END.
 
@@ -129,14 +98,25 @@ DO ON QUIT UNDO, RETRY:
   IF VALID-OBJECT(mainCallback) THEN
     mainCallback:beforeRun().
   IF (outprmEntries:Length EQ 0) THEN
-    RUN VALUE(configJson:getCharacter("procedure")) NO-ERROR.
+    RUN VALUE(configJson:getCharacter("procedure")).
   ELSE IF (outprmEntries:Length EQ 1) THEN
-    RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1) NO-ERROR.
+    RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1).
   ELSE IF (outprmEntries:Length EQ 2) THEN
-    RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1, OUTPUT out2) NO-ERROR.
+    RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1, OUTPUT out2).
+  CATCH pAppErr AS Progress.Lang.AppError:
+    ASSIGN i = 1.
+    MESSAGE pAppErr:ReturnValue.
+    DO zz2 = 1 TO pAppErr:NumMessages:
+      MESSAGE pAppErr:GetMessage(zz2).
+    END.
+  END.
+  CATCH pErr AS Progress.Lang.Error:
+    ASSIGN i = 1.
+    DO zz2 = 1 TO pErr:NumMessages:
+      MESSAGE pErr:GetMessage(zz2).
+    END.
+  END.
 END.
-IF ERROR-STATUS:ERROR THEN
-  ASSIGN i = 1.
 IF (i EQ ?) THEN
   ASSIGN i = INTEGER (ENTRY(1, RETURN-VALUE, " ")) NO-ERROR.
 IF (i EQ ?) THEN
@@ -173,4 +153,33 @@ PROCEDURE writeOutputParam PRIVATE:
   PUT UNFORMATTED prm SKIP.
   OUTPUT CLOSE.
 
+END PROCEDURE.
+
+PROCEDURE dbConnect:
+  DEFINE INPUT PARAMETER dbEntry AS JsonObject NO-UNDO.
+
+  DEFINE VARIABLE connectStr AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE osCmdOut   AS CHARACTER NO-UNDO.
+  DEFINE VARIABLE xx AS INTEGER     NO-UNDO.
+
+  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
+    MESSAGE "Executing passphrase command line: " + dbEntry:getCharacter("cmd").
+    INPUT THROUGH VALUE(dbEntry:getCharacter("cmd")).
+    IMPORT UNFORMATTED osCmdOut.
+    INPUT CLOSE.
+  END.
+  IF pctVerbose THEN
+    MESSAGE "Connecting to '" + dbEntry:getCharacter("connect") + "'".
+  IF (dbEntry:getCharacter("passphrase") EQ "cmdline") THEN DO:
+    ASSIGN connectStr = SUBSTITUTE('&1 -KeyStorePassPhrase "&2"', dbEntry:getCharacter("connect"), osCmdOut).
+  END.
+  ELSE DO:
+    ASSIGN connectStr = dbEntry:getCharacter("connect").
+  END.
+  CONNECT VALUE(connectStr).
+  DO xx = 1 TO dbEntry:getJsonArray("aliases"):Length:
+    IF pctVerbose THEN
+      MESSAGE SUBSTITUTE("Creating alias &1 for database #&2 &3", dbEntry:getJsonArray("aliases"):getCharacter(xx), zz, LDBNAME(zz)).
+    CREATE ALIAS VALUE(dbEntry:getJsonArray("aliases"):getCharacter(xx)) FOR DATABASE VALUE(LDBNAME(zz)).
+  END.
 END PROCEDURE.
