@@ -21,6 +21,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -387,11 +388,38 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(new File("PCTRun/test44/Logger2.afterRun.1.txt").exists());
     }
 
-    @Test(groups = {"v11", "win"})
+    @Test(groups = {"v11"})
     public void test45() {
         configureProject("PCTRun/test45/build.xml");
         executeTarget("test1");
+
+        // Message has to be displayed on both Unix and Windows
         executeTarget("test2");
+        boolean unableToFindMessage = false;
+        boolean iniFileIgnored = false;
+        for (String str : getLogBuffer()) {
+            if (str.startsWith("Unable to find INI file"))
+                unableToFindMessage = true;
+            if (str.startsWith("iniFile attribute is ignored"))
+                iniFileIgnored = true;
+        }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            assertTrue(unableToFindMessage, "Expected message not found");
+        } else {
+            assertTrue(iniFileIgnored, "Expected message not found");
+        }
+
+        boolean unableToFindMessage2 = false;
+        executeTarget("test3");
+        for (String str : getLogBuffer()) {
+            if (str.startsWith("Unable to find INI file"))
+                unableToFindMessage2 = true;
+        }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            assertTrue(unableToFindMessage2);
+        } else {
+            assertFalse(unableToFindMessage2);
+        }
     }
 
     @Test(groups = {"v11"})

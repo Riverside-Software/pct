@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 
@@ -180,11 +181,20 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     @Override
     public void setIniFile(File iniFile) {
-        if ((iniFile != null) && !iniFile.exists()) {
-            parent.log("Unable to find INI file " + iniFile.getAbsolutePath() + " - Skipping attribute");
+        if (iniFile == null)
             return;
+        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+            if (!iniFile.equals(parent.getProject().resolveFile(""))) {
+                parent.log("iniFile attribute is ignored on non-Windows platforms");
+            }
+        } else {
+            if (iniFile.exists() && iniFile.isFile()) {
+                this.iniFile = iniFile;
+            } else {
+                parent.log("Unable to find INI file " + iniFile.getAbsolutePath()
+                        + " - Skipping attribute");
+            }
         }
-        this.iniFile = iniFile;
     }
 
     @Override

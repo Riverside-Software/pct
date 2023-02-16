@@ -3,11 +3,15 @@
   <taskdef resource="PCT.properties" />
 
   <target name="test1">
-    <PCTRun graphicalMode="true" iniFile="test.ini" procedure="test.p" dlcHome="${DLC}" />
+    <PCTRun graphicalMode="false" iniFile="test.ini" procedure="test.p" dlcHome="${DLC}" />
   </target>
 
   <target name="test2">
-    <PCTRun graphicalMode="true" iniFile="invalid.ini" procedure="test.p" dlcHome="${DLC}" />
+    <PCTRun graphicalMode="false" iniFile="invalid.ini" procedure="test.p" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test3">
+    <PCTRun graphicalMode="false" iniFile="" procedure="test.p" dlcHome="${DLC}" />
   </target>
 
 </project>
