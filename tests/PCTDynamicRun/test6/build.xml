@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="PCTDynamicRun-test6">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDynRun procedure="test.p" dlcHome="${DLC}">
+      <Profiler description="PCTDynamicRun-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+  </target>
+
+  <target name="test2">
+    <PCTDynRun procedure="test2.p" dlcHome="${DLC}">
+      <Profiler description="PCTDynamicRun-test6" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+  </target>
+
+</project>

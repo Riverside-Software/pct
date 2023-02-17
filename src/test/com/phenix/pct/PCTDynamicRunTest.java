@@ -17,6 +17,7 @@
 package com.phenix.pct;
 
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
     public void test2() {
         configureProject("PCTDynamicRun/test2/build.xml");
         expectLog("test", "Output val1 val2");
+        expectLog("test2", "Output val1 val2 val1 val2 val1 val2");
     }
 
     @Test(groups = {"v11"})
@@ -106,4 +108,12 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         }
     }
 
+    @Test(groups = {"v11"})
+    public void test6() {
+        configureProject("PCTDynamicRun/test6/build.xml");
+        expectBuildException("test", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "** tt1 record not on file. (138)"));
+        expectBuildException("test2", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "** Unable to understand after -- \"mesage\". (247)"));
+    }
 }

@@ -12,4 +12,15 @@
     <echo message="Output ${dynrun2}" />
   </target>
 
+  <target name="test2">
+    <PCTDynRun procedure="test2.p" dlcHome="${DLC}">
+      <Parameter name="prm1" value="val1" />
+      <Parameter name="prm2" value="val2" />
+      <OutputParameter name="dynrun22" />
+      <OutputParameter name="dynrun23" />
+      <Profiler description="PCTDynamicRun-test2" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTDynRun>
+    <echo message="Output ${dynrun22} ${dynrun23}" />
+  </target>
+
 </project>
