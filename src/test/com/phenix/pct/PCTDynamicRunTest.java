@@ -112,7 +112,7 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
     public void test6() {
         configureProject("PCTDynamicRun/test6/build.xml");
         expectBuildException("test", "Failure");
-        assertTrue(searchInList(getLogBuffer(), "** tt1 record not on file. (138)"));
+        assertTrue(searchInList(getLogBuffer(), "Not an int"));
         expectBuildException("test2", "Failure");
         assertTrue(searchInList(getLogBuffer(), "** Unable to understand after -- \"mesage\". (247)"));
     }
