@@ -41,7 +41,7 @@ pipeline {
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/main:refs/remotes/origin/main']] ])
 
           unstash name: 'classdoc'
-          sh 'git rev-parse HEAD > head-rev'
+          sh 'git rev-parse --short HEAD > head-rev'
           def commit = readFile('head-rev').trim()
           def jdk = tool name: 'Corretto 11', type: 'jdk'
           def antHome = tool name: 'Ant 1.9', type: 'ant'
