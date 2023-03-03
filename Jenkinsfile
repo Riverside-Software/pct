@@ -62,9 +62,9 @@ pipeline {
       steps {
         parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
-                 branch4: { testBranch('Linux-Office02', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
-                 branch5: { testBranch('Linux-Office02', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
-                 branch6: { testBranch('Linux-Office02', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
+                 branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
+                 branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
+                 branch6: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
                  failFast: false
       }
     }
@@ -143,7 +143,7 @@ pipeline {
   }
 }
 
-def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, label, docker) {
+def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, label, dockerImg) {
   node(nodeName) {
     ws {
       deleteDir()
@@ -151,11 +151,14 @@ def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, labe
       def jdk = tool name: jdkVersion, type: 'jdk'
       def antHome = tool name: antVersion, type: 'ant'
       unstash name: 'tests'
-      withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
-        if (isUnix()) {
-          sh "podman run --rm -v ${env.WORKSPACE}:/pct:z -w /pct ${docker} /opt/progress/dlc/ant/bin/ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
-        } else
+      if (isUnix()) {
+        docker.image(dockerImg).inside('') {
+          sh "ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
+        }
+      } else {
+        withEnv(["JAVA_HOME=${jdk}"]) {
           bat "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
+        }
       }
       stash name: "junit-${label}", includes: 'junitreports-*.zip'
       archiveArtifacts 'emailable-report-*.html'
