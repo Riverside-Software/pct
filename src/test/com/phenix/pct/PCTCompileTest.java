@@ -1729,35 +1729,36 @@ public class PCTCompileTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"})
     public void test93() {
-
         configureProject(BASEDIR + "test93/build.xml");
         // First build
-        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler", "test.p [No r-code]",
+        expectLog("test1", new String[]{ //
+                "PCTCompile - Progress Code Compiler", "test.p [No r-code]", //
                 "test2.p [No r-code]", "2 file(s) compiled"});
         // Second build, nothing compiled
-        expectLog("test1",
-                new String[]{"PCTCompile - Progress Code Compiler", "0 file(s) compiled"});
+        expectLog("test1", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "0 file(s) compiled"});
 
         // Touch test.p
-        expectLog("test2", new String[]{"[PCTCompile] PCTCompile - Progress Code Compiler", //
-            "[PCTCompile] test.p [R-code older than source]", //
-            "[PCTCompile] 2023-02-28T09:44:40.000 : rcode test.r", //
-            "[PCTCompile] 2023-02-28T09:44:49.000 : source:test.p", //
-            "[PCTCompile] test2.p [R-code older than source]", //
-            "[PCTCompile] 2023-02-28T09:44:40.000 : rcode test2.r", //
-            "[PCTCompile] 2023-02-28T09:44:49.000 : source:test2.p", //
-            "[PCTCompile] 2 file(s) compiled"
-            });
+        expectLog("test2", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than source]", //
+                "2023-02-28T09:44:40.000 : rcode test.r", //
+                "2023-02-28T09:44:49.000 : source:test.p", //
+                "test2.p [R-code older than source]", //
+                "2023-02-28T09:44:40.000 : rcode test2.r", //
+                "2023-02-28T09:44:49.000 : source:test2.p", //
+                "2 file(s) compiled"});
         // Touch test.i
-        expectLog("test3", new String[]{"[PCTCompile] PCTCompile - Progress Code Compiler", //
-            "[PCTCompile] test.p [R-code older than include file: test.i]", //
-            "[PCTCompile] 2023-02-28T09:44:49.000 : rcode build\test.r", //
-            "[PCTCompile] 2023-02-28T09:48:47.000 : include:src\test.i", //
-            "[PCTCompile] test2.p [R-code older than include file: test2.i]", //
-            "[PCTCompile] 2023-02-28T09:44:49.000 : rcode build\test2.r", //
-            "[PCTCompile] 2023-02-28T09:48:47.000 : include:src\test2.i", //
-            "[PCTCompile] 2 file(s) compiled"
-            });
+        expectLog("test3", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file: test.i]", //
+                "2023-02-28T09:44:49.000 : rcode build\test.r", //
+                "2023-02-28T09:48:47.000 : include:src\test.i", //
+                "test2.p [R-code older than include file: test2.i]", //
+                "2023-02-28T09:44:49.000 : rcode build\test2.r", //
+                "2023-02-28T09:48:47.000 : include:src\test2.i", //
+                "2 file(s) compiled"});
     }
 
 
