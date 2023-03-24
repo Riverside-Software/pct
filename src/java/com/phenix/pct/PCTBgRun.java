@@ -662,14 +662,15 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         public void run() {
             ExecutorService group = Executors.newFixedThreadPool(numThreads);
             for (int zz = 0; zz < numThreads; zz++) {
+                final Socket socket;
+                try {
+                    socket = server.accept();
+                } catch (IOException caught) {
+                    setBuildException(caught);
+                    return;
+                }
+
                 group.execute(() -> {
-                    final Socket socket;
-                    try {
-                        socket = server.accept();
-                    } catch (IOException caught) {
-                        setBuildException(caught);
-                        return;
-                    }
                     final BackgroundWorker status = createOpenEdgeWorker(socket);
                     status.setDBConnections(options.getDBConnections().iterator());
                     status.setAliases(options.getAliases().iterator());
