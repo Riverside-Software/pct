@@ -135,7 +135,7 @@ DEFINE VARIABLE iStepPerc AS INTEGER    NO-UNDO.
 DEFINE VARIABLE cDspSteps AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE cIgnoredIncludes AS CHARACTER  NO-UNDO.
 DEFINE VARIABLE lIgnoredIncludes AS LOGICAL    NO-UNDO.
-DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO.
+DEFINE VARIABLE iFileList AS INTEGER    NO-UNDO. /* DisplayFiles value */
 DEFINE VARIABLE callbackClass AS CHARACTER NO-UNDO.
 DEFINE VARIABLE outputType AS CHARACTER NO-UNDO.
 DEFINE VARIABLE cLastIncludeName AS CHARACTER NO-UNDO.
@@ -174,7 +174,7 @@ PROCEDURE setOption:
   DEFINE INPUT PARAMETER ipValue AS CHARACTER NO-UNDO.
 
   CASE ipName:
-    when 'OUTPUTDIR':U        THEN ASSIGN DestDir = ipValue.
+    WHEN 'OUTPUTDIR':U        THEN ASSIGN DestDir = ipValue.
     WHEN 'PCTDIR':U           THEN ASSIGN PCTDir = ipValue.
     WHEN 'FORCECOMPILE':U     THEN ASSIGN ForceComp = (ipValue EQ '1':U).
     WHEN 'XCODE':U            THEN ASSIGN lXCode = (ipValue EQ '1':U).
@@ -243,7 +243,7 @@ PROCEDURE initModule:
     RETURN RETURN-VALUE.
 
   /* Checks if valid config */
-  OutputDir = if DestDir ne ? then DestDir else ".".
+  OutputDir = IF DestDir NE ? THEN DestDir ELSE ".".
   IF NOT FileExists(OutputDir) THEN
     RETURN '4'.
   IF NOT FileExists(PCTDir) THEN
@@ -365,7 +365,7 @@ PROCEDURE compileXref:
     IF (opError) THEN RETURN.
     ASSIGN opError = NOT createDir(PCTDir, cBase2).
     IF (opError) THEN RETURN.
-    ASSIGN cRenameFrom = cBase + (IF cbase EQ '' THEN '' ELSE '/') + substring(cfile, 1, R-INDEX(cfile, '.') - 1) + '.r'.
+    ASSIGN cRenameFrom = cBase + (IF cbase EQ '' THEN '' ELSE '/') + SUBSTRING(cfile, 1, R-INDEX(cfile, '.') - 1) + '.r'.
   END.
 
   IF (noParse OR ForceComp OR lXCode) THEN DO:
@@ -374,9 +374,9 @@ PROCEDURE compileXref:
   ELSE DO:
     /* Does .r file exists ?,
        if DestDir = unknown rcode will be located in the same directory as the source : ipInDir */
-    ASSIGN RCodeTS = getTimeStampDF(if DestDir = ? then ipInDir else OutputDir, ipOutFile).
+    ASSIGN RCodeTS = getTimeStampDF(IF DestDir = ? THEN ipInDir ELSE OutputDir, ipOutFile).
     IF (RCodeTS EQ ?) THEN DO:
-      opComp = 1.
+      opComp = 1. /* No rcode */
     END.
     ELSE DO:
       /* Checking if .r timestamp is prior to procedure timestamp */
@@ -386,15 +386,15 @@ PROCEDURE compileXref:
       END.
       ELSE DO:
         IF CheckIncludes(ipInFile, RCodeTS, PCTDir) THEN DO:
-          opComp = 3.
+          opComp = 3. /* R-code older than include file */
         END.
         ELSE DO:
           IF CheckCRC(ipInFile, PCTDir) THEN DO:
-            opComp = 4.
+            opComp = 4. /* Table CRC */
           END.
           ELSE DO:
             IF CheckHierarchy(ipInFile, RCodeTS, PCTDir) THEN DO:
-              opComp = 6.
+              opComp = 6. /* Hierarchy change */
             END.
           END.
         END.
@@ -518,9 +518,9 @@ PROCEDURE compileXref:
           CREATE ttProjectWarnings.
           ASSIGN ttProjectWarnings.msgNum       = ttWarnings.msgNum
                  ttProjectWarnings.rowNum       = ttWarnings.rowNum
-                 ttProjectWarnings.fileName     = REPLACE(ttWarnings.fileName, chr(92), '/')
+                 ttProjectWarnings.fileName     = REPLACE(ttWarnings.fileName, CHR(92), '/')
                  ttProjectWarnings.msg          = ttWarnings.msg
-                 ttProjectWarnings.mainFileName = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/').
+                 ttProjectWarnings.mainFileName = REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/').
         END.
       END.
       IF lOutputConsole THEN DO:
@@ -557,8 +557,8 @@ PROCEDURE compileXref:
     IF lOutputJson THEN DO:
       FOR EACH ttErrors:
         CREATE ttProjectErrors.
-        ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, chr(92), '/')
-               ttProjectErrors.mainFileName  = REPLACE(ipInDir + (if ipInDir eq '':U then '':U else '/':U) + ipInFile, chr(92), '/')
+        ASSIGN ttProjectErrors.fileName      = REPLACE(ttErrors.fileName, CHR(92), '/')
+               ttProjectErrors.mainFileName  = REPLACE(ipInDir + (IF ipInDir EQ '':U THEN '':U ELSE '/':U) + ipInFile, CHR(92), '/')
                ttProjectErrors.rowNum        = ttErrors.rowNum
                ttProjectErrors.colNum        = ttErrors.colNum
                ttProjectErrors.msg           = ttErrors.msg.
