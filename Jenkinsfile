@@ -65,6 +65,7 @@ pipeline {
                  branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
                  branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch6: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
+                 branch7: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.7', false, '12.7-Linux', 'docker.rssw.eu/progress/dlc:12.7') },
                  failFast: false
       }
     }
