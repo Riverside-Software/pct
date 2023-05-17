@@ -5,6 +5,9 @@
   <target name="test">
     <mkdir dir="dist" />
     <RestGen dlcHome="${DLC}" projectDir="." destFile="dist/REST.paar" type="paar" services="RestProjectService" />
+    <RestGen dlcHome="${DLC}" projectDir="." destFile="dist/REST.mobpaar" type="mobpaar" services="RestProjectService" />
+    <RestGen dlcHome="${DLC}" projectDir="." destFile="dist/REST.restwar" type="restwar" services="RestProjectService" />
+    <RestGen dlcHome="${DLC}" projectDir="." destFile="dist/REST.mobwar" type="mobwar" services="RestProjectService" />
   </target>
 
 </project>

@@ -16,13 +16,14 @@
  */
 package com.phenix.pct;
 
+import static org.testng.Assert.assertTrue;
+
 import java.io.File;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Class for testing ABLUnit task
+ * RestGen task unit tests
  * 
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
@@ -33,8 +34,10 @@ public class RestGenTest extends BuildFileTestNg {
         configureProject("RestGen/test1/build.xml");
         executeTarget("test");
 
-        File paar = new File("RestGen/test1/dist/REST.paar");
-        Assert.assertTrue(paar.exists());
+        assertTrue(new File("RestGen/test1/dist/REST.paar").exists());
+        assertTrue(new File("RestGen/test1/dist/REST.mobpaar").exists());
+        assertTrue(new File("RestGen/test1/dist/REST.restwar").exists());
+        assertTrue(new File("RestGen/test1/dist/REST.mobwar").exists());
     }
 
 }
