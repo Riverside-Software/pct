@@ -361,4 +361,20 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.members.get(11).comment,
                 "<h2>Purpose</h2>\n<p>The purpose of the property12</p>\n<h3>Modifier:</h3>\n<p><code>PRIVATE GET - SET</code></p>\n");
     }
+
+    @Test(groups = {"v11"})
+    public void test3() {
+        configureProject("ABLDuck/test3/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("ABLDuck/test3/docs1/output/classes/rssw.pct.TestClass1.js");
+        assertTrue(f1.exists());
+        File f2 = new File("ABLDuck/test3/docs2/output/classes/rssw.pct.TestClass1.js");
+        assertTrue(f2.exists());
+
+        // Not exactly the same as ClassDocumentationTest#test3
+        assertTrue(f2.length() < f1.length());
+
+    }
+
 }

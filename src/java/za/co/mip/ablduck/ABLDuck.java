@@ -99,6 +99,7 @@ public class ABLDuck extends PCT {
     private Charset inputCharset = null;
     private File template = null;
     private File customLink = null;
+    private boolean includeCommentsAfterNode = false;
 
     public ABLDuck() {
         super();
@@ -112,6 +113,10 @@ public class ABLDuck extends PCT {
      */
     public void addFileset(FileSet set) {
         filesets.add(set);
+    }
+
+    public void setLegacyMode(boolean legacyMode) {
+        this.includeCommentsAfterNode = legacyMode;
     }
 
     /**
@@ -269,7 +274,7 @@ public class ABLDuck extends PCT {
                     ICompilationUnit root = astMgr.createAST(fsr, astContext, monitor,
                             IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                     if (isClass) {
-                        ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp);
+                        ABLDuckClassVisitor visitor = new ABLDuckClassVisitor(pp, includeCommentsAfterNode);
                         log("Executing AST ClassVisitor " + file.getAbsolutePath(),
                                 Project.MSG_VERBOSE);
                         root.accept(visitor);

@@ -49,6 +49,10 @@ public class ABLDuckClassVisitor extends ClassDocumentationVisitor {
         super(propath);
     }
 
+    public ABLDuckClassVisitor(IPropath propath, boolean includeCommentsAfterASTNode) {
+        super(propath, includeCommentsAfterASTNode);
+    }
+
     public CompilationUnit getCompilationUnit() {
         CompilationUnit cu = new CompilationUnit();
         ClassCompilationUnit classUnit = getClassCompilationUnit();

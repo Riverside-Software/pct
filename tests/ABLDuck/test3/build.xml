@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="ABLDuck-test">
+  <taskdef resource="extras115.properties" />
+
+  <target name="test">
+    <ABLDuck destDir="docs1" dlcHome="${DLC}" title="ABLDuck Documentation" dataFilesOnly="true">
+      <fileset dir="src" includes="**/*.cls,**/*.p,**/*.w" />
+    </ABLDuck>
+    <ABLDuck destDir="docs2" dlcHome="${DLC}" title="ABLDuck Documentation" dataFilesOnly="true" legacyMode="true">
+      <fileset dir="src" includes="**/*.cls,**/*.p,**/*.w" />
+    </ABLDuck>
+  </target>
+
+</project>

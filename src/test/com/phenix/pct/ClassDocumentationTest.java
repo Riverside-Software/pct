@@ -138,4 +138,17 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertEquals(nodeList.getLength(), 1);
     }
 
+    @Test(groups= {"win", "v11"})
+    public void test7() throws XPathExpressionException, IOException, SAXException, ParserConfigurationException {
+        configureProject("ClassDocumentation/test7/build.xml");
+        executeTarget("test");
+
+        File f1 = new File("ClassDocumentation/test7/doc1/rssw.pct.TestClass1.xml");
+        assertTrue(f1.exists());
+        File f2 = new File("ClassDocumentation/test7/doc2/rssw.pct.TestClass1.xml");
+        assertTrue(f2.exists());
+
+        assertTrue(f2.length() > f1.length());
+    }
+
 }

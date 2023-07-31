@@ -54,6 +54,7 @@ public class OpenEdgeDocumentation115 extends PCT {
     private String encoding = null;
     private List<FileSet> filesets = new ArrayList<>();
     protected Path propath = null;
+    private boolean includeCommentsAfterNode = false;
 
     public OpenEdgeDocumentation115() {
         super();
@@ -67,6 +68,10 @@ public class OpenEdgeDocumentation115 extends PCT {
      */
     public void addFileset(FileSet set) {
         filesets.add(set);
+    }
+
+    public void setLegacyMode(boolean legacyMode) {
+        this.includeCommentsAfterNode = legacyMode;
     }
 
     /**
@@ -148,7 +153,7 @@ public class OpenEdgeDocumentation115 extends PCT {
 
                     ICompilationUnit root = astMgr.createAST(file, astContext, monitor, IASTManager.EXPAND_ON, IASTManager.DLEVEL_FULL);
                     if (isClass) {
-                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(pp);
+                        ClassDocumentationVisitor visitor = new ClassDocumentationVisitor(pp, includeCommentsAfterNode);
                         log("Executing AST ClassVisitor " + file.getAbsolutePath(), Project.MSG_VERBOSE);
                         root.accept(visitor);
                         if (visitor.getPackageName().length() == 0)

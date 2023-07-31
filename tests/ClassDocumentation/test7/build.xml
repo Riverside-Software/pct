@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="ClassDocumentation-test7">
+  <taskdef resource="extras115.properties" />
+
+  <target name="test">
+    <mkdir dir="doc1" />
+    <mkdir dir="doc2" />
+    <ClassDocumentation destDir="doc1" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.cls" />
+      <propath location="src" />
+    </ClassDocumentation>
+    <ClassDocumentation destDir="doc2" dlcHome="${DLC}" legacyMode="true">
+      <fileset dir="src" includes="**/*.cls" />
+      <propath location="src" />
+    </ClassDocumentation>
+  </target>
+
+</project>
