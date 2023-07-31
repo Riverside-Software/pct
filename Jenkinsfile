@@ -64,7 +64,6 @@ pipeline {
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
                  branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
                  branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
-                 branch6: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.6', false, '12.6-Linux', 'docker.rssw.eu/progress/dlc:12.6') },
                  branch7: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.7', false, '12.7-Linux', 'docker.rssw.eu/progress/dlc:12.7') },
                  failFast: false
       }
@@ -78,14 +77,14 @@ pipeline {
         unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Win'
         unstash name: 'junit-12.2-Linux'
-        unstash name: 'junit-12.6-Linux'
+        unstash name: 'junit-12.7-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-12.6-Linux.zip', dir: 'junitreports'
+        unzip zipFile: 'junitreports-12.7-Linux.zip', dir: 'junitreports'
         junit 'junitreports/**/*.xml'
       }
     }
