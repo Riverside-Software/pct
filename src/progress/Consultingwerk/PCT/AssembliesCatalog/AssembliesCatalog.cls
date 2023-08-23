@@ -118,7 +118,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         DEFINE VARIABLE oStaticPropertiesJson   AS JsonArray                          NO-UNDO .
         DEFINE VARIABLE oProperties             AS "System.Reflection.PropertyInfo[]" NO-UNDO .
 
-        oProperties = poType:GetProperties () .
+        oProperties = poType:GetProperties (System.Reflection.BindingFlags:DeclaredOnly) .
 
         {Consultingwerk/foreach.i System.Reflection.PropertyInfo oProperty in oProperties '' propertyloop}
 
@@ -206,7 +206,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
         {Consultingwerk/foreach.i System.Type oType in oTypes '' typeloop}
             /* IF poJsonObject:Has (oType:FullName) THEN
                 NEXT typeloop . */
-
+            IF oType:IsNotPublic THEN NEXT typeLoop.
             oTypeJson = NEW JsonObject () .
 
             THIS-OBJECT:AddBaseTypes (oType, oTypeJson) .
@@ -326,6 +326,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
             oMethodJson = NEW JsonObject ().
             oMethodJson:Add ("name":U, SUBSTITUTE ("&1 (&2)", oMethod:NAME, cParameters)) .
+            oMethodJson:Add ("returnType":U, SUBSTITUTE ("&1", THIS-OBJECT:TypeName(oMethod:ReturnType))) .
             IF oAttributes:Length > 0 THEN DO:
                 oObsoleteJson = NEW JsonObject () .
                 oMethodJson:Add ("obsolete":U, oObsoleteJson) .
@@ -400,6 +401,10 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
         IF poType:IsAssignableFrom (oByteArrayType) THEN
             RETURN "MEMPTR":U .
+
+        // Don't include generics information
+        IF INDEX(poType:FullName, '`') > 0 THEN
+            RETURN SUBSTRING(poType:FullName, 1, INDEX(poType:FullName, '`') - 1).
 
         RETURN poType:FullName .
 

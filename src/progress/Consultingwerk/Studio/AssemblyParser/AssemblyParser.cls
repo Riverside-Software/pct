@@ -41,11 +41,7 @@ CLASS Consultingwerk.Studio.AssemblyParser.AssemblyParser
     ------------------------------------------------------------------------------*/
     CONSTRUCTOR PUBLIC AssemblyParser ():
 
-        &IF "{&WINDOW-SYSTEM}":U BEGINS "MS-WIN":U &THEN
         THIS-OBJECT (Progress.ClrBridge.AssemblyStore:Instance:AssembliesPath) .
-        &ELSE
-        UNDO, THROW NEW Progress.Lang.AppError ("Not supported on this platform.", 0) .
-        &ENDIF
 
     END CONSTRUCTOR.
 
