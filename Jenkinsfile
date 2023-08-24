@@ -43,14 +43,13 @@ pipeline {
           unstash name: 'classdoc'
           sh 'git rev-parse --short HEAD > head-rev'
           def commit = readFile('head-rev').trim()
-          def jdk = tool name: 'Corretto 11', type: 'jdk'
-          def antHome = tool name: 'Ant 1.9', type: 'ant'
-          def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
-          def dlc12 = tool name: 'OpenEdge-12.4', type: 'openedge'
           def version = readFile('version.txt').trim()
 
-          withEnv(["TERM=xterm", "JAVA_HOME=${jdk}"]) {
-            sh "${antHome}/bin/ant -Dpct.release=${version} -DDLC11=${dlc11} -DDLC12=${dlc12} -DGIT_COMMIT=${commit} dist"
+          docker.image('docker.rssw.eu/progress/dlc:11.7').inside('') {
+            sh "ant -DDLC11=/opt/progress/dlc -DDLC12=/ pbuild"
+          }
+          docker.image('docker.rssw.eu/progress/dlc:12.7').inside('') {
+            sh "ant -Dpct.release=${version} -DDLC11=/ -DDLC12=/opt/progress/dlc -DGIT_COMMIT=${commit} dist"
           }
         }
         stash name: 'tests', includes: 'dist/PCT.jar,dist/testcases.zip,tests.xml'

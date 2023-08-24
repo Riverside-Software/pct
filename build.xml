@@ -244,7 +244,8 @@
     <copy todir="classDocTemp">
       <zipfileset src="dist/classDoc.zip" />
     </copy>
-    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC11}" encoding="undefined" if:true="${dlc.v11.present}">
+    <!-- Note that pct11.pl is updated with v12 prolib (workaround for the Jenkins build process) -->
+    <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
       <fileset dir="classDocTemp/v11" includes="**/*.r" />
     </bootstrapLibrary>
     <bootstrapLibrary destfile="${build}/pct12.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
