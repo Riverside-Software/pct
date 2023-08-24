@@ -341,7 +341,7 @@
       <group title="ABLDuck" packages="za.co.mip.ablduck.*" />
       <group title="ProUnit" packages="net.cordova.prounit.*" />
       <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
-      <link href="https://docs.oracle.com/javase/8/docs/api/" />
+      <link href="https://docs.oracle.com/en/java/javase/20/" />
       <link href="https://ant.apache.org/manual/api/" />
     </javadoc>
     <jar destfile="${dist}/PCT-javadoc.jar">
