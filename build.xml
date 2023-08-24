@@ -74,7 +74,7 @@
     <pathelement location="lib/openedge-checks-2.22.1.jar"/>
     <pathelement location="lib/proparse-2.22.1.jar"/>
     <pathelement location="lib/guava-30.1.1-jre.jar"/>
-    <pathelement location="lib/antlr4-runtime-4.10.1.jar"/>
+    <pathelement location="lib/antlr4-runtime-4.13.0.jar"/>
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
@@ -276,13 +276,13 @@
       <zipfileset src="lib/jaxb-core-2.3.0.1.jar" />
       <zipfileset src="lib/jaxb-impl-2.3.2.jar" />
       <zipfileset src="lib/guava-30.1.1-jre.jar" />
-      <zipfileset src="lib/antlr4-runtime-4.10.1.jar" />
+      <zipfileset src="lib/antlr4-runtime-4.13.0.jar" />
       <zipfileset src="lib/proparse-2.22.1.jar" />
       <zipfileset src="lib/rcode-reader-2.22.1.jar" />
       <zipfileset src="lib/database-parser-2.22.1.jar" />
       <zipfileset src="lib/openedge-checks-2.22.1.jar" />
-      <zipfileset src="lib/slf4j-api-1.7.30.jar" />
-      <zipfileset src="lib/slf4j-simple-1.7.30.jar" />
+      <zipfileset src="lib/slf4j-api-1.7.36.jar" />
+      <zipfileset src="lib/slf4j-simple-1.7.36.jar" />
 
       <!-- ABLDuck classes -->
       <zipfileset src="lib/commonmark-0.11.0.jar"/>
