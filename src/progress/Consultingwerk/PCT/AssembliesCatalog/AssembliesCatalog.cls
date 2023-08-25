@@ -194,7 +194,7 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
      * @param poAssembly The reference to the .NET Assembly
      * @param poJsonObject The name of the JSON Array
      */
-    METHOD PROTECTED VOID AddTypes (poAssembly AS System.Reflection.Assembly,
+    METHOD PUBLIC VOID AddTypes (poAssembly AS System.Reflection.Assembly,
                                     poJsonObject AS JsonArray):
 
         DEFINE VARIABLE oTypeJson  AS JsonObject      NO-UNDO .
@@ -228,26 +228,6 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
                     rtle:Message
                 VIEW-AS ALERT-BOX.
         END CATCH.
-
-    END METHOD.
-
-    /**
-     * Purpose: Adds the types from the given Assembly to the JsonObject
-     * Notes:
-     * @param pcAssemblyName The name of the assembly
-     * @param poJsonObject The name of the JSON Array
-     */
-    METHOD PUBLIC VOID AddTypesFromAssembly (pcAssemblyName AS CHARACTER,
-                                             poJsonObject AS JsonArray):
-
-        DEFINE VARIABLE oAssembly AS System.Reflection.Assembly NO-UNDO .
-
-        oAssembly = System.Reflection.Assembly:Load (pcAssemblyName) .
-
-        IF NOT VALID-OBJECT (oAssembly) THEN
-            RETURN .
-
-        THIS-OBJECT:AddTypes (oAssembly, poJsonObject) .
 
     END METHOD.
 

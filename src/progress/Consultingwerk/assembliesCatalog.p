@@ -15,40 +15,32 @@
  *                                                                    *
  **********************************************************************/
 
-BLOCK-LEVEL ON ERROR UNDO, THROW.
+block-level on error undo, throw.
 
-USING Consultingwerk.PCT.AssembliesCatalog.* FROM PROPATH.
-USING Consultingwerk.Studio.AssemblyParser.* FROM PROPATH.
-USING Progress.Json.ObjectModel.*            FROM PROPATH.
+using Progress.Json.ObjectModel.JsonArray from propath.
 
-DEFINE VARIABLE oParser  AS AssemblyParser    NO-UNDO.
-DEFINE VARIABLE oCatalog AS AssembliesCatalog NO-UNDO.
-DEFINE VARIABLE oJson    AS JsonArray        NO-UNDO.
-
-{ Consultingwerk/Studio/AssemblyParser/ttAssemblies.i }
+define variable oCatalog    as Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog no-undo.
+define variable oJson       as JsonArray                      no-undo.
+define variable oAssembly   as System.Reflection.Assembly     no-undo.
+define variable oAssemblies as "System.Reflection.Assembly[]" no-undo.
+define variable oEnum       as System.Collections.IEnumerator no-undo.
 
 /* ***************************  Main Block  *************************** */
 
-MESSAGE "Generating assemblies catalog".
-oParser = NEW AssemblyParser() .
-oParser:GetTable (OUTPUT TABLE ttAssemblies) .
+message "Generating assemblies catalog".
 
-IF NOT CAN-FIND (ttAssemblies WHERE ttAssemblies.AssemblyName = "mscorlib":U) THEN DO:
-    CREATE ttAssemblies.
-    ASSIGN ttAssemblies.AssemblyEntry  = "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089":U
-           ttAssemblies.AssemblyName   = "mscorlib":U
-           ttAssemblies.Culture        = "neutral":U
-           ttAssemblies.PublicKeyToken = "b77a5c561934e089":U
-           ttAssemblies.Version        = "4.0.0.0":U .
-END.
+assign oJson = new JsonArray().
+assign oCatalog = new Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog().
+assign oAssemblies = System.AppDomain:CurrentDomain:GetAssemblies().
+assign oEnum = cast(oAssemblies , System.Collections.IEnumerable):GetEnumerator().
+oEnum:reset().
+do while oEnum:MoveNext() on error undo, throw:
+  assign oAssembly = cast(oEnum:Current, System.Reflection.Assembly).
+  message substitute("  -> Generating &1 catalog", oAssembly:FullName).
+  oCatalog:AddTypes (oAssembly, oJson) .
+end.
+message "Catalog generated".
 
-oJson = NEW JsonArray() .
-oCatalog = NEW AssembliesCatalog() .
+oJson:WriteFile (session:parameter, true).
 
-FOR EACH ttAssemblies:
-  MESSAGE ttAssemblies.AssemblyEntry .
-  oCatalog:AddTypesFromAssembly (ttAssemblies.AssemblyEntry, oJson) .
-END.
-
-oJson:WriteFile (SESSION:PARAMETER, TRUE) .
-RETURN '0'.
+return '0'.
