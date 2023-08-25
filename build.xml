@@ -241,6 +241,8 @@
 
     <!--  Updating pct11.pl and pct12.pl with rcode compiled on Windows -->
     <mkdir dir="classDocTemp" />
+    <mkdir dir="classDocTemp/v11" />
+    <mkdir dir="classDocTemp/v12" />
     <copy todir="classDocTemp">
       <zipfileset src="dist/classDoc.zip" />
     </copy>
