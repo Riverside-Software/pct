@@ -78,6 +78,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private File output;
     private String xCodeSessionKey = null;
     private String clientMode = null;
+    private boolean clrnetcore = false;
 
     public GenericExecuteOptions(Task parent) {
         this.parent = parent;
@@ -351,6 +352,10 @@ public class GenericExecuteOptions implements IRunAttributes {
             throw new BuildException("Invalid client mode: " + clientMode);
     }
 
+    public void setClrnetcore(boolean clrnetcore) {
+        this.clrnetcore = clrnetcore;
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -496,6 +501,10 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public String getClientMode() {
         return clientMode;
+    }
+
+    public boolean isClrnetcore() {
+        return clrnetcore;
     }
 
     protected List<String> getCmdLineParameters() {
@@ -662,6 +671,9 @@ public class GenericExecuteOptions implements IRunAttributes {
             list.add(assemblies.getAbsolutePath());
         }
 
+        if (clrnetcore)
+            list.add("-clrnetcore");
+
         // Additional command line options
         if (options != null) {
             for (PCTRunOption opt : options) {
@@ -712,7 +724,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     public Collection<DBAlias> getAliases() {
-        return aliases == null ? new ArrayList<DBAlias>() : aliases;
+        return aliases == null ? new ArrayList<>() : aliases;
     }
 
     /**

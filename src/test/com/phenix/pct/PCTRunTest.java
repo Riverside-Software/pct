@@ -506,4 +506,16 @@ public class PCTRunTest extends BuildFileTestNg {
         }
     }
 
+    @Test(groups = {"v12", "win"})
+    public void test54() {
+        // Only work with 12.7+
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 6))
+            return;
+
+        configureProject("PCTRun/test54/build.xml");
+        expectLog("test1", ".Net version: 4.0.30319.42000");
+        expectLog("test2", ".Net version: 6.0.21");
+    }
+
 }

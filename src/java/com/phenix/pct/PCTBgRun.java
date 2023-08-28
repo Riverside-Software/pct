@@ -182,6 +182,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setClrnetcore(boolean clrnetcore) {
+        options.setClrnetcore(clrnetcore);
+    }
+
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         options.setCompileUnderscore(compUnderscore);
     }

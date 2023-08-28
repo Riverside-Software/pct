@@ -49,7 +49,7 @@ import org.apache.tools.ant.util.FileUtils;
  */
 public class PCTRun extends PCT implements IRunAttributes {
     protected GenericExecuteOptions runAttributes;
-    
+
     protected Path internalPropath = null;
 
     // Internal use
@@ -252,6 +252,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     @Override
     public void setClientMode(String clientMode) {
         runAttributes.setClientMode(clientMode);
+    }
+
+    @Override
+    public void setClrnetcore(boolean clrnetcore) {
+        runAttributes.setClrnetcore(clrnetcore);
     }
 
     @Override

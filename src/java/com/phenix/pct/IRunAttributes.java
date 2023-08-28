@@ -244,4 +244,9 @@ public interface IRunAttributes {
      * Client mode of ABL session (one of rg, rq, rr, rx)
      */
     void setClientMode(String clientMode);
+
+    /**
+     * Use .Net core (-clrnetcore parameter)
+     */
+    void setClrnetcore(boolean clrnetcore);
 }

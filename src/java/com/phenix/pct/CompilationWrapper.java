@@ -527,6 +527,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setClrnetcore(boolean clrnetcore) {
+        runAttributes.setClrnetcore(clrnetcore);
+    }
+
+    @Override
     public void setParameter(String param) {
         throw new BuildException("Can't set parameter attribute here");
     }

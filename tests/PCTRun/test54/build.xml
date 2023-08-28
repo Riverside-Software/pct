@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test54">
+  <taskdef resource="PCT.properties" />
+  <property environment="env" />
+
+  <target name="test1">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" clrnetcore="false" />
+  </target>
+
+  <target name="test2">
+    <PCTRun graphicalMode="false" procedure="test.p" dlcHome="${DLC}" clrnetcore="true" />
+  </target>
+
+</project>
