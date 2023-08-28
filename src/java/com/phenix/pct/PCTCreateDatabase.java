@@ -554,7 +554,6 @@ public class PCTCreateDatabase extends PCT {
                 run.setDlcHome(getDlcHome());
                 run.setDlcBin(getDlcBin());
                 run.addPropath(propath);
-                run.setIncludedPL(getIncludedPL());
                 run.setProcedure(holder.getProcedure());
                 run.setParameters(holder.getParameters());
                 run.setTempDir(tempDir);
@@ -585,7 +584,6 @@ public class PCTCreateDatabase extends PCT {
         task.setDlcHome(getDlcHome());
         task.setDlcBin(getDlcBin());
         task.addPropath(propath);
-        task.setIncludedPL(getIncludedPL());
         task.setFailOnError(failOnError);
         task.setNumDec(numdec);
         task.setNumSep(numsep);

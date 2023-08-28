@@ -55,6 +55,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
             if (numThreads > 1) {
                 ((PCTBgCompile) pctTask).setNumThreads(numThreads);
             }
+        } else if ("bootstrapCompile".equalsIgnoreCase(getRuntimeConfigurableWrapper().getElementTag())) {
+            pctTask = new PCTCompile();
+            ((PCTCompile) pctTask).skipEmbeddedPL();
+            ((PCTCompile) pctTask).setRunAttributes(runAttributes);
+            ((PCTCompile) pctTask).setCompilationAttributes(compAttributes);
         } else {
             pctTask = new PCTCompile();
             ((PCTCompile) pctTask).setRunAttributes(runAttributes);
@@ -65,7 +70,6 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
         }
         pctTask.bindToOwner(this);
         pctTask.setDlcHome(getDlcHome());
-        pctTask.setIncludedPL(getIncludedPL());
         pctTask.execute();
     }
 

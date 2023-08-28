@@ -69,7 +69,6 @@ public abstract class PCT extends Task {
     private File pdsHome = null;
     private File jdk = null;
     private File jre = null;
-    private boolean includedPL = true;
 
     // Internal use
     private ProgressProcedures pp = null;
@@ -197,15 +196,6 @@ public abstract class PCT extends Task {
     }
 
     /**
-     * Add default pct.pl included in JAR file into PROPATH. Default value is true.
-     * 
-     * @since 0.10
-     */
-    public final void setIncludedPL(boolean inc) {
-        this.includedPL = inc;
-    }
-
-    /**
      * Add an environment variable to the launched process.
      * 
      * @param var new environment variable.
@@ -223,16 +213,6 @@ public abstract class PCT extends Task {
      */
     protected final Collection<Variable> getEnvironmentVariables() {
         return env.getVariablesVector();
-    }
-
-    /**
-     * Use default pct.pl included in JAR file into PROPATH
-     * 
-     * @return boolean
-     * @since 0.10
-     */
-    protected final boolean getIncludedPL() {
-        return this.includedPL;
     }
 
     /**

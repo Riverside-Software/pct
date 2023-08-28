@@ -446,8 +446,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         }
 
         try {
-            if (getIncludedPL() && !extractPL(pctLib)) {
-                throw new BuildException("Unable to extract pct.pl.");
+            if (!extractPL(pctLib)) {
+                throw new BuildException("Unable to extract pct.pl");
             }
         } catch (IOException caught) {
             cleanup();
@@ -609,16 +609,14 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         return list;
     }
     protected void preparePropath() {
-        if (this.getIncludedPL()) {
-            // PL is extracted later, we just have a reference on filename
-            FileList list = new FileList();
-            list.setDir(pctLib.getParentFile().getAbsoluteFile());
-            FileList.FileName fn = new FileList.FileName();
-            fn.setName(pctLib.getName());
-            list.addConfiguredFile(fn);
-            this.internalPropath = new Path(this.getProject());
-            this.internalPropath.addFilelist(list);
-        }
+        // PL is extracted later, we just have a reference on filename
+        FileList list = new FileList();
+        list.setDir(pctLib.getParentFile().getAbsoluteFile());
+        FileList.FileName fn = new FileList.FileName();
+        fn.setName(pctLib.getName());
+        list.addConfiguredFile(fn);
+        this.internalPropath = new Path(this.getProject());
+        this.internalPropath.addFilelist(list);
     }
 
     protected void cleanup() {

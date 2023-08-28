@@ -234,7 +234,6 @@ public class PCTRunTest extends BuildFileTestNg {
         configureProject("PCTRun/test30/build.xml");
         expectBuildException("test1", "Shouldn't work");
         executeTarget("test2");
-        executeTarget("test3");
     }
 
     @Test(groups = {"v11"})

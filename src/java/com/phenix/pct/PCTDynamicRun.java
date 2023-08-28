@@ -194,8 +194,8 @@ public class PCTDynamicRun extends PCTRun {
             exec.createArg().setValue("-p");
             exec.createArg().setValue(getProgressProcedures().getDynamicRunProcedure());
 
-            if (getIncludedPL() && !extractPL(pctLib)) {
-                throw new BuildException("Unable to extract pct.pl.");
+            if (!extractPL(pctLib)) {
+                throw new BuildException("Unable to extract pct.pl");
             }
 
             exec.execute();

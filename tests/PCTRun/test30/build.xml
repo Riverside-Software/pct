@@ -14,10 +14,5 @@
       <propath refid="my.propath" />
     </PCTRun>
   </target>
-  <target name="test3">
-    <PCTRun graphicalMode="false" procedure="foo/test.p" dlcHome="${DLC}" includedPL="false">
-      <propath refid="my.propath" />
-    </PCTRun>
-  </target>
 
 </project>

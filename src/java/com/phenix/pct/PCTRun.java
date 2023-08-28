@@ -67,6 +67,8 @@ public class PCTRun extends PCT implements IRunAttributes {
     private File profilerParamFile = null;
     private boolean prepared = false;
     private Charset charset = null;
+    // Set to false only during the internal PCT build process
+    private boolean useEmbeddedPL = true;
 
     /**
      * Default constructor
@@ -109,6 +111,10 @@ public class PCTRun extends PCT implements IRunAttributes {
 
     protected void setRunAttributes(GenericExecuteOptions attrs) {
         this.runAttributes = attrs;
+    }
+
+    public void skipEmbeddedPL() {
+        this.useEmbeddedPL = false;
     }
 
     /**
@@ -417,9 +423,8 @@ public class PCTRun extends PCT implements IRunAttributes {
             // Startup procedure
             exec.createArg().setValue("-p"); //$NON-NLS-1$
             exec.createArg().setValue(initProc.getAbsolutePath());
-            if (getIncludedPL() && !extractPL(pctLib)) {
-                throw new BuildException("Unable to extract pct.pl.");
-            }
+            if (useEmbeddedPL && !extractPL(pctLib))
+                throw new BuildException("Unable to extract pct.pl");
 
             // OE12 ? Define failOnError and resultProperty
             if (getDLCMajorVersion() >= 12) {
@@ -785,7 +790,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     protected void preparePropath() {
-        if (this.getIncludedPL()) {
+        if (useEmbeddedPL) {
             // PL is extracted later, we just have a reference on filename
             FileList list = new FileList();
             list.setDir(pctLib.getParentFile().getAbsoluteFile());

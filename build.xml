@@ -151,7 +151,7 @@
       <arg value="empty" />
       <env key="DLC" value="${dlcHome}" />
     </exec>
-    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" includedPL="false" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
+    <bootstrapCompile destdir="${buildDir}" debugListing="true" listing="true" keepXref="true" xmlXref="${xmlxref}" md5="true" minSize="false" graphicalMode="false" dlcHome="${dlcHome}" compileUnderscore="true" cpstream="utf-8" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true">
       <fileset refid="${fsid}" />
       <propath refid="${propid}" />
       <PCTRunOption name="-cprcodeout" value="undefined" />
@@ -201,7 +201,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win-v11}" />
-    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
+    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -210,7 +210,7 @@
     </bootstrapCompile>
 
     <mkdir dir="${build-win-v12}" />
-    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" includedPL="false" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
+    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
