@@ -26,6 +26,7 @@
   <property name="build-v12" location="build/build-v12" />
   <property name="build-win-v11" location="build/windows-v11" />
   <property name="build-win-v12" location="build/windows-v12" />
+  <property name="build-win-v12-netcore" location="build/windows-v12-netcore" />
   <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
@@ -201,7 +202,7 @@
  
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win-v11}" />
-    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC11}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
+    <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC11}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -210,7 +211,7 @@
     </bootstrapCompile>
 
     <mkdir dir="${build-win-v12}" />
-    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="true" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
+    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
       <fileset refid="fs.classDoc" />
       <propath>
         <pathelement location="${src.progress}" />
@@ -218,9 +219,20 @@
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
 
+    <mkdir dir="${build-win-v12-netcore}" />
+    <bootstrapCompile destdir="${build-win-v12-netcore}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-clrnetcore" />
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+
     <zip destFile="${dist}/classDoc.zip">
       <zipfileset dir="${build-win-v11}" prefix="v11" includes="**/*.r" />
       <zipfileset dir="${build-win-v12}" prefix="v12" includes="**/*.r" />
+      <zipfileset dir="${build-win-v12-netcore}" prefix="v12-netcore" includes="**/*.r" />
     </zip>
   </target>
 
@@ -243,6 +255,7 @@
     <mkdir dir="classDocTemp" />
     <mkdir dir="classDocTemp/v11" />
     <mkdir dir="classDocTemp/v12" />
+    <mkdir dir="classDocTemp/v12-netcore" />
     <copy todir="classDocTemp">
       <zipfileset src="dist/classDoc.zip" />
     </copy>
@@ -252,6 +265,9 @@
     </bootstrapLibrary>
     <bootstrapLibrary destfile="${build}/pct12.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
       <fileset dir="classDocTemp/v12" includes="**/*.r" />
+    </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct12-netcore.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
+      <fileset dir="classDocTemp/v12-netcore" includes="**/*.r" />
     </bootstrapLibrary>
     <delete dir="classDocTemp" />
     <zip destfile="${build}/ablduck.zip">
@@ -265,6 +281,7 @@
       <fileset dir="${build}">
         <include name="pct11.pl" />
         <include name="pct12.pl" />
+        <include name="pct12-netcore.pl" />
         <include name="pct-src.zip" />
       </fileset>
       <zipfileset dir="${build}" includes="ablduck.zip" prefix="za/co/mip/ablduck/resources" />

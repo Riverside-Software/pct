@@ -435,6 +435,20 @@ public abstract class PCT extends Task {
         return true;
     }
 
+    protected boolean extractNetCorePL(File f) throws IOException {
+        String plFile = "/pct" + version.getMajorVersion() + "-netcore.pl";
+        try (InputStream is = getClass().getResourceAsStream(plFile);
+                OutputStream os = new FileOutputStream(f)) {
+            byte[] b = new byte[8192];
+            int k = 0;
+            while ((k = is.read(b)) != -1) {
+                os.write(b, 0, k);
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Extracts pct-src.zip from PCT.jar into a directory, and returns true if the operation was OK.
      * 

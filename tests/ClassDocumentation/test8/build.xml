@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="ClassDocumentation-test8">
+  <taskdef resource="extras115.properties" />
+
+  <target name="test">
+    <mkdir dir="xml" />
+    <mkdir dir="profiler" />
+
+    <ClassDocumentation destDir="doc" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </ClassDocumentation>
+    <ClassDocumentation destDir="doc2" dlcHome="${DLC}">
+      <fileset dir="src" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </ClassDocumentation>
+    <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html" clrnetcore="true">
+      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </HTMLDocumentation>
+    <XMLDocumentation dlcHome="${DLC}" sourceDir="doc" destFile="xml/test1.xml" clrnetcore="true">
+      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </XMLDocumentation>
+  </target>
+
+</project>

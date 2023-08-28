@@ -63,6 +63,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     protected File initProc = null;
     protected File status = null;
     protected File pctLib = null;
+    protected File pctNetcoreLib = null;
     private File xcodeDir = null;
     private File profilerParamFile = null;
     private boolean prepared = false;
@@ -414,6 +415,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             // to open a procedure library, and miserably fails with error 13.
             pctLib = new File(
                     System.getProperty(PCT.TMPDIR), "pct" + plID + (isSourceCodeUsed() ? "" : ".pl")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            pctNetcoreLib = new File(System.getProperty(PCT.TMPDIR), "pct-netcore" + plID + ".pl");
 
             preparePropath();
             createInitProcedure();
@@ -425,6 +427,8 @@ public class PCTRun extends PCT implements IRunAttributes {
             exec.createArg().setValue(initProc.getAbsolutePath());
             if (useEmbeddedPL && !extractPL(pctLib))
                 throw new BuildException("Unable to extract pct.pl");
+            if (useNetCorePL() && !extractNetCorePL(pctNetcoreLib))
+                throw new BuildException("Unable to extract pct-netcore.pl");
 
             // OE12 ? Define failOnError and resultProperty
             if (getDLCMajorVersion() >= 12) {
@@ -485,6 +489,12 @@ public class PCTRun extends PCT implements IRunAttributes {
     // In order to know if Progress session has to use verbose logging
     protected boolean isVerbose() {
         return getAntLoggerLevel() > 2;
+    }
+
+    // Return true if task requested access to .Net core procedures
+    protected boolean useNetCorePL() {
+        return runAttributes.isClrnetcore()
+                && (getVersion().compareTo(new DLCVersion(12, 7, "")) >= 0) && !isSourceCodeUsed();
     }
 
     // Helper method to set result property to the passed in value if appropriate.
@@ -794,6 +804,11 @@ public class PCTRun extends PCT implements IRunAttributes {
             // PL is extracted later, we just have a reference on filename
             FileList list = new FileList();
             list.setDir(pctLib.getParentFile().getAbsoluteFile());
+            if (useNetCorePL()) {
+                FileList.FileName netcorePL = new FileList.FileName();
+                netcorePL.setName(pctNetcoreLib.getName());
+                list.addConfiguredFile(netcorePL);
+            }
             FileList.FileName fn = new FileList.FileName();
             fn.setName(pctLib.getName());
             list.addConfiguredFile(fn);
@@ -864,6 +879,9 @@ public class PCTRun extends PCT implements IRunAttributes {
         // Always delete pct.pl, even in debugPCT mode
         if (pctLib != null) {
             deleteFile(pctLib);
+        }
+        if (useNetCorePL()) {
+            deleteFile(pctNetcoreLib);
         }
         if (runAttributes.isDebugPCT())
             return;

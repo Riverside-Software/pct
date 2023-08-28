@@ -59,9 +59,8 @@
    Currently we do expect that in OE11 the test 
    for "{&WINDOW-SYSTEM} would not be sufficient 
    to know if .NET assemblies are accesible. */
-&IF "{&WINDOW-SYSTEM}":U BEGINS "MS-WIN":U &THEN   
+   
 &GLOBAL-DEFINE DotNetAccessible 
-&ENDIF
 
 /* Include conditional compilation for Infragistics Controls */
 &GLOBAL-DEFINE Infragistics

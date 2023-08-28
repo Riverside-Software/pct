@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="AssemblyCatalog-test">
+<project name="AssemblyCatalog-test1">
   <taskdef resource="PCT.properties" />
 
   <target name="test">

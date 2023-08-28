@@ -39,12 +39,11 @@ import com.google.gson.GsonBuilder;
  */
 public class AssemblyCatalogTest extends BuildFileTestNg {
 
-    @Test(groups= {"win", "v11"})
-    public void test1() {
-        configureProject("AssemblyCatalog/test1/build.xml");
+    public void genericTest(String rootDir) {
+        configureProject(rootDir + "/build.xml");
         executeTarget("test");
 
-        File f1 = new File("AssemblyCatalog/test1/assemblies.json");
+        File f1 = new File(rootDir + "/assemblies.json");
         assertTrue(f1.exists());
         Gson gson = new GsonBuilder().create();
         try (FileReader reader = new FileReader(f1)) {
@@ -82,7 +81,28 @@ public class AssemblyCatalogTest extends BuildFileTestNg {
         } catch (IOException caught) {
             fail("Unable to read assemblies.json");
         }
+    }
 
+    @Test(groups= {"win", "v11"})
+    public void test1() {
+        genericTest("AssemblyCatalog/test1");
+    }
+
+    @Test(groups= {"v12"})
+    public void test2() {
+        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+        if (isWindows) {
+            // Only work with 12.7+
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 6))
+                return;
+        } else {
+         // Only work with 12.8+
+            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 7))
+                return;
+        }
+        genericTest("AssemblyCatalog/test2");
     }
 
     @SuppressWarnings("unused")
