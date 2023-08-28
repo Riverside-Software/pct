@@ -109,8 +109,9 @@ public class PCTProxygenTest extends BuildFileTestNg {
 
     @Test(groups = { "v12", "win" })
     public void test6() {
+        // Only on 12.2
         DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() == 0))
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() != 2))
             return;
 
         configureProject("PCTProxygen/test6/build.xml");

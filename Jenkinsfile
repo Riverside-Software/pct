@@ -18,7 +18,7 @@ pipeline {
         script {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
-          def dlc12 = tool name: 'OpenEdge-12.4', type: 'openedge'
+          def dlc12 = tool name: 'OpenEdge-12.7', type: 'openedge'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
           def version = readFile('version.txt').trim()
 
@@ -61,6 +61,7 @@ pipeline {
       steps {
         parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
+                 branch3: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-12.7', true, '12.7-Win', '') },
                  branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
                  branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch7: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.7', false, '12.7-Linux', 'docker.rssw.eu/progress/dlc:12.7') },
@@ -73,15 +74,17 @@ pipeline {
       steps {
         // Wildcards not accepted in unstash...
         unstash name: 'junit-11.7-Win'
-        unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Win'
+        unstash name: 'junit-12.7-Win'
+        unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Linux'
         unstash name: 'junit-12.7-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports'
-        unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports'
+        unzip zipFile: 'junitreports-12.7-Win.zip', dir: 'junitreports'
+        unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports'
         unzip zipFile: 'junitreports-12.7-Linux.zip', dir: 'junitreports'
         junit 'junitreports/**/*.xml'
@@ -93,6 +96,7 @@ pipeline {
       steps {
         unstash name: 'coverage-11.7-Win'
         unstash name: 'coverage-12.2-Win'
+        unstash name: 'coverage-12.7-Win'
         script {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
