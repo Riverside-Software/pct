@@ -13,8 +13,8 @@
 Which will give you something like:
 
 ```text
-[PCTVersion] PCT Version : jenkins-Dev1-PCT-376
-     [echo] OpenEdge Release 11.5 as of Fri Dec  5 19:02:15 EST 2014
+[PCTVersion] PCT Version : pct-226-main-e52f4a4
+     [echo] OpenEdge Release 12.2.8 as of Fri Mar 25 19:01:43 EDT 2022
 ```
 
 * Upgrade to the latest version of PCT if possible
@@ -29,7 +29,20 @@ Which will give you something like:
 * JDK 11 is required
 * Modify `pct.build.properties` to match your OpenEdge installation dir
   * If you don't want to modify the properties you can create a symbolic link using `mklink /j /d C:\\Progress\\OpenEdge-12.6 your-oe126-path` in an administrator command prompt
-* Make sure you don’t have PCT.jar in `$ANT_HOME/lib`
+* Make sure you **don’t** have PCT.jar in `$ANT_HOME/lib`
 * Execute `ant clean jar` (or `ant clean classDoc jar` if you want to test ClassDocumentation on Windows) to build everything (PCT.jar is created in dist/ directory)
 * Execute `ant prepare-test` to (re)generate the testbox dir, where tests are executed
-* Execute `ant -DDLC=/path/to/dlc -Dprofiler=true -lib dist/PCT.jar -file tests.xml test` to execute unit tests
+* Execute `ant -DDLC=%DLC% -Dprofiler=true -lib dist/PCT.jar -file tests.xml test` to execute unit tests
+
+## Individual unit tests in Docker containers
+
+_ The docker images are only available internally_
+
+```
+docker run -it --rm -v %CD%:/pct docker.rssw.eu/progress/dlc:12.8
+cd /pct/testbox/PCTRun/test1
+# Standard unit tests
+ant -DDLC=$DLC -lib ../../../dist/PCT.jar test
+# Class documentation unit tests
+ant -DDLC=$DLC -lib ../../../dist/PCT.jar -lib ../../../lib/xmltask.jar -lib ../../../lib/ast.jar -lib ../../../lib/ast-dependencies.jar -lib ../../../lib/activation-1.1.1.jar test
+```
