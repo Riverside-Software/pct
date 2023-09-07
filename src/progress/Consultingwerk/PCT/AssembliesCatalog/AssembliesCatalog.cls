@@ -116,24 +116,44 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
         DEFINE VARIABLE oInstancePropertiesJson AS JsonArray                          NO-UNDO .
         DEFINE VARIABLE oStaticPropertiesJson   AS JsonArray                          NO-UNDO .
+        DEFINE VARIABLE oFields                 AS "System.Reflection.FieldInfo[]" NO-UNDO .
         DEFINE VARIABLE oProperties             AS "System.Reflection.PropertyInfo[]" NO-UNDO .
+        DEFINE VARIABLE oJsonObj                AS JsonObject NO-UNDO.
+        DEFINE VARIABLE filter  AS System.Enum.
 
-        oProperties = poType:GetProperties (System.Reflection.BindingFlags:DeclaredOnly) .
+        filter = Progress.Util.EnumHelper:Add(System.Reflection.BindingFlags:Instance , System.Reflection.BindingFlags:Public).
+        filter = Progress.Util.EnumHelper:Add(filter, System.Reflection.BindingFlags:DeclaredOnly).
+
+        oProperties = poType:GetProperties(cast(filter, System.Reflection.BindingFlags)).
+        oFields = poType:GetFields(cast(filter, System.Reflection.BindingFlags)).
 
         {Consultingwerk/foreach.i System.Reflection.PropertyInfo oProperty in oProperties '' propertyloop}
-
+            
             IF CAST (oProperty:GetAccessors(TRUE):GetValue(0), System.Reflection.MethodInfo):IsStatic THEN DO:
                 IF NOT VALID-OBJECT (oStaticPropertiesJson) THEN
                     oStaticPropertiesJson = NEW JsonArray () .
-
-                oStaticPropertiesJson:Add (oProperty:Name) .
+                oJsonObj = new JsonObject().
+                oJsonObj:add("name", oProperty:Name).
+                oJsonObj:add("dataType", this-object:TypeName(oProperty:PropertyType)).
+                oStaticPropertiesJson:Add(oJsonObj) .
             END.
             ELSE DO:
                 IF NOT VALID-OBJECT (oInstancePropertiesJson) THEN
                     oInstancePropertiesJson = NEW JsonArray () .
-
-                oInstancePropertiesJson:Add (oProperty:Name) .
+                oJsonObj = new JsonObject().
+                oJsonObj:add("name", oProperty:Name).
+                oJsonObj:add("dataType", this-object:TypeName(oProperty:PropertyType)).
+                oInstancePropertiesJson:Add(oJsonObj) .
             END.
+        END.
+
+        {Consultingwerk/foreach.i System.Reflection.FieldInfo oField in oFields '' fieldloop}
+                IF NOT VALID-OBJECT (oInstancePropertiesJson) THEN
+                    oInstancePropertiesJson = NEW JsonArray () .
+                oJsonObj = new JsonObject().
+                oJsonObj:add("name", oField:Name).
+                oJsonObj:add("dataType", this-object:TypeName(oField:FieldType)).
+                oInstancePropertiesJson:Add (oJsonObj) .
         END.
 
         IF VALID-OBJECT (oInstancePropertiesJson) THEN
@@ -283,9 +303,8 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
             IF oMethod:IsStatic <> plStatic THEN
                 NEXT methodLoop .
-
-            IF oMethod:Name BEGINS "set_":U OR oMethod:Name BEGINS "get_":U THEN
-                NEXT methodLoop .
+            IF oMethod:isSpecialName then
+                next methodLoop.
 
             IF NOT VALID-OBJECT (oMethodsJson) THEN
                 oMethodsJson = NEW JsonArray () .
@@ -295,9 +314,9 @@ CLASS Consultingwerk.PCT.AssembliesCatalog.AssembliesCatalog:
 
             {Consultingwerk/foreach.i System.Reflection.ParameterInfo oParameter IN oParameters}
                 ASSIGN cParameters = cParameters +
-                                     SUBSTITUTE (", &1&2":U,
+                                     SUBSTITUTE (", &3 &1&2":U,
                                                  IF oParameter:IsOut THEN "output ":U ELSE "":U,
-                                                 THIS-OBJECT:TypeName(oParameter:ParameterType)) .
+                                                 THIS-OBJECT:TypeName(oParameter:ParameterType), oParameter:Name) .
             END .
 
             ASSIGN cParameters = TRIM (TRIM (cParameters, ",":U)) .

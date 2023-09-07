@@ -66,7 +66,7 @@ public class AssemblyCatalogTest extends BuildFileTestNg {
             Method obsMethd = null;
             Method nonObsMethd = null;
             for (Method m : cls.methods) {
-                if ("MakeRelative (System.Uri)".equals(m.name)) {
+                if ("MakeRelative (toUri System.Uri)".equals(m.name)) {
                     obsMethd = m;
                 }
                 if ("IsWellFormedOriginalString ()".equals(m.name)) {
@@ -113,16 +113,23 @@ public class AssemblyCatalogTest extends BuildFileTestNg {
         boolean isClass;
         boolean isEnum;
         boolean isInterface;
-        String[] properties;
+        Property[] properties;
         Method[] methods;
         String[] events;
         Method[] staticMethods;
-        String[] staticProperties;
+        Property[] staticProperties;
     }
 
     @SuppressWarnings("unused")
     private static class Method {
         String name;
+        ObsoleteDescription obsolete;
+    }
+
+    @SuppressWarnings("unused")
+    private static class Property {
+        String name;
+        String dataType;
         ObsoleteDescription obsolete;
     }
 
