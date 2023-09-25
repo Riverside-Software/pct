@@ -31,7 +31,7 @@ pipeline {
     }
 
     stage('Standard build') {
-      agent { label 'Linux-Office' }
+      agent { label 'Linux-Office03' }
       steps {
         script {
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
@@ -71,7 +71,7 @@ pipeline {
     }
 
     stage('Unit tests reports') {
-      agent { label 'Linux-Office' }
+      agent { label 'Linux-Office03' }
       steps {
         // Wildcards not accepted in unstash...
         unstash name: 'junit-11.7-Win'
@@ -95,23 +95,19 @@ pipeline {
     }
 
     stage('Sonar') {
-      agent { label 'Linux-Office' }
+      agent { label 'Linux-Office03' }
       steps {
         unstash name: 'coverage-11.7-Win'
         unstash name: 'coverage-12.2-Win'
         unstash name: 'coverage-12.7-Win'
         script {
-          def antHome = tool name: 'Ant 1.9', type: 'ant'
-          def jdk = tool name: 'Corretto 11', type: 'jdk'
-          def dlc = tool name: 'OpenEdge-11.7', type: 'openedge'
           def version = readFile('version.txt').trim()
-
-          withEnv(["JAVA_HOME=${jdk}"]) {
-            sh "${antHome}/bin/ant -lib lib/jacocoant-0.8.7.jar -file sonar.xml -DDLC=${dlc} init-sonar"
+          docker.image('docker.rssw.eu/progress/dlc:12.7').inside('') {
+            sh 'ant -lib lib/jacocoant-0.8.7.jar -file sonar.xml -DDLC=/opt/progress/dlc init-sonar' 
           }
-          withEnv(["PATH+SCAN=${tool name: 'SQScanner4', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin", "JAVA_HOME=${jdk}"]) {
+          docker.image('sonarsource/sonar-scanner-cli:latest').inside('') {
             withSonarQubeEnv('RSSW') {
-              sh "sonar-scanner -Dsonar.projectVersion=${version} -Dsonar.oe.dlc=${dlc}"
+              sh "sonar-scanner -Dsonar.projectVersion=${version}"
             }
           }
         }
@@ -119,7 +115,7 @@ pipeline {
     }
 
     stage('Maven Central') {
-      agent { label 'Linux-Office' }
+      agent { label 'Linux-Office03' }
       steps {
         script {
           def jdk = tool name: 'Corretto 11', type: 'jdk'
