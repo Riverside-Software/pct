@@ -252,6 +252,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setClassName(String className) {
+        runAttributes.setClassName(className);
+    }
+
+    @Override
     public void setXCodeSessionKey(String xCodeSessionKey) {
         runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }
@@ -396,10 +401,8 @@ public class PCTRun extends PCT implements IRunAttributes {
      */
     @Override
     public void execute() {
-
         checkDlcHome();
-        if ((runAttributes.getProcedure() == null) || (runAttributes.getProcedure().length() == 0))
-            throw new BuildException("Procedure attribute not defined");
+        runAttributes.checkConfig();
 
         if (!prepared) {
             prepareExecTask();
@@ -772,20 +775,27 @@ public class PCTRun extends PCT implements IRunAttributes {
             }
 
             // Calls progress procedure
-            bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
-                    escapeString(runAttributes.getProcedure()), sb.toString()));
-            // Checking return value
-            bw.write(this.getProgressProcedures().getAfterRun());
-            // Writing output parameters to temporary files
-            if (this.runAttributes.getOutputParameters() != null) {
-                for (OutputParameter param : runAttributes.getOutputParameters()) {
-                    File tmpFile = new File(
-                            System.getProperty(PCT.TMPDIR), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    param.setTempFileName(tmpFile);
-                    bw.write(MessageFormat.format(this.getProgressProcedures()
-                            .getOutputParameterCall(), param.getProgressVar(),
-                            escapeString(tmpFile.getAbsolutePath())));
+            if (runAttributes.getProcedure() != null) {
+                bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
+                        escapeString(runAttributes.getProcedure()), sb.toString()));
+                // Checking return value
+                bw.write(this.getProgressProcedures().getAfterRun());
+                // Writing output parameters to temporary files
+                if (this.runAttributes.getOutputParameters() != null) {
+                    for (OutputParameter param : runAttributes.getOutputParameters()) {
+                        File tmpFile = new File(
+                                System.getProperty(PCT.TMPDIR), param.getProgressVar() + "." + PCT.nextRandomInt() + ".out"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        param.setTempFileName(tmpFile);
+                        bw.write(MessageFormat.format(this.getProgressProcedures()
+                                .getOutputParameterCall(), param.getProgressVar(),
+                                escapeString(tmpFile.getAbsolutePath())));
+                    }
                 }
+            } else {
+                bw.write(MessageFormat.format(this.getProgressProcedures().getDynamicInvokeString(),
+                        escapeString(runAttributes.getClassName())));
+                // Checking return value
+                bw.write(this.getProgressProcedures().getAfterDynamicInvoke());
             }
             // Quit
             bw.write(this.getProgressProcedures().getQuit());

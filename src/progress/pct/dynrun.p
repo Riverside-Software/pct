@@ -33,6 +33,7 @@ DEFINE VARIABLE zz   AS INTEGER     NO-UNDO.
 DEFINE VARIABLE zz2  AS INTEGER     NO-UNDO.
 DEFINE VARIABLE out1 AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE out2 AS CHARACTER   NO-UNDO.
+DEFINE VARIABLE procOrClass AS LOGICAL NO-UNDO.
 
 ASSIGN jsonParser = NEW ObjectModelParser().
 ASSIGN configJson = CAST(jsonParser:ParseFile(SESSION:PARAMETER), JsonObject).
@@ -85,9 +86,16 @@ IF configJson:getLogical("super") THEN DO:
   SESSION:ADD-SUPER-PROCEDURE(THIS-PROCEDURE).
 END.
 
+ASSIGN procOrClass = configJson:has("procedure").
+
 // Execute procedure
-IF pctVerbose THEN
-  MESSAGE "RUN " + configJson:getCharacter("procedure").
+IF pctVerbose THEN DO:
+  IF procOrClass THEN
+    MESSAGE SUBSTITUTE("RUN &1", configJson:getCharacter("procedure")).
+  ELSE
+    MESSAGE SUBSTITUTE("DYNAMIC-INVOKE('&1', 'main')", configJson:getCharacter("className")).
+END.
+
 RunBlock:
 DO ON QUIT UNDO, RETRY:
   IF RETRY THEN DO:
@@ -97,7 +105,9 @@ DO ON QUIT UNDO, RETRY:
   END.
   IF VALID-OBJECT(mainCallback) THEN
     mainCallback:beforeRun().
-  IF (outprmEntries:Length EQ 0) THEN
+  IF NOT procOrClass THEN
+    ASSIGN i = DYNAMIC-INVOKE(configJson:getCharacter("className"), 'main').
+  ELSE IF (outprmEntries:Length EQ 0) THEN
     RUN VALUE(configJson:getCharacter("procedure")).
   ELSE IF (outprmEntries:Length EQ 1) THEN
     RUN VALUE(configJson:getCharacter("procedure")) (OUTPUT out1).

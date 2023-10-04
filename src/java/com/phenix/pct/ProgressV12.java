@@ -104,6 +104,11 @@ public class ProgressV12 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicInvokeString() {
+        return getString("ProgressV12.18"); //$NON-NLS-1$
+    }
+
+    @Override
     public String getReturnProc() {
         return getString("ProgressV12.5"); //$NON-NLS-1$
     }
@@ -126,6 +131,11 @@ public class ProgressV12 implements ProgressProcedures {
     @Override
     public String getAfterRun() {
         return getString("ProgressV12.10"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getAfterDynamicInvoke() {
+        return getString("ProgressV12.19"); //$NON-NLS-1$
     }
 
     @Override

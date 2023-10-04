@@ -517,4 +517,24 @@ public class PCTRunTest extends BuildFileTestNg {
         expectLog("test2", ".Net version: 6.0.21");
     }
 
+    @Test(groups = {"v11"})
+    public void test55() {
+        configureProject("PCTRun/test55/build.xml");
+        executeTarget("test");
+        assertTrue(searchInList(getLogBuffer(), "hello"));
+        expectBuildException("test2", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "hello2"));
+        expectBuildException("test3", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15304)"));
+        expectBuildException("test4", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "hello4"));
+        expectBuildException("test5", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+        expectBuildException("test6", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+        expectBuildException("test7", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(247)"));
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+    }
+
 }

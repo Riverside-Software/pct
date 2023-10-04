@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test55">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <!-- Valid -->
+    <PCTRun className="rssw.pct.MyClass" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <!-- Return 22 -->
+    <PCTRun className="rssw.pct.MyClass2" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <!-- void -->
+    <PCTRun className="rssw.pct.MyClass3" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test4">
+    <!-- Return CHAR. Converted to int by the AVM -->
+    <PCTRun className="rssw.pct.MyClass4" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test5">
+    <!-- main is not static -->
+    <PCTRun className="rssw.pct.MyClass5" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test6">
+    <!-- class not found -->
+    <PCTRun className="rssw.pct.MyClass6" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test7">
+    <!-- compilation error -->
+    <PCTRun className="rssw.pct.MyClass7" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+</project>

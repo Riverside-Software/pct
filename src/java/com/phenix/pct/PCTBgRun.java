@@ -406,6 +406,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      */
     @Override
     public void execute() {
+        if ((options.getProcedure() == null) || (options.getProcedure().length() == 0))
+            throw new BuildException("Procedure attribute not defined");
+        if ((options.getProcedure() != null) && (options.getClassName() != null))
+            throw new BuildException("Procedure and className attributes are mutually exclusive");
+
         ListenerThread listener = null;
         int port = 0;
         checkDlcHome();

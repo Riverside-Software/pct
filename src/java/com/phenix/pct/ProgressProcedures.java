@@ -40,11 +40,13 @@ public abstract interface ProgressProcedures {
     String getPropathString();
     String getSuperInitString();
     String getRunString();
+    String getDynamicInvokeString();
     String getReturnProc();
     String getParameterString();
     String getOutputParameterDeclaration();
     String getOutputParameterProc();
     String getAfterRun();
+    String getAfterDynamicInvoke();
     String getOutputParameterCall();
     String getQuit();
     String getXCodeSessionKey();

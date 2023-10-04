@@ -521,6 +521,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setClassName(String className) {
+        throw new BuildException("Can't set className attribute");
+    }
+
+    @Override
     public void setXCodeSessionKey(String xCodeSessionKey) {
         runAttributes.setXCodeSessionKey(xCodeSessionKey);
     }

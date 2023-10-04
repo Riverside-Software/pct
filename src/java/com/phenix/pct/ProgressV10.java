@@ -104,6 +104,11 @@ public class ProgressV10 implements ProgressProcedures {
     }
 
     @Override
+    public String getDynamicInvokeString() {
+        throw new UnsupportedOperationException("No class execution on version 10");
+    }
+
+    @Override
     public String getReturnProc() {
         return getString("ProgressV10.5"); //$NON-NLS-1$
     }
@@ -126,6 +131,11 @@ public class ProgressV10 implements ProgressProcedures {
     @Override
     public String getAfterRun() {
         return getString("ProgressV10.10"); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getAfterDynamicInvoke() {
+        throw new UnsupportedOperationException("No class execution on version 10");
     }
 
     @Override

@@ -206,6 +206,11 @@ public interface IRunAttributes {
     void setProcedure(String procedure);
 
     /**
+     * Main procedure to be executed
+     */
+    void setClassName(String className);
+
+    /**
      * XCode session key
      */
     void setXCodeSessionKey(String xCodeSessionKey);

@@ -55,6 +55,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     private String numsep = null;
     private String numdec = null;
     private String procedure = null;
+    private String className = null;
     private File paramFile = null;
     private int inputChars = 0;
     private int dirSize = 0;
@@ -321,6 +322,11 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    @Override
     public void setMainCallback(String mainCallback) {
         this.mainCallback = mainCallback;
     }
@@ -475,6 +481,10 @@ public class GenericExecuteOptions implements IRunAttributes {
         return procedure;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     public File getAssemblies() {
         return assemblies;
     }
@@ -505,6 +515,17 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public boolean isClrnetcore() {
         return clrnetcore;
+    }
+
+    protected void checkConfig() {
+        boolean noProc = (procedure == null) || procedure.trim().isEmpty();
+        boolean noClass = (className == null) || className.trim().isEmpty();
+        if (noProc && noClass) 
+            throw new BuildException("No procedure or className attribute");
+        if (!noProc && !noClass)
+            throw new BuildException("Procedure and className attributes are mutually exclusive");
+        if (!noClass && (outputParameters!= null) && !outputParameters.isEmpty())
+            throw new BuildException("Output parameters can't be used with className attribute");
     }
 
     protected List<String> getCmdLineParameters() {

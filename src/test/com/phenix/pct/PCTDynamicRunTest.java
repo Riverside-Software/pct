@@ -116,4 +116,24 @@ public class PCTDynamicRunTest extends BuildFileTestNg {
         expectBuildException("test2", "Failure");
         assertTrue(searchInList(getLogBuffer(), "** Unable to understand after -- \"mesage\". (247)"));
     }
+
+    @Test(groups = {"v11"})
+    public void test7() {
+        configureProject("PCTDynamicRun/test7/build.xml");
+        executeTarget("test");
+        assertTrue(searchInList(getLogBuffer(), "hello"));
+        expectBuildException("test2", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "hello2"));
+        expectBuildException("test3", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15304)"));
+        expectBuildException("test4", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "hello4"));
+        expectBuildException("test5", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+        expectBuildException("test6", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+        expectBuildException("test7", "Failure");
+        assertTrue(searchInList(getLogBuffer(), "(247)"));
+        assertTrue(searchInList(getLogBuffer(), "(15285)"));
+    }
 }
