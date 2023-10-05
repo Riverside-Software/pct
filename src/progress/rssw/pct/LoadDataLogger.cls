@@ -145,6 +145,7 @@ class rssw.pct.LoadDataLogger implements ITableDataMonitor:
     this-object:bailed = true.
     if dynamic-function('getParameter', 'silent') ne '' then
       message "Number of errors exceed error tolerance".
+    return true.
   end method.
 
   method public void EndTask():
@@ -177,10 +178,12 @@ class rssw.pct.LoadDataLogger implements ITableDataMonitor:
 
   method public logical SetPolicyBailed (fname as character, pname as character):
     // No-op
+    return false.
   end method.
 
   method public logical CountCDCRow (fname as character, pname as character):
     // No-op
+    return false.
   end method.
 
 end class.

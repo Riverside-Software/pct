@@ -18,16 +18,17 @@
 ROUTINE-LEVEL ON ERROR UNDO, THROW.
 
 USING Progress.Lang.*.
-USING OpenEdge.DataAdmin.Binding.IDataDefinitionLoader FROM PROPATH. 
+USING OpenEdge.DataAdmin.Binding.IDataDefinitionLoader FROM PROPATH.
 
 CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
   DEFINE PUBLIC PROPERTY IsReader AS LOGICAL  NO-UNDO INITIAL TRUE GET. PROTECTED SET.
   DEFINE PUBLIC PROPERTY Error    AS AppError NO-UNDO GET. PRIVATE SET.
   DEFINE PUBLIC PROPERTY Warning  AS AppError NO-UNDO GET. PRIVATE SET.
-  DEFINE PUBLIC PROPERTY AddingChildToNewTable AS LOGICAL NO-UNDO GET. SET. 
+  DEFINE PUBLIC PROPERTY AddingChildToNewTable AS LOGICAL NO-UNDO GET. SET.
 
   METHOD PUBLIC LOGICAL EXTENT CurrentTableAttributes():
-
+    DEFINE VARIABLE retVal AS LOGICAL EXTENT.
+    RETURN retVal.
   END METHOD.
 
   METHOD PUBLIC VOID AddError( pError as Error):
@@ -61,15 +62,15 @@ CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
   METHOD PUBLIC VOID AddIndex(pcAction as character, pcTable as character, h as handle, piArea as integer, piPrimary as logical):
 
   END METHOD.
-  
+
   METHOD PUBLIC VOID AddField(pcAction as character, pcTable as character, h as handle, piArea as integer):
 
   END METHOD.
-    
+
   METHOD PUBLIC LOGICAL IsNewTable(pcTable as character):
-    RETURN TRUE.
-  END METHOD. 
-    
+    RETURN FALSE.
+  END METHOD.
+
   METHOD PUBLIC VOID RenameTable(pcname as character,pcNewname as character):
 
   END METHOD.
@@ -84,54 +85,54 @@ CLASS rssw.pct.AbstractLoadLogger IMPLEMENTS IDataDefinitionLoader ABSTRACT:
 
   METHOD PUBLIC VOID RenameSequence(pcname as character,pcNewname as character):
 
-  END METHOD. 
+  END METHOD.
 
   METHOD PUBLIC CHARACTER TableOldName(pcNewname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER FieldOldName(pcTable as character, pcNewname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER IndexOldName(pcTable as character, pcNewname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER SequenceOldName(pcNewname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER FieldNewName(pcTable as character, pcOldname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER IndexNewName(pcTable as character, pcOldname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER TableNewName(pcOldname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER SequenceNewName(pcOldname as character):
-
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC AppError RemoveWarning ():
     RETURN ?.
-  END METHOD. 
+  END METHOD.
 
   METHOD PUBLIC AppError RemoveError ():
     RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER RemoveErrorMessages ():
-    RETURN "".
+    RETURN ?.
   END METHOD.
 
   METHOD PUBLIC CHARACTER RemoveWarningMessages ():
-    RETURN "".
+    RETURN ?.
   END METHOD.
 
 END CLASS.
