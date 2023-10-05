@@ -634,13 +634,11 @@ public abstract class PCT extends Task {
             switch (c) {
                 case '\u007E' : // TILDE converted to TILDE TILDE
                     res.append("\u007E\u007E"); //$NON-NLS-1$
-
                     break;
 
                 case '\u0022' : // QUOTATION MARK converted to TILDE APOSTROPHE
                 case '\''     : // APOSTROPHE converted to TILDE APOSTROPHE
                     res.append("\u007E\u0027"); //$NON-NLS-1$
-
                     break;
 
                 default :
