@@ -65,7 +65,7 @@ pipeline {
                  branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
                  branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch7: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.7', false, '12.7-Linux', 'docker.rssw.eu/progress/dlc:12.7') },
-                 branch8: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', false, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
+                 branch8: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
                  failFast: false
       }
     }
@@ -100,6 +100,7 @@ pipeline {
         unstash name: 'coverage-11.7-Win'
         unstash name: 'coverage-12.2-Win'
         unstash name: 'coverage-12.7-Win'
+        unstash name: 'coverage-12.8-Linux'
         script {
           def version = readFile('version.txt').trim()
           docker.image('docker.rssw.eu/progress/dlc:12.7').inside('') {
