@@ -28,16 +28,17 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
 import com.google.gson.Gson;
 
 import eu.rssw.pct.RCodeInfo;
@@ -556,23 +557,23 @@ public class PCTCompileTest extends BuildFileTestNg {
 
         File crc = new File(BASEDIR + "test35/build/.pct/test.p.crc");
         assertTrue(crc.exists());
-        String line = Files.asCharSource(crc, Charset.defaultCharset()).readFirstLine();
+        String line = Files.readAllLines(crc.toPath(), StandardCharsets.UTF_8).get(0);
         assertTrue(line.startsWith("\"sports2000.Item\""));
         File inc = new File(BASEDIR + "test35/build/.pct/test.p.inc");
         assertTrue(inc.exists());
 
         LineProcessor<Boolean> lineProcessor = new Test35LineProcessor();
-        Files.asCharSource(inc, Charset.defaultCharset()).readLines(lineProcessor);
+        Files.readAllLines(inc.toPath(), StandardCharsets.UTF_8).forEach(lineProcessor::processLine);
         assertTrue(lineProcessor.getResult());
 
         File crc2 = new File(BASEDIR + "test35/build2/.pct/test.p.crc");
         assertTrue(crc2.exists());
-        String line2 = Files.asCharSource(crc2, Charset.defaultCharset()).readFirstLine();
+        String line2 = Files.readAllLines(crc2.toPath(), StandardCharsets.UTF_8).get(0);
         assertTrue(line2.startsWith("\"sports2000.Item\""));
         File inc2 = new File(BASEDIR + "test35/build2/.pct/test.p.inc");
         assertTrue(inc2.exists());
         LineProcessor<Boolean> lineProcessor2 = new Test35LineProcessor();
-        Files.asCharSource(inc2, Charset.defaultCharset()).readLines(lineProcessor2);
+        Files.readAllLines(inc2.toPath(), StandardCharsets.UTF_8).forEach(lineProcessor2::processLine);
         assertTrue(lineProcessor2.getResult());
     }
 
@@ -586,7 +587,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
 
         @Override
-        public boolean processLine(String line) throws IOException {
+        public boolean processLine(String line) {
             if (zz == 0) {
                 retVal = line.startsWith("\"test.i\"");
             } else if (zz == 1) {
@@ -730,8 +731,8 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f4.exists());
         try {
             // Preprocessed source code removes many lines of unreachable code
-            assertTrue(Files.readLines(f2, Charsets.UTF_8).size() + 10 < Files
-                    .readLines(f4, Charsets.UTF_8).size());
+            assertTrue(Files.readAllLines(f2.toPath(), StandardCharsets.UTF_8).size() + 10 < Files
+                    .readAllLines(f4.toPath(), StandardCharsets.UTF_8).size());
         } catch (IOException caught) {
             Assert.fail("Unable to open file", caught);
         }
@@ -942,7 +943,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         // As promsgs 4788 contains %r
         File warnings = new File(BASEDIR + "test58/build1/.pct/file1.p.warnings");
         assertTrue(warnings.exists());
-        assertEquals(Files.readLines(warnings, Charset.defaultCharset()).size(), 2);
+        assertEquals(Files.readAllLines(warnings.toPath(), StandardCharsets.UTF_8).size(), 2);
     }
 
     @Test(groups = {"v11"})
@@ -1237,7 +1238,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(listing.exists(), "Unable to find listing file");
 
         try {
-            List<String> lines = Files.readLines(listing, Charset.defaultCharset());
+            List<String> lines = Files.readAllLines(listing.toPath(), StandardCharsets.UTF_8);
 
             // Test the ASCII code at the defined PAGE-SIZE - 1 (zero based).
             assertTrue(lines.size() > 10 && lines.get(10).contains(String.valueOf(ff)));
@@ -1400,8 +1401,9 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(f3.exists());
 
         try {
-            assertTrue(Files.asCharSource(f3, Charset.defaultCharset())
-                    .readLines(new Test80LineProcessor()));
+            LineProcessor<Boolean> lineProcessor = new Test80LineProcessor();
+            Files.readAllLines(f3.toPath(), StandardCharsets.UTF_8).forEach(lineProcessor::processLine);
+            assertTrue(lineProcessor.getResult());
         } catch (IOException caught) {
             fail("Unable to read file", caught);
         }
@@ -1585,32 +1587,32 @@ public class PCTCompileTest extends BuildFileTestNg {
 
         LineProcessor<Integer> proc = new Test86LineProcessor();
         try {
-            Files.asCharSource(new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy"),
-                    Charset.defaultCharset()).readLines(proc);
+            Files.readAllLines(new File(dir, ".pct/eu/rssw/pct/Y.cls.hierarchy").toPath(),
+                    StandardCharsets.UTF_8).forEach(proc::processLine);
         } catch (IOException caught) {
             fail("Unable to read file", caught);
         }
         assertEquals(proc.getResult(), Integer.valueOf(1));
         LineProcessor<Integer> proc2 = new Test86LineProcessor();
         try {
-            Files.asCharSource(new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy"),
-                    Charset.defaultCharset()).readLines(proc2);
+            Files.readAllLines(new File(dir, ".pct/eu/rssw/pct/Z.cls.hierarchy").toPath(),
+                    StandardCharsets.UTF_8).forEach(proc2::processLine);
         } catch (IOException caught) {
             fail("Unable to read file", caught);
         }
         assertEquals(proc2.getResult(), Integer.valueOf(4));
         LineProcessor<Integer> proc3 = new Test86LineProcessor();
         try {
-            Files.asCharSource(new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy"),
-                    Charset.defaultCharset()).readLines(proc3);
+            Files.readAllLines(new File(dir, ".pct/eu/rssw/pct/M.cls.hierarchy").toPath(),
+                    StandardCharsets.UTF_8).forEach(proc3::processLine);
         } catch (IOException caught) {
             fail("Unable to read file", caught);
         }
         assertEquals(proc3.getResult(), Integer.valueOf(1));
         LineProcessor<Integer> proc4 = new Test86LineProcessor();
         try {
-            Files.asCharSource(new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy"),
-                    Charset.defaultCharset()).readLines(proc4);
+            Files.readAllLines(new File(dir, ".pct/eu/rssw/pct/proc.p.hierarchy").toPath(),
+                    StandardCharsets.UTF_8).forEach(proc4::processLine);
         } catch (IOException caught) {
             fail("Unable to read file", caught);
         }
@@ -1663,9 +1665,9 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test89() throws IOException {
         configureProject(BASEDIR + "test89/build.xml");
 
+        Path targetPath = new File(BASEDIR).toPath().resolve("test89/src/inc/ttTable-comp.i");
         // Compile everything
-        Files.copy(new File(BASEDIR + "test89/src/inc/ttTable1.i"),
-                new File(BASEDIR + "test89/src/inc/ttTable-comp.i"));
+        Files.copy(new File(BASEDIR).toPath().resolve("test89/src/inc/ttTable1.i"), targetPath);
         executeTarget("test");
 
         // Save the last modified date of our child class
@@ -1674,13 +1676,14 @@ public class PCTCompileTest extends BuildFileTestNg {
 
         // Do an incremental compile with a new include for the parent class
         // This would have previously skipped compiling the child class because the child was only
-        // checking if the
-        // parent class had changed and not whether an include referenced by the parent class
-        // changed.
+        // checking if the parent class had changed and not whether an include referenced by the
+        // parent class changed.
         // The child class needs to be compiled since it references a table from an include in the
         // parent class.
-        Files.copy(new File(BASEDIR + "test89/src/inc/ttTable2.i"),
-                new File(BASEDIR + "test89/src/inc/ttTable-comp.i"));
+        Files.copy(new File(BASEDIR).toPath().resolve("test89/src/inc/ttTable2.i"), targetPath,
+                StandardCopyOption.REPLACE_EXISTING);
+        Files.setLastModifiedTime(targetPath, FileTime.fromMillis(System.currentTimeMillis()));
+
         executeTarget("test");
         assertNotEquals(f1.lastModified(), lastModTime);
     }
@@ -1705,11 +1708,11 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(BASEDIR, "test91/build/src/test2.r").exists());
 
         // Check that source files are not overwritten by preprocessor
-        List<String> lines01 = Files.readLines(new File(BASEDIR, "test91/src/test1.p"),
-                Charset.defaultCharset());
+        List<String> lines01 = Files.readAllLines(new File(BASEDIR, "test91/src/test1.p").toPath(),
+                StandardCharsets.UTF_8);
         assertTrue(lines01.stream().filter(it -> it.trim().length() > 0).count() > 0);
-        List<String> lines02 = Files.readLines(new File(BASEDIR, "test91/src/test2.p"),
-                Charset.defaultCharset());
+        List<String> lines02 = Files.readAllLines(new File(BASEDIR, "test91/src/test2.p").toPath(),
+                StandardCharsets.UTF_8);
         assertTrue(lines02.stream().filter(it -> it.trim().length() > 0).count() > 0);
     }
 
@@ -1737,7 +1740,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
 
         @Override
-        public boolean processLine(String str) throws IOException {
+        public boolean processLine(String str) {
             numLines++;
             rslt &= str.endsWith(" (19822)");
             return true;
@@ -1753,10 +1756,15 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
 
         @Override
-        public boolean processLine(String arg0) throws IOException {
+        public boolean processLine(String arg0) {
             retVal++;
             return true;
         }
+    }
+
+    public interface LineProcessor<T> {
+        public T getResult();
+        public boolean processLine(String line);
     }
 
     // GSON mapping in test79

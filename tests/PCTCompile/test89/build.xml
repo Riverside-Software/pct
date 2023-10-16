@@ -6,7 +6,7 @@
     <mkdir dir="build" />
     <PCTCompile destDir="build"
                 failOnError="false"
-                displayFiles="1">
+                displayFiles="1" dlcHome="${DLC}">
       <propath location="src" />
       <fileset dir="src" includes="**/*.cls" />
     </PCTCompile>

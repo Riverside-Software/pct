@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.tools.ant.BuildException;
@@ -51,9 +53,6 @@ import org.prorefactor.treeparser.symbols.Routine;
 import org.prorefactor.treeparser.symbols.Variable;
 import org.sonar.plugins.openedge.api.objects.DatabaseWrapper;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.io.Files;
 import com.google.gson.stream.JsonWriter;
 import com.phenix.pct.DBConnectionSet;
 import com.phenix.pct.PCT;
@@ -203,7 +202,7 @@ public class JsonDocumentation extends PCT {
         } catch (IOException caught) {
             throw new BuildException(caught);
         }
-        String pp = Joiner.on(',').join(propath.list());
+        String pp = String.join(",", propath.list());
         log("Using PROPATH: " + pp, Project.MSG_INFO);
         ProparseSettings ppSettings = new ProparseSettings(pp, false);
         RefactorSession session = new RefactorSession(ppSettings, sch, Charset.forName(encoding));
@@ -211,18 +210,21 @@ public class JsonDocumentation extends PCT {
         // Multi-threaded pool
         AtomicInteger numRCode = new AtomicInteger(0);
         ExecutorService service = Executors.newFixedThreadPool(numThreads);
-        Files.fileTraverser().depthFirstPreOrder(buildDir).forEach(f -> {
-            if (f.getName().endsWith(".r")) {
+        try (Stream<java.nio.file.Path> stream = Files.walk(buildDir.toPath())) {
+            stream.filter(path -> path.getFileName().toString().endsWith(".r")).forEach(f -> {
                 numRCode.incrementAndGet();
                 service.submit(() -> {
-                    ITypeInfo info = parseRCode(f);
+                    ITypeInfo info = parseRCode(f.toFile());
                     if (info != null) {
                         log("TypeInfo found: " + info.getTypeName(), Project.MSG_DEBUG);
                         session.injectTypeInfo(info);
                     }
                 });
-            }
-        });
+            });
+        } catch (IOException caught) {
+            log("Unable to parse build directory " + buildDir + " - " + caught.getMessage(),
+                    Project.MSG_ERR);
+        }
         service.shutdown();
         try {
             service.awaitTermination(10, TimeUnit.MINUTES);
@@ -548,7 +550,7 @@ public class JsonDocumentation extends PCT {
     private List<String> convertJavadoc(String comment) {
         List<String> rslt = new ArrayList<>();
         if (checkStartComment(comment.trim())) {
-            for (String s : Splitter.on('\n').split(comment.trim())) {
+            for (String s : comment.trim().split("\n")) {
                 // First line and last line is not supposed to contain anything
                 if (!checkStartComment(s.trim()) && !s.endsWith("*/")) {
                     // Trim first *
