@@ -528,7 +528,7 @@ public class PCTCompileTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"})
-    public void test34() throws IOException {
+    public void test34() {
         configureProject(BASEDIR + "test34/build.xml");
         executeTarget("test");
 
@@ -576,7 +576,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(lineProcessor2.getResult());
     }
 
-    private static final class Test35LineProcessor implements LineProcessor<Boolean> {
+    static final class Test35LineProcessor implements LineProcessor<Boolean> {
         private boolean retVal = false;
         private int zz = 0;
 
@@ -1744,7 +1744,7 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
     }
 
-    private static final class Test86LineProcessor implements LineProcessor<Integer> {
+    static final class Test86LineProcessor implements LineProcessor<Integer> {
         private int retVal = 0;
 
         @Override
@@ -1759,31 +1759,28 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
     }
 
-    // Those classes just for the GSON mapping in test79
-    @SuppressWarnings("unused")
+    // GSON mapping in test79
     protected static class ProjectResult {
-        private int compiledFiles;
-        private int errorFiles;
-        private ProjectError[] errors;
-        private ProjectWarning[] warnings;
+        int compiledFiles;
+        int errorFiles;
+        ProjectError[] errors;
+        ProjectWarning[] warnings;
     }
 
-    @SuppressWarnings("unused")
     protected static class ProjectError {
-        private int rowNum;
-        private int colNum;
-        private String fileName;
-        private String mainFileName;
-        private String msg;
+        int rowNum;
+        int colNum;
+        String fileName;
+        String mainFileName;
+        String msg;
     }
 
-    @SuppressWarnings("unused")
     protected static class ProjectWarning {
-        private int msgNum;
-        private int rowNum;
-        private String fileName;
-        private String mainFileName;
-        private String msg;
+        int msgNum;
+        int rowNum;
+        String fileName;
+        String mainFileName;
+        String msg;
     }
 
 }
