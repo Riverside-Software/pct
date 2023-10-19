@@ -25,52 +25,52 @@ define variable cTbl        as character no-undo.
 { prodict/user/uservar12.i NEW }
 
 do on error undo, retry:
- if retry then do:
-  if valid-object(callback) then callback:onError("Error trapped").
-  return '20'.
- end.
+  if retry then do:
+    if valid-object(callback) then callback:onError("Error trapped").
+    return '20'.
+  end.
 
-assign cTbl = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName').
-assign callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass').
-if (callbackCls > "") then do:
+  assign cTbl = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName').
+  assign callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'callbackClass').
+  if (callbackCls > "") then do:
     callback = cast(Class:GetClass(callbackCls):new(), rssw.pct.ILoadDataCallback).
     callback:initialize(cTbl).
-end.
-
-find first dictdb._db.
-ASSIGN drec_db     = RECID(_Db)
-       user_dbname = (IF _Db._Db-name = ? THEN LDBNAME("DICTDB") ELSE _Db._Db-Name)
-       user_dbtype = (IF _Db._Db-name = ? THEN DBTYPE("DICTDB") ELSE _Db._Db-Type).
-find first dictdb._file where dictdb._file._file-name = ctbl no-error.
-if not available dictdb._file then do:
-  if valid-object(callback) then do:
-    callback:onError("No table " + ctbl + " found").
   end.
-  else do:
-    message "No table " + ctbl + " found".
+
+  find first dictdb._db.
+  ASSIGN drec_db     = RECID(_Db)
+         user_dbname = (IF _Db._Db-name = ? THEN LDBNAME("DICTDB") ELSE _Db._Db-Name)
+         user_dbtype = (IF _Db._Db-name = ? THEN DBTYPE("DICTDB") ELSE _Db._Db-Type).
+  find first dictdb._file where dictdb._file._file-name = ctbl no-error.
+  if not available dictdb._file then do:
+    if valid-object(callback) then do:
+      callback:onError("No table " + ctbl + " found").
+    end.
+    else do:
+      message "No table " + ctbl + " found".
+    end.
+    return '2'.
   end.
-  return '2'.
-end.
 
-define variable logger as rssw.pct.LoadDataLogger no-undo.
-logger = new rssw.pct.LoadDataLogger().
-assign dictMonitor = logger.
+  define variable logger as rssw.pct.LoadDataLogger no-undo.
+  logger = new rssw.pct.LoadDataLogger().
+  assign dictMonitor = logger.
 
-if valid-object(callback) then callback:beforeLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')).
-assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName')
-       user_env[2] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
-       user_env[3] = "NO-MAP"
-       user_env[4] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'errorPercentage')
-       user_env[5] = ""
-       user_env[6] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'silent').
+  if valid-object(callback) then callback:beforeLoad( DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName')).
+  assign user_env[1] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'tableName')
+         user_env[2] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'srcFile')
+         user_env[3] = "NO-MAP"
+         user_env[4] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'errorPercentage')
+         user_env[5] = ""
+         user_env[6] = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'silent').
 
-run prodict/dump/_loddata.p no-error.
-if valid-object(callback) then callback:afterLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).
+  run prodict/dump/_loddata.p no-error.
+  if valid-object(callback) then callback:afterLoad(DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'fileName'), logger).
 
-/* If process failed, return error code */
-if logger:loadException or logger:bailed then do:
-  return '1'.
-end.
+  /* If process failed, return error code */
+  if logger:loadException or logger:bailed then do:
+    return '1'.
+  end.
 
-return "0":U.
+  return "0":U.
 end. /* do on error */
