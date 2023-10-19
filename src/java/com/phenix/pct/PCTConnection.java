@@ -360,7 +360,7 @@ public class PCTConnection extends DataType {
     public String createConnectString() {
         StringBuilder sb = new StringBuilder();
         for (String str : getConnectParametersList()) {
-            String s = PCTRun.escapeString(str);
+            String s = PCT.escapeString(str);
             sb.append((s.indexOf(' ') == -1 ? s : "'" + s + "'")).append(' '); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return sb.toString();
