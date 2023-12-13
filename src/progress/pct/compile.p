@@ -212,15 +212,25 @@ END PROCEDURE.
 PROCEDURE initModule:
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
-  IF (callbackClass > "") AND NOT bAboveEq113 THEN
+  IF (callbackClass > "") EQ TRUE AND NOT bAboveEq113 THEN
     MESSAGE "Callbacks are only supported on 11.3+".
+
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-  IF (callbackClass > "") THEN DO:
-      callback = CAST(Class:GetClass(callbackClass):new(), rssw.pct.ICompileCallback).
-      callback:initialize(hSrcProc).
+  IF (callbackClass > "") EQ TRUE THEN DO:
+//  IF Progress.Lang.Class:GetClass(callbackClass):IsA(get-class(rssw.pct.ICompileCallback)) THEN
+//      callback = CAST(Class:GetClass(callbackClass):new(), rssw.pct.ICompileCallback) NO-ERROR.
+
+	IF ERROR-STATUS:ERROR THEN DO:
+      MESSAGE ERROR-STATUS:GET-MESSAGE(1).
+      ERROR-STATUS:ERROR = false.
+	END.
+
+    IF VALID-OBJECT(callback) AND VALID-OBJECT(hSrcProc) THEN
+	  callback:initialize(hSrcProc).
   END.
 &ENDIF
+
   IF (outputType > "") THEN DO:
     IF (LOOKUP("json", outputType) GT 0) THEN DO:
       IF bAboveEq117 THEN DO:
