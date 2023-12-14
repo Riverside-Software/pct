@@ -223,7 +223,7 @@ PROCEDURE initModule:
 	/* First attempt to get the named class, or fail silently */
 	oClass = Progress.Lang.Class:GetClass(callbackClass) NO-ERROR.
 	IF ERROR-STATUS:ERROR THEN DO:
-      MESSAGE "ClaGetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
+      MESSAGE "GetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
       ERROR-STATUS:ERROR = false.
 	END.
 
@@ -234,7 +234,7 @@ PROCEDURE initModule:
 	  callback:initialize(hSrcProc).
 
     CATCH err AS Progress.Lang.Error:
-      MESSAGE "Error while creating callback: " err:GetMessage(1).
+      MESSAGE "Error while creating callback class: " err:GetMessage(1).
     END CATCH.
   END.
 &ENDIF
