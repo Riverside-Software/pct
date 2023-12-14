@@ -218,10 +218,10 @@ PROCEDURE initModule:
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
   IF (callbackClass > "") EQ TRUE THEN DO ON ERROR UNDO, LEAVE:
-    DEFINE VARAIABLE oClass AS Progress.Lang.Class NO-UNDO.
+    DEFINE VARIABLE oClass AS Progress.Lang.Class NO-UNDO.
 
+	/* First attempt to get the named class, or fail silently */
 	oClass = Progress.Lang.Class:GetClass(callbackClass) NO-ERROR.
-
 	IF ERROR-STATUS:ERROR THEN DO:
       MESSAGE "ClaGetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
       ERROR-STATUS:ERROR = false.
