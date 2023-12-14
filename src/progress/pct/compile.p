@@ -212,12 +212,12 @@ END PROCEDURE.
 PROCEDURE initModule:
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
-  IF (callbackClass > "") EQ TRUE AND NOT bAboveEq113 THEN
+  IF (callbackClass > "") AND NOT bAboveEq113 THEN
     MESSAGE "Callbacks are only supported on 11.3+".
 
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-  IF (callbackClass > "") EQ TRUE THEN DO ON ERROR UNDO, LEAVE:
+  IF (callbackClass > "") THEN DO ON ERROR UNDO, LEAVE:
     /* First attempt to get the named class, or fail silently. */
     DEFINE VARIABLE oClass AS Progress.Lang.Class NO-UNDO.
     oClass = Progress.Lang.Class:GetClass(callbackClass) NO-ERROR.
