@@ -217,17 +217,25 @@ PROCEDURE initModule:
 
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-  IF (callbackClass > "") EQ TRUE THEN DO:
-//  IF Progress.Lang.Class:GetClass(callbackClass):IsA(get-class(rssw.pct.ICompileCallback)) THEN
-//      callback = CAST(Class:GetClass(callbackClass):new(), rssw.pct.ICompileCallback) NO-ERROR.
+  IF (callbackClass > "") EQ TRUE THEN DO ON ERROR UNDO, LEAVE:
+    DEFINE VARAIABLE oClass AS Progress.Lang.Class NO-UNDO.
+
+	oClass = Progress.Lang.Class:GetClass(callbackClass) NO-ERROR.
 
 	IF ERROR-STATUS:ERROR THEN DO:
-      MESSAGE ERROR-STATUS:GET-MESSAGE(1).
+      MESSAGE "ClaGetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
       ERROR-STATUS:ERROR = false.
 	END.
 
+    IF VALID-OBJECT(oClass) AND oClass:IsA(get-class(rssw.pct.ICompileCallback)) THEN
+      callback = CAST(oClass:new(), rssw.pct.ICompileCallback) NO-ERROR.
+
     IF VALID-OBJECT(callback) AND VALID-OBJECT(hSrcProc) THEN
 	  callback:initialize(hSrcProc).
+
+    CATCH err AS Progress.Lang.Error:
+      MESSAGE "Error while creating callback: " err:GetMessage(1).
+    END CATCH.
   END.
 &ENDIF
 
