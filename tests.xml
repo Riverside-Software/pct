@@ -12,18 +12,15 @@
   <ProgressVersion dlcHome="${DLC}" majorVersion="OE_MAJOR_VERSION" minorVersion="OE_MINOR_VERSION" shortVersion="OE_VERSION" bitness="OE_ARCH" />
 
   <!-- Assume version 12 when in local development -->
-  <condition property="GROUPS" value="v11,v12,v13">
+  <condition property="GROUPS" value="v11,v12">
     <not><isset property="OE_MAJOR_VERSION" /></not>
   </condition>
   <!-- Groups to be executed depending on OpenEdge major version -->
   <condition property="GROUPS" value="v11">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
   </condition>
-  <condition property="GROUPS" value="v11,v12,v13">
+  <condition property="GROUPS" value="v11,v12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
-  </condition>
-  <condition property="GROUPS" value="v11,v12,v13">
-    <equals arg1="${OE_MAJOR_VERSION}" arg2="13" />
   </condition>
 
   <!-- Excluded group depending on OS -->

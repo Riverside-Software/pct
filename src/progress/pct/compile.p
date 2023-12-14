@@ -152,7 +152,6 @@ DEFINE VARIABLE bAboveEq113 AS LOGICAL NO-UNDO INITIAL TRUE.
 DEFINE VARIABLE bAboveEq117 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq1173 AS LOGICAL NO-UNDO INITIAL FALSE.
 DEFINE VARIABLE bAboveEq12 AS LOGICAL NO-UNDO INITIAL FALSE.
-DEFINE VARIABLE bAboveEq13 AS LOGICAL NO-UNDO INITIAL FALSE.
 
 ASSIGN majorMinor = DECIMAL(REPLACE(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1), '.', SESSION:NUMERIC-DECIMAL-POINT)).
 ASSIGN bAboveEq113 = (majorMinor GE 11.3).
@@ -162,7 +161,6 @@ ASSIGN bAboveEq117 = (majorMinor GE 11.7).
 ASSIGN bAboveEq1173 = (majorMinor GT 11.7) OR ((majorMinor EQ 11.7) AND (INTEGER(ENTRY(3, PROVERSION(1), '.')) GE 3)). /* FIXME Check exact version number */
 &ENDIF
 ASSIGN bAboveEq12 = (majorMinor GE 12).
-ASSIGN bAboveEq13 = (majorMinor GE 13).
 
 /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
@@ -214,33 +212,15 @@ END PROCEDURE.
 PROCEDURE initModule:
   ASSIGN lIgnoredIncludes = (LENGTH(cignoredIncludes) > 0).
 
-  IF (callbackClass > "") EQ TRUE AND NOT bAboveEq113 THEN
+  IF (callbackClass > "") AND NOT bAboveEq113 THEN
     MESSAGE "Callbacks are only supported on 11.3+".
-
   /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
-  IF (callbackClass > "") EQ TRUE THEN DO ON ERROR UNDO, LEAVE:
-    /* First attempt to get the named class, or fail silently. */
-    DEFINE VARIABLE oClass AS Progress.Lang.Class NO-UNDO.
-    oClass = Progress.Lang.Class:GetClass(callbackClass) NO-ERROR.
-    IF ERROR-STATUS:ERROR THEN DO:
-      MESSAGE "GetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
-      ERROR-STATUS:ERROR = false.
-    END.
-
-    /* Confirm the callback implements the expected interface. */
-    IF VALID-OBJECT(oClass) AND oClass:IsA(get-class(rssw.pct.ICompileCallback)) THEN
-      callback = CAST(oClass:new(), rssw.pct.ICompileCallback) NO-ERROR.
-
-    IF VALID-OBJECT(callback) AND VALID-OBJECT(hSrcProc) THEN
+  IF (callbackClass > "") THEN DO:
+      callback = CAST(Class:GetClass(callbackClass):new(), rssw.pct.ICompileCallback).
       callback:initialize(hSrcProc).
-
-    CATCH err AS Progress.Lang.Error:
-      MESSAGE "Error while creating callback class: " err:GetMessage(1).
-    END CATCH.
   END.
 &ENDIF
-
   IF (outputType > "") THEN DO:
     IF (LOOKUP("json", outputType) GT 0) THEN DO:
       IF bAboveEq117 THEN DO:

@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (C) 2006-2020 by Progress Software Corporation. All rights *
+* Copyright (C) 2006,2008-2009 by Progress Software Corporation. All rights *
 * reserved.  Prior versions of this work may contain portions        *
 * contributed by participants of Possenet.                           *
 *                                                                    *
@@ -12,8 +12,7 @@
               fernando  04/11/08 Support for new seq generator
               fernando  03/20/09 Support for datetime-tz
               Nagaraju  09/22/09 Support for Computed Columns
-              vmaganti  10/12/20 Making Native sequence as default one
-*/
+*/    
 
 DEFINE {1} SHARED VARIABLE pro_dbname     AS CHARACTER NO-UNDO.
 DEFINE {1} SHARED VARIABLE pro_conparms   AS CHARACTER NO-UNDO.
@@ -26,30 +25,25 @@ DEFINE {1} SHARED VARIABLE mss_codepage   AS CHARACTER NO-UNDO.
 DEFINE {1} SHARED VARIABLE mss_collname   AS CHARACTER NO-UNDO.
 DEFINE {1} SHARED VARIABLE mss_incasesen  AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE mss_conparms   AS CHARACTER NO-UNDO.
-DEFINE {1} SHARED VARIABLE long-length    AS INTEGER   NO-UNDO INITIAL 8000.
+DEFINE {1} SHARED VARIABLE long-length    AS INTEGER   NO-UNDO.
 DEFINE {1} SHARED VARIABLE movedata       AS LOGICAL   NO-UNDO.
-DEFINE {1} SHARED VARIABLE pcompatible    AS LOGICAL   NO-UNDO INITIAL TRUE.
+DEFINE {1} SHARED VARIABLE pcompatible    AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE sqlwidth       AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE loadsql        AS LOGICAL   NO-UNDO.
-DEFINE {1} SHARED VARIABLE genrepenv      AS INTEGER   NO-UNDO INITIAL 0.
-
 DEFINE {1} SHARED VARIABLE rmvobj         AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE shadowcol      AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE descidx        AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE dflt           AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE iFmtOption     AS INTEGER   NO-UNDO
                                                     INITIAL 2.
-DEFINE {1} SHARED VARIABLE selected_seq     AS INTEGER   NO-UNDO
-                                                    INITIAL 1.
 DEFINE {1} SHARED VARIABLE lFormat        AS LOGICAL   NO-UNDO
                                                     INITIAL TRUE.
 DEFINE {1} SHARED VARIABLE iRecidOption   AS INTEGER   NO-UNDO
                                                     INITIAL 2.
-DEFINE {1} SHARED VARIABLE unicodeTypes   AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE {1} SHARED VARIABLE unicodeTypes   AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE lUniExpand     AS LOGICAL   NO-UNDO INITIAL FALSE.
-DEFINE {1} SHARED VARIABLE newseq         AS LOGICAL   NO-UNDO INITIAL FALSE.
+DEFINE {1} SHARED VARIABLE newseq         AS LOGICAL   NO-UNDO.
 DEFINE {1} SHARED VARIABLE mapMSSDatetime AS LOGICAL   NO-UNDO INITIAL TRUE.
-DEFINE {1} SHARED VARIABLE longlength     AS INTEGER   NO-UNDO.
 
 DEFINE {1} SHARED STREAM dbg_stream.
 
@@ -58,15 +52,15 @@ DEFINE {1} SHARED VARIABLE stages_complete 	AS LOGICAL EXTENT 7 NO-UNDO.
 
 /*
  * Constants describing stage we are at.
- */
+ */ 
 define {1} shared variable mss_create_sql	  as integer   initial 1.
 define {1} shared variable mss_dump_data   	  as integer   initial 2.
-define {1} shared variable mss_create_sh 	  as integer   initial 3.
+define {1} shared variable mss_create_sh 	  as integer   initial 3. 
 define {1} shared variable mss_create_objects as integer   initial 4.
 define {1} shared variable mss_build_schema	  as integer   initial 5.
 define {1} shared variable mss_fixup_schema	  as integer   initial 6.
-define {1} shared variable mss_load_data	  as integer   initial 7.
-define {1} shared variable s_file-sel         as character initial "*".
+define {1} shared variable mss_load_data	  as integer   initial 7. 
+define {1} shared variable s_file-sel         as character initial "*". 
 
 
 
