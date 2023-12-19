@@ -17,9 +17,9 @@
 
 /* Callbacks are only supported on 11.3+ */
 &IF DECIMAL(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.') + 1)) GE 11.3 &THEN
- USING Progress.Lang.Class.
+USING Progress.Lang.Class.
 &ENDIF
- USING Progress.Json.ObjectModel.*.
+USING Progress.Json.ObjectModel.*.
 
 &IF INTEGER(SUBSTRING(PROVERSION, 1, INDEX(PROVERSION, '.'))) GE 11 &THEN
   { pct/v11/xrefd0005.i}
