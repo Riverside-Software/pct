@@ -2,6 +2,7 @@
   "activeRules": [
     {
       "name": "AbbreviatedKeywords",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.AbbreviatedKeywords",
       "parameters": [
         {
@@ -12,26 +13,32 @@
     },
     {
       "name": "AbbreviatedTableName",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.AbbreviatedTableName"
     },
     {
       "name": "BackslashCurlyBrace",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.BackslashCurlyBrace"
     },
     {
       "name": "BackslashInIncludeFile",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.BackslashInIncludeFile"
     },
     {
       "name": "BackslashInString",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.BackslashInString"
     },
     {
       "name": "BlockLabel",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.BlockLabel"
     },
     {
       "name": "BufferUsage",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.BufferUsage",
       "parameters": [
         {
@@ -42,10 +49,12 @@
     },
     {
       "name": "ClassNameCasing",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ClassNameCasing"
     },
     {
       "name": "ClassNamingConvention",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ClassNamingConvention",
       "parameters": [
         {
@@ -56,18 +65,22 @@
     },
     {
       "name": "ClassNoPackage",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ClassNoPackage"
     },
     {
       "name": "ColonTTrim",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ColonTTrim"
     },
     {
       "name": "ColonForBlock",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ColonForBlock"
     },
     {
       "name": "CommentedOutCode",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.CommentedOutCode",
       "parameters": [
         {
@@ -86,14 +99,17 @@
     },
     {
       "name": "CompileTimeArguments",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.CompileTimeArguments"
     },
     {
       "name": "DefaultImplementationForProperty",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DefaultImplementationForProperty"
     },
     {
       "name": "DefaultWidgetName",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DefaultWidgetName",
       "parameters": [
         {
@@ -104,22 +120,27 @@
     },
     {
       "name": "DisableTriggers",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DisableTriggers"
     },
     {
       "name": "DosKeyword",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DosKeyword"
     },
     {
       "name": "DotComment",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DotComment"
     },
     {
       "name": "DuplicateCase",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.DuplicateCase"
     },
     {
       "name": "EmptyBlock",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.EmptyBlock",
       "parameters": [
         {
@@ -134,10 +155,12 @@
     },
     {
       "name": "EmptyFieldsList",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.EmptyFieldsList"
     },
     {
       "name": "EmptyStatement",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.EmptyStatement",
       "parameters": [
         {
@@ -148,14 +171,17 @@
     },
     {
       "name": "EndType",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.EndType"
     },
     {
       "name": "ErrorHandlingDirective",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ErrorHandlingDirective"
     },
     {
       "name": "ExpressionNoEffect",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ExpressionNoEffect",
       "parameters": [
         {
@@ -166,6 +192,7 @@
     },
     {
       "name": "FindFirst",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.FindFirst",
       "parameters": [
         {
@@ -176,10 +203,12 @@
     },
     {
       "name": "FindNoError",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.FindNoError"
     },
     {
       "name": "GlobalDefine",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.GlobalDefine",
       "parameters": [
         {
@@ -190,34 +219,42 @@
     },
     {
       "name": "GlobalSharedVariable",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.GlobalSharedVariable"
     },
     {
       "name": "HiddenVariable",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.HiddenVariable"
     },
     {
       "name": "I18NLength",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.I18NLength"
     },
     {
       "name": "IncludeNameCasing",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.IncludeNameCasing"
     },
     {
       "name": "IndentationCheck",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.IndentationCheck"
     },
     {
       "name": "ExtraCharactersInIdentifier",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ExtraCharactersInIdentifier"
     },
     {
       "name": "InvalidUseIndex",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.InvalidUseIndex"
     },
     {
       "name": "LogRethrowException",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.LogRethrowException",
       "parameters": [
         {
@@ -228,26 +265,32 @@
     },
     {
       "name": "NestedComments",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NestedComments"
     },
     {
       "name": "NestedDo",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NestedDo"
     },
     {
       "name": "NoInitialDefaultValue",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoInitialDefaultValue"
     },
     {
       "name": "NoReturnInFinally",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoReturnInFinally"
     },
     {
       "name": "NoReturnInFuncOrMethod",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoReturnInFuncOrMethod"
     },
     {
       "name": "NoRoutineInLoop",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoRoutineInLoop",
       "parameters": [
         {
@@ -258,6 +301,7 @@
     },
     {
       "name": "NoRoutineInWhere",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoRoutineInWhere",
       "parameters": [
         {
@@ -268,6 +312,7 @@
     },
     {
       "name": "NoUndo",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoUndo",
       "parameters": [
         {
@@ -278,6 +323,7 @@
     },
     {
       "name": "NoWait",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.NoWait",
       "parameters": [
         {
@@ -288,10 +334,12 @@
     },
     {
       "name": "OfLink",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.OfLink"
     },
     {
       "name": "OneStatementPerLine",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.OneStatementPerLine",
       "parameters": [
         {
@@ -306,34 +354,42 @@
     },
     {
       "name": "OutdatedDigest",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.OutdatedDigest"
     },
     {
       "name": "PublicVariable",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.PublicVariable"
     },
     {
       "name": "ReadkeyKeyword",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ReadkeyKeyword"
     },
     {
       "name": "RecidKeyword",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.RecidKeyword"
     },
     {
       "name": "RedundantCatch",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.RedundantCatch"
     },
     {
       "name": "ReturnError",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ReturnError"
     },
     {
       "name": "SerializableError",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SerializableError"
     },
     {
       "name": "ShareLock",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ShareLock",
       "parameters": [
         {
@@ -344,22 +400,27 @@
     },
     {
       "name": "SharedVariable",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SharedVariable"
     },
     {
       "name": "SortAccessAnalyzer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SortAccessAnalyzer"
     },
     {
       "name": "SortAccessWholeIndexAnalyzer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SortAccessWholeIndexAnalyzer"
     },
     {
       "name": "SplitCommaSeparatedStrings",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SplitCommaSeparatedStrings"
     },
     {
       "name": "StatementOrder",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.StatementOrder",
       "parameters": [
         {
@@ -370,30 +431,37 @@
     },
     {
       "name": "SubstituteLongChar",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SubstituteLongChar"
     },
     {
       "name": "SubstituteParameters",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.SubstituteParameters"
     },
     {
       "name": "TableScanAndWhere",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.TableScanAndWhere"
     },
     {
       "name": "TempTableSortAccessWholeIndexAnalyzer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.TempTableSortAccessWholeIndexAnalyzer"
     },
     {
       "name": "TempTableWholeIndexAnalyzer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.TempTableWholeIndexAnalyzer"
     },
     {
       "name": "ToDoTracker",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.ToDoTracker"
     },
     {
       "name": "TooManyParameters",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.TooManyParameters",
       "parameters": [
         {
@@ -404,26 +472,32 @@
     },
     {
       "name": "UndefinedNamedInclude",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UndefinedNamedInclude"
     },
     {
       "name": "UndoWithoutOption",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UndoWithoutOption"
     },
     {
       "name": "UnixKeyword",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UnixKeyword"
     },
     {
       "name": "UnquotedParameterOsCommand",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UnquotedParameterOsCommand"
     },
     {
       "name": "UnusedBuffer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UnusedBuffer"
     },
     {
       "name": "UnusedParameter",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UnusedParameter",
       "parameters": [
         {
@@ -434,6 +508,7 @@
     },
     {
       "name": "UnusedVariable",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UnusedVariable",
       "parameters": [
         {
@@ -448,6 +523,7 @@
     },
     {
       "name": "UseIndex",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UseIndex",
       "parameters": [
         {
@@ -458,34 +534,42 @@
     },
     {
       "name": "UsingStars",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.UsingStars"
     },
     {
       "name": "VariableAssignedButNotRead",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.VariableAssignedButNotRead"
     },
     {
       "name": "VariableOverflow",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.VariableOverflow"
     },
     {
       "name": "VariableReadButNotAssigned",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.VariableReadButNotAssigned"
     },
     {
       "name": "WhereCanDo",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.WhereCanDo"
     },
     {
       "name": "WholeIndexAnalyzer",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.WholeIndexAnalyzer"
     },
     {
       "name": "WorkTableKeyword",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.WorkTableKeyword"
     },
     {
       "name": "WrongAssignWhen",
+      "repository": "rssw-oe-main",
       "class": "eu.rssw.antlr.proparse.checks.WrongAssignWhen"
     }
   ]
