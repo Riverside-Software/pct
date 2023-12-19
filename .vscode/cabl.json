@@ -344,11 +344,11 @@
       "parameters": [
         {
           "name": "allowSimpleIf",
-          "value": false
+          "value": true
         },
         {
           "name": "allowDoOn",
-          "value": false
+          "value": true
         }
       ]
     },
