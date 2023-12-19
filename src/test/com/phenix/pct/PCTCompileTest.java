@@ -1733,6 +1733,20 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(getBaseDir(), "test92/build3/item.r").exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test93() {
+        configureProject(getBaseDir() + "test93/build.xml");
+        executeTarget("init");
+        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler",
+                "GetClass Error:  Could not dynamically find class 'InvalidCompileCallback'. (15287)",
+                "1 file(s) compiled"});
+        assertTrue(new File(getBaseDir(), "test93/build/test.r").exists());
+        expectLog("test2", new String[]{"PCTCompile - Progress Code Compiler",
+                "Skip 'CompileCallback' callback as it doesn't implement rssw.pct.ICompileCallback",
+                "1 file(s) compiled"});
+        assertTrue(new File(getBaseDir(), "test93/build2/test.r").exists());
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

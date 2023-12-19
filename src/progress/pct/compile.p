@@ -225,14 +225,16 @@ PROCEDURE initModule:
       MESSAGE "GetClass Error: " ERROR-STATUS:GET-MESSAGE(1).
       ERROR-STATUS:ERROR = false.
     END.
+    ELSE DO:
+      /* Confirm the callback implements the expected interface. */
+      IF VALID-OBJECT(oClass) AND oClass:IsA(get-class(rssw.pct.ICompileCallback)) THEN
+        callback = CAST(oClass:new(), rssw.pct.ICompileCallback) NO-ERROR.
+      ELSE
+        MESSAGE "Skip '" + callbackClass + "' callback as it doesn't implement rssw.pct.ICompileCallback".
 
-    /* Confirm the callback implements the expected interface. */
-    IF VALID-OBJECT(oClass) AND oClass:IsA(get-class(rssw.pct.ICompileCallback)) THEN
-      callback = CAST(oClass:new(), rssw.pct.ICompileCallback) NO-ERROR.
-
-    IF VALID-OBJECT(callback) AND VALID-OBJECT(hSrcProc) THEN
-      callback:initialize(hSrcProc).
-
+      IF VALID-OBJECT(callback) AND VALID-OBJECT(hSrcProc) THEN
+        callback:initialize(hSrcProc).
+    END.
     CATCH err AS Progress.Lang.Error:
       MESSAGE "Error while creating callback class: " err:GetMessage(1).
     END CATCH.

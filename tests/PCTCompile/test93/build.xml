@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test93">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="build" />
+  	<mkdir dir="build2" />
+    <mkdir dir="profiler" />
+  </target>
+
+  <target name="test1">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" callbackClass="InvalidCompileCallback" destDir="build">
+      <fileset dir="src" includes="*" />
+      <Profiler description="PCTCompile-test93" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" callbackClass="CompileCallback" destDir="build2">
+      <fileset dir="src" includes="*" />
+      <Profiler description="PCTCompile-test93" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
