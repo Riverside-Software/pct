@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.rssw.pct</groupId>
   <artifactId>pct</artifactId>
-  <version>227</version>
+  <version>228-pre</version>
   <packaging>jar</packaging>
 
   <name>PCT</name>
