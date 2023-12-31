@@ -535,6 +535,8 @@ public class PCTRunTest extends BuildFileTestNg {
         expectBuildException("test7", "Failure");
         assertTrue(searchInList(getLogBuffer(), "(247)"));
         assertTrue(searchInList(getLogBuffer(), "(15285)"));
+        executeTarget("test8");
+        assertTrue(searchInList(getLogBuffer(), "hello"));
     }
 
 }

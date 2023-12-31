@@ -51,4 +51,11 @@
     </PCTRun>
   </target>
 
+  <target name="test8">
+    <!-- Execute class when procedure attribute is empty -->
+    <PCTRun className="rssw.pct.MyClass8" dlcHome="${DLC}" procedure="">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
 </project>

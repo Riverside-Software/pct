@@ -661,7 +661,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 bw.newLine();
             }
 
-            // Defines database connections and aliases
+            // Define database connections and aliases
             int dbNum = 1;
             for (PCTConnection dbc : runAttributes.getAllDbConnections()) {
                 if (dbc.hasCmdLinePassphrase()) {
@@ -690,7 +690,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 }
             }
 
-            // Defines internal propath
+            // Define internal propath
             if (this.internalPropath != null) {
                 String[] lst = this.internalPropath.list();
                 for (int k = lst.length - 1; k >= 0; k--) {
@@ -699,7 +699,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 }
             }
 
-            // Defines PROPATH
+            // Define PROPATH
             if (runAttributes.getPropath() != null) {
                 // Bug #1058733 : multiple assignments for propath, as a long propath
                 // could lead to error 135 (More than xxx characters in a single
@@ -732,7 +732,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 bw.write(MessageFormat.format(getProgressProcedures().getCallbackString(), runAttributes.getMainCallback()));
             }
 
-            // Defines parameters
+            // Define parameters
             if (runAttributes.getRunParameters() != null) {
                 for (RunParameter param : runAttributes.getRunParameters()) {
                     if (param.validate()) {
@@ -745,7 +745,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 }
             }
 
-            // Defines variables for OUTPUT parameters
+            // Define variables for OUTPUT parameters
             if (runAttributes.getOutputParameters() != null) {
                 int zz = 0;
                 for (OutputParameter param : runAttributes.getOutputParameters()) {
@@ -755,7 +755,7 @@ public class PCTRun extends PCT implements IRunAttributes {
                 }
             }
 
-            // Creates a StringBuffer containing output parameters when calling the progress
+            // Create a StringBuffer containing output parameters when calling the progress
             // procedure
             StringBuilder sb = new StringBuilder();
             if ((runAttributes.getOutputParameters() != null) && !runAttributes.getOutputParameters().isEmpty()) {
@@ -774,13 +774,14 @@ public class PCTRun extends PCT implements IRunAttributes {
                 bw.write(getProgressProcedures().getSuperInitString());
             }
 
-            // Calls progress procedure
-            if (runAttributes.getProcedure() != null) {
+            // Call progress procedure
+            if ((runAttributes.getProcedure() != null)
+                    && !runAttributes.getProcedure().trim().isEmpty()) {
                 bw.write(MessageFormat.format(this.getProgressProcedures().getRunString(),
                         escapeString(runAttributes.getProcedure()), sb.toString()));
-                // Checking return value
+                // Check return value
                 bw.write(this.getProgressProcedures().getAfterRun());
-                // Writing output parameters to temporary files
+                // Write output parameters to temporary files
                 if (this.runAttributes.getOutputParameters() != null) {
                     for (OutputParameter param : runAttributes.getOutputParameters()) {
                         File tmpFile = new File(
@@ -794,7 +795,7 @@ public class PCTRun extends PCT implements IRunAttributes {
             } else {
                 bw.write(MessageFormat.format(this.getProgressProcedures().getDynamicInvokeString(),
                         escapeString(runAttributes.getClassName())));
-                // Checking return value
+                // Check return value
                 bw.write(this.getProgressProcedures().getAfterDynamicInvoke());
             }
             // Quit
