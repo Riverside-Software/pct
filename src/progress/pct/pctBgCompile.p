@@ -26,59 +26,59 @@ RUN pct/compile.p PERSISTENT SET hComp.
 ASSIGN hSrcProc = SOURCE-PROCEDURE.
 
 PROCEDURE setOptions:
-    DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
-    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
-    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
+  DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
+  DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO.
+  DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
-    /* Defines compilation option -- This is a ';' separated string containing */
-    /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG), callbackClass (CHAR) */
-    RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('XCODE', IF ENTRY(4, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('FORCECOMPILE', IF ENTRY(6, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('RELATIVE', IF ENTRY(14, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    IF (ENTRY(15, ipPrm, ';') GT "") THEN
-      RUN setOption IN hComp ('OUTPUTDIR', ENTRY(15, ipPrm, ';')).
-    RUN setOption IN hComp ('PREPROCESS', IF ENTRY(16, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('PREPROCESSDIR', ENTRY(17, ipPrm, ';')).
-    RUN setOption IN hComp ('LISTING', IF ENTRY(18, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('DEBUGLISTING', IF ENTRY(19, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('DEBUGLISTINGDIR', ENTRY(20, ipPrm, ';')).
-    RUN setOption IN hComp ('IGNOREDINCLUDES', ENTRY(21, ipPrm, ';')).
-    RUN setOption IN hComp ('XMLXREF', IF ENTRY(22, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('STRINGXREF', IF ENTRY(23, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('APPENDSTRINGXREF', IF ENTRY(24, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('LISTINGSOURCE', ENTRY(26, ipPrm, ';')).
-    RUN setOption IN hComp ('NOPARSE', IF ENTRY(27, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
-    RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('PCTDIR', ENTRY(30, ipPrm, ';')).
-    RUN setOption IN hComp ('FILELIST', ENTRY(31, ipPrm, ';')).
-    RUN setOption IN hComp ('FULLKW', IF ENTRY(32, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
-    RUN setOption IN hComp ('CALLBACKCLASS', ENTRY(35, ipPrm, ';')).
-    RUN setOption IN hComp ('OUTPUTTYPE', ENTRY(36, ipPrm, ';')).
-    RUN setOption IN hComp ('RETURNVALUES', IF ENTRY(37, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  /* Defines compilation option -- This is a ';' separated string containing */
+  /* runList (LOG), minSize (LOG), md5 (LOG), xcode (LOG), xcodekey (CHAR), forceCompil (LOG), noCompil (LOG), keepXref (LOG), multiComp (LOG), streamIO (LOG), lV6Frame (LOG), outputDir (CHAR), preprocess (LOG), preprocessDir (CHAR), listing (LOG), debugListing (LOG), debugListingDir (CHAR), reqFullKW (LOG), reqFullNames (LOG), reqFldQual (LOG), callbackClass (CHAR) */
+  RUN setOption IN hComp ('RUNLIST', IF ENTRY(1, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('XCODE', IF ENTRY(4, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('FORCECOMPILE', IF ENTRY(6, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('KEEPXREF', IF ENTRY(8, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('MULTICOMPILE', IF ENTRY(11, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('RELATIVE', IF ENTRY(14, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  IF (ENTRY(15, ipPrm, ';') GT "") THEN
+    RUN setOption IN hComp ('OUTPUTDIR', ENTRY(15, ipPrm, ';')).
+  RUN setOption IN hComp ('PREPROCESS', IF ENTRY(16, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('PREPROCESSDIR', ENTRY(17, ipPrm, ';')).
+  RUN setOption IN hComp ('LISTING', IF ENTRY(18, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('DEBUGLISTING', IF ENTRY(19, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('DEBUGLISTINGDIR', ENTRY(20, ipPrm, ';')).
+  RUN setOption IN hComp ('IGNOREDINCLUDES', ENTRY(21, ipPrm, ';')).
+  RUN setOption IN hComp ('XMLXREF', IF ENTRY(22, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('STRINGXREF', IF ENTRY(23, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('APPENDSTRINGXREF', IF ENTRY(24, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('LISTINGSOURCE', ENTRY(26, ipPrm, ';')).
+  RUN setOption IN hComp ('NOPARSE', IF ENTRY(27, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  ASSIGN lStopOnErr = ENTRY(28, ipPrm, ';') EQ 'true'.
+  RUN setOption IN hComp ('FLATTENDBG', IF ENTRY(29, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('PCTDIR', ENTRY(30, ipPrm, ';')).
+  RUN setOption IN hComp ('FILELIST', ENTRY(31, ipPrm, ';')).
+  RUN setOption IN hComp ('FULLKW', IF ENTRY(32, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('FULLNAMES', IF ENTRY(33, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('FIELDQLF', IF ENTRY(34, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
+  RUN setOption IN hComp ('CALLBACKCLASS', ENTRY(35, ipPrm, ';')).
+  RUN setOption IN hComp ('OUTPUTTYPE', ENTRY(36, ipPrm, ';')).
+  RUN setOption IN hComp ('RETURNVALUES', IF ENTRY(37, ipPrm, ';') EQ 'true' THEN '1' ELSE '0').
 
-    RUN initModule IN hComp.
+  RUN initModule IN hComp.
 
-    ASSIGN opOk = TRUE.
+  ASSIGN opOk = TRUE.
 
 END PROCEDURE.
 
 PROCEDURE pctCompile:
-    DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
-    DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL FALSE.
-    DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
+  DEFINE INPUT  PARAMETER ipPrm AS CHARACTER   NO-UNDO.
+  DEFINE OUTPUT PARAMETER opOK  AS LOGICAL     NO-UNDO INITIAL FALSE.
+  DEFINE OUTPUT PARAMETER opMsg AS CHARACTER NO-UNDO.
 
-    /* Input parameter is a star-separated list of compilation units */
-    /* Each compilation unit is a pipe-separated list of infos : */
-    /*  -> Fileset directory - Full pathname (CHAR) */
-    /*  -> Input file directory - relative path */
-    /*  -> Input file to compile - just the file name (CHAR) */
-    /*  -> Target file name (CHAR) */
+  /* Input parameter is a star-separated list of compilation units */
+  /* Each compilation unit is a pipe-separated list of infos : */
+  /*  -> Fileset directory - Full pathname (CHAR) */
+  /*  -> Input file directory - relative path */
+  /*  -> Input file to compile - just the file name (CHAR) */
+  /*  -> Target file name (CHAR) */
 
   DEFINE VARIABLE zz        AS INTEGER     NO-UNDO.
   DEFINE VARIABLE compOK    AS INTEGER     NO-UNDO.
