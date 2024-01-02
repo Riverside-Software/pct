@@ -537,6 +537,8 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(searchInList(getLogBuffer(), "(15285)"));
         executeTarget("test8");
         assertTrue(searchInList(getLogBuffer(), "hello"));
+        executeTarget("test9");
+        assertTrue(searchInList(getLogBuffer(), "ABC"));
     }
 
 }

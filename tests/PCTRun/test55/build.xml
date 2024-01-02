@@ -58,4 +58,11 @@
     </PCTRun>
   </target>
 
+  <target name="test9">
+    <!-- Main method instantiating same class -->
+    <PCTRun className="rssw.pct.MyClass9" dlcHome="${DLC}">
+      <Profiler description="PCTRun-test55" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
 </project>
