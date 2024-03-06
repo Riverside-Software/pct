@@ -33,6 +33,7 @@ public class Profiler {
     private String description = "Default description";
     private String tracing;
     private String traceFilter;
+    private String extension = ".out";
     private File outputFile = null;
     private File outputDir = null;
     private File listings = null;
@@ -138,6 +139,14 @@ public class Profiler {
 
     public String getTraceFilter() {
         return traceFilter;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public String getExtension() {
+        return extension;
     }
 
     /**

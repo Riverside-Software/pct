@@ -568,9 +568,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     private void createProfilerParamFile(File paramFile) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(paramFile))) {
             // Assuming nobody will use file names with double quotes in this case...
-            bw.write("-FILENAME \""
-                    + new File(options.getProfiler().getOutputDir(), "profiler"
-                            + PCT.nextRandomInt() + ".out\""));
+            bw.write("-FILENAME \"" + new File(options.getProfiler().getOutputDir(), "profiler"
+                    + PCT.nextRandomInt() + options.getProfiler().getExtension() + "\""));
             bw.newLine();
             if (options.getProfiler().hasCoverage()) {
                 bw.write("-COVERAGE");

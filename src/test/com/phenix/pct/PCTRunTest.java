@@ -541,4 +541,24 @@ public class PCTRunTest extends BuildFileTestNg {
         assertTrue(searchInList(getLogBuffer(), "ABC"));
     }
 
+    @Test(groups = {"v11"})
+    public void test56() {
+        configureProject("PCTRun/test56/build.xml");
+
+        executeTarget("test1");
+        String[] list1 = new File("PCTRun/test56/profiler1").list();
+        assertEquals(list1.length, 1);
+        assertTrue(list1[0].endsWith(".out"));
+
+        executeTarget("test2");
+        String[] list2 = new File("PCTRun/test56/profiler2").list();
+        assertEquals(list2.length, 1);
+        // No extension, ends with digit
+        assertTrue(Character.isDigit(list2[0].charAt(list2[0].length() - 1)));
+
+        executeTarget("test3");
+        String[] list3 = new File("PCTRun/test56/profiler3").list();
+        assertEquals(list3.length, 1);
+        assertTrue(list3[0].endsWith(".prof"));
+    }
 }
