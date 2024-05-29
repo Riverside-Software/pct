@@ -25,6 +25,8 @@ import org.apache.tools.ant.taskdefs.condition.Os;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for testing PCTRun task
@@ -513,8 +515,11 @@ public class PCTRunTest extends BuildFileTestNg {
             return;
 
         configureProject("PCTRun/test54/build.xml");
+
         expectLog("test1", ".Net version: 4.0.30319.42000");
-        expectLog("test2", ".Net version: 6.0.21");
+        List<String> rexp = new ArrayList<>();
+        rexp.add("\\.Net version: 6\\.0\\.\\d+"); // fix: patch version can change with updates
+        expectLogRegexp("test2", rexp, false);  
     }
 
     @Test(groups = {"v11"})
