@@ -12,7 +12,7 @@
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <fileset dir="data" includes="Tab1.bd" />
       <option name="-cpinternal" value="iso8859-15" />
-      <option name="-cpinternal" value="iso8859-15" />
+      <option name="-cpstream" value="iso8859-15" />
     </PCTBinaryLoad>
   </target>
 
@@ -21,7 +21,7 @@
       <DBConnection dbName="test" dbDir="db" singleUser="true" />
       <fileset dir="data" includes="Tab2.bd" />
       <option name="-cpinternal" value="iso8859-15" />
-      <option name="-cpinternal" value="iso8859-15" />
+      <option name="-cpstream" value="iso8859-15" />
     </PCTBinaryLoad>
   </target>
 
