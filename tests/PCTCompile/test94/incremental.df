@@ -1,0 +1,10 @@
+
+ADD FIELD "IncrementalField" OF "Customer" AS character
+  FORMAT "x(50)"
+  INITIAL ""
+  LABEL "IncrementalField"
+  POSITION 20
+  MAX-WIDTH 100
+  HELP ""
+  LENGTH 0
+  ORDER 201

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test89">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="target/db" />
+    <sports2000 destDir="target/db" dbName="mydb" dlcHome="${DLC}" />
+  </target>
+
+  <target name="compile-and-run">
+    <mkdir dir="target/build" />
+    <PCTCompile destDir="target/build"
+                failOnError="false"
+                displayFiles="1"
+                dlcHome="${DLC}">
+      <DBConnection dbName="mydb" dbDir="target/db" readOnly="true" />
+      <propath location="src" />
+      <fileset dir="src" includes="**/*.cls,**/*.p" />
+    </PCTCompile>
+
+    <PCTRun procedure="runme.r"
+            dlcHome="${DLC}">
+      <DBConnection dbName="mydb" dbDir="target/db" readOnly="true" />
+      <propath location="target/build" />
+    </PCTRun>
+  </target>
+
+  <target name="dump-schema">
+    <!-- not used by test, but if you want to see the current schema run this to dump it -->
+    <PCTDumpSchema destfile="sports2000.df"
+                   tables="customer"
+                   dlcHome="${DLC}">
+      <DBConnection dbName="mydb" dbDir="target/db" readOnly="true" />
+    </PCTDumpSchema>
+  </target>
+
+  <target name="load-schema" >
+    <PCTLoadSchema dlcHome="${DLC}">
+      <DBConnection dbName="mydb" dbdir="target/db" singleUser="true" />
+      <fileset dir="." includes="incremental.df" />
+    </PCTLoadSchema>
+  </target>
+
+  <target name="test">
+    <antcall target="init" />
+    <antcall target="compile-and-run" />
+    <antcall target="load-schema" />
+    <antcall target="compile-and-run" />
+  </target>
+
+</project>
