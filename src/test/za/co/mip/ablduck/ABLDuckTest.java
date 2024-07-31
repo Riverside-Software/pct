@@ -182,6 +182,22 @@ public class ABLDuckTest extends BuildFileTestNg {
         assertEquals(js.implementations.size(), 1);
         assertEquals(js.implementations.get(0), "hierarchy.IFamily");
 
+        filename = "ABLDuck/test2/docs/output/classes/hierarchy.GrandSon.js";
+
+        content = new String(Files.readAllBytes(Paths.get(filename)));
+        content = content.substring(content.indexOf('(') + 1, content.length() - 2);
+
+        js = gson.fromJson(content, CompilationUnit.class);
+        assertEquals(js.superclasses.size(), 3);
+        assertEquals(js.superclasses.get(0), "hierarchy.Father");
+        assertEquals(js.superclasses.get(1), "hierarchy.Son");
+        assertEquals(js.superclasses.get(2), "hierarchy.GrandSon");
+        assertEquals(js.implementations.size(), 0);
+        assertEquals(js.members.get(4).id, "method-hierarchy_Father_HelloWorldFather");
+        assertEquals(js.members.get(4).tagname, "method");
+        assertEquals(js.members.get(4).owner, "hierarchy.Father");
+
+
         filename = "ABLDuck/test2/docs/output/classes/hierarchy.IFamily.js";
 
         content = new String(Files.readAllBytes(Paths.get(filename)));

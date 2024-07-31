@@ -26,5 +26,17 @@ CLASS hierarchy.Father:
         RETURN.
 
     END METHOD.
+
+        /*------------------------------------------------------------------------------
+     Purpose: Say Hello from Father
+     Notes:
+         @param pName Name to say hello from father
+    ------------------------------------------------------------------------------*/
+
+    METHOD PUBLIC VOID HelloWorldFather ( INPUT pName AS CHARACTER  ):
+        
+        RETURN.
+
+    END METHOD.
  
 END CLASS.
