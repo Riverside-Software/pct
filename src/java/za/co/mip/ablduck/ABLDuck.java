@@ -465,6 +465,7 @@ public class ABLDuck extends PCT {
         String inherits = curClass.inherits;
 
         if (!"".equals(inherits)) {
+            inherits = determineFullyQualifiedClassName(curClass.uses, inherits);
             result.addHierarchy(inherits);
 
             CompilationUnit nextClass = classes.get(inherits);
