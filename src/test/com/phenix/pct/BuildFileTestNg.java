@@ -272,7 +272,6 @@ public class BuildFileTestNg {
         try {
             return searchInList(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8), pattern);
         } catch (IOException caught) {
-            System.out.println("ERR");
             return false;
         }
     }
