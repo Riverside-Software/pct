@@ -33,13 +33,13 @@ import com.phenix.pct.DLCVersion;
  */
 public class PCTProxygenTest extends BuildFileTestNg {
 
-    @Test(groups = { "v11", "nov12" }, expectedExceptions = BuildException.class)
+    @Test(groups = { "v11", "nov12", "nov13" }, expectedExceptions = BuildException.class)
     public void test1() {
         configureProject("PCTProxygen/test1/build.xml");
         executeTarget("test");
     }
 
-    @Test(groups = { "v11", "win", "nov12" })
+    @Test(groups = { "v11", "win", "nov12", "nov13" })
     public void test2() {
         configureProject("PCTProxygen/test2/build.xml");
         executeTarget("prepare");
@@ -56,7 +56,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f3.exists());
     }
 
-    @Test(groups = { "v11", "win", "nov12" })
+    @Test(groups = { "v11", "win", "nov12", "nov13" })
     public void test3() {
         configureProject("PCTProxygen/test3/build.xml");
         executeTarget("prepare");
@@ -70,7 +70,7 @@ public class PCTProxygenTest extends BuildFileTestNg {
         assertTrue(f2.exists());
     }
     
-    @Test(groups = { "v11", "win", "nov12" })
+    @Test(groups = { "v11", "win", "nov12", "nov13" })
     public void test4() {
         configureProject("PCTProxygen/test4/build.xml");
         executeTarget("prepare");

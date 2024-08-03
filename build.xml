@@ -24,9 +24,12 @@
   <property name="build-test" location="build/test" />
   <property name="build-v11" location="build/build-v11" />
   <property name="build-v12" location="build/build-v12" />
+  <property name="build-v13" location="build/build-v13" />
   <property name="build-win-v11" location="build/windows-v11" />
   <property name="build-win-v12" location="build/windows-v12" />
   <property name="build-win-v12-netcore" location="build/windows-v12-netcore" />
+  <property name="build-win-v13" location="build/windows-v13" />
+  <property name="build-win-v13-netcore" location="build/windows-v13-netcore" />
   <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
@@ -47,6 +50,12 @@
     <include name="pct/v12/*.p" />
     <include name="rssw/**/*.cls" />
   </fileset>
+  <fileset id="fs.v13" dir="${src.progress}">
+    <include name="pct/*.p" />
+    <exclude name="pct/pctOEUnitRunner.p" />
+    <include name="pct/v13/*.p" />
+    <include name="rssw/**/*.cls" />
+  </fileset>
   <fileset id="fs.classDoc" dir="${src.progress}">
     <include name="Consultingwerk/**/*.cls" />
     <include name="Consultingwerk/**/*.p" />
@@ -58,6 +67,9 @@
     <pathelement location="lib/OEUnit_dlc11.pl" />
   </path>
   <path id="pp.v12">
+    <pathelement location="${src.progress}" />
+  </path>
+  <path id="pp.v13">
     <pathelement location="${src.progress}" />
   </path>
 
@@ -90,7 +102,7 @@
     <pathelement location="lib/objenesis-2.6.jar" />
     <pathelement location="lib/rcode-reader-2.22.1.jar"/>
   </path>
-  
+
   <target name="init" description="Initialize PCT builder" depends="init-properties">
     <tstamp>
       <format property="year" pattern="yyyy" />
@@ -99,13 +111,15 @@
     <mkdir dir="${build-java}" />
     <mkdir dir="${build-test}" />
     <mkdir dir="${build-v11}" />
-    <mkdir dir="${doc}" />
     <mkdir dir="${build-v12}" />
+    <mkdir dir="${build-v13}" />
+    <mkdir dir="${doc}" />
     <mkdir dir="${dist}" />
 
-    <!-- Checking v11 and v12 availability -->
+    <!-- Checking v11, v12, and v13 availability -->
     <available file="${DLC11}/version" property="dlc.v11.present" />
     <available file="${DLC12}/version" property="dlc.v12.present" />
+    <available file="${DLC13}/version" property="dlc.v13.present" />
 
     <echo message="Version tag : ${pct.version.string}" />
     <echo file="${src.java}/com/phenix/pct/PCT.properties">PCTVersion=${pct.version.string}</echo>
@@ -174,6 +188,7 @@
   <target name="pbuild" depends="declare-bootstrap" description="Progress code compilation">
     <echo message="Checking v11 in ${DLC11}" />
     <echo message="Checking v12 in ${DLC12}" />
+    <echo message="Checking v13 in ${DLC13}" />
 
     <antcall target="cond.pbuild">
       <param name="build.this.version" value="dlc.v11.present" />
@@ -195,11 +210,21 @@
       <param name="xmlxref" value="true" />
     </antcall>
 
+    <antcall target="cond.pbuild">
+      <param name="build.this.version" value="dlc.v13.present" />
+      <param name="dlcHome" value="${DLC13}" />
+      <param name="buildDir" value="${build-v13}" />
+      <param name="libName" value="pct13.pl" />
+      <param name="fsid" value="fs.v13" />
+      <param name="propid" value="pp.v13" />
+      <param name="xmlxref" value="true" />
+    </antcall>
+
     <zip destfile="${build}/pct-src.zip">
       <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
     </zip>
   </target>
- 
+
   <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
     <mkdir dir="${build-win-v11}" />
     <bootstrapCompile destdir="${build-win-v11}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC11}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v11.present}">
@@ -229,10 +254,31 @@
       <PCTRunOption name="-cprcodeout" value="undefined" />
     </bootstrapCompile>
 
+    <mkdir dir="${build-win-v13}" />
+    <bootstrapCompile destdir="${build-win-v13}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC13}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v13.present}">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+
+    <mkdir dir="${build-win-v13-netcore}" />
+    <bootstrapCompile destdir="${build-win-v13-netcore}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC13}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v13.present}">
+      <fileset refid="fs.classDoc" />
+      <propath>
+        <pathelement location="${src.progress}" />
+      </propath>
+      <PCTRunOption name="-clrnetcore" />
+      <PCTRunOption name="-cprcodeout" value="undefined" />
+    </bootstrapCompile>
+
     <zip destFile="${dist}/classDoc.zip">
       <zipfileset dir="${build-win-v11}" prefix="v11" includes="**/*.r" />
       <zipfileset dir="${build-win-v12}" prefix="v12" includes="**/*.r" />
       <zipfileset dir="${build-win-v12-netcore}" prefix="v12-netcore" includes="**/*.r" />
+      <zipfileset dir="${build-win-v13}" prefix="v13" includes="**/*.r" />
+      <zipfileset dir="${build-win-v13-netcore}" prefix="v13-netcore" includes="**/*.r" />
     </zip>
   </target>
 
@@ -242,6 +288,7 @@
     <zip destFile="${dist}/classDoc.zip" whenEmpty="create">
       <zipfileset dir="${dist}" includes="empty.txt" prefix="v11" />
       <zipfileset dir="${dist}" includes="empty.txt" prefix="v12" />
+      <zipfileset dir="${dist}" includes="empty.txt" prefix="v13" />
     </zip>
   </target>
 
@@ -256,9 +303,13 @@
     <mkdir dir="classDocTemp/v11" />
     <mkdir dir="classDocTemp/v12" />
     <mkdir dir="classDocTemp/v12-netcore" />
+    <mkdir dir="classDocTemp/v13" />
+    <mkdir dir="classDocTemp/v13-netcore" />
+
     <copy todir="classDocTemp" overwrite="true">
       <zipfileset src="dist/classDoc.zip" />
     </copy>
+
     <!-- Note that pct11.pl is updated with v12 prolib (workaround for the Jenkins build process) -->
     <bootstrapLibrary destfile="${build}/pct11.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
       <fileset dir="classDocTemp/v11" includes="**/*.r" />
@@ -269,10 +320,19 @@
     <bootstrapLibrary destfile="${build}/pct12-netcore.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
       <fileset dir="classDocTemp/v12-netcore" includes="**/*.r" />
     </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct13.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
+      <fileset dir="classDocTemp/v13" includes="**/*.r" />
+    </bootstrapLibrary>
+    <bootstrapLibrary destfile="${build}/pct13-netcore.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
+      <fileset dir="classDocTemp/v13-netcore" includes="**/*.r" />
+    </bootstrapLibrary>
+
     <delete dir="classDocTemp" />
+
     <zip destfile="${build}/ablduck.zip">
       <fileset dir="${src.java}/za/co/mip/ablduck/resources" />
     </zip>
+
     <jar jarfile="${dist}/PCT.jar" duplicate="preserve">
       <fileset dir="${build-java}">
         <include name="**/*.class" />
@@ -282,6 +342,8 @@
         <include name="pct11.pl" />
         <include name="pct12.pl" />
         <include name="pct12-netcore.pl" />
+        <include name="pct13.pl" />
+        <include name="pct13-netcore.pl" />
         <include name="pct-src.zip" />
       </fileset>
       <zipfileset dir="${build}" includes="ablduck.zip" prefix="za/co/mip/ablduck/resources" />
@@ -358,7 +420,7 @@
       <group title="ABLDuck" packages="za.co.mip.ablduck.*" />
       <group title="ProUnit" packages="net.cordova.prounit.*" />
       <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
-      <link href="https://docs.oracle.com/en/java/javase/20/" />
+      <link href="https://docs.oracle.com/en/java/javase/21/docs/api/" />
       <link href="https://ant.apache.org/manual/api/" />
     </javadoc>
     <jar destfile="${dist}/PCT-javadoc.jar">
@@ -399,8 +461,8 @@
   </target>
 
   <target name="install" depends="jar" >
-      <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
-    </target>
+    <copy file="${dist}/PCT.jar" todir="${ant.library.dir}"/>
+  </target>
 
   <target name="dist" depends="srcdist,javadoc,jar,testdist" />
 

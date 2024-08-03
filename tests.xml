@@ -22,6 +22,9 @@
   <condition property="GROUPS" value="v11,v12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
+  <condition property="GROUPS" value="v11,v12,v13">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="13" />
+  </condition>
 
   <!-- Excluded group depending on OS -->
   <condition property="EXCLUDES-OS" value="unix" else="win">
@@ -33,6 +36,9 @@
   </condition>
   <condition property="EXCLUDES-VERSION" value="nov12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
+  </condition>
+  <condition property="EXCLUDES-VERSION" value="nov13">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="13" />
   </condition>
 
   <!-- Only used by old unit tests (OEUnit, ProUnit) -->
