@@ -28,9 +28,14 @@
     <os family="windows" />
   </condition>
   <!-- Excluded group depending on version -->
-  <condition property="EXCLUDES-VERSION" value="nov12" else="">
+  <condition property="EXCLUDES-VERSION" value="nov11">
+    <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
+  </condition>
+  <condition property="EXCLUDES-VERSION" value="nov12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
+
+  <!-- Only used by old unit tests (OEUnit, ProUnit) -->
   <condition property="VERSION" value="dlc${OE_MAJOR_VERSION}" else="dlc11">
     <isset property="OE_MAJOR_VERSION" />
   </condition>
