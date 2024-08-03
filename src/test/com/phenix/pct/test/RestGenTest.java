@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  */
 public class RestGenTest extends BuildFileTestNg {
 
-    @Test(groups = {"v11", "win", "nov12"})
+    @Test(groups = {"v11", "win", "nov12", "nov13"})
     public void test1() {
         configureProject("RestGen/test1/build.xml");
         executeTarget("test");
