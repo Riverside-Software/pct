@@ -72,6 +72,7 @@
     <mkdir dir="profiler" />
     <taskdef resource="testngtasks" classpathref="testng.cp" />
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml" classpathref="jacoco.cp" />
+    <echo message="Execute unit tests -- Groups ${GROUPS} -- Excludes ${EXCLUDES-OS},${EXCLUDES-VERSION} -- Suite ${TESTENV} -- DLC ${DLC}" />
     <jacoco:coverage destFile="profiler/jacoco-${TESTENV}.exec">
       <testng workingDir="testbox" outputdir="test-output" useDefaultListeners="true" groups="${GROUPS}" excludedGroups="${EXCLUDES-OS},${EXCLUDES-VERSION}" suiteName="${TESTENV} tests">
         <classfileset dir="build/test" includes="**/*Test.class" excludes="**/*BrokerTest.class" />
