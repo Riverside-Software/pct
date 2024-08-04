@@ -256,7 +256,7 @@
     <mkdir dir="classDocTemp/v11" />
     <mkdir dir="classDocTemp/v12" />
     <mkdir dir="classDocTemp/v12-netcore" />
-    <copy todir="classDocTemp">
+    <copy todir="classDocTemp" overwrite="true">
       <zipfileset src="dist/classDoc.zip" />
     </copy>
     <!-- Note that pct11.pl is updated with v12 prolib (workaround for the Jenkins build process) -->
