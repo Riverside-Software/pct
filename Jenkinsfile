@@ -52,8 +52,33 @@ pipeline {
             sh "ant -Dpct.release=${version} -DDLC11=/ -DDLC12=/opt/progress/dlc -DGIT_COMMIT=${commit} dist"
           }
         }
-        stash name: 'tests', includes: 'dist/PCT.jar,dist/testcases.zip,tests.xml'
-        archiveArtifacts 'dist/PCT.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
+        stash name: 'unsigned', includes: 'dist/PCT.jar,eToken.cfg'
+      }
+    }
+
+    stage('Sign') {
+      agent { label 'Windows-Office02' }
+      environment {
+        KEYSTORE_ALIAS = credentials('KEYSTORE_ALIAS')
+        KEYSTORE_PASS = credentials('KEYSTORE_PASS')
+      }
+      steps {
+        unstash name: 'unsigned'
+        script {
+          withEnv(["PATH+JAVA=${tool name: 'JDK17', type: 'jdk'}\\bin"]) {
+            bat "jarsigner -tsa http://timestamp.sectigo.com -keystore NONE -storepass %KEYSTORE_PASS% -storetype PKCS11 -providerClass sun.security.pkcs11.SunPKCS11 -providerArg .\\eToken.cfg -signedjar dist\\PCT-signed.jar dist\\PCT.jar %KEYSTORE_ALIAS%"
+          }
+        }
+        stash name: 'signed', includes: 'dist/PCT-signed.jar'
+      }
+    }
+
+    stage('Archive') {
+      agent { label 'Linux-Office03' }
+      steps {
+        unstash name: 'signed'
+        stash name: 'tests', includes: 'dist/PCT.jar,dist/PCT-signed.jar,dist/testcases.zip,tests.xml'
+        archiveArtifacts 'dist/PCT.jar,dist/PCT-signed.jar,dist/PCT-javadoc.jar,dist/PCT-sources.jar'
       }
     }
 
@@ -154,7 +179,7 @@ def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, labe
       unstash name: 'tests'
       if (isUnix()) {
         docker.image(dockerImg).inside('') {
-          sh "ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT.jar -f tests.xml init dist"
+          sh "ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT-signed.jar -f tests.xml init dist"
         }
       } else {
         withEnv(["JAVA_HOME=${jdk}"]) {
