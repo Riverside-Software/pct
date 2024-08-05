@@ -323,10 +323,7 @@
 
   <target name="test-build" depends="build" description="Builds TestNG tests">
     <javac srcdir="${src.test}" destdir="${build-test}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
-      <include name="org/ini4j/**/*.java" />
-      <include name="com/phenix/pct/*.java" />
-      <include name="net/cordova/prounit/*.java" />
-      <include name="za/co/mip/ablduck/*.java" />
+      <include name="**/*.java" />
       <classpath refid="pct.test.compil" />
     </javac>
   </target>

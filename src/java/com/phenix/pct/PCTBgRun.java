@@ -487,7 +487,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
      * according to cpstream, parameter files, ...) and dealing with OE encodings (such as undefined
      * or 1252)
      */
-    protected Charset getCharset() {
+    public Charset getCharset() {
         if (charset != null) {
             return charset;
         }
