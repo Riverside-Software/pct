@@ -15,8 +15,6 @@
  *
  */
 
-USING Progress.Lang.Class.
-
 DEFINE VARIABLE hQuery  AS HANDLE    NO-UNDO.
 DEFINE VARIABLE hBuffer AS HANDLE    NO-UNDO.
 DEFINE TEMP-TABLE ttUnfrozen NO-UNDO
@@ -50,10 +48,10 @@ ASSIGN callbackCls = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 
        lInactIdx = DYNAMIC-FUNCTION('getParameter' IN SOURCE-PROCEDURE, INPUT 'inactiveIdx') EQ "true":U.
 
 IF (callbackCls > "") THEN DO:
-    callback = CAST(Class:GetClass(callbackCls):new(), rssw.pct.ILoadCallback).
+    callback = CAST(Progress.Lang.Class:GetClass(callbackCls):new(), rssw.pct.ILoadCallback).
 END.
 IF (analyzerCls > "") THEN DO:
-    analyzer = CAST(Class:GetClass(analyzerCls):new(), OpenEdge.DataAdmin.Binding.IDataDefinitionLoader).
+    analyzer = CAST(Progress.Lang.Class:GetClass(analyzerCls):new(), OpenEdge.DataAdmin.Binding.IDataDefinitionLoader).
 end.
 
 IF VALID-OBJECT(callback) THEN

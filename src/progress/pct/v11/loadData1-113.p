@@ -15,8 +15,6 @@
  *
  */
 
-using Progress.Lang.Class.
-
 define variable srcDir    as character no-undo.
 define variable tableList as character no-undo.
 define variable h         as handle    no-undo.
@@ -31,7 +29,7 @@ assign srcDir    = dynamic-function('getParameter' in source-procedure, input 's
 
 assign callbackCls = dynamic-function('getParameter' in source-procedure, input 'callbackClass').
 if (callbackCls > "") then do:
-    callback = cast(Class:GetClass(callbackCls):new(), rssw.pct.ILoadDataCallback).
+    callback = cast(Progress.Lang.Class:GetClass(callbackCls):new(), rssw.pct.ILoadDataCallback).
     callback:initialize(tableList).
 end.
 
