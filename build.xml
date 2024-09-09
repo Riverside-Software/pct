@@ -273,7 +273,7 @@
     <zip destfile="${build}/ablduck.zip">
       <fileset dir="${src.java}/za/co/mip/ablduck/resources" />
     </zip>
-    <jar jarfile="${dist}/PCT.jar">
+    <jar jarfile="${dist}/PCT.jar" duplicate="preserve">
       <fileset dir="${build-java}">
         <include name="**/*.class" />
         <include name="**/*.properties" />
