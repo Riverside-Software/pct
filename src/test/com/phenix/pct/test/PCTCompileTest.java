@@ -1386,30 +1386,36 @@ public class PCTCompileTest extends BuildFileTestNg {
         }
     }
 
-    @Test(groups = {"v12"})
+    @Test(groups = {"v11"})
     public void test80() {
-        // Only work with 12.2+
         DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() < 2))
-            return;
+        boolean v12_2 = version.compareTo(new DLCVersion(12, 2, "0")) >= 0;
 
         configureProject(getBaseDir() + "test80/build.xml");
         executeTarget("test1");
         File f1 = new File(getBaseDir() + "test80/build1/test.r");
         assertTrue(f1.exists());
+        File f2 = new File(getBaseDir() + "test80/build1/.pct/test.p.warnings");
+        assertFalse(f2.exists());
 
         executeTarget("test2");
-        File f2 = new File(getBaseDir() + "test80/build2/test.r");
-        assertTrue(f2.exists());
-        File f3 = new File(getBaseDir() + "test80/build2/.pct/test.p.warnings");
+        File f3 = new File(getBaseDir() + "test80/build2/test.r");
         assertTrue(f3.exists());
+        File f4 = new File(getBaseDir() + "test80/build2/.pct/test.p.warnings");
+        if (v12_2)
+            assertTrue(f4.exists());
+        else
+            assertFalse(f4.exists());
 
-        try {
-            LineProcessor<Boolean> lineProcessor = new Test80LineProcessor();
-            Files.readAllLines(f3.toPath(), StandardCharsets.UTF_8).forEach(lineProcessor::processLine);
-            assertTrue(lineProcessor.getResult());
-        } catch (IOException caught) {
-            fail("Unable to read file", caught);
+        if (v12_2) {
+            try {
+                LineProcessor<Boolean> lineProcessor = new Test80LineProcessor();
+                Files.readAllLines(f4.toPath(), StandardCharsets.UTF_8)
+                        .forEach(lineProcessor::processLine);
+                assertTrue(lineProcessor.getResult());
+            } catch (IOException caught) {
+                fail("Unable to read file", caught);
+            }
         }
     }
 

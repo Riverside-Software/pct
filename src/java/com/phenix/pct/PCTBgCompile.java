@@ -132,6 +132,10 @@ public class PCTBgCompile extends PCTBgRun {
             }
         }
 
+        if (compAttrs.isRequireReturnValues() && getVersion().compareTo(new DLCVersion(12, 2, "0")) < 0) {
+            log("Skip requireReturnValues attribute, as it is set to true but not available in this version of OpenEdge");
+        }
+
         log(Messages.getString("PCTCompile.40"), Project.MSG_INFO); //$NON-NLS-1$
 
         // Checking xcode and (listing || preprocess) attributes -- They're mutually exclusive
@@ -348,7 +352,8 @@ public class PCTBgCompile extends PCTBgRun {
             sb.append(Boolean.toString(compAttrs.isRequireFieldQualifiers())).append(';');
             sb.append(compAttrs.getCallbackClass() == null ? "" : compAttrs.getCallbackClass()).append(';');
             sb.append(CompilationAttributes.CONSOLE_OUTPUT_TYPE).append(';');
-            sb.append(Boolean.toString(compAttrs.isRequireReturnValues())).append(';');
+            sb.append(Boolean.toString(getVersion().compareTo(new DLCVersion(12, 2, "0")) >= 0
+                    && compAttrs.isRequireReturnValues())).append(';');
 
             return sb.toString();
         }
