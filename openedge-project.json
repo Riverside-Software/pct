@@ -15,7 +15,7 @@
   ],
   "numThreads": 1,
   "dbConnections": [
-    { "name": "empty", "connect": "-db target/db/empty12 -ld empty -RO", "dumpFile": "empty.df", "aliases": [ "empty2" ] }
+    { "name": "empty", "connect": "-db target/db/empty12 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "empty2" ] }
   ],
   "profiles": [
     {
@@ -32,7 +32,7 @@
           }
         ],
         "dbConnections": [
-          { "name": "empty", "connect": "-db target/db/empty11 -ld empty -RO", "dumpFile": "empty.df", "aliases": [ "empty2" ] }
+          { "name": "empty", "connect": "-db target/db/empty11 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "empty2" ] }
         ]
       }
     }
