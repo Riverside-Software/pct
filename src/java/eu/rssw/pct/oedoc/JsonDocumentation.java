@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
@@ -253,8 +254,10 @@ public class JsonDocumentation extends PCT {
     private void parseAndWriteUnit(File file, RefactorSession session, JsonWriter writer)
             throws IOException {
         log("Proparse: " + file.getName(), Project.MSG_DEBUG);
+        InputStream input = null;
         try {
-            ParseUnit unit = new ParseUnit(file, file.getName(), session);
+            input = new FileInputStream(file);
+            ParseUnit unit = new ParseUnit(input, file.getName(), session, session.getCharset());
             unit.treeParser01();
             if (session.getTypeInfo(unit.getClassName()) != null) {
                 writeClass(writer, session.getTypeInfo(unit.getClassName()), unit);
@@ -264,6 +267,13 @@ public class JsonDocumentation extends PCT {
         } catch (UncheckedIOException | ParseCancellationException caught) {
             log("Unable to attach comments from " + file.getAbsolutePath() + " - Proparse error: "
                     + caught.getMessage(), Project.MSG_INFO);
+        } finally {
+            try {
+                if (input != null)
+                    input.close();
+            } catch (IOException uncaught) {
+                
+            }
         }
     }
 
@@ -457,7 +467,7 @@ public class JsonDocumentation extends PCT {
         } else if (list.size() == 1) {
             return list.get(0);
         } else {
-            String sig = elem.getSignature();
+            String sig = elem.getSignature().substring(0, elem.getSignature().indexOf(')') + 1);
             for (Routine r : list) {
                 if (r.getSignature().equalsIgnoreCase(sig))
                     return r;

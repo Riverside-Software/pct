@@ -22,10 +22,10 @@
 	<classpathentry kind="lib" path="lib/objenesis-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-api-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.36.jar"/>
-	<classpathentry kind="lib" path="lib/rcode-reader-2.22.1.jar"/>
-	<classpathentry kind="lib" path="lib/database-parser-2.22.1.jar"/>
-	<classpathentry kind="lib" path="lib/openedge-checks-2.22.1.jar"/>
-	<classpathentry kind="lib" path="lib/proparse-2.22.1.jar"/>
+	<classpathentry kind="lib" path="lib/rcode-reader-2.30.0.jar"/>
+	<classpathentry kind="lib" path="lib/database-parser-2.30.0.jar"/>
+	<classpathentry kind="lib" path="lib/openedge-checks-2.30.0.jar"/>
+	<classpathentry kind="lib" path="lib/proparse-2.30.0.jar"/>
     <classpathentry kind="lib" path="lib/antlr4-runtime-4.13.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

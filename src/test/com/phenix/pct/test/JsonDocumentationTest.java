@@ -40,6 +40,11 @@ import com.phenix.pct.DLCVersion;
  * @author <a href="mailto:g.querret+PCT@gmail.com">Gilles QUERRET</a>
  */
 public class JsonDocumentationTest extends BuildFileTestNg {
+    private static final String CLASSNAME = "className";
+    private static final String COMMENTS = "comments";
+    private static final String DEPRECATED = "deprecated";
+    private static final String SINCE = "since";
+    private static final String MESSAGE = "message";
 
     @Test(groups = {"v11", "win"})
     public void test1() {
@@ -79,8 +84,8 @@ public class JsonDocumentationTest extends BuildFileTestNg {
             JsonArray array = gson.fromJson(reader, JsonArray.class);
             assertEquals(array.size(), 3);
             JsonObject firstObj = gson.fromJson(array.get(0), JsonObject.class);
-            assertEquals(firstObj.get("className").getAsString(), "base.class");
-            assertEquals(firstObj.getAsJsonArray("comments").size(), 16);
+            assertEquals(firstObj.get(CLASSNAME).getAsString(), "base.class");
+            assertEquals(firstObj.getAsJsonArray(COMMENTS).size(), 16);
         } catch (IOException caught) {
             fail("Unable to read out.json", caught);
         }
@@ -120,33 +125,33 @@ public class JsonDocumentationTest extends BuildFileTestNg {
             assertEquals(array.size(), 2);
 
             JsonObject firstObj = gson.fromJson(array.get(0), JsonObject.class);
-            assertEquals(firstObj.get("className").getAsString(), "rssw.TestGenerics");
+            assertEquals(firstObj.get(CLASSNAME).getAsString(), "rssw.TestGenerics");
             JsonArray methods = firstObj.getAsJsonArray("methods");
             JsonObject firstMethod = methods.get(0).getAsJsonObject();
             assertEquals(firstMethod.get("name").getAsString(), "foobar");
             assertEquals(firstMethod.get("returnType").getAsString(),
                     "Progress.Collections.List<Progress.Lang.Object>");
             assertEquals(firstMethod.get("signature").getAsString(),
-                    "foobar(IZProgress.Collections.List<Progress.Lang.Object>)");
+                    "foobar(IZProgress.Collections.List<Progress.Lang.Object>)U");
 
             JsonObject secondObj = gson.fromJson(array.get(1), JsonObject.class);
-            assertEquals(secondObj.get("className").getAsString(), "rssw.X");
+            assertEquals(secondObj.get(CLASSNAME).getAsString(), "rssw.X");
             JsonObject prop1 = secondObj.getAsJsonArray("properties").get(0).getAsJsonObject();
-            assertEquals(prop1.get("deprecated").getAsJsonObject().get("message").getAsString(), "");
+            assertEquals(prop1.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "");
             JsonObject prop2 = secondObj.getAsJsonArray("properties").get(1).getAsJsonObject();
-            assertFalse(prop2.has("deprecated"));
+            assertFalse(prop2.has(DEPRECATED));
 
             JsonObject constr1 = secondObj.getAsJsonArray("constructors").get(0).getAsJsonObject();
-            assertEquals(constr1.get("deprecated").getAsJsonObject().get("since").getAsString(), "1.0");
-            assertEquals(constr1.get("deprecated").getAsJsonObject().get("message").getAsString(), "");
+            assertEquals(constr1.get(DEPRECATED).getAsJsonObject().get(SINCE).getAsString(), "1.0");
+            assertEquals(constr1.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "");
             JsonObject constr2 = secondObj.getAsJsonArray("constructors").get(1).getAsJsonObject();
-            assertEquals(constr2.get("deprecated").getAsJsonObject().get("since").getAsString(), "1.0");
-            assertEquals(constr2.get("deprecated").getAsJsonObject().get("message").getAsString(), "xxxx");
+            assertEquals(constr2.get(DEPRECATED).getAsJsonObject().get(SINCE).getAsString(), "1.0");
+            assertEquals(constr2.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "xxxx");
 
             JsonArray methods2 = secondObj.getAsJsonArray("methods");
             JsonObject firstMethod2 = methods2.get(0).getAsJsonObject();
-            assertFalse(firstMethod2.get("deprecated").getAsJsonObject().has("since"));
-            assertEquals(firstMethod2.get("deprecated").getAsJsonObject().get("message").getAsString(), "yyyy");
+            assertFalse(firstMethod2.get(DEPRECATED).getAsJsonObject().has(SINCE));
+            assertEquals(firstMethod2.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "yyyy");
         } catch (IOException caught) {
             fail("Unable to read out.json", caught);
         }
