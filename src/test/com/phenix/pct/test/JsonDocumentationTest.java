@@ -41,6 +41,7 @@ import com.phenix.pct.DLCVersion;
  */
 public class JsonDocumentationTest extends BuildFileTestNg {
     private static final String CLASSNAME = "className";
+    private static final String PROPERTIES = "properties";
     private static final String COMMENTS = "comments";
     private static final String DEPRECATED = "deprecated";
     private static final String SINCE = "since";
@@ -109,9 +110,9 @@ public class JsonDocumentationTest extends BuildFileTestNg {
 
     @Test(groups = {"v12"})
     public void test4() {
-        // Only work with 12.5+
+        // Only work with 12.8+
         DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 4))
+        if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 7))
             return;
 
         configureProject("JsonDocumentation/test4/build.xml");
@@ -133,12 +134,24 @@ public class JsonDocumentationTest extends BuildFileTestNg {
                     "Progress.Collections.List<Progress.Lang.Object>");
             assertEquals(firstMethod.get("signature").getAsString(),
                     "foobar(IZProgress.Collections.List<Progress.Lang.Object>)U");
+            JsonArray props = firstObj.getAsJsonArray(PROPERTIES);
+            JsonObject firstProp = props.get(0).getAsJsonObject();
+            assertEquals(firstProp.get("name").getAsString(), "mBackingHashMap");
+            assertEquals(firstProp.get("type").getAsString(),
+                    "Progress.Collections.HashMap<Progress.Lang.Object,Progress.Lang.Object>");
+            assertEquals(firstProp.getAsJsonArray(COMMENTS).get(0).getAsString(),
+                    "Variable documentation 1");
+            JsonObject secondProp = props.get(1).getAsJsonObject();
+            assertEquals(secondProp.get("name").getAsString(), "localInt");
+            assertEquals(secondProp.get("type").getAsString(), "I");
+            assertEquals(secondProp.getAsJsonArray(COMMENTS).get(0).getAsString(),
+                    "Variable documentation 2");
 
             JsonObject secondObj = gson.fromJson(array.get(1), JsonObject.class);
             assertEquals(secondObj.get(CLASSNAME).getAsString(), "rssw.X");
-            JsonObject prop1 = secondObj.getAsJsonArray("properties").get(0).getAsJsonObject();
+            JsonObject prop1 = secondObj.getAsJsonArray(PROPERTIES).get(0).getAsJsonObject();
             assertEquals(prop1.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "");
-            JsonObject prop2 = secondObj.getAsJsonArray("properties").get(1).getAsJsonObject();
+            JsonObject prop2 = secondObj.getAsJsonArray(PROPERTIES).get(1).getAsJsonObject();
             assertFalse(prop2.has(DEPRECATED));
 
             JsonObject constr1 = secondObj.getAsJsonArray("constructors").get(0).getAsJsonObject();
