@@ -19,6 +19,13 @@ CLASS test INHERITS base.class:
   
   DEFINE PUBLIC EVENT someEvent SIGNATURE VOID (sender AS Progress.Lang.Object, e AS CHARACTER).
 
+    /** Object containing the message body/entity. The object can be of any type,
+        which may depend on the content type.
+        
+        The Entity is the 'programmer-readable' version of the message body: it's 
+        the formatted, strongly-typed version */
+    define public property Entity as Progress.Lang.Object no-undo get. set.
+
   CONSTRUCTOR PRIVATE test ():
     
   END CONSTRUCTOR.

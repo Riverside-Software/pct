@@ -87,6 +87,14 @@ public class JsonDocumentationTest extends BuildFileTestNg {
             JsonObject firstObj = gson.fromJson(array.get(0), JsonObject.class);
             assertEquals(firstObj.get(CLASSNAME).getAsString(), "base.class");
             assertEquals(firstObj.getAsJsonArray(COMMENTS).size(), 16);
+            JsonObject secondObj = gson.fromJson(array.get(1), JsonObject.class);
+            assertEquals(secondObj.get(CLASSNAME).getAsString(), "test");
+            JsonArray props = secondObj.getAsJsonArray(PROPERTIES);
+            JsonObject firstProp = props.get(0).getAsJsonObject();
+            assertEquals(firstProp.get("name").getAsString(), "Entity");
+            JsonArray comments = firstProp.getAsJsonArray(COMMENTS);
+            assertEquals(comments.get(0).getAsString(), "Object containing the message body/entity. The object can be of any type,");
+            assertEquals(comments.get(4).getAsString(), "the formatted, strongly-typed version");
         } catch (IOException caught) {
             fail("Unable to read out.json", caught);
         }

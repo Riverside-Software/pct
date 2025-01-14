@@ -560,18 +560,36 @@ public class JsonDocumentation extends PCT {
     private List<String> convertJavadoc(String comment) {
         List<String> rslt = new ArrayList<>();
         if (checkStartComment(comment.trim())) {
-            for (String s : comment.trim().split("\n")) {
-                // First line and last line is not supposed to contain anything
-                if (!checkStartComment(s.trim()) && !s.endsWith("*/")) {
-                    // Trim first *
-                    if (s.trim().startsWith("*"))
-                        rslt.add(s.trim().substring(1).trim());
-                    else
-                        rslt.add(s.trim());
+            for (String line : comment.trim().split("\n")) {
+                line = line.trim();
+                if (line.endsWith("*/")) {
+                    line = line.substring(0, line.length() - 2).trim();
+                    if (line.isEmpty())
+                        continue;
                 }
+                if (checkStartComment(line)) {
+                    line = trimStartComment(line);
+                    if (line.isEmpty())
+                        continue;
+                }
+                if (line.startsWith("*"))
+                    line = line.substring(1).trim();
+
+                rslt.add(line);
             }
         }
         return rslt;
+    }
+
+    private String trimStartComment(String comment) {
+        if ((style == CommentStyle.JAVADOC) && comment.startsWith("/**"))
+            return comment.substring(3).trim();
+        else if ((style == CommentStyle.SIMPLE) && comment.startsWith("/*"))
+            return comment.substring(2).trim();
+        else if ((style == CommentStyle.CONSULTINGWERK) && comment.startsWith("/**"))
+            return comment.substring(3).trim();
+        else
+            return comment;
     }
 
     private boolean checkStartComment(String comment) {
