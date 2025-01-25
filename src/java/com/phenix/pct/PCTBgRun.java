@@ -663,7 +663,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
         }
 
         /**
-         * Generic calls made by PCTBgRun : connect to database and change propath, then pass away
+         * Generic calls made by PCTBgRun : connect to database and change propath, then pass
          * to custom method
          */
         @Override
@@ -674,7 +674,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                 try {
                     socket = server.accept();
                 } catch (IOException caught) {
-                    setBuildException(caught);
+                    if (getOptions().isFailOnError())
+                        setBuildException(caught);
                     return;
                 }
 
@@ -690,7 +691,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
                             status.listen();
                         }
                     } catch (IOException caught) {
-                        setBuildException(caught);
+                        if (getOptions().isFailOnError())
+                            setBuildException(caught);
                     }
                 });
             }
@@ -698,7 +700,8 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
             try {
                 group.awaitTermination(timeout, TimeUnit.SECONDS);
             } catch (InterruptedException caught) {
-                setBuildException(caught);
+                if (getOptions().isFailOnError())
+                    setBuildException(caught);
                 Thread.currentThread().interrupt();
             }
         }
