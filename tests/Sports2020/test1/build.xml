@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="Sports2020-test1">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <sports2020 dlcHome="${DLC}" />
+  </target>
+
+  <target name="test2">
+    <sports2020 dbName="sp2k" dlcHome="${DLC}" />
+  </target>
+  
+  <target name="test3">
+    <mkdir dir="db" />
+    <Sports2020 destDir="db" dlcHome="${DLC}" />
+  </target>
+
+  <target name="test4">
+    <mkdir dir="db" />
+    <Sports2020 destDir="db" dbName="sp2k" dlcHome="${DLC}" />
+  </target>
+  
+</project>

@@ -26,6 +26,7 @@
   <taskdef name="version" classname="com.phenix.pct.Version" />
   <taskdef name="dump_sequences" classname="com.phenix.pct.DumpSequences" />
   <taskdef name="sports2000" classname="com.phenix.pct.Sports2000" />
+  <taskdef name="sports2020" classname="com.phenix.pct.Sports2020" />
   <taskdef name="dump_users" classname="com.phenix.pct.PCTDumpUsers" />
   <taskdef name="load_users" classname="com.phenix.pct.PCTLoadUsers" />
   <taskdef name="dlc_home" classname="com.phenix.pct.DlcHome" />
