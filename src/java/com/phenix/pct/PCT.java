@@ -143,8 +143,7 @@ public abstract class PCT extends Task {
                     jdk  = new File(str);
                     jre = new File(jdk, "jre");
                     if (!jdk.exists())
-                        log("JAVA_HOME '" + jdk.getAbsolutePath() + "' directory doesn't exist")
-                        ;
+                        log("JAVA_HOME '" + jdk.getAbsolutePath() + "' directory doesn't exist");
                 }
             } catch (IOException uncaught) {
                 log("Unable to open file $DLC/properties/java.properties", Project.MSG_ERR);
