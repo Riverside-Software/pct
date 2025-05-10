@@ -64,6 +64,10 @@ public class Sports2000 extends PCT {
         this.overwrite = overwrite;
     }
 
+    String getDefaultDbName() {
+        return "sports2000";
+    }
+
     /**
      * Do the work
      * 
@@ -75,7 +79,7 @@ public class Sports2000 extends PCT {
 
         // If dbName is null, then it's sports2000
         if (dbName == null) {
-            dbName = "sports2000"; //$NON-NLS-1$
+            dbName = getDefaultDbName();
         }
 
         // Checking length of the database name
@@ -117,16 +121,16 @@ public class Sports2000 extends PCT {
         exec.setDir(destDir);
         exec.setExecutable(getExecPath("_dbutil").toString()); //$NON-NLS-1$
         exec.createArg().setValue("procopy"); //$NON-NLS-1$
-        exec.createArg().setValue(new File(getDlcHome(), "sports2000").getAbsolutePath()); //$NON-NLS-1$
+        exec.createArg().setValue(new File(getDlcHome(), getDefaultDbName()).getAbsolutePath()); //$NON-NLS-1$
         exec.createArg().setValue(dbName);
 
-        Environment.Variable var = new Environment.Variable();
-        var.setKey("DLC"); //$NON-NLS-1$
-        var.setValue(this.getDlcHome().toString());
-        exec.addEnv(var);
+        Environment.Variable envVar1 = new Environment.Variable();
+        envVar1.setKey("DLC"); //$NON-NLS-1$
+        envVar1.setValue(this.getDlcHome().toString());
+        exec.addEnv(envVar1);
 
-        for (Variable var2 : getEnvironmentVariables()) {
-            exec.addEnv(var2);
+        for (Variable envVar2 : getEnvironmentVariables()) {
+            exec.addEnv(envVar2);
         }
 
         return exec;
