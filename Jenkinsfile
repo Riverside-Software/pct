@@ -138,21 +138,33 @@ pipeline {
     }
 
     stage('Maven Central') {
+      environment {
+        MAVEN_GPG_PASSPHRASE=credentials('GPG_KEY')
+        BEARER_TOKEN=credentials('MavenCentralBearer')
+      }
       agent { label 'Linux-Office03' }
       steps {
         script {
-          def jdk = tool name: 'Corretto 11', type: 'jdk'
+          def jdk = tool name: 'JDK17', type: 'jdk'
           def mvn = tool name: 'Maven 3', type: 'maven'
+          def ant = tool name: 'Ant 1.10', type: 'ant'
           def version = readFile('version.txt').trim()
 
-          // When script is executed, go to https://oss.sonatype.org/#stagingRepositories, then close and release the staging repository
-          // It then takes a few minutes before artifacts are visible in Maven Central
           withEnv(["MAVEN_HOME=${mvn}", "JAVA_HOME=${jdk}"]) {
             if (!version.endsWith('-pre')) {
-              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=alt-pom.xml -Dfile=dist/PCT.jar"
-              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=alt-pom.xml -Dfile=dist/PCT-sources.jar -Dclassifier=sources"
-              sh "$MAVEN_HOME/bin/mvn -B -ntp gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh -DpomFile=alt-pom.xml -Dfile=dist/PCT-javadoc.jar -Dclassifier=javadoc"
-              mail body: "---", to: "g.querret@riverside-software.fr", subject: "PCT - Release artifact on Sonatype"
+              // Manually create and upload bundle to Maven Central. It's probably possible to do that with the maven-publish plugin, but as build is done with Ant, it's easier to do it manually.
+              // https://central.sonatype.org/publish/publish-portal-api/
+              // https://central.sonatype.org/publish/publish-portal-upload/
+              sh "mkdir bundle && cp alt-pom.xml bundle/pct-${version}.pom && cp dist/PCT.jar bundle/pct-${version}.jar && cp dist/PCT-sources.jar bundle/pct-${version}-sources.jar && cp dist/PCT-javadoc.jar bundle/pct-${version}-javadoc.jar"
+              sh "gpg --pinentry-mode loopback --passphrase \${MAVEN_GPG_PASSPHRASE} --armor --output bundle/pct-${version}.jar.asc --detach-sign bundle/pct-${version}.jar"
+              sh "gpg --pinentry-mode loopback --passphrase \${MAVEN_GPG_PASSPHRASE} --armor --output bundle/pct-${version}-sources.jar.asc --detach-sign bundle/pct-${version}-sources.jar"
+              sh "gpg --pinentry-mode loopback --passphrase \${MAVEN_GPG_PASSPHRASE} --armor --output bundle/pct-${version}-javadoc.jar.asc --detach-sign bundle/pct-${version}-javadoc.jar"
+              sh "gpg --pinentry-mode loopback --passphrase \${MAVEN_GPG_PASSPHRASE} --armor --output bundle/pct-${version}.pom.asc --detach-sign bundle/pct-${version}.pom"
+
+              sh "${ant}/bin/ant -Dversion=${version} central-bundle"
+
+              sh 'curl --request POST --header "Authorization: Bearer \${BEARER_TOKEN}" --form bundle=@central-bundle.zip \'https://central.sonatype.com/api/v1/publisher/upload?name=pct&publishingType=USER_MANAGED\''
+              mail body: "https://central.sonatype.com/publishing/deployments", to: "g.querret@riverside-software.fr", subject: "pct - Publish artifact on Central"
             }
           }
         }

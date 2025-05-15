@@ -417,4 +417,16 @@
     </delete>
   </target>
 
+  <target name="central-bundle">
+    <checksum algorithm="md5" fileExt=".md5">
+      <fileset dir="bundle" includes="*.jar,*.pom" />
+    </checksum>
+    <checksum algorithm="sha1" fileExt=".sha1">
+      <fileset dir="bundle" includes="*.jar,*.pom" />
+    </checksum>
+    <zip destfile="central-bundle.zip">
+      <zipfileset dir="bundle" prefix="eu/rssw/pct/pct/${version}" includes="*" />
+    </zip>
+  </target>
+
 </project>
