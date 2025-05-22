@@ -129,7 +129,7 @@ public class DLCVersion implements Comparable<DLCVersion> {
         if (m.matches()) {
             builder.minor = Integer.parseInt((m.group(1) == null ? "0" : m.group(1)));
             builder.maintenance = (m.group(2) == null ? "0" : m.group(2));
-            builder.patch = (m.group(3) == null ? "0" : m.group(3));
+            builder.patch = (m.group(3) == null ? "" : m.group(3));
         } else {
             throw new IllegalArgumentException("Invalid $DLC/version file : " + str);
         }

@@ -78,7 +78,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -88,7 +88,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -98,7 +98,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -108,7 +108,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(1, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -118,7 +118,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(1, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -128,7 +128,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(1, version.getMinorVersion());
         assertEquals("1", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -148,7 +148,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -158,7 +158,7 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
@@ -168,13 +168,25 @@ public class DLCVersionTest {
         assertEquals(11, version.getMajorVersion());
         assertEquals(0, version.getMinorVersion());
         assertEquals("0", version.getMaintenanceVersion());
-        assertEquals("0", version.getPatchVersion());
+        assertEquals("", version.getPatchVersion());
     }
 
     @Test(groups = {"v11"})
     public void test15() {
         DLCVersion version = DLCVersion.getObject(new File("/invalid_path"));
         assertEquals(version, DLCVersion.UNKNOWN_VERSION);
+    }
+
+    @Test(groups = {"v11"})
+    public void test16() {
+        String str = "OpenEdge Release 12.8.7 as of Fri Apr 25 10:19:48 EDT 2025";
+        DLCVersion version = DLCVersion.getObject(str);
+        assertEquals(version.getMajorVersion(), 12);
+        assertEquals(version.getMinorVersion(), 8);
+        assertEquals(version.getMaintenanceVersion(), "7");
+        assertEquals(version.getPatchVersion(), "");
+        assertEquals(version.getShortVersion(), "12.8.7");
+        assertEquals(version.getFullVersion(), str);
     }
 
 }
