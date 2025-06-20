@@ -254,9 +254,7 @@ public class JsonDocumentation extends PCT {
     private void parseAndWriteUnit(File file, RefactorSession session, JsonWriter writer)
             throws IOException {
         log("Proparse: " + file.getName(), Project.MSG_DEBUG);
-        InputStream input = null;
-        try {
-            input = new FileInputStream(file);
+        try (InputStream input = new FileInputStream(file)) {
             ParseUnit unit = new ParseUnit(input, file.getName(), session, session.getCharset());
             unit.treeParser01();
             if (session.getTypeInfo(unit.getClassName()) != null) {
@@ -267,13 +265,6 @@ public class JsonDocumentation extends PCT {
         } catch (UncheckedIOException | ParseCancellationException caught) {
             log("Unable to attach comments from " + file.getAbsolutePath() + " - Proparse error: "
                     + caught.getMessage(), Project.MSG_INFO);
-        } finally {
-            try {
-                if (input != null)
-                    input.close();
-            } catch (IOException uncaught) {
-                
-            }
         }
     }
 
@@ -561,21 +552,20 @@ public class JsonDocumentation extends PCT {
         List<String> rslt = new ArrayList<>();
         if (checkStartComment(comment.trim())) {
             for (String line : comment.trim().split("\n")) {
+                boolean skipEmptyLine = false;
                 line = line.trim();
                 if (line.endsWith("*/")) {
                     line = line.substring(0, line.length() - 2).trim();
-                    if (line.isEmpty())
-                        continue;
+                    skipEmptyLine = true;
                 }
                 if (checkStartComment(line)) {
                     line = trimStartComment(line);
-                    if (line.isEmpty())
-                        continue;
+                    skipEmptyLine = true;
                 }
                 if (line.startsWith("*"))
                     line = line.substring(1).trim();
-
-                rslt.add(line);
+                if (!skipEmptyLine || !line.isEmpty())
+                    rslt.add(line);
             }
         }
         return rslt;

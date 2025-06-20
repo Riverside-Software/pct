@@ -18,6 +18,7 @@ package com.phenix.pct.test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -41,6 +42,7 @@ import com.phenix.pct.DLCVersion;
  */
 public class JsonDocumentationTest extends BuildFileTestNg {
     private static final String CLASSNAME = "className";
+    private static final String CONSTRUCTORS = "constructors";
     private static final String PROPERTIES = "properties";
     private static final String COMMENTS = "comments";
     private static final String DEPRECATED = "deprecated";
@@ -107,13 +109,27 @@ public class JsonDocumentationTest extends BuildFileTestNg {
 
         File f1 = new File("JsonDocumentation/test3/doc/out.json");
         assertTrue(f1.exists());
+        File f2 = new File("JsonDocumentation/test3/doc/out2.json");
+        assertTrue(f2.exists());
         Gson gson = new Gson();
-        try (Reader r = new FileReader(f1); JsonReader reader = new JsonReader(r)) {
+        try (Reader r = new FileReader(f1);
+                JsonReader reader = new JsonReader(r);
+                Reader r2 = new FileReader(f2);
+                JsonReader reader2 = new JsonReader(r2)) {
             JsonArray array = gson.fromJson(reader, JsonArray.class);
             assertEquals(array.size(), 12);
+            JsonArray array2 = gson.fromJson(reader2, JsonArray.class);
+            assertEquals(array2.size(), 12);
+            JsonArray constrComments = array.get(0).getAsJsonObject().getAsJsonArray(CONSTRUCTORS)
+                    .get(0).getAsJsonObject().getAsJsonArray(COMMENTS);
+            assertNull(constrComments);
+            JsonArray constrComments2 = array2.get(0).getAsJsonObject().getAsJsonArray(CONSTRUCTORS)
+                    .get(0).getAsJsonObject().getAsJsonArray(COMMENTS);
+            assertEquals(constrComments2.size(), 5);
         } catch (IOException caught) {
             fail("Unable to read out.json", caught);
         }
+
     }
 
     @Test(groups = {"v12"})
@@ -162,10 +178,10 @@ public class JsonDocumentationTest extends BuildFileTestNg {
             JsonObject prop2 = secondObj.getAsJsonArray(PROPERTIES).get(1).getAsJsonObject();
             assertFalse(prop2.has(DEPRECATED));
 
-            JsonObject constr1 = secondObj.getAsJsonArray("constructors").get(0).getAsJsonObject();
+            JsonObject constr1 = secondObj.getAsJsonArray(CONSTRUCTORS).get(0).getAsJsonObject();
             assertEquals(constr1.get(DEPRECATED).getAsJsonObject().get(SINCE).getAsString(), "1.0");
             assertEquals(constr1.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "");
-            JsonObject constr2 = secondObj.getAsJsonArray("constructors").get(1).getAsJsonObject();
+            JsonObject constr2 = secondObj.getAsJsonArray(CONSTRUCTORS).get(1).getAsJsonObject();
             assertEquals(constr2.get(DEPRECATED).getAsJsonObject().get(SINCE).getAsString(), "1.0");
             assertEquals(constr2.get(DEPRECATED).getAsJsonObject().get(MESSAGE).getAsString(), "xxxx");
 

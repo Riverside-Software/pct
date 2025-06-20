@@ -18,6 +18,12 @@
         <pathelement location="src" />
       </propath>
     </JsonDocumentation>
+    <JsonDocumentation buildDir="build" destFile="doc/out2.json" dlcHome="${DLC}" encoding="iso-8859-1" indent="true" style="simple">
+      <fileset dir="src" includes="**/*.cls,**/*.p" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+    </JsonDocumentation>
   </target>
 
 </project>
