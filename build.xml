@@ -301,7 +301,6 @@
       <zipfileset src="lib/database-parser-2.30.0.jar" />
       <zipfileset src="lib/openedge-checks-2.30.0.jar" />
       <zipfileset src="lib/slf4j-api-1.7.36.jar" />
-      <zipfileset src="lib/slf4j-simple-1.7.36.jar" />
 
       <!-- ABLDuck classes -->
       <zipfileset src="lib/commonmark-0.11.0.jar"/>
