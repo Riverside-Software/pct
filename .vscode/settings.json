@@ -1,0 +1,6 @@
+{
+  "sonarlint-abl.connectedMode.project": {
+    "connectionId": "https-sonar-riverside-software-fr",
+    "projectKey": "eu.rssw.pct:PCT"
+  }
+}
