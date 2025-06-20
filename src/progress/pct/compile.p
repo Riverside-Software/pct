@@ -941,6 +941,8 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETI
   DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO.
 
+  DEFINE BUFFER bTimeStamps FOR TimeStamps.
+
   /* Small workaround when compiling classes */
   FILE-INFO:FILE-NAME = d + '/':U + f + '.inc':U.
   IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
@@ -951,18 +953,18 @@ FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETI
   FileList:
   REPEAT:
     IMPORT STREAM sIncludes IncFile IncFullPath.
-    FIND TimeStamps WHERE TimeStamps.ttFile EQ IncFile NO-LOCK NO-ERROR.
-    IF (NOT AVAILABLE TimeStamps) THEN DO:
-      CREATE TimeStamps.
-      ASSIGN TimeStamps.ttFile = IncFile
-             TimeStamps.ttFullPath = SEARCH(IncFile).
-      ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+    FIND bTimeStamps WHERE bTimeStamps.ttFile EQ IncFile NO-LOCK NO-ERROR.
+    IF (NOT AVAILABLE bTimeStamps) THEN DO:
+      CREATE bTimeStamps.
+      ASSIGN bTimeStamps.ttFile = IncFile
+             bTimeStamps.ttFullPath = SEARCH(IncFile).
+      ASSIGN bTimeStamps.ttMod = getTimeStampF(bTimeStamps.ttFullPath).
       IF lIgnoredIncludes AND CAN-DO(cIgnoredIncludes, REPLACE(IncFile, '~\':U, '/':U)) THEN /* include is not relevant for recompile */ DO:
         RUN logVerbose IN hSrcProc (SUBSTITUTE('Ignoring changes in &1', IncFile)).
-        ASSIGN TimeStamps.ttExcept = TRUE.
+        ASSIGN bTimeStamps.ttExcept = TRUE.
       END.
     END.
-    IF ((TimeStamps.ttFullPath NE IncFullPath) OR (TS LT TimeStamps.ttMod)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
+    IF ((bTimeStamps.ttFullPath NE SEARCH(IncFullPath)) OR (TS LT bTimeStamps.ttMod)) AND (bTimeStamps.ttExcept EQ FALSE) THEN DO:
       ASSIGN lReturn = TRUE
              cLastIncludeName = IncFile.
       LEAVE FileList.
@@ -1004,6 +1006,8 @@ FUNCTION checkHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATET
   DEFINE VARIABLE clsFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO.
 
+  DEFINE BUFFER bTimeStamps FOR TimeStamps.
+
   /* Small workaround when compiling classes */
   FILE-INFO:FILE-NAME = d + '/':U + f + '.hierarchy':U.
   IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
@@ -1014,14 +1018,16 @@ FUNCTION checkHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATET
   FileList:
   REPEAT:
     IMPORT STREAM sHierarchy clsName clsFullPath.
-    FIND TimeStamps WHERE TimeStamps.ttFile EQ clsName NO-LOCK NO-ERROR.
-    IF (NOT AVAILABLE TimeStamps) THEN DO:
-      CREATE TimeStamps.
-      ASSIGN TimeStamps.ttFile = clsName
-             TimeStamps.ttFullPath = SEARCH(REPLACE(clsName, '.', '/') + '.cls').
-      ASSIGN TimeStamps.ttMod = getTimeStampF(TimeStamps.ttFullPath).
+
+    FIND bTimeStamps WHERE bTimeStamps.ttFile EQ clsName NO-LOCK NO-ERROR.
+    IF (NOT AVAILABLE bTimeStamps) THEN DO:
+      CREATE bTimeStamps.
+      ASSIGN bTimeStamps.ttFile = clsName
+              bTimeStamps.ttFullPath = SEARCH(REPLACE(clsName, '.', '/') + '.cls').
+      ASSIGN bTimeStamps.ttMod = getTimeStampF(bTimeStamps.ttFullPath).
     END.
-    IF ((TimeStamps.ttFullPath NE clsFullPath) OR (ts LT TimeStamps.ttMod) OR CheckIncludes(REPLACE(clsName, '.', '/') + '.cls', ts, d)) AND (TimeStamps.ttExcept EQ FALSE) THEN DO:
+    
+    IF ((bTimeStamps.ttFullPath NE SEARCH(clsFullPath)) OR (ts LT bTimeStamps.ttMod) OR CheckIncludes(REPLACE(clsName, '.', '/') + '.cls', ts, d)) AND (bTimeStamps.ttExcept EQ FALSE) THEN DO:      
       ASSIGN lReturn = TRUE.
       LEAVE FileList.
     END.
