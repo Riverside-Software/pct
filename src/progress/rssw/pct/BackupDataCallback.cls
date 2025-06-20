@@ -80,7 +80,7 @@ class rssw.pct.BackupDataCallback inherits rssw.pct.AbstractLoadDataCallback:
       output stream sBackup close.
 
     return opDelCount.
-END method.
+  end method.
 
   method private character exportRecord (input hRecord  as handle, input cDelim  as character):
     DEFINE VARIABLE hFld     AS HANDLE    NO-UNDO.
@@ -91,10 +91,10 @@ END method.
     DEFINE VARIABLE cResult  AS CHARACTER NO-UNDO.
     DEFINE VARIABLE cLobname AS CHARACTER NO-UNDO.
 
-  IF hRecord:TYPE <> "BUFFER" THEN
+    IF hRecord:TYPE <> "BUFFER" THEN
       RETURN ?.
 
-  DO iCnt = 1 TO hRecord:NUM-FIELDS:
+    DO iCnt = 1 TO hRecord:NUM-FIELDS:
 
       ASSIGN hFld = hRecord:BUFFER-FIELD(iCnt).
 
@@ -120,8 +120,8 @@ END method.
               WHEN "character"      THEN cTmp = QUOTER(hFld:BUFFER-VALUE).
               WHEN "raw"            THEN cTmp = '"' + STRING(hFld:BUFFER-VALUE) + '"'.
               WHEN "datetime" OR
-                 WHEN "datetime-tz" THEN cTmp = string(year(hFld:BUFFER-VALUE),"9999") + "-" + string(month(hFld:BUFFER-VALUE),"99") + "-" + string(day(hFld:BUFFER-VALUE),"99") + "T" + substring(string(hFld:BUFFER-VALUE),12).
-             OTHERWISE                cTmp = STRING(hFld:BUFFER-VALUE).
+              WHEN "datetime-tz" THEN cTmp = string(year(hFld:BUFFER-VALUE),"9999") + "-" + string(month(hFld:BUFFER-VALUE),"99") + "-" + string(day(hFld:BUFFER-VALUE),"99") + "T" + substring(string(hFld:BUFFER-VALUE),12).
+              OTHERWISE                cTmp = STRING(hFld:BUFFER-VALUE).
          END CASE.
 
          cResult = cResult + cTmp + cDelim.
@@ -137,15 +137,15 @@ END method.
                   WHEN "raw"            THEN cTmp = '"' + STRING(hFld:BUFFER-VALUE(iExtnt)) + '"'.
                   WHEN "datetime" OR
                   WHEN "datetime-tz"    THEN cTmp = string(year(hFld:BUFFER-VALUE(iExtnt)),"9999") + "-" + string(month(hFld:BUFFER-VALUE(iExtnt)),"99") + "-" + string(day(hFld:BUFFER-VALUE(iExtnt)),"99") + "T" + substring(string(hFld:BUFFER-VALUE(iExtnt)),12).
-                 OTHERWISE                cTmp = STRING(hFld:BUFFER-VALUE(iExtnt)).
+                  OTHERWISE                cTmp = STRING(hFld:BUFFER-VALUE(iExtnt)).
               END CASE.
 
               cArray = cArray + cTmp + cDelim.
           END.
           cResult = cResult + RIGHT-TRIM(cArray,cDelim) + cDelim.
       END.
-  END.
-  RETURN RIGHT-TRIM(cResult,cDelim).
+    END.
+    RETURN RIGHT-TRIM(cResult,cDelim).
   end method.
 
 end class.

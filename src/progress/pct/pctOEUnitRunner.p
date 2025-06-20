@@ -78,15 +78,15 @@ PROCEDURE RunClassAsTest PRIVATE:
      IF runner:Results:GetStatus() EQ TestResult:StatusFailed THEN
         MESSAGE "  > At least one failure.".
 
-      /* If OK, log the results */
-      DEFINE VARIABLE reporter AS BaseReporter NO-UNDO.
+     /* If OK, log the results */
+     DEFINE VARIABLE reporter AS BaseReporter NO-UNDO.
 
-      IF OPSYS = "WIN32" THEN
+     IF OPSYS = "WIN32" THEN
         className = "~\" + className.
-      ELSE
+     ELSE
         className = "/" + className.
 
-      CASE reportFormat:
+     CASE reportFormat:
           WHEN 'SUREFIRE':U THEN DO:
               reporter = NEW SureFireReporter(ENTRY(2,SESSION:PARAMETER)).
           END.
@@ -103,8 +103,8 @@ PROCEDURE RunClassAsTest PRIVATE:
               hasErrors = TRUE.
               MESSAGE "Unknown reporter format : " + reportFormat.
           END.
-      END.
-      reporter:Report(runner:Results).
+     END.
+     reporter:Report(runner:Results).
   END.
   ELSE DO:
     IF runner:Results:GetStatus() EQ TestResult:StatusError THEN DO:
