@@ -535,8 +535,8 @@ public class PCTCreateDatabase extends PCT {
             pls.execute();
         }
 
-        // If a collation is loaded, indexes needs to be rebuilded
-        if ((collation != null) && (collation.length() > 0)) {
+        // If a collation is loaded, indexes must be rebuilt
+        if ((collation != null) && (collation.trim().length() > 0)) {
             exec = indexRebuildAllCmdLine();
             exec.execute();
         }
