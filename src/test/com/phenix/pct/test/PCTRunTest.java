@@ -480,7 +480,7 @@ public class PCTRunTest extends BuildFileTestNg {
     public void test52() {
         configureProject("PCTRun/test52/build.xml");
         expectLog("test1", "----");
-        expectLog("test2", "-- --");
+        expectLog("test2", "----");
         expectLog("test3", "--xx--");
     }
 
