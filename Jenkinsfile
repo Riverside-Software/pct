@@ -130,7 +130,9 @@ pipeline {
           }
           docker.image('sonarsource/sonar-scanner-cli:latest').inside('') {
             withSonarQubeEnv('RSSW') {
-              sh "sonar-scanner -Dsonar.projectVersion=${version}"
+              withEnv(["SONAR_USER_HOME=/tmp"]) {
+                sh "sonar-scanner -Dsonar.projectVersion=${version}"
+              }
             }
           }
         }
