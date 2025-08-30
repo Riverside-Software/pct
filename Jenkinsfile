@@ -11,7 +11,7 @@ pipeline {
   }
 
   stages {
-    stage('Class documentation build') {
+    stage('🏗️ Class documentation build') {
       agent { label 'Windows-Office' }
       steps {
         checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
@@ -30,7 +30,7 @@ pipeline {
       }
     }
 
-    stage('Standard build') {
+    stage('🏗️ Standard build') {
       agent { label 'Linux-Office03' }
       steps {
         script {
@@ -56,7 +56,7 @@ pipeline {
       }
     }
 
-    stage('Sign') {
+    stage('🔏 Package signature') {
       agent { label 'Windows-Office02' }
       environment {
         KEYSTORE_ALIAS = credentials('KEYSTORE_ALIAS')
@@ -73,7 +73,7 @@ pipeline {
       }
     }
 
-    stage('Archive') {
+    stage('📦 Archive') {
       agent { label 'Linux-Office03' }
       steps {
         unstash name: 'signed'
@@ -82,7 +82,7 @@ pipeline {
       }
     }
 
-    stage('Unit tests') {
+    stage('🧪 Unit tests') {
       steps {
         parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
@@ -94,7 +94,7 @@ pipeline {
       }
     }
 
-    stage('Unit tests reports') {
+    stage('🗃️ Unit tests reports') {
       agent { label 'Linux-Office03' }
       steps {
         // Wildcards not accepted in unstash...
@@ -116,7 +116,7 @@ pipeline {
       }
     }
 
-    stage('Sonar') {
+    stage('🔍️ Sonar') {
       agent { label 'Linux-Office03' }
       steps {
         unstash name: 'coverage-11.7-Win'
@@ -139,7 +139,7 @@ pipeline {
       }
     }
 
-    stage('Maven Central') {
+    stage('📦 Maven Central') {
       environment {
         MAVEN_GPG_PASSPHRASE=credentials('GPG_KEY')
         BEARER_TOKEN=credentials('MavenCentralBearer')
