@@ -11,7 +11,7 @@ pipeline {
   }
 
   stages {
-    stage('Class documentation build') {
+    stage('🏗️ Class documentation build') {
       agent { label 'Windows-Office' }
       steps {
         checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
@@ -30,7 +30,7 @@ pipeline {
       }
     }
 
-    stage('Standard build') {
+    stage('🏗️ Standard build') {
       agent { label 'Linux-Office03' }
       steps {
         script {
@@ -56,7 +56,7 @@ pipeline {
       }
     }
 
-    stage('Sign') {
+    stage('🔏 Package signature') {
       agent { label 'Windows-Office02' }
       environment {
         KEYSTORE_ALIAS = credentials('KEYSTORE_ALIAS')
@@ -73,7 +73,7 @@ pipeline {
       }
     }
 
-    stage('Archive') {
+    stage('📦 Archive') {
       agent { label 'Linux-Office03' }
       steps {
         unstash name: 'signed'
@@ -82,11 +82,11 @@ pipeline {
       }
     }
 
-    stage('Unit tests') {
+    stage('🧪 Unit tests') {
       steps {
         parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
                  branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
-                 branch3: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Win', '') },
+                 branch3: { testBranch('Windows-Office02', 'JDK17', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Win', '') },
                  branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
                  branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch6: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
@@ -94,7 +94,7 @@ pipeline {
       }
     }
 
-    stage('Unit tests reports') {
+    stage('🗃️ Unit tests reports') {
       agent { label 'Linux-Office03' }
       steps {
         // Wildcards not accepted in unstash...
@@ -116,7 +116,7 @@ pipeline {
       }
     }
 
-    stage('Sonar') {
+    stage('🔍️ Sonar') {
       agent { label 'Linux-Office03' }
       steps {
         unstash name: 'coverage-11.7-Win'
@@ -130,14 +130,16 @@ pipeline {
           }
           docker.image('sonarsource/sonar-scanner-cli:latest').inside('') {
             withSonarQubeEnv('RSSW') {
-              sh "sonar-scanner -Dsonar.projectVersion=${version}"
+              withEnv(["SONAR_USER_HOME=/tmp"]) {
+                sh "sonar-scanner -Dsonar.projectVersion=${version}"
+              }
             }
           }
         }
       }
     }
 
-    stage('Maven Central') {
+    stage('📦 Maven Central') {
       environment {
         MAVEN_GPG_PASSPHRASE=credentials('GPG_KEY')
         BEARER_TOKEN=credentials('MavenCentralBearer')
