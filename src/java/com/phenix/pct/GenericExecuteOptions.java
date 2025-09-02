@@ -183,7 +183,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     @Override
     public void setIniFile(File iniFile) {
-        if (iniFile == null)
+        if (iniFile == null || iniFile.getPath().trim().isEmpty())
             return;
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             if (!iniFile.equals(parent.getProject().resolveFile(""))) {
@@ -408,7 +408,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     public String getCpCase() {
         return cpCase;
     }
-    
+
     public String getCpColl() {
         return cpColl;
     }
@@ -520,7 +520,7 @@ public class GenericExecuteOptions implements IRunAttributes {
     protected void checkConfig() {
         boolean noProc = (procedure == null) || procedure.trim().isEmpty();
         boolean noClass = (className == null) || className.trim().isEmpty();
-        if (noProc && noClass) 
+        if (noProc && noClass)
             throw new BuildException("No procedure or className attribute");
         if (!noProc && !noClass)
             throw new BuildException("Procedure and className attributes are mutually exclusive");
@@ -532,7 +532,7 @@ public class GenericExecuteOptions implements IRunAttributes {
         List<String> list = new ArrayList<>();
 
         // Parameter file
-        if (paramFile != null) {
+        if (paramFile != null && !paramFile.getPath().trim().isEmpty()) {
             list.add("-pf"); //$NON-NLS-1$
             list.add(paramFile.getAbsolutePath());
         }
@@ -712,7 +712,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     /**
      * Returns list of database connections, from dbConnList and dbConnSet
-     * 
+     *
      * @return List of PCTConnection objects. Empty list if no DB connections
      */
     public Collection<PCTConnection> getDBConnections() {
@@ -750,7 +750,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     /**
      * Returns list of command line options.
-     * 
+     *
      * @return List of PCTRunOption objects. Empty list if no options.
      */
     public List<PCTRunOption> getOptions() {
@@ -759,7 +759,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     /**
      * Returns list of parameters passed to the called Progress procedure.
-     * 
+     *
      * @return List of RunParameters objects. Empty list if no parameter.
      */
     public List<RunParameter> getParameters() {
@@ -768,7 +768,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     /**
      * Returns list of output parameters to be filled by the called Progress procedure.
-     * 
+     *
      * @return List of OutputParameter objects. Empty list if no parameter.
      */
     public List<OutputParameter> getOutputParameters() {
@@ -781,7 +781,7 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     /**
      * Creates a new Path instance
-     * 
+     *
      * @return Path
      */
     public Path createPropath() {
