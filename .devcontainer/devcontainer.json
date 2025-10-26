@@ -1,0 +1,26 @@
+{
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/pct",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "RiversideSoftware.openedge-abl-lsp@prerelease",
+        "riversidesoftware.sonarlint-abl"
+      ],
+      "settings": {
+        "extensions.verifySignature": false,
+        "abl.configuration.runtimes": [
+          {
+            "name": "12.8",
+            "path": "/opt/progress/dlc",
+            "default": true
+          }
+        ]
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  }
+}

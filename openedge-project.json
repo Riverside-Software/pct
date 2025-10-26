@@ -15,7 +15,7 @@
   ],
   "numThreads": 1,
   "dbConnections": [
-    { "name": "empty", "connect": "-db target/db/empty12 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "empty2" ] }
+    { "name": "empty", "connect": "-db target/db/empty12 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "dictdb2" ] }
   ],
   "profiles": [
     {
@@ -32,7 +32,16 @@
           }
         ],
         "dbConnections": [
-          { "name": "empty", "connect": "-db target/db/empty11 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "empty2" ] }
+          { "name": "empty", "connect": "-db target/db/empty11 -ld empty -RO", "schemaFile": "empty.df", "aliases": [ "dictdb2" ] }
+        ]
+      }
+    },
+    {
+      "name": "devcontainer",
+      "inherits": "default",
+      "value": {
+        "dbConnections": [
+          { "name": "empty", "connect": "-db sports -ld empty -H dbserver -S 12345", "schemaFile": "empty.df", "aliases": [ "dictdb2" ] }
         ]
       }
     }

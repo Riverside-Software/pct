@@ -1,0 +1,17 @@
+volumes:
+  database:
+
+services:
+  devcontainer:
+    image: docker.rssw.eu/progress/vscode:12.8
+    platform: linux/amd64
+    volumes:
+      - ../:/workspaces/pct/
+    command: /bin/sh -c "sleep infinity"
+
+  sports2020:
+    image: docker.rssw.eu/progress/sp2k:12.8
+    platform: linux/amd64
+    hostname: dbserver
+    volumes:
+      - database:/app/db
