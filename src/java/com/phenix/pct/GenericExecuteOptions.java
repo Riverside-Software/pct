@@ -23,13 +23,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Path;
 
 public class GenericExecuteOptions implements IRunAttributes {
-    private final Task parent;
+    private final PCT parent;
 
     private Collection<PCTConnection> dbConnList = null;
     private Collection<DBConnectionSet> dbConnSet = null;
@@ -80,8 +79,9 @@ public class GenericExecuteOptions implements IRunAttributes {
     private String xCodeSessionKey = null;
     private String clientMode = null;
     private boolean clrnetcore = false;
+    private Boolean caseSensitiveClasses = null;
 
-    public GenericExecuteOptions(Task parent) {
+    public GenericExecuteOptions(PCT parent) {
         this.parent = parent;
     }
 
@@ -362,6 +362,11 @@ public class GenericExecuteOptions implements IRunAttributes {
         this.clrnetcore = clrnetcore;
     }
 
+
+    public void setCaseSensitiveClasses(boolean caseSensitive) {
+        this.caseSensitiveClasses = caseSensitive;
+    }
+
     // End of IRunAttribute methods
     // ****************************
 
@@ -515,6 +520,10 @@ public class GenericExecuteOptions implements IRunAttributes {
 
     public boolean isClrnetcore() {
         return clrnetcore;
+    }
+
+    public Boolean getCaseSensitiveClasses() {
+        return caseSensitiveClasses;
     }
 
     protected void checkConfig() {
@@ -694,6 +703,25 @@ public class GenericExecuteOptions implements IRunAttributes {
 
         if (clrnetcore)
             list.add("-clrnetcore");
+
+        if (caseSensitiveClasses != null) {
+            if ((parent.getDLCMajorVersion() >= 13) && Boolean.FALSE.equals(caseSensitiveClasses)) {
+                list.add("-casesensitiveclasses");
+                list.add("0");
+            } else if ((parent.getDLCMajorVersion() == 12) && (parent.getDLCMinorVersion() == 8)
+                    && Boolean.TRUE.equals(caseSensitiveClasses)) {
+                int patchLevel = 0;
+                try {
+                    patchLevel = Integer.parseInt(parent.getDLCMaintenanceVersion());
+                } catch (NumberFormatException uncaught) {
+                    // Nothing
+                }
+                if (patchLevel >= 7) {
+                    list.add("-casesensitiveclasses");
+                    list.add("1");
+                }
+            }
+        }
 
         // Additional command line options
         if (options != null) {

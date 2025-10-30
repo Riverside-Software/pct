@@ -541,6 +541,11 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
+    public void setCaseSensitiveClasses(boolean caseSensitive) {
+        runAttributes.setCaseSensitiveClasses(caseSensitive);
+    }
+
+    @Override
     public void setParameter(String param) {
         throw new BuildException("Can't set parameter attribute here");
     }

@@ -568,4 +568,33 @@ public class PCTRunTest extends BuildFileTestNg {
         assertEquals(list3.length, 1);
         assertTrue(list3[0].endsWith(".prof"));
     }
+
+    @Test(groups = {"v11", "win"})
+    public void test57() {
+        // Case sensitive classes is only relevant on Windows
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        boolean isOE13 = version.getMajorVersion() >= 13;
+        int patchLevel = 0;
+        try {
+            patchLevel = Integer.parseInt(version.getMaintenanceVersion());
+        } catch (NumberFormatException uncaught) {
+            // Nothing
+        }
+        boolean isOE1287 = (version.getMajorVersion() == 12) && (version.getMinorVersion() >= 8) && (patchLevel >= 7);
+
+        configureProject("PCTRun/test57/build.xml");
+        if (isOE13) {
+            expectBuildException("test1", "Supposed to fail");
+            executeTarget("test2");
+            expectBuildException("test3", "Supposed to fail");
+        } else if (isOE1287) {
+            expectBuildException("test1", "Supposed to fail");
+            executeTarget("test2");
+            executeTarget("test3");
+        } else {
+            executeTarget("test1");
+            executeTarget("test2");
+            executeTarget("test3");
+        }
+    }
 }

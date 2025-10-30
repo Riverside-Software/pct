@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="PCTRun-test57">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test1">
+    <mkdir dir="profiler" />
+    <PCTRun procedure="test.p" dlcHome="${DLC}" caseSensitiveClasses="true">
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler description="PCTRun-test57" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test2">
+    <mkdir dir="profiler" />
+    <PCTRun procedure="test.p" dlcHome="${DLC}" caseSensitiveClasses="false">
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler description="PCTRun-test57" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+  <target name="test3">
+    <mkdir dir="profiler" />
+    <PCTRun procedure="test.p" dlcHome="${DLC}">
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler description="PCTRun-test57" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTRun>
+  </target>
+
+</project>

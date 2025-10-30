@@ -187,6 +187,11 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setCaseSensitiveClasses(boolean caseSensitive) {
+        options.setCaseSensitiveClasses(caseSensitive);
+    }
+
+    @Override
     public void setCompileUnderscore(boolean compUnderscore) {
         options.setCompileUnderscore(compUnderscore);
     }

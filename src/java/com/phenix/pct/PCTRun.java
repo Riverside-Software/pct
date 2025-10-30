@@ -272,6 +272,11 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
+    public void setCaseSensitiveClasses(boolean caseSensitive) {
+        runAttributes.setCaseSensitiveClasses(caseSensitive);
+    }
+
+    @Override
     public void setInputChars(int inputChars) {
         runAttributes.setInputChars(inputChars);
     }

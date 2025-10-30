@@ -254,4 +254,10 @@ public interface IRunAttributes {
      * Use .Net core (-clrnetcore parameter)
      */
     void setClrnetcore(boolean clrnetcore);
+
+    /**
+     * Use case sensitive classes (-casesensitiveclasses parameter)
+     */
+    void setCaseSensitiveClasses(boolean caseSensitive);
+
 }
