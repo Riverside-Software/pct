@@ -85,6 +85,7 @@ DEFINE TEMP-TABLE ttProjectErrors NO-UNDO
 
 FUNCTION getTimeStampDF RETURN DATETIME (INPUT d AS CHARACTER, INPUT f AS CHARACTER) FORWARD.
 FUNCTION getTimeStampF RETURN DATETIME (INPUT f AS CHARACTER) FORWARD.
+FUNCTION checkMissingPctFiles RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER) FORWARD.
 FUNCTION CheckHierarchy RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER) FORWARD.
@@ -310,6 +311,7 @@ FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
     WHEN 4 THEN RETURN 'Table CRC'.
     WHEN 5 THEN RETURN 'XCode or force'.
     WHEN 6 THEN RETURN 'Hierarchy change'.
+    WHEN 7 THEN RETURN 'Missing .inc or .crc'.
     OTHERWISE   RETURN '???'.
   END.
 END FUNCTION.
@@ -408,16 +410,21 @@ PROCEDURE compileXref:
         opComp = 2.
       END.
       ELSE DO:
-        IF CheckIncludes(ipInFile, RCodeTS, PCTDir) THEN DO:
-          opComp = 3. /* R-code older than include file */
+        IF checkMissingPCTFiles(ipInFile, RCodeTS, PCTDir) THEN DO:
+          opComp = 7. /* Missing PCT files */
         END.
         ELSE DO:
-          IF CheckCRC(ipInFile, PCTDir) THEN DO:
-            opComp = 4. /* Table CRC */
+          IF CheckIncludes(ipInFile, RCodeTS, PCTDir) THEN DO:
+            opComp = 3. /* R-code older than include file */
           END.
           ELSE DO:
-            IF CheckHierarchy(ipInFile, RCodeTS, PCTDir) THEN DO:
-              opComp = 6. /* Hierarchy change */
+            IF CheckCRC(ipInFile, PCTDir) THEN DO:
+              opComp = 4. /* Table CRC */
+            END.
+            ELSE DO:
+              IF CheckHierarchy(ipInFile, RCodeTS, PCTDir) THEN DO:
+                opComp = 6. /* Hierarchy change */
+              END.
             END.
           END.
         END.
@@ -940,16 +947,18 @@ FUNCTION getTimeStampF RETURNS DATETIME (INPUT f AS CHARACTER):
   RETURN DATETIME(FILE-INFO:FILE-MOD-DATE, FILE-INFO:FILE-MOD-TIME * 1000).
 END FUNCTION.
 
+FUNCTION checkMissingPctFiles RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER):
+  IF NOT fileExists(d + '/':U + f + '.inc':U) THEN
+    RETURN TRUE.
+  IF NOT fileExists(d + '/':U + f + '.crc':U) THEN
+    RETURN TRUE.
+  RETURN FALSE.
+END FUNCTION.
+
 FUNCTION CheckIncludes RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT ts AS DATETIME, INPUT d AS CHARACTER):
   DEFINE VARIABLE IncFile     AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE IncFullPath AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lReturn     AS LOGICAL    NO-UNDO.
-
-  /* Small workaround when compiling classes */
-  FILE-INFO:FILE-NAME = d + '/':U + f + '.inc':U.
-  IF FILE-INFO:FULL-PATHNAME EQ ? THEN DO:
-    RETURN lReturn.
-  END.
 
   INPUT STREAM sIncludes FROM VALUE (d + '/':U + f + '.inc':U).
   FileList:
@@ -982,8 +991,6 @@ FUNCTION CheckCRC RETURNS LOGICAL (INPUT f AS CHARACTER, INPUT d AS CHARACTER):
   DEFINE VARIABLE cCRC AS CHARACTER  NO-UNDO.
   DEFINE VARIABLE lRet AS LOGICAL    NO-UNDO.
 
-  IF NOT fileExists(d + '/':U + f + '.crc':U) THEN
-    RETURN TRUE.
   INPUT STREAM sCRC FROM VALUE(d + '/':U + f + '.crc':U).
   CRCList:
   REPEAT:
