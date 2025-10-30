@@ -1754,6 +1754,36 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(getBaseDir(), "test93/build2/test.r").exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test94() {
+        configureProject(getBaseDir() + "test94/build.xml");
+        File f1 = new File(getBaseDir(), "test94/src1/rssw/MyClass.r");
+        File f2 = new File(getBaseDir(), "test94/src2/rssw/MyClass.r");
+        File f3 = new File(getBaseDir(), "test94/src2/rssw/MyChildClass.r");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        assertFalse(f3.exists());
+        executeTarget("test1");
+        assertTrue(f1.exists());
+        assertFalse(f2.exists());
+        assertTrue(f3.exists());
+        executeTarget("clean");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        assertFalse(f3.exists());
+        executeTarget("test2");
+        assertTrue(f1.exists());
+        assertFalse(f2.exists());
+        assertTrue(f3.exists());
+        executeTarget("clean");
+        executeTarget("test3");
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        assertFalse(f3.exists());
+        assertTrue(new File(getBaseDir(), "test94/build/rssw/MyClass.r").exists());
+        assertTrue(new File(getBaseDir(), "test94/build/rssw/MyChildClass.r").exists());
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

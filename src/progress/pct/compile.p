@@ -374,6 +374,10 @@ PROCEDURE compileXref:
                        ELSE (IF cFileExt = ".cls":U OR lRelative
                                THEN outputDir
                                ELSE outputDir + '/':U + cBase)).
+  IF (cFileExt = ".cls") AND (cSaveDir EQ ipInDir) THEN DO:
+    // Don't specify saveDir attribute when compiling classes with destDir pointing to target directory (see issue #556)
+    ASSIGN cSaveDir = ''.
+  END.
 
   IF (ipOutFile EQ ?) OR (ipOutFile EQ '') THEN DO:
     ASSIGN ipOutFile = SUBSTRING(ipInFile, 1, R-INDEX(ipInFile, cFileExt) - 1) + '.r':U.

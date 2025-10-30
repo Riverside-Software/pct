@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test94">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="profiler" />
+  </target>
+
+  <target name="clean">
+    <delete dir="src1" includes="**/*.r" />
+    <delete dir="src2" includes="**/*.r" />
+  </target>
+
+  <target name="test1">
+    <!-- No destDir, assumes this is src2 -->
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}">
+      <fileset dir="src2" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src2" />
+        <pathelement location="src1" />
+      </propath>
+      <Profiler description="PCTCompile-test94" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <!-- destDir forced to src2 -->
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" destDir="src2">
+      <fileset dir="src2" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src2" />
+        <pathelement location="src1" />
+      </propath>
+      <Profiler description="PCTCompile-test94" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test3">
+    <!-- destDir forced to build -->
+    <mkdir dir="build" />
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" destDir="build">
+      <fileset dir="src2" includes="**/*.cls" />
+      <propath>
+        <pathelement location="src2" />
+        <pathelement location="src1" />
+      </propath>
+      <Profiler description="PCTCompile-test94" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
