@@ -30,7 +30,7 @@ public class DlcHome extends Task {
     @Override
     public void execute() {
         if (value == null)
-            throw new BuildException("Value can't be null");
+            throw new BuildException("Value cannot be null");
         getProject().setProperty(GLOBAL_DLCHOME, value.getAbsolutePath());
 
         DefaultExcludes excludes = new DefaultExcludes();

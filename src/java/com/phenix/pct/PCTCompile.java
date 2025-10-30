@@ -78,12 +78,12 @@ public class PCTCompile extends PCTRun {
 
     @Override
     public void setProcedure(String procedure) {
-        throw new BuildException("Can't set procedure attribute here");
+        throw new BuildException("Cannot set procedure attribute here");
     }
 
     @Override
     public void setParameter(String param) {
-        throw new BuildException("Can't set parameter attribute here");
+        throw new BuildException("Cannot set parameter attribute here");
     }
 
     /**

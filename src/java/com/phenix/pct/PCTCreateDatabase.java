@@ -411,11 +411,11 @@ public class PCTCreateDatabase extends PCT {
         // If schema holders defined, then no Progress schema can be loaded
         if ((holders != null) && (!holders.isEmpty())) {
             if ((schema != null) && (schema.trim().length() > 0)) {
-                throw new BuildException("On peut pas !!!");
+                throw new BuildException("Schema holders and schema attribute are mutually exclusive");
             }
             // noInit also cannot be set to true
             if (noInit) {
-                throw new BuildException("on peut pas non plus !!");
+                throw new BuildException("noInit attribute cannot be set to true when schema holders are defined");
             }
         }
 

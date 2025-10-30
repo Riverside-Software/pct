@@ -93,7 +93,7 @@ public class PCTIndexRebuild extends PCT {
             throw new BuildException(Messages.getString("PCTCreateDatabase.3"));
         }
         if (indexes.isEmpty())
-            throw new BuildException("Index list can't be empty");
+            throw new BuildException("Index list cannot be empty");
 
         // Update dbDir if not defined
         if (dbDir == null) {

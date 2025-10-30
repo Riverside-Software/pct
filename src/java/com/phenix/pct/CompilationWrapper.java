@@ -517,12 +517,12 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void setProcedure(String procedure) {
-        throw new BuildException("Can't set procedure attribute here");
+        throw new BuildException("Cannot set procedure attribute here");
     }
 
     @Override
     public void setClassName(String className) {
-        throw new BuildException("Can't set className attribute");
+        throw new BuildException("Cannot set className attribute");
     }
 
     @Override
@@ -532,7 +532,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void setClientMode(String clientMode) {
-        throw new BuildException("Can't set clientMode attribute in compilation task");
+        throw new BuildException("Cannot set clientMode attribute in compilation task");
     }
 
     @Override
@@ -547,7 +547,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
 
     @Override
     public void setParameter(String param) {
-        throw new BuildException("Can't set parameter attribute here");
+        throw new BuildException("Cannot set parameter attribute here");
     }
 
     @Override

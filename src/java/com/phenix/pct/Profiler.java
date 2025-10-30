@@ -169,7 +169,7 @@ public class Profiler {
             throw new BuildException("Only outputDir can be set for multi-threaded tasks");
         if (listings != null) {
             if (!listings.exists() || !listings.isDirectory())
-                throw new BuildException("Listing dir doesn't exist or is not a directory");
+                throw new BuildException("Listing directory does not exist or is not a directory");
         }
     }
 }

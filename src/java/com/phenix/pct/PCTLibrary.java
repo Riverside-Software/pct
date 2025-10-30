@@ -282,7 +282,7 @@ public class PCTLibrary extends PCT {
                 } catch (IOException caught) {
                     log(MessageFormat.format(Messages.getString("PCTLibrary.5"),
                             sharedFile.getAbsolutePath()), Project.MSG_VERBOSE);
-                    throw new BuildException("Can't create memory-mapped library", caught);
+                    throw new BuildException("Cannot create memory-mapped library", caught);
                 }
                 log(MessageFormat
                         .format(Messages.getString("PCTLibrary.8"), sharedFile.getAbsolutePath()));

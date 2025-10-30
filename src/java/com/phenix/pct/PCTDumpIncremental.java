@@ -125,7 +125,7 @@ public class PCTDumpIncremental extends PCTDynamicRun {
     @Override
     public void addDBConnection(PCTConnection dbConn) {
         throw new BuildException(
-                "DBConnection shouldn't be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
+                "DBConnection should not be used in PCTDumpIncremental. Use sourceDb and targetDb instead");
     }
 
     /**

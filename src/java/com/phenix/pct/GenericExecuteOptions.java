@@ -534,7 +534,7 @@ public class GenericExecuteOptions implements IRunAttributes {
         if (!noProc && !noClass)
             throw new BuildException("Procedure and className attributes are mutually exclusive");
         if (!noClass && (outputParameters!= null) && !outputParameters.isEmpty())
-            throw new BuildException("Output parameters can't be used with className attribute");
+            throw new BuildException("Output parameters cannot be used with className attribute");
     }
 
     protected List<String> getCmdLineParameters() {

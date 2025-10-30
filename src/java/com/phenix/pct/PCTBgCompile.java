@@ -80,12 +80,12 @@ public class PCTBgCompile extends PCTBgRun {
 
     @Override
     public void setProcedure(String procedure) {
-        throw new BuildException("Can't set procedure attribute");
+        throw new BuildException("Cannot set procedure attribute");
     }
 
     @Override
     public void setClassName(String className) {
-        throw new BuildException("Can't set className attribute");
+        throw new BuildException("Cannot set className attribute");
     }
 
     /**
