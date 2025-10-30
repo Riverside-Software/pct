@@ -1784,6 +1784,12 @@ public class PCTCompileTest extends BuildFileTestNg {
         assertTrue(new File(getBaseDir(), "test94/build/rssw/MyChildClass.r").exists());
     }
 
+    @Test(groups = {"v11"})
+    public void test95() {
+        configureProject(getBaseDir() + "test95/build.xml");
+
+    }
+
     static final class Test80LineProcessor implements LineProcessor<Boolean> {
         private boolean rslt = true;
         private int numLines;

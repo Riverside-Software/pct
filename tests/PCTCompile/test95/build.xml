@@ -1,0 +1,29 @@
+<project name="PCTCompile-test95">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="profiler" />
+  </target>
+
+  <target name="test1">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" destDir="build" relativePaths="true" baseDir="client">
+      <fileset dir="client" includes="**/*.cls" />
+      <propath>
+        <pathelement location="client" />
+      </propath>
+      <Profiler description="PCTCompile-test95" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" destDir="build" relativePaths="true" baseDir="server">
+      <fileset dir="server" includes="**/*.p" />
+      <propath>
+        <pathelement location="client" />
+        <pathelement location="server" />
+      </propath>
+      <Profiler description="PCTCompile-test95" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>
