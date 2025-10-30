@@ -177,17 +177,17 @@ pipeline {
   post {
     unstable {
       script {
-        mail body: "Check console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is unstable"
+        mail body: "Check console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is unstable"
       }
     }
     failure {
       script {
-        mail body: "Check console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build failure"
+        mail body: "Check console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build failure"
       }
     }
     fixed {
       script {
-        mail body: "Console output at ${BUILD_URL}/console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is back to normal"
+        mail body: "Console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is back to normal"
       }
     }
   }
