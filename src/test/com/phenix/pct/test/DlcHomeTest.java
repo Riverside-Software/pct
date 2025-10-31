@@ -16,8 +16,9 @@
  */
 package com.phenix.pct.test;
 
-import javax.xml.xpath.XPathExpressionException;
+import static org.testng.Assert.fail;
 
+import org.apache.tools.ant.BuildException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,18 @@ import com.phenix.pct.DlcHome;
 public class DlcHomeTest extends BuildFileTestNg {
 
     @Test(groups = {"v11"})
-    public void test1() throws XPathExpressionException {
+    public void test0() {
+        DlcHome dlcHome = new DlcHome();
+        try {
+            dlcHome.execute();
+            fail("Should have failed");
+        } catch (BuildException caught) {
+            // Nothign
+        }
+    }
+
+    @Test(groups = {"v11"})
+    public void test1() {
         configureProject("DlcHome/test1/build.xml");
         executeTarget("test");
         assertPropertyEquals(DlcHome.GLOBAL_DLCHOME, System.getProperty("DLC"));
@@ -34,7 +46,7 @@ public class DlcHomeTest extends BuildFileTestNg {
     }
 
     @Test(groups = {"v11"})
-    public void test2() throws XPathExpressionException {
+    public void test2() {
         configureProject("DlcHome/test2/build.xml");
         executeTarget("test");
         Assert.assertTrue(getProject().getProperty(DlcHome.GLOBAL_DLCHOME).endsWith("foobar"));

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project name="PCTCompile-test95">
+  <taskdef resource="PCT.properties" />
+
+  <target name="init">
+    <mkdir dir="profiler" />
+  </target>
+
+  <target name="test1">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" procedure="test.p">
+      <fileset dir="src" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler description="PCTCompile-test95" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test2">
+    <PCTCompile graphicalMode="false" dlcHome="${DLC}" parameter="foobar">
+      <fileset dir="src2" includes="**/*.cls" />
+      <fileset dir="src" />
+      <propath>
+        <pathelement location="src" />
+      </propath>
+      <Profiler description="PCTCompile-test95" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+</project>

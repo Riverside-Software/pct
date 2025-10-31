@@ -522,10 +522,6 @@ public class GenericExecuteOptions implements IRunAttributes {
         return clrnetcore;
     }
 
-    public Boolean getCaseSensitiveClasses() {
-        return caseSensitiveClasses;
-    }
-
     protected void checkConfig() {
         boolean noProc = (procedure == null) || procedure.trim().isEmpty();
         boolean noClass = (className == null) || className.trim().isEmpty();
