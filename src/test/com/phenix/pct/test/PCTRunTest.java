@@ -583,14 +583,10 @@ public class PCTRunTest extends BuildFileTestNg {
         boolean isOE1287 = (version.getMajorVersion() == 12) && (version.getMinorVersion() >= 8) && (patchLevel >= 7);
 
         configureProject("PCTRun/test57/build.xml");
-        if (isOE13) {
+        if (isOE13 || isOE1287) { // Same behavior on 12.8 and 13.0 on Windows for now
             expectBuildException("test1", "Supposed to fail");
             executeTarget("test2");
-            expectBuildException("test3", "Supposed to fail");
-        } else if (isOE1287) {
-            expectBuildException("test1", "Supposed to fail");
-            executeTarget("test2");
-            executeTarget("test3");
+            executeTarget("test3"); // 13.0 on Windows, default value is still 0
         } else {
             executeTarget("test1");
             executeTarget("test2");

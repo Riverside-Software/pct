@@ -701,9 +701,9 @@ public class GenericExecuteOptions implements IRunAttributes {
             list.add("-clrnetcore");
 
         if (caseSensitiveClasses != null) {
-            if ((parent.getDLCMajorVersion() >= 13) && Boolean.FALSE.equals(caseSensitiveClasses)) {
+            if (parent.getDLCMajorVersion() >= 13) {
                 list.add("-casesensitiveclasses");
-                list.add("0");
+                list.add(Boolean.FALSE.equals(caseSensitiveClasses) ? "0" : "1");
             } else if ((parent.getDLCMajorVersion() == 12) && (parent.getDLCMinorVersion() == 8)
                     && Boolean.TRUE.equals(caseSensitiveClasses)) {
                 int patchLevel = 0;
