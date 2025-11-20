@@ -86,7 +86,7 @@ public class AnalyticsBuildListener implements BuildListener {
             @Override
             public Void call() throws Exception {
                 try {
-                    final URL url = new URL("http://sonar-analytics.rssw.eu/write?db=sonar");
+                    final URL url = new URL("https://sonar-analytics.rssw.eu/write?db=sonar");
                     HttpURLConnection connx = (HttpURLConnection) url.openConnection();
                     connx.setRequestMethod("POST");
                     connx.setConnectTimeout(2000);
