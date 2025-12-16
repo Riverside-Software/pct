@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    { "groupId": "com.progress.openedge",  "artifactId": "net", "version" : "12.8.9", "extension": "pl" },
+    { "groupId": "com.progress.openedge", "artifactId": "core", "version" : "12.8.9", "extension": "apl" },
+    { "groupId": "com.progress.openedge", "artifactId": "adecomm", "version" : "12.8.9", "extension": "zip" },
+    { "groupId": "cefsharp", "artifactId": "cefsharp", "version" : "124.3.80", "classifier": "assembly", "extension": "zip" }
+  ]
+}

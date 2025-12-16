@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="PCTDependencies-Test01">
+  <taskdef resource="PCT.properties" />
+
+  <target name="test">
+    <PCTDependencies assemblies="myAssemblies" pathId="foobar" />
+    <PCTCompile destDir="build" dlcHome="${DLC}" relativePaths="true">
+      <fileset dir="src" includes="**/*.p" />
+      <propath>
+        <pathelement location="src" />
+        <path refid="foobar" />
+      </propath>
+    </PCTCompile>
+  </target>
+
+</project>

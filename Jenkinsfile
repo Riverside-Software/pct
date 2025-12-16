@@ -217,12 +217,21 @@ def testBranch(nodeName, jdkVersion, antVersion, dlcVersion, stashCoverage, labe
       def antHome = tool name: antVersion, type: 'ant'
       unstash name: 'tests'
       if (isUnix()) {
-        docker.image(dockerImg).inside('') {
-          sh "ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT-signed.jar -f tests.xml init dist"
+        configFileProvider([configFile(fileId: 'MvnSettingsRSSW', targetLocation: 'tmpDir/settings.xml')]) {
+          docker.image(dockerImg).inside('') {
+            sh "mkdir local_repo"
+            sh "> pwd.txt pwd"
+            def pwd = readFile('pwd.txt').trim()
+            withEnv(["MAVEN_SETTINGS=${pwd}/tmpDir/settings.xml", "LOCAL_M2_REPO=${pwd}/local_repo"]) {
+              sh "ant -DDLC=/opt/progress/dlc -DPROFILER=true -DTESTENV=${label} -lib dist/PCT-signed.jar -f tests.xml init dist"
+            }
+          }
         }
       } else {
-        withEnv(["JAVA_HOME=${jdk}"]) {
-          bat "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
+        configFileProvider([configFile(fileId: 'MvnSettingsRSSW', variable: 'MAVEN_SETTINGS')]) {
+          withEnv(["JAVA_HOME=${jdk}"]) {
+            bat "${antHome}/bin/ant -lib dist/PCT.jar -DDLC=${dlc} -DPROFILER=true -DTESTENV=${label} -f tests.xml init dist"
+          }
         }
       }
       stash name: "junit-${label}", includes: 'junitreports-*.zip'

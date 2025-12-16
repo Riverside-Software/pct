@@ -26,6 +26,7 @@
 	<classpathentry kind="lib" path="lib/database-parser-2.30.0.jar"/>
 	<classpathentry kind="lib" path="lib/openedge-checks-2.30.0.jar"/>
 	<classpathentry kind="lib" path="lib/proparse-2.30.0.jar"/>
-    <classpathentry kind="lib" path="lib/antlr4-runtime-4.13.0.jar"/>
+  <classpathentry kind="lib" path="lib/antlr4-runtime-4.13.0.jar"/>
+	<classpathentry kind="lib" path="lib/mvn-resolver-shaded-1.23.0.jar"/>	
 	<classpathentry kind="output" path="bin"/>
 </classpath>
