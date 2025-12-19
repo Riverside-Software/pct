@@ -141,7 +141,7 @@ pipeline {
         script {
           def version = readFile('version.txt').trim()
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
-            sh 'ant -lib lib/jacocoant-0.8.7.jar -file sonar.xml -DDLC=/opt/progress/dlc init-sonar' 
+            sh 'ant -lib lib/jacocoant-0.8.14.jar -file sonar.xml -DDLC=/opt/progress/dlc init-sonar' 
           }
           docker.image('sonarsource/sonar-scanner-cli:latest').inside('') {
             withSonarQubeEnv('RSSW') {
