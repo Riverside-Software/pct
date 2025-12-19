@@ -42,7 +42,7 @@ pipeline {
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/main:refs/remotes/origin/main']] ])
 
           unstash name: 'classdoc'
-          sh '> author.txt git log --format="%ae" -n 1'
+          env.GIT_AUTHOR = sh (script: 'git log --format="%ae" -n 1', returnStdout: true).trim()
           sh 'git rev-parse --short HEAD > head-rev'
           def commit = readFile('head-rev').trim()
           def version = readFile('version.txt').trim()
@@ -192,20 +192,17 @@ pipeline {
   post {
     unstable {
       script {
-        def author = readFile('author.txt').trim()
-        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build is unstable"
+        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${env.GIT_AUTHOR}", subject: "PCT ${BRANCH_NAME} build is unstable"
       }
     }
     failure {
       script {
-        def author = readFile('author.txt').trim()
-        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build failure"
+        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${env.GIT_AUTHOR}", subject: "PCT ${BRANCH_NAME} build failure"
       }
     }
     fixed {
       script {
-        def author = readFile('author.txt').trim()
-        mail body: "Console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build is back to normal"
+        mail body: "Console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${env.GIT_AUTHOR}", subject: "PCT ${BRANCH_NAME} build is back to normal"
       }
     }
   }
