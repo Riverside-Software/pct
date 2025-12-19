@@ -42,10 +42,15 @@ pipeline {
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/main:refs/remotes/origin/main']] ])
 
           unstash name: 'classdoc'
+          sh '> author.txt git log --format="%ae" -n 1'
           sh 'git rev-parse --short HEAD > head-rev'
           def commit = readFile('head-rev').trim()
           def version = readFile('version.txt').trim()
 
+          // Compile Java code first
+          docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
+            sh "ant build"
+          }
           docker.image('docker.rssw.eu/progress/dlc:11.7').inside('') {
             sh "ant -DDLC11=/opt/progress/dlc -DDLC12=/ -DDLC13=/ pbuild"
           }
@@ -187,17 +192,20 @@ pipeline {
   post {
     unstable {
       script {
-        mail body: "Check console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is unstable"
+        def author = readFile('author.txt').trim()
+        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build is unstable"
       }
     }
     failure {
       script {
-        mail body: "Check console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build failure"
+        def author = readFile('author.txt').trim()
+        mail body: "Check console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build failure"
       }
     }
     fixed {
       script {
-        mail body: "Console output at ${BUILD_URL}console", to: "g.querret@riverside-software.fr", subject: "PCT ${BRANCH_NAME} build is back to normal"
+        def author = readFile('author.txt').trim()
+        mail body: "Console output at ${BUILD_URL}console", to: "jenkins-reports@riverside-software.fr,${author}", subject: "PCT ${BRANCH_NAME} build is back to normal"
       }
     }
   }
