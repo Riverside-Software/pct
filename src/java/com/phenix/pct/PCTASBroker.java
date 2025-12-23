@@ -214,7 +214,7 @@ public class PCTASBroker extends PCTBroker {
     @Override
     public void execute() {
         File propFile = null;
-
+        setJavaEnv();
         try {
             checkAttributes();
             // Choosing right properties file

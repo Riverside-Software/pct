@@ -132,8 +132,10 @@ public abstract class PCT extends Task {
             this.pp = new ProgressV10();
         else
             throw new BuildException("Invalid Progress version : " + version.toString());
-        log("Using object : " + pp.getClass().getName(), Project.MSG_VERBOSE);
+        log("Using object : " + pp.getClass().getName(), Project.MSG_VERBOSE);  
+    }
 
+    public void setJavaEnv() {
         if (pp.externalJDK()) {
             try (InputStream input = new FileInputStream (new File(dlcHome, "properties/java.properties"))) {
                 Properties props = new Properties();
@@ -154,7 +156,6 @@ public abstract class PCT extends Task {
             jdk = new File(dlcHome, "jdk");
             jre = new File(dlcHome, "jre");
         }
-        
     }
 
     public void setPdsHome(File pdsHome) {

@@ -107,6 +107,7 @@ public class RestGen extends PCT {
             throw new BuildException("Invalid value for argument type");
 
         checkDlcHome();
+        setJavaEnv();
 
         // Creates a new Java task to launch proxygen task
         if (pxg == null) {

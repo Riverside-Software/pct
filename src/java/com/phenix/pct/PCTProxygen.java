@@ -130,6 +130,7 @@ public class PCTProxygen extends PCT {
         }
 
         checkDlcHome();
+        setJavaEnv();
 
         // Creates a new Java task to launch proxygen task
         if (pxg == null) {
