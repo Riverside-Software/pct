@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.rssw.pct</groupId>
   <artifactId>pct</artifactId>
-  <version>231</version>
+  <version>232-pre</version>
 
   <name>PCT</name>
   <description>OpenEdge plugin for Ant</description>
