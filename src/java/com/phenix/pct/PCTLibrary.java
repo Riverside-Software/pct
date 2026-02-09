@@ -18,6 +18,7 @@ package com.phenix.pct;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.taskdefs.ExecTask;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
@@ -52,6 +53,7 @@ public class PCTLibrary extends PCT {
     private String cpCase = null;
     private boolean noCompress = false;
     private boolean debugPCT = false;
+    private boolean useForwardSlashes = false;
     private FileSet fileset = new FileSet();
     private List<FileSet> filesets = new ArrayList<>();
     private File baseDir = null;
@@ -216,6 +218,15 @@ public class PCTLibrary extends PCT {
      */
     public void setDebugPCT(boolean debugPCT) {
         this.debugPCT = debugPCT;
+    }
+
+    /**
+     * Sets the use of / instead of \ on windows
+     * 
+     * @param useForwardSlashes  boolean
+     */
+    public void setUseForwardSlashes (boolean useForwardSlashes ) {
+        this.useForwardSlashes = useForwardSlashes ;
     }
 
     /**
@@ -416,6 +427,9 @@ public class PCTLibrary extends PCT {
                 if (resourceAsFile.equals(destFile)) {
                     throw new BuildException(Messages.getString("PCTLibrary.3"));
                 }
+     
+                if (Os.isFamily(Os.FAMILY_WINDOWS) && useForwardSlashes)
+                    str = str.replace('\\', '/');
 
                 // If there are spaces, don't put in the pf file
                 if ((str.indexOf(' ') == -1) && (str.length() < 128)) {

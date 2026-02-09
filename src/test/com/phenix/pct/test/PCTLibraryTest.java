@@ -17,12 +17,14 @@
 package com.phenix.pct.test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.testng.annotations.Test;
 
 import eu.rssw.pct.FileEntry;
@@ -251,5 +253,39 @@ public class PCTLibraryTest extends BuildFileTestNg {
         expectBuildException("test3", "No destFile or sharedFile");
 
         executeTarget("test4");
+    }
+
+    /**
+     * Checks that a file is added in the library with the right slash
+     */
+    @Test(groups= {"v11"})
+    public void test14() {
+        configureProject("PCTLibrary/test14/build.xml");
+        executeTarget("test");
+
+        File pl = new File("PCTLibrary/test14/lib/test.pl");
+        assertTrue(pl.exists());
+
+        PLReader r = new PLReader(pl.toPath());
+        List<FileEntry> v = r.getFileList();
+        assertNotNull(v);
+        assertEquals(v.size(), 1);
+        assertEquals(v.get(0).getFileName(), "abl/test");
+
+        executeTarget("test2");
+
+        File pl2 = new File("PCTLibrary/test14/lib2/test.pl");
+        assertTrue(pl2.exists());
+
+        PLReader r2 = new PLReader(pl2.toPath());
+        List<FileEntry> v2 = r2.getFileList();
+        assertNotNull(v2);
+        assertEquals(v2.size(), 1);
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            assertEquals(v2.get(0).getFileName(), "abl\\test");
+        } else {
+            assertEquals(v2.get(0).getFileName(), "abl/test");
+        }
+
     }
 }
