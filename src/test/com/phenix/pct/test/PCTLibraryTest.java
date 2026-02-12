@@ -21,7 +21,11 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.condition.Os;
@@ -65,9 +69,9 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(pl.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 1);
-        assertTrue(v.get(0).getFileName().startsWith("test"));
+        assertNotNull(v);
+        assertEquals(v.size(), 1);
+        assertEquals(v.get(0).getFileName(), "test");
     }
 
     /**
@@ -83,14 +87,14 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(pl.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 1);
+        assertNotNull(v);
+        assertEquals(v.size(), 1);
 
         executeTarget("test2");
         PLReader r2 = new PLReader(pl.toPath());
         List<FileEntry> v2 = r2.getFileList();
-        assertTrue(v2 != null);
-        assertTrue(v2.size() == 1);
+        assertNotNull(v2);
+        assertEquals(v2.size(), 1);
     }
 
     @Test(groups= {"v11"})
@@ -102,7 +106,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(f1.exists());
         File f2 = new File("PCTLibrary/test5/lib/test2.pl");
         assertTrue(f2.exists());
-        assertTrue((f2.length() < f1.length()));
+        assertTrue(f2.length() < f1.length());
     }
 
     @Test(groups= {"v11"})
@@ -115,11 +119,11 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(f1.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 3);
-        assertTrue(v.get(0).getFileName().startsWith("test"));
-        assertTrue(v.get(1).getFileName().startsWith("test"));
-        assertTrue(v.get(2).getFileName().startsWith("test"));
+        assertNotNull(v);
+        assertEquals(v.size(), 3);
+        Set<String> names = v.stream().map(FileEntry::getFileName).collect(Collectors.toSet());
+        Set<String> expected = new HashSet(Arrays.asList("test", "test2", "test3"));
+        assertEquals(names, expected);
     }
 
     @Test(groups= {"v11"}, expectedExceptions = BuildException.class)
@@ -138,8 +142,8 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(f1.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 2);
+        assertNotNull(v);
+        assertEquals(v.size(), 2);
     }
 
     @Test(groups= {"v11"})
@@ -156,17 +160,19 @@ public class PCTLibraryTest extends BuildFileTestNg {
         PLReader r2 = new PLReader(f2.toPath());
         List<FileEntry> v1 = r1.getFileList();
         List<FileEntry> v2 = r2.getFileList();
-        assertTrue(v1 != null);
-        assertTrue(v1.size() == 2);
-        assertTrue(v1.get(0).getFileName().startsWith("test"));
-        assertTrue(v1.get(1).getFileName().startsWith("test"));
+        assertNotNull(v1);
+        assertEquals(v1.size(), 2);
+        Set<String> names = v1.stream().map(FileEntry::getFileName).collect(Collectors.toSet());
+        Set<String> expected = new HashSet(Arrays.asList("test space", "test space2"));
+        assertEquals(names, expected);
 
-        assertTrue(v2 != null);
-        assertTrue(v2.size() == 1);
-        assertTrue(v2.get(0).getFileName().startsWith("test"));
+        assertNotNull(v2);
+        assertEquals(v2.size(), 1);
+        assertEquals(v2.get(0).getFileName(), "test space");
     }
 
-//    @Test Not tested for now
+    // This has never been enabled, good candidate for removal 
+    @Test(groups= {"v11"}, enabled = false)
     public void test10() {
         configureProject("PCTLibrary/test10/build.xml");
         executeTarget("prepare");
@@ -180,12 +186,13 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(f2.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
+        assertNotNull(v);
         assertTrue(v.size() == 2);
-        assertTrue(v.contains(new String("éèà.txt")));
+        assertEquals(v.get(0).getFileName(), "éèà.txt");
     }
 
-    // @Test(groups= {"v11"})
+    // Test has been disabled in 2015, another good candidate for removal
+    @Test(groups= {"v11"}, enabled = false)
     public void test11() {
         configureProject("PCTLibrary/test11/build.xml");
 
@@ -195,8 +202,8 @@ public class PCTLibraryTest extends BuildFileTestNg {
 
         PLReader r = new PLReader(f1.toPath());
         List<FileEntry> v = r.getFileList();
-        assertTrue(v != null);
-        assertTrue(v.size() == 1);
+        assertNotNull(v);
+        assertEquals(v.size(), 1);
         assertTrue(v.get(0).getFileName().startsWith("Twenty"));
 
         executeTarget("test2");
@@ -236,13 +243,7 @@ public class PCTLibraryTest extends BuildFileTestNg {
         assertTrue(pl1.exists());
         File pl2 = new File("PCTLibrary/test13/lib1/shared.pl");
         assertTrue(pl2.exists());
-
         // Memory-mapped PL can't be read by PLReader
-        // PLReader r = new PLReader(pl2);
-        // List<FileEntry> v = r.getFileList();
-        // assertTrue(v != null);
-        // assertTrue(v.size() == 1);
-        // assertTrue(((FileEntry) v.get(0)).getFileName().startsWith("test"));
 
         executeTarget("test2");
         File dir = new File("PCTLibrary/test13/lib2");
