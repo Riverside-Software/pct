@@ -146,7 +146,11 @@ pipeline {
           docker.image('sonarsource/sonar-scanner-cli:latest').inside('') {
             withSonarQubeEnv('RSSW') {
               withEnv(["SONAR_USER_HOME=/tmp"]) {
-                sh "sonar-scanner -Dsonar.projectVersion=${version}"
+                if ("main" == env.BRANCH_NAME) {
+                  sh "sonar-scanner -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.projectVersion=${version}"
+                } else {
+                  sh "sonar-scanner -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.newCode.referenceBranch=main -Dsonar.branch.target=main -Dsonar.projectVersion=${version}"
+                }
               }
             }
           }
