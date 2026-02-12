@@ -307,7 +307,7 @@ FUNCTION getRecompileLabel RETURNS CHARACTER (ipVal AS INTEGER):
     WHEN 0 THEN RETURN 'Up to date'.
     WHEN 1 THEN RETURN 'No r-code'.
     WHEN 2 THEN RETURN 'R-code older than source'.
-    WHEN 3 THEN RETURN 'R-code older than include file'.
+    WHEN 3 THEN RETURN 'R-code older than include file, or include reference pointing to different file'.
     WHEN 4 THEN RETURN 'Table CRC'.
     WHEN 5 THEN RETURN 'XCode or force'.
     WHEN 6 THEN RETURN 'Hierarchy change'.

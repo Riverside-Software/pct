@@ -1514,22 +1514,42 @@ public class PCTCompileTest extends BuildFileTestNg {
     public void test85() {
         configureProject(getBaseDir() + "test85/build.xml");
         // First build
-        expectLog("test1", new String[]{"PCTCompile - Progress Code Compiler", "test.p [No r-code]",
-                "test2.p [No r-code]", "2 file(s) compiled"});
+        expectLog("test1", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "test.p [No r-code]", //
+                "test2.p [No r-code]", //
+                "2 file(s) compiled"});
         // Second build, nothing compiled
-        expectLog("test1",
-                new String[]{"PCTCompile - Progress Code Compiler", "0 file(s) compiled"});
+        expectLog("test1", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "0 file(s) compiled"});
 
         // Touch test.p
-        expectLog("test2", new String[]{"PCTCompile - Progress Code Compiler", //
+        expectLog("test2", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
                 "test.p [R-code older than source]", //
                 "test2.p [R-code older than source]", //
                 "2 file(s) compiled"});
         // Touch test.i
-        expectLog("test3", new String[]{"PCTCompile - Progress Code Compiler", //
-                "test.p [R-code older than include file: test.i]", //
-                "test2.p [R-code older than include file: test2.i]", //
+        expectLog("test3", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file, or include reference pointing to different file: test.i]", //
+                "test2.p [R-code older than include file, or include reference pointing to different file: test2.i]", //
                 "2 file(s) compiled"});
+
+        // Compile in src/ directory with relativePaths=false
+        // .inc file are expected to have a hard-coded reference to src/
+        expectLog("test4-pre", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "2 file(s) compiled"});
+        // Then move src/ to src2/
+        // .p will be recompiled due to the directory rename even though file content didn't change
+        expectLog("test4", new String[]{ //
+                "PCTCompile - Progress Code Compiler", //
+                "test.p [R-code older than include file, or include reference pointing to different file: test.i]", //
+                "test2.p [R-code older than include file, or include reference pointing to different file: test2.i]", //
+                "2 file(s) compiled"});
+
     }
 
     @Test(groups = {"v11"})

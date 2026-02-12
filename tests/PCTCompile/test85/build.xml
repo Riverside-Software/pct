@@ -32,4 +32,21 @@
     </PCTCompile>
   </target>
 
+  <target name="test4-pre">
+    <PCTCompile destDir="build2" dlcHome="${DLC}" relativePaths="false">
+      <filelist dir="src" files="test.p,test2.p" />
+      <propath location="src" />
+      <Profiler description="PCTCompile-test85" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
+  <target name="test4">
+    <move file="src" tofile="src2" />
+    <PCTCompile destDir="build2" dlcHome="${DLC}" relativePaths="false" displayFiles="1">
+      <filelist dir="src2" files="test.p,test2.p" />
+      <propath location="src2" />
+      <Profiler description="PCTCompile-test85" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
+    </PCTCompile>
+  </target>
+
 </project>
