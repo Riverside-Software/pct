@@ -16,9 +16,6 @@
     <not><isset property="OE_MAJOR_VERSION" /></not>
   </condition>
   <!-- Groups to be executed depending on OpenEdge major version -->
-  <condition property="GROUPS" value="v11">
-    <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
-  </condition>
   <condition property="GROUPS" value="v11,v12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
@@ -31,19 +28,11 @@
     <os family="windows" />
   </condition>
   <!-- Excluded group depending on version -->
-  <condition property="EXCLUDES-VERSION" value="nov11">
-    <equals arg1="${OE_MAJOR_VERSION}" arg2="11" />
-  </condition>
   <condition property="EXCLUDES-VERSION" value="nov12">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="12" />
   </condition>
   <condition property="EXCLUDES-VERSION" value="nov13">
     <equals arg1="${OE_MAJOR_VERSION}" arg2="13" />
-  </condition>
-
-  <!-- Only used by old unit tests (OEUnit, ProUnit) -->
-  <condition property="VERSION" value="dlc${OE_MAJOR_VERSION}" else="dlc11">
-    <isset property="OE_MAJOR_VERSION" />
   </condition>
 
   <path id="test.run.cp">

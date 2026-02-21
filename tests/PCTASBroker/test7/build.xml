@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<project name="PCTASBroker-test7">
-  <taskdef resource="PCT.properties" />
-
-  <target name="test">
-    <PCTASBroker action="create" name="Test" file="ubroker.properties" dlcHome="${DLC}" brokerLogFile="broker.log" brokerLogLevel="4" serverLogFile="server.log" serverLogLevel="1" />
-  </target>
-
-</project>

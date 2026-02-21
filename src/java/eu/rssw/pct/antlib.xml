@@ -18,9 +18,7 @@
   <taskdef name="incr_dump" classname="com.phenix.pct.PCTDumpIncremental" />
   <taskdef name="crc" classname="com.phenix.pct.PCTCRC" />
   <taskdef name="xcode" classname="com.phenix.pct.PCTXCode" />
-  <taskdef name="prounit" classname="net.cordova.prounit.ProUnit" />
   <taskdef name="ablunit" classname="com.phenix.pct.ABLUnit" />
-  <taskdef name="oeunit" classname="com.phenix.pct.OEUnit" />
   <taskdef name="schema_doc" classname="com.phenix.pct.PCTSchemaDoc" />
   <taskdef name="progress_version" classname="com.phenix.pct.ProgressVersion" />
   <taskdef name="version" classname="com.phenix.pct.Version" />

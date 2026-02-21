@@ -17,14 +17,13 @@ pipeline {
         checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
         script {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
-          def dlc11 = tool name: 'OpenEdge-11.7', type: 'openedge'
           def dlc12 = tool name: 'OpenEdge-12.8', type: 'openedge'
           def dlc13 = tool name: 'OpenEdge-13.0', type: 'openedge'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
           def version = readFile('version.txt').trim()
 
           withEnv(["JAVA_HOME=${jdk}"]) {
-            bat "${antHome}\\bin\\ant -Dpct.release=${version} -DDLC11=${dlc11} -DDLC12=${dlc12} -DDLC13=${dlc13} classDoc"
+            bat "${antHome}\\bin\\ant -Dpct.release=${version} -DDLC12=${dlc12} -DDLC13=${dlc13} classDoc"
           }
         }
         stash name: 'classdoc', includes: 'dist/classDoc.zip'
@@ -51,14 +50,11 @@ pipeline {
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
             sh "ant build"
           }
-          docker.image('docker.rssw.eu/progress/dlc:11.7').inside('') {
-            sh "ant -DDLC11=/opt/progress/dlc -DDLC12=/ -DDLC13=/ pbuild"
-          }
           docker.image('docker.rssw.eu/progress/dlc:13.0').inside('') {
-            sh "ant -Dpct.release=${version} -DDLC11=/ -DDLC12=/ -DDLC13=/opt/progress/dlc pbuild"
+            sh "ant -Dpct.release=${version} -DDLC12=/ -DDLC13=/opt/progress/dlc pbuild"
           }
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
-            sh "ant -Dpct.release=${version} -DDLC11=/ -DDLC12=/opt/progress/dlc -DDLC13=/ -DGIT_COMMIT=${commit} dist"
+            sh "ant -Dpct.release=${version} -DDLC12=/opt/progress/dlc -DDLC13=/ -DGIT_COMMIT=${commit} dist"
           }
         }
         stash name: 'unsigned', includes: 'dist/PCT.jar,eToken.cfg'
@@ -93,14 +89,12 @@ pipeline {
 
     stage('🧪 Unit tests') {
       steps {
-        parallel branch1: { testBranch('Windows-Office', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', true, '11.7-Win', '') },
-                 branch2: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
-                 branch3: { testBranch('Windows-Office02', 'JDK17', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Win', '') },
-                 branch4: { testBranch('Linux-Office03', 'JDK8', 'Ant 1.10', 'OpenEdge-11.7', false, '11.7-Linux', 'docker.rssw.eu/progress/dlc:11.7') },
-                 branch5: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
-                 branch6: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
-                 branch7: { testBranch('Linux-Office03', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Linux', 'docker.rssw.eu/progress/dlc:13.0') },
-                 branch8: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Win', '') },
+        parallel branch1: { testBranch('Windows-Office', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', true, '12.2-Win', '') },
+                 branch2: { testBranch('Windows-Office02', 'JDK17', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Win', '') },
+                 branch3: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
+                 branch4: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
+                 branch5: { testBranch('Linux-Office03', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Linux', 'docker.rssw.eu/progress/dlc:13.0') },
+                 branch6: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Win', '') },
                  failFast: false
       }
     }
@@ -109,21 +103,17 @@ pipeline {
       agent { label 'Linux-Office03' }
       steps {
         // Wildcards not accepted in unstash...
-        unstash name: 'junit-11.7-Win'
         unstash name: 'junit-12.2-Win'
         unstash name: 'junit-12.8-Win'
         unstash name: 'junit-13.0-Win'
-        unstash name: 'junit-11.7-Linux'
         unstash name: 'junit-12.2-Linux'
         unstash name: 'junit-12.8-Linux'
         unstash name: 'junit-13.0-Linux'
 
         sh "mkdir junitreports"
-        unzip zipFile: 'junitreports-11.7-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.8-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-13.0-Win.zip', dir: 'junitreports', quiet: true
-        unzip zipFile: 'junitreports-11.7-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.8-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-13.0-Linux.zip', dir: 'junitreports', quiet: true
@@ -134,10 +124,11 @@ pipeline {
     stage('🔍️ Sonar') {
       agent { label 'Linux-Office03' }
       steps {
-        unstash name: 'coverage-11.7-Win'
         unstash name: 'coverage-12.2-Win'
         unstash name: 'coverage-12.8-Win'
         unstash name: 'coverage-12.8-Linux'
+        unstash name: 'coverage-13.0-Win'
+        unstash name: 'coverage-13.0-Linux'
         script {
           def version = readFile('version.txt').trim()
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
