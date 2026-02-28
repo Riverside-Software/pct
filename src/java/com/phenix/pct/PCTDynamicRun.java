@@ -58,7 +58,7 @@ public class PCTDynamicRun extends PCTRun {
     }
 
     @Override
-    public void setIniFile(File iniFile) {
+    public void setIniFile(String iniFile) {
         throw new UnsupportedOperationException("No -ininame attribute in this mode");
     }
 
@@ -184,7 +184,7 @@ public class PCTDynamicRun extends PCTRun {
 
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 writeIniFile();
-                super.setIniFile(iniFile);
+                super.setIniFile(iniFile.toString());
             } else {
                 Environment.Variable var = new Environment.Variable();
                 var.setKey("PROPATH"); //$NON-NLS-1$

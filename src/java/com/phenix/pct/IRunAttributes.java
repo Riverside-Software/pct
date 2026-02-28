@@ -56,7 +56,7 @@ public interface IRunAttributes {
     /**
      * Parameter file (-pf attribute)
      */
-    void setParamFile(File pf);
+    void setParamFile(String pf);
 
     /**
      * Thousands separator (-numsep attribute)
@@ -97,7 +97,7 @@ public interface IRunAttributes {
     /**
      * Sets .ini file to use (-basekey INI -ininame xxx)
      */
-    void setIniFile(File iniFile);
+    void setIniFile(String iniFile);
 
     /**
      * Stream code page (-cpstream attribute)

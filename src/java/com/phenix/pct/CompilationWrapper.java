@@ -376,7 +376,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setParamFile(File pf) {
+    public void setParamFile(String pf) {
         runAttributes.setParamFile(pf);
     }
 
@@ -411,7 +411,7 @@ public class CompilationWrapper extends PCT implements IRunAttributes, ICompilat
     }
 
     @Override
-    public void setIniFile(File iniFile) {
+    public void setIniFile(String iniFile) {
         runAttributes.setIniFile(iniFile);
     }
 

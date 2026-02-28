@@ -192,7 +192,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setParamFile(File pf) {
+    public void setParamFile(String pf) {
         runAttributes.setParamFile(pf);
     }
 
@@ -232,7 +232,7 @@ public class PCTRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setIniFile(File iniFile) {
+    public void setIniFile(String iniFile) {
         runAttributes.setIniFile(iniFile);
     }
 

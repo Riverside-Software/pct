@@ -418,11 +418,7 @@ public class PCTRunTest extends BuildFileTestNg {
             if (str.startsWith("Unable to find INI file"))
                 unableToFindMessage2 = true;
         }
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            assertTrue(unableToFindMessage2);
-        } else {
-            assertFalse(unableToFindMessage2);
-        }
+        assertFalse(unableToFindMessage2);
     }
 
     @Test(groups = {"v11"})

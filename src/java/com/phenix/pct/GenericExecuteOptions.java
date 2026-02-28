@@ -142,8 +142,11 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
-    public void setParamFile(File pf) {
-        paramFile = pf;
+    public void setParamFile(String pf) {
+        if (pf == null || pf.trim().isEmpty())
+            return;
+
+        this.paramFile = parent.getProject().resolveFile(pf);
     }
 
     @Override
@@ -182,18 +185,17 @@ public class GenericExecuteOptions implements IRunAttributes {
     }
 
     @Override
-    public void setIniFile(File iniFile) {
-        if (iniFile == null || iniFile.getPath().trim().isEmpty())
+    public void setIniFile(String iniFile) {
+        if (iniFile == null || iniFile.trim().isEmpty())
             return;
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            if (!iniFile.equals(parent.getProject().resolveFile(""))) {
-                parent.log("iniFile attribute is ignored on non-Windows platforms");
-            }
+            parent.log("iniFile attribute is ignored on non-Windows platforms");
         } else {
-            if (iniFile.exists() && iniFile.isFile()) {
-                this.iniFile = iniFile;
+            File resolved = parent.getProject().resolveFile(iniFile);
+            if (resolved.exists() && resolved.isFile()) {
+                this.iniFile = resolved;
             } else {
-                parent.log("Unable to find INI file " + iniFile.getAbsolutePath()
+                parent.log("Unable to find INI file " + resolved.getAbsolutePath()
                         + " - Skipping attribute");
             }
         }

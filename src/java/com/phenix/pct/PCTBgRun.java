@@ -147,7 +147,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setParamFile(File pf) {
+    public void setParamFile(String pf) {
         options.setParamFile(pf);
     }
 
@@ -207,7 +207,7 @@ public abstract class PCTBgRun extends PCT implements IRunAttributes {
     }
 
     @Override
-    public void setIniFile(File iniFile) {
+    public void setIniFile(String iniFile) {
         options.setIniFile(iniFile);
     }
 
