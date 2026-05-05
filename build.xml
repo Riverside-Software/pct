@@ -51,7 +51,7 @@
     <include name="Consultingwerk/**/*.cls" />
     <include name="Consultingwerk/**/*.p" />
   </fileset>
-  
+
   <!-- Different propath depending on version -->
   <path id="pp.v12">
     <pathelement location="${src.progress}" />
@@ -75,7 +75,7 @@
     <pathelement location="lib/proparse-2.30.0.jar"/>
     <pathelement location="lib/guava-32.1.3-jre.jar"/>
     <pathelement location="lib/antlr4-runtime-4.13.0.jar"/>
-    <pathelement location="lib/mvn-resolver-shaded-1.23.0.jar"/>    
+    <pathelement location="lib/mvn-resolver-shaded-1.26.0.jar"/>
   </path>
   <path id="pct.test.compil">
     <path refid="pct.compil" />
@@ -123,7 +123,7 @@
       <include name="za/co/mip/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
-      
+
     <copy todir="${build-java}">
       <fileset dir="${src.java}" includes="**/*.properties" />
     </copy>
@@ -321,7 +321,7 @@
       <zipfileset src="lib/openedge-checks-2.30.0.jar" />
       <zipfileset src="lib/slf4j-api-1.7.36.jar" />
       <zipfileset src="lib/slf4j-simple-1.7.36.jar" />
-      <zipfileset src="lib/mvn-resolver-shaded-1.23.0.jar" />
+      <zipfileset src="lib/mvn-resolver-shaded-1.26.0.jar" />
 
       <!-- ABLDuck classes -->
       <zipfileset src="lib/commonmark-0.11.0.jar"/>

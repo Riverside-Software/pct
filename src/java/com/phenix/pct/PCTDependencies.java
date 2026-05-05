@@ -36,15 +36,16 @@ import org.eclipse.aether.RepositoryException;
 
 import com.google.gson.GsonBuilder;
 
-import eu.rssw.openedge.ls.IDependencyResolver.LocalDependency;
-import eu.rssw.openedge.ls.OpenEdgeDependencyResolver;
+import eu.rssw.openedge.ls.IDependencyHandler;
+import eu.rssw.openedge.ls.OpenEdgeDependencyHandler;
+import eu.rssw.openedge.ls.IDependencyHandler.LocalDependency;
 import eu.rssw.openedge.ls.mapping.ProjectConfigFile;
 import eu.rssw.openedge.ls.mapping.ProjectConfigFile.Dependency;
 
 public class PCTDependencies extends Task {
     private String projectName;
     private Map<LocalDependency, java.nio.file.Path> dependencyHash;
-    private OpenEdgeDependencyResolver resolver;
+    private IDependencyHandler resolver;
 
     // Task attributes
     private File srcFile;
@@ -77,7 +78,7 @@ public class PCTDependencies extends Task {
         List<LocalDependency> resolvedDependencies = new ArrayList<>();
         dependencyHash = new HashMap<>();
         projectName = getProject().getName();
-        resolver = new OpenEdgeDependencyResolver();
+        resolver = new OpenEdgeDependencyHandler();
 
         if (srcFile == null)
             srcFile = new File(getProject().getBaseDir(), "openedge-project.json");
