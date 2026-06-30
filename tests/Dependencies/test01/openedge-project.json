@@ -1,4 +1,7 @@
 {
+  "name": "DependenciesTest01",
+  "version": "1.0.0",
+  "charset": "utf-8",
   "dependencies": [
     { "groupId": "com.progress.openedge",  "artifactId": "net", "version" : "12.8.9", "extension": "pl" },
     { "groupId": "com.progress.openedge", "artifactId": "core", "version" : "12.8.9", "extension": "apl" },
