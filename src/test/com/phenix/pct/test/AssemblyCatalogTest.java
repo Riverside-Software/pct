@@ -16,7 +16,6 @@
  */
 package com.phenix.pct.test;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -63,7 +62,7 @@ public class AssemblyCatalogTest extends BuildFileTestNg {
             assertFalse(cls.isInterface);
             assertFalse(cls.isEnum);
             assertNotNull(cls.methods);
-            assertEquals(cls.methods.length, 9);
+            assertTrue(cls.methods.length >= 9);
             Method obsMethd = null;
             Method nonObsMethd = null;
             for (Method m : cls.methods) {

@@ -32,7 +32,7 @@
     <unzip src="oe-profiler-data-13.0-Win.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
-    <unzip src="oe-profiler-data-13.0-Linux.zip" dest="profiler/progress" overwrite="true">
+    <unzip src="oe-profiler-data-13.1-Linux.zip" dest="profiler/progress" overwrite="true">
       <flattenmapper />
     </unzip>
   </target>

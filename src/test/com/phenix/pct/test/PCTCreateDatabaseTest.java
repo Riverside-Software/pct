@@ -181,15 +181,16 @@ public class PCTCreateDatabaseTest extends BuildFileTestNg {
     @Test(groups = {"v11"})
     public void test15() {
         configureProject("PCTCreateDatabase/test15/build.xml");
-        
         executeTarget("test");
         executeTarget("verify");
     }
 
     @Test(groups = {"v11"})
     public void test16() {
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if ((version.getMajorVersion() == 13) && (version.getMinorVersion() >= 1))
+            return;
         configureProject("PCTCreateDatabase/test16/build.xml");
-        
         executeTarget("test");
         executeTarget("verify");
     }
@@ -256,6 +257,19 @@ public class PCTCreateDatabaseTest extends BuildFileTestNg {
         executeTarget("base");
         expectBuildException("test2", "TDE Activated");
         executeTarget("test1");
+    }
+
+    @Test(groups = {"v11"})
+    public void test23() {
+        // Only work with 13.1+ (which upgraded ICU to 78)
+        DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
+        if (version.getMajorVersion() <= 12)
+            return;
+        if ((version.getMajorVersion() == 13) && (version.getMinorVersion() < 1))
+            return;
+        configureProject("PCTCreateDatabase/test23/build.xml");
+        executeTarget("test");
+        executeTarget("verify");
     }
 
 }

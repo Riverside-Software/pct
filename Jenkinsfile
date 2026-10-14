@@ -93,7 +93,7 @@ pipeline {
                  branch2: { testBranch('Windows-Office02', 'JDK17', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Win', '') },
                  branch3: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch4: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
-                 branch5: { testBranch('Linux-Office03', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Linux', 'docker.rssw.eu/progress/dlc:13.0') },
+                 branch5: { testBranch('Linux-Office03', 'JDK17', 'Ant 1.10', 'OpenEdge-13.1', true, '13.1-Linux', 'docker.rssw.eu/progress/dlc:13.1') },
                  branch6: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Win', '') },
                  failFast: false
       }
@@ -108,7 +108,7 @@ pipeline {
         unstash name: 'junit-13.0-Win'
         unstash name: 'junit-12.2-Linux'
         unstash name: 'junit-12.8-Linux'
-        unstash name: 'junit-13.0-Linux'
+        unstash name: 'junit-13.1-Linux'
 
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports', quiet: true
@@ -116,7 +116,7 @@ pipeline {
         unzip zipFile: 'junitreports-13.0-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.8-Linux.zip', dir: 'junitreports', quiet: true
-        unzip zipFile: 'junitreports-13.0-Linux.zip', dir: 'junitreports', quiet: true
+        unzip zipFile: 'junitreports-13.1-Linux.zip', dir: 'junitreports', quiet: true
         junit 'junitreports/**/*.xml'
       }
     }
@@ -128,7 +128,7 @@ pipeline {
         unstash name: 'coverage-12.8-Win'
         unstash name: 'coverage-12.8-Linux'
         unstash name: 'coverage-13.0-Win'
-        unstash name: 'coverage-13.0-Linux'
+        unstash name: 'coverage-13.1-Linux'
         script {
           def version = readFile('version.txt').trim()
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
