@@ -22,7 +22,7 @@
       "name": "v13",
       "inherits": "default",
       "value": {
-        "oeversion": "13.0",
+        "oeversion": "13.1",
         "buildPath": [
           {
             "type": "source",

@@ -18,7 +18,7 @@ pipeline {
         script {
           def antHome = tool name: 'Ant 1.9', type: 'ant'
           def dlc12 = tool name: 'OpenEdge-12.8', type: 'openedge'
-          def dlc13 = tool name: 'OpenEdge-13.0', type: 'openedge'
+          def dlc13 = tool name: 'OpenEdge-13.1', type: 'openedge'
           def jdk = tool name: 'Corretto 11', type: 'jdk'
           def version = readFile('version.txt').trim()
 
@@ -50,7 +50,7 @@ pipeline {
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
             sh "ant build"
           }
-          docker.image('docker.rssw.eu/progress/dlc:13.0').inside('') {
+          docker.image('docker.rssw.eu/progress/dlc:13.1').inside('') {
             sh "ant -Dpct.release=${version} -DDLC12=/ -DDLC13=/opt/progress/dlc pbuild"
           }
           docker.image('docker.rssw.eu/progress/dlc:12.8').inside('') {
@@ -94,7 +94,7 @@ pipeline {
                  branch3: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.2', false, '12.2-Linux', 'docker.rssw.eu/progress/dlc:12.2') },
                  branch4: { testBranch('Linux-Office03', 'Corretto 11', 'Ant 1.10', 'OpenEdge-12.8', true, '12.8-Linux', 'docker.rssw.eu/progress/dlc:12.8') },
                  branch5: { testBranch('Linux-Office03', 'JDK17', 'Ant 1.10', 'OpenEdge-13.1', true, '13.1-Linux', 'docker.rssw.eu/progress/dlc:13.1') },
-                 branch6: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-13.0', true, '13.0-Win', '') },
+                 branch6: { testBranch('Windows-Office', 'JDK17', 'Ant 1.10', 'OpenEdge-13.1', true, '13.1-Win', '') },
                  failFast: false
       }
     }
@@ -105,7 +105,7 @@ pipeline {
         // Wildcards not accepted in unstash...
         unstash name: 'junit-12.2-Win'
         unstash name: 'junit-12.8-Win'
-        unstash name: 'junit-13.0-Win'
+        unstash name: 'junit-13.1-Win'
         unstash name: 'junit-12.2-Linux'
         unstash name: 'junit-12.8-Linux'
         unstash name: 'junit-13.1-Linux'
@@ -113,7 +113,7 @@ pipeline {
         sh "mkdir junitreports"
         unzip zipFile: 'junitreports-12.2-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.8-Win.zip', dir: 'junitreports', quiet: true
-        unzip zipFile: 'junitreports-13.0-Win.zip', dir: 'junitreports', quiet: true
+        unzip zipFile: 'junitreports-13.1-Win.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.2-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-12.8-Linux.zip', dir: 'junitreports', quiet: true
         unzip zipFile: 'junitreports-13.1-Linux.zip', dir: 'junitreports', quiet: true
@@ -127,7 +127,7 @@ pipeline {
         unstash name: 'coverage-12.2-Win'
         unstash name: 'coverage-12.8-Win'
         unstash name: 'coverage-12.8-Linux'
-        unstash name: 'coverage-13.0-Win'
+        unstash name: 'coverage-13.1-Win'
         unstash name: 'coverage-13.1-Linux'
         script {
           def version = readFile('version.txt').trim()

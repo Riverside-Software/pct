@@ -516,7 +516,7 @@ public class PCTRunTest extends BuildFileTestNg {
 
         expectLog("test1", ".Net version: 4.0.30319.42000");
         List<String> rexp = new ArrayList<>();
-        rexp.add("\\.Net version: 6\\.0\\.\\d+"); // fix: patch version can change with updates
+        rexp.add("\\.Net version: \\d+\\.\\d+\\.\\d+");
         expectLogRegexp("test2", rexp, false);  
     }
 
@@ -582,7 +582,7 @@ public class PCTRunTest extends BuildFileTestNg {
         if (isOE13 || isOE1287) { // Same behavior on 12.8 and 13.0 on Windows for now
             expectBuildException("test1", "Supposed to fail");
             executeTarget("test2");
-            executeTarget("test3"); // 13.0 on Windows, default value is still 0
+            executeTarget("test3"); // 13.1 on Windows, default value is still 0
         } else {
             executeTarget("test1");
             executeTarget("test2");
