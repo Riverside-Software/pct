@@ -11,25 +11,6 @@ pipeline {
   }
 
   stages {
-    stage('🏗️ Class documentation build') {
-      agent { label 'Windows-Office' }
-      steps {
-        checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: scm.userRemoteConfigs])
-        script {
-          def antHome = tool name: 'Ant 1.9', type: 'ant'
-          def dlc12 = tool name: 'OpenEdge-12.8', type: 'openedge'
-          def dlc13 = tool name: 'OpenEdge-13.1', type: 'openedge'
-          def jdk = tool name: 'Corretto 11', type: 'jdk'
-          def version = readFile('version.txt').trim()
-
-          withEnv(["JAVA_HOME=${jdk}"]) {
-            bat "${antHome}\\bin\\ant -Dpct.release=${version} -DDLC12=${dlc12} -DDLC13=${dlc13} classDoc"
-          }
-        }
-        stash name: 'classdoc', includes: 'dist/classDoc.zip'
-      }
-    }
-
     stage('🏗️ Standard build') {
       agent { label 'Linux-Office03' }
       steps {
@@ -40,7 +21,6 @@ pipeline {
           // There's probably a better way to do that, but no time for that (today)
           checkout([$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'CleanCheckout']], userRemoteConfigs: [[credentialsId: scm.userRemoteConfigs.credentialsId[0], url: scm.userRemoteConfigs.url[0], refspec: '+refs/heads/main:refs/remotes/origin/main']] ])
 
-          unstash name: 'classdoc'
           env.GIT_AUTHOR = sh (script: 'git log --format="%ae" -n 1', returnStdout: true).trim()
           sh 'git rev-parse --short HEAD > head-rev'
           def commit = readFile('head-rev').trim()

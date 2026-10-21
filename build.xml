@@ -24,10 +24,6 @@
   <property name="build-test" location="build/test" />
   <property name="build-v12" location="build/build-v12" />
   <property name="build-v13" location="build/build-v13" />
-  <property name="build-win-v12" location="build/windows-v12" />
-  <property name="build-win-v12-netcore" location="build/windows-v12-netcore" />
-  <property name="build-win-v13" location="build/windows-v13" />
-  <property name="build-win-v13-netcore" location="build/windows-v13-netcore" />
   <property name="doc" location="doc" />
   <property name="dist" location="dist" />
 
@@ -47,10 +43,6 @@
     <include name="pct/v13/*.p" />
     <include name="rssw/**/*.cls" />
   </fileset>
-  <fileset id="fs.classDoc" dir="${src.progress}">
-    <include name="Consultingwerk/**/*.cls" />
-    <include name="Consultingwerk/**/*.p" />
-  </fileset>
 
   <!-- Different propath depending on version -->
   <path id="pp.v12">
@@ -67,8 +59,6 @@
     <pathelement location="lib/ast.jar" />
     <pathelement location="lib/ast-dependencies.jar" />
     <pathelement location="lib/jaxb-api-2.3.1.jar" />
-    <!-- ABLDuck classes -->
-    <pathelement location="lib/commonmark-0.11.0.jar"/>
     <pathelement location="lib/database-parser-2.30.0.jar"/>
     <pathelement location="lib/rcode-reader-2.30.0.jar"/>
     <pathelement location="lib/openedge-checks-2.30.0.jar"/>
@@ -120,7 +110,6 @@
     <javac srcdir="${src.java}" destdir="${build-java}" debug="${debug}" release="8" deprecation="${deprecation}" optimize="${optimize}" encoding="utf-8" includeAntRuntime="false">
       <include name="com/phenix/pct/*.java" />
       <include name="eu/rssw/pct/**/*.java" />
-      <include name="za/co/mip/**/*.java" />
       <classpath refid="pct.compil" />
     </javac>
 
@@ -195,102 +184,11 @@
     </antcall>
 
     <zip destfile="${build}/pct-src.zip">
-      <fileset dir="${src.progress}" includes="**/*" excludes="Consultingwerk/Studio/ClassDocumentation/Templates/resources/**/*" />
-    </zip>
-  </target>
-
-  <target name="classDoc" depends="declare-bootstrap" description="Windows compilation of class documentation">
-    <mkdir dir="${build-win-v12}" />
-    <bootstrapCompile destdir="${build-win-v12}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
-      <fileset refid="fs.classDoc" />
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-      <PCTRunOption name="-cprcodeout" value="undefined" />
-    </bootstrapCompile>
-
-    <mkdir dir="${build-win-v12-netcore}" />
-    <bootstrapCompile destdir="${build-win-v12-netcore}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC12}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v12.present}">
-      <fileset refid="fs.classDoc" />
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-      <PCTRunOption name="-clrnetcore" />
-      <PCTRunOption name="-cprcodeout" value="undefined" />
-    </bootstrapCompile>
-
-    <mkdir dir="${build-win-v13}" />
-    <bootstrapCompile destdir="${build-win-v13}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC13}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v13.present}">
-      <fileset refid="fs.classDoc" />
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-      <PCTRunOption name="-cprcodeout" value="undefined" />
-    </bootstrapCompile>
-
-    <mkdir dir="${build-win-v13-netcore}" />
-    <bootstrapCompile destdir="${build-win-v13-netcore}" md5="true" minSize="false" graphicalMode="false" dlcHome="${DLC13}" cpstream="iso8859-1" debugListing="true" listing="true" relativePaths="true" requireFullNames="true" requireFieldQualifiers="true" if:true="${dlc.v13.present}">
-      <fileset refid="fs.classDoc" />
-      <propath>
-        <pathelement location="${src.progress}" />
-      </propath>
-      <PCTRunOption name="-clrnetcore" />
-      <PCTRunOption name="-cprcodeout" value="undefined" />
-    </bootstrapCompile>
-
-    <zip destFile="${dist}/classDoc.zip">
-      <zipfileset dir="${build-win-v12}" prefix="v12" includes="**/*.r" />
-      <zipfileset dir="${build-win-v12-netcore}" prefix="v12-netcore" includes="**/*.r" />
-      <zipfileset dir="${build-win-v13}" prefix="v13" includes="**/*.r" />
-      <zipfileset dir="${build-win-v13-netcore}" prefix="v13-netcore" includes="**/*.r" />
-    </zip>
-  </target>
-
-  <target name="fakeClassDoc" unless="classDocOK">
-    <echo message="Generating fake classDoc.zip file" />
-    <echo file="${dist}/empty.txt" />
-    <zip destFile="${dist}/classDoc.zip" whenEmpty="create">
-      <zipfileset dir="${dist}" includes="empty.txt" prefix="v12" />
-      <zipfileset dir="${dist}" includes="empty.txt" prefix="v13" />
+      <fileset dir="${src.progress}" includes="**/*" />
     </zip>
   </target>
 
   <target name="jar" depends="pbuild,test-build" description="JAR file generation">
-    <condition property="classDocOK">
-      <resourceexists><file file="${dist}/classDoc.zip" /></resourceexists>
-    </condition>
-    <antcall target="fakeClassDoc" />
-
-    <!--  Updating pct12.pl with rcode compiled on Windows -->
-    <mkdir dir="classDocTemp" />
-    <mkdir dir="classDocTemp/v12" />
-    <mkdir dir="classDocTemp/v12-netcore" />
-    <mkdir dir="classDocTemp/v13" />
-    <mkdir dir="classDocTemp/v13-netcore" />
-
-    <copy todir="classDocTemp" overwrite="true">
-      <zipfileset src="dist/classDoc.zip" />
-    </copy>
-
-    <bootstrapLibrary destfile="${build}/pct12.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
-      <fileset dir="classDocTemp/v12" includes="**/*.r" />
-    </bootstrapLibrary>
-    <bootstrapLibrary destfile="${build}/pct12-netcore.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
-      <fileset dir="classDocTemp/v12-netcore" includes="**/*.r" />
-    </bootstrapLibrary>
-    <bootstrapLibrary destfile="${build}/pct13.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
-      <fileset dir="classDocTemp/v13" includes="**/*.r" />
-    </bootstrapLibrary>
-    <bootstrapLibrary destfile="${build}/pct13-netcore.pl" dlcHome="${DLC12}" encoding="undefined" if:true="${dlc.v12.present}">
-      <fileset dir="classDocTemp/v13-netcore" includes="**/*.r" />
-    </bootstrapLibrary>
-
-    <delete dir="classDocTemp" />
-
-    <zip destfile="${build}/ablduck.zip">
-      <fileset dir="${src.java}/za/co/mip/ablduck/resources" />
-    </zip>
-
     <jar jarfile="${dist}/PCT.jar" duplicate="preserve">
       <fileset dir="${build-java}">
         <include name="**/*.class" />
@@ -298,16 +196,12 @@
       </fileset>
       <fileset dir="${build}">
         <include name="pct12.pl" />
-        <include name="pct12-netcore.pl" />
         <include name="pct13.pl" />
-        <include name="pct13-netcore.pl" />
         <include name="pct-src.zip" />
       </fileset>
-      <zipfileset dir="${build}" includes="ablduck.zip" prefix="za/co/mip/ablduck/resources" />
       <fileset dir="${src.java}">
         <include name="eu/rssw/pct/antlib.xml" />
         <include name="eu/rssw/pct/oedoc/antlib.xml" />
-        <include name="za/co/mip/ablduck/resources/ablduck.zip" />
       </fileset>
       <zipfileset src="lib/gson-2.2.4.jar" />
       <zipfileset src="lib/jaxb-api-2.3.1.jar" />
@@ -322,11 +216,6 @@
       <zipfileset src="lib/slf4j-api-1.7.36.jar" />
       <zipfileset src="lib/slf4j-simple-1.7.36.jar" />
       <zipfileset src="lib/mvn-resolver-shaded-1.26.0.jar" />
-
-      <!-- ABLDuck classes -->
-      <zipfileset src="lib/commonmark-0.11.0.jar"/>
-
-      <zipfileset dir="${src.progress}/Consultingwerk/Studio/ClassDocumentation/Templates" prefix="templates" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">
@@ -360,10 +249,6 @@
     <copy todir="testbox">
       <fileset dir="tests" />
     </copy>
-    <mkdir dir="testbox/ClassDocumentation/test3/src" />
-    <copy todir="testbox/ClassDocumentation/test3/src">
-      <fileset dir="${src.progress}" includes="Consultingwerk/**/*" />
-    </copy>
   </target>
 
   <target name="javadoc" depends="build" description="Javadoc generation">
@@ -375,7 +260,6 @@
       </classpath>
       <group title="PCT Core" packages="com.phenix.pct.*" />
       <group title="Class documentation" packages="eu.rssw.pct.*" />
-      <group title="ABLDuck" packages="za.co.mip.ablduck.*" />
       <group title="ProUnit" packages="net.cordova.prounit.*" />
       <bottom>Copyright © 2003-${year} Gilles QUERRET. All Rights Reserved.</bottom>
       <link href="https://docs.oracle.com/en/java/javase/21/docs/api/" />
@@ -397,7 +281,6 @@
     <zip destfile="${dist}/testcases.zip" encoding="utf-8">
       <zipfileset dir="${build-test}" includes="**/*" prefix="build/test" />
       <zipfileset dir="tests" includes="**/*" prefix="testbox" />
-      <zipfileset dir="${src.progress}" includes="Consultingwerk/**/*" prefix="testbox/ClassDocumentation/test3/src" />
       <zipfileset dir="lib" prefix="lib">
         <include name="activation-*.jar" />
         <include name="ast.jar" />

@@ -1,70 +1,49 @@
-/**********************************************************************
- * Copyright (C) 2006-2013 by Consultingwerk Ltd. ("CW") -            *
- * www.consultingwerk.de and other contributors as listed             *
- * below.  All Rights Reserved.                                       *
- *                                                                    *
- *  Software is distributed on an "AS IS", WITHOUT WARRANTY OF ANY    *
- *   KIND, either express or implied.                                 *
- *                                                                    *
- *  Contributors:                                                     *
- *                                                                    *
- **********************************************************************/
 /*------------------------------------------------------------------------
     File        : TestClass
-    Purpose     : 
-    Syntax      : 
-    Description : 
-    Author(s)   : Mike Fechner / Consultingwerk Ltd.
-    Created     : Sat Jun 08 12:43:13 CEST 2013
-    Notes       : 
+    Purpose     : Test fixture for documentation tasks
+    Author(s)   : Riverside Software
   ----------------------------------------------------------------------*/
 
-ROUTINE-LEVEL ON ERROR UNDO, THROW.
+block-level on error undo, throw.
 
-USING Progress.Lang.*       FROM PROPATH .
+using Progress.Lang.* from propath.
 
-CLASS eu.rssw.pct.TestClass FINAL: 
+class eu.rssw.pct.TestClass final:
 
-    /*------------------------------------------------------------------------------
-        Purpose: Constructor for the TestClass class
-        Notes:   
-    ------------------------------------------------------------------------------*/
-	CONSTRUCTOR PUBLIC TestClass ():
-		SUPER ().
-		
-	END CONSTRUCTOR.
+  /*------------------------------------------------------------------------------
+      Purpose: Default constructor
+      Notes:
+  ------------------------------------------------------------------------------*/
+  constructor public TestClass():
+    super().
+  end constructor.
 
-    /*------------------------------------------------------------------------------
-        Purpose: Constructor for the TestClass class
-        Notes:   
-        @param pcParam The comment for pcParam
-    ------------------------------------------------------------------------------*/
-    CONSTRUCTOR PUBLIC TestClass (pcParam AS CHARACTER):
-        SUPER ().
-        
-    END CONSTRUCTOR.
+  /*------------------------------------------------------------------------------
+      Purpose: Constructor with one argument
+      Notes:
+      @param pcName Name of the instance
+  ------------------------------------------------------------------------------*/
+  constructor public TestClass(pcName as character):
+    super().
+  end constructor.
 
-    /*------------------------------------------------------------------------------
-        Purpose: The is a test method with no annotation
-        Notes:   
-        @param pcParam The comment for pcParam
-    ------------------------------------------------------------------------------*/
-	METHOD PUBLIC FINAL VOID TestMethodNoAnnotation (pcParam AS CHARACTER):
-		
-		RETURN.
+  /*------------------------------------------------------------------------------
+      Purpose: Method without annotation
+      Notes:
+      @param pcValue Input value
+  ------------------------------------------------------------------------------*/
+  method public final void DoSomething(pcValue as character):
+    return.
+  end method.
 
-	END METHOD .
+  /*------------------------------------------------------------------------------
+      Purpose: Method with an annotation
+      Notes:
+      @param pcValue Input value
+  ------------------------------------------------------------------------------*/
+  @Test.
+  method public void DoSomethingElse(pcValue as character):
+    return.
+  end method.
 
-    /*------------------------------------------------------------------------------
-        Purpose: The is a test method with an @Test. annotation
-        Notes:   
-        @param pcParam The comment for pcParam
-    ------------------------------------------------------------------------------*/
-    @Test.
-    METHOD PUBLIC VOID TestMethodWithAnnotation (pcParam AS CHARACTER):
-        
-        RETURN.
-
-    END METHOD .
-
-END CLASS.
+end class.

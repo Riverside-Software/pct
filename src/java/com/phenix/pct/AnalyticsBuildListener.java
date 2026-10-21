@@ -44,7 +44,6 @@ public class AnalyticsBuildListener implements BuildListener {
                 || "RestGen".equalsIgnoreCase(task.getTaskType())
                 || "ClassDocumentation".equalsIgnoreCase(task.getTaskType())
                 || "JsonDocumentation".equalsIgnoreCase(task.getTaskType())
-                || "ABLDuck".equalsIgnoreCase(task.getTaskType())
                 || "ABLUnit".equalsIgnoreCase(task.getTaskType()));
     }
 

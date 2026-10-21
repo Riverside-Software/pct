@@ -10,7 +10,7 @@
       "type": "source",
       "path": "src/progress",
       "build": "build/build-v12",
-      "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v13/**,pct/v102b/**,pct/v12/loadSch124.p"
+      "excludes": "pct/v10/**,pct/v11/**,pct/v13/**,pct/v102b/**,pct/v12/loadSch124.p"
     }
   ],
   "numThreads": 1,
@@ -28,7 +28,7 @@
             "type": "source",
             "path": "src/progress",
             "build": "build/build-v13",
-            "excludes": "Consultingwerk/**,pct/v10/**,pct/v11/**,pct/v12/**,pct/v102b/**"
+            "excludes": "pct/v10/**,pct/v11/**,pct/v12/**,pct/v102b/**"
           }
         ],
         "dbConnections": [

@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<ttServiceLoader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ttServiceLoaderRow>
-    <Order>1</Order>
-    <ServiceTypeName>Consultingwerk.Studio.ClassDocumentation.IClassReferenceLinkProvider</ServiceTypeName>
-    <ServiceClassName>Consultingwerk.Studio.SmartDox.ExtendedClassReferenceLinkProvider</ServiceClassName>
-  </ttServiceLoaderRow>  
-</ttServiceLoader>

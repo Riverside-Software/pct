@@ -30,7 +30,7 @@ Which will give you something like:
 * Modify `pct.build.properties` to match your OpenEdge installation dir
   * If you don't want to modify the properties you can create a symbolic link using `mklink /j /d C:\\Progress\\OpenEdge-12.6 your-oe126-path` in an administrator command prompt
 * Make sure you **don’t** have PCT.jar in `$ANT_HOME/lib`
-* Execute `ant clean jar` (or `ant clean classDoc jar` if you want to test ClassDocumentation on Windows) to build everything (PCT.jar is created in dist/ directory)
+* Execute `ant clean jar` to build everything (PCT.jar is created in dist/ directory)
 * Execute `ant prepare-test` to (re)generate the testbox dir, where tests are executed
 * Execute `ant -DDLC=%DLC% -Dprofiler=true -lib dist/PCT.jar -file tests.xml test` to execute unit tests
 

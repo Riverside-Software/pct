@@ -37,8 +37,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.phenix.pct.DLCVersion;
-
 /**
  * Class for testing ClassDocumentation task
  * 
@@ -93,20 +91,12 @@ public class ClassDocumentationTest extends BuildFileTestNg {
     }
 
     @Test(groups= {"win", "v11"})
-    public void test3() {
-        configureProject("ClassDocumentation/test3/build.xml");
-        executeTarget("test");
-    }
-
-    @Test(groups= {"win", "v11"})
     public void test4() {
         configureProject("ClassDocumentation/test4/build.xml");
         executeTarget("test");
 
         File f1 = new File("ClassDocumentation/test4/doc/TestClass.xml");
         assertTrue(f1.exists());
-        File f2 = new File("ClassDocumentation/test4/html/TestClass.html");
-        assertTrue(f2.exists());
     }
 
     @Test(groups= {"win", "v11"})
@@ -116,8 +106,6 @@ public class ClassDocumentationTest extends BuildFileTestNg {
 
         File f1 = new File("ClassDocumentation/test5/doc/OpenEdge.Core.InjectABL.InjectionRequest.xml");
         assertTrue(f1.exists());
-        File f2 = new File("ClassDocumentation/test5/html/OpenEdge.Core.InjectABL.InjectionRequest.html");
-        assertTrue(f2.exists());
     }
 
     @Test(groups= {"win", "v11"})
@@ -151,42 +139,5 @@ public class ClassDocumentationTest extends BuildFileTestNg {
         assertTrue(f2.exists());
 
         assertTrue(f2.length() > f1.length());
-    }
-
-    @Test(groups= {"v12"})
-    public void test8() throws XPathExpressionException {
-        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-        if (isWindows) {
-            // Only work with 12.7+
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 6))
-                return;
-        } else {
-         // Only work with 12.8+
-            DLCVersion version = DLCVersion.getObject(new File(System.getProperty("DLC")));
-            if ((version.getMajorVersion() == 12) && (version.getMinorVersion() <= 7))
-                return;
-        }
-
-        configureProject("ClassDocumentation/test8/build.xml");
-        executeTarget("test");
-        File f1 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.X.xml");
-        assertTrue(f1.exists());
-        File f2 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.Y.xml");
-        assertTrue(f2.exists());
-        File f3 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.Z.xml");
-        assertTrue(f3.exists());
-        File f4 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.A.xml");
-        assertTrue(f4.exists());
-        File f5 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.B.xml");
-        assertTrue(f5.exists());
-        File f6 = new File("ClassDocumentation/test8/doc2/dir1/test.p.xml");
-        assertTrue(f6.exists());
-        File f7 = new File("ClassDocumentation/test8/doc/eu.rssw.pct.TestClass.xml");
-        assertTrue(f7.exists());
-
-        InputSource inputSource = new InputSource("ClassDocumentation/test8/doc/eu.rssw.pct.X.xml");
-        assertEquals(xpath.evaluate("//unit/temp-table[@name='tt3']/@like", inputSource), "tt1");
-        assertEquals(xpath.evaluate("//unit/temp-table[@name='tt3']/field[@name='fld5']/@dataType", inputSource), "UNKNOWN DATATYPE");
     }
 }

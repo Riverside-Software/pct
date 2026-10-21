@@ -3,9 +3,6 @@
   <taskdef resource="extras115.properties" />
 
   <target name="test">
-    <mkdir dir="xml" />
-    <mkdir dir="profiler" />
-
     <ClassDocumentation destDir="doc" dlcHome="${DLC}">
       <fileset dir="src" includes="**/*.cls" />
       <propath>
@@ -18,12 +15,6 @@
         <pathelement location="src" />
       </propath>
     </ClassDocumentation>
-    <HTMLDocumentation dlcHome="${DLC}" sourceDir="doc" destDir="html">
-      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
-    </HTMLDocumentation>
-    <XMLDocumentation dlcHome="${DLC}" sourceDir="doc" destFile="xml/test1.xml">
-      <Profiler description="ClassDocumentation-test1" enabled="${PROFILER}" coverage="true" outputDir="profiler" />
-    </XMLDocumentation>
   </target>
 
 </project>
