@@ -41,6 +41,7 @@
   <fileset id="fs.v13" dir="${src.progress}">
     <include name="pct/*.p" />
     <include name="pct/v13/*.p" />
+    <include name="pct/v12/assemblyCatalog.p" />
     <include name="rssw/**/*.cls" />
   </fileset>
 
@@ -216,6 +217,10 @@
       <zipfileset src="lib/slf4j-api-1.7.36.jar" />
       <zipfileset src="lib/slf4j-simple-1.7.36.jar" />
       <zipfileset src="lib/mvn-resolver-shaded-1.26.0.jar" />
+
+      <!-- AssemblyCatalog task -->
+      <zipfileset file="lib/PCTTools-1.0.6.dll" fullpath="assemblycatalog/PCTTools.dll" />
+      <zipfileset file="lib/PCTTools-1.0.6-LICENSE.txt" fullpath="assemblycatalog/PCTTools-LICENSE.txt" />
       <manifest>
         <attribute name="Built-By" value="${user.name}" />
         <section name="common">

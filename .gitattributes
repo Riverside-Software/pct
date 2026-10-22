@@ -12,3 +12,4 @@ org.eclipse.wst.common.project.facet.core.xml text=crlf
 *.jar    binary
 *.pl     binary
 *.pxg    binary
+*.dll    binary
